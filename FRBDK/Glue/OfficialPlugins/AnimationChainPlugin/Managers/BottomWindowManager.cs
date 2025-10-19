@@ -109,8 +109,6 @@ internal class BottomWindowManager
 
     public void RefreshAnimationPreview(AchxViewModel ViewModel)
     {
-        var texture = MainAnimationSprite.Texture;
-
         _currentDisplayedAnimationFrameIndex = -1;
         _lastFrameTime = DateTime.MinValue;
         _currentFrameTime = 0;
@@ -121,7 +119,7 @@ internal class BottomWindowManager
         }
         AnimationShapes.Clear();
 
-        if (texture != null && ViewModel != null)
+        if (ViewModel != null)
         {
             if (ViewModel.SelectedAnimationFrame != null || ViewModel.SelectedShape != null)
             {
@@ -166,7 +164,7 @@ internal class BottomWindowManager
         BottomGumCanvas.InvalidateVisual();
     }
 
-    private void RenderShapes(List<ShapeViewModel> shapes, AnimationFrameViewModel owner, bool forceRenderShapes)
+    private void RenderShapes(List<ShapeViewModel> shapes, AnimationFrameViewModel? owner, bool forceRenderShapes)
     {
         foreach (var shape in AnimationShapes)
         {
@@ -174,7 +172,7 @@ internal class BottomWindowManager
         }
         AnimationShapes.Clear();
 
-        if (settingsViewModel.IsShowingFrameShapes || forceRenderShapes)
+        if (shapes != null && (settingsViewModel.IsShowingFrameShapes || forceRenderShapes))
         {
             foreach (var loopShape in shapes)
             {
@@ -237,7 +235,7 @@ internal class BottomWindowManager
 
     private void RunAnimation()
     {
-        AnimationFrameViewModel frame;
+        AnimationFrameViewModel? frame = null;
         lock (_animationLock)
         {
             if (
@@ -257,17 +255,20 @@ internal class BottomWindowManager
             if (_currentDisplayedAnimationFrameIndex >= _viewModel.CurrentAnimationChain.VisibleChildren.Count())
                 _currentDisplayedAnimationFrameIndex = 0;
 
-            frame = _viewModel.CurrentAnimationChain.VisibleChildren[_currentDisplayedAnimationFrameIndex];
+            if(_viewModel.CurrentAnimationChain.VisibleChildren.Count > _currentDisplayedAnimationFrameIndex)
+            {
+                frame = _viewModel.CurrentAnimationChain.VisibleChildren[_currentDisplayedAnimationFrameIndex];
 
-            _lastFrameTime = DateTime.Now;
-            _currentFrameTime = frame.LengthInSeconds * 1000;
+                _lastFrameTime = DateTime.Now;
+                _currentFrameTime = frame.LengthInSeconds * 1000;
+            }
         }
 
         try
         {
             UserControl.Dispatcher.Invoke(() =>
             {
-                RenderFrame(frame, frame.VisibleChildren.ToList(), 
+                RenderFrame(frame, frame?.VisibleChildren.ToList(), 
                     // do not force render shapes, we're viewing an animation so only if the animation is 
                     forceRenderShapes:false);
 
@@ -280,50 +281,64 @@ internal class BottomWindowManager
         }
     }
 
-    private void RenderFrame(AnimationFrameViewModel frame, List<ShapeViewModel> shapes, bool forceRenderShapes)
+    private void RenderFrame(AnimationFrameViewModel? frame, List<ShapeViewModel>? shapes, bool forceRenderShapes)
     {
-        // don't use percentage, because that will result in a flipped sprite having negative width and height
-        //MainAnimationSprite.WidthUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
-        //MainAnimationSprite.HeightUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
-        MainAnimationSprite.WidthUnits = Gum.DataTypes.DimensionUnitType.Absolute;
-        MainAnimationSprite.HeightUnits = Gum.DataTypes.DimensionUnitType.Absolute;
-        MainAnimationSprite.TextureAddress = Gum.Managers.TextureAddress.Custom;
-        MainAnimationSprite.TextureLeft = (int)frame.LeftCoordinate;
-        MainAnimationSprite.TextureTop = (int)frame.TopCoordinate;
-        MainAnimationSprite.TextureWidth = FlatRedBall.Math.MathFunctions.RoundToInt(frame.RightCoordinate - frame.LeftCoordinate);
-        MainAnimationSprite.TextureHeight = FlatRedBall.Math.MathFunctions.RoundToInt(frame.BottomCoordinate - frame.TopCoordinate);
-        MainAnimationSprite.Visible = true;
-        MainAnimationSprite.Y = -frame.RelativeY * (frame.FlipVertical ? -1 : 1);
-        MainAnimationSprite.X = frame.RelativeX * (frame.FlipHorizontal ? -1 : 1);
-
-        if (frame.FlipHorizontal)
+        if(frame == null)
         {
-            MainAnimationSprite.TextureLeft += MainAnimationSprite.TextureWidth;
-            MainAnimationSprite.TextureWidth = -MainAnimationSprite.TextureWidth;
+            MainAnimationSprite.Visible = false;
         }
-        if (frame.FlipVertical)
+        else
         {
-            MainAnimationSprite.TextureTop += MainAnimationSprite.TextureHeight;
-            MainAnimationSprite.TextureHeight = -MainAnimationSprite.TextureHeight;
-            MainAnimationSprite.Y -= MainAnimationSprite.TextureHeight;
+            MainAnimationSprite.Visible = true;
+            // don't use percentage, because that will result in a flipped sprite having negative width and height
+            //MainAnimationSprite.WidthUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
+            //MainAnimationSprite.HeightUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
+            MainAnimationSprite.WidthUnits = Gum.DataTypes.DimensionUnitType.Absolute;
+            MainAnimationSprite.HeightUnits = Gum.DataTypes.DimensionUnitType.Absolute;
+            MainAnimationSprite.TextureAddress = Gum.Managers.TextureAddress.Custom;
+            MainAnimationSprite.TextureLeft = (int)frame.LeftCoordinate;
+            MainAnimationSprite.TextureTop = (int)frame.TopCoordinate;
+            MainAnimationSprite.TextureWidth = FlatRedBall.Math.MathFunctions.RoundToInt(frame.RightCoordinate - frame.LeftCoordinate);
+            MainAnimationSprite.TextureHeight = FlatRedBall.Math.MathFunctions.RoundToInt(frame.BottomCoordinate - frame.TopCoordinate);
+            MainAnimationSprite.Visible = true;
+            MainAnimationSprite.Y = -frame.RelativeY * (frame.FlipVertical ? -1 : 1);
+            MainAnimationSprite.X = frame.RelativeX * (frame.FlipHorizontal ? -1 : 1);
+
+            if (frame.FlipHorizontal)
+            {
+                MainAnimationSprite.TextureLeft += MainAnimationSprite.TextureWidth;
+                MainAnimationSprite.TextureWidth = -MainAnimationSprite.TextureWidth;
+            }
+            if (frame.FlipVertical)
+            {
+                MainAnimationSprite.TextureTop += MainAnimationSprite.TextureHeight;
+                MainAnimationSprite.TextureHeight = -MainAnimationSprite.TextureHeight;
+                MainAnimationSprite.Y -= MainAnimationSprite.TextureHeight;
+            }
+            MainAnimationSprite.Width = System.Math.Abs(MainAnimationSprite.TextureWidth);
+            MainAnimationSprite.Height = System.Math.Abs(MainAnimationSprite.TextureHeight);
+
+            MainAnimationSprite.Texture = _cachedTextureService.TryGetTexture(_currentParentDirectory + frame.RelativeTextureName);
+
         }
-        MainAnimationSprite.Width = System.Math.Abs(MainAnimationSprite.TextureWidth);
-        MainAnimationSprite.Height = System.Math.Abs(MainAnimationSprite.TextureHeight);
-
-        MainAnimationSprite.Texture = _cachedTextureService.TryGetTexture(_currentParentDirectory + frame.RelativeTextureName);
-
         RenderShapes(shapes, frame, forceRenderShapes);
     }
 
-    public void UpdateTextureCache(AnimationChainSave animationChain, FilePath parentFilePath)
+    public void UpdateTextureCache()
     {
-        _currentParentDirectory = parentFilePath.GetDirectoryContainingThis();
+        var parentFilePath = _viewModel.AchxFilePath;
+        var animationChain = _viewModel.CurrentAnimationChain?.BackingModel;
 
-        foreach (var frame in animationChain.Frames)
+        if(parentFilePath != null && animationChain != null)
         {
-            FilePath filePath = _currentParentDirectory + frame.TextureName;
+            _currentParentDirectory = parentFilePath.GetDirectoryContainingThis();
 
-            _cachedTextureService.RefreshCacheFor(filePath);
+            foreach (var frame in animationChain.Frames)
+            {
+                FilePath filePath = _currentParentDirectory + frame.TextureName;
+
+                _cachedTextureService.RefreshCacheFor(filePath);
+            }
         }
     }
 
