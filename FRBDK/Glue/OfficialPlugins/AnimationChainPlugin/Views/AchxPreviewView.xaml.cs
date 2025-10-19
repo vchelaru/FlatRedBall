@@ -113,7 +113,7 @@ partial class AchxPreviewView : UserControl
         _textureCoordinateSelectionViewModel.SnapChecked = false;
 
         _textureCoordinateRectangle = new TextureCoordinateRectangle();
-
+        var cachedTextureService = new CachedTextureService();
 
         InitializeComponent();
 
@@ -139,8 +139,14 @@ partial class AchxPreviewView : UserControl
         TopWindowManager = new TopWindowManager(TopGumCanvas, this, topWindowCameraLogic,
             ViewModel?.TopWindowZoom, ViewModel.Settings);
 
-        BottomWindowManager = new BottomWindowManager(BottomGumCanvas, this, BottomWindowCameraLogic,
-            ViewModel?.BottomWindowZoom, ViewModel.Settings);
+        BottomWindowManager = new BottomWindowManager(
+            BottomGumCanvas,
+            this,
+            BottomWindowCameraLogic,
+            ViewModel?.BottomWindowZoom,
+            ViewModel.Settings,
+            cachedTextureService,
+            ViewModel);
 
         TopGumCanvas.Children.Add(_textureCoordinateRectangle);
 
@@ -258,9 +264,9 @@ partial class AchxPreviewView : UserControl
 
                 TopWindowManager.RefreshTopCanvasOutlines(ViewModel);
 
-                if (ViewModel.CurrentAnimationChain != null)
+                if (ViewModel.CurrentAnimationChain?.BackingModel != null)
                 {
-                    BottomWindowManager.ForceRefreshMainAnimationSpriteTexture(TopWindowManager.TextureFilePath);
+                    BottomWindowManager.UpdateTextureCache(ViewModel.CurrentAnimationChain.BackingModel ,ViewModel.AchxFilePath);
                 }
 
                 BottomWindowManager.RefreshAnimationPreview(ViewModel);
@@ -370,9 +376,11 @@ partial class AchxPreviewView : UserControl
             
             TopWindowManager.RefreshTexture(achxFilePath, ViewModel.CurrentAnimationChain);
 
-            if (ViewModel.CurrentAnimationChain != null)
+            if (ViewModel.CurrentAnimationChain?.BackingModel != null)
             {
-                BottomWindowManager.ForceRefreshMainAnimationSpriteTexture(TopWindowManager.TextureFilePath);
+                BottomWindowManager.UpdateTextureCache(
+                    ViewModel.CurrentAnimationChain.BackingModel,
+                    ViewModel.AchxFilePath);
             }
 
             ViewModel.SetFrom(ViewModel.BackingData, achxFilePath, 
@@ -401,7 +409,9 @@ partial class AchxPreviewView : UserControl
 
             if (ViewModel.CurrentAnimationChain != null)
             {
-                BottomWindowManager.ForceRefreshMainAnimationSpriteTexture(TopWindowManager.TextureFilePath);
+                BottomWindowManager.UpdateTextureCache(
+                    ViewModel.CurrentAnimationChain.BackingModel,
+                    ViewModel.AchxFilePath);
             }
         }
         TopWindowManager.RefreshTopCanvasOutlines(ViewModel);

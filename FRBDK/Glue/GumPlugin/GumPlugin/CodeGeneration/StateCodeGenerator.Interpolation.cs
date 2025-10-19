@@ -275,7 +275,7 @@ public partial class StateCodeGenerator
     {
         foreach (StateSave state in states)
         {
-            var variables = state.Variables.Where(item => GetIfShouldGenerateStateVariable(item, element)).ToList();
+            var variables = state.Variables.Where(item => GetIfShouldGenerateVariableInStateSetter(item, element)).ToList();
 
             foreach (VariableSave variableSave in variables)
             {
@@ -396,7 +396,7 @@ public partial class StateCodeGenerator
         {
             curBlock = curBlock.Case(enumType + "." + state.MemberNameInCode());
 
-            foreach (VariableSave variable in state.Variables.Where(item => GetIfShouldGenerateStateVariable(item, element)))
+            foreach (VariableSave variable in state.Variables.Where(item => GetIfShouldGenerateVariableInStateSetter(item, element)))
             {
                 var nameInCode = variable.MemberNameInCode(element, VariableNamesToReplaceForStates);
 
