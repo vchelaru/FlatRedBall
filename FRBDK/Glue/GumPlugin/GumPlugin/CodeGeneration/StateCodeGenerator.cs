@@ -393,7 +393,7 @@ public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
                         var shouldGenerate = false;
                         try
                         {
-                            shouldGenerate = GetIfShouldGenerateStateVariable(variable, container);
+                            shouldGenerate = GetIfShouldGenerateVariableInStateSetter(variable, container);
                         }
                         catch (Exception e)
                         {
@@ -470,7 +470,7 @@ public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
 
     #endregion
 
-    private bool GetIfShouldGenerateStateVariable(Gum.DataTypes.Variables.VariableSave variable, ElementSave container)
+    private bool GetIfShouldGenerateVariableInStateSetter(Gum.DataTypes.Variables.VariableSave variable, ElementSave container)
     {
         bool toReturn = true;
 
@@ -642,7 +642,8 @@ public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
                     //var rootStandardElementVariables = rootStandardElementSave.DefaultState.Variables;
                     if(StandardElementsManager.Self.DefaultStates.ContainsKey(rootStandardElementSave.Name) == false)
                     {
-                        var message = $"Could not find default state for {rootStandardElementSave.Name} in the StandardElementsManager. Found the following\n:";
+                        var message = $"Error generating variable {variable} - could not find default state for {rootStandardElementSave.Name} " +
+                            $"in the StandardElementsManager. Found the following\n:";
 
                         foreach(var kvp in StandardElementsManager.Self.DefaultStates)
                         {
@@ -734,7 +735,7 @@ public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
                     {
                         var instanceNames = container.Instances.Select(item => item.Name).ToList();
                         var orderedVariables = state.Variables
-                            .Where(item => GetIfShouldGenerateStateVariable(item, container))
+                            .Where(item => GetIfShouldGenerateVariableInStateSetter(item, container))
                             .OrderBy(variable => instanceNames.IndexOf(variable.SourceObject));
 
                         foreach (var variable in orderedVariables)

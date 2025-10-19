@@ -125,20 +125,31 @@ public class MainAnimationChainPlugin : PluginBase
             {
                 var directory = path.GetDirectoryContainingThis();
 
-                // might be faster to read the entire file:
-                var contents = System.IO.File.ReadAllLines(path.FullPath);
-
-                var textureNameLength = "<TextureName>".Length;
-                foreach(var line in contents)
+                try
                 {
-                    if(line.Contains("<TextureName>"))
+                    GlueCommands.Self.TryMultipleTimes(() =>
                     {
-                        var startIndex = line.IndexOf("<TextureName>") + textureNameLength;
-                        var endIndex = line.IndexOf("</TextureName>");
-                        var textureName = line.Substring(startIndex, endIndex - startIndex);
-                        list.Add(directory + textureName);
-                    }
+                        // might be faster to read the entire file:
+                        var contents = System.IO.File.ReadAllLines(path.FullPath);
+
+                        var textureNameLength = "<TextureName>".Length;
+                        foreach(var line in contents)
+                        {
+                            if(line.Contains("<TextureName>"))
+                            {
+                                var startIndex = line.IndexOf("<TextureName>") + textureNameLength;
+                                var endIndex = line.IndexOf("</TextureName>");
+                                var textureName = line.Substring(startIndex, endIndex - startIndex);
+                                list.Add(directory + textureName);
+                            }
+                        }
+                    });
                 }
+                catch(IOException exception)
+                {
+                    GlueCommands.Self.PrintError($"Error trying to read .achx referenced files:\n{exception}");
+                }
+
 
                 return ToolsUtilities.GeneralResponse.SuccessfulResponse;
             }

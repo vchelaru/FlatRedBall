@@ -307,7 +307,7 @@ namespace OfficialPlugins.SpritePlugin.Managers
                 return !alreadyHasAchx;
             };
 
-            var variableToAddBefore = ati.VariableDefinitions.FirstOrDefault(item => item.Name == nameof(Sprite.AnimationChains));
+            var variableToAddBefore = ati.VariableDefinitions.First(item => item.Name == nameof(Sprite.AnimationChains));
             var index = ati.VariableDefinitions.IndexOf(variableToAddBefore);
             ati.VariableDefinitions.Insert(index, createNewAchxVariable);
 
