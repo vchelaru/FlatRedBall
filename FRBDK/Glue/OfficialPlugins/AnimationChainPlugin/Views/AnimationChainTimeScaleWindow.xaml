@@ -9,7 +9,7 @@
   <StackPanel Margin="8">
     <Label Content="Set the desired animation length (in seconds):"/>
     <TextBox Text="{Binding LengthInSeconds, UpdateSourceTrigger=PropertyChanged}"/>
-    <GroupBox Header="Frame time options">
+    <GroupBox Header="Frame time options" Margin="0,10,0,0">
       <StackPanel>
         <RadioButton Content="Keep frame times proportional"
                      IsChecked="{Binding IsProportionalChecked}"/>
