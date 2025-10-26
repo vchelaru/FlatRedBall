@@ -107,7 +107,7 @@ public class GluxCommands : IGluxCommands
 
 
                 GlueState.Self.CurrentGlueProject.StartUpScreen = value;
-                GluxCommands.Self.SaveProjectAndElements();
+                GluxCommands.Self.SaveGlujFile();
                 if (string.IsNullOrEmpty(ProjectManager.GameClassFileName))
                 {
                     GlueCommands.Self.DialogCommands.ShowMessageBox(
@@ -133,7 +133,6 @@ public class GluxCommands : IGluxCommands
                 {
                     GlueCommands.Self.RefreshCommands.RefreshTreeNodes();
                 }
-                GlueCommands.Self.RefreshCommands.RefreshErrors();
 
                 PluginManager.ReactToChangedStartupScreen();
             }
