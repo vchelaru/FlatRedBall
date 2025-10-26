@@ -7,11 +7,13 @@
              xmlns:wpfdataui="clr-namespace:WpfDataUi;assembly=WpfDataUi"
              mc:Ignorable="d"
              d:DesignHeight="200" d:DesignWidth="400">
-    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-        <StackPanel>
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
 
-            <wpfdataui:DataUiGrid x:Name="DataUiGrid"></wpfdataui:DataUiGrid>
-            <Button Visibility="{Binding AddVariableVisibility}" Click="AddVariableButtonClick" Content="{x:Static localization:Texts.VariableCreate}" />
-        </StackPanel>
-    </ScrollViewer>
+    <wpfdataui:DataUiGrid x:Name="DataUiGrid"></wpfdataui:DataUiGrid>
+    <Button Visibility="{Binding AddVariableVisibility}" Click="AddVariableButtonClick" Content="{x:Static localization:Texts.VariableCreate}" />
+  </Grid>
 </UserControl>
