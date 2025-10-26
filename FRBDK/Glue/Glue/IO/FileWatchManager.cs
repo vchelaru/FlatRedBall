@@ -175,6 +175,26 @@ namespace FlatRedBall.Glue.IO
                 isIgnored = true;
             }
 
+            if(!isIgnored)
+            {
+                // Tiled has files that should be ignored:
+                // This addresses https://github.com/vchelaru/FlatRedBall/issues/1815
+                // This could have been handled by a plugin but I'm not sure it's worth
+                // the extra complexity for it. If this code extends more to handle plugin-specific
+                // content types, then perhaps we need a way to ignore through the PluginManager.
+                isIgnored = filePath.Extension == "tiled-session";
+
+                if(!isIgnored)
+                {
+                    isIgnored = filePath.FullPath.EndsWith("tiled-session.lock");
+                }
+                // This check takes the place of regex. I did this to avoid regex
+                if(!isIgnored && filePath.FullPath.EndsWith(".tiled-session." + filePath.Extension))
+                {
+                    isIgnored = true;
+                }
+            }
+
             return isIgnored;                
         }
 
