@@ -133,9 +133,6 @@ public class GluxCommands : IGluxCommands
                 {
                     GlueCommands.Self.RefreshCommands.RefreshTreeNodes();
                 }
-                // We need to refresh errors because there could be missing screens or the user
-                // could have set the startup screen as an abstract screen
-                GlueCommands.Self.RefreshCommands.RefreshErrors();
 
                 PluginManager.ReactToChangedStartupScreen();
             }
