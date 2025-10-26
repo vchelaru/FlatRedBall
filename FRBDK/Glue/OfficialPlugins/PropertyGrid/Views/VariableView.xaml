@@ -14,6 +14,6 @@
     </Grid.RowDefinitions>
 
     <wpfdataui:DataUiGrid x:Name="DataUiGrid"></wpfdataui:DataUiGrid>
-    <Button Visibility="{Binding AddVariableVisibility}" Click="AddVariableButtonClick" Content="{x:Static localization:Texts.VariableCreate}" />
+    <Button Grid.Row="1" Visibility="{Binding AddVariableVisibility}" Click="AddVariableButtonClick" Content="{x:Static localization:Texts.VariableCreate}" />
   </Grid>
 </UserControl>
