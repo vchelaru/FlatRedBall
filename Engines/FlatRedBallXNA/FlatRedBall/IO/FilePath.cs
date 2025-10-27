@@ -41,6 +41,10 @@ namespace FlatRedBall.IO
         #region Properties
 
         string extensionCache;
+
+        /// <summary>
+        /// Returns the lower-case extension without a period. For example, "txt" or "png".
+        /// </summary>
         public string Extension
         {
             get

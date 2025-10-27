@@ -189,7 +189,9 @@ namespace FlatRedBall.Glue.IO
                     isIgnored = filePath.FullPath.EndsWith("tiled-session.lock");
                 }
                 // This check takes the place of regex. I did this to avoid regex
-                if(!isIgnored && filePath.FullPath.EndsWith(".tiled-session." + filePath.Extension))
+                if(!isIgnored &&
+                    // lower-case it, because filePath.Extension is lower-case already
+                    filePath.FullPath.ToLowerInvariant().EndsWith(".tiled-session." + filePath.Extension))
                 {
                     isIgnored = true;
                 }

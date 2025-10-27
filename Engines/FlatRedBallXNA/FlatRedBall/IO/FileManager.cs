@@ -644,7 +644,7 @@ namespace FlatRedBall.IO
         }
 
         /// <summary>
-        /// Returns the extension in a filename.
+        /// Returns the lower-case extension in a filename, such as png.
         /// </summary>
         /// <remarks>
         /// The extension returned will not contain a period.
