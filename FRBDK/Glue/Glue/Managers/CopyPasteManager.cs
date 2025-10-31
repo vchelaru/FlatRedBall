@@ -46,7 +46,7 @@ namespace FlatRedBall.Glue.Managers
                 copiedObjectOwner = currentElement;
                 copiedObjectClone = variable.Clone();
             }
-            else if(GlueState.Self.CurrentTreeNode.IsFolderForGlobalContentFiles())
+            else if(GlueState.Self.CurrentTreeNode?.IsFolderForGlobalContentFiles() == true)
             {
                 copiedObjectClone = GlueState.Self.CurrentTreeNode.GetRelativeFilePath();
             }
