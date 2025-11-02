@@ -105,7 +105,7 @@ namespace GumCoreShared.FlatRedBall.Embedded
             int screenXRelativeToDestinationRectangle = 0;
             int screenYRelativeToDestinationRectangle = 0;
 
-            var worldPosition = FrbObject.Position;
+            var worldPosition = FrbObject.Position + this.RelativePosition;
 
             global::FlatRedBall.Math.MathFunctions.AbsoluteToWindow(
                 worldPosition.X, worldPosition.Y, worldPosition.Z,
