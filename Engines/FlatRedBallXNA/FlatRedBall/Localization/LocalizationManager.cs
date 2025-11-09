@@ -225,11 +225,25 @@ namespace FlatRedBall.Localization
 
         public static string Translate(string stringID, params object[] args)
         {
-            string translated =
-                string.Format(Translate(stringID),
-                args);
+            try
+            {
+                string translated =
+                    string.Format(Translate(stringID),
+                    args);
 
-            return translated;
+                return translated;
+            }
+            catch(FormatException fe)
+            {
+                var message =
+                    $"Error formatting string with ID {stringID}. The untranslated string is: {Translate(stringID)}";
+                message += $"\nThe number of arguments provided is {args.Length}.";
+                foreach(var arg in args)
+                {
+                    message += $"\nArgument: {arg} of type {arg?.GetType().FullName ?? "null"}";
+                }
+                throw new FormatException(message, fe);
+            }
         }
 
         /// <summary>

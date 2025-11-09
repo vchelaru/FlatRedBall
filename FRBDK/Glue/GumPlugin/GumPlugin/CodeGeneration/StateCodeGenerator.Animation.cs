@@ -475,7 +475,7 @@ public partial class StateCodeGenerator
         AnimatedStateSave previousState, AnimatedStateSave currentState, string animationName)
     {
 
-        if (previousState == null)
+        if (previousState == null || currentState.Time == 0)
         {
             string variableStateName = null;
 
