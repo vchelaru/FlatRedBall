@@ -212,10 +212,14 @@ namespace GameCommunicationPlugin.GlueControl.CommandSending
                 var toReturn = new global::ToolsUtilities.GeneralResponse<string>();
                 try
                 {
-                    var response = await GameJsonCommunicationPlugin.Common.GameConnectionManager.Self.SendItemWithResponse(whatToSend);
+                    var gameConnectionManager = GameJsonCommunicationPlugin.Common.GameConnectionManager.Self;
+                    if(gameConnectionManager != null)
+                    {
+                        var response = await gameConnectionManager.SendItemWithResponse(whatToSend);
 
-                    toReturn.SetFrom(response);
-                    toReturn.Data = response?.Data;    
+                        toReturn.SetFrom(response);
+                        toReturn.Data = response?.Data;    
+                    }
                 }
                 catch(Exception e)
                 {
