@@ -143,6 +143,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Gum\Runtimes\SkiaGum.Wpf\SkiaGum.Wpf.csproj" />
     <ProjectReference Include="..\..\..\Tiled\TMXGlueLib\TMXGlueLib.csproj" />
     <ProjectReference Include="..\..\AchxToSpineAtlas\SpineAtlasLibrary\SpineAtlasLibrary.csproj" />
     <ProjectReference Include="..\..\Localization\Localization.csproj" />

@@ -6,7 +6,6 @@ using Gum.DataTypes;
 using Gum.DataTypes.Variables;
 using GumPlugin.CodeGeneration;
 using NAudio.SoundFont;
-using SkiaSharp.Skottie;
 using System;
 using System.Collections.Generic;
 using System.Linq;

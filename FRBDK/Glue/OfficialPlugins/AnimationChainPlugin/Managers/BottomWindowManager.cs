@@ -103,7 +103,7 @@ internal class BottomWindowManager
 
     private void RefreshBackgroundColor()
     {
-        GumBackground.Color = settingsViewModel.BackgroundColor.ToSKColor();
+        GumBackground.Color = new SKColor(settingsViewModel.BackgroundColor.R, settingsViewModel.BackgroundColor.G, settingsViewModel.BackgroundColor.B);
         BottomGumCanvas.InvalidateSurface();
     }
 

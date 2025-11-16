@@ -22,7 +22,6 @@ using GlueFormsCore.Extensions;
 using FlatRedBall.Glue.IO;
 using System.Threading.Tasks;
 using L = Localization;
-using ShimSkiaSharp;
 using System.Threading;
 using System.Windows.Controls;
 using EditorObjects.SaveClasses;
