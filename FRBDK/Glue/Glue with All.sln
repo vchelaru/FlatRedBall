@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.0.11201.2 d18.0
+VisualStudioVersion = 18.0.11201.2
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlatRedBall.PropertyGrid", "FlatRedBall.PropertyGrid\FlatRedBall.PropertyGrid.csproj", "{5FE94178-9907-4878-AFAC-8F347CA86B50}"
 EndProject
@@ -10,10 +10,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{EC6FC7AF-EDDF-4DC2-93C8-95EE34CD8CD8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared Libraries", "Shared Libraries", "{07985C4C-B3CF-432C-8A27-36FDD006231F}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GumCoreProjects", "GumCoreProjects", "{1D66D67D-064B-4AAC-94E1-AF754D281FA0}"
-EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "GumCoreShared", "..\..\..\Gum\GumCoreShared.shproj", "{F919C045-EAC7-4806-9A1F-CE421F923E97}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "FlatRedBall.Forms.Shared", "..\..\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Shared\FlatRedBall.Forms.Shared.shproj", "{728151F0-03E0-4253-94FE-46B9C77EDEA6}"
 EndProject
@@ -234,8 +230,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{5FE94178-9907-4878-AFAC-8F347CA86B50} = {60818A85-E5BC-4B05-97F9-24402B4B0CCE}
 		{3DDD0995-4B47-47A2-82A4-F0A6367C9FF2} = {EC6FC7AF-EDDF-4DC2-93C8-95EE34CD8CD8}
-		{1D66D67D-064B-4AAC-94E1-AF754D281FA0} = {3DDD0995-4B47-47A2-82A4-F0A6367C9FF2}
-		{F919C045-EAC7-4806-9A1F-CE421F923E97} = {1D66D67D-064B-4AAC-94E1-AF754D281FA0}
 		{728151F0-03E0-4253-94FE-46B9C77EDEA6} = {3DDD0995-4B47-47A2-82A4-F0A6367C9FF2}
 		{DABAF6E1-1075-4CD2-959A-78FFB46B868D} = {EC6FC7AF-EDDF-4DC2-93C8-95EE34CD8CD8}
 		{D784E25F-320D-47F5-9397-63E33B81A64F} = {1D05DDEE-051E-4280-A9E5-5F343B7084BC}
@@ -281,6 +275,5 @@ Global
 		..\..\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Shared\FlatRedBall.Forms.Shared.projitems*{728151f0-03e0-4253-94fe-46b9c77edea6}*SharedItemsImports = 13
 		..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{8ad810af-716d-4bce-a6c6-475e57e2f100}*SharedItemsImports = 5
 		StateInterpolationPlugin\StateInterpolationPlugin\StateInterpolationShared.projitems*{d00d287d-385b-42fb-bf5f-04401e7d37d0}*SharedItemsImports = 13
-		..\..\..\Gum\GumCoreShared.projitems*{f919c045-eac7-4806-9a1f-ce421f923e97}*SharedItemsImports = 13
 	EndGlobalSection
 EndGlobal

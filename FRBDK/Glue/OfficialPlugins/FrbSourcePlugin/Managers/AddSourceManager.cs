@@ -100,7 +100,7 @@ internal static class AddSourceManager
 
     static ProjectReference GumSkia = new ProjectReference
     {
-        RelativeProjectFilePath = $"SvgPlugin\\SkiaInGumShared\\SkiaInGum.csproj",
+        RelativeProjectFilePath = $"Gum\\SvgPlugin\\SkiaInGumShared\\SkiaInGum.csproj",
         ProjectRootType = FrbOrGum.Gum
     };
 
@@ -118,7 +118,7 @@ internal static class AddSourceManager
 
     private static ProjectReference GumSkiaFNA = new ProjectReference
     {
-        RelativeProjectFilePath = $"SvgPlugin\\SkiaInGumShared\\SkiaInGum.FNA.csproj",
+        RelativeProjectFilePath = $"Gum\\SvgPlugin\\SkiaInGumShared\\SkiaInGum.FNA.csproj",
         ProjectRootType = FrbOrGum.Gum
     };
 
