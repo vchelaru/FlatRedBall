@@ -7,10 +7,11 @@ using FlatRedBall.Glue.MVVM;
 
 namespace OfficialPlugins.AnimationChainPlugin.ViewModels;
 
-internal enum ProportionalOrUniform
+internal enum TimeAssignmentType
 {
     Proportional,
-    Uniform
+    Uniform,
+    SetFrameTimeDirectly
 }
 
 internal class AnimationChainTimeScaleViewModel : ViewModel
@@ -19,63 +20,89 @@ internal class AnimationChainTimeScaleViewModel : ViewModel
 
     private readonly AnimationChainViewModel _animationChainViewModel;
 
-    public ProportionalOrUniform ProportionalOrUniform
+    public TimeAssignmentType TimeAssignmentType
     {
-        get => Get<ProportionalOrUniform>();
+        get => Get<TimeAssignmentType>();
         set => Set(value);
     }
 
-    [DependsOn(nameof(ProportionalOrUniform))]
+    [DependsOn(nameof(TimeAssignmentType))]
     public bool IsProportionalChecked
     {
-        get => ProportionalOrUniform == ProportionalOrUniform.Proportional;
+        get => TimeAssignmentType == TimeAssignmentType.Proportional;
         set
         {
             if (value)
             {
-                ProportionalOrUniform = ProportionalOrUniform.Proportional;
+                TimeAssignmentType = TimeAssignmentType.Proportional;
             }
         }
     }
 
-    [DependsOn(nameof(ProportionalOrUniform))]
+    [DependsOn(nameof(TimeAssignmentType))]
     public bool IsUniformChecked
     {
-        get => ProportionalOrUniform == ProportionalOrUniform.Uniform;
+        get => TimeAssignmentType == TimeAssignmentType.Uniform;
         set
         {
             if(value)
             {
-                ProportionalOrUniform = ProportionalOrUniform.Uniform;
+                TimeAssignmentType = TimeAssignmentType.Uniform;
             }
         }
     }
 
-    public double LengthInSeconds 
+    [DependsOn(nameof(TimeAssignmentType))]
+    public bool IsSetFrameTimeDirectlyChecked
     {
-        get => Get<double>();
+        get => TimeAssignmentType == TimeAssignmentType.SetFrameTimeDirectly;
+        set
+        {
+            if(value)
+            {
+                TimeAssignmentType = TimeAssignmentType.SetFrameTimeDirectly;
+            }
+        }
+    }
+
+    public decimal LengthInSeconds 
+    {
+        get => Get<decimal>();
         set => Set(value);
     }
 
     [DependsOn(nameof(LengthInSeconds))]
     public string EachFrameDisplay =>
-        $"Set each frame time to " +
+        $"Divide timeanimation time evently - set each frame time to " +
         $"{LengthInSeconds / _animationChainViewModel.VisibleChildren.Count} seconds";
 
+    [DependsOn(nameof(TimeAssignmentType))]
+    public string DesiredAnimationOrFrameDisplay =>
+        TimeAssignmentType == TimeAssignmentType.SetFrameTimeDirectly ?
+        "Each Frame Time (seconds):" :
+        "Desired Animation Time (seconds):";
 
     public AnimationChainTimeScaleViewModel(AnimationChainViewModel animationChainViewModel)
     {
         _animationChainViewModel = animationChainViewModel;
 
         this.LengthInSeconds = animationChainViewModel.VisibleChildren.Sum(
-            x => x.LengthInSeconds);
+            // use decimal for better math and precision.
+            // using double can result in a value like 0.1
+            // being widened and stored as 0.10000000149011612
+            x => (decimal)x.LengthInSeconds);
+
+        double asDouble = animationChainViewModel.VisibleChildren[0].LengthInSeconds;
+        decimal asDecimal = (decimal)animationChainViewModel.VisibleChildren[0].LengthInSeconds;
+
+
     }
 
     public void ApplyToAnimation()
     {
-        switch(ProportionalOrUniform)
+        switch(TimeAssignmentType)
         {
-            case ProportionalOrUniform.Uniform:
+            case TimeAssignmentType.Uniform:
                 {
                     var lengthInSeconds =
                         LengthInSeconds /
@@ -86,7 +113,7 @@ internal class AnimationChainTimeScaleViewModel : ViewModel
                     }
                 }
                 break;
-            case ProportionalOrUniform.Proportional:
+            case TimeAssignmentType.Proportional:
                 {
                     var oldTotal = _animationChainViewModel.VisibleChildren.Sum(
                         frame => frame.LengthInSeconds);
@@ -95,10 +122,18 @@ internal class AnimationChainTimeScaleViewModel : ViewModel
                     {
                         var ratio = child.LengthInSeconds / oldTotal;
 
-                        child.LengthInSeconds = (float)(ratio * LengthInSeconds);
+                        child.LengthInSeconds = (float)(ratio * (float)LengthInSeconds);
                     }
                 }
 
+                break;
+            case TimeAssignmentType.SetFrameTimeDirectly:
+                {
+                    foreach(var child in _animationChainViewModel.VisibleChildren)
+                    {
+                        child.LengthInSeconds = (float)LengthInSeconds;
+                    }
+                }
                 break;
         }
     }

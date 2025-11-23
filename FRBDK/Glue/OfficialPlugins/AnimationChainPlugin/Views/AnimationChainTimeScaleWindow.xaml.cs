@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace OfficialPlugins.AnimationChainPlugin.Views;
 /// <summary>
@@ -21,6 +22,13 @@ public partial class AnimationChainTimeScaleWindow : Window
     public AnimationChainTimeScaleWindow()
     {
         InitializeComponent();
+
+        this.Loaded += (not, used) => GlueCommands.Self.DialogCommands.MoveToCursor(this);
+    }
+
+    private void HandleLoaded(object sender, RoutedEventArgs e)
+    {
+
     }
 
     private void HandleOkClick(object sender, RoutedEventArgs e)
