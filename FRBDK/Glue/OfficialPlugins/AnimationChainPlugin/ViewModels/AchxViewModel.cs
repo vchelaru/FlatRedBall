@@ -131,6 +131,8 @@ internal class AchxViewModel : ViewModel
     public AnimationChainListSave BackingData { get; internal set; }
     public ICommand AddAnimationCommand { get; internal set; }
     public ICommand AddFrameCommand { get; internal set; }
+
+    public ICommand DuplicateFrameCommand { get; internal set; }
     public ICommand AdjustAllFrameTimeCommand { get; internal set; }
     public ICommand SortAnimationsAlphabeticallyCommand { get; internal set; }
 
@@ -194,6 +196,7 @@ internal class AchxViewModel : ViewModel
         AddFrameCommand = new CommandBase(HandleAddFrame);
         AdjustAllFrameTimeCommand = new CommandBase(HandleAdjustAllFrameTime);
         SortAnimationsAlphabeticallyCommand = new CommandBase(HandleSortAnimationsAlphabetically);
+        DuplicateFrameCommand = new CommandBase(HandleDuplicateFrame);
     }
 
     private void HandleSortAnimationsAlphabetically()
@@ -247,6 +250,23 @@ internal class AchxViewModel : ViewModel
         }
 
         currentChain.AddAnimationFrame(frame);
+
+    }
+
+    private void HandleDuplicateFrame()
+    {
+        var currentFrame = CurrentAnimationFrame;
+
+        /////////////////////////Early out////////////////////////
+        if(currentFrame == null || CurrentAnimationChain == null)
+        {
+            return;
+        }
+        /////////////////////////End Early Out/////////////////////
+
+        var frame = FileManager.CloneObject<AnimationFrameSave>(currentFrame.BackingModel);
+
+        AddFrameToAnimationChain(CurrentAnimationChain, frame);
 
     }
 
@@ -485,17 +505,22 @@ internal class AchxViewModel : ViewModel
                     if (chainVmToAddTo != null)
                     {
                         var deserialized = FileManager.XmlDeserializeFromString<AnimationFrameSave>(copiedXml);
-                        // add it to the backing model first, so that when it's added to the VM, the save picks up the add:
-                        chainVmToAddTo.BackingModel.Frames.Add(deserialized);
-
-                        var newFrame = chainVmToAddTo.AddAnimationFrame(deserialized);
-                        CurrentAnimationFrame = newFrame;
+                        AddFrameToAnimationChain(chainVmToAddTo, deserialized);
                     }
                 }
 
                 break;
         }
 
+    }
+
+    private void AddFrameToAnimationChain(AnimationChainViewModel chainVmToAddTo, AnimationFrameSave animationFrame)
+    {
+        // add it to the backing model first, so that when it's added to the VM, the save picks up the add:
+        chainVmToAddTo.BackingModel.Frames.Add(animationFrame);
+
+        var newFrame = chainVmToAddTo.AddAnimationFrame(animationFrame);
+        CurrentAnimationFrame = newFrame;
     }
 
     public void LoadAchx(FilePath filePath)

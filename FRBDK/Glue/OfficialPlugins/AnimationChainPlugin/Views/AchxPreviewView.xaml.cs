@@ -599,6 +599,15 @@ partial class AchxPreviewView : UserControl
 
             AnimationListBoxContextMenu.Items.Add(new MenuItem()
             {
+                Header = "Duplicate Frame",
+                Command = ViewModel.DuplicateFrameCommand
+            });
+
+
+            AnimationListBoxContextMenu.Items.Add(new Separator());
+
+            AnimationListBoxContextMenu.Items.Add(new MenuItem()
+            {
                 Header = "Adjust All Frame Time",
                 Command = ViewModel.AdjustAllFrameTimeCommand
             });

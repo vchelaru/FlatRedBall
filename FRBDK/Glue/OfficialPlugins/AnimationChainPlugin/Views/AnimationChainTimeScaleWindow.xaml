@@ -5,18 +5,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:OfficialPlugins.AnimationChainPlugin.Views"
         mc:Ignorable="d"
-        SizeToContent="Height" Width="400">
+        SizeToContent="Height" Width="520">
   <StackPanel Margin="8">
-    <Label Content="Set the desired animation length (in seconds):"/>
-    <TextBox Text="{Binding LengthInSeconds, UpdateSourceTrigger=PropertyChanged}"/>
     <GroupBox Header="Frame time options" Margin="0,10,0,0">
       <StackPanel>
         <RadioButton Content="Keep frame times proportional"
                      IsChecked="{Binding IsProportionalChecked}"/>
         <RadioButton Content="{Binding EachFrameDisplay, FallbackValue=SetToX}"
                      IsChecked="{Binding IsUniformChecked}"/>
+        <RadioButton Content="Set all frame times"
+                     IsChecked="{Binding IsSetFrameTimeDirectlyChecked}"/>
       </StackPanel>
     </GroupBox>
+    <Label Content="{Binding DesiredAnimationOrFrameDisplay, FallbackValue=SetLength}"/>
+    <TextBox Text="{Binding LengthInSeconds, UpdateSourceTrigger=PropertyChanged}"/>
     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
       <Button Content="OK" Margin="5" Width="60" Click="HandleOkClick"/>
       <Button Content="Cancel" Margin="5" Width="60" Click="HandleCancelClick" />
