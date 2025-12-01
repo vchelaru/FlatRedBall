@@ -50,13 +50,13 @@
     <Variable>
       <Type>float</Type>
       <Name>TextInstance.X</Name>
-      <Value xsi:type="xsd:float">268.500183</Value>
+      <Value xsi:type="xsd:float">268.50018</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>float</Type>
       <Name>TextInstance.Y</Name>
-      <Value xsi:type="xsd:float">179.500031</Value>
+      <Value xsi:type="xsd:float">179.50003</Value>
       <SetsValue>true</SetsValue>
     </Variable>
   </State>

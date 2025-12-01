@@ -4,81 +4,25 @@
     "Owner": [],
     "d1638316d18f4a1e23a287aaaa12b6c540f704e257a6549bc9a672497ccc934e": [
       {
-        "NewName": "TestScreen.ContainerInstance1",
+        "NewName": "ComponentForLayering",
         "OldName": null,
-        "ElementType": "Screens",
-        "EventType": 5,
-        "TimestampUtc": "2025-05-19T10:30:03.1445834Z"
-      },
-      {
-        "NewName": "TestScreen.ContainerWithAlpha",
-        "OldName": "TestScreen.ContainerInstance1",
-        "ElementType": "Screens",
-        "EventType": 7,
-        "TimestampUtc": "2025-05-19T10:30:10.3848748Z"
-      },
-      {
-        "NewName": "TestScreen.ContainerWithAlpha",
-        "OldName": "TestScreen.ContainerInstance1",
-        "ElementType": "Screens",
-        "EventType": 7,
-        "TimestampUtc": "2025-05-19T10:30:10.3868763Z"
-      },
-      {
-        "NewName": "TestScreen.ContainerWithAlpha",
-        "OldName": "TestScreen.ContainerInstance1",
-        "ElementType": "Screens",
-        "EventType": 7,
-        "TimestampUtc": "2025-05-19T10:30:10.3882406Z"
-      },
-      {
-        "NewName": "TestScreen.ContainerWithAlpha",
-        "OldName": "TestScreen.ContainerInstance1",
-        "ElementType": "Screens",
-        "EventType": 7,
-        "TimestampUtc": "2025-05-19T10:30:10.3892515Z"
-      },
-      {
-        "NewName": "TestScreen.ContainerWithAlpha",
-        "OldName": "TestScreen.ContainerInstance1",
-        "ElementType": "Screens",
-        "EventType": 7,
-        "TimestampUtc": "2025-05-19T10:30:10.3902513Z"
-      },
-      {
-        "NewName": "TestScreen.ColoredRectangleInstance1",
-        "OldName": null,
-        "ElementType": "Screens",
-        "EventType": 5,
-        "TimestampUtc": "2025-05-19T10:30:23.5188189Z"
-      },
-      {
-        "NewName": "TestScreen.ColoredRectangleInstance2",
-        "OldName": null,
-        "ElementType": "Screens",
-        "EventType": 5,
-        "TimestampUtc": "2025-05-19T10:30:28.5808518Z"
-      },
-      {
-        "NewName": "RenderTargetContainerScreen",
-        "OldName": null,
-        "ElementType": "Screens",
+        "ElementType": "Components",
         "EventType": 0,
-        "TimestampUtc": "2025-05-19T10:32:27.2734901Z"
+        "TimestampUtc": "2025-12-01T11:22:44.4265107Z"
       },
       {
-        "NewName": "RenderTargetContainerScreen.ContainerInstance",
+        "NewName": "ComponentForLayering (Container).ColoredRectangleInstance",
         "OldName": null,
-        "ElementType": "Screens",
+        "ElementType": "Components",
         "EventType": 5,
-        "TimestampUtc": "2025-05-19T10:32:35.2101893Z"
+        "TimestampUtc": "2025-12-01T11:22:49.6048015Z"
       },
       {
-        "NewName": "RenderTargetContainerScreen.ColoredRectangleInstance",
+        "NewName": "ComponentForLayering (Container).TextInstance",
         "OldName": null,
-        "ElementType": "Screens",
+        "ElementType": "Components",
         "EventType": 5,
-        "TimestampUtc": "2025-05-19T10:33:00.4310703Z"
+        "TimestampUtc": "2025-12-01T11:22:53.1409087Z"
       }
     ]
   }

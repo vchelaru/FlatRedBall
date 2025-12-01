@@ -30,7 +30,7 @@
     <Variable>
       <Type>float</Type>
       <Name>ColoredRectangleInstance.Rotation</Name>
-      <Value xsi:type="xsd:float">17.4611759</Value>
+      <Value xsi:type="xsd:float">17.461176</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>

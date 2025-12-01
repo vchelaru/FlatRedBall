@@ -155,6 +155,12 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
+      <Type>int?</Type>
+      <Name>MaxNumberOfLines</Name>
+      <Category>Text</Category>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
       <Type>float?</Type>
       <Name>MaxWidth</Name>
       <Category>Dimensions</Category>

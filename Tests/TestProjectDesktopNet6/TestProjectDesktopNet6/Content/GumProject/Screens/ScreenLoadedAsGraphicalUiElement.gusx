@@ -20,7 +20,7 @@
     <Variable>
       <Type>float</Type>
       <Name>NineSliceInstance.Rotation</Name>
-      <Value xsi:type="xsd:float">-35.7015762</Value>
+      <Value xsi:type="xsd:float">-35.701576</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>

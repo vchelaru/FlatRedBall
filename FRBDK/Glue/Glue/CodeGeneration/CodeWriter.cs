@@ -1266,7 +1266,7 @@ namespace FlatRedBallAddOns.Entities
 
 
     /// <summary>
-    /// Generate the AddToManagersBottomUp method for the specified <paramref name="saveObject"/>.
+    /// Generate the AddToManagers method for the specified <paramref name="saveObject"/>.
     /// </summary>
     /// <param name="saveObject">Element to write the method for.</param>
     /// <param name="currentBlock">Code block to write the method to.</param>

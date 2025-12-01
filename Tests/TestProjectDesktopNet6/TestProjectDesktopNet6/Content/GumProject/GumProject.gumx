@@ -4,6 +4,7 @@
   <FontRanges>32-126,160-255</FontRanges>
   <FontSpacingVertical>1</FontSpacingVertical>
   <FontSpacingHorizontal>1</FontSpacingHorizontal>
+  <UseFontCharacterFile>false</UseFontCharacterFile>
   <Version>1</Version>
   <DefaultCanvasWidth>1000</DefaultCanvasWidth>
   <DefaultCanvasHeight>600</DefaultCanvasHeight>
@@ -156,6 +157,11 @@
   </ComponentReference>
   <ComponentReference>
     <Name>ComponentFolder/StateComponentContainedFoldered</Name>
+    <ElementType>Component</ElementType>
+    <LinkType>ReferenceOriginal</LinkType>
+  </ComponentReference>
+  <ComponentReference>
+    <Name>ComponentForLayering</Name>
     <ElementType>Component</ElementType>
     <LinkType>ReferenceOriginal</LinkType>
   </ComponentReference>

@@ -42,6 +42,8 @@ namespace GlueTestProject.Screens
             // access the song to force a load:
             var songTemp = BaseScreenSongOnlyWhenReferenced;
 
+            ComponentForLayeringRuntimeInstance.Layer.ShouldBe(LayerInstanceGum, "Because this Gum object was added to a layer defined in the base screen, so its Layer should be set in code");
+
         }
 
 		void CustomActivity(bool firstTimeCalled)

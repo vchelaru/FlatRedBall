@@ -444,7 +444,7 @@
     <Variable>
       <Type>float</Type>
       <Name>Width</Name>
-      <Value xsi:type="xsd:float">955.334045</Value>
+      <Value xsi:type="xsd:float">955.33405</Value>
       <Category>Dimensions</Category>
       <SetsValue>true</SetsValue>
     </Variable>

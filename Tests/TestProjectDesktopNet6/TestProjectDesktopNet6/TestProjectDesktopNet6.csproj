@@ -582,6 +582,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>StateComponentContainedFoldered</Name>
     </None>
+    <None Include="Content\GumProject\Components\ComponentForLayering.gucx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>ComponentForLayering</Name>
+    </None>
     <None Include="Content\GumProject\Components\ComponentWithCustomInitialize.gucx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>ComponentWithCustomInitialize</Name>
@@ -2149,6 +2153,10 @@
     <Compile Include="GumRuntimes\ComponentFolder\StateComponentContainedFolderedRuntime.Generated.cs">
       <DependentUpon>StateComponentContainedFolderedRuntime.cs</DependentUpon>
     </Compile>
+    <Compile Include="GumRuntimes\ComponentForLayeringRuntime.cs" />
+    <Compile Include="GumRuntimes\ComponentForLayeringRuntime.Generated.cs">
+      <DependentUpon>ComponentForLayeringRuntime.cs</DependentUpon>
+    </Compile>
     <Compile Include="GumRuntimes\ComponentWithCustomInitializeRuntime.cs" />
     <Compile Include="GumRuntimes\ComponentWithCustomInitializeRuntime.Generated.cs">
       <DependentUpon>ComponentWithCustomInitializeRuntime.cs</DependentUpon>
@@ -2723,7 +2731,7 @@
     <ProjectReference Include="../../../../Gum/GumCore/GumCoreXnaPc/GumCore.DesktopGlNet6/GumCore.DesktopGlNet6.csproj">
       <Name>GumCore.DesktopGlNet6</Name>
     </ProjectReference>
-    <ProjectReference Include="../../../../Gum/SvgPlugin/SkiaInGumShared/SkiaInGum.csproj">
+    <ProjectReference Include="../../../../Gum/Gum/SvgPlugin/SkiaInGumShared/SkiaInGum.csproj">
       <Name>SkiaInGum</Name>
     </ProjectReference>
     <ProjectReference Include="../../../Engines/FlatRedBallXNA/FlatRedBallDesktopGLNet6/FlatRedBallDesktopGLNet6.csproj">

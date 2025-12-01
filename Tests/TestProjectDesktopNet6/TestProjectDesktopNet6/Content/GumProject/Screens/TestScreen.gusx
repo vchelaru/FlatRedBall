@@ -799,13 +799,13 @@
     <Variable>
       <Type>float</Type>
       <Name>NineSliceInstance.X</Name>
-      <Value xsi:type="xsd:float">71.6000061</Value>
+      <Value xsi:type="xsd:float">71.600006</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
       <Type>float</Type>
       <Name>NineSliceInstance.Y</Name>
-      <Value xsi:type="xsd:float">30.4000015</Value>
+      <Value xsi:type="xsd:float">30.400002</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
@@ -1138,7 +1138,7 @@
     <Variable>
       <Type>float</Type>
       <Name>StackWithChildrenWidthDependsOnParent.Y</Name>
-      <Value xsi:type="xsd:float">549.492065</Value>
+      <Value xsi:type="xsd:float">549.49207</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
@@ -1663,7 +1663,7 @@ wrap the text.</Value>
     <Variable>
       <Type>float</Type>
       <Name>TypedContainer.Y</Name>
-      <Value xsi:type="xsd:float">580.190552</Value>
+      <Value xsi:type="xsd:float">580.19055</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
