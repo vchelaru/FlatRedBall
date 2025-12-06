@@ -88,7 +88,7 @@ namespace FlatRedBall.Forms.Controls.Games
             }
         }
 
-        private void UpdateKeyEvents(IList<IRenderableIpso> children)
+        private void UpdateKeyEvents(IList<GraphicalUiElement> children)
         {
             foreach(var child in children)
             {
