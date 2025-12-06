@@ -20,6 +20,8 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
 
         public AnimationFrameViewModel Parent { get; protected set; }
         protected string internalName;
+
+        public override string ToString() => Name;
     }
 
     internal class RectangleViewModel : ShapeViewModel
@@ -42,6 +44,8 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
             X = rect.X;
             Y = rect.Y;
         }
+
+        public override string ToString() => $"Rectangle {Name}";
     }
 
     internal class CircleViewModel : ShapeViewModel
@@ -62,5 +66,7 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
             X = circ.X;
             Y = circ.Y;
         }
+
+        public override string ToString() => $"Circle {Name}";
     }
 }

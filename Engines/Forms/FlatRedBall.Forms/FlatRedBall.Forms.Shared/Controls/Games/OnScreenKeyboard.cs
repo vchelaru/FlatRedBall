@@ -66,23 +66,24 @@ namespace FlatRedBall.Forms.Controls.Games
 
             FillWithSelectableItemsRecursive(this.Visual);
 
-            UpdateKeyEvents(this.Visual.Children);
+            var visual = (IRenderableIpso)this.Visual;
+
+            UpdateKeyEvents(visual.Children);
 
             base.ReactToVisualChanged();
         }
 
         private void FillWithSelectableItemsRecursive(GraphicalUiElement parent)
         {
-            foreach (var child in parent.Children)
+            foreach (var childGue in parent.Children)
             {
-                var childGue = child as GraphicalUiElement;
                 if(childGue.FormsControlAsObject is Button)
                 {
                     selectableItems.Add(childGue);
                 }
                 else
                 {
-                    FillWithSelectableItemsRecursive(child as GraphicalUiElement);
+                    FillWithSelectableItemsRecursive(childGue);
                 }
 
             }

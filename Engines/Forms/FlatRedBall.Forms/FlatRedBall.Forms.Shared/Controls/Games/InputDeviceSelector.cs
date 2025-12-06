@@ -180,7 +180,7 @@ namespace FlatRedBall.Forms.Controls.Games
             {
                 for(int i = 0; i < InputDeviceContainerInstance.Children.Count; i++)
                 {
-                    GraphicalUiElement child = (GraphicalUiElement)InputDeviceContainerInstance.Children[i];
+                    GraphicalUiElement child = InputDeviceContainerInstance.Children[i];
                     if(!InputDeviceSelectionItemsInternal.Any(item => item.Visual == child))
                     {
                         InputDeviceContainerInstance.Children.Remove(child);

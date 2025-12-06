@@ -1,22 +1,20 @@
-﻿using FlatRedBall.Content.AnimationChain;
-using FlatRedBall.Glue.MVVM;
-using FlatRedBall.Math;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FlatRedBall.Content.AnimationChain;
+using FlatRedBall.Glue.MVVM;
+using FlatRedBall.Math;
+using OfficialPlugins.AnimationChainPlugin.Managers;
 using ToolsUtilities;
 
 namespace OfficialPlugins.AnimationChainPlugin.ViewModels
 {
     internal class AnimationFrameViewModel : ViewModel
     {
-        public AnimationFrameViewModel()
-        {
-            VisibleChildren = new ObservableCollection<ShapeViewModel>();
-        }
 
         public AnimationFrameSave BackingModel { get; set; }
         public AnimationChainViewModel Parent { get; private set; }
@@ -146,7 +144,7 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
             set => BottomCoordinate = value + TopCoordinate;
         }
 
-
+        private readonly AchxManager _achxManager;
 
         public ObservableCollection<ShapeViewModel> VisibleChildren
         {
@@ -289,6 +287,47 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
             }
 
             return toReturn;
+        }
+
+        public AnimationFrameViewModel(AchxManager achxManager)
+        {
+            _achxManager = achxManager;
+            VisibleChildren = new ObservableCollection<ShapeViewModel>();
+            VisibleChildren.CollectionChanged += HandleCollectionChanged;
+        }
+
+        private void HandleCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            var shouldSave = false;
+
+            if (e.Action == NotifyCollectionChangedAction.Remove)
+            {
+                var oldItems = e.OldItems;
+                if (oldItems != null)
+                {
+                    foreach (ShapeViewModel oldItem in oldItems)
+                    {
+                        if (oldItem is RectangleViewModel rectangleViewModel)
+                        {
+                            this.BackingModel.ShapeCollectionSave.AxisAlignedRectangleSaves.Remove(
+                                rectangleViewModel.BackingModel);
+                            shouldSave = true;
+                        }
+                        else if (oldItem is CircleViewModel circleViewModel)
+                        {
+                            this.BackingModel.ShapeCollectionSave.CircleSaves.Remove(
+                                circleViewModel.BackingModel);
+                            // deselect?
+                            shouldSave = true;
+                        }
+                    }
+                }
+            }
+
+            if(shouldSave)
+            {
+                _achxManager.SaveCurrentAchx();
+            }
         }
 
         public override string ToString() => Text;

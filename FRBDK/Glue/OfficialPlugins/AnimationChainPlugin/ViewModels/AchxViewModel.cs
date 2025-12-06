@@ -370,7 +370,7 @@ internal class AchxViewModel : ViewModel
     /// <param name="broadcastAddition">Whether to broadcast the addition.</param>
     private AnimationChainViewModel AddAnimationChainInner(AnimationChainSave animationChainSave, bool broadcastAddition)
     {
-        var newViewModel = new AnimationChainViewModel();
+        var newViewModel = new AnimationChainViewModel(_achxManager);
         newViewModel.SetFrom(animationChainSave, AchxFilePath, ResolutionWidth, ResolutionHeight);
         newViewModel.FrameUpdatedByUi += HandleFrameUpdatedByUi;
         newViewModel.PropertyChanged += HandlePropertyChanged;
@@ -418,6 +418,11 @@ internal class AchxViewModel : ViewModel
 
     public void HandleDelete()
     {
+        if(SelectedShape != null)
+        {
+            GlueCommands.Self.DialogCommands.ShowYesNoMessageBox($"Delete {SelectedShape} in {CurrentAnimationFrame}?",
+                yesAction: HandleDeleteConfirm);
+        }
         if (CurrentAnimationFrame != null)
         {
             GlueCommands.Self.DialogCommands.ShowYesNoMessageBox($"Delete {CurrentAnimationFrame}?",
@@ -432,22 +437,24 @@ internal class AchxViewModel : ViewModel
 
     private void HandleDeleteConfirm()
     {
-        if (CurrentAnimationFrame != null)
+        if(SelectedShape != null)
+        {
+            var parent = SelectedShape.Parent;
+
+            parent.VisibleChildren.Remove(SelectedShape);
+
+            // need to remove it....
+        }
+        else if (CurrentAnimationFrame != null)
         {
             var parent = CurrentAnimationFrame.Parent;
             parent.VisibleChildren.Remove(CurrentAnimationFrame);
             CurrentAnimationFrame = null;
-
-            
-
             _achxManager.SaveCurrentAchx();
         }
         else if(CurrentAnimationChain != null)
         {
             VisibleRoot.Remove(CurrentAnimationChain);
-
-            
-
             CurrentAnimationChain = null;
             _achxManager.SaveCurrentAchx();
         }

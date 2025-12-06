@@ -192,10 +192,7 @@ namespace Gum.Wireframe
             {
                 foreach(var child in this.Children)
                 {
-                    if(child is GraphicalUiElement childGue)
-                    {
-                        childGue.Activity(camera);
-                    }
+                    child.Activity(camera);
                 }
             }
         }
@@ -428,15 +425,14 @@ namespace Gum.Wireframe
                     var child = this.Children[i];
                     if (child is GraphicalUiElement)
                     {
-                        var asGue = child as GraphicalUiElement;
                         // Children should always have the opportunity to handle activity,
                         // even if they are not components, because they may contain components as their children
 
                         // If the child either has events or exposes children events, then give it a chance to handle this activity.
 
-                        if ((asGue.HasEvents || asGue.ExposeChildrenEvents) && asGue.HasCursorOver(cursor))
+                        if ((child.HasEvents || child.ExposeChildrenEvents) && child.HasCursorOver(cursor))
                         {
-                            handledByChild = asGue.TryHandleCursorActivity(cursor, handledActions);
+                            handledByChild = child.TryHandleCursorActivity(cursor, handledActions);
 
                             if (handledByChild)
                             {
@@ -679,7 +675,7 @@ namespace Gum.Wireframe
             {
                 for (int i = 0; i < Children.Count; i++)
                 {
-                    var child = Children[i] as GraphicalUiElement;
+                    var child = Children[i];
 
                     if (child != null && child.HasCursorOver(cursor))
                     {

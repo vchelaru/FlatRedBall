@@ -107,10 +107,7 @@ public class BindableGue : GraphicalUiElement
         {
             foreach (var child in this.Children)
             {
-                if (child is GraphicalUiElement gue)
-                {
-                    gue.RemoveBindingContextRecursively();
-                }
+                child.RemoveBindingContextRecursively();
             }
         }
         else

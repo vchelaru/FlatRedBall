@@ -38,9 +38,11 @@ internal class AnimationChainViewModel : ViewModel
         new ObservableCollection<AnimationFrameViewModel>();
 
     public Action<AnimationFrameViewModel, string> FrameUpdatedByUi;
+    private readonly AchxManager _achxManager;
 
-    public AnimationChainViewModel()
+    public AnimationChainViewModel(AchxManager achxManager)
     {
+        _achxManager = achxManager;
         VisibleChildren.CollectionChanged += HandleCollectionChanged;
     }
 
@@ -115,7 +117,7 @@ internal class AnimationChainViewModel : ViewModel
 
     public AnimationFrameViewModel AddAnimationFrame(AnimationFrameSave frame)
     {
-        var frameVm = new AnimationFrameViewModel();
+        var frameVm = new AnimationFrameViewModel(_achxManager);
         frameVm.SetFrom(this, frame);
         frameVm.PropertyChanged += HandleFrameViewModelPropertyChanged;
         VisibleChildren.Add(frameVm);

@@ -282,7 +282,7 @@ namespace FlatRedBall.Forms.Controls.Games
             {
                 foreach(var item in innerPanel.Children)
                 {
-                    var playerJoinViewItem = (item as GraphicalUiElement)?.FormsControlAsObject as PlayerJoinViewItem;
+                    var playerJoinViewItem = item.FormsControlAsObject as PlayerJoinViewItem;
 
                     if(playerJoinViewItem != null)
                     {
