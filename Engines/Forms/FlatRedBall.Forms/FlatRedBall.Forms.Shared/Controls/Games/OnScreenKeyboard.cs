@@ -60,15 +60,12 @@ namespace FlatRedBall.Forms.Controls.Games
 
         protected override void ReactToVisualChanged()
         {
-            FocusIndicator = this.Visual.GetChildByName("HighlightRectangle") as GraphicalUiElement;
+            FocusIndicator = this.Visual.GetChildByName("HighlightRectangle");
 
-            Key1 = this.Visual.GetChildByNameRecursively("Key1") as GraphicalUiElement;
-
+            Key1 = this.Visual.GetChildByNameRecursively("Key1");
             FillWithSelectableItemsRecursive(this.Visual);
 
-            var visual = (IRenderableIpso)this.Visual;
-
-            UpdateKeyEvents(visual.Children);
+            UpdateKeyEvents(Visual.Children);
 
             base.ReactToVisualChanged();
         }
