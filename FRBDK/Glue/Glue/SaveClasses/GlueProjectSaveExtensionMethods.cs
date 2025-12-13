@@ -20,6 +20,7 @@ using FlatRedBall.Glue.VSHelpers.Projects;
 using System.Globalization;
 using System.IO;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
+using GlueFormsCore.Managers;
 
 namespace FlatRedBall.Glue.SaveClasses;
 
@@ -719,11 +720,11 @@ public static class GlueProjectSaveExtensionMethods
     {
         foreach (var screen in instance.Screens)
         {
-            GlueCommands.Self.GluxCommands.ElementCommands.UpdateFromBaseType(screen, showPopupAboutObjectErrors:false);
+            InheritanceManager.UpdateFromBaseType(screen, showPopupAboutObjectErrors:false);
         }
         foreach (var entity in instance.Entities)
         {
-            GlueCommands.Self.GluxCommands.ElementCommands.UpdateFromBaseType(entity, showPopupAboutObjectErrors:false);
+            InheritanceManager.UpdateFromBaseType(entity, showPopupAboutObjectErrors:false);
         }
     }
 }

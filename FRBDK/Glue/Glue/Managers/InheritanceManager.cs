@@ -720,15 +720,9 @@ public class InheritanceManager
         GlueElement baseElement =
             ObjectFinder.Self.GetBaseElement(derivedElement);
 
-        List<CustomVariable> customVariablesBeforeUpdate = new List<CustomVariable>();
-
-        for (int i = 0; i < derivedElement.CustomVariables.Count; i++)
-        {
-            if (derivedElement.CustomVariables[i].DefinedByBase)
-            {
-                customVariablesBeforeUpdate.Add(derivedElement.CustomVariables[i]);
-            }
-        }
+        List<CustomVariable> customVariablesBeforeUpdate = derivedElement.CustomVariables
+            .Where(item => item.DefinedByBase)
+            .ToList();
 
         List<CustomVariable> newCustomVariables =
             baseElement?.GetCustomVariablesToBeSetByDerived()?? new List<CustomVariable>();
@@ -736,17 +730,7 @@ public class InheritanceManager
         // See if there are any variables to be removed.
         for (int i = customVariablesBeforeUpdate.Count - 1; i > -1; i--)
         {
-            bool contains = false;
-
-            for (int j = 0; j < newCustomVariables.Count; j++)
-            {
-                if (customVariablesBeforeUpdate[i].Name == newCustomVariables[j].Name &&
-                    customVariablesBeforeUpdate[i].DefinedByBase)
-                {
-                    contains = true;
-                    break;
-                }
-            }
+            bool contains = newCustomVariables.Any(item => item.Name == customVariablesBeforeUpdate[i].Name);
 
             if (!contains)
             {
@@ -759,15 +743,8 @@ public class InheritanceManager
         // Next, see if there are any variables to be added
         for (int i = 0; i < newCustomVariables.Count; i++)
         {
-            bool alreadyContainedAsDefinedByBase = false;
-            for (int j = 0; j < customVariablesBeforeUpdate.Count; j++)
-            {
-                if (customVariablesBeforeUpdate[j].Name == newCustomVariables[i].Name &&
-                    customVariablesBeforeUpdate[j].DefinedByBase)
-                {
-                    alreadyContainedAsDefinedByBase = true;
-                }
-            }
+            bool alreadyContainedAsDefinedByBase =
+                customVariablesBeforeUpdate.Any(item => item.Name == newCustomVariables[i].Name);
 
             if (!alreadyContainedAsDefinedByBase)
             {
@@ -807,6 +784,15 @@ public class InheritanceManager
                     // set the value there.
                     customVariable.SourceObject = null;
                     customVariable.SourceObjectProperty = null;
+
+                    // December 13, 2025
+                    // When we create a variable
+                    // in a derived element, the derived
+                    // variable should not explicitly set
+                    // its value. It should instead have a
+                    // null value to indicate that it is inheriting
+                    // its value from the base element:
+                    customVariable.DefaultValue = null;
 
                     customVariable.DefinedByBase = true;
                     // We'll assume that this thing is going to be the acutal definition
