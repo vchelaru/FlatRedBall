@@ -272,7 +272,8 @@ internal class BottomWindowManager
                     // do not force render shapes, we're viewing an animation so only if the animation is 
                     forceRenderShapes:false);
 
-                _cameraLogic.RefreshCameraZoomToViewModel();
+                // Why is this happening constantly. Seems expensive...
+                //_cameraLogic.RefreshCameraZoomToViewModel();
             });
         }
         catch (TaskCanceledException)
@@ -391,10 +392,10 @@ internal class BottomWindowManager
 
         GumBackground = new SolidRectangleRuntime();
         GumBackground.Color = new SKColor(68, 34, 136);
-        GumBackground.WidthUnits = Gum.DataTypes.DimensionUnitType.RelativeToContainer;
-        GumBackground.Width = 100;
-        GumBackground.HeightUnits = Gum.DataTypes.DimensionUnitType.RelativeToContainer;
-        GumBackground.Height = 100;
+        GumBackground.WidthUnits = Gum.DataTypes.DimensionUnitType.RelativeToParent;
+        GumBackground.Width = 2000;
+        GumBackground.HeightUnits = Gum.DataTypes.DimensionUnitType.RelativeToParent;
+        GumBackground.Height = 2000;
         this.BottomGumCanvas.Children.Add(GumBackground);
     }
 
