@@ -6,6 +6,7 @@ using SkiaGum.GueDeriving;
 using SkiaGum.Wpf;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -64,7 +65,9 @@ public class CameraLogic
 
     #endregion
 
-    public void Initialize(System.Windows.Controls.UserControl view, ICameraZoomViewModel cameraZoomViewModel, GumSKElement canvas, BindableGue background)
+    public void Initialize(System.Windows.Controls.UserControl view,
+        ICameraZoomViewModel cameraZoomViewModel, GumSKElement canvas,
+        BindableGue background)
     {
         Canvas = canvas;
         View = view;
@@ -72,9 +75,23 @@ public class CameraLogic
         Background = background;
         Camera.X = -20;
         Camera.Y = -20;
+
         UpdateBackgroundPositionToCamera();
 
+        cameraZoomViewModel.PropertyChanged += HandleViewModelPropertyChanged;
+
         Canvas.InvalidateVisual();
+    }
+
+    private void HandleViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        switch(e.PropertyName)
+        {
+            case nameof(ICameraZoomViewModel.CurrentZoomPercent):
+                RefreshCameraZoomToViewModel();
+
+                break;
+        }
     }
 
     public void UpdateBackgroundPositionToCamera()
@@ -134,26 +151,18 @@ public class CameraLogic
     {
 
         GetWorldPosition(cursorPosition, out double worldBeforeX, out double worldBeforeY);
-        var newValue = ViewModel.CurrentZoomPercent;
         if (zoomDirection > 0)
         {
-            var zooms = ViewModel.ZoomPercentages.Where(x => x > newValue);
-            if (zooms.Count() == 0) return;
-            newValue = zooms.Last();
+            ViewModel.ZoomOut();
         }
         else if (zoomDirection < 0)
         {
-            var zooms = ViewModel.ZoomPercentages.Where(x => x < newValue);
-            if (zooms.Count() == 0) return;
-            newValue = zooms.First();
+            ViewModel.ZoomIn();
         }
-
-        ViewModel.CurrentZoomPercent = newValue;
 
         Camera.X = (float)(worldBeforeX - cursorPosition.X / ViewModel.CurrentZoomScale);
         Camera.Y = (float)(worldBeforeY - cursorPosition.Y / ViewModel.CurrentZoomScale);
 
-        RefreshCameraZoomToViewModel();
     }
 
     public void ResetCamera() {

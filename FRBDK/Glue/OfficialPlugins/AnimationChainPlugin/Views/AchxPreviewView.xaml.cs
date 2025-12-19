@@ -125,6 +125,7 @@ partial class AchxPreviewView : UserControl
         InitializeSettingsPropertyGrid();
 
         ViewModel.Settings.PropertyChanged += HandleSettingsPropertyChanged;
+        ViewModel.TopWindowZoom.AfterZoomPercentSet += HandleTopWindowAfter;
         ViewModel.FrameUpdatedByUi += HandleFrameUpdated;
         //MemberCategoryManager.SetMemberCategories(PropertyGrid);
 
@@ -137,13 +138,13 @@ partial class AchxPreviewView : UserControl
         this.BottomWindowCameraLogic = bottomWindowCameraLogic;
 
         TopWindowManager = new TopWindowManager(TopGumCanvas, this, topWindowCameraLogic,
-            ViewModel?.TopWindowZoom, ViewModel.Settings);
+            ViewModel.TopWindowZoom, ViewModel.Settings);
 
         BottomWindowManager = new BottomWindowManager(
             BottomGumCanvas,
             this,
             BottomWindowCameraLogic,
-            ViewModel?.BottomWindowZoom,
+            ViewModel.BottomWindowZoom,
             ViewModel.Settings,
             cachedTextureService,
             ViewModel);
@@ -224,6 +225,12 @@ partial class AchxPreviewView : UserControl
             topWindowCameraLogic);
     }
 
+    private void HandleTopWindowAfter(object? sender, EventArgs e)
+    {
+        RefreshTopWindowScrollBars();
+    }
+
+
     #region Initialization
 
     private void InitializeSettingsPropertyGrid()
@@ -253,7 +260,7 @@ partial class AchxPreviewView : UserControl
 
     #endregion
 
-    private void HandleViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+    private void HandleViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         switch (e.PropertyName)
         {
@@ -490,7 +497,6 @@ partial class AchxPreviewView : UserControl
         var changed = TopWindowCameraLogic.HandleMouseWheel(e);
         if(changed)
         {
-            RefreshTopWindowScrollBars();
 
             _textureCoordinateSelectionViewModel.CurrentZoomPercent = TopGumCanvas.SystemManagers.Renderer.Camera.Zoom * 100;
 
@@ -692,5 +698,15 @@ partial class AchxPreviewView : UserControl
     private void ExportClicked(object sender, RoutedEventArgs e)
     {
         ViewModel.HandleExportClicked();
+    }
+
+    private void HandleTopWindowZoomOut()
+    {
+        ((ICameraZoomViewModel)ViewModel.TopWindowZoom).ZoomOut();
+    }
+
+    private void HandleTopWindowZoomIn()
+    {
+        ((ICameraZoomViewModel)ViewModel.TopWindowZoom).ZoomIn();
     }
 }
