@@ -709,4 +709,16 @@ partial class AchxPreviewView : UserControl
     {
         ((ICameraZoomViewModel)ViewModel.TopWindowZoom).ZoomIn();
     }
+
+    private void HandleBottomWindowZoomIn()
+    {
+        ((ICameraZoomViewModel)ViewModel.BottomWindowZoom).ZoomIn();
+
+    }
+
+    private void HandleBottomWindowZoomOut()
+    {
+        ((ICameraZoomViewModel)ViewModel.BottomWindowZoom).ZoomOut();
+
+    }
 }

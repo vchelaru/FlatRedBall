@@ -89,7 +89,6 @@ public class CameraLogic
         {
             case nameof(ICameraZoomViewModel.CurrentZoomPercent):
                 RefreshCameraZoomToViewModel();
-
                 break;
         }
     }
@@ -138,7 +137,7 @@ public class CameraLogic
     {
         if(args.Delta != 0)
         {
-            var zoomDirection = args.Delta;
+            var zoomDirection = -args.Delta;
             var screenPosition = args.GetPosition(Canvas);
 
             HandleZoomInDirection(zoomDirection, screenPosition);
@@ -162,6 +161,8 @@ public class CameraLogic
 
         Camera.X = (float)(worldBeforeX - cursorPosition.X / ViewModel.CurrentZoomScale);
         Camera.Y = (float)(worldBeforeY - cursorPosition.Y / ViewModel.CurrentZoomScale);
+
+        UpdateBackgroundPositionToCamera();
 
     }
 

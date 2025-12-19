@@ -166,6 +166,10 @@
                         MouseMove="BottomCanvas_MouseMove"
                         MouseWheel="BottomCanvas_MouseWheel" />
                     <StackPanel Grid.Row="1" Orientation="Horizontal">
+                        <GlueControls:ZoomControl
+                            CurrentZoomLevelDisplay="{Binding BottomWindowZoom.CurrentZoomDisplay}"
+                            ZoomMinusClick="HandleBottomWindowZoomOut"
+                            ZoomPlusClick="HandleBottomWindowZoomIn" />
                         <Label Content="{Binding ResolutionDisplay, FallbackValue=300x500}" />
                     </StackPanel>
                 </Grid>
