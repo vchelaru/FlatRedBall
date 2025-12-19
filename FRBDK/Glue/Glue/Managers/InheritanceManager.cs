@@ -784,7 +784,7 @@ public class InheritanceManager
                     // set the value there.
                     customVariable.SourceObject = null;
                     customVariable.SourceObjectProperty = null;
-
+                        
                     // December 13, 2025
                     // When we create a variable
                     // in a derived element, the derived
@@ -795,7 +795,7 @@ public class InheritanceManager
                     customVariable.DefaultValue = null;
 
                     customVariable.DefinedByBase = true;
-                    // We'll assume that this thing is going to be the acutal definition
+                    // We'll assume that this thing is going to be the actual definition
                     // Update April 11, 2023
                     // Setting this to false doesn't
                     // prevent this from being the final
