@@ -56,7 +56,7 @@ partial class ReferencedFileFlatListWindow
         this.CloseButton.Name = "CloseButton";
         this.CloseButton.Size = new System.Drawing.Size(288, 31);
         this.CloseButton.TabIndex = 1;
-        this.CloseButton.Text = L.Texts.Close;
+        this.CloseButton.Text = "Close";
         this.CloseButton.UseVisualStyleBackColor = true;
         this.CloseButton.Click += new System.EventHandler(this.CloseButton_Click);
         // 

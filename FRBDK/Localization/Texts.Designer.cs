@@ -61,24 +61,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Climbing Speed:.
-        /// </summary>
-        public static string ClimbingSpeed {
-            get {
-                return ResourceManager.GetString("ClimbingSpeed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Close.
-        /// </summary>
-        public static string Close {
-            get {
-                return ResourceManager.GetString("Close", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Closest.
         /// </summary>
         public static string Closest {
@@ -2978,15 +2960,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Increases game speed (makes it run in fast-forward).
-        /// </summary>
-        public static string IncreaseGameSpeedFastForward {
-            get {
-                return ResourceManager.GetString("IncreaseGameSpeedFastForward", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Increase Visible Area.
         /// </summary>
         public static string IncreaseVisibleArea {
@@ -4715,15 +4688,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Reduce game speed (makes it run in slow-motion).
-        /// </summary>
-        public static string ReduceGameSpeedSlowMotion {
-            get {
-                return ResourceManager.GetString("ReduceGameSpeedSlowMotion", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Reference Sharing.
         /// </summary>
         public static string ReferenceSharing {
@@ -5314,15 +5278,6 @@ namespace Localization {
         public static string SlopesChangeSpeed {
             get {
                 return ResourceManager.GetString("SlopesChangeSpeed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Slow Down.
-        /// </summary>
-        public static string SlowDown {
-            get {
-                return ResourceManager.GetString("SlowDown", resourceCulture);
             }
         }
         

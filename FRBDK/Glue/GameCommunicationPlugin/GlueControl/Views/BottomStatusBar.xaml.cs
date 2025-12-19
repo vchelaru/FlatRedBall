@@ -25,12 +25,12 @@ namespace GameCommunicationPlugin.GlueControl.Views
             InitializeComponent();
         }
 
-        private void ZoomMinusClicked(object sender, RoutedEventArgs e)
+        private void ZoomMinusClicked()
         {
             ZoomMinusClick?.Invoke();
         }
 
-        private void ZoomPlusClicked(object sender, RoutedEventArgs e)
+        private void ZoomPlusClicked()
         {
             ZoomPlusClick?.Invoke();
         }

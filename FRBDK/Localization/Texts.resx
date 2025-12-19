@@ -385,18 +385,6 @@ for {1}?</value>
   <data name="Ok" xml:space="preserve">
     <value>OK</value>
   </data>
-  <data name="SlowDown" xml:space="preserve">
-    <value>Slow Down</value>
-  </data>
-  <data name="ReduceGameSpeedSlowMotion" xml:space="preserve">
-    <value>Reduce game speed (makes it run in slow-motion)</value>
-  </data>
-  <data name="SpeedUp" xml:space="preserve">
-    <value>Speed Up</value>
-  </data>
-  <data name="IncreaseGameSpeedFastForward" xml:space="preserve">
-    <value>Increases game speed (makes it run in fast-forward)</value>
-  </data>
   <data name="TakeSnapshot" xml:space="preserve">
     <value>Take Snapshot</value>
   </data>
@@ -588,9 +576,6 @@ for {1}?</value>
   </data>
   <data name="HintClimbingPressingUp" xml:space="preserve">
     <value>Whether pressing up and down puts the player in a climbing state. When climbing, there is no gravity and up/down input directly sets the player's velocity.</value>
-  </data>
-  <data name="ClimbingSpeed" xml:space="preserve">
-    <value>Climbing Speed:</value>
   </data>
   <data name="HintVerticalSpeedForClimbing" xml:space="preserve">
     <value>The vertical movement speed when climbing.</value>
@@ -1771,9 +1756,6 @@ for {1}?</value>
   <data name="ProjectSpecificFiles" xml:space="preserve">
     <value>Project Specific Files</value>
   </data>
-  <data name="Close" xml:space="preserve">
-    <value>Close</value>
-  </data>
   <data name="PluginFiles" xml:space="preserve">
     <value>Plugin Files</value>
   </data>
@@ -2172,5 +2154,8 @@ for {1}?</value>
   </data>
   <data name="EntityAddDerived" xml:space="preserve">
     <value />
+  </data>
+  <data name="SpeedUp" xml:space="preserve">
+    <value>Speed Up</value>
   </data>
 </root>

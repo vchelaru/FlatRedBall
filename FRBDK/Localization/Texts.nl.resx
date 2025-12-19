@@ -384,18 +384,6 @@
   <data name="Ok" xml:space="preserve">
     <value>OK</value>
   </data>
-  <data name="SlowDown" xml:space="preserve">
-    <value>Vertragen</value>
-  </data>
-  <data name="ReduceGameSpeedSlowMotion" xml:space="preserve">
-    <value>Verlaag de spelsnelheid (laat het in slow motion draaien)</value>
-  </data>
-  <data name="SpeedUp" xml:space="preserve">
-    <value>Versnellen</value>
-  </data>
-  <data name="IncreaseGameSpeedFastForward" xml:space="preserve">
-    <value>Verhoogt de spelsnelheid (laat het snel vooruitspoelen)</value>
-  </data>
   <data name="TakeSnapshot" xml:space="preserve">
     <value>Maak snapshot</value>
   </data>
@@ -587,9 +575,6 @@
   </data>
   <data name="HintClimbingPressingUp" xml:space="preserve">
     <value>Of het nu omhoog of omlaag drukken is, de speler in een klimtoestand brengt. Bij het klimmen is er geen zwaartekracht en wordt de snelheid van de speler rechtstreeks bepaald door de invoer omhoog/omlaag.</value>
-  </data>
-  <data name="ClimbingSpeed" xml:space="preserve">
-    <value>Klimsnelheid:</value>
   </data>
   <data name="HintVerticalSpeedForClimbing" xml:space="preserve">
     <value>De verticale bewegingssnelheid tijdens het klimmen.</value>
@@ -1770,9 +1755,6 @@
   <data name="ProjectSpecificFiles" xml:space="preserve">
     <value>Projectspecifieke bestanden</value>
   </data>
-  <data name="Close" xml:space="preserve">
-    <value>Sluiten</value>
-  </data>
   <data name="PluginFiles" xml:space="preserve">
     <value>Plugin-bestanden</value>
   </data>
@@ -2165,5 +2147,8 @@
   </data>
   <data name="EntityAddDerived" xml:space="preserve">
     <value>Afgeleide entiteit toevoegen</value>
+  </data>
+  <data name="SpeedUp" xml:space="preserve">
+    <value>Versnellen</value>
   </data>
 </root>

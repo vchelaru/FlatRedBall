@@ -1,49 +1,25 @@
-﻿<UserControl x:Class="GameCommunicationPlugin.GlueControl.Views.BottomStatusBar"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:localization="clr-namespace:Localization;assembly=Localization"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             mc:Ignorable="d" 
-             d:DesignWidth="450" Height="28">
+﻿<UserControl
+    x:Class="GameCommunicationPlugin.GlueControl.Views.BottomStatusBar"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:GlueControls="clr-namespace:FlatRedBall.Glue.Controls;assembly=GlueFormsCore"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Height="28"
+    d:DesignWidth="450"
+    mc:Ignorable="d">
     <StackPanel Orientation="Horizontal">
-        <Grid HorizontalAlignment="Left" Margin="0,0,0,0">
-            <StackPanel VerticalAlignment="Stretch" Orientation="Horizontal" Margin="0,0,3,0" >
-                <Button Height="16"
-                        Background="Transparent" Click="ZoomMinusClicked"
-                        BorderBrush="Transparent" Visibility="{Binding EditingToolsVisibility}"
-                        Content="{materialDesign:PackIcon Minus}"
-                        Style="{DynamicResource IconButton}">
-                    <Button.ToolTip>
-                        <ToolTip>
-                            <StackPanel>
-                                <TextBlock FontWeight="Bold" Text="{x:Static localization:Texts.SlowDown}"></TextBlock>
-                                <TextBlock Text="{x:Static localization:Texts.ReduceGameSpeedSlowMotion}"></TextBlock>
-                            </StackPanel>
-                        </ToolTip>
-                    </Button.ToolTip>
-                </Button>
-                <materialDesign:PackIcon Kind="Search" VerticalAlignment="Center" Margin="2,0,0,0"/>
-                <TextBlock VerticalAlignment="Center" Text="{Binding CurrentZoomLevelDisplay, FallbackValue=100%}" Margin="0,0,2,0"></TextBlock>
-                <Button
-                    Height="16"
-                    Background="Transparent" Click="ZoomPlusClicked"
-                        BorderBrush="Transparent" Visibility="{Binding EditingToolsVisibility}"
-                        Content="{materialDesign:PackIcon Plus}"
-                        Style="{DynamicResource IconButton}">
-                    <Button.ToolTip>
-                        <ToolTip>
-                            <StackPanel>
-                                <TextBlock FontWeight="Bold" Text="{x:Static localization:Texts.SpeedUp}"></TextBlock>
-                                <TextBlock Text="{x:Static localization:Texts.IncreaseGameSpeedFastForward}"></TextBlock>
-                            </StackPanel>
-                        </ToolTip>
-                    </Button.ToolTip>
-                </Button>
-            </StackPanel>
-
+        <Grid Margin="0,0,0,0" HorizontalAlignment="Left">
+            <GlueControls:ZoomControl
+                ButtonVisibility="{Binding EditingToolsVisibility}"
+                CurrentZoomLevelDisplay="{Binding CurrentZoomLevelDisplay}"
+                ZoomMinusClick="ZoomMinusClicked"
+                ZoomPlusClick="ZoomPlusClicked" />
         </Grid>
-        <TextBlock VerticalAlignment="Center" Margin="4" Text="{Binding ResolutionDisplayText, FallbackValue=800x600}"></TextBlock>
+        <TextBlock
+            Margin="4"
+            VerticalAlignment="Center"
+            Text="{Binding ResolutionDisplayText, FallbackValue=800x600}" />
     </StackPanel>
 </UserControl>

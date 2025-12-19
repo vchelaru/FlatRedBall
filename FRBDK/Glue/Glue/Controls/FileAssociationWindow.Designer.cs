@@ -58,7 +58,7 @@ partial class FileAssociationWindow
         this.OkButton.Name = "OkButton";
         this.OkButton.Size = new System.Drawing.Size(88, 27);
         this.OkButton.TabIndex = 1;
-        this.OkButton.Text = L.Texts.Close;
+        this.OkButton.Text = "Close";
         this.OkButton.UseVisualStyleBackColor = true;
         this.OkButton.Click += new System.EventHandler(this.OkButton_Click);
         // 

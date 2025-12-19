@@ -384,18 +384,6 @@
   <data name="Ok" xml:space="preserve">
     <value>Ok</value>
   </data>
-  <data name="SlowDown" xml:space="preserve">
-    <value>Verlangsamen</value>
-  </data>
-  <data name="ReduceGameSpeedSlowMotion" xml:space="preserve">
-    <value>Reduzieren Sie die Spielgeschwindigkeit (lässt es in Zeitlupe laufen)</value>
-  </data>
-  <data name="SpeedUp" xml:space="preserve">
-    <value>Beschleunigen</value>
-  </data>
-  <data name="IncreaseGameSpeedFastForward" xml:space="preserve">
-    <value>Erhöht die Spielgeschwindigkeit (lässt es im Schnellvorlauf laufen)</value>
-  </data>
   <data name="TakeSnapshot" xml:space="preserve">
     <value>Schnappschuss machen</value>
   </data>
@@ -587,9 +575,6 @@
   </data>
   <data name="HintClimbingPressingUp" xml:space="preserve">
     <value>Ob das Drücken nach oben und unten den Spieler in einen Kletterzustand versetzt. Beim Klettern gibt es keine Schwerkraft und die Auf-/Ab-Eingabe bestimmt direkt die Geschwindigkeit des Spielers.</value>
-  </data>
-  <data name="ClimbingSpeed" xml:space="preserve">
-    <value>Steiggeschwindigkeit:</value>
   </data>
   <data name="HintVerticalSpeedForClimbing" xml:space="preserve">
     <value>Die vertikale Bewegungsgeschwindigkeit beim Klettern.</value>
@@ -1770,9 +1755,6 @@
   <data name="ProjectSpecificFiles" xml:space="preserve">
     <value>Projektspezifische Dateien</value>
   </data>
-  <data name="Close" xml:space="preserve">
-    <value>Schließen</value>
-  </data>
   <data name="PluginFiles" xml:space="preserve">
     <value>Plugin-Dateien</value>
   </data>
@@ -2162,5 +2144,8 @@
   </data>
   <data name="EntityAddDerived" xml:space="preserve">
     <value>Abgeleitete Entität hinzufügen</value>
+  </data>
+  <data name="SpeedUp" xml:space="preserve">
+    <value>Beschleunigen</value>
   </data>
 </root>

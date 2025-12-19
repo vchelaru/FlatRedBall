@@ -15,8 +15,6 @@ internal class AnimationChainVisualEditingManager
 {
     private GumSKElement _canvas;
     private readonly CameraLogic _cameraLogic;
-    double worldXPushed;
-    double worldYPushed;
 
     public AnimationChainVisualEditingManager(SkiaGum.Wpf.GumSKElement canvas, CameraLogic cameraLogic)
     {
