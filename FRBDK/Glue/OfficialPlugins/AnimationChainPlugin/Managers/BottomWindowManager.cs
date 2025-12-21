@@ -274,6 +274,7 @@ internal class BottomWindowManager
 
                 // Why is this happening constantly. Seems expensive...
                 //_cameraLogic.RefreshCameraZoomToViewModel();
+                BottomGumCanvas.InvalidateVisual();
             });
         }
         catch (TaskCanceledException)
