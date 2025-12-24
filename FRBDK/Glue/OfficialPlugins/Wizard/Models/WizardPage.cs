@@ -332,7 +332,7 @@ namespace OfficialPlugins.Wizard.Models
                     var group = new GroupBox();
                     group.Header = dataItem.LabelText;
                     stackPanel.Children.Add(group);
-                    var asOptionContainer = dataItem as OptionContainer;
+                    var asOptionContainer = (OptionContainer)dataItem;
                     group.HorizontalAlignment = HorizontalAlignment.Left;
                     var innerStack = new StackPanel();
                     group.Content = innerStack;
@@ -345,7 +345,7 @@ namespace OfficialPlugins.Wizard.Models
                         radioButton.IsChecked = vmValue?.Equals(child.OptionValue) == true;
                         radioButton.Content = child.OptionName;
                         var optionValue = child.OptionValue;
-                        radioButton.Click += (not, used) => vmProperty.SetValue(ViewModel, optionValue);
+                        radioButton.Click += (not, used) => vmProperty!.SetValue(ViewModel, optionValue);
                         innerStack.Children.Add(radioButton);
                     }
                     break;

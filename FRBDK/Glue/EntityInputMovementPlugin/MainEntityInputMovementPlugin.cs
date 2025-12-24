@@ -13,6 +13,8 @@ using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.FormHelpers;
 using System.Threading.Tasks;
 using FlatRedBall.IO;
+using FlatRedBall.Glue.Services;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 
 namespace EntityInputMovementPlugin
 {
@@ -28,6 +30,7 @@ namespace EntityInputMovementPlugin
         Views.MainView mainView;
         PluginTab mainTab;
         MainViewModel mainViewModel;
+        private IProjectCommands _projectCommands;
 
         #endregion
 
@@ -40,6 +43,8 @@ namespace EntityInputMovementPlugin
 
         public override void StartUp()
         {
+            _projectCommands = Builder.Get<IProjectCommands>();
+
             base.RegisterCodeGenerator(new TopDownPlugin.CodeGenerators.EntityCodeGenerator());
             base.RegisterCodeGenerator(new FlatRedBall.PlatformerPlugin.Generators.EntityCodeGenerator());
             base.RegisterCodeGenerator(new PlatformerPlugin.CodeGenerators.EntityPlatformerAnimationCodeGenerator());
@@ -101,7 +106,7 @@ namespace EntityInputMovementPlugin
             UpdatePlatformerCodePresenceInProject();
         }
 
-        private static void UpdatePlatformerCodePresenceInProject()
+        private void UpdatePlatformerCodePresenceInProject()
         {
             var entities = GlueState.Self.CurrentGlueProject.Entities;
 
@@ -122,9 +127,9 @@ namespace EntityInputMovementPlugin
             else
             {
                 // see if there are any references to files which do not exist. If so, let's remove them:
-                GlueCommands.Self.ProjectCommands.RemoveFromProjects(FlatRedBall.PlatformerPlugin.Generators.EnumFileGenerator.Self.FileLocation);
-                GlueCommands.Self.ProjectCommands.RemoveFromProjects(FlatRedBall.PlatformerPlugin.Generators.IPlatformerCodeGenerator.Self.FileLocation);
-                GlueCommands.Self.ProjectCommands.RemoveFromProjects(FlatRedBall.PlatformerPlugin.Generators.PlatformerAnimationControllerGenerator.Self.FileLocation);
+                _projectCommands.RemoveFromProjects(FlatRedBall.PlatformerPlugin.Generators.EnumFileGenerator.Self.FileLocation);
+                _projectCommands.RemoveFromProjects(FlatRedBall.PlatformerPlugin.Generators.IPlatformerCodeGenerator.Self.FileLocation);
+                _projectCommands.RemoveFromProjects(FlatRedBall.PlatformerPlugin.Generators.PlatformerAnimationControllerGenerator.Self.FileLocation);
             }
         }
 

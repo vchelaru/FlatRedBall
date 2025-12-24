@@ -93,6 +93,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkiaGum.Wpf", "..\..\..\Gum
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkiaGum", "..\..\..\Gum\SkiaGum\SkiaGum.csproj", "{3AC20D6E-C39F-91E6-8942-F44C8430814A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{3CB2E620-1431-4DEA-AD58-E844D5DDCC60}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GlueUnitTests", "Tests\GlueUnitTests\GlueUnitTests.csproj", "{ABCCA529-A8A3-44E4-B2E8-C69EA3B00644}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -223,6 +227,10 @@ Global
 		{3AC20D6E-C39F-91E6-8942-F44C8430814A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3AC20D6E-C39F-91E6-8942-F44C8430814A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3AC20D6E-C39F-91E6-8942-F44C8430814A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ABCCA529-A8A3-44E4-B2E8-C69EA3B00644}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABCCA529-A8A3-44E4-B2E8-C69EA3B00644}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ABCCA529-A8A3-44E4-B2E8-C69EA3B00644}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ABCCA529-A8A3-44E4-B2E8-C69EA3B00644}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -265,6 +273,7 @@ Global
 		{74D65A46-28C0-49FB-938B-6ED83C06DC73} = {60818A85-E5BC-4B05-97F9-24402B4B0CCE}
 		{1ACC516A-D3D4-B8D5-B98B-87743A46466C} = {07985C4C-B3CF-432C-8A27-36FDD006231F}
 		{3AC20D6E-C39F-91E6-8942-F44C8430814A} = {07985C4C-B3CF-432C-8A27-36FDD006231F}
+		{ABCCA529-A8A3-44E4-B2E8-C69EA3B00644} = {3CB2E620-1431-4DEA-AD58-E844D5DDCC60}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {878CCBB8-EADE-4F25-9DE7-D55D999D414A}

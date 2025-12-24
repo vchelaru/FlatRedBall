@@ -200,8 +200,8 @@ class ProjectCommands : IProjectCommands
     }
 
     /// <summary>
-    /// Updates the presence of the RFS in the main project. If the RFS has project specific files, then those
-    /// files are updated in the appropriate synced project. If the file  
+    /// Adds or updates the file type of the RFS in the main Visual Studio project. If the RFS has project specific files, then those
+    /// files are updated in the appropriate synced project.
     /// </summary>
     /// <remarks>
     /// This method does not update synced projects if the synced projects use the same file.  The reason is because
@@ -254,7 +254,8 @@ class ProjectCommands : IProjectCommands
     }
 
     /// <summary>
-    /// Adds the argument fileRelativeToProject to the argument project if it's not already part of the project. This is a recursive
+    /// Adds the argument fileRelativeToProject to the argument Visual Studio project if it's not already part of the project.
+    /// If the file is part of the project, this updates the reference type, such as cmpile or content. This is an optionally recursive
     /// call so it will also add all referenced files to the project.
     /// </summary>
     /// <param name="project"></param>
@@ -265,7 +266,8 @@ class ProjectCommands : IProjectCommands
     /// <returns>Whether the project was modified.</returns>
     public bool UpdateFileMembershipInProject(VisualStudioProject project,
         FilePath fileName, bool useContentPipeline, bool shouldLink,
-        string parentFile = null, bool recursive = true,
+        string? parentFile = null,
+        bool recursive = true,
         List<string> alreadyReferencedFiles = null,
         ReferencedFileSave fileRfs = null,
         bool reEvaluateAfterAdd = true,

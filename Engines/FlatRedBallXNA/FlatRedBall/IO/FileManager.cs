@@ -841,7 +841,7 @@ namespace FlatRedBall.IO
         /// <param name="depthToSearch">The depth to search through.  If the depthToSearch
         /// is 0, only the argument directory will be searched.</param>
         /// <returns>A list containing all of the files found which match the fileType.</returns>
-        public static List<string> GetAllFilesInDirectory(string directory, string fileType, int depthToSearch)
+        public static List<string> GetAllFilesInDirectory(string directory, string? fileType, int depthToSearch)
         {
             List<string> arrayToReturn = new List<string>();
 
