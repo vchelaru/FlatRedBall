@@ -19,7 +19,7 @@ namespace Localization {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Texts {
@@ -61,33 +61,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Closest.
-        /// </summary>
-        public static string Closest {
-            get {
-                return ResourceManager.GetString("Closest", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Add CloudCollision ShapeCollection.
-        /// </summary>
-        public static string CloudCollisionAdd {
-            get {
-                return ResourceManager.GetString("CloudCollisionAdd", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cloud Platform Thickness:.
-        /// </summary>
-        public static string CloudPlatformThickness {
-            get {
-                return ResourceManager.GetString("CloudPlatformThickness", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Code.
         /// </summary>
         public static string Code {
@@ -102,15 +75,6 @@ namespace Localization {
         public static string CodeGeneration {
             get {
                 return ResourceManager.GetString("CodeGeneration", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Re-Generate Code.
-        /// </summary>
-        public static string CodeRegenerate {
-            get {
-                return ResourceManager.GetString("CodeRegenerate", resourceCulture);
             }
         }
         
@@ -3077,15 +3041,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Remove item.
-        /// </summary>
-        public static string ItemRemove {
-            get {
-                return ResourceManager.GetString("ItemRemove", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Orphaned item.
         /// </summary>
         public static string ItemsOrphaned {
@@ -4742,47 +4697,11 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Remove from Entity.
-        /// </summary>
-        public static string RemoveFromEntity {
-            get {
-                return ResourceManager.GetString("RemoveFromEntity", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Remove from Global Content.
-        /// </summary>
-        public static string RemoveFromGlobalContent {
-            get {
-                return ResourceManager.GetString("RemoveFromGlobalContent", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Remove from project.
-        /// </summary>
-        public static string RemoveFromProject {
-            get {
-                return ResourceManager.GetString("RemoveFromProject", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Remove from project quick (ONLY IF YOU KNOW WHAT YOU&apos;RE DOING!).
         /// </summary>
         public static string RemoveFromProjectQuick {
             get {
                 return ResourceManager.GetString("RemoveFromProjectQuick", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Remove from Screen.
-        /// </summary>
-        public static string RemoveFromScreen {
-            get {
-                return ResourceManager.GetString("RemoveFromScreen", resourceCulture);
             }
         }
         

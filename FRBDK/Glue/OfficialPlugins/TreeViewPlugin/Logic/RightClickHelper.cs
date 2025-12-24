@@ -336,7 +336,7 @@ public static class RightClickHelper
         {
             AddItem(addFileToolStripMenuItem);
             Add(L.Texts.FolderAdd, () => RightClickHelper.AddFolderClick(targetNode), image: FolderImage);
-            Add(L.Texts.CodeRegenerate, () => HandleReGenerateCodeClick(targetNode));
+            Add("Re-Generate Code", () => HandleReGenerateCodeClick(targetNode));
 
             Add(L.Texts.ViewInExplorer, () => RightClickHelper.ViewInExplorerClick(targetNode), image: FolderImage);
         }
@@ -492,16 +492,13 @@ public static class RightClickHelper
 
             AddSeparator();
 
-            if(rfs.IsCreatedByWildcard == false)
-            {
-                AddRemoveFromProjectItems();
-            }
+            AddRemoveFromProjectItems();
 
             if (FileManager.GetExtension(rfs.Name) == "csv" || rfs.TreatAsCsv)
             {
                 AddSeparator();
                 AddItem(setCreatedClassToolStripMenuItem);
-                Add(L.Texts.CodeRegenerate, () => HandleReGenerateCodeClick(targetNode));
+                Add("Re-Generate Code", () => HandleReGenerateCodeClick(targetNode));
             }
 
 
@@ -543,7 +540,7 @@ public static class RightClickHelper
         {
 
             Add(L.Texts.ViewInExplorer, () => RightClickHelper.ViewInExplorerClick(targetNode), image: FolderImage);
-            Add(L.Texts.CodeRegenerate, () => HandleReGenerateCodeClick(targetNode));
+            Add("Re-Generate Code", () => HandleReGenerateCodeClick(targetNode));
         }
 
         #endregion
@@ -552,7 +549,7 @@ public static class RightClickHelper
 
         else if (targetNode.IsRootCodeNode())
         {
-            Add(L.Texts.CodeRegenerate, () => HandleReGenerateCodeClick(targetNode));
+            Add("Re-Generate Code", () => HandleReGenerateCodeClick(targetNode));
         }
 
 
@@ -832,7 +829,7 @@ public static class RightClickHelper
         addFileToolStripMenuItem.Text = L.Texts.FileAdd;
 
         removeFromProjectToolStripMenuItem = new GeneralToolStripMenuItem();
-        removeFromProjectToolStripMenuItem.Text = L.Texts.RemoveFromProject;
+        removeFromProjectToolStripMenuItem.Text = "Remove from project";
         removeFromProjectToolStripMenuItem.Click += (not, used) => RightClickHelper.RemoveFromProjectToolStripMenuItem();
 
         mMoveToTop = new GeneralToolStripMenuItem($"^^ {L.Texts.MoveToTop}");
@@ -1105,20 +1102,25 @@ public static class RightClickHelper
         {
             if (GlueState.Self.CurrentScreenSave != null)
             {
-                removeFromProjectToolStripMenuItem.Text = L.Texts.RemoveFromScreen;
+                removeFromProjectToolStripMenuItem.Text = "Remove from Screen";
             }
             else if (GlueState.Self.CurrentEntitySave != null)
             {
-                removeFromProjectToolStripMenuItem.Text = L.Texts.RemoveFromEntity;
+                removeFromProjectToolStripMenuItem.Text = "Remove from Entity";
             }
             else
             {
-                removeFromProjectToolStripMenuItem.Text = L.Texts.RemoveFromGlobalContent;
+                removeFromProjectToolStripMenuItem.Text = "Remove from Global Content";
+            }
+
+            if(GlueState.Self.CurrentReferencedFileSave?.IsCreatedByWildcard == true)
+            {
+                removeFromProjectToolStripMenuItem.Text = $"Delete [{GlueState.Self.CurrentReferencedFileSave.Name}]";
             }
         }
         else
         {
-            removeFromProjectToolStripMenuItem.Text = L.Texts.ItemRemove;
+            removeFromProjectToolStripMenuItem.Text = "Remove item";
         }
         if ((Control.ModifierKeys & Keys.Shift) != 0)
         {

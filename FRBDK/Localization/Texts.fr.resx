@@ -549,9 +549,6 @@
   <data name="HintPressDownThroughClouds" xml:space="preserve">
     <value>Si cette case est cochée, le joueur peut appuyer vers le bas et sauter pour tomber à travers les nuages.</value>
   </data>
-  <data name="CloudPlatformThickness" xml:space="preserve">
-    <value>Épaisseur de la plateforme cloud :</value>
-  </data>
   <data name="HintDistancePressCloudCollision" xml:space="preserve">
     <value>La distance à parcourir en appuyant et en sautant sur le nuage avant de réactiver la collision avec le nuage. Cela devrait être la hauteur d'une tuile (généralement 16).</value>
   </data>
@@ -858,9 +855,6 @@
   <data name="SolidCollisionAdd" xml:space="preserve">
     <value>Ajouter SolidCollision ShapeCollection</value>
   </data>
-  <data name="CloudCollisionAdd" xml:space="preserve">
-    <value>Ajouter CloudCollision ShapeCollection</value>
-  </data>
   <data name="GenerateDisplayCode" xml:space="preserve">
     <value>Générer le code d'affichage</value>
   </data>
@@ -1094,9 +1088,6 @@
   </data>
   <data name="CollisionLimit" xml:space="preserve">
     <value>Limite de collision</value>
-  </data>
-  <data name="Closest" xml:space="preserve">
-    <value>Le plus près</value>
   </data>
   <data name="StopAfterFirst" xml:space="preserve">
     <value>Arrêtez-vous après le premier</value>
@@ -1857,18 +1848,6 @@
   <data name="EntityIsBaseForEntities" xml:space="preserve">
     <value>L'entité {0} constitue la base des entités suivantes :</value>
   </data>
-  <data name="ItemRemove" xml:space="preserve">
-    <value>Retirer l'objet</value>
-  </data>
-  <data name="RemoveFromScreen" xml:space="preserve">
-    <value>Supprimer de l'écran</value>
-  </data>
-  <data name="RemoveFromEntity" xml:space="preserve">
-    <value>Supprimer de l'entité</value>
-  </data>
-  <data name="RemoveFromGlobalContent" xml:space="preserve">
-    <value>Supprimer du contenu global</value>
-  </data>
   <data name="FillValuesDefault" xml:space="preserve">
     <value>Remplir les valeurs par défaut ?</value>
   </data>
@@ -1938,9 +1917,6 @@
   <data name="FileNew" xml:space="preserve">
     <value>Nouveau fichier</value>
   </data>
-  <data name="RemoveFromProject" xml:space="preserve">
-    <value>Supprimer du projet</value>
-  </data>
   <data name="ScreenAdd" xml:space="preserve">
     <value>Ajouter un écran</value>
   </data>
@@ -1961,9 +1937,6 @@
   </data>
   <data name="ViewContentFolder" xml:space="preserve">
     <value>Afficher le dossier de contenu</value>
-  </data>
-  <data name="CodeRegenerate" xml:space="preserve">
-    <value>Régénérer le code</value>
   </data>
   <data name="Open" xml:space="preserve">
     <value>Ouvrez</value>
