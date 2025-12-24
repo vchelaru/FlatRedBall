@@ -348,7 +348,7 @@
             </CheckBox>
             <StackPanel Visibility="{Binding FallThroughCloudPlatformsVisibility}">
                 <TextBlock>
-                    <Label Content="{x:Static localization:Texts.CloudPlatformThickness}" />
+                    <Label Content="Cloud Platform Thickness:" />
                 </TextBlock>
                 <TextBox
                     Width="50"

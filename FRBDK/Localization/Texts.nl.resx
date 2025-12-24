@@ -549,9 +549,6 @@
   <data name="HintPressDownThroughClouds" xml:space="preserve">
     <value>Indien aangevinkt, kan de speler op de neerwaartse richting drukken en springen om door de wolken te vallen.</value>
   </data>
-  <data name="CloudPlatformThickness" xml:space="preserve">
-    <value>Dikte cloudplatform:</value>
-  </data>
   <data name="HintDistancePressCloudCollision" xml:space="preserve">
     <value>De afstand die moet worden afgelegd wanneer u op de wolk drukt en springt voordat de botsing met de wolken opnieuw wordt ingeschakeld. Dit moet de hoogte van één tegel zijn (meestal 16).</value>
   </data>
@@ -858,9 +855,6 @@
   <data name="SolidCollisionAdd" xml:space="preserve">
     <value>Voeg SolidCollision ShapeCollection toe</value>
   </data>
-  <data name="CloudCollisionAdd" xml:space="preserve">
-    <value>Voeg CloudCollision ShapeCollection toe</value>
-  </data>
   <data name="GenerateDisplayCode" xml:space="preserve">
     <value>Weergavecode genereren</value>
   </data>
@@ -1094,9 +1088,6 @@
   </data>
   <data name="CollisionLimit" xml:space="preserve">
     <value>Botsingslimiet</value>
-  </data>
-  <data name="Closest" xml:space="preserve">
-    <value>Dichtstbijzijnde</value>
   </data>
   <data name="StopAfterFirst" xml:space="preserve">
     <value>Stop na eerste</value>
@@ -1857,20 +1848,8 @@
   <data name="EntityIsBaseForEntities" xml:space="preserve">
     <value>De Entiteit {0} is de basis voor de volgende Entiteiten:</value>
   </data>
-  <data name="ItemRemove" xml:space="preserve">
-    <value>Verwijder voorwerp</value>
-  </data>
   <data name="ItemsOrphaned" xml:space="preserve">
     <value>Verweesde voorwerpen</value>
-  </data>
-  <data name="RemoveFromScreen" xml:space="preserve">
-    <value>Verwijderen van scherm</value>
-  </data>
-  <data name="RemoveFromEntity" xml:space="preserve">
-    <value>Verwijderen uit entiteit</value>
-  </data>
-  <data name="RemoveFromGlobalContent" xml:space="preserve">
-    <value>Verwijderen uit algemene inhoud</value>
   </data>
   <data name="FillValuesDefault" xml:space="preserve">
     <value>Waarden invullen vanaf standaard?</value>
@@ -1941,9 +1920,6 @@
   <data name="FileNew" xml:space="preserve">
     <value>Nieuw bestand</value>
   </data>
-  <data name="RemoveFromProject" xml:space="preserve">
-    <value>Verwijderen uit project</value>
-  </data>
   <data name="ScreenAdd" xml:space="preserve">
     <value>Scherm toevoegen</value>
   </data>
@@ -1964,9 +1940,6 @@
   </data>
   <data name="ViewContentFolder" xml:space="preserve">
     <value>Inhoudsmap bekijken</value>
-  </data>
-  <data name="CodeRegenerate" xml:space="preserve">
-    <value>Code opnieuw genereren</value>
   </data>
   <data name="Open" xml:space="preserve">
     <value>Open</value>

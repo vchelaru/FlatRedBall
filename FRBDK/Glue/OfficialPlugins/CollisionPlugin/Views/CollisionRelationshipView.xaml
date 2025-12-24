@@ -98,7 +98,7 @@
                 <StackPanel>
                     <RadioButton IsChecked="{Binding IsAllCollisionLimitChecked}" Content="All" />
                     <RadioButton IsChecked="{Binding IsFirstCollisionLimitChecked}"  Content="{x:Static localization:Texts.StopAfterFirst}" />
-                    <RadioButton IsChecked="{Binding IsClosestCollisionLimitChecked}" Content="{x:Static localization:Texts.Closest}" />
+                    <RadioButton IsChecked="{Binding IsClosestCollisionLimitChecked}" Content="Closest" />
                     <TextBlock Text="{Binding CollisionLimitExplanationText}" />
                 </StackPanel>
             </GroupBox>

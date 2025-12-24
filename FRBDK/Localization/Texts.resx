@@ -550,9 +550,6 @@ for {1}?</value>
   <data name="HintPressDownThroughClouds" xml:space="preserve">
     <value>If checked, the player can press the down direction and jump to fall through clouds.</value>
   </data>
-  <data name="CloudPlatformThickness" xml:space="preserve">
-    <value>Cloud Platform Thickness:</value>
-  </data>
   <data name="HintDistancePressCloudCollision" xml:space="preserve">
     <value>The amount of distance to fall when pressing down and jump on cloud before re-enabling cloud collision. This should be the height of one tile (typically 16).</value>
   </data>
@@ -859,9 +856,6 @@ for {1}?</value>
   <data name="SolidCollisionAdd" xml:space="preserve">
     <value>Add SolidCollision ShapeCollection</value>
   </data>
-  <data name="CloudCollisionAdd" xml:space="preserve">
-    <value>Add CloudCollision ShapeCollection</value>
-  </data>
   <data name="GenerateDisplayCode" xml:space="preserve">
     <value>Generate Display Code</value>
   </data>
@@ -1095,9 +1089,6 @@ for {1}?</value>
   </data>
   <data name="CollisionLimit" xml:space="preserve">
     <value>Collision Limit</value>
-  </data>
-  <data name="Closest" xml:space="preserve">
-    <value>Closest</value>
   </data>
   <data name="StopAfterFirst" xml:space="preserve">
     <value>Stop After First</value>
@@ -1858,20 +1849,8 @@ for {1}?</value>
   <data name="EntityIsBaseForEntities" xml:space="preserve">
     <value>The Entity {0} is the base for the following Entities:</value>
   </data>
-  <data name="ItemRemove" xml:space="preserve">
-    <value>Remove item</value>
-  </data>
   <data name="ItemsOrphaned" xml:space="preserve">
     <value>Orphaned item</value>
-  </data>
-  <data name="RemoveFromScreen" xml:space="preserve">
-    <value>Remove from Screen</value>
-  </data>
-  <data name="RemoveFromEntity" xml:space="preserve">
-    <value>Remove from Entity</value>
-  </data>
-  <data name="RemoveFromGlobalContent" xml:space="preserve">
-    <value>Remove from Global Content</value>
   </data>
   <data name="FillValuesDefault" xml:space="preserve">
     <value>Fill values from default?</value>
@@ -1942,9 +1921,6 @@ for {1}?</value>
   <data name="FileNew" xml:space="preserve">
     <value>New file</value>
   </data>
-  <data name="RemoveFromProject" xml:space="preserve">
-    <value>Remove from project</value>
-  </data>
   <data name="ScreenAdd" xml:space="preserve">
     <value>Add screen</value>
   </data>
@@ -1965,9 +1941,6 @@ for {1}?</value>
   </data>
   <data name="ViewContentFolder" xml:space="preserve">
     <value>View content folder</value>
-  </data>
-  <data name="CodeRegenerate" xml:space="preserve">
-    <value>Re-Generate Code</value>
   </data>
   <data name="Open" xml:space="preserve">
     <value>Open</value>

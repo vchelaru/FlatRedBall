@@ -549,9 +549,6 @@
   <data name="HintPressDownThroughClouds" xml:space="preserve">
     <value>Wenn diese Option aktiviert ist, kann der Spieler die Abwärtsrichtung drücken und springen, um durch Wolken zu fallen.</value>
   </data>
-  <data name="CloudPlatformThickness" xml:space="preserve">
-    <value>Dicke der Cloud-Plattform:</value>
-  </data>
   <data name="HintDistancePressCloudCollision" xml:space="preserve">
     <value>Die zurückzulegende Fallstrecke beim Herunterdrücken und Springen auf die Wolke, bevor die Wolkenkollision wieder aktiviert wird. Dies sollte die Höhe einer Kachel haben (normalerweise 16).</value>
   </data>
@@ -858,9 +855,6 @@
   <data name="SolidCollisionAdd" xml:space="preserve">
     <value>SolidCollision ShapeCollection hinzufügen</value>
   </data>
-  <data name="CloudCollisionAdd" xml:space="preserve">
-    <value>CloudCollision ShapeCollection hinzufügen</value>
-  </data>
   <data name="GenerateDisplayCode" xml:space="preserve">
     <value>Anzeigecode generieren</value>
   </data>
@@ -1094,9 +1088,6 @@
   </data>
   <data name="CollisionLimit" xml:space="preserve">
     <value>Kollisionsgrenze</value>
-  </data>
-  <data name="Closest" xml:space="preserve">
-    <value>Am nächsten</value>
   </data>
   <data name="StopAfterFirst" xml:space="preserve">
     <value>Stoppen Sie nach dem Ersten</value>
@@ -1857,18 +1848,6 @@
   <data name="EntityIsBaseForEntities" xml:space="preserve">
     <value>De Entiteit {0} is de basis voor de volgende Entiteiten:</value>
   </data>
-  <data name="ItemRemove" xml:space="preserve">
-    <value>Gegenstand entfernen</value>
-  </data>
-  <data name="RemoveFromScreen" xml:space="preserve">
-    <value>Vom Bildschirm entfernen</value>
-  </data>
-  <data name="RemoveFromEntity" xml:space="preserve">
-    <value>Aus Entität entfernen</value>
-  </data>
-  <data name="RemoveFromGlobalContent" xml:space="preserve">
-    <value>Aus dem globalen Inhalt entfernen</value>
-  </data>
   <data name="FillValuesDefault" xml:space="preserve">
     <value>Werte aus Standardwerten füllen?</value>
   </data>
@@ -1938,9 +1917,6 @@
   <data name="FileNew" xml:space="preserve">
     <value>Neue Datei</value>
   </data>
-  <data name="RemoveFromProject" xml:space="preserve">
-    <value>Aus Projekt entfernen</value>
-  </data>
   <data name="ScreenAdd" xml:space="preserve">
     <value>Bildschirm hinzufügen</value>
   </data>
@@ -1961,9 +1937,6 @@
   </data>
   <data name="ViewContentFolder" xml:space="preserve">
     <value>Inhaltsordner anzeigen</value>
-  </data>
-  <data name="CodeRegenerate" xml:space="preserve">
-    <value>Code neu generieren</value>
   </data>
   <data name="Open" xml:space="preserve">
     <value>Öffnen</value>
