@@ -242,6 +242,11 @@ namespace FlatRedBall.Glue.SaveClasses
         // Even though these never appear in the saved json on disk, they need to be serialized
         // so that the clone can be properly created, so it an't be ignored.
         // [JsonIgnore]
+        /// <summary>
+        /// A temporary storage of wildcard patterns. When a file is saved to disk, wildcard patterns
+        /// are saved as regular files, but when the file is loaded, these patterns are stored in this list
+        /// and the resolved files are stored in GlobalFiles.
+        /// </summary>
         public List<ReferencedFileSave> GlobalFileWildcards = new List<ReferencedFileSave>();
 
         public GlobalContentSettingsSave GlobalContentSettingsSave = new GlobalContentSettingsSave();

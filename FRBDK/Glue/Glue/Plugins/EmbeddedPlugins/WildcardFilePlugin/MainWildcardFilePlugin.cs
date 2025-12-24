@@ -2,6 +2,7 @@
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using System;
@@ -17,10 +18,33 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.WildcardFilePlugin
     [Export(typeof(PluginBase))]
     internal class MainWildcardFilePlugin : EmbeddedPlugin
     {
+        private GlueCommands _glueCommands;
+        private IFileCommands _fileCommands;
+        WildcardReferencedFileSaveLogic _wildcardSaveLogic = default!;
         public override void StartUp()
         {
-            this.ReactToFileChange += HandleFileChanged;
+            _glueCommands = GlueCommands.Self;
+            _fileCommands = GlueCommands.Self.FileCommands;
+
+            _wildcardSaveLogic = new WildcardReferencedFileSaveLogic(_glueCommands, _fileCommands);
+            AssignEvents();
         }
+
+        private void AssignEvents()
+        {
+            this.ReactToFileChange += HandleFileChanged;
+
+            this.ReactToLoadedGlux += HandleGluxLoaded;
+        }
+
+        private void HandleGluxLoaded()
+        {
+            _wildcardSaveLogic.RemoveMissingWildcardFilesFrom(GlueState.Self.CurrentGlueProject, GlueState.Self.CurrentMainProject);
+
+            // do we need to worry about synced projects?
+
+        }
+
 
         ConcurrentQueue<FilePath> changedExistingFiles = new ConcurrentQueue<FilePath>();
 
@@ -74,14 +98,14 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.WildcardFilePlugin
                         }
 
 
-                        while (changedExistingFiles.TryDequeue(out FilePath existingFile))
+                        while (changedExistingFiles.TryDequeue(out FilePath? existingFile))
                         {
-                            if(existingFile.IsDirectory)
+                            if(existingFile?.IsDirectory == true)
                             {
                                 foreach (var wildcardFile in project.GlobalFileWildcards)
                                 {
                                     var absoluteFile = new FilePath(contentFolder + wildcardFile.Name);
-                                    var files = WildcardReferencedFileSaveLogic.GetFilesForWildcard(absoluteFile);
+                                    var files = _wildcardSaveLogic.GetFilesMatchingWildcardPattern(absoluteFile);
 
                                     foreach(var candidate in files)
                                     {

@@ -322,6 +322,8 @@ namespace FlatRedBall.Glue.IO
                 // This task is going to run after the load finishes, so we will not pass the ChangedObjects
                 _projectCommands.CallUpdateFileMembershipsOnAllFiles();
 
+
+
                 foreach (var element in ObjectFinder.Self.GlueProject.Screens)
                 {
                     element.UpdateCustomProperties();
