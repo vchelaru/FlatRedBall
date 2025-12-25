@@ -2,6 +2,7 @@
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
@@ -20,11 +21,13 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.WildcardFilePlugin
     {
         private GlueCommands _glueCommands;
         private IFileCommands _fileCommands;
+        private IGlueState _glueState;
         WildcardReferencedFileSaveLogic _wildcardSaveLogic = default!;
         public override void StartUp()
         {
             _glueCommands = GlueCommands.Self;
             _fileCommands = GlueCommands.Self.FileCommands;
+            _glueState = GlueState.Self;
 
             _wildcardSaveLogic = new WildcardReferencedFileSaveLogic(_glueCommands, _fileCommands);
             AssignEvents();
@@ -39,10 +42,14 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.WildcardFilePlugin
 
         private void HandleGluxLoaded()
         {
-            _wildcardSaveLogic.RemoveMissingWildcardFilesFrom(GlueState.Self.CurrentGlueProject, GlueState.Self.CurrentMainProject);
+            TaskManager.Self.AddAsync(() =>
+            {
 
-            // do we need to worry about synced projects?
-
+                // do we need to worry about synced projects?
+                _wildcardSaveLogic.RemoveMissingWildcardFilesFrom(
+                    _glueState.CurrentGlueProject,
+                    _glueState.CurrentMainProject);
+            }, $"Removing missing wildcard files from csproj {_glueState.CurrentMainProject.Name}");
         }
 
 
@@ -50,7 +57,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.WildcardFilePlugin
 
         private async void HandleFileChanged(FilePath changedFile, FileChangeType fileChangeType)
         {
-            var project = GlueState.Self.CurrentGlueProject;
+            var project = _glueState.CurrentGlueProject;
 
             var exists = changedFile.Exists();
 
@@ -63,8 +70,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.WildcardFilePlugin
                     //await TaskManager.Self.AddAsync(() =>
                     _ = TaskManager.Self.AddAsync(() =>
                     {
-                        var glueState = GlueState.Self;
-                        var contentFolder = glueState.ContentDirectory;
+                        var contentFolder = _glueState.ContentDirectory;
 
                         Dictionary<ReferencedFileSave, List < FilePath >> filesMatchingPattern = new ();
 
@@ -81,7 +87,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.WildcardFilePlugin
 
                             var suffix = wildcardFilePath.RelativeTo(directoryWithNoWildcard);
 
-                            List<FilePath> filesMatchingSuffixFilePattern = null;
+                            List<FilePath>? filesMatchingSuffixFilePattern = null;
 
                             if (suffix.StartsWith("**") && suffix != "**" && suffix.Contains('/'))
                             {
@@ -125,7 +131,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.WildcardFilePlugin
                                     // Note - a file may change 2x really fast (one after another)
                                     // If that happens, the alradyExists may be false both times, and
                                     // the file may get added 2x. We need to instead wrap everything in tasks to prevent this from happening:
-                                    if(glueState.CurrentGlueProject != null && IsFileRelativeToWildcard(existingFile, wildcardPattern, filesMatchingPattern[wildcardPattern]))
+                                    if(_glueState.CurrentGlueProject != null && IsFileRelativeToWildcard(existingFile, wildcardPattern, filesMatchingPattern[wildcardPattern]))
                                     {
                                         TryAddFile(existingFile, project, wildcardPattern);
                                         break;

@@ -334,10 +334,8 @@ public class WildcardReferencedFileSaveLogic
 
         if(toRemove.Count > 0)
         {
-            foreach(var item in toRemove)
-            {
-                visualStudioProject.RemoveItem(item);
-            }
+            visualStudioProject.RemoveItems(toRemove);
+            
             _glueCommands.TryMultipleTimes(visualStudioProject.Save);
         }
     }

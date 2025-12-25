@@ -246,13 +246,13 @@ namespace FlatRedBall.Glue.IO
                 foreach (var file in distinctFiles)
                 {
 
-                    var fileCopy = file;
+                    var fileChangeCopy = file;
 
                     // The task internally will skip files if they are to be ignored, but projects can have
                     // *so many* generated files, that putting a check here on generated can eliminate hundreds
                     // of tasks from being created, improving startup performance
                     IgnoreReason reason;
-                    bool isIgnored = IsFileIgnoredBasedOnFileType(fileCopy.FilePath, out reason);
+                    bool isIgnored = IsFileIgnoredBasedOnFileType(fileChangeCopy.FilePath, out reason);
 
                     // November 12, 2019
                     // Vic asks - why do we only ignore files that are generated here?
@@ -264,7 +264,7 @@ namespace FlatRedBall.Glue.IO
                         // If individual files changed, we will flush. But if a directory changed, we'll ignore that
                         // for refreshing unreferenced files. Unreferenced files can change if a file changes or is deleted 
                         // or added, so the specific file will appear in this list. Use that not the directory. 
-                        if (!fileCopy.FilePath.IsDirectory)
+                        if (!fileChangeCopy.FilePath.IsDirectory)
                         {
                             shouldRefreshUnreferencedFiles = true;
                         }
@@ -275,13 +275,13 @@ namespace FlatRedBall.Glue.IO
                                 GlueCommands.Self.PrintOutput($"Flushing {file} files");
                             }
 
-                            var didReact = await FlushChangedFile(fileCopy);
+                            var didReact = await FlushChangedFile(fileChangeCopy);
                             if (didReact)
                             {
                                 UnreferencedFilesManager.Self.IsRefreshRequested = true;
                             }
                         },
-                            "Reacting to changed file " + fileCopy.FilePath);
+                            $"Reacting to changed file {fileChangeCopy.ChangeType} {fileChangeCopy.FilePath}");
                     }
                 }
 

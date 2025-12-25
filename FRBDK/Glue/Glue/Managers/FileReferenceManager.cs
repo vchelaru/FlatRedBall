@@ -43,6 +43,21 @@ public class FileReferenceManager : Singleton<FileReferenceManager>
     /// in the cache are not checked for .Exists or last write time, making the cache much faster.
     /// Items should remove themselves when they no longer want fully trusted cache
     /// </summary>
+    /// <example>
+    /// // code should add trust, request cache, then remove trust and cache, like this:
+    /// _fileReferenceManager.ObjectsForcingTrustedCache.Add(this);
+    /// GlueCommands.Self.GluxCommands.RequestFileCache(this);
+    /// try
+    /// {
+    ///     // do work here... 
+    /// }
+    /// finally
+    /// {
+    ///  _fileReferenceManager.ObjectsForcingTrustedCache.Remove(this);
+    ///  GlueCommands.Self.GluxCommands.RemoveFileCache(this); 
+    /// }
+    /// 
+    /// </example>
     public List<object> ObjectsForcingTrustedCache { get; private set; } = new List<object>();
 
     List<string> getFileReferenceCalls = new List<string>();

@@ -314,7 +314,7 @@ namespace OfficialPlugins.MonoGameContent
             // This method gets called a LOT for games like Deadvivors for .achx files. We can early out for file types
             // that we know are not content pipeline files:
             var extension = filePath.Extension;
-            if(extension == "achx" || extension == "json" || extension == "tsx" || extension == "tmx")
+            if(extension == "achx" || extension == "json" || extension == "tsx" || extension == "tmx" || extension == "ase")
             {
                 return;
             }

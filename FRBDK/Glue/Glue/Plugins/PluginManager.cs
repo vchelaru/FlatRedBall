@@ -1386,8 +1386,7 @@ public class PluginManager : PluginManagerBase
         if (ProjectManager.WantsToCloseProject == false)
         {
             var time = System.DateTime.Now;
-            var msDigit = (time.Millisecond / 100).ToString();
-            output = $"{time.ToString("h:mm:ss")}.{msDigit} - {output}";
+            output = $"{time.ToString("h:mm:ss.ff")} - {output}";
 
             if (mInstances == null || mInstances.Count == 0)
             {

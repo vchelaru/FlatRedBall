@@ -1218,39 +1218,69 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         public bool RemoveItem(ProjectItem buildItem)
         {
             string itemName = buildItem.EvaluatedInclude.Replace("/", "\\");
-
-            if(buildItem.Metadata.Any(metadata => metadata.ItemType == "Link"))
+            if(mBuildItemDictionaries.ContainsKey(itemName) == false)
             {
-                var evaluated = buildItem.Metadata.First(metadata => metadata.ItemType == "Link").EvaluatedValue;
-                
-                if(LinkedDictionary.ContainsKey(evaluated))
-                {
-                    LinkedDictionary.Remove(evaluated);
-                }
+                return false;
             }
-
-            var wasRemoved = RemoveItem(itemName);
-
-            return wasRemoved;
+            RemoveItem(itemName, buildItem);
+            return true;
         }
 
-        private void RemoveItem(string itemName, ProjectItem item)
+        public bool RemoveItems(IEnumerable<ProjectItem> buildItems)
         {
-            /////////////////////Early Out/////////////
-            if(item == null)
+            bool anyRemoved = false;
+            foreach(var item in buildItems)
             {
-                return;
+                string itemName = item.EvaluatedInclude.Replace("/", "\\");
+
+                if (mBuildItemDictionaries.ContainsKey(itemName) == false)
+                {
+                    continue;
+                }
+
+                RemoveItem(itemName, item, reevaluateProject:false);
+                anyRemoved = true;
             }
-            ////////////////End Early Out///////////////
-            lock (this)
+
+            if(anyRemoved)
             {
-                Project.RemoveItem(item);
-                // Not sure why, but the project can be readonly, so let's try, and move on if it fails:
                 try
                 {
                     Project.ReevaluateIfNecessary();
                 }
                 catch { }
+            }
+
+            return anyRemoved;
+        }
+
+        public override bool RemoveItem(string itemName)
+        {
+            itemName = StandardizeItemName(itemName);
+
+
+            itemName = itemName.Replace("/", "\\");
+            bool removed = false;
+            ProjectItem? itemToRemove = null;
+            if (mBuildItemDictionaries.TryGetValue(itemName, out var buildItem))
+            {
+                itemToRemove = buildItem;
+                removed = true;
+            }
+
+            if(itemToRemove != null)
+            {
+                RemoveItem(itemName, itemToRemove);
+            }
+            return removed;
+        }
+
+        private void RemoveItem(string itemName, ProjectItem item, bool reevaluateProject = true)
+        {
+            lock (this)
+            {
+                Project.RemoveItem(item);
+                // Not sure why, but the project can be readonly, so let's try, and move on if it fails:
 
                 mBuildItemDictionaries.Remove(itemName);
 
@@ -1262,25 +1292,16 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                         LinkedDictionary.Remove(evaluated);
                     }
                 }
+
+                if(reevaluateProject)
+                {
+                    try
+                    {
+                        Project.ReevaluateIfNecessary();
+                    }
+                    catch { }
+                }
             }
-        }
-
-        public override bool RemoveItem(string itemName)
-        {
-            itemName = StandardizeItemName(itemName);
-
-            ProjectItem itemToRemove = null;
-
-            itemName = itemName.Replace("/", "\\");
-            bool removed = false;
-            if (mBuildItemDictionaries.TryGetValue(itemName, out var buildItem))
-            {
-                itemToRemove = buildItem;
-                removed = true;
-            }
-
-            RemoveItem(itemName, itemToRemove);
-            return removed;
         }
 
         public void RenameInDictionary(string oldName, string newName, ProjectItem item)

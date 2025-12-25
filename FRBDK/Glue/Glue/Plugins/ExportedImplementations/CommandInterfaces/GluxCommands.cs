@@ -46,6 +46,7 @@ using GeneralResponse = ToolsUtilities.GeneralResponse;
 using System.Collections;
 using FlatRedBall.Glue.Utilities;
 using FlatRedBall.Glue.SaveClasses.Helpers;
+using FlatRedBall.Glue.Services;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 
@@ -1025,13 +1026,6 @@ public class GluxCommands : IGluxCommands
         }
     }
 
-    [Obsolete("Use RemoveReferencedFileAsync")]
-    public void RemoveReferencedFile(ReferencedFileSave referencedFileToRemove, List<string> additionalFilesToRemove, bool regenerateAndSave = true)
-    {
-        TaskManager.Self.AddOrRunIfTasked(() =>
-            RemoveReferencedFileInternal(referencedFileToRemove, additionalFilesToRemove, regenerateAndSave),
-            $"Removing referenced file {referencedFileToRemove}");
-    }
 
     public async Task RenameNamedObjectSave(NamedObjectSave namedObjectSave, string newName, bool performSaveAndGenerateCode = true, bool updateUi = true)
     {
@@ -1104,173 +1098,184 @@ public class GluxCommands : IGluxCommands
         }
         ////////////////////////End Early Out/////////////////////////////
 
-        // allow sending null here if the caller doesn't care:
-        additionalFilesToRemove = additionalFilesToRemove ?? new List<string>();
-
-        // There are some things that need to happen:
-        // 1.  Remove the ReferencedFileSave from the Glue project (GLUX)
-        // 2.  Remove the GUI item
-        // 3.  Remove the item from the Visual Studio project.
-        var container = referencedFileToRemove.GetContainer();
-
-        #region Remove the file from the current Screen or Entity if there is a current Screen or Entity
-
-        if (container != null)
+        var fileReferenceManager = Builder.Get<FileReferenceManager>();
+        fileReferenceManager.ObjectsForcingTrustedCache.Add(this);
+        GlueCommands.Self.GluxCommands.RequestFileCache(this);
+        try
         {
-            // The referenced file better be a globally referenced file
+            // allow sending null here if the caller doesn't care:
+            additionalFilesToRemove = additionalFilesToRemove ?? new List<string>();
 
+            // There are some things that need to happen:
+            // 1.  Remove the ReferencedFileSave from the Glue project (GLUX)
+            // 2.  Remove the GUI item
+            // 3.  Remove the item from the Visual Studio project.
+            var container = referencedFileToRemove.GetContainer();
 
-            if (!container.ReferencedFiles.Contains(referencedFileToRemove))
-            {
-                throw new ArgumentException();
-            }
-            else
-            {
-                container.ReferencedFiles.Remove(referencedFileToRemove);
+            #region Remove the file from the current Screen or Entity if there is a current Screen or Entity
 
-            }
-            // Ask about any NamedObjects that reference this file.                
-            for (int i = container.NamedObjects.Count - 1; i > -1; i--)
-            {
-                var nos = container.NamedObjects[i];
-                if (nos.SourceType == SourceType.File && nos.SourceFile == referencedFileToRemove.Name)
-                {
-                    GlueCommands.Self.DoOnUiThread(() =>
-                    {
-                        if (nos.DefinedByBase)
-                        {
-                            // don't remove it, just tell the user that the object will be broken until fixed
-                            GlueCommands.Self.DialogCommands.ShowMessageBox($"The object {nos} is using the file {referencedFileToRemove}, but the file is being removed.\n\n" +
-                                $"The project may be broken until this object is fixed");
-                        }
-                        else
-                        {
-                            // Ask the user what to do here - remove it?  Keep it and not compile?
-                            var mbmb = new MultiButtonMessageBoxWpf();
-                            mbmb.MessageText = "The object\n" + nos.ToString() + "\nreferences the file\n" + referencedFileToRemove.Name +
-                                "\nWhat would you like to do?";
-                            mbmb.AddButton("Remove this object", DialogResult.Yes);
-                            mbmb.AddButton("Keep it (object will not be valid until changed)", DialogResult.No);
-
-                            var result = mbmb.ShowDialog();
-
-                            if (result == true && mbmb.ClickedResult is DialogResult dialogResult && dialogResult == DialogResult.Yes)
-                            {
-                                container.NamedObjects.RemoveAt(i);
-                            }
-                        }
-
-                    });
-
-                }
-                nos.ResetVariablesReferencing(referencedFileToRemove);
-            }
             if (container != null)
             {
-                var isCurrentElement = container == GlueState.Self.CurrentElement;
+                // The referenced file better be a globally referenced file
 
-                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(container);
 
-                if (container.ReferencedFiles.Count > 0 && isCurrentElement)
+                if (!container.ReferencedFiles.Contains(referencedFileToRemove))
                 {
-                    GlueState.Self.CurrentReferencedFileSave = container.ReferencedFiles.LastOrDefault();
+                    throw new ArgumentException();
                 }
                 else
                 {
-                    // This should refresh the selection...
-                    GlueState.Self.CurrentElement = container;
+                    container.ReferencedFiles.Remove(referencedFileToRemove);
+
+                }
+                // Ask about any NamedObjects that reference this file.                
+                for (int i = container.NamedObjects.Count - 1; i > -1; i--)
+                {
+                    var nos = container.NamedObjects[i];
+                    if (nos.SourceType == SourceType.File && nos.SourceFile == referencedFileToRemove.Name)
+                    {
+                        GlueCommands.Self.DoOnUiThread(() =>
+                        {
+                            if (nos.DefinedByBase)
+                            {
+                                // don't remove it, just tell the user that the object will be broken until fixed
+                                GlueCommands.Self.DialogCommands.ShowMessageBox($"The object {nos} is using the file {referencedFileToRemove}, but the file is being removed.\n\n" +
+                                    $"The project may be broken until this object is fixed");
+                            }
+                            else
+                            {
+                                // Ask the user what to do here - remove it?  Keep it and not compile?
+                                var mbmb = new MultiButtonMessageBoxWpf();
+                                mbmb.MessageText = "The object\n" + nos.ToString() + "\nreferences the file\n" + referencedFileToRemove.Name +
+                                    "\nWhat would you like to do?";
+                                mbmb.AddButton("Remove this object", DialogResult.Yes);
+                                mbmb.AddButton("Keep it (object will not be valid until changed)", DialogResult.No);
+
+                                var result = mbmb.ShowDialog();
+
+                                if (result == true && mbmb.ClickedResult is DialogResult dialogResult && dialogResult == DialogResult.Yes)
+                                {
+                                    container.NamedObjects.RemoveAt(i);
+                                }
+                            }
+
+                        });
+
+                    }
+                    nos.ResetVariablesReferencing(referencedFileToRemove);
+                }
+                if (container != null)
+                {
+                    var isCurrentElement = container == GlueState.Self.CurrentElement;
+
+                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(container);
+
+                    if (container.ReferencedFiles.Count > 0 && isCurrentElement)
+                    {
+                        GlueState.Self.CurrentReferencedFileSave = container.ReferencedFiles.LastOrDefault();
+                    }
+                    else
+                    {
+                        // This should refresh the selection...
+                        GlueState.Self.CurrentElement = container;
+                    }
+                }
+                if (regenerateAndSave && container != null)
+                {
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(container);
+                }
+
+            }
+            #endregion
+
+            #region else, the file is likely part of the GlobalContentFile
+
+            else
+            {
+                ProjectManager.GlueProjectSave.GlobalFiles.Remove(referencedFileToRemove);
+
+                // Much faster to just remove the tree node.  This was done
+                // to reuse code and make things reactive, but this has gotten
+                // slow on bigger projects.
+                //ElementViewWindow.UpdateGlobalContentTreeNodes(false); // don't save here because projects will get saved below 
+                GlueCommands.Self.RefreshCommands.RefreshGlobalContent();
+
+                GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
+
+                var elements = ObjectFinder.Self.GetAllElementsReferencingFile(referencedFileToRemove.Name);
+
+                if (regenerateAndSave)
+                {
+                    foreach (var element in elements)
+                    {
+                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
+                    }
                 }
             }
-            if (regenerateAndSave && container != null)
+
+            #endregion
+
+            var allFilePaths = GlueCommands.Self.FileCommands.GetAllReferencedFileNames();
+
+            var rfsFilePath = GlueCommands.Self.GetAbsoluteFilePath(referencedFileToRemove);
+
+            var isFileReferenced = allFilePaths.Contains(rfsFilePath);
+
+            if (isFileReferenced == false)
             {
-                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(container);
+                isFileReferenced = FileReferenceManager.Self.IsFileReferencedRecursively(rfsFilePath);
             }
 
-        }
-        #endregion
+            var isWildcard = referencedFileToRemove.IsCreatedByWildcard;
+            string absoluteName = GlueCommands.Self.GetAbsoluteFileName(referencedFileToRemove);
+            if(isWildcard && System.IO.File.Exists(absoluteName))
+            {
+                FileHelper.MoveToRecycleBin(absoluteName);
+            }
 
-        #region else, the file is likely part of the GlobalContentFile
+            if (isFileReferenced == false)
+            {
+                if(!isWildcard)
+                {
+                    // It's already been removed, no need to ask the user about it as a file to delete
+                    additionalFilesToRemove.Add(referencedFileToRemove.GetRelativePath());
+                }
 
-        else
-        {
-            ProjectManager.GlueProjectSave.GlobalFiles.Remove(referencedFileToRemove);
+                string itemName = referencedFileToRemove.GetRelativePath();
 
-            // Much faster to just remove the tree node.  This was done
-            // to reuse code and make things reactive, but this has gotten
-            // slow on bigger projects.
-            //ElementViewWindow.UpdateGlobalContentTreeNodes(false); // don't save here because projects will get saved below 
-            GlueCommands.Self.RefreshCommands.RefreshGlobalContent();
+                // I don't know why we were removing the file from the ProjectBase - it should
+                // be from the Content project
+                //ProjectManager.RemoveItemFromProject(ProjectManager.ProjectBase, itemName);
+                ProjectManager.RemoveItemFromProject(GlueState.Self.CurrentMainProject.ContentProject, itemName, performSave: false);
 
-            GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
+                foreach (ProjectBase syncedProject in ProjectManager.SyncedProjects)
+                {
+                    ProjectManager.RemoveItemFromProject(syncedProject.ContentProject, absoluteName);
+                }
+            }
 
-            var elements = ObjectFinder.Self.GetAllElementsReferencingFile(referencedFileToRemove.Name);
+            if (GlueCommands.Self.FileCommands.IsContent(rfsFilePath))
+            {
+                UnreferencedFilesManager.Self.TryRefreshUnreferencedFiles(false);
+                foreach (var file in UnreferencedFilesManager.LastAddedUnreferencedFiles)
+                {
+                    additionalFilesToRemove.Add(file.FilePath);
+                }
+            }
+
+            ReactToRemovalIfCsv(referencedFileToRemove, additionalFilesToRemove);
+
+            PluginManager.ReactToFileRemoved(container, referencedFileToRemove);
 
             if (regenerateAndSave)
             {
-                foreach (var element in elements)
-                {
-                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
-                }
+                GluxCommands.Self.SaveProjectAndElements();
             }
         }
-
-        #endregion
-
-        var allFilePaths = GlueCommands.Self.FileCommands.GetAllReferencedFileNames();
-
-        var rfsFilePath = GlueCommands.Self.GetAbsoluteFilePath(referencedFileToRemove);
-
-        var isFileReferenced = allFilePaths.Contains(rfsFilePath);
-
-        if (isFileReferenced == false)
+        finally
         {
-            isFileReferenced = FileReferenceManager.Self.IsFileReferencedRecursively(rfsFilePath);
-        }
-
-        var isWildcard = referencedFileToRemove.IsCreatedByWildcard;
-        string absoluteName = GlueCommands.Self.GetAbsoluteFileName(referencedFileToRemove);
-        if(isWildcard && System.IO.File.Exists(absoluteName))
-        {
-            FileHelper.MoveToRecycleBin(absoluteName);
-        }
-
-        if (isFileReferenced == false)
-        {
-            if(!isWildcard)
-            {
-                // It's already been removed, no need to ask the user about it as a file to delete
-                additionalFilesToRemove.Add(referencedFileToRemove.GetRelativePath());
-            }
-
-            string itemName = referencedFileToRemove.GetRelativePath();
-
-            // I don't know why we were removing the file from the ProjectBase - it should
-            // be from the Content project
-            //ProjectManager.RemoveItemFromProject(ProjectManager.ProjectBase, itemName);
-            ProjectManager.RemoveItemFromProject(GlueState.Self.CurrentMainProject.ContentProject, itemName, performSave: false);
-
-            foreach (ProjectBase syncedProject in ProjectManager.SyncedProjects)
-            {
-                ProjectManager.RemoveItemFromProject(syncedProject.ContentProject, absoluteName);
-            }
-        }
-
-        if (GlueCommands.Self.FileCommands.IsContent(rfsFilePath))
-        {
-            UnreferencedFilesManager.Self.TryRefreshUnreferencedFiles(false);
-            foreach (var file in UnreferencedFilesManager.LastAddedUnreferencedFiles)
-            {
-                additionalFilesToRemove.Add(file.FilePath);
-            }
-        }
-
-        ReactToRemovalIfCsv(referencedFileToRemove, additionalFilesToRemove);
-
-        PluginManager.ReactToFileRemoved(container, referencedFileToRemove);
-
-        if (regenerateAndSave)
-        {
-            GluxCommands.Self.SaveProjectAndElements();
+            fileReferenceManager.ObjectsForcingTrustedCache.Remove(this);
+            GlueCommands.Self.GluxCommands.RemoveFileCache(this);
         }
     }
 
