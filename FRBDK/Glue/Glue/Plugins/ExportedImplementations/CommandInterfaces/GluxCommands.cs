@@ -3860,7 +3860,7 @@ public class GluxCommands : IGluxCommands
                         deletedRfs = rfs;
                         if (GlueState.Self.Find.IfReferencedFileSaveIsReferenced(toRemove))
                         {
-                            await GlueCommands.Self.GluxCommands.RemoveReferencedFileAsync(toRemove, filesToRemove, regenerateAndSave: true);
+                            await GlueCommands.Self.GluxCommands.RemoveReferencedFileAsync(toRemove, filesToRemove, saveAndRegenerate);
                         }
                     }
                     #endregion

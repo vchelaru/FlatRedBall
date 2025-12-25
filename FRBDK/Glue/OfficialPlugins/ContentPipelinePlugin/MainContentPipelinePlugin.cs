@@ -199,7 +199,7 @@ namespace OfficialPlugins.MonoGameContent
                 BuildLogic.TryDeleteBuiltXnbFor(syncedProject, file, viewModel.UseContentPipelineOnPngs);
             }
 
-            TaskManager.Self.Add(Container.Get<IGlueCommands>().ProjectCommands.SaveProjects, "Save projects after removing XNBs");
+            Container.Get<IGlueCommands>().ProjectCommands.SaveProjects();
         }
 
         private void HandleGluxUnloaded()
