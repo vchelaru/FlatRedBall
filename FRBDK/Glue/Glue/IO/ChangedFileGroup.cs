@@ -362,8 +362,11 @@ namespace FlatRedBall.Glue.IO
 
             if (shouldProcess)
             {
-                // Process both the old and the new just in case someone depended on the old
-                TryAddChangedFileTo(e.OldFullPath, FileChangeType.Renamed, mChangedFiles);
+                if(!IsSkippedBasedOnTypeOrLocation(e.OldFullPath))
+                {
+                    // Process both the old and the new just in case someone depended on the old
+                    TryAddChangedFileTo(e.OldFullPath, FileChangeType.Renamed, mChangedFiles);
+                }
                 TryAddChangedFileTo(e.FullPath, FileChangeType.Renamed, mChangedFiles);
             }
         }
@@ -372,7 +375,10 @@ namespace FlatRedBall.Glue.IO
             filePath.Standardized.Contains("/.vs/")
             || filePath.Standardized.StartsWith(".vs")
             || filePath.Standardized.Contains("/bin/Debug/", StringComparison.InvariantCultureIgnoreCase)
-            || filePath.Standardized.EndsWith(".generated.cs", StringComparison.InvariantCultureIgnoreCase);
+            || filePath.Standardized.EndsWith(".generated.cs", StringComparison.InvariantCultureIgnoreCase)
+            // temporary shader built file:
+            || filePath.Extension.EndsWith("~")
+            || (filePath.Extension == "tmp" && filePath.Standardized.Contains(".fx~"));
 
         private void TryAddChangedFileTo(FilePath fileName, FileChangeType fileChangeType, ChangeInformation toAddTo)
         {
