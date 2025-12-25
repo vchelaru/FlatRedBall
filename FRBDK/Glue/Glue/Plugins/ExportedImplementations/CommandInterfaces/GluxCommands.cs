@@ -150,7 +150,7 @@ public class GluxCommands : IGluxCommands
     { 
         TaskManager.Self.Add(
             () => SaveProjectAndElementsImmediately(),
-            "Saving Glue Project",
+            "Saving Glue Project and all Elements",
             // asap because otherwise this may get added
             // after a reload command
             taskExecutionPreference);
@@ -1269,7 +1269,14 @@ public class GluxCommands : IGluxCommands
 
             if (regenerateAndSave)
             {
-                GluxCommands.Self.SaveProjectAndElements();
+                if(container == null)
+                {
+                    GluxCommands.Self.SaveGlujFile(TaskExecutionPreference.AddOrMoveToEnd);
+                }
+                else
+                {
+                    GluxCommands.Self.SaveProjectAndElements(TaskExecutionPreference.AddOrMoveToEnd);
+                }
             }
         }
         finally

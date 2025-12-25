@@ -403,7 +403,7 @@ namespace FlatRedBall.Glue.IO
                 }
                 if (wasAdded && FileWatchManager.IsPrintingDiagnosticOutput)
                 {
-                    GlueCommands.Self.PrintOutput($"Storing change {fileChangeType} on {fileName} for flushing");
+                    GlueCommands.Self.PrintOutput($"Queueign change {fileChangeType} on {fileName} for flushing");
                 }
             }
             mLastModification = DateTime.Now;
