@@ -46,6 +46,7 @@ public class FileReferenceManager : Singleton<FileReferenceManager>
     /// <example>
     /// // code should add trust, request cache, then remove trust and cache, like this:
     /// _fileReferenceManager.ObjectsForcingTrustedCache.Add(this);
+    /// // May want to also cache the file cache dictionary
     /// GlueCommands.Self.GluxCommands.RequestFileCache(this);
     /// try
     /// {
@@ -54,6 +55,7 @@ public class FileReferenceManager : Singleton<FileReferenceManager>
     /// finally
     /// {
     ///  _fileReferenceManager.ObjectsForcingTrustedCache.Remove(this);
+    ///  // may want to do this too:
     ///  GlueCommands.Self.GluxCommands.RemoveFileCache(this); 
     /// }
     /// 
