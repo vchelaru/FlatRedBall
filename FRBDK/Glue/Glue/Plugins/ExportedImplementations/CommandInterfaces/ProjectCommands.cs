@@ -156,7 +156,6 @@ class ProjectCommands : IProjectCommands
                 .ToArray();
 
 
-            _fileReferenceManager.ObjectsForcingTrustedCache.Add(this);
             GlueCommands.Self.GluxCommands.RequestFileCache(this);
             var fileCommands = GlueCommands.Self.FileCommands;
             var fileReferenceManager = FileReferenceManager.Self;
@@ -191,7 +190,6 @@ class ProjectCommands : IProjectCommands
             }
             finally
             {
-                _fileReferenceManager.ObjectsForcingTrustedCache.Remove(this);
                 GlueCommands.Self.GluxCommands.RemoveFileCache(this);
             }
         },

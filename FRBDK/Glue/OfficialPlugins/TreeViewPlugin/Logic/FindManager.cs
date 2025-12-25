@@ -20,6 +20,11 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
 
         public ITreeNode GlobalContentTreeNode => mainViewModel.GlobalContentRootNode;
 
+        /// <summary>
+        /// Returns whether the given ReferencedFileSave is referenced by either any element or by Global Content
+        /// </summary>
+        /// <param name="referencedFileSave"></param>
+        /// <returns></returns>
         public bool IfReferencedFileSaveIsReferenced(ReferencedFileSave referencedFileSave)
         {
             var container = referencedFileSave.GetContainer();

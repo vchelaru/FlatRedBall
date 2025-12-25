@@ -1099,7 +1099,6 @@ public class GluxCommands : IGluxCommands
         ////////////////////////End Early Out/////////////////////////////
 
         var fileReferenceManager = Builder.Get<FileReferenceManager>();
-        fileReferenceManager.ObjectsForcingTrustedCache.Add(this);
         GlueCommands.Self.GluxCommands.RequestFileCache(this);
         try
         {
@@ -1281,7 +1280,6 @@ public class GluxCommands : IGluxCommands
         }
         finally
         {
-            fileReferenceManager.ObjectsForcingTrustedCache.Remove(this);
             GlueCommands.Self.GluxCommands.RemoveFileCache(this);
         }
     }

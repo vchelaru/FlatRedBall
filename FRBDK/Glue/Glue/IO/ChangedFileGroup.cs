@@ -282,6 +282,9 @@ namespace FlatRedBall.Glue.IO
         void HandleFileSystemDelete(object sender, FileSystemEventArgs e)
         {
             string fileName = e.FullPath;
+
+            FileReferenceManager.Self.ClearFileCache(fileName);
+
             ChangeInformation toAddTo = mDeletedFiles;
 
             var extension = FileManager.GetExtension(fileName);
@@ -299,6 +302,8 @@ namespace FlatRedBall.Glue.IO
         void HandleFileSystemChange(object sender, FileSystemEventArgs e)
         {
             string fileName = e.FullPath;
+
+            FileReferenceManager.Self.ClearFileCache(fileName);
 
             bool shouldProcess = !IsSkippedBasedOnTypeOrLocation(e.Name);
 
@@ -321,6 +326,8 @@ namespace FlatRedBall.Glue.IO
         {
             string fileName = e.FullPath;
 
+            FileReferenceManager.Self.ClearFileCache(fileName);
+
             var extension = FileManager.GetExtension(fileName);
             bool shouldProcess = !extensionsToIgnoreRenames_CreatesAndDeletes.Contains(extension) &&
                 !IsSkippedBasedOnTypeOrLocation(e.Name);
@@ -336,8 +343,6 @@ namespace FlatRedBall.Glue.IO
 
         private void HandleRename(object sender, RenamedEventArgs e)
         {
-            var extension = FileManager.GetExtension(e.Name);
-
             ///////////////early out////////////////
             if(string.IsNullOrEmpty(e.Name))
             {
@@ -345,6 +350,13 @@ namespace FlatRedBall.Glue.IO
                 return;
             }
             ////////////end early out///////////////
+
+            FileReferenceManager.Self.ClearFileCache(e.OldFullPath);
+            FileReferenceManager.Self.ClearFileCache(e.FullPath);
+
+
+            var extension = FileManager.GetExtension(e.Name);
+
             var shouldProcess = extensionsToIgnoreRenames_CreatesAndDeletes.Contains(extension) == false &&
                 !IsSkippedBasedOnTypeOrLocation(e.Name);
 

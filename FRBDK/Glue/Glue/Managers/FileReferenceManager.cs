@@ -38,29 +38,6 @@ public class FileReferenceManager : Singleton<FileReferenceManager>
 
     public Dictionary<FilePath, GeneralResponse> FilesWithFailedGetReferenceCalls { get; private set; } = new Dictionary<FilePath, GeneralResponse>();
 
-    /// <summary>
-    /// The list of items that will force a trusted cache. If this list is not empty, then files
-    /// in the cache are not checked for .Exists or last write time, making the cache much faster.
-    /// Items should remove themselves when they no longer want fully trusted cache
-    /// </summary>
-    /// <example>
-    /// // code should add trust, request cache, then remove trust and cache, like this:
-    /// _fileReferenceManager.ObjectsForcingTrustedCache.Add(this);
-    /// // May want to also cache the file cache dictionary
-    /// GlueCommands.Self.GluxCommands.RequestFileCache(this);
-    /// try
-    /// {
-    ///     // do work here... 
-    /// }
-    /// finally
-    /// {
-    ///  _fileReferenceManager.ObjectsForcingTrustedCache.Remove(this);
-    ///  // may want to do this too:
-    ///  GlueCommands.Self.GluxCommands.RemoveFileCache(this); 
-    /// }
-    /// 
-    /// </example>
-    public List<object> ObjectsForcingTrustedCache { get; private set; } = new List<object>();
 
     List<string> getFileReferenceCalls = new List<string>();
 
@@ -93,23 +70,8 @@ public class FileReferenceManager : Singleton<FileReferenceManager>
 
         if(fileReferences.ContainsKey(absoluteName))
         {
-            // compare dates:
-            bool isOutOfDate = false;
-
-            if(ObjectsForcingTrustedCache.Count == 0)
-            {
-                isOutOfDate = absoluteName.Exists() && 
-                    //File.GetLastWriteTime(standardized) > fileReferences[standardized].LastWriteTime;
-                    // Do a != in case the user reverts a file
-                    File.GetLastWriteTime(absoluteName.FullPath) != fileReferences[absoluteName].LastWriteTime;
-            }
-
-
-            if(!isOutOfDate)
-            {
-                handledByCache = true;
-                topLevelOnly = fileReferences[absoluteName].References;
-            }
+            handledByCache = true;
+            topLevelOnly = fileReferences[absoluteName].References;
         }
 
         if (!handledByCache)
@@ -208,15 +170,6 @@ public class FileReferenceManager : Singleton<FileReferenceManager>
             // compare dates:
             bool isOutOfDate = false;
 
-            if(ObjectsForcingTrustedCache.Count == 0)
-            {
-                isOutOfDate = absoluteName.Exists() &&
-                    //File.GetLastWriteTime(standardized) > filesNeededOnDisk[standardized].LastWriteTime;
-                    // Do a != in case the user reverts a file
-                    File.GetLastWriteTime(absoluteName.FullPath) != filesNeededOnDisk[absoluteName].LastWriteTime;
-
-
-            }
             if (!isOutOfDate)
             {
                 handledByCache = true;
