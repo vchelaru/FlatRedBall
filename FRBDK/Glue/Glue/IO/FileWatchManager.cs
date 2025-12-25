@@ -210,6 +210,8 @@ namespace FlatRedBall.Glue.IO
             filesWaitingToBeFlushed.ClearIgnores();
         }
 
+        public const string ReactingToChangedFileTaskPrefix = "Reacting to changed file";
+
         /// <summary>
         /// Loops through all files that have been changed since the last flush, allowing
         /// Glue (and plugins) to react to these changed files. 
@@ -281,7 +283,7 @@ namespace FlatRedBall.Glue.IO
                                 UnreferencedFilesManager.Self.IsRefreshRequested = true;
                             }
                         },
-                            $"Reacting to changed file {fileChangeCopy.ChangeType} {fileChangeCopy.FilePath}");
+                            $"{ReactingToChangedFileTaskPrefix} {fileChangeCopy.ChangeType} {fileChangeCopy.FilePath}");
                     }
                 }
 

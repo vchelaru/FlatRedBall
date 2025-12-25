@@ -202,12 +202,15 @@ namespace GlueFormsCore.Controls
                 // We want to wait until all tasks are done, but
                 // if the task is to reload, we can continue or else
                 // we'll have a deadlock
+                var isChangeFile =
+                    TaskManager.Self.CurrentTaskDescription.StartsWith("Reacting to changed file");
+
                 var canContinue = TaskManager.Self.CurrentTaskDescription == UpdateReactor.ReloadingProjectDescription ||
-                    (TaskManager.Self.CurrentTaskDescription.StartsWith("Reacting to changed file") && TaskManager.Self.CurrentTaskDescription.EndsWith(".glux")) ||
-                    (TaskManager.Self.CurrentTaskDescription.StartsWith("Reacting to changed file") && TaskManager.Self.CurrentTaskDescription.EndsWith(".gluj")) ||
-                    (TaskManager.Self.CurrentTaskDescription.StartsWith("Reacting to changed file") && TaskManager.Self.CurrentTaskDescription.EndsWith(".csproj")) ||
-                    (TaskManager.Self.CurrentTaskDescription.StartsWith("Reacting to changed file") && TaskManager.Self.CurrentTaskDescription.EndsWith("." + GlueProjectSave.ScreenExtension)) ||
-                    (TaskManager.Self.CurrentTaskDescription.StartsWith("Reacting to changed file") && TaskManager.Self.CurrentTaskDescription.EndsWith("." + GlueProjectSave.EntityExtension)) ||
+                    (isChangeFile && TaskManager.Self.CurrentTaskDescription.EndsWith(".glux")) ||
+                    (isChangeFile && TaskManager.Self.CurrentTaskDescription.EndsWith(".gluj")) ||
+                    (isChangeFile && TaskManager.Self.CurrentTaskDescription.EndsWith(".csproj")) ||
+                    (isChangeFile && TaskManager.Self.CurrentTaskDescription.EndsWith("." + GlueProjectSave.ScreenExtension)) ||
+                    (isChangeFile && TaskManager.Self.CurrentTaskDescription.EndsWith("." + GlueProjectSave.EntityExtension)) ||
                     TaskManager.Self.CurrentTaskDescription.StartsWith("Reloading glux due to file change on disk") ||
                     TaskManager.Self.CurrentTaskDescription.StartsWith("Reloading Project due to changed file") ||
                     (TaskManager.Self.IsInTask() && TaskManager.Self.TaskCount == 1);
