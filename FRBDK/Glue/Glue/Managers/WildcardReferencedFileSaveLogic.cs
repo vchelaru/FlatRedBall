@@ -301,8 +301,8 @@ public class WildcardReferencedFileSaveLogic
 
         var toRemove = new List<ProjectItem>();
 
-        foreach (var itemInVisualStudio in visualStudioProject.EvaluatedItems)
-        //Parallel.ForEach(visualStudioProject.EvaluatedItems, itemInVisualStudio =>
+        //foreach (var itemInVisualStudio in visualStudioProject.EvaluatedItems)
+        Parallel.ForEach(visualStudioProject.EvaluatedItems, itemInVisualStudio =>
         {
             var relativeFile = itemInVisualStudio.EvaluatedInclude;
 
@@ -331,7 +331,7 @@ public class WildcardReferencedFileSaveLogic
                     }
                 }
             }
-        }//);
+        });
 
         if(toRemove.Count > 0)
         {
