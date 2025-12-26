@@ -301,36 +301,37 @@ public class WildcardReferencedFileSaveLogic
 
         var toRemove = new List<ProjectItem>();
 
-        foreach(var itemInVisualStudio in visualStudioProject.EvaluatedItems)
+        //foreach (var itemInVisualStudio in visualStudioProject.EvaluatedItems)
+        Parallel.ForEach(visualStudioProject.EvaluatedItems, itemInVisualStudio =>
         {
             var relativeFile = itemInVisualStudio.EvaluatedInclude;
 
-            if (relativeFile == null) continue;
-
-            FilePath absoluteFile = projectFile + relativeFile;
-
-
-            var isContent =
-                itemInVisualStudio.ItemType == "None" &&
-                !string.IsNullOrEmpty(absoluteFile.Extension) &&
-                absoluteFile.Extension != "cs" &&
-                _fileCommands.IsContent(absoluteFile);
-
-            if (isContent && absoluteFile.Exists() == false)
+            if (relativeFile != null)
             {
-                foreach(var pattern in glueProject.GlobalFileWildcards)
+                FilePath absoluteFile = projectFile + relativeFile;
+
+                var isContent =
+                    itemInVisualStudio.ItemType == "None" &&
+                    !string.IsNullOrEmpty(absoluteFile.Extension) &&
+                    absoluteFile.Extension != "cs" &&
+                    _fileCommands.IsContent(absoluteFile);
+
+                if (isContent && absoluteFile.Exists() == false)
                 {
-                    var absolutePattern = _glueCommands.GetAbsoluteFilePath(pattern);
-                    // does it match?
-                    if(IsMatch(absolutePattern, absoluteFile))
+                    foreach (var pattern in glueProject.GlobalFileWildcards)
                     {
-                        // remove it!
-                        toRemove.Add(itemInVisualStudio);
-                        break;
+                        var absolutePattern = _glueCommands.GetAbsoluteFilePath(pattern);
+                        // does it match?
+                        if (IsMatch(absolutePattern, absoluteFile))
+                        {
+                            // remove it!
+                            toRemove.Add(itemInVisualStudio);
+                            break;
+                        }
                     }
                 }
             }
-        }
+        });
 
         if(toRemove.Count > 0)
         {
