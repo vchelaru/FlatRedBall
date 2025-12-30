@@ -97,7 +97,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                     if (i != index)
                     {
                         nodeList.RemoveAt(index);
-                        if(nodeList.Count == 0)
+                        if(nodeList.Count == 0 || i >= nodeList.Count)
                         {
                             nodeList.Add(nodeForFile);
                         }
