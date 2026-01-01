@@ -4,104 +4,120 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace FlatRedBall.Graphics
 {
+    /// <summary>
+    /// Manages custom effects from the custom shader file. Main purposes:
+    /// <list type="number">
+    /// <item><description>Caches effect parameters and techniques to avoid lookups during rendering.</description></item>
+    /// <item><description>Handles compatibility between old and new effect specifications with automatic fallback.</description></item>
+    /// <item><description>Provides methods to retrieve techniques based on:
+    /// <list type="bullet">
+    /// <item><description>Texture filtering (Point/Linear)</description></item>
+    /// <item><description>Color source (VertexColor/ColorModifier)</description></item>
+    /// <item><description>Color operation (Add, Subtract, Modulate, etc.)</description></item>
+    /// <item><description>Gamma correction (Linearize methods)</description></item>
+    /// </list>
+    /// </description></item>
+    /// </list>
+    /// This class is designed for use by renderers and custom graphics code.
+    /// </summary>
     public class CustomEffectManager
     {
-        Effect _effect;
+        Effect _effect = null!;
 
         // Cached effect members to avoid list lookups while rendering
-        public EffectParameter ParameterCurrentTexture;
-        public EffectParameter ParameterViewProj;
-        public EffectParameter ParameterColorModifier;
+        public EffectParameter ParameterCurrentTexture = null!;
+        public EffectParameter ParameterViewProj = null!;
+        public EffectParameter? ParameterColorModifier;
 
         bool _effectHasNewformat;
 
-        EffectTechnique _techniqueTexture;
-        EffectTechnique _techniqueAdd;
-        EffectTechnique _techniqueSubtract;
-        EffectTechnique _techniqueModulate;
-        EffectTechnique _techniqueModulate2X;
-        EffectTechnique _techniqueModulate4X;
-        EffectTechnique _techniqueInverseTexture;
-        EffectTechnique _techniqueColor;
-        EffectTechnique _techniqueColorTextureAlpha;
-        EffectTechnique _techniqueInterpolateColor;
+        EffectTechnique? _techniqueTexture;
+        EffectTechnique? _techniqueAdd;
+        EffectTechnique? _techniqueSubtract;
+        EffectTechnique? _techniqueModulate;
+        EffectTechnique? _techniqueModulate2X;
+        EffectTechnique? _techniqueModulate4X;
+        EffectTechnique? _techniqueInverseTexture;
+        EffectTechnique? _techniqueColor;
+        EffectTechnique? _techniqueColorTextureAlpha;
+        EffectTechnique? _techniqueInterpolateColor;
 
-        EffectTechnique _techniqueTexture_CM;
-        EffectTechnique _techniqueAdd_CM;
-        EffectTechnique _techniqueSubtract_CM;
-        EffectTechnique _techniqueModulate_CM;
-        EffectTechnique _techniqueModulate2X_CM;
-        EffectTechnique _techniqueModulate4X_CM;
-        EffectTechnique _techniqueInverseTexture_CM;
-        EffectTechnique _techniqueColor_CM;
-        EffectTechnique _techniqueColorTextureAlpha_CM;
-        EffectTechnique _techniqueInterpolateColor_CM;
+        EffectTechnique? _techniqueTexture_CM;
+        EffectTechnique? _techniqueAdd_CM;
+        EffectTechnique? _techniqueSubtract_CM;
+        EffectTechnique? _techniqueModulate_CM;
+        EffectTechnique? _techniqueModulate2X_CM;
+        EffectTechnique? _techniqueModulate4X_CM;
+        EffectTechnique? _techniqueInverseTexture_CM;
+        EffectTechnique? _techniqueColor_CM;
+        EffectTechnique? _techniqueColorTextureAlpha_CM;
+        EffectTechnique? _techniqueInterpolateColor_CM;
 
-        EffectTechnique _techniqueTexture_LN;
-        EffectTechnique _techniqueAdd_LN;
-        EffectTechnique _techniqueSubtract_LN;
-        EffectTechnique _techniqueModulate_LN;
-        EffectTechnique _techniqueModulate2X_LN;
-        EffectTechnique _techniqueModulate4X_LN;
-        EffectTechnique _techniqueInverseTexture_LN;
-        EffectTechnique _techniqueColor_LN;
-        EffectTechnique _techniqueColorTextureAlpha_LN;
-        EffectTechnique _techniqueInterpolateColor_LN;
+        EffectTechnique? _techniqueTexture_LN;
+        EffectTechnique? _techniqueAdd_LN;
+        EffectTechnique? _techniqueSubtract_LN;
+        EffectTechnique? _techniqueModulate_LN;
+        EffectTechnique? _techniqueModulate2X_LN;
+        EffectTechnique? _techniqueModulate4X_LN;
+        EffectTechnique? _techniqueInverseTexture_LN;
+        EffectTechnique? _techniqueColor_LN;
+        EffectTechnique? _techniqueColorTextureAlpha_LN;
+        EffectTechnique? _techniqueInterpolateColor_LN;
 
-        EffectTechnique _techniqueTexture_LN_CM;
-        EffectTechnique _techniqueAdd_LN_CM;
-        EffectTechnique _techniqueSubtract_LN_CM;
-        EffectTechnique _techniqueModulate_LN_CM;
-        EffectTechnique _techniqueModulate2X_LN_CM;
-        EffectTechnique _techniqueModulate4X_LN_CM;
-        EffectTechnique _techniqueInverseTexture_LN_CM;
-        EffectTechnique _techniqueColor_LN_CM;
-        EffectTechnique _techniqueColorTextureAlpha_LN_CM;
-        EffectTechnique _techniqueInterpolateColor_LN_CM;
+        EffectTechnique? _techniqueTexture_LN_CM;
+        EffectTechnique? _techniqueAdd_LN_CM;
+        EffectTechnique? _techniqueSubtract_LN_CM;
+        EffectTechnique? _techniqueModulate_LN_CM;
+        EffectTechnique? _techniqueModulate2X_LN_CM;
+        EffectTechnique? _techniqueModulate4X_LN_CM;
+        EffectTechnique? _techniqueInverseTexture_LN_CM;
+        EffectTechnique? _techniqueColor_LN_CM;
+        EffectTechnique? _techniqueColorTextureAlpha_LN_CM;
+        EffectTechnique? _techniqueInterpolateColor_LN_CM;
 
-        EffectTechnique _techniqueTexture_Linear;
-        EffectTechnique _techniqueAdd_Linear;
-        EffectTechnique _techniqueSubtract_Linear;
-        EffectTechnique _techniqueModulate_Linear;
-        EffectTechnique _techniqueModulate2X_Linear;
-        EffectTechnique _techniqueModulate4X_Linear;
-        EffectTechnique _techniqueInverseTexture_Linear;
-        EffectTechnique _techniqueColor_Linear;
-        EffectTechnique _techniqueColorTextureAlpha_Linear;
-        EffectTechnique _techniqueInterpolateColor_Linear;
+        EffectTechnique? _techniqueTexture_Linear;
+        EffectTechnique? _techniqueAdd_Linear;
+        EffectTechnique? _techniqueSubtract_Linear;
+        EffectTechnique? _techniqueModulate_Linear;
+        EffectTechnique? _techniqueModulate2X_Linear;
+        EffectTechnique? _techniqueModulate4X_Linear;
+        EffectTechnique? _techniqueInverseTexture_Linear;
+        EffectTechnique? _techniqueColor_Linear;
+        EffectTechnique? _techniqueColorTextureAlpha_Linear;
+        EffectTechnique? _techniqueInterpolateColor_Linear;
 
-        EffectTechnique _techniqueTexture_Linear_CM;
-        EffectTechnique _techniqueAdd_Linear_CM;
-        EffectTechnique _techniqueSubtract_Linear_CM;
-        EffectTechnique _techniqueModulate_Linear_CM;
-        EffectTechnique _techniqueModulate2X_Linear_CM;
-        EffectTechnique _techniqueModulate4X_Linear_CM;
-        EffectTechnique _techniqueInverseTexture_Linear_CM;
-        EffectTechnique _techniqueColor_Linear_CM;
-        EffectTechnique _techniqueColorTextureAlpha_Linear_CM;
-        EffectTechnique _techniqueInterpolateColor_Linear_CM;
+        EffectTechnique? _techniqueTexture_Linear_CM;
+        EffectTechnique? _techniqueAdd_Linear_CM;
+        EffectTechnique? _techniqueSubtract_Linear_CM;
+        EffectTechnique? _techniqueModulate_Linear_CM;
+        EffectTechnique? _techniqueModulate2X_Linear_CM;
+        EffectTechnique? _techniqueModulate4X_Linear_CM;
+        EffectTechnique? _techniqueInverseTexture_Linear_CM;
+        EffectTechnique? _techniqueColor_Linear_CM;
+        EffectTechnique? _techniqueColorTextureAlpha_Linear_CM;
+        EffectTechnique? _techniqueInterpolateColor_Linear_CM;
 
-        EffectTechnique _techniqueTexture_Linear_LN;
-        EffectTechnique _techniqueAdd_Linear_LN;
-        EffectTechnique _techniqueSubtract_Linear_LN;
-        EffectTechnique _techniqueModulate_Linear_LN;
-        EffectTechnique _techniqueModulate2X_Linear_LN;
-        EffectTechnique _techniqueModulate4X_Linear_LN;
-        EffectTechnique _techniqueInverseTexture_Linear_LN;
-        EffectTechnique _techniqueColor_Linear_LN;
-        EffectTechnique _techniqueColorTextureAlpha_Linear_LN;
-        EffectTechnique _techniqueInterpolateColor_Linear_LN;
+        EffectTechnique? _techniqueTexture_Linear_LN;
+        EffectTechnique? _techniqueAdd_Linear_LN;
+        EffectTechnique? _techniqueSubtract_Linear_LN;
+        EffectTechnique? _techniqueModulate_Linear_LN;
+        EffectTechnique? _techniqueModulate2X_Linear_LN;
+        EffectTechnique? _techniqueModulate4X_Linear_LN;
+        EffectTechnique? _techniqueInverseTexture_Linear_LN;
+        EffectTechnique? _techniqueColor_Linear_LN;
+        EffectTechnique? _techniqueColorTextureAlpha_Linear_LN;
+        EffectTechnique? _techniqueInterpolateColor_Linear_LN;
 
-        EffectTechnique _techniqueTexture_Linear_LN_CM;
-        EffectTechnique _techniqueAdd_Linear_LN_CM;
-        EffectTechnique _techniqueSubtract_Linear_LN_CM;
-        EffectTechnique _techniqueModulate_Linear_LN_CM;
-        EffectTechnique _techniqueModulate2X_Linear_LN_CM;
-        EffectTechnique _techniqueModulate4X_Linear_LN_CM;
-        EffectTechnique _techniqueInverseTexture_Linear_LN_CM;
-        EffectTechnique _techniqueColor_Linear_LN_CM;
-        EffectTechnique _techniqueColorTextureAlpha_Linear_LN_CM;
-        EffectTechnique _techniqueInterpolateColor_Linear_LN_CM;
+        EffectTechnique? _techniqueTexture_Linear_LN_CM;
+        EffectTechnique? _techniqueAdd_Linear_LN_CM;
+        EffectTechnique? _techniqueSubtract_Linear_LN_CM;
+        EffectTechnique? _techniqueModulate_Linear_LN_CM;
+        EffectTechnique? _techniqueModulate2X_Linear_LN_CM;
+        EffectTechnique? _techniqueModulate4X_Linear_LN_CM;
+        EffectTechnique? _techniqueInverseTexture_Linear_LN_CM;
+        EffectTechnique? _techniqueColor_Linear_LN_CM;
+        EffectTechnique? _techniqueColorTextureAlpha_Linear_LN_CM;
+        EffectTechnique? _techniqueInterpolateColor_Linear_LN_CM;
 
         public Effect Effect
         {
@@ -110,123 +126,167 @@ namespace FlatRedBall.Graphics
             {
                 _effect = value;
 
-                ParameterViewProj = _effect.Parameters["ViewProj"];
-                ParameterCurrentTexture = _effect.Parameters["CurrentTexture"];
-                try { ParameterColorModifier = _effect.Parameters["ColorModifier"]; } catch { }
+                var parameterViewProj = GetParameterSafe("ViewProj");
+                if (parameterViewProj == null) // ViewProj is required. Throw exception if null.
+                {
+                    throw new InvalidOperationException("Shader.xnb must contain a parameter called ViewProj.");
+                }
+
+                ParameterViewProj = parameterViewProj;
+
+                var parameterCurrentTexture = GetParameterSafe("CurrentTexture");
+                if (parameterCurrentTexture == null) // CurrentTexture is required. Throw exception if null.
+                {
+                    throw new InvalidOperationException("Shader.xnb must contain a parameter called CurrentTexture.");
+                }
+
+                ParameterCurrentTexture = parameterCurrentTexture;
+
+                ParameterColorModifier = GetParameterSafe("ColorModifier");
 
                 // Let's check if the shader has the new format (which includes
                 // separate versions of techniques for Point and Linear filtering).
                 // We try to cache the first technique in order to do so.
-                try { _techniqueTexture = _effect.Techniques["Texture_Point"]; } catch { }
+                _techniqueTexture = GetTechniqueSafe("Texture_Point");
 
                 if (_techniqueTexture != null)
                 {
                     _effectHasNewformat = true;
 
-                    //try { mTechniqueTexture = mEffect.Techniques["Texture_Point"]; } catch { } // This has been already cached
-                    try { _techniqueAdd = _effect.Techniques["Add_Point"]; } catch { }
-                    try { _techniqueSubtract = _effect.Techniques["Subtract_Point"]; } catch { }
-                    try { _techniqueModulate = _effect.Techniques["Modulate_Point"]; } catch { }
-                    try { _techniqueModulate2X = _effect.Techniques["Modulate2X_Point"]; } catch { }
-                    try { _techniqueModulate4X = _effect.Techniques["Modulate4X_Point"]; } catch { }
-                    try { _techniqueInverseTexture = _effect.Techniques["InverseTexture_Point"]; } catch { }
-                    try { _techniqueColor = _effect.Techniques["Color_Point"]; } catch { }
-                    try { _techniqueColorTextureAlpha = _effect.Techniques["ColorTextureAlpha_Point"]; } catch { }
-                    try { _techniqueInterpolateColor = _effect.Techniques["InterpolateColor_Point"]; } catch { }
+                    //_techniqueTexture = GetTechniqueSafe("Texture_Point"); // This has been already cached
+                    _techniqueAdd = GetTechniqueSafe("Add_Point");
+                    _techniqueSubtract = GetTechniqueSafe("Subtract_Point");
+                    _techniqueModulate = GetTechniqueSafe("Modulate_Point");
+                    _techniqueModulate2X = GetTechniqueSafe("Modulate2X_Point");
+                    _techniqueModulate4X = GetTechniqueSafe("Modulate4X_Point");
+                    _techniqueInverseTexture = GetTechniqueSafe("InverseTexture_Point");
+                    _techniqueColor = GetTechniqueSafe("Color_Point");
+                    _techniqueColorTextureAlpha = GetTechniqueSafe("ColorTextureAlpha_Point");
+                    _techniqueInterpolateColor = GetTechniqueSafe("InterpolateColor_Point");
 
-                    try { _techniqueTexture_CM = _effect.Techniques["Texture_Point_CM"]; } catch { }
-                    try { _techniqueAdd_CM = _effect.Techniques["Add_Point_CM"]; } catch { }
-                    try { _techniqueSubtract_CM = _effect.Techniques["Subtract_Point_CM"]; } catch { }
-                    try { _techniqueModulate_CM = _effect.Techniques["Modulate_Point_CM"]; } catch { }
-                    try { _techniqueModulate2X_CM = _effect.Techniques["Modulate2X_Point_CM"]; } catch { }
-                    try { _techniqueModulate4X_CM = _effect.Techniques["Modulate4X_Point_CM"]; } catch { }
-                    try { _techniqueInverseTexture_CM = _effect.Techniques["InverseTexture_Point_CM"]; } catch { }
-                    try { _techniqueColor_CM = _effect.Techniques["Color_Point_CM"]; } catch { }
-                    try { _techniqueColorTextureAlpha_CM = _effect.Techniques["ColorTextureAlpha_Point_CM"]; } catch { }
-                    try { _techniqueInterpolateColor_CM = _effect.Techniques["InterpolateColor_Point_CM"]; } catch { }
+                    _techniqueTexture_CM = GetTechniqueSafe("Texture_Point_CM");
+                    _techniqueAdd_CM = GetTechniqueSafe("Add_Point_CM");
+                    _techniqueSubtract_CM = GetTechniqueSafe("Subtract_Point_CM");
+                    _techniqueModulate_CM = GetTechniqueSafe("Modulate_Point_CM");
+                    _techniqueModulate2X_CM = GetTechniqueSafe("Modulate2X_Point_CM");
+                    _techniqueModulate4X_CM = GetTechniqueSafe("Modulate4X_Point_CM");
+                    _techniqueInverseTexture_CM = GetTechniqueSafe("InverseTexture_Point_CM");
+                    _techniqueColor_CM = GetTechniqueSafe("Color_Point_CM");
+                    _techniqueColorTextureAlpha_CM = GetTechniqueSafe("ColorTextureAlpha_Point_CM");
+                    _techniqueInterpolateColor_CM = GetTechniqueSafe("InterpolateColor_Point_CM");
 
-                    try { _techniqueTexture_LN = _effect.Techniques["Texture_Point_LN"]; } catch { }
-                    try { _techniqueAdd_LN = _effect.Techniques["Add_Point_LN"]; } catch { }
-                    try { _techniqueSubtract_LN = _effect.Techniques["Subtract_Point_LN"]; } catch { }
-                    try { _techniqueModulate_LN = _effect.Techniques["Modulate_Point_LN"]; } catch { }
-                    try { _techniqueModulate2X_LN = _effect.Techniques["Modulate2X_Point_LN"]; } catch { }
-                    try { _techniqueModulate4X_LN = _effect.Techniques["Modulate4X_Point_LN"]; } catch { }
-                    try { _techniqueInverseTexture_LN = _effect.Techniques["InverseTexture_Point_LN"]; } catch { }
-                    try { _techniqueColor_LN = _effect.Techniques["Color_Point_LN"]; } catch { }
-                    try { _techniqueColorTextureAlpha_LN = _effect.Techniques["ColorTextureAlpha_Point_LN"]; } catch { }
-                    try { _techniqueInterpolateColor_LN = _effect.Techniques["InterpolateColor_Point_LN"]; } catch { }
+                    _techniqueTexture_LN = GetTechniqueSafe("Texture_Point_LN");
+                    _techniqueAdd_LN = GetTechniqueSafe("Add_Point_LN");
+                    _techniqueSubtract_LN = GetTechniqueSafe("Subtract_Point_LN");
+                    _techniqueModulate_LN = GetTechniqueSafe("Modulate_Point_LN");
+                    _techniqueModulate2X_LN = GetTechniqueSafe("Modulate2X_Point_LN");
+                    _techniqueModulate4X_LN = GetTechniqueSafe("Modulate4X_Point_LN");
+                    _techniqueInverseTexture_LN = GetTechniqueSafe("InverseTexture_Point_LN");
+                    _techniqueColor_LN = GetTechniqueSafe("Color_Point_LN");
+                    _techniqueColorTextureAlpha_LN = GetTechniqueSafe("ColorTextureAlpha_Point_LN");
+                    _techniqueInterpolateColor_LN = GetTechniqueSafe("InterpolateColor_Point_LN");
 
-                    try { _techniqueTexture_LN_CM = _effect.Techniques["Texture_Point_LN_CM"]; } catch { }
-                    try { _techniqueAdd_LN_CM = _effect.Techniques["Add_Point_LN_CM"]; } catch { }
-                    try { _techniqueSubtract_LN_CM = _effect.Techniques["Subtract_Point_LN_CM"]; } catch { }
-                    try { _techniqueModulate_LN_CM = _effect.Techniques["Modulate_Point_LN_CM"]; } catch { }
-                    try { _techniqueModulate2X_LN_CM = _effect.Techniques["Modulate2X_Point_LN_CM"]; } catch { }
-                    try { _techniqueModulate4X_LN_CM = _effect.Techniques["Modulate4X_Point_LN_CM"]; } catch { }
-                    try { _techniqueInverseTexture_LN_CM = _effect.Techniques["InverseTexture_Point_LN_CM"]; } catch { }
-                    try { _techniqueColor_LN_CM = _effect.Techniques["Color_Point_LN_CM"]; } catch { }
-                    try { _techniqueColorTextureAlpha_LN_CM = _effect.Techniques["ColorTextureAlpha_Point_LN_CM"]; } catch { }
-                    try { _techniqueInterpolateColor_LN_CM = _effect.Techniques["InterpolateColor_Point_LN_CM"]; } catch { }
+                    _techniqueTexture_LN_CM = GetTechniqueSafe("Texture_Point_LN_CM");
+                    _techniqueAdd_LN_CM = GetTechniqueSafe("Add_Point_LN_CM");
+                    _techniqueSubtract_LN_CM = GetTechniqueSafe("Subtract_Point_LN_CM");
+                    _techniqueModulate_LN_CM = GetTechniqueSafe("Modulate_Point_LN_CM");
+                    _techniqueModulate2X_LN_CM = GetTechniqueSafe("Modulate2X_Point_LN_CM");
+                    _techniqueModulate4X_LN_CM = GetTechniqueSafe("Modulate4X_Point_LN_CM");
+                    _techniqueInverseTexture_LN_CM = GetTechniqueSafe("InverseTexture_Point_LN_CM");
+                    _techniqueColor_LN_CM = GetTechniqueSafe("Color_Point_LN_CM");
+                    _techniqueColorTextureAlpha_LN_CM = GetTechniqueSafe("ColorTextureAlpha_Point_LN_CM");
+                    _techniqueInterpolateColor_LN_CM = GetTechniqueSafe("InterpolateColor_Point_LN_CM");
 
-                    try { _techniqueTexture_Linear = _effect.Techniques["Texture_Linear"]; } catch { }
-                    try { _techniqueAdd_Linear = _effect.Techniques["Add_Linear"]; } catch { }
-                    try { _techniqueSubtract_Linear = _effect.Techniques["Subtract_Linear"]; } catch { }
-                    try { _techniqueModulate_Linear = _effect.Techniques["Modulate_Linear"]; } catch { }
-                    try { _techniqueModulate2X_Linear = _effect.Techniques["Modulate2X_Linear"]; } catch { }
-                    try { _techniqueModulate4X_Linear = _effect.Techniques["Modulate4X_Linear"]; } catch { }
-                    try { _techniqueInverseTexture_Linear = _effect.Techniques["InverseTexture_Linear"]; } catch { }
-                    try { _techniqueColor_Linear = _effect.Techniques["Color_Linear"]; } catch { }
-                    try { _techniqueColorTextureAlpha_Linear = _effect.Techniques["ColorTextureAlpha_Linear"]; } catch { }
-                    try { _techniqueInterpolateColor_Linear = _effect.Techniques["InterpolateColor_Linear"]; } catch { }
+                    _techniqueTexture_Linear = GetTechniqueSafe("Texture_Linear");
+                    _techniqueAdd_Linear = GetTechniqueSafe("Add_Linear");
+                    _techniqueSubtract_Linear = GetTechniqueSafe("Subtract_Linear");
+                    _techniqueModulate_Linear = GetTechniqueSafe("Modulate_Linear");
+                    _techniqueModulate2X_Linear = GetTechniqueSafe("Modulate2X_Linear");
+                    _techniqueModulate4X_Linear = GetTechniqueSafe("Modulate4X_Linear");
+                    _techniqueInverseTexture_Linear = GetTechniqueSafe("InverseTexture_Linear");
+                    _techniqueColor_Linear = GetTechniqueSafe("Color_Linear");
+                    _techniqueColorTextureAlpha_Linear = GetTechniqueSafe("ColorTextureAlpha_Linear");
+                    _techniqueInterpolateColor_Linear = GetTechniqueSafe("InterpolateColor_Linear");
 
-                    try { _techniqueTexture_Linear_CM = _effect.Techniques["Texture_Linear_CM"]; } catch { }
-                    try { _techniqueAdd_Linear_CM = _effect.Techniques["Add_Linear_CM"]; } catch { }
-                    try { _techniqueSubtract_Linear_CM = _effect.Techniques["Subtract_Linear_CM"]; } catch { }
-                    try { _techniqueModulate_Linear_CM = _effect.Techniques["Modulate_Linear_CM"]; } catch { }
-                    try { _techniqueModulate2X_Linear_CM = _effect.Techniques["Modulate2X_Linear_CM"]; } catch { }
-                    try { _techniqueModulate4X_Linear_CM = _effect.Techniques["Modulate4X_Linear_CM"]; } catch { }
-                    try { _techniqueInverseTexture_Linear_CM = _effect.Techniques["InverseTexture_Linear_CM"]; } catch { }
-                    try { _techniqueColor_Linear_CM = _effect.Techniques["Color_Linear_CM"]; } catch { }
-                    try { _techniqueColorTextureAlpha_Linear_CM = _effect.Techniques["ColorTextureAlpha_Linear_CM"]; } catch { }
-                    try { _techniqueInterpolateColor_Linear_CM = _effect.Techniques["InterpolateColor_Linear_CM"]; } catch { }
+                    _techniqueTexture_Linear_CM = GetTechniqueSafe("Texture_Linear_CM");
+                    _techniqueAdd_Linear_CM = GetTechniqueSafe("Add_Linear_CM");
+                    _techniqueSubtract_Linear_CM = GetTechniqueSafe("Subtract_Linear_CM");
+                    _techniqueModulate_Linear_CM = GetTechniqueSafe("Modulate_Linear_CM");
+                    _techniqueModulate2X_Linear_CM = GetTechniqueSafe("Modulate2X_Linear_CM");
+                    _techniqueModulate4X_Linear_CM = GetTechniqueSafe("Modulate4X_Linear_CM");
+                    _techniqueInverseTexture_Linear_CM = GetTechniqueSafe("InverseTexture_Linear_CM");
+                    _techniqueColor_Linear_CM = GetTechniqueSafe("Color_Linear_CM");
+                    _techniqueColorTextureAlpha_Linear_CM = GetTechniqueSafe("ColorTextureAlpha_Linear_CM");
+                    _techniqueInterpolateColor_Linear_CM = GetTechniqueSafe("InterpolateColor_Linear_CM");
 
-                    try { _techniqueTexture_Linear_LN = _effect.Techniques["Texture_Linear_LN"]; } catch { }
-                    try { _techniqueAdd_Linear_LN = _effect.Techniques["Add_Linear_LN"]; } catch { }
-                    try { _techniqueSubtract_Linear_LN = _effect.Techniques["Subtract_Linear_LN"]; } catch { }
-                    try { _techniqueModulate_Linear_LN = _effect.Techniques["Modulate_Linear_LN"]; } catch { }
-                    try { _techniqueModulate2X_Linear_LN = _effect.Techniques["Modulate2X_Linear_LN"]; } catch { }
-                    try { _techniqueModulate4X_Linear_LN = _effect.Techniques["Modulate4X_Linear_LN"]; } catch { }
-                    try { _techniqueInverseTexture_Linear_LN = _effect.Techniques["InverseTexture_Linear_LN"]; } catch { }
-                    try { _techniqueColor_Linear_LN = _effect.Techniques["Color_Linear_LN"]; } catch { }
-                    try { _techniqueColorTextureAlpha_Linear_LN = _effect.Techniques["ColorTextureAlpha_Linear_LN"]; } catch { }
-                    try { _techniqueInterpolateColor_Linear_LN = _effect.Techniques["InterpolateColor_Linear_LN"]; } catch { }
+                    _techniqueTexture_Linear_LN = GetTechniqueSafe("Texture_Linear_LN");
+                    _techniqueAdd_Linear_LN = GetTechniqueSafe("Add_Linear_LN");
+                    _techniqueSubtract_Linear_LN = GetTechniqueSafe("Subtract_Linear_LN");
+                    _techniqueModulate_Linear_LN = GetTechniqueSafe("Modulate_Linear_LN");
+                    _techniqueModulate2X_Linear_LN = GetTechniqueSafe("Modulate2X_Linear_LN");
+                    _techniqueModulate4X_Linear_LN = GetTechniqueSafe("Modulate4X_Linear_LN");
+                    _techniqueInverseTexture_Linear_LN = GetTechniqueSafe("InverseTexture_Linear_LN");
+                    _techniqueColor_Linear_LN = GetTechniqueSafe("Color_Linear_LN");
+                    _techniqueColorTextureAlpha_Linear_LN = GetTechniqueSafe("ColorTextureAlpha_Linear_LN");
+                    _techniqueInterpolateColor_Linear_LN = GetTechniqueSafe("InterpolateColor_Linear_LN");
 
-                    try { _techniqueTexture_Linear_LN_CM = _effect.Techniques["Texture_Linear_LN_CM"]; } catch { }
-                    try { _techniqueAdd_Linear_LN_CM = _effect.Techniques["Add_Linear_LN_CM"]; } catch { }
-                    try { _techniqueSubtract_Linear_LN_CM = _effect.Techniques["Subtract_Linear_LN_CM"]; } catch { }
-                    try { _techniqueModulate_Linear_LN_CM = _effect.Techniques["Modulate_Linear_LN_CM"]; } catch { }
-                    try { _techniqueModulate2X_Linear_LN_CM = _effect.Techniques["Modulate2X_Linear_LN_CM"]; } catch { }
-                    try { _techniqueModulate4X_Linear_LN_CM = _effect.Techniques["Modulate4X_Linear_LN_CM"]; } catch { }
-                    try { _techniqueInverseTexture_Linear_LN_CM = _effect.Techniques["InverseTexture_Linear_LN_CM"]; } catch { }
-                    try { _techniqueColor_Linear_LN_CM = _effect.Techniques["Color_Linear_LN_CM"]; } catch { }
-                    try { _techniqueColorTextureAlpha_Linear_LN_CM = _effect.Techniques["ColorTextureAlpha_Linear_LN_CM"]; } catch { }
-                    try { _techniqueInterpolateColor_Linear_LN_CM = _effect.Techniques["InterpolateColor_Linear_LN_CM"]; } catch { }
+                    _techniqueTexture_Linear_LN_CM = GetTechniqueSafe("Texture_Linear_LN_CM");
+                    _techniqueAdd_Linear_LN_CM = GetTechniqueSafe("Add_Linear_LN_CM");
+                    _techniqueSubtract_Linear_LN_CM = GetTechniqueSafe("Subtract_Linear_LN_CM");
+                    _techniqueModulate_Linear_LN_CM = GetTechniqueSafe("Modulate_Linear_LN_CM");
+                    _techniqueModulate2X_Linear_LN_CM = GetTechniqueSafe("Modulate2X_Linear_LN_CM");
+                    _techniqueModulate4X_Linear_LN_CM = GetTechniqueSafe("Modulate4X_Linear_LN_CM");
+                    _techniqueInverseTexture_Linear_LN_CM = GetTechniqueSafe("InverseTexture_Linear_LN_CM");
+                    _techniqueColor_Linear_LN_CM = GetTechniqueSafe("Color_Linear_LN_CM");
+                    _techniqueColorTextureAlpha_Linear_LN_CM = GetTechniqueSafe("ColorTextureAlpha_Linear_LN_CM");
+                    _techniqueInterpolateColor_Linear_LN_CM = GetTechniqueSafe("InterpolateColor_Linear_LN_CM");
                 }
                 else
                 {
                     _effectHasNewformat = false;
 
-                    try { _techniqueTexture = _effect.Techniques["Texture"]; } catch { }
-                    try { _techniqueAdd = _effect.Techniques["Add"]; } catch { }
-                    try { _techniqueSubtract = _effect.Techniques["Subtract"]; } catch { }
-                    try { _techniqueModulate = _effect.Techniques["Modulate"]; } catch { }
-                    try { _techniqueModulate2X = _effect.Techniques["Modulate2X"]; } catch { }
-                    try { _techniqueModulate4X = _effect.Techniques["Modulate4X"]; } catch { }
-                    try { _techniqueInverseTexture = _effect.Techniques["InverseTexture"]; } catch { }
-                    try { _techniqueColor = _effect.Techniques["Color"]; } catch { }
-                    try { _techniqueColorTextureAlpha = _effect.Techniques["ColorTextureAlpha"]; } catch { }
-                    try { _techniqueInterpolateColor = _effect.Techniques["InterpolateColor"]; } catch { }
+                    _techniqueTexture = GetTechniqueSafe("Texture");
+                    _techniqueAdd = GetTechniqueSafe("Add");
+                    _techniqueSubtract = GetTechniqueSafe("Subtract");
+                    _techniqueModulate = GetTechniqueSafe("Modulate");
+                    _techniqueModulate2X = GetTechniqueSafe("Modulate2X");
+                    _techniqueModulate4X = GetTechniqueSafe("Modulate4X");
+                    _techniqueInverseTexture = GetTechniqueSafe("InverseTexture");
+                    _techniqueColor = GetTechniqueSafe("Color");
+                    _techniqueColorTextureAlpha = GetTechniqueSafe("ColorTextureAlpha");
+                    _techniqueInterpolateColor = GetTechniqueSafe("InterpolateColor");
                 }
             }
+        }
+
+        EffectParameter? GetParameterSafe(string parameterName)
+        {
+            if (_effect == null)
+                return null;
+
+            for (int i = 0; i < _effect.Parameters.Count; i++)
+            {
+                var parameter = _effect.Parameters[i];
+                if (parameter.Name == parameterName)
+                    return parameter;
+            }
+
+            return null;
+        }
+
+        EffectTechnique? GetTechniqueSafe(string techniqueName)
+        {
+            if (_effect == null)
+                return null;
+
+            for (int i = 0; i < _effect.Techniques.Count; i++)
+            {
+                var technique = _effect.Techniques[i];
+                if (technique.Name == techniqueName)
+                    return technique;
+            }
+
+            return null;
         }
 
         static EffectTechnique GetTechniqueVariant(bool useDefaultOrPointFilter, EffectTechnique point, EffectTechnique pointLinearized, EffectTechnique linear, EffectTechnique linearLinearized)
@@ -239,9 +299,9 @@ namespace FlatRedBall.Graphics
         public EffectTechnique GetVertexColorTechniqueFromColorOperation(ColorOperation value, bool? useDefaultOrPointFilter = null)
         {
             if (_effect == null)
-                throw new Exception("The effect hasn't been set.");
+                throw new InvalidOperationException("The effect hasn't been set.");
 
-            EffectTechnique technique = null;
+            EffectTechnique technique = null!;
 
             bool useDefaultOrPointFilterInternal;
 
@@ -317,9 +377,9 @@ namespace FlatRedBall.Graphics
         public EffectTechnique GetColorModifierTechniqueFromColorOperation(ColorOperation value, bool? useDefaultOrPointFilter = null)
         {
             if (_effect == null)
-                throw new Exception("The effect hasn't been set.");
+                throw new InvalidOperationException("The effect hasn't been set.");
 
-            EffectTechnique technique = null;
+            EffectTechnique technique = null!;
 
             bool useDefaultOrPointFilterInternal;
 
