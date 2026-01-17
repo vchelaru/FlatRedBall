@@ -170,6 +170,14 @@ namespace FlatRedBall.AI.Pathfinding
             get { return mActive; }
             set { mActive = value; }
         }
+
+        /// <summary>
+        /// Gets or sets a user-defined object associated with the current node.
+        /// </summary>
+        /// <remarks>This property can be used to attach custom data to the instance for
+        /// game-specific purposes. The value is not used or interpreted by the engine.</remarks>
+        public object? Tag { get; set; }
+
         #endregion
 
         #region Methods

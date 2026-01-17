@@ -103,7 +103,7 @@ namespace FlatRedBall.AI.Pathfinding
             }
         }
 
-        public static void FillFromPredicate(this TileNodeNetwork nodeNetwork, LayeredTileMap layeredTileMap, Func<List<NamedValue>, bool> predicate, MapDrawableBatch layer = null, float offsetX = 0, float offsetY = 0)
+        public static void FillFromPredicate(this TileNodeNetwork nodeNetwork, LayeredTileMap layeredTileMap, Func<List<NamedValue>, bool> predicate, MapDrawableBatch layer = null, float offsetX = 0, float offsetY = 0, object? tagForAddedNodes = null)
         {
             var dimensionHalf = layeredTileMap.WidthPerTile.Value / 2.0f;
 
@@ -151,7 +151,8 @@ namespace FlatRedBall.AI.Pathfinding
                         var centerX = left + dimensionHalf + offsetX;
                         var centerY = bottom + dimensionHalf + offsetY;
 
-                        nodeNetwork.AddAndLinkTiledNodeWorld(centerX, centerY);
+                        var node = nodeNetwork.AddAndLinkTiledNodeWorld(centerX, centerY);
+                        node.Tag = tagForAddedNodes;
                     }
                 }
             }
