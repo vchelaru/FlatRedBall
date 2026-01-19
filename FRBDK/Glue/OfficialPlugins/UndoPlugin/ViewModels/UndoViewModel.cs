@@ -75,7 +75,7 @@ namespace OfficialPlugins.UndoPlugin.ViewModels
 
         public string VariableName { get; set; }
 
-        public object OldValue { get; set; }
+        public object? OldValue { get; set; }
 
         public override string ToString()
         {

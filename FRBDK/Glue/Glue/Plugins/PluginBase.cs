@@ -262,7 +262,7 @@ namespace FlatRedBall.Glue.Plugins
     public class VariableChangeArguments
     {
         public string ChangedMember { get; set; }
-        public object OldValue { get; set; }
+        public object? OldValue { get; set; }
         public NamedObjectSave NamedObject { get; set; }
         public bool RecordUndo { get; set; } = true;
         public SetPropertyCommitType CommitType { get; set; } = SetPropertyCommitType.Full;

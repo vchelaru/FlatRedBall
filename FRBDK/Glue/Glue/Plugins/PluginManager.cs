@@ -1593,7 +1593,7 @@ public class PluginManager : PluginManagerBase
     /// <remarks>Although this has the word "Property" in the name, it applies to both properties and variables.</remarks>
     /// <param name="changedMember">The member that has changed</param>
     /// <param name="oldValue">The value of the member before the change</param>
-    public static void ReactToChangedProperty(string changedMember, object oldValue, GlueElement owner, NamedObjectSavePropertyChange nosVariableChange)
+    public static void ReactToChangedProperty(string changedMember, object? oldValue, GlueElement owner, NamedObjectSavePropertyChange nosVariableChange)
     {
 
         CallMethodOnPlugin(
