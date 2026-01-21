@@ -149,7 +149,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Gum\GumCommon\GumCommon.csproj" />
     <ProjectReference Include="..\..\..\..\Gum\Runtimes\SkiaGum.Wpf\SkiaGum.Wpf.csproj" />
-    <ProjectReference Include="..\..\..\..\Gum\SkiaGum\SkiaGum.csproj" />
+    <ProjectReference Include="..\..\..\..\Gum\Runtimes\SkiaGum\SkiaGum.csproj" />
     <ProjectReference Include="..\..\..\..\Gum\WpfDataUi\WpfDataUi.csproj" />
     <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\FlatRedBallDesktopGLNet6\FlatRedBallDesktopGLNet6.csproj" />
     <ProjectReference Include="..\..\..\Tiled\TMXGlueLib\TMXGlueLib.csproj" />
