@@ -91,7 +91,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfDataUi", "..\..\..\Gum\W
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkiaGum.Wpf", "..\..\..\Gum\Runtimes\SkiaGum.Wpf\SkiaGum.Wpf.csproj", "{1ACC516A-D3D4-B8D5-B98B-87743A46466C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkiaGum", "..\..\..\Gum\SkiaGum\SkiaGum.csproj", "{3AC20D6E-C39F-91E6-8942-F44C8430814A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkiaGum", "..\..\..\Gum\Runtimes\SkiaGum\SkiaGum.csproj", "{3AC20D6E-C39F-91E6-8942-F44C8430814A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{3CB2E620-1431-4DEA-AD58-E844D5DDCC60}"
 EndProject
