@@ -2177,15 +2177,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Gum Plugin.
-        /// </summary>
-        public static string GumPlugin {
-            get {
-                return ResourceManager.GetString("GumPlugin", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Gum plugin reacting to glux load.
         /// </summary>
         public static string GumPluginGluxLoad {

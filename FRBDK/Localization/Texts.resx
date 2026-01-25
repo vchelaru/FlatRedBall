@@ -1201,9 +1201,6 @@ for {1}?</value>
   <data name="ProjectWizardNew" xml:space="preserve">
     <value>New Project Wizard</value>
   </data>
-  <data name="GumPlugin" xml:space="preserve">
-    <value>Gum Plugin</value>
-  </data>
   <data name="ObjectAdd" xml:space="preserve">
     <value>Add Object</value>
   </data>

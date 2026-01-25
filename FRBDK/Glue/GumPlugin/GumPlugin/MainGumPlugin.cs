@@ -409,6 +409,10 @@ public class MainGumPlugin : PluginBase
 
     #region Methods
 
+    // This function should not be removed, it is referenced by string name by the Quick Actions MainView.
+    public Task AskToCreateGumProject() =>
+        newGumProjectCreationLogic.AskToCreateGumProject();
+
     private void HandleResolutionChanged()
     {
         if (viewModel?.IsMatchGameResolutionInGumChecked == true)

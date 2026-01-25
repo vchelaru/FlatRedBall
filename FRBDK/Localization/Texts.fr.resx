@@ -1200,9 +1200,6 @@
   <data name="ProjectWizardNew" xml:space="preserve">
     <value>Assistant Nouveau projet</value>
   </data>
-  <data name="GumPlugin" xml:space="preserve">
-    <value>Gum Plugin</value>
-  </data>
   <data name="ObjectAdd" xml:space="preserve">
     <value>Ajouter un objet</value>
   </data>

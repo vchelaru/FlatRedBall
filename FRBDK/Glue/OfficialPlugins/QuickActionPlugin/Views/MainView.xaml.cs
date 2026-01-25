@@ -67,7 +67,7 @@ namespace OfficialPlugins.QuickActionPlugin.Views
 
         private void AddGumButton_Clicked(object sender, RoutedEventArgs args)
         {
-            PluginManager.CallPluginMethod(Localization.Texts.GumPlugin, "AskToCreateGumProject");
+            PluginManager.CallPluginMethod("Gum Plugin", "AskToCreateGumProject");
         }
 
         #region Add Object
