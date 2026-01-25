@@ -204,7 +204,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
                     if (shouldCopy && ViewModel.IsRunning)
                     {
-                        // Right now we'll assume the screen owns this file, although it is possible that it's 
+                        // Right now we'll assume the screen owns this file, although it is possible that it's
                         // global but not part of global content. That's a special case we'll have to handle later
                         var timeBefore = TimeManager.CurrentSystemTime;
                         printOutput($"Waiting for file to be copied: {strippedName}");
@@ -225,7 +225,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
                             var shouldReloadScreen = false;
 
-                            
+
 
                             if (shouldReloadFile)
                             {
@@ -234,9 +234,18 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                                 var dto = new Dtos.ForceReloadFileDto();
                                 dto.ElementsContainingFile = containerNames.ToList();
                                 dto.LoadInGlobalContent = GlueState.Self.CurrentGlueProject.GetAllReferencedFiles().Contains(firstRfs);
-                                dto.IsLocalizationDatabase = firstRfs.IsDatabaseForLocalizing;
-                                dto.FileRelativeToProject =
-                                    ReferencedFileSaveCodeGenerator.GetFileToLoadForRfs(firstRfs);
+                                dto.IsLocalizationDatabase = firstRfs?.IsDatabaseForLocalizing is true;
+
+                                if (firstRfs is null)
+                                {
+                                    dto.FileRelativeToProject = fileName.RelativeTo(GlueState.Self.ContentDirectoryPath);
+                                }
+                                else
+                                {
+                                    dto.FileRelativeToProject =
+                                        ReferencedFileSaveCodeGenerator.GetFileToLoadForRfs(firstRfs);
+                                }
+
                                 dto.StrippedFileName = fileName.NoPathNoExtension;
                                 await CommandSender.Self.Send(dto);
 
@@ -671,7 +680,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             // Let's look at the possible variables that are added:
             // * New variables - which by default have no functionality until code is written for them
             // * Exposed variables - these do have functionality but they ultimately are just setting other variables
-            // If it's a new variable, we are going to restart. Otherwise if it's exposed, send that to the game to use 
+            // If it's a new variable, we are going to restart. Otherwise if it's exposed, send that to the game to use
             // for assigning real values
             var isTunneled = !string.IsNullOrWhiteSpace(newVariable.SourceObject) &&
                 !string.IsNullOrWhiteSpace(newVariable.SourceObjectProperty);
@@ -707,7 +716,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             {
                 // it's a brand new variable, so let's restart it...
                 // Update - why restart? Users can still assign it, but
-                // they'll have to restart if they want to make changes in 
+                // they'll have to restart if they want to make changes in
                 // code or make it functional. I don't see a reason to restart.
                 //CreateStopAndRestartTask($"Restarting because of added variable {newVariable}");
             }
@@ -720,7 +729,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
         internal async void HandleVariableRenamed(CustomVariable renamedVariable)
         {
-            // When a variable is renamed, we treat it as if it's a new variable. 
+            // When a variable is renamed, we treat it as if it's a new variable.
             // I don't think we need to clean up old variables...or at least I can't
             // think of why it might be important to do so (yet), but if this becomes
             // an issue in the future we will have to send a "remove variable" command,
@@ -753,7 +762,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
         // so that any edits they make to the object doesn't
         // pull in state values. The easiest way to do this is
         // to force a reload of the screen. To do this, we need
-        // to know if the user was viewing a state before, and is 
+        // to know if the user was viewing a state before, and is
         // no longer viewing a state now. The LastDtoPushedToGame is
         // needed to determine this.
         SelectObjectDto LastDtoPushedToGame;
@@ -930,7 +939,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
             if (excludedOrIncluded == StateCategoryVariableAction.Excluded)
             {
-                // todo - this would require detecting what is compiled in and if we remove a compiled- in value, we need to 
+                // todo - this would require detecting what is compiled in and if we remove a compiled- in value, we need to
                 // explicitly unset it. For now, let's just restart
                 CreateStopAndRestartTask($"Restarting because variable {variableName} removed from category {category}, and codegen currently assigns that value");
             }
