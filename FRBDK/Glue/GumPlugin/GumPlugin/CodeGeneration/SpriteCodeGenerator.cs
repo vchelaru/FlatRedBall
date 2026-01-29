@@ -1,22 +1,30 @@
-﻿using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using FlatRedBall.Glue.SaveClasses;
 using Gum.DataTypes;
 using Gum.DataTypes.Variables;
 using GumPlugin.CodeGeneration;
 using NAudio.SoundFont;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static FlatRedBall.Glue.SaveClasses.GlueProjectSave;
 
 namespace GumPlugin.CodeGeneration;
 
-internal class SpriteCodeGenerator
+public class SpriteCodeGenerator
 {
+    private readonly GlueState _glueState;
+
+    public SpriteCodeGenerator(GlueState glueState)
+    {
+        _glueState = glueState;
+    }
+
     public void AddStandardGetterSetterReplacements(
         Dictionary<string, Action<ICodeBlock>> standardGetterReplacements,
         Dictionary<string, Action<ICodeBlock>> standardSetterReplacements)
@@ -72,7 +80,7 @@ internal class SpriteCodeGenerator
         {
             return;
         }
-        var hasIRenderTargetTextureReferencer = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.GumHasIRenderTargetTextureReferencer;
+        var hasIRenderTargetTextureReferencer = _glueState.CurrentGlueProject.FileVersion >= (int)GluxVersions.GumHasIRenderTargetTextureReferencer;
 
         if (!hasIRenderTargetTextureReferencer)
         {
@@ -95,7 +103,7 @@ internal class SpriteCodeGenerator
         GenerateSourceRectangle(classBodyBlock);
         GenerateCurrentChainNameProperty(classBodyBlock);
         GenerateAnimationChainsProperty(classBodyBlock);
-        if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.TimeManagerHasDelaySeconds)
+        if (_glueState.CurrentGlueProject.FileVersion >= (int)GluxVersions.TimeManagerHasDelaySeconds)
         {
             GeneratePlayAnimationChainsAsync(classBodyBlock);
 
@@ -135,8 +143,8 @@ internal class SpriteCodeGenerator
 
     private void GenerateCurrentChainNameProperty(ICodeBlock classBodyBlock)
     {
-        var hasCommon = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.GumCommonCodeReferencing ||
-            GlueState.Self.CurrentMainProject.IsFrbSourceLinked();
+        var hasCommon = _glueState.CurrentGlueProject.FileVersion >= (int)GluxVersions.GumCommonCodeReferencing ||
+            _glueState.CurrentMainProject.IsFrbSourceLinked();
         if (hasCommon)
         {
             var sourceFileNameProperty = classBodyBlock.Property("public string", "CurrentChainName");
@@ -152,8 +160,8 @@ internal class SpriteCodeGenerator
 
     private void GenerateAnimationChainsProperty(ICodeBlock classBodyBlock)
     {
-        var hasCommon = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.GumCommonCodeReferencing ||
-            GlueState.Self.CurrentMainProject.IsFrbSourceLinked();
+        var hasCommon = _glueState.CurrentGlueProject.FileVersion >= (int)GluxVersions.GumCommonCodeReferencing ||
+            _glueState.CurrentMainProject.IsFrbSourceLinked();
         if (hasCommon)
         {
             var sourceFileNameProperty = classBodyBlock.Property("public Gum.Graphics.Animation.AnimationChainList", "AnimationChains");
@@ -252,7 +260,7 @@ internal class SpriteCodeGenerator
 
     private void GenerateIRenderTargetTextureReferencerProperties(ICodeBlock classBodyBlock)
     {
-        var hasIRenderTargetTextureReferencer = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.GumHasIRenderTargetTextureReferencer;
+        var hasIRenderTargetTextureReferencer = _glueState.CurrentGlueProject.FileVersion >= (int)GluxVersions.GumHasIRenderTargetTextureReferencer;
 
         if(!hasIRenderTargetTextureReferencer)
         {

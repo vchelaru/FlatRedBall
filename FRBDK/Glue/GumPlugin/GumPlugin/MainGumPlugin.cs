@@ -1,28 +1,29 @@
-﻿using FlatRedBall.Glue.Elements;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.Composition;
+using System.Diagnostics;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Events;
+using FlatRedBall.Glue.FormHelpers;
+using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces;
+using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using Gum.DataTypes;
-using GumPlugin.CodeGeneration;
-using GumPlugin.Managers;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
-using System.Linq;
-using System.Windows.Forms;
-using FlatRedBall.Glue.SaveClasses;
-using GumPlugin.Controls;
-using GumPlugin.ViewModels;
-using System.ComponentModel;
 using Gum.Managers;
-using System.Drawing;
-using FlatRedBall.Glue.Events;
-using FlatRedBall.Glue.Managers;
-using System.Diagnostics;
-using FlatRedBall.Glue.FormHelpers;
-using System.Threading.Tasks;
+using GumPlugin.CodeGeneration;
+using GumPlugin.Controls;
+using GumPlugin.Managers;
+using GumPlugin.ViewModels;
 using HQ.Util.Unmanaged;
-using System.IO;
 
 namespace GumPlugin;
 
@@ -338,8 +339,15 @@ public class MainGumPlugin : PluginBase
         var textCodeGenerator = new TextCodeGenerator();
         var containerCodeGenerator = new ContainerCodeGenerator(GlueState.Self);
         var nineSliceCodeGenerator = new NineSliceCodeGenerator(GlueState.Self);
+        var spriteCodeGenerator = new SpriteCodeGenerator(GlueState.Self);
+        var polygonCodeGenerator = new PolygonCodeGenerator(GlueState.Self);
 
-        StandardsCodeGenerator.Self.Initialize(textCodeGenerator, containerCodeGenerator, nineSliceCodeGenerator);
+        StandardsCodeGenerator.Self.Initialize(
+            spriteCodeGenerator,
+            textCodeGenerator,
+            containerCodeGenerator,
+            nineSliceCodeGenerator,
+            polygonCodeGenerator);
         StateCodeGenerator.Self.Initialize(textCodeGenerator, containerCodeGenerator);
     }
 

@@ -36,6 +36,8 @@ namespace GumPlugin.CodeGeneration
         private TextCodeGenerator _textCodeGenerator;
         private ContainerCodeGenerator _containerCodeGenerator;
         private NineSliceCodeGenerator _nineSliceCodeGenerator;
+        private PolygonCodeGenerator _polygonCodeGenerator;
+        private GlueState _glueState;
 
         #endregion
 
@@ -43,19 +45,21 @@ namespace GumPlugin.CodeGeneration
 
         public StandardsCodeGenerator()
         {
-
+            _glueState = GlueState.Self;
         }
 
         public void Initialize(
+            SpriteCodeGenerator spriteCodeGenerator,
             TextCodeGenerator textCodeGenerator,
             ContainerCodeGenerator containerCodeGenerator,
-            NineSliceCodeGenerator nineSliceCodeGenerator)
-        { 
-            _spriteCodeGenerator = new SpriteCodeGenerator();
+            NineSliceCodeGenerator nineSliceCodeGenerator,
+            PolygonCodeGenerator polygonCodeGenerator)
+        {
+            _spriteCodeGenerator = spriteCodeGenerator;
             _textCodeGenerator = textCodeGenerator;
             _containerCodeGenerator = containerCodeGenerator;
             _nineSliceCodeGenerator = nineSliceCodeGenerator;
-
+            _polygonCodeGenerator = polygonCodeGenerator;
 
             _spriteCodeGenerator.AddStandardGetterSetterReplacements(mStandardGetterReplacements, mStandardSetterReplacements);
             _textCodeGenerator.AddStandardGetterSetterReplacements(mStandardGetterReplacements, mStandardSetterReplacements);
@@ -295,6 +299,7 @@ namespace GumPlugin.CodeGeneration
             _spriteCodeGenerator.GenerateAdditionalMethods(standardElementSave, classBodyBlock);
             _textCodeGenerator.GenerateAdditionalMethods(standardElementSave, classBodyBlock);
             _containerCodeGenerator.GenerateAdditionalMethods(standardElementSave, classBodyBlock);
+            _polygonCodeGenerator.GenerateAdditionalMethods(standardElementSave, classBodyBlock);
         }
 
         private void GenerateGenericContainerCode(ICodeBlock codeBlock)
