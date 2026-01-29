@@ -45,6 +45,7 @@ namespace FlatRedBall.Glue.SetVariable
         /// <param name="parentPropertyName">The parent property containing this property, only relevant for embedded properties like X in a Rectangle. This will usually be null.</param>
         public async Task ReactToNamedObjectChangedValue(string changedMember, object oldValue, string parentPropertyName = null, NamedObjectSave namedObjectSave = null)
         {
+            System.Diagnostics.Debug.Assert(!string.IsNullOrEmpty(changedMember));
             GlueElement element;
             if(namedObjectSave == null)
             {

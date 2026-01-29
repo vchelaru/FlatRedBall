@@ -192,6 +192,9 @@ namespace FlatRedBall.Glue.SaveClasses
             // October 10, 2025
             GumHasIRenderTargetTextureReferencer = 65,
 
+            // January 29, 2026
+            GumHasGueVirtualIsPointInside = 66,
+
             // Stop! If adding an entry here, modify SyntaxVersionAttribute on FlatRedBallServices
             // and LatestVersion down below
             // and update the docs
@@ -201,7 +204,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.GumHasIRenderTargetTextureReferencer;
+        public const int LatestVersion = (int)GluxVersions.GumHasGueVirtualIsPointInside;
 
         public int FileVersion { get; set; }
 

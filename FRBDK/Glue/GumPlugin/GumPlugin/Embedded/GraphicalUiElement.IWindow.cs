@@ -370,17 +370,20 @@ namespace Gum.Wireframe
             }
         }
 
+        [Obsolete("Do not use this, it is going away in future versions", error:true)]
         public void SetScaleTL(float newScaleX, float newScaleY, bool keepTopLeftStatic)
         {
             throw new NotImplementedException();
         }
 
+        [Obsolete("Do not use this, it is going away in future versions", error:true)]
         public void SetScaleTL(float newScaleX, float newScaleY)
         {
             throw new NotImplementedException();
         }
 
         // Vic asks - can we kill this? I think we can....
+        [Obsolete("Do not use this anymore, it is not supported")]
         FlatRedBall.ManagedSpriteGroups.SpriteFrame SpriteFrame
         {
             get
@@ -659,8 +662,7 @@ namespace Gum.Wireframe
 
                     // for now we'll just rely on the bounds of the GUE itself
 
-                    toReturn = global::RenderingLibrary.IPositionedSizedObjectExtensionMethods.HasCursorOver(
-                        this, worldX, worldY);
+                    toReturn = this.IsPointInside(worldX, worldY);
                 }
                 else
                 {

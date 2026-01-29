@@ -49,7 +49,7 @@ namespace FlatRedBall.Gui
         /// </summary>
         public static Cursor Main => GuiManager.Cursor;
 
-        IWindow mWindowPushed;
+        IWindow? mWindowPushed;
 
         /// <summary>
         /// The window that the cursor was over when the mouse button was pressed.
@@ -678,7 +678,7 @@ namespace FlatRedBall.Gui
         /// pushed and without accidentally clicking on other Buttons.  This is also used
         /// with ToggleButtons to control when they are pressed and unpressed.
         /// </remarks>
-        public IWindow WindowPushed
+        public IWindow? WindowPushed
         {
             get { return mWindowPushed; }
             set
