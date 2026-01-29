@@ -101,7 +101,7 @@ public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
         mVariableNamesToSkipForStates.Add("IsOverrideInCodeGen");
         //mVariableNamesToSkipForStates.Add("IsBold");
 
-        // Eventually we'll support this but first Gum needs to support 
+        // Eventually we'll support this but first Gum needs to support
         // setting categorized states on instances
         // September 17 2014
         // no longer needed:
@@ -152,7 +152,7 @@ public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
 
         if (version >= (int)GluxVersions.GumTextHasIsBold)
         {
-            // We can include this one, it's handled by 
+            // We can include this one, it's handled by
             Include("IsBold");
         }
         else
@@ -367,6 +367,7 @@ public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
         {
             setter = setter.If("value != null");
         }
+        setter.Line($"var oldValue = m{propertyName};");
         setter.Line("m" + propertyName + " = value;");
 
         if (states.Count > 0)
@@ -429,6 +430,9 @@ public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
                 switchBlock.Parent.BodyCodeLines.Remove(switchBlock);
             }
         }
+
+        setter.If($"oldValue != m{propertyName}")
+              .Line($"NotifyPropertyChanged();");
 
         return setter;
     }
@@ -558,7 +562,7 @@ public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
 
                     // Gum (just like Glue) keeps variables that aren't needed around.  This allows users to rename things and not lose
                     // important information accidentally.  But because of that we have to make sure that the variable we're working with is
-                    // valid for the type of object we're dealing with.  
+                    // valid for the type of object we're dealing with.
                     var defaultState = baseElement.DefaultState;
 
                     // October 26, 2018
@@ -598,7 +602,7 @@ public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
 
                         if (!string.IsNullOrEmpty(variableValueAsString) && category != null && !category.States.Any(item => item.Name == variableValueAsString))
                         {
-                            // this references an invalid state. This can happen if a state is deleted from an entity 
+                            // this references an invalid state. This can happen if a state is deleted from an entity
                             toReturn = false;
                         }
                     }
@@ -634,7 +638,7 @@ public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
                 {
                     IEnumerable<VariableSave> variablesToCheck;
 
-                    // This code used to get the default state from the rootStandardElementSave, 
+                    // This code used to get the default state from the rootStandardElementSave,
                     // but the standard element save can have variables missing from the Gum XML,
                     // but it should still support them based on the definition in the StandardElementsManager,
                     // especially if new variables have been added in the future. Therefore, use the StandardElementsManager
