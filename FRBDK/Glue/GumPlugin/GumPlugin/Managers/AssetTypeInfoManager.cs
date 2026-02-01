@@ -501,7 +501,10 @@ namespace GumPlugin.Managers
                 toReturn += $" {fieldName} = FlatRedBall.Gum.GumIdb.Self;";
             }
 
-            var displaySettings = GlueState.Self.CurrentGlueProject?.DisplaySettings;
+            var glueProject = GlueState.Self.CurrentGlueProject;
+            var vsProject = GlueState.Self.CurrentMainProject;
+
+            var displaySettings = glueProject?.DisplaySettings;
 
             if(displaySettings != null)
             {
@@ -556,19 +559,22 @@ namespace GumPlugin.Managers
                 int bottom = gumProjectSave.SinglePixelTextureBottom.Value;
 
 
+
+                string rectangleType = "Microsoft.Xna.Framework.Rectangle";
+
+                if(vsProject.IsFrbSourceLinked() || glueProject.FileVersion >= (int)GluxVersions.GumUsesSystemTypes)
+                {
+                    rectangleType = "System.Drawing.Rectangle";
+                }
+
                 toReturn +=
                     $@"
-            var contentManagerWrapper = new FlatRedBall.Gum.ContentManagerWrapper();
-            contentManagerWrapper.ContentManagerName = FlatRedBall.FlatRedBallServices.GlobalContentManager;
-            RenderingLibrary.Content.LoaderManager.Self.ContentLoader = contentManagerWrapper;
-
-
             var loaderManager = global::RenderingLibrary.Content.LoaderManager.Self;
             var renderer = global::RenderingLibrary.Graphics.Renderer.Self;
 
             renderer.SinglePixelTexture = loaderManager.LoadContent<Microsoft.Xna.Framework.Graphics.Texture2D>(""{fileLocation}"");
 
-            renderer.SinglePixelSourceRectangle = new Microsoft.Xna.Framework.Rectangle(
+            renderer.SinglePixelSourceRectangle = new {rectangleType}(
                 {left},
                 {top},
                 {right},

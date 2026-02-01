@@ -1537,10 +1537,10 @@ namespace FlatRedBall.IO
             }
         }
 
-        public static string Standardize(string fileNameToFix, string relativePath, bool makeAbsolute)
+        public static string Standardize(string fileNameToFix, string? relativePath, bool makeAbsolute)
         {
             if (fileNameToFix == null)
-                return null;
+                return string.Empty;
 
             bool isNetwork = fileNameToFix.StartsWith(@"\\");
 

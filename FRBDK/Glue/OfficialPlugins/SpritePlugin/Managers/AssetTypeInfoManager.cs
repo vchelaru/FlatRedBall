@@ -358,7 +358,7 @@ namespace OfficialPlugins.SpritePlugin.Managers
             }
             else if (!shouldHaveUseAnimationTextureFlip && doesAtiAlreadyHaveUseAnimationTextureFlip)
             {
-                ati.VariableDefinitions.Remove(existingUseAnimationTextureVariableDefinition);
+                ati.VariableDefinitions.Remove(existingUseAnimationTextureVariableDefinition!);
             }
 
             if (shouldHaveUseAnimationTextureFlip && existingIgnoreAnimationTextureFlipVariableDefinition != null)
