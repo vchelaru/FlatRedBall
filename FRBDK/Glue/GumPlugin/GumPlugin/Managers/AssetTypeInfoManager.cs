@@ -553,6 +553,8 @@ namespace GumPlugin.Managers
             {
                 var fileLocation = FileManager.GetDirectory(fileNameToLoad, RelativeType.Relative) + gumProjectSave.SinglePixelTextureFile;
 
+                fileLocation = FileManager.RemoveDotDotSlash(fileLocation);
+
                 int left = gumProjectSave.SinglePixelTextureLeft.Value;
                 int top = gumProjectSave.SinglePixelTextureTop.Value;
                 int right = gumProjectSave.SinglePixelTextureRight.Value;
