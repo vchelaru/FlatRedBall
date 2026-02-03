@@ -284,6 +284,13 @@ namespace FlatRedBall.Gui
                 mWindowOver = value;
             }
         }
+
+        public IWindow VisualOver
+        {
+            get => WindowOver;
+            set => WindowOver = value;
+        }
+
         public IWindow WindowClosing;
 
         float mPushedX;
