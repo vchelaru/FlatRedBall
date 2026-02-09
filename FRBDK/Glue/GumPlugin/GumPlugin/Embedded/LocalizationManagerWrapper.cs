@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using FlatRedBall.Localization;
-using MonoGameGum.Localization;
+using Gum.Localization;
 
 namespace GumCoreShared.FlatRedBall.Embedded;
 
