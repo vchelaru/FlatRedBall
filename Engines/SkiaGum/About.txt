@@ -1,0 +1,4 @@
+Gum has moved off of using these files, even in the Gum tool itself where it used to share files with FRB.
+
+This is a snapshot of the files before a refactor on Feb 19. This exists here for FRB until one day FRB moves to using the same code as
+the rest of MonoGame
