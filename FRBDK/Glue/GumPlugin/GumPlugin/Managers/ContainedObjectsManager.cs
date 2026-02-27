@@ -81,15 +81,15 @@ namespace GumPlugin.Managers
 
                 try
                 {
+                    var (fileContent, _) = GumFileSerializer.ReadAndDetectFormat(absoluteFile);
+                    var projectVersion = GumObjectFinder.Self.GumProjectSave?.Version ?? int.MaxValue;
                     if (extension == GumProjectSave.ComponentExtension)
                     {
-                        element =
-                            FileManager.XmlDeserialize<ComponentSave>(absoluteFile);
+                        element = GumFileSerializer.DeserializeElementSave<ComponentSave>(fileContent, projectVersion);
                     }
                     else
                     {
-                        element =
-                            FileManager.XmlDeserialize<Gum.DataTypes.ScreenSave>(absoluteFile);
+                        element = GumFileSerializer.DeserializeElementSave<Gum.DataTypes.ScreenSave>(fileContent, projectVersion);
                     }
                     // we could initialize more deeply, but this should handle common cases.
                     element.DefaultState.ParentContainer = element;

@@ -111,7 +111,9 @@ namespace FlatRedBall
             string oldDir = ToolsUtilities.FileManager.RelativeDirectory;
             ToolsUtilities.FileManager.RelativeDirectory = ToolsUtilities.FileManager.GetDirectory(mProjectFileName);
 
-            ComponentSave elementSave = FlatRedBall.IO.FileManager.XmlDeserialize<ComponentSave>(fileName);
+            var (idbContent, _) = GumFileSerializer.ReadAndDetectFormat(fileName);
+            ComponentSave elementSave = GumFileSerializer.DeserializeElementSave<ComponentSave>(idbContent,
+                ObjectFinder.Self.GumProjectSave?.Version ?? int.MaxValue);
             foreach (var state in elementSave.States)
             {
                 state.Initialize();

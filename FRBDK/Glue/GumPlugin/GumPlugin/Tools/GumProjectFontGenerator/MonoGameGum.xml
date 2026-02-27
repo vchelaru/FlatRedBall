@@ -4,61 +4,71 @@
         <name>MonoGameGum</name>
     </assembly>
     <members>
-        <member name="F:MonoGameGum.Forms.Controls.Button.ButtonCategoryState">
+        <member name="F:Gum.Forms.Controls.Button.ButtonCategoryName">
             <summary>
             The name of the Category containing visual states for the Button object.
             </summary>
         </member>
-        <member name="P:MonoGameGum.Forms.Controls.Button.Text">
+        <member name="P:Gum.Forms.Controls.Button.Text">
             <summary>
             Text displayed by the button. This property requires that the TextInstance instance be present in the Gum component.
             If the TextInstance instance is not present, an exception will be thrown in DEBUG mode
             </summary>
         </member>
-        <member name="P:MonoGameGum.Forms.Controls.Button.IsEnabled">
+        <member name="P:Gum.Forms.Controls.ComboBox.ListBox">
             <summary>
-            Whether the button is enabled or not. When disabled, the button will not respond to user input, and will display
-            a disabled state.
+            Replaces the internal ListBox with the provided instance.
+            This replaces the Items, SelectedObject, and SelectedIndex unless
+            the properties are bound.
             </summary>
         </member>
-        <member name="P:MonoGameGum.Forms.Controls.FrameworkElement.PopupRoot">
+        <member name="P:Gum.Forms.Controls.FrameworkElement.PopupRoot">
             <summary>
             Container used to hold popups such as the ListBox which appears when clicking on a combo box.
             </summary>
         </member>
-        <member name="P:MonoGameGum.Forms.Controls.FrameworkElement.ModalRoot">
+        <member name="P:Gum.Forms.Controls.FrameworkElement.ModalRoot">
             <summary>
             Container used to hold modal objects. If any object is added to this container, then all other
             UI does not receive events.
             </summary>
         </member>
-        <member name="P:MonoGameGum.Forms.Controls.FrameworkElement.IsFocused">
+        <member name="P:Gum.Forms.Controls.FrameworkElement.IsFocused">
             <summary>
             Whether this element has input focus. If true, the element shows its focused
             state and receives input from keyboards and gamepads.
             </summary>
         </member>
-        <member name="P:MonoGameGum.Forms.Controls.FrameworkElement.ActualHeight">
+        <member name="P:Gum.Forms.Controls.FrameworkElement.ActualHeight">
             <summary>
             The height in pixels. This is a calculated value considering HeightUnits and Height.
             </summary>
         </member>
-        <member name="P:MonoGameGum.Forms.Controls.FrameworkElement.ActualWidth">
+        <member name="P:Gum.Forms.Controls.FrameworkElement.ActualWidth">
             <summary>
             The width in pixels. This is a calculated value considering WidthUnits and Width;
             </summary>
         </member>
-        <member name="P:MonoGameGum.Forms.Controls.FrameworkElement.AbsoluteLeft">
+        <member name="P:Gum.Forms.Controls.FrameworkElement.AbsoluteLeft">
             <summary>
             Returns the left of this element in absolute (screen) coordinates
             </summary>
         </member>
-        <member name="P:MonoGameGum.Forms.Controls.FrameworkElement.AbsoluteTop">
+        <member name="P:Gum.Forms.Controls.FrameworkElement.AbsoluteTop">
             <summary>
             Returns the top of this element in absolute (screen) coordinates
             </summary>
         </member>
-        <member name="P:MonoGameGum.Forms.Controls.FrameworkElement.DefaultFormsComponents">
+        <member name="M:Gum.Forms.Controls.FrameworkElement.Anchor(Gum.Wireframe.Anchor)">
+            <inheritdoc cref="M:Gum.Wireframe.GraphicalUiElement.Anchor(Gum.Wireframe.Anchor)" />
+        </member>
+        <member name="P:Gum.Forms.Controls.FrameworkElement.IsEnabled">
+            <summary>
+            Whether the element is enabled or not. When disabled, the element does
+            not respond to user input, and displays a disabled state.
+            </summary>
+        </member>
+        <member name="P:Gum.Forms.Controls.FrameworkElement.DefaultFormsComponents">
             <summary>
             Contains the default association between Forms Controls and Gum Runtime Types. 
             This dictionary enabled forms controls (like TextBox) to automatically create their own visuals.
@@ -80,7 +90,15 @@
                 typeof(ProjectName.GumRuntimes.LargeMenuButtonRuntime);
             </example>
         </member>
-        <member name="M:MonoGameGum.Forms.Controls.FrameworkElement.Show(RenderingLibrary.Graphics.Layer)">
+        <member name="P:Gum.Forms.Controls.FrameworkElement.DefaultFormsTemplates">
+            <summary>
+            Contains the default association from a Forms type (such as Button) to the visual template used
+            for that particular forms type (such as the V2 button style, or a Component loaded from the Gum tool).
+            This may contain standard Gum types such as Gum.Forms.Controls, as well as derived types, such as
+            forms types created from components in generated code.
+            </summary>
+        </member>
+        <member name="M:Gum.Forms.Controls.FrameworkElement.Show(RenderingLibrary.Graphics.Layer)">
             <summary>
             Displays this element visually and adds it to the underlying managers for Cursor interaction.
             </summary>
@@ -90,28 +108,49 @@
             this will result in the object being added twice.</remarks>
             <param name="layer">The layer to add this to, can be null to add it directly to managers</param>
         </member>
-        <member name="M:MonoGameGum.Forms.Controls.FrameworkElement.CallLoaded">
+        <member name="M:Gum.Forms.Controls.FrameworkElement.CallLoaded">
             <summary>
             Calls the loaded event. This should not be called in custom code, but instead is called by Gum
             </summary>
         </member>
-        <member name="M:MonoGameGum.Forms.Controls.FrameworkElement.Activity">
-            <summary>
-            Every-frame logic. This will automatically be called if this element is added to the FrameworkElementManager
-            </summary>
-        </member>
-        <member name="M:MonoGameGum.Forms.Controls.FrameworkElement.ReactToVisualRemoved">
+        <member name="M:Gum.Forms.Controls.FrameworkElement.ReactToVisualRemoved">
             <summary>
             Method raised when the current visual is changed or set to null. If the visual
             is being replaced, this is called before the new visual is assigned.
             </summary>
         </member>
-        <member name="P:MonoGameGum.Forms.Controls.FrameworkElement.IsUsingLeftAndRightGamepadDirectionsForNavigation">
+        <member name="M:Gum.Forms.Controls.FrameworkElement.GetVisual(System.String)">
+            <summary>
+            Searches recursively for and returns a GraphicalUiElement (visual) in this instance by name. Returns null
+            if not found.
+            </summary>
+            <param name="name">The case-sensitive name to search for.</param>
+            <returns>The found GraphicalUiElement, or null if no match is found.</returns>
+        </member>
+        <member name="P:Gum.Forms.Controls.FrameworkElement.IsUsingLeftAndRightGamepadDirectionsForNavigation">
             <summary>
             Whether to use left and right directions as navigation. If false, left and right directions are ignored for navigation.
             </summary>
         </member>
-        <member name="M:MonoGameGum.Forms.Controls.FrameworkElement.HandleTab(MonoGameGum.Forms.Controls.TabDirection,MonoGameGum.Forms.Controls.FrameworkElement,System.Boolean)">
+        <member name="P:Gum.Forms.Controls.FrameworkElement.TabKeyCombos">
+            <summary>
+            List of key combinations that will trigger shifting focus
+            to the next control (typically called "tabbing").
+            </summary>
+        </member>
+        <member name="P:Gum.Forms.Controls.FrameworkElement.TabReverseKeyCombos">
+            <summary>
+            List of key combinations that will trigger shifting focus
+            to the previous control.
+            </summary>
+        </member>
+        <member name="P:Gum.Forms.Controls.FrameworkElement.ClickCombos">
+            <summary>
+            List of key combinations that will trigger a click action
+            on controls which can be clicked such as Button, ComboBox, and CheckBox
+            </summary>
+        </member>
+        <member name="M:Gum.Forms.Controls.FrameworkElement.HandleTab(Gum.Forms.Controls.TabDirection,Gum.Forms.Controls.FrameworkElement,System.Boolean)">
             <summary>
             Shifts focus to the next or previous element in the tab depending on the tabDirection argument.
             </summary>
@@ -120,7 +159,7 @@
             treated as the origin of the tab action.</param>
             <param name="loop">Whether to loop around to the beginning or end if at the last focusable item.</param>
         </member>
-        <member name="M:MonoGameGum.Forms.Controls.FrameworkElement.HandleTab(MonoGameGum.Forms.Controls.TabDirection,Gum.Wireframe.InteractiveGue,Gum.Wireframe.InteractiveGue,System.Boolean,System.Boolean)">
+        <member name="M:Gum.Forms.Controls.FrameworkElement.HandleTab(Gum.Forms.Controls.TabDirection,Gum.Wireframe.InteractiveGue,Gum.Wireframe.InteractiveGue,System.Boolean,System.Boolean)">
             <summary>
             
             </summary>
@@ -132,13 +171,13 @@
             <param name="loop"></param>
             <returns></returns>
         </member>
-        <member name="M:MonoGameGum.Forms.Controls.FrameworkElement.UpdateState">
+        <member name="M:Gum.Forms.Controls.FrameworkElement.UpdateState">
             <summary>
             Gets the state according to the element's current properties (such as whether it is enabled) and applies it
             to refresh the Visual's appearance.
             </summary>
         </member>
-        <member name="P:MonoGameGum.Forms.Controls.ItemsControl.Items">
+        <member name="P:Gum.Forms.Controls.ItemsControl.Items">
             <summary>
             The items contained by this ItemsControl. This can contain regular
             data such as strings, instances of ViewModels, or FrameworkElement instances
@@ -159,10 +198,48 @@
             in response to the Items.
             </remarks>
         </member>
-        <member name="M:MonoGameGum.Forms.Controls.ItemsControl.ReactToVisualRemoved">
+        <member name="E:Gum.Forms.Controls.ItemsControl.ItemClicked">
+            <summary>
+            Occurs when an item is clicked. A click is defined by the cursor
+            primary button being pressed last frame, and released this frame.
+            </summary>
+        </member>
+        <member name="E:Gum.Forms.Controls.ItemsControl.ItemPushed">
+            <summary>
+            Occurs when an item is pushed. A push is defined by the cursor
+            primary button being released last frame, and pressed this frame.
+            </summary>
+        </member>
+        <member name="M:Gum.Forms.Controls.ItemsControl.ReactToVisualRemoved">
             <inheritdoc/>
         </member>
-        <member name="F:MonoGameGum.Forms.Controls.ScrollIntoViewStyle.BringIntoView">
+        <member name="T:Gum.Forms.Controls.SelectionMode">
+            <summary>
+            Specifies how items can be selected in a ListBox.
+            </summary>
+        </member>
+        <member name="F:Gum.Forms.Controls.SelectionMode.Single">
+            <summary>
+            Only one item can be selected at a time. Clicking an item deselects all others.
+            </summary>
+        </member>
+        <member name="F:Gum.Forms.Controls.SelectionMode.Multiple">
+            <summary>
+            Multiple items can be selected. Each click toggles the selection state of the clicked item without affecting other selections.
+            </summary>
+        </member>
+        <member name="F:Gum.Forms.Controls.SelectionMode.Extended">
+            <summary>
+            Multiple items can be selected using modifier keys. Click selects one item (deselecting others),
+            Ctrl+Click toggles individual items, and Shift+Click selects a range from the anchor to the clicked item.
+            </summary>
+        </member>
+        <member name="T:Gum.Forms.Controls.ScrollIntoViewStyle">
+            <summary>
+            Specifies the scrolling behavior to use when bringing an item into view within a scrollable container.
+            </summary>
+        </member>
+        <member name="F:Gum.Forms.Controls.ScrollIntoViewStyle.BringIntoView">
             <summary>
             Scrolls only if the item is not in view. Scrolls the minimum amount necessary to bring the item into view.
             In other words, if the item is above the visible area, then the scrolling brings the item to the top.
@@ -170,14 +247,82 @@
             If the item is already into view, no scrolling is performed.
             </summary>
         </member>
-        <member name="P:MonoGameGum.Forms.Controls.ListBox.CanListItemsLoseFocus">
+        <member name="F:Gum.Forms.Controls.ScrollIntoViewStyle.Top">
+            <summary>
+            Scrolls the item to the top of the visible area.
+            </summary>
+        </member>
+        <member name="F:Gum.Forms.Controls.ScrollIntoViewStyle.Center">
+            <summary>
+            Scrolls the item to the center of the visible area.
+            </summary>
+        </member>
+        <member name="F:Gum.Forms.Controls.ScrollIntoViewStyle.Bottom">
+            <summary>
+            Scrolls the item to the bottom of the visible area.
+            </summary>
+        </member>
+        <member name="T:Gum.Forms.Controls.DragDropReorderMode">
+            <summary>
+            Specifies the available modes for drag-and-drop reordering operations.
+            </summary>
+        </member>
+        <member name="F:Gum.Forms.Controls.DragDropReorderMode.NoReorder">
+            <summary>
+            Drag+drop reordering is disabled.
+            </summary>
+        </member>
+        <member name="F:Gum.Forms.Controls.DragDropReorderMode.Immediate">
+            <summary>
+            Indicates that the operation should be performed immediately as dragging is happening.
+            </summary>
+        </member>
+        <member name="T:Gum.Forms.Controls.ListBox">
+            <summary>
+            Represents a control that displays a collection of selectable items in a list, allowing users to select one item at
+            a time. Supports keyboard, gamepad, and pointer navigation, as well as item reordering and focus management.
+            </summary>
+            <remarks>The ListBox provides advanced selection and navigation features, including support for focus
+            management between the list as a whole and individual items, drag-and-drop reordering (when enabled), and
+            integration with various input devices. Selection changes raise the SelectionChanged event, and controller input is
+            handled via the ControllerButtonPushed event. The ListBox can be customized to display items using different visual
+            templates and supports both data-bound and manually managed item collections. Thread safety is not guaranteed; all
+            interactions should occur on the UI thread.</remarks>
+        </member>
+        <member name="F:Gum.Forms.Controls.ListBox.ListBoxItemsInternal">
+             <summary>
+             Provides internal storage for the collection of list box items.
+             </summary>
+             <remarks>This field is intended for internal use and should not be accessed directly from outside the
+             containing class. Use public members to interact with the list box items when available.
+            
+             In normal usage, where view models or primitives are added to the Items collection, this
+             list is automatically kept up-to-date. However, it is possible for the Items collection to
+             not be up-to-date with ListBoxItemsInternal. This can happen if a visual is added directly
+             to the Items collection. In this case, the ListBox assumes that the added visual should be directly
+             displayed. However, if the visual already has a forms control, such as a Button having been added to
+             the list box, then the control is used as-is, and it is not even added to the ListBoxItems.
+             </remarks>
+        </member>
+        <member name="P:Gum.Forms.Controls.ListBox.SelectedItems">
+            <summary>
+            Gets the collection of currently selected items. This collection can be modified to change the selection,
+            and supports INotifyCollectionChanged for data binding. The collection cannot be replaced, only modified.
+            </summary>
+            <remarks>
+            In Single selection mode, this collection will contain at most one item.
+            In Multiple and Extended modes, this collection can contain multiple items.
+            Changes to this collection are synchronized with the IsSelected state of ListBoxItems.
+            </remarks>
+        </member>
+        <member name="P:Gum.Forms.Controls.ListBox.CanListItemsLoseFocus">
             <summary>
             Whether pressing the B button (back/cancel) should result in individual items losing focus and
             returning focus to the top level. This should be false if the list box is the only object in the 
             screen which can receive focus.
             </summary>
         </member>
-        <member name="P:MonoGameGum.Forms.Controls.ListBox.LoseListItemFocusOnPrimaryInput">
+        <member name="P:Gum.Forms.Controls.ListBox.LoseListItemFocusOnPrimaryInput">
             <summary>
             Whether the primary input button (usually the A button) results in the highlighted list box item
             being selected and in the ListBox focus moving outside of the individual items.
@@ -187,13 +332,55 @@
             list box item (such as toggling a check box) without focus being moved out of the individual items.
             </remarks>
         </member>
-        <member name="E:MonoGameGum.Forms.Controls.ListBox.SelectionChanged">
+        <member name="P:Gum.Forms.Controls.ListBox.SelectionMode">
+            <summary>
+            Gets or sets the selection behavior for the ListBox.
+            </summary>
+            <remarks>
+            Single mode (default): Only one item can be selected at a time.
+            Multiple mode: Each click toggles selection without modifier keys.
+            Extended mode: Click selects one, Ctrl+Click toggles, Shift+Click selects range.
+            Note: Gamepad and keyboard input always use single-selection behavior regardless of this mode.
+            </remarks>
+        </member>
+        <member name="P:Gum.Forms.Controls.ListBox.ToggleSelectionModifierKey">
+            <summary>
+            The primary key used to toggle individual item selection in Extended selection mode.
+            Default is LeftControl.
+            </summary>
+        </member>
+        <member name="P:Gum.Forms.Controls.ListBox.AlternateToggleSelectionModifierKey">
+            <summary>
+            The alternate key used to toggle individual item selection in Extended selection mode.
+            Default is RightControl.
+            </summary>
+        </member>
+        <member name="P:Gum.Forms.Controls.ListBox.RangeSelectionModifierKey">
+            <summary>
+            The primary key used to select a range of items in Extended selection mode.
+            Default is LeftShift.
+            </summary>
+        </member>
+        <member name="P:Gum.Forms.Controls.ListBox.AlternateRangeSelectionModifierKey">
+            <summary>
+            The alternate key used to select a range of items in Extended selection mode.
+            Default is RightShift.
+            </summary>
+        </member>
+        <member name="P:Gum.Forms.Controls.ListBox.DragDropReorderMode">
+            <summary>
+            Controls the ListBox's drag+drop behavior for reordering ListBoxItems. If true,
+            items can be reordered by pushing on an item and dragging it to the position of 
+            another item. By default this is set to NoReorder.
+            </summary>
+        </member>
+        <member name="E:Gum.Forms.Controls.ListBox.SelectionChanged">
             <summary>
             Event raised whenever the selection changes. The object parameter is the sender (list box) and the SelectionChangedeventArgs
             contains information about the changed selected items.
             </summary>
         </member>
-        <member name="E:MonoGameGum.Forms.Controls.ListBox.ControllerButtonPushed">
+        <member name="E:Gum.Forms.Controls.ListBox.ControllerButtonPushed">
             <summary>
             Event raised when the user presses a button, whether at the top level or internally on
             an item.
@@ -203,33 +390,100 @@
             this event when a button is pushed on an item.
             </remarks>
         </member>
-        <member name="M:MonoGameGum.Forms.Controls.ListBox.ScrollIntoView(System.Object,MonoGameGum.Forms.Controls.ScrollIntoViewStyle)">
+        <member name="M:Gum.Forms.Controls.ListBox.SyncIsSelectedFromSelectedItems">
             <summary>
-            Scrolls the list view so that the argument item is in view. The amount of scrolling depends on the scrollIntoViewStyle argument.
+            Synchronizes the IsSelected state of all ListBoxItems based on the SelectedItems collection.
+            </summary>
+        </member>
+        <member name="M:Gum.Forms.Controls.ListBox.HandleSelectedItemsCollectionChanged(System.Object,System.Collections.Specialized.NotifyCollectionChangedEventArgs)">
+            <summary>
+            Handles changes to the SelectedItems collection and synchronizes the IsSelected state of ListBoxItems.
+            </summary>
+        </member>
+        <member name="M:Gum.Forms.Controls.ListBox.HandleCollectionItemRemoved(System.Int32)">
+            <summary>
+            Handles the removal of an item from the Items collection at the specified index by also
+            removing the corresponding ListBoxItem from the internal ListBoxItemsInternal collection.
+            </summary>
+            <param name="indexToRemoveFrom">The index in the Items collection.</param>
+        </member>
+        <member name="M:Gum.Forms.Controls.ListBox.ScrollIntoView(System.Object,Gum.Forms.Controls.ScrollIntoViewStyle)">
+            <summary>
+            Scrolls the ListBox so that the argument item is in view. The amount of scrolling depends on the scrollIntoViewStyle argument.
             </summary>
             <param name="item">The item to scroll into view.</param>
             <param name="scrollIntoViewStyle">The desired location of the item after scrolling.</param>
         </member>
-        <member name="M:MonoGameGum.Forms.Controls.ListBox.ShowPopupListBox(MonoGameGum.Forms.Controls.ScrollViewer,Gum.Wireframe.GraphicalUiElement)">
+        <member name="M:Gum.Forms.Controls.ListBox.ScrollIndexIntoView(System.Int32,Gum.Forms.Controls.ScrollIntoViewStyle)">
+            <summary>
+            Scrolls the ListBox so that the item at the argument index is in view. The amount of scrolling depends on the scrollIntoViewStyle argument.
+            </summary>
+            <param name="itemIndex">The index of the item to scroll into view.</param>
+            <param name="scrollIntoViewStyle">The desired location of the item after scrolling.</param>
+        </member>
+        <member name="M:Gum.Forms.Controls.ListBox.ShowPopupListBox(Gum.Forms.Controls.ScrollViewer,Gum.Wireframe.GraphicalUiElement,System.Boolean)">
             <summary>
             Shows the argument popup using the argument listBoxParent to determine its destination layer.
             </summary>
             <param name="popup">The popup to show, for example a dropdown from a ComboBox or MenuItem</param>
             <param name="listBoxParent">The parent visual, which would be something like the ComboBox.Visual</param>
+            <param name="forceAbsoluteSize">Whether to force the popup to have absolute WidthUnits and HeightUnits.</param>
         </member>
-        <member name="P:MonoGameGum.Forms.Controls.ListBox.AdditionalOffsetToCheckForDPadNavigation">
+        <member name="P:Gum.Forms.Controls.ListBox.AdditionalOffsetToCheckForDPadNavigation">
             <summary>
             The additional offset to check when attempting to find a control when performing DPad navigation. This value is added
             to the InnerPanel's StackSpacing. Increasing this value is useful if objects in the ListBox are not of uniform size, but
             if the value is too large then navigation may skip rows or columns.
             </summary>
         </member>
-        <member name="M:MonoGameGum.Forms.Controls.ListBox.OnLoseFocus">
+        <member name="M:Gum.Forms.Controls.ListBox.OnLoseFocus">
             <summary>
             Removes focus from the ListBox, both at the top level and at the individual item level, even if CanListItemsLoseFocus is set to false.
             </summary>
         </member>
-        <member name="E:MonoGameGum.Forms.Controls.Primitives.ButtonBase.Click">
+        <member name="M:Gum.Forms.Controls.MenuItem.IsRecursiveMenuItem(Gum.Wireframe.GraphicalUiElement)">
+            <summary>
+            Returns whether the argument itemVisual is the visual for either
+            this MenuItem, or any MenuItem contained as a sub-item.
+            </summary>
+            <param name="itemVisual"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Gum.Forms.Controls.Panel">
+            <summary>
+            Base control which can contain multiple children. This is most commonly used
+            when instantiating a StackPanel.
+            </summary>
+        </member>
+        <member name="P:Gum.Forms.Controls.Panel.Children">
+            <summary>
+            Returns a read-only list of the children FrameworkElements of this panel. 
+            </summary>
+            <remarks>
+            This list is updated whenever the underlying Visual's Children change.
+            This only contains FrameworkElements, so if a non-FrameworkElement Visual
+            is added to this panel, it will not appear in this list.
+            </remarks>
+        </member>
+        <member name="M:Gum.Forms.Controls.Panel.#ctor">
+            <summary>
+            Creates a new Panel using default visuals.
+            </summary>
+        </member>
+        <member name="M:Gum.Forms.Controls.Panel.#ctor(Gum.Wireframe.InteractiveGue)">
+            <summary>
+            Creates a new Panel using the specified visual.
+            </summary>
+            <param name="visual">The visual to use.</param>
+        </member>
+        <member name="M:Gum.Forms.Controls.PasswordBox.HandleCharEntered(System.Char)">
+            <summary>
+            Will update the Text based on what was pressed, if existing text was already selected, or enter pressed.  Also updates the caret position.
+            See TextBox.cs for more details
+            </summary>
+            <param name="character">The ascii code character that we need to perform an action on</param>
+        </member>
+        <member name="E:Gum.Forms.Controls.Primitives.ButtonBase.Click">
             <summary>
             Event raised when the user pushes, then releases the control.
             This means the cursor is over the button, the button was originally pushed,
@@ -237,109 +491,346 @@
             The "click" terminology comes from the Cursor's PrimaryClick property.
             </summary>
         </member>
-        <member name="E:MonoGameGum.Forms.Controls.Primitives.ButtonBase.Push">
+        <member name="E:Gum.Forms.Controls.Primitives.ButtonBase.Push">
             <summary>
             Event raised when the user pushes on the control. 
             This means the cursor is over the button and the primary button was not pressed last frame, but is pressed this frame.
             The "push" terminology comes from the Cursor's PrimaryPush property.
             </summary>
         </member>
-        <member name="E:MonoGameGum.Forms.Controls.Primitives.ButtonBase.ControllerButtonPushed">
+        <member name="E:Gum.Forms.Controls.Primitives.ButtonBase.ControllerButtonPushed">
             <summary>
             Event raised when any button is pressed on an Xbox360GamePad which is being used by the 
             GuiManager.GamePadsForUiControl.
             </summary>
         </member>
-        <member name="F:MonoGameGum.Forms.Controls.Primitives.RangeBase.cursorGrabOffsetRelativeToThumb">
+        <member name="T:Gum.Forms.Controls.Primitives.RangeBase">
+            <summary>
+            Base class for controls which display or allow a user to change a value between a Minimum and Maximum.
+            This is the base class for ScrollBar and Slider.
+            </summary>
+        </member>
+        <member name="F:Gum.Forms.Controls.Primitives.RangeBase.cursorGrabOffsetRelativeToThumb">
             <summary>
             Represents the X or Y offset of the cursor relative to the thumb when the thumb was grabbed.
             If the element is horizontal, this is an X value. If the element is vertical, this is a Y value.
             </summary>
         </member>
-        <member name="P:MonoGameGum.Forms.Controls.Primitives.RangeBase.LargeChange">
+        <member name="P:Gum.Forms.Controls.Primitives.RangeBase.LargeChange">
             <summary>
-            The amount to change Value when the user clicks on the track.
+            The amount to change Value when the user clicks on the track. 
+            Only applies if IsMoveToPointEnabled is false.
             </summary>
         </member>
-        <member name="P:MonoGameGum.Forms.Controls.Primitives.RangeBase.SmallChange">
+        <member name="P:Gum.Forms.Controls.Primitives.RangeBase.SmallChange">
             <summary>
-            The amount of to change Value when the user presses the up or down buttons on a scrollbar.
-            Also currently the amount of distance to move per mouse wheel tick - note that this may change
-            in future versions of Forms.
+            The amount to change Value when the user presses the up or down buttons on a scrollbar, 
+            per mouse wheel tick on a scrollbar, or the amount to change the value in response
+            to left/right presses on gamepad or keyboard on a Slider.
             </summary>
         </member>
-        <member name="P:MonoGameGum.Forms.Controls.Primitives.RangeBase.Minimum">
+        <member name="P:Gum.Forms.Controls.Primitives.RangeBase.Minimum">
             <summary>
             The minimum inclusive value which can be set through the UI.
             </summary>
         </member>
-        <member name="P:MonoGameGum.Forms.Controls.Primitives.RangeBase.Maximum">
+        <member name="P:Gum.Forms.Controls.Primitives.RangeBase.Maximum">
             <summary>
             The maximum inclusive value which can be set through the UI.
             </summary>
         </member>
-        <member name="M:MonoGameGum.Forms.Controls.Primitives.RangeBase.ReactToVisualRemoved">
+        <member name="P:Gum.Forms.Controls.Primitives.RangeBase.Value">
+            <summary>
+            The current value of the RangeBase. This value is clamped to be between Minimum and Maximum.
+            </summary>
+        </member>
+        <member name="P:Gum.Forms.Controls.Primitives.RangeBase.IsMoveToPointEnabled">
+            <summary>
+            Controls whether clicking on the track sets the value to the clicked position.
+            If true, the value moves to the clicked position. If false, the value increases or decreases
+            according to the LargeChange value.
+            </summary>
+        </member>
+        <member name="E:Gum.Forms.Controls.Primitives.RangeBase.ValueChanged">
+            <summary>
+            Event raised whenever the Value property changes regardless
+            of source. This event may be raised multiple times if the user
+            pushes+drags on the track or thumb.
+            </summary>
+        </member>
+        <member name="E:Gum.Forms.Controls.Primitives.RangeBase.ValueChangeCompleted">
+            <summary>
+            Event raised whenever a Value change has completed. This event is raised for discrete
+            changes such as pressing left/right on a keyboard, or pushes on the track when
+            IsMoveToPointEnabled is set to false.
+            </summary>
+            <remarks>
+            This event can be used to prevent responding to changes every frame as a user
+            is dragging a thumb or clicking on a track with IsMoveToPointEnabled set to true.
+            Examples of when to use ValueChangeCompleted would be to play an audio cue when changing
+            volume, or committing changes which are too expensive to perform every frame such as saving
+            settings to disk.
+            </remarks>
+        </member>
+        <member name="E:Gum.Forms.Controls.Primitives.RangeBase.ValueChangedByUi">
+            <summary>
+            Event raised whenever a Value change is initiated by the UI. This event is not raised
+            when Value changes are performed in code, such as by assigning the Value property.
+            </summary>
+        </member>
+        <member name="E:Gum.Forms.Controls.Primitives.RangeBase.OrientationChanged">
+            <summary>
+            Event raised when the Orientation property is changed.
+            </summary>
+        </member>
+        <member name="M:Gum.Forms.Controls.Primitives.RangeBase.ReactToVisualRemoved">
             <inheritdoc/>
         </member>
-        <member name="F:MonoGameGum.Forms.Controls.ScrollBarVisibility.Auto">
+        <member name="M:Gum.Forms.Controls.Primitives.RangeBase.HandleTrackHover(System.Object,System.EventArgs)">
+            <summary>
+            Handles the user pushing and holding the mouse button
+            on the track. If IsMoveToPointEnabled is true, this 
+            moves the position immediately. Otherwise, it only does
+            so using the track's repeat rate values.
+            </summary>
+            <remarks>
+            If IsMoveToPointEnabled is set to true, then 
+            Value is also updated immediately in HandleTrackDragging;
+            </remarks>
+            <param name="sender">The sender of the event.</param>
+            <param name="e">Args for the event.</param>
+        </member>
+        <member name="F:Gum.Forms.Controls.ScrollBarVisibility.Auto">
             <summary>
             The ScrollBar displays only if needed based on the size of the inner panel
             </summary>
         </member>
-        <member name="F:MonoGameGum.Forms.Controls.ScrollBarVisibility.Hidden">
+        <member name="F:Gum.Forms.Controls.ScrollBarVisibility.Hidden">
             <summary>
             The ScrollBar remains invisible even if the contents of the inner panel exceed the size of its container
             </summary>
         </member>
-        <member name="F:MonoGameGum.Forms.Controls.ScrollBarVisibility.Visible">
+        <member name="F:Gum.Forms.Controls.ScrollBarVisibility.Visible">
             <summary>
             The ScrollBar always displays
             </summary>
         </member>
-        <member name="M:MonoGameGum.Forms.Controls.ScrollViewer.ReactToVisualRemoved">
+        <member name="T:Gum.Forms.Controls.ScrollViewer">
+            <summary>
+            A control for displaying stacked items with a scroll bar. Items can be
+            FrameworkElements (Forms) or regular visuals (GraphicalUiElements).
+            </summary>
+        </member>
+        <member name="P:Gum.Forms.Controls.ScrollViewer.SmallChange">
+            <inheritdoc cref="P:Gum.Forms.Controls.Primitives.RangeBase.SmallChange"/>
+            <remarks>
+            This property sets the SmallChange value for both vertical and horizontal scroll bars.
+            </remarks>
+        </member>
+        <member name="P:Gum.Forms.Controls.ScrollViewer.VerticalScrollBarValue">
+            <summary>
+            The vertical scroll bar value. Assigning this automatically scrolls
+            the ScrollViewer to the desired location. Percentage-based scrolling
+            can be perofrmed by using VerticalScrollBarMaximum. 
+            </summary>
+        </member>
+        <member name="P:Gum.Forms.Controls.ScrollViewer.VerticalScrollBarMaximum">
+            <summary>
+            Gets the maximum amount the scroll bar can be scrolled to. This value is automatically
+            assigned by the ScrollViewer in response to children being added.
+            </summary>
+        </member>
+        <member name="P:Gum.Forms.Controls.ScrollViewer.VerticalSizeMode">
+            <summary>
+            Sets whether vertical sizing (height of entire control) is fixed (based on the size of the ScrollViewer's Visual) or 
+            auto (based on the size of the inner panel's contents).
+            </summary>
+            <remarks>
+            This property depends on the underlying Visual implementing the VerticalSizeMode category
+            with an Auto state. If this is not set, then this property simply prevents the ScrollBarVisibility 
+            category from being set.
+            </remarks>
+        </member>
+        <member name="P:Gum.Forms.Controls.ScrollViewer.HorizontalSizeMode">
+            <summary>
+            Sets whether horizontal sizing (width of the entire control) is fixed (based on the size of the ScrollViewer's Visual) or
+            auto (based on the size of the inner panel's contents).
+            </summary>
+            <remarks>
+            This property depends on the underlying Visual implementing the HorizontalSizeMode category
+            with an Auto state. If this is not set, then this property simply prevents the ScrollBarVisibility
+            category from being set.
+            </remarks>
+        </member>
+        <member name="M:Gum.Forms.Controls.ScrollViewer.ReactToVisualRemoved">
             <inheritdoc/>
         </member>
-        <member name="T:MonoGameGum.Forms.Controls.Slider">
+        <member name="T:Gum.Forms.Controls.Slider">
             <summary>
             A control enabling changing a value between the specified Minimum and Maximum
             </summary>
         </member>
-        <member name="P:MonoGameGum.Forms.Controls.Slider.TicksFrequency">
+        <member name="P:Gum.Forms.Controls.Slider.TicksFrequency">
             <summary>
             The frequency to snap the Slider value when IsSnapToTickEnabled is true. If IsSnapToTickEnabled
             is false, then this value is ignored.
             </summary>
         </member>
-        <member name="P:MonoGameGum.Forms.Controls.Slider.IsSnapToTickEnabled">
+        <member name="P:Gum.Forms.Controls.Slider.IsSnapToTickEnabled">
             <summary>
             Controls whether the TickFrequency is applied when the slider is moved throuh the UI. If false, then any
             value between Minimum and Maximum is possible. If true, then values snap to the TickFrequency.
             </summary>
         </member>
-        <member name="M:MonoGameGum.Forms.Controls.Slider.ReactToVisualRemoved">
+        <member name="M:Gum.Forms.Controls.Slider.ReactToVisualRemoved">
             <inheritdoc/>
         </member>
-        <member name="P:MonoGameGum.Forms.Controls.TextCompositionEventArgs.Text">
+        <member name="T:Gum.Forms.Controls.Splitter">
+            <summary>
+            Control which allows the user to resize two adjacent siblings.
+            </summary>
+        </member>
+        <member name="P:Gum.Forms.Controls.Splitter.ResizeBehavior">
+            <summary>
+            The explicitly-set resize behavior. If null, resize behavior is determined
+            by layout.
+            </summary>
+        </member>
+        <member name="M:Gum.Forms.Controls.Splitter.#ctor">
+            <summary>
+            Creates a new Splitter using default visuals.
+            </summary>
+        </member>
+        <member name="M:Gum.Forms.Controls.Splitter.#ctor(Gum.Wireframe.InteractiveGue)">
+            <summary>
+            Creates a new Splitter using the specified visual.
+            </summary>
+            <param name="visual">The visual to use.</param>
+        </member>
+        <member name="M:Gum.Forms.Controls.Splitter.ApplyResizeChangeInPixels(System.Single)">
+            <summary>
+            Resizes the previous and next siblings based on the changeInPixels parameter.
+            </summary>
+            <param name="changeInPixels">The number of pixels to resize, where positive is to the right or down dependin gon the effective resize behavior.</param>
+        </member>
+        <member name="P:Gum.Forms.Controls.TextBox.Text">
+            <summary>
+            Gets and sets the displayed Text. If the text exceeds MaxLength, it will be truncated.
+            </summary>
+        </member>
+        <member name="P:Gum.Forms.Controls.TextBox.MaxLettersToShow">
+            <summary>
+            The maximum letters to display. This can be used to 
+            create an effect where the text prints out letter-by-letter.
+            </summary>
+        </member>
+        <member name="P:Gum.Forms.Controls.TextBox.MaxNumberOfLines">
+            <summary>
+            The maximum number of lines to display. This can be used to 
+            limit how many lines of text are displayed at one time.
+            </summary>
+        </member>
+        <member name="E:Gum.Forms.Controls.TextBox.TextChanged">
+            <summary>
+            Event raised when the Text property changes.
+            </summary>
+        </member>
+        <member name="M:Gum.Forms.Controls.TextBox.#ctor">
+            <summary>
+            Creates a new TextBox instance using the default visual.
+            </summary>
+        </member>
+        <member name="M:Gum.Forms.Controls.TextBox.#ctor(Gum.Wireframe.InteractiveGue)">
+            <summary>
+            Creates a new TextBox instance using the specified visual.
+            </summary>
+            <param name="visual"></param>
+        </member>
+        <member name="M:Gum.Forms.Controls.TextBox.HandleCharEntered(System.Char)">
+            <summary>
+            Will update the Text based on what was pressed, if existing text was already selected, or enter pressed.  Also updates the caret position.  
+            Does not handle control keys like(LEFT, RIGHT, UP, DOWN, HOME, END, BACKSPACE, DELETE, CTRL+C, CTRL+X, CTRL+V, CTRL+A)
+            control key situations are handled by TextBoxBase.HandleKeyDown
+            Key information is gathered from Keyboard.cs in the Activity method, then passed during TextBoxBase.DoKeyboardAction
+            </summary>
+            <param name="character">The ascii code character that we need to perform an action on</param>
+        </member>
+        <member name="M:Gum.Forms.Controls.TextBox.HandleBackspace(System.Boolean)">
+            <summary>
+            Performs logic to handle backspace. This includes deleting individual letters, deleting selection, or deleting the previous word if ctrl is down.
+            </summary>
+            <param name="isCtrlDown">Whether the ctrl key is held. If true, the entire word is deleted rather than a single character.</param>
+        </member>
+        <member name="M:Gum.Forms.Controls.TextBox.DeleteSelection">
+            <summary>
+            Deletes the selected text, updates the caret position, and sets the SelectionLength to 0.
+            </summary>
+        </member>
+        <member name="M:Gum.Forms.Controls.TextBox.SelectAll">
+            <summary>
+            Sets the SelectionStart to 0 and the SelectionLength to the length of the text, if any.
+            </summary>
+        </member>
+        <member name="P:Gum.Forms.Controls.TextCompositionEventArgs.Text">
             <summary>
             The new text value.
             </summary>
         </member>
-        <member name="F:MonoGameGum.Forms.Controls.TextBoxBase.indexPushed">
+        <member name="F:Gum.Forms.Controls.TextBoxBase.indexPushed">
             <summary>
             The cursor index where the cursor was last pushed, used for drag+select
             </summary>
         </member>
-        <member name="P:MonoGameGum.Forms.Controls.TextBoxBase.IsCaretVisibleWhenNotFocused">
+        <member name="P:Gum.Forms.Controls.TextBoxBase.IsCaretVisibleWhenNotFocused">
             <summary>
             Whether the caret is visible when not focused. If true, the caret will always stay visible even if the TextBox has lost focus.
             </summary>
         </member>
-        <member name="M:MonoGameGum.Forms.Controls.TextBoxBase.UpdateToSelection">
+        <member name="P:Gum.Forms.Controls.TextBoxBase.AcceptsTab">
+            <summary>
+            Whether pressing the tab key inserts a tab character. If true, then
+            tab characters can be inserted.
+            </summary>
+        </member>
+        <member name="M:Gum.Forms.Controls.TextBoxBase.HandleKeyDown(Microsoft.Xna.Framework.Input.Keys,System.Boolean,System.Boolean,System.Boolean)">
+            <summary>
+            Handles special situations only like [LEFT, HOME, END, BACK (Backspace), RIGHT, UP, DOWN, DELETE, CTRL+C, CTRL+X, CTRL+V, CTRL+A]
+            Data comes from the MonogameGum.Input.Keyboard.Activity() method earlier in the call stack, which gets the data from Monogame's Keyboard.GetState()
+            </summary>
+            <param name="key"></param>
+            <param name="isShiftDown"></param>
+            <param name="isAltDown"></param>
+            <param name="isCtrlDown"></param>
+        </member>
+        <member name="M:Gum.Forms.Controls.TextBoxBase.DoKeyboardAction(Gum.Wireframe.IInputReceiverKeyboard)">
+            <summary>
+            Performs key actions based on the keyboard input gathered during Keyboard.cs's Activity() method
+            </summary>
+            <param name="keyboard">State of keyboard from TextInput and Keyboard.GetKeys</param>
+        </member>
+        <member name="M:Gum.Forms.Controls.TextBoxBase.GetLineNumber(System.Int32,System.Int32@,System.Int32@,System.Int32@)">
+            <summary>
+            Returns the line number, start of the line, and relative index into the line given an absolute character index
+            </summary>
+            <param name="absoluteCharacterIndex">The absolute character index, where 0 is the first character in the entire text box.</param>
+            <param name="lineNumber">The line number containing the arugment character index.</param>
+            <param name="absoluteStartOfLine">The index of the first character in the argument lineNumber.</param>
+            <param name="relativeIndexOnLine">The relative index in the line, where 0 is the first character in the line.</param>
+        </member>
+        <member name="P:Gum.Forms.Controls.TextBoxBase.AcceptsReturn">
+            <summary>
+            Whether pressing the return key adds a newline to the text box. If false, the return key does not add a newline.
+            </summary>
+            <remarks>
+            Setting this value to true makes the Visual use its 
+            LineModeCategoryState.Multi state.</remarks>
+        </member>
+        <member name="M:Gum.Forms.Controls.TextBoxBase.UpdateToSelection">
             <summary>
             Updates the Selection visuals to match the current selection values.
             </summary>
         </member>
-        <member name="F:MonoGameGum.Forms.Controls.TextBoxBase.edgeToTextPadding">
+        <member name="F:Gum.Forms.Controls.TextBoxBase.edgeToTextPadding">
             <summary>
             The maximum distance between the edge of the control and the text.
             Either we will want to make this customizable at some point, or remove
@@ -348,7 +839,7 @@
             the range of the text object.
             </summary>
         </member>
-        <member name="E:MonoGameGum.Forms.Controls.ToggleButton.Checked">
+        <member name="E:Gum.Forms.Controls.ToggleButton.Checked">
             <summary>
             Event raised when the IsChecked value is set to true. Seperate events exist for Indeterminate and Unchecked.
             </summary>
@@ -357,30 +848,440 @@
             https://stackoverflow.com/questions/5574613/separate-events-for-checked-and-unchecked-state-of-wpf-checkbox-why
             </remarks>
         </member>
-        <member name="E:MonoGameGum.Forms.Controls.ToggleButton.Indeterminate">
+        <member name="E:Gum.Forms.Controls.ToggleButton.Indeterminate">
             <summary>
             Event raised when the IsChecked value is set to null.
             </summary>
         </member>
-        <member name="E:MonoGameGum.Forms.Controls.ToggleButton.Unchecked">
+        <member name="E:Gum.Forms.Controls.ToggleButton.Unchecked">
             <summary>
             Event raised when the IsChecked value is set to false;
             </summary>
         </member>
-        <member name="M:MonoGameGum.Forms.FormsUtilities.InitializeDefaults">
+        <member name="M:Gum.Forms.Data.BinderHelpers.BuildGetter(System.Type,System.String)">
+            <summary>
+            Null-safe getter: returns DependencyProperty.UnsetValue if any intermediate is null.
+            </summary>
+        </member>
+        <member name="M:Gum.Forms.Data.BinderHelpers.BuildSetter(System.Type,System.String)">
+            <summary>
+            Null-safe setter: no-op if any intermediate is null.
+            </summary>
+        </member>
+        <member name="T:Gum.Forms.Data.BindingMode">
+            <summary>
+            Defines the direction of data flow in a binding.
+            </summary>
+        </member>
+        <member name="F:Gum.Forms.Data.BindingMode.OneWay">
+            <summary>
+            Data flows from the source to the target only.
+            Changes in the source (usually the ViewModel) update the target (usually the View),
+            but changes in the target do not update the source.
+            </summary>
+        </member>
+        <member name="F:Gum.Forms.Data.BindingMode.TwoWay">
+            <summary>
+            Data flows in both directions between the source and target.
+            Changes in either the source (usually the ViewModel) or target (usually the View) update the other.
+            </summary>
+        </member>
+        <member name="F:Gum.Forms.Data.BindingMode.OneWayToSource">
+            <summary>
+            Data flows from the target to the source only.
+            Changes in the target (usually the View) update the source (usually the ViewModel),
+            but changes in the source do not update the target.
+            </summary>
+        </member>
+        <member name="T:Gum.Forms.Data.UpdateSourceTrigger">
+            <summary>
+            Defines when the source (usually the ViewModel) is updated in a binding.
+            </summary>
+        </member>
+        <member name="F:Gum.Forms.Data.UpdateSourceTrigger.Default">
+            <summary>
+            Uses the default update behavior for the target property.
+            The default behavior depends on the type of control being bound.
+            </summary>
+        </member>
+        <member name="F:Gum.Forms.Data.UpdateSourceTrigger.PropertyChanged">
+            <summary>
+            Updates the source immediately whenever the target property value changes.
+            For example, in a TextBox, the source updates with every keystroke.
+            </summary>
+        </member>
+        <member name="F:Gum.Forms.Data.UpdateSourceTrigger.LostFocus">
+            <summary>
+            Updates the source when the target control loses focus.
+            For example, in a TextBox, the source updates only when the user clicks outside the TextBox
+            or tabs to another control, not during typing.
+            </summary>
+        </member>
+        <member name="T:Gum.Forms.Data.IValueConverter">
+             <summary>
+             Provides a way to transform values as they flow between the source and target in a binding.
+             Implement this interface to create custom converters for data transformations.
+             </summary>
+             <example>
+             A converter that transforms a boolean to a color:
+             <code>
+             public class BoolToColorConverter : IValueConverter
+             {
+                 public object? Convert(object? value, Type targetType, object? parameter)
+                 {
+                     if (value is bool isActive)
+                         return isActive ? Color.Green : Color.Red;
+                     return Color.Gray;
+                 }
+            
+                 public object? ConvertBack(object? value, Type sourceType, object? parameter)
+                 {
+                     // Not typically implemented for one-way conversions like color
+                     return Binding.DoNothing;
+                 }
+             }
+             </code>
+             </example>
+        </member>
+        <member name="M:Gum.Forms.Data.IValueConverter.Convert(System.Object,System.Type,System.Object)">
+            <summary>
+            Converts a value from the source (usually ViewModel) to the target (usually View).
+            This is called when data flows from source to target.
+            </summary>
+            <param name="value">The value from the source property.</param>
+            <param name="targetType">The type of the target property.</param>
+            <param name="parameter">An optional parameter from <see cref="P:Gum.Forms.Data.Binding.ConverterParameter"/>.</param>
+            <returns>The converted value to set on the target property, or <see cref="P:Gum.Forms.Data.Binding.DoNothing"/> to skip the update.</returns>
+        </member>
+        <member name="M:Gum.Forms.Data.IValueConverter.ConvertBack(System.Object,System.Type,System.Object)">
+            <summary>
+            Converts a value from the target (usually View) back to the source (usually ViewModel).
+            This is called when data flows from target to source in TwoWay or OneWayToSource bindings.
+            </summary>
+            <param name="value">The value from the target property.</param>
+            <param name="sourceType">The type of the source property.</param>
+            <param name="parameter">An optional parameter from <see cref="P:Gum.Forms.Data.Binding.ConverterParameter"/>.</param>
+            <returns>The converted value to set on the source property, or <see cref="P:Gum.Forms.Data.Binding.DoNothing"/> to skip the update.</returns>
+        </member>
+        <member name="T:Gum.Forms.Data.Binding">
+            <summary>
+            Represents a data binding between a source property (usually on a ViewModel) and a target property (usually on a View control).
+            </summary>
+            <param name="path">The property path on the source object to bind to.</param>
+        </member>
+        <member name="M:Gum.Forms.Data.Binding.#ctor(System.String)">
+            <summary>
+            Represents a data binding between a source property (usually on a ViewModel) and a target property (usually on a View control).
+            </summary>
+            <param name="path">The property path on the source object to bind to.</param>
+        </member>
+        <member name="P:Gum.Forms.Data.Binding.DoNothing">
+            <summary>
+            A sentinel value that indicates no action should be taken during conversion.
+            Return this from a converter to prevent updating the target or source.
+            </summary>
+        </member>
+        <member name="M:Gum.Forms.Data.Binding.#ctor(System.Linq.Expressions.LambdaExpression)">
+            <summary>
+            Creates a binding using a lambda expression to specify the property path.
+            This provides compile-time safety and refactoring support compared to using a string path.
+            </summary>
+            <param name="propertyExpression">A lambda expression that references the property to bind to.
+            For example: <c>vm => vm.UserName</c> or <c>vm => vm.Address.City</c>.</param>
+        </member>
+        <member name="P:Gum.Forms.Data.Binding.Path">
+            <summary>
+            Gets the property path on the source object to bind to.
+            For example, "UserName" or "Address.City".
+            </summary>
+        </member>
+        <member name="P:Gum.Forms.Data.Binding.Mode">
+            <summary>
+            Gets or sets the direction of data flow in the binding.
+            Default is <see cref="F:Gum.Forms.Data.BindingMode.TwoWay"/>.
+            </summary>
+        </member>
+        <member name="P:Gum.Forms.Data.Binding.UpdateSourceTrigger">
+            <summary>
+            Gets or sets when the source is updated in a binding.
+            Default is <see cref="F:Gum.Forms.Data.UpdateSourceTrigger.Default"/>.
+            </summary>
+        </member>
+        <member name="P:Gum.Forms.Data.Binding.FallbackValue">
+            <summary>
+            Gets or sets the value to use when the binding cannot retrieve a value from the source.
+            For example, if binding to a property that doesn't exist or if the source is null,
+            the FallbackValue will be displayed in the target control instead.
+            </summary>
+        </member>
+        <member name="P:Gum.Forms.Data.Binding.TargetNullValue">
+            <summary>
+            Gets or sets the value to use when the source property value is null.
+            For example, you might set TargetNullValue to "(none)" to display in a TextBox
+            when the bound property is null, instead of showing an empty string.
+            </summary>
+        </member>
+        <member name="P:Gum.Forms.Data.Binding.Converter">
+            <summary>
+            Gets or sets a converter to transform values between the source and target.
+            For example, a converter might transform a boolean to a color (true = green, false = red)
+            or convert a DateTime to a formatted string.
+            </summary>
+        </member>
+        <member name="P:Gum.Forms.Data.Binding.ConverterParameter">
+            <summary>
+            Gets or sets an optional parameter to pass to the <see cref="P:Gum.Forms.Data.Binding.Converter"/>.
+            This can be used to customize the converter's behavior without creating multiple converter classes.
+            </summary>
+        </member>
+        <member name="P:Gum.Forms.Data.Binding.StringFormat">
+            <summary>
+            Gets or sets a format string to apply to the value.
+            For example, "{0:C}" formats a number as currency, or "{0:MM/dd/yyyy}" formats a DateTime.
+            </summary>
+        </member>
+        <member name="T:Gum.Forms.Data.Binding`1">
+            <summary>
+            A strongly-typed binding that provides compile-time type safety for the source object.
+            This class exists to allow creating bindings with a typed lambda expression without casting,
+            making the code more readable and type-safe.
+            </summary>
+            <typeparam name="T">The type of the source object (usually the ViewModel type).</typeparam>
+            <param name="propertyExpression">A lambda expression that references the property to bind to.
+            For example: <c>new Binding&lt;MyViewModel&gt;(vm => vm.UserName)</c>.</param>
+        </member>
+        <member name="M:Gum.Forms.Data.Binding`1.#ctor(System.Linq.Expressions.Expression{System.Func{`0,System.Object}})">
+            <summary>
+            A strongly-typed binding that provides compile-time type safety for the source object.
+            This class exists to allow creating bindings with a typed lambda expression without casting,
+            making the code more readable and type-safe.
+            </summary>
+            <typeparam name="T">The type of the source object (usually the ViewModel type).</typeparam>
+            <param name="propertyExpression">A lambda expression that references the property to bind to.
+            For example: <c>new Binding&lt;MyViewModel&gt;(vm => vm.UserName)</c>.</param>
+        </member>
+        <member name="T:Gum.Forms.Data.PropertyPathObserver">
+            <summary>
+            Watches a dotted-path (e.g. "Foo.Bar.Baz") on any INotifyPropertyChanged root
+            and raises ValueChanged whenever the final value changes (or any segment in between changes).
+            </summary>
+        </member>
+        <member name="E:Gum.Forms.Data.PropertyPathObserver.ValueChanged">
+            <summary> Raised whenever the value at the end of the path has changed. </summary>
+        </member>
+        <member name="M:Gum.Forms.Data.PropertyPathObserver.Attach(System.Object)">
+            <summary>
+            Start observing on a new root object (detaches from the old).
+            </summary>
+        </member>
+        <member name="P:Gum.Forms.DefaultVisuals.Styling.ActiveStyle">
+            <summary>
+            This allows someone to get the active style from any instance they create, or from the class self like Styling.ActiveStyle.
+            </summary>
+        </member>
+        <member name="M:Gum.Forms.DefaultVisuals.Styling.CreateTextureCoordinateState(System.Int32,System.Int32,System.Int32,System.Int32,Microsoft.Xna.Framework.Graphics.Texture2D)">
+            <summary>
+            Creates a StateSave object that represents the rectangle position on a specific Texture2D
+            </summary>
+            <param name="left"></param>
+            <param name="top"></param>
+            <param name="width"></param>
+            <param name="height"></param>
+            <param name="texture"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Gum.Forms.DefaultVisuals.V3.Styling.ActiveStyle">
+            <summary>
+            This allows someone to get the active style from any instance they create, or from the class self like Styling.ActiveStyle.
+            </summary>
+        </member>
+        <member name="M:Gum.Forms.DefaultVisuals.V3.Styling.CreateTextureCoordinateState(System.Int32,System.Int32,System.Int32,System.Int32,Microsoft.Xna.Framework.Graphics.Texture2D,System.String)">
+            <summary>
+            Creates a StateSave object that represents the rectangle position on a specific Texture2D
+            </summary>
+            <param name="left"></param>
+            <param name="top"></param>
+            <param name="width"></param>
+            <param name="height"></param>
+            <param name="texture"></param>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Gum.Forms.DefaultVisuals.V3.ColorExtensions.Adjust(Microsoft.Xna.Framework.Color,System.Single)">
+            <summary>
+            Lightens (positive amount) or darkens (negative amount) a color.
+            amount = -100% to +100%.  Example: -30f = 30% darker, +20f = 20% lighter.
+            </summary>
+        </member>
+        <member name="T:Gum.Forms.DefaultVisuals.V3.WindowVisual">
+            <summary>
+            A code-only visual for a Window control.
+            </summary>
+        </member>
+        <member name="P:Gum.Forms.DefaultVisuals.V3.WindowVisual.Background">
+            <summary>
+            The Background NineSlice for the Window. This is the visual frame.
+            </summary>
+        </member>
+        <member name="P:Gum.Forms.DefaultVisuals.V3.WindowVisual.InnerPanelInstance">
+            <summary>
+            The panel which hosts the inner content of the window. Calling AddChild adds children to 
+            this panel.
+            </summary>
+        </member>
+        <member name="P:Gum.Forms.DefaultVisuals.V3.WindowVisual.TitleBarInstance">
+            <summary>
+            The panel which acts as the area which the user can push to drag the window.
+            </summary>
+        </member>
+        <member name="P:Gum.Forms.DefaultVisuals.V3.WindowVisual.BorderTopLeftInstance">
+            <summary>
+            The panel which acts as the top-left border for resizing.
+            </summary>
+        </member>
+        <member name="P:Gum.Forms.DefaultVisuals.V3.WindowVisual.BorderTopRightInstance">
+            <summary>
+            The panel which acts as the top-right border for resizing.
+            </summary>
+        </member>
+        <member name="P:Gum.Forms.DefaultVisuals.V3.WindowVisual.BorderBottomLeftInstance">
+            <summary>
+            The panel which acts as the bottom-left border for resizing.
+            </summary>
+        </member>
+        <member name="P:Gum.Forms.DefaultVisuals.V3.WindowVisual.BorderBottomRightInstance">
+            <summary>
+            The panel which acts as the bottom-right border for resizing.
+            </summary>
+        </member>
+        <member name="P:Gum.Forms.DefaultVisuals.V3.WindowVisual.BorderTopInstance">
+            <summary>
+            The panel which acts as the top border for resizing.
+            </summary>
+        </member>
+        <member name="P:Gum.Forms.DefaultVisuals.V3.WindowVisual.BorderBottomInstance">
+            <summary>
+            The panel which acts as the bottom border for resizing.
+            </summary>
+        </member>
+        <member name="P:Gum.Forms.DefaultVisuals.V3.WindowVisual.BorderLeftInstance">
+            <summary>
+            The panel which acts as the left border for resizing.
+            </summary>
+        </member>
+        <member name="P:Gum.Forms.DefaultVisuals.V3.WindowVisual.BorderRightInstance">
+            <summary>
+            The panel which acts as the right border for resizing.
+            </summary>
+        </member>
+        <member name="P:Gum.Forms.DefaultVisuals.V3.WindowVisual.BackgroundColor">
+            <summary>
+            The background color which is applied to the window's Background.
+            </summary>
+        </member>
+        <member name="M:Gum.Forms.DefaultVisuals.V3.WindowVisual.#ctor(System.Boolean,System.Boolean)">
+            <summary>
+            Instantiates a new WindowVisual, optionally creating an underlying Forms object.
+            </summary>
+            <remarks>
+            If using using a V3 code-only project, then creating a Window instance automatically creates
+            a WindowVisual for its Visual, so this is usually not explicitly instantiated.
+            </remarks>
+            <param name="fullInstantiation">This parameter is ignored and exists to match other runtime conventions.</param>
+            <param name="tryCreateFormsObject">Whether to create a new Visual instance. This should be true if
+            explicitly calling this constructor, but is false when called by the Window class when creating a new Window.
+            </param>
+        </member>
+        <member name="M:Gum.Forms.DefaultVisuals.V3.WindowVisual.MakeSizedToChildren(System.Single)">
+            <summary>
+            Adjusts the size of the WindowVisual and its InnerPanel to fit around its children,
+            applying the specified margin on all sides.
+            </summary>
+            <param name="innerPanelMargin">The margin to apply on all sides.</param>
+        </member>
+        <member name="M:Gum.Forms.DefaultVisuals.V3.WindowVisual.MakeSizedToChildren(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Adjusts the size of the WindowVisual and its InnerPanel to fit around its children,
+            applying the specified margins.
+            </summary>
+            <param name="leftMargin">The left margin in pixels</param>
+            <param name="topMargin">The top margin in pixels</param>
+            <param name="rightMargin">The right margin in pixels</param>
+            <param name="bottomMargin">The bottom margin in pixels</param>
+        </member>
+        <member name="T:Gum.Forms.DefaultVisualsVersion">
+            <summary>
+            The version to use for default visuals in a code-only project.
+            </summary>
+        </member>
+        <member name="F:Gum.Forms.DefaultVisualsVersion.V1">
+            <summary>
+            The first version introduced with the first version of Gum Forms.
+            Most controls use solid colors and ColoredRectangles for their backgrounds.
+            </summary>
+        </member>
+        <member name="F:Gum.Forms.DefaultVisualsVersion.V2">
+            <summary>
+            The second version introduced mid 2025. This version uses NineSlices for backgrounds,
+            and respects a centralized styling.
+            </summary>
+        </member>
+        <member name="F:Gum.Forms.DefaultVisualsVersion.V3">
+            <summary>
+            The third version introduced end of 2025. This version makes styling with colors easier.
+            </summary>
+        </member>
+        <member name="F:Gum.Forms.DefaultVisualsVersion.Newest">
+            <summary>
+            Specifies that the newest version is used.
+            </summary>
+            <remarks>This value is an alias for the latest supported version. Use this option to ensure the most
+            recent features and updates are applied.</remarks>
+        </member>
+        <member name="M:Gum.Forms.FormsUtilities.InitializeDefaults(Microsoft.Xna.Framework.Game,RenderingLibrary.SystemManagers,Gum.Forms.DefaultVisualsVersion)">
             <summary>
             Initializes defaults to enable FlatRedBall Forms. This method should be called before using Forms.
             </summary>
             <remarks>
             Projects can make further customization to Forms such as by modifying the FrameworkElement.Root or the DefaultFormsComponents.
             </remarks>
+            <param name="game">The Game instance, used for creating and updating input such as the Keyboard and Mouse</param>
+            <param name="systemManagers">The optional system managers. If not specified, the default system managers are used. Games with a single SystemsManager
+            do not need to provide one.</param>
+            <param name="defaultVisualsVersion">The version of visuals. Changing between visuals can change the apperance, as well as the structure of the Visual objects.</param>
         </member>
-        <member name="F:MonoGameGum.Forms.TextWrapping.NoWrap">
+        <member name="M:Gum.Forms.GraphicalUiElementFormsExtensions.GetFrameworkElementByName``1(Gum.Wireframe.GraphicalUiElement,System.String)">
+            <summary>
+            Recursively returns the first matching element with the given name, or throws an exception if not found.
+            </summary>
+            <typeparam name="FrameworkElementType">The element type</typeparam>
+            <param name="graphicalUiElement">The parent visual owning all children</param>
+            <param name="name">The name to match</param>
+            <returns>Teh found FrameworkElement</returns>
+            <exception cref="T:System.ArgumentException">Throw if a visual is not found by the name, or if a child is found but its type doesn't match.</exception>
+        </member>
+        <member name="T:Gum.Forms.ScreenBase">
+            <summary>
+            Base class which can be inherited from when creating new Screen classes
+            </summary>
+        </member>
+        <member name="M:Gum.Forms.ScreenBase.#ctor">
+            <summary>
+            Creates a new ScreenBase using a ContainerRuntime as the Visual.
+            </summary>
+        </member>
+        <member name="M:Gum.Forms.ScreenBase.#ctor(Gum.Wireframe.InteractiveGue)">
+            <summary>
+            Creates a new ScreenBase using the argument as its Visual.
+            </summary>
+            <param name="runtime">The visual to use.</param>
+        </member>
+        <member name="F:Gum.Forms.TextWrapping.NoWrap">
             <summary>
             No line wrapping is performed.
             </summary>
         </member>
-        <member name="F:MonoGameGum.Forms.TextWrapping.Wrap">
+        <member name="F:Gum.Forms.TextWrapping.Wrap">
             <summary>
             Line-breaking occurs if the line overflows beyond the available block width,
             even if the standard line breaking algorithm cannot determine any line break
@@ -388,213 +1289,39 @@
             container with no scrolling allowed.
             </summary>
         </member>
-        <member name="P:MonoGameGum.Input.AnalogButton.Position">
+        <member name="T:Gum.Forms.ResizeMode">
             <summary>
-            The current value of the AnalogButton, with ranges 0 - 1
+            Values for an element's resize behavior.
             </summary>
         </member>
-        <member name="F:MonoGameGum.Input.DeadzoneInterpolationType.Instant">
+        <member name="F:Gum.Forms.ResizeMode.NoResize">
             <summary>
-            No interpolation is performed. Values less than the deadzone are set to 0.
+            Resizing using the cursor is not enabled
             </summary>
         </member>
-        <member name="F:MonoGameGum.Input.DeadzoneInterpolationType.Linear">
+        <member name="F:Gum.Forms.ResizeMode.CanResize">
             <summary>
-            Linear interpolation is performed for values greater than the deadzone. 
+            Resizing is enabled according to the enabled border instances.
             </summary>
         </member>
-        <member name="F:MonoGameGum.Input.DeadzoneInterpolationType.Quadratic">
+        <member name="T:Gum.Forms.Window">
             <summary>
-            Quadratic (in) interpolation is performed for values greater than the deadzone. This increases
-            accuracy at lower values (values closer to the deadzone) so that small movements are easier to perform.
+            A resizable, movable FrameworkElement
             </summary>
         </member>
-        <member name="F:MonoGameGum.Input.AnalogStick.DPadOnValue">
+        <member name="P:Gum.Forms.Window.Children">
             <summary>
-            The DPadOnValue and DPadOffValue
-            values are used to simulate D-Pad control
-            with the analog stick.  When the user is above
-            the absolute value of the mDPadOnValue then it is
-            as if the DPad is held down.  To release the DPad the
-            value must come under the off value.  If there was only
-            one value then the user could hold the stick near the threshold
-            and get rapid on/off values due to the inaccuracy of the analog stick. 
-            Therefore the DPadOnValue must be larger than DPadOffValue. The spread between
-            these values should be large enough to prevent rapid on/off values, but small enough
-            so the user can still release the analog stick and have it feel like a DPad.
+            Returns a read-only list of the children FrameworkElements of this panel. 
             </summary>
+            <remarks>
+            This list is updated whenever the underlying Visual's Children change.
+            This only contains FrameworkElements, so if a non-FrameworkElement Visual
+            is added to this panel, it will not appear in this list.
+            </remarks>
         </member>
-        <member name="F:MonoGameGum.Input.AnalogStick.DefaultTimeAfterPush">
+        <member name="F:Gum.Wireframe.CustomSetPropertyOnRenderable.AdditionalPropertyOnRenderable">
             <summary>
-            Number of seconds to wait after a push before repeating.
-            </summary>
-        </member>
-        <member name="F:MonoGameGum.Input.AnalogStick.DefaultTimeBetweenRepeating">
-            <summary>
-            Number of seconds between repeating.
-            </summary>
-        </member>
-        <member name="P:MonoGameGum.Input.AnalogStick.IsMaxPositionNormalized">
-            <summary>
-            Whether Position values should be limited so that Position.Length is less than or equal to 1.
-            This is recommended for top-down games.
-            </summary>
-        </member>
-        <member name="P:MonoGameGum.Input.AnalogStick.DeadzoneInterpolation">
-            <summary>
-            The type of interpolation to perform up to the max value when outside of the deadzone value.
-            </summary>
-        </member>
-        <member name="M:MonoGameGum.Input.AnalogStick.AsDPadPushed(MonoGameGum.Input.DPadDirection)">
-            <summary>
-            Returns whether the user has pressed a particular direction, returning true only once per push similar to a d-pad. This can be used for UI navigation.
-            </summary>
-            <seealso cref="M:MonoGameGum.Input.AnalogStick.AsDPadDown(MonoGameGum.Input.DPadDirection)"/>
-            <param name="direction">The direction to test</param>
-            <returns>Whether the direction was pressed.</returns>
-        </member>
-        <member name="P:MonoGameGum.Input.Cursor.XChange">
-            <summary>
-            Returns the screen space (in pixels) change on the X axis since the last frame.
-            </summary>
-        </member>
-        <member name="P:MonoGameGum.Input.Cursor.YChange">
-            <summary>
-            Returns the screen space (in pixel) change on the Y axis since the last frame.
-            </summary>
-        </member>
-        <member name="P:MonoGameGum.Input.Cursor.ZVelocity">
-            <summary>
-            The movement rate of the controlling input (usually mouse) on the z axis. For the mouse this refers to the scroll wheel.
-            </summary>
-        </member>
-        <member name="P:MonoGameGum.Input.Cursor.WindowOver">
-            <summary>
-            The last window that the cursor was over. This typically gets updated every frame in Update, usually by calls to 
-            FormsUtilities.
-            </summary>
-        </member>
-        <member name="P:MonoGameGum.Input.GamePad.LeftStick">
-            <summary>
-            Returns a reference to the left analog stick. This value will always be non-null even if the gamepad doesn't have a physical analog stick.
-            </summary>
-        </member>
-        <member name="P:MonoGameGum.Input.GamePad.RightStick">
-            <summary>
-            Returns a reference to the right analog stick. This value will always be non-null even if the gamepad doesn't have a physical analog stick.
-            </summary>
-        </member>
-        <member name="F:MonoGameGum.Input.GamePad.mLeftTrigger">
-            <summary>
-            The left trigger values as reported directly by the gamepad, not flipped for Gamecube
-            </summary>
-        </member>
-        <member name="F:MonoGameGum.Input.GamePad.mRightTrigger">
-            <summary>
-            The right trigger values as reported directly by the gamepad, not flipped for Gamecube
-            </summary>
-        </member>
-        <member name="M:MonoGameGum.Input.GamePad.ButtonRepeatRate(Microsoft.Xna.Framework.Input.Buttons,System.Double,System.Double)">
-            <summary>
-            Returns whether the argument was pushed this frame, or whether it is continually being held down and a "repeat" press
-            has occurred.
-            </summary>
-            <param name="button">The button to test, which includes DPad directions.</param>
-            <param name="timeAfterPush">The number of seconds after initial push to wait before raising repeat rates. This value is typically larger than timeBetweenRepeating.</param>
-            <param name="timeBetweenRepeating">The number of seconds between repeats once the timeAfterPush. This value is typically smaller than timeAfterPush.</param>
-            <returns>Whether the button was pushed or repeated this frame.</returns>
-        </member>
-        <member name="M:MonoGameGum.Input.KeyboardStateProcessor.Clear">
-            <summary>
-            Clears the keyboard states, simulating the keyboard
-            not having any values down or pressed
-            </summary>
-        </member>
-        <member name="M:Gum.Wireframe.BbCodeParser.Parse(System.String,System.Collections.Generic.HashSet{System.String})">
-            <summary>
-            Returns a list of FoundTags in the argument text. Only tags in the availableTags set are returned.
-            </summary>
-            <param name="text">The text populated with tags.</param>
-            <param name="availableTags">The available tags for parsing. Tags can be lower-case.</param>
-            <returns>The list of found tags.</returns>
-        </member>
-        <member name="F:Gum.Content.AnimationChain.AnimationChainListSave.FileRelativeTextures">
-            <summary>
-            Whether files (usually image files) referenced by this object (and .achx) are
-            relative to the .achx itself. If false, then file references will be stored as absolute. 
-            If true, then file reference,s will be stored relative to the .achx itself. This value should
-            be true so that a .achx can be moved to a different file system or computer and still
-            have valid references.
-            </summary>
-        </member>
-        <member name="M:Gum.Content.AnimationChain.AnimationChainListSave.ToAnimationChainList(System.String)">
-            <summary>
-            Create a "save" object from a regular animation chain list
-            </summary>
-        </member>
-        <member name="F:Gum.Content.AnimationChain.AnimationChainSave.ParentFile">
-            <summary>
-            This is used if the AnimationChain actually comes from 
-            a file like a .gif.
-            </summary>
-        </member>
-        <member name="F:Gum.Content.AnimationChain.AnimationFrameSave.FlipHorizontal">
-            <summary>
-            Whether the texture should be flipped horizontally.
-            </summary>
-        </member>
-        <member name="F:Gum.Content.AnimationChain.AnimationFrameSave.FlipVertical">
-            <summary>
-            Whether the texture should be flipped on the vertidally.
-            </summary>
-        </member>
-        <member name="F:Gum.Content.AnimationChain.AnimationFrameSave.TextureName">
-            <summary>
-            Used in XML Serialization of AnimationChains - this should
-            not explicitly be set by the user.
-            </summary>
-        </member>
-        <member name="F:Gum.Content.AnimationChain.AnimationFrameSave.FrameLength">
-            <summary>
-            The amount of time in seconds the AnimationFrame should be shown for.
-            </summary>
-        </member>
-        <member name="F:Gum.Content.AnimationChain.AnimationFrameSave.LeftCoordinate">
-            <summary>
-            The left coordinate in texture coordinates of the AnimationFrame.  Default is 0.
-            This may be in UV coordinates or pixel coordinates.
-            </summary>
-        </member>
-        <member name="F:Gum.Content.AnimationChain.AnimationFrameSave.RightCoordinate">
-            <summary>
-            The right coordinate in texture coordinates of the AnimationFrame.  Default is 1.
-            This may be in UV coordinates or pixel coordinates.
-            </summary>
-        </member>
-        <member name="F:Gum.Content.AnimationChain.AnimationFrameSave.TopCoordinate">
-            <summary>
-            The top coordinate in texture coordinates of the AnimationFrame.  Default is 0.
-            This may be in UV coordinates or pixel coordinates.
-            </summary>
-        </member>
-        <member name="F:Gum.Content.AnimationChain.AnimationFrameSave.BottomCoordinate">
-            <summary>
-            The bottom coordinate in texture coordinates of the AnimationFrame.  Default is 1.
-            This may be in UV coordinates or pixel coordinates.
-            </summary>
-        </member>
-        <member name="F:Gum.Content.AnimationChain.AnimationFrameSave.RelativeX">
-            <summary>
-            The relative X position of the object that is using this AnimationFrame.  This
-            is only applied if the IAnimationChainAnimatable's UseAnimationRelativePosition is
-            set to true.
-            </summary>
-        </member>
-        <member name="F:Gum.Content.AnimationChain.AnimationFrameSave.RelativeY">
-            <summary>
-            The relative Y position of the object that is using this AnimationFrame.  This
-            is only applied if the IAnimationChainAnimatable's UseAnimationRelativePosition is
-            set to true.
+            Additional logic to perform before falling back to reflection. This can be added by libraries adding additional runtime types
             </summary>
         </member>
         <member name="T:Gum.Graphics.Animation.AnimationChain">
@@ -810,11 +1537,738 @@
             </summary>
             <returns>String representation of this.</returns>
         </member>
+        <member name="F:MonoGameGum.Forms.DefaultVisualsVersion.V1">
+            <summary>
+            The first version introduced with the first version of Gum Forms.
+            Most controls use solid colors and ColoredRectangles for their backgrounds.
+            </summary>
+        </member>
+        <member name="F:MonoGameGum.Forms.DefaultVisualsVersion.V2">
+            <summary>
+            The second version introduced mid 2025. This version uses NineSlices for backgrounds,
+            and respects a centralized styling.
+            </summary>
+        </member>
+        <member name="F:MonoGameGum.Forms.TextWrapping.NoWrap">
+            <summary>
+            No line wrapping is performed.
+            </summary>
+        </member>
+        <member name="F:MonoGameGum.Forms.TextWrapping.Wrap">
+            <summary>
+            Line-breaking occurs if the line overflows beyond the available block width,
+            even if the standard line breaking algorithm cannot determine any line break
+            opportunity, as in the case of a very long word constrained in a fixed-width
+            container with no scrolling allowed.
+            </summary>
+        </member>
+        <member name="F:MonoGameGum.Forms.Controls.ScrollBarVisibility.Auto">
+            <summary>
+            The ScrollBar displays only if needed based on the size of the inner panel
+            </summary>
+        </member>
+        <member name="F:MonoGameGum.Forms.Controls.ScrollBarVisibility.Hidden">
+            <summary>
+            The ScrollBar remains invisible even if the contents of the inner panel exceed the size of its container
+            </summary>
+        </member>
+        <member name="F:MonoGameGum.Forms.Controls.ScrollBarVisibility.Visible">
+            <summary>
+            The ScrollBar always displays
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.Forms.Controls.TextCompositionEventArgs.Text">
+            <summary>
+            The new text value.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.GueDeriving.NineSliceRuntime.CustomFrameTextureCoordinateWidth">
+            <summary>
+            Sets the width or height of the nine slice edges in pixels. If null,
+            the NineSlice uses 1/3 of the texture size. If set, this overrides the
+            1/3 width and uses the specified value.
+            </summary>
+        </member>
+        <member name="T:MonoGameGum.GueDeriving.PolygonRuntime">
+            <summary>
+            A visual polygon element which can display any arbitrary convex or concave shape.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.GueDeriving.PolygonRuntime.Red">
+            <summary>
+            The red component of the polygon color. Ranges from 0 to 255.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.GueDeriving.PolygonRuntime.Green">
+            <summary>
+            The green component of the polygon color. Ranges from 0 to 255.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.GueDeriving.PolygonRuntime.Blue">
+            <summary>
+            The blue component of the polygon color. Ranges from 0 to 255.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.GueDeriving.PolygonRuntime.Alpha">
+            <summary>
+            The alpha (opacity) component of the polygon color. Ranges from 0 (fully transparent) to 255 (fully opaque).
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.GueDeriving.PolygonRuntime.Color">
+            <summary>
+            Gets or sets the color used to render the polygon. This includes color and alpha (opacity) components.
+            </summary>
+        </member>
+        <member name="T:MonoGameGum.GueDeriving.TextRuntime">
+            <summary>
+            A visual text element which can display a string.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.GueDeriving.TextRuntime.BlendState">
+            <summary>
+            The XNA blend state used when rendering the text. This controls how 
+            color and alpha values blend with the background.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.GueDeriving.TextRuntime.Red">
+            <summary>
+            The red component of the text color. Ranges from 0 to 255.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.GueDeriving.TextRuntime.Green">
+            <summary>
+            The green component of the text color. Ranges from 0 to 255.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.GueDeriving.TextRuntime.Blue">
+            <summary>
+            The blue component of the text color. Ranges from 0 to 255.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.GueDeriving.TextRuntime.Alpha">
+            <summary>
+            The alpha (opacity) component of the text color. Ranges from 0 (fully transparent) to 255 (fully opaque).
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.GueDeriving.TextRuntime.Color">
+            <summary>
+            Gets or sets the color used to render the text. This includes color and alpha (opacity) components.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.GueDeriving.TextRuntime.HorizontalAlignment">
+            <summary>
+            The horizontal alignment of the text within its bounding box.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.GueDeriving.TextRuntime.VerticalAlignment">
+            <summary>
+            The vertical alignment of the text within its bounding box.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.GueDeriving.TextRuntime.MaxLettersToShow">
+            <summary>
+            The maximum letters to display. This can be used to 
+            create an effect where the text prints out letter-by-letter.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.GueDeriving.TextRuntime.MaxNumberOfLines">
+            <summary>
+            The maximum number of lines to display. This can be used to 
+            limit how many lines of text are displayed at one time.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.GueDeriving.TextRuntime.FontScale">
+            <summary>
+            A multiplier used when rendering the text. The default value is 1.0.
+            </summary>
+            <remarks>
+            Setting this value to a value other than 1 scales the text accordingly. This is
+            a scalue value applied to the existing font, so a value larger than 1 can result
+            in the font appearing pixellated.
+            
+            Since this value does not affect the underlying Font, it can be changed without
+            requiring a dedicated font asset.
+            </remarks>
+        </member>
+        <member name="P:MonoGameGum.GueDeriving.TextRuntime.UseCustomFont">
+            <summary>
+            Whether to use the CustomFontFile to determine the font value. 
+            If false, then the font is determiend by looking for an existing
+            font based on:
+            * Font
+            * FontSize
+            * IsItalic
+            * IsBold
+            * UseFontSmoothing
+            * OutlineThickness
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.GueDeriving.TextRuntime.CustomFontFile">
+            <summary>
+            Specifies the name of the custom font. This can be specified relative to
+            FileManager.RelativeDirectory, which is the Content folder for code-only projects,
+            or the folder containing the .gumx project if loading a Gum project. This should
+            include the .fnt extension.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.GueDeriving.TextRuntime.Font">
+            <summary>
+            The font name, such as "Arial", which is used to load fonts from 
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.GueDeriving.TextRuntime.FontFamily">
+            <summary>
+            The font name, such as "Arial", which is used to load fonts from 
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.GueDeriving.TextRuntime.TextRenderingPositionMode">
+            <summary>
+            Gets or sets the text rendering position mode to use for the contained text, overriding the default behavior if
+            specified.
+            </summary>
+            <remarks>Set this property to control how text positioning is handled during rendering. If the value
+            is <see langword="null"/>, the default rendering position mode is used. Changing this property affects only the
+            contained text and does not impact other elements.</remarks>
+        </member>
+        <member name="P:MonoGameGum.GueDeriving.TextRuntime.Text">
+            <summary>
+            Gets or sets the raw text content displayed by the control. This is the value before line wrapping and bbcode parsing has been applied.
+            </summary>
+            <remarks>Setting this property updates the displayed text and may trigger layout changes if the text
+            size affects the control's dimensions. If the control's width is set relative to its children and no maximum
+            width is specified, the text will not be line-wrapped.</remarks>
+        </member>
+        <member name="P:MonoGameGum.GueDeriving.TextRuntime.WrappedText">
+            <summary>
+            The lines of text after wrapping and bbcode parsing have been applied.
+            </summary>
+        </member>
+        <member name="F:MonoGameGum.GueDeriving.TextRuntime.AssignFontInConstructor">
+            <summary>
+            Indicates whether the font should be assigned during object construction.
+            </summary>
+            <remarks>Set this field to <see langword="true"/> to assign the font in the constructor, or to <see
+            langword="false"/> to defer font assignment until later in the object's lifecycle. This can be set to false
+            if TextRuntime instances are always given a custom font, so this can prevent unnecessary font loading/assignment.</remarks>
+        </member>
+        <member name="M:MonoGameGum.GueDeriving.TextRuntime.GetCharacterIndexAtPosition(System.Single,System.Single)">
+            <summary>
+            Returns the index of the character at the specified screen position. This returns the index
+            within the WrappedText, so to index in, you need to loop through each line.
+            </summary>
+            <param name="screenX">The screen x position, usually obtained by Cursor.XRespectingGumZoomAndBounds()</param>
+            <param name="screenY">The screen y position, usually obtained by Cursor.YRespectingGumZoomAndBounds()</param>
+            <returns>The index in the WrappedText</returns>
+        </member>
+        <member name="P:MonoGameGum.GumService.Default">
+            <summary>
+            Gets the default instance of the GumService class.
+            </summary>
+            <remarks>This property provides a lazily initialized, shared GumService instance for general use. Use
+            this instance when a custom configuration is not required.</remarks>
+        </member>
+        <member name="P:MonoGameGum.GumService.GameTime">
+            <summary>
+            The GameTime of the most recent Update call.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.GumService.Cursor">
+            <summary>
+            Gets the default cursor, which represents either mouse or touch screen depending on hardware capabilities.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.GumService.Keyboard">
+            <summary>
+            Gets the default keyboard.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.GumService.LocalizationService">
+            <summary>
+            Gets the service used to provide localized strings and resources for the application.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.GumService.Gamepads">
+            <summary>
+            Gets the collection of connected gamepads available to the application.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.GumService.CanvasWidth">
+            <summary>
+            Gets or sets the width of the canvas, which acts as the root-most coordiante space. This value
+            represents the "internal coordinates" which can be adjusted by Camera zoom.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.GumService.CanvasHeight">
+            <summary>
+            Gets or sets the height of the canvas, which acts as the root-most coordiante space. This value
+            represents the "internal coordinates" which can be adjusted by Camera zoom.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.GumService.PopupRoot">
+            <inheritdoc/>
+        </member>
+        <member name="P:MonoGameGum.GumService.ModalRoot">
+            <inheritdoc/>
+        </member>
+        <member name="P:MonoGameGum.GumService.IsInitialized">
+            <summary>
+            Gets whether GumService has been initialized.
+            </summary>
+        </member>
+        <member name="M:MonoGameGum.GumService.#ctor">
+            <summary>
+            Instantiates a new GumService. This is usually not called directly, since
+            the Default is the most common way to access GumService.
+            </summary>
+        </member>
+        <member name="M:MonoGameGum.GumService.Initialize(Microsoft.Xna.Framework.Game,System.String)">
+            <summary>
+            Initializes Gum, optionally loading a Gum project.
+            </summary>
+            <param name="game">The game instance.</param>
+            <param name="gumProjectFile">An optional project to load. If not specified, no project is loaded and Gum can be used "code only".</param>
+            <returns>The loaded project, or null if no project is loaded</returns>
+        </member>
+        <member name="M:MonoGameGum.GumService.LoadAnimations">
+            <summary>
+            Loads animations for all elements in the project.
+            </summary>
+            <exception cref="T:System.InvalidOperationException">Thrown if a Gum project hasn't been loaded first</exception>
+        </member>
+        <member name="M:MonoGameGum.GumService.Update(Microsoft.Xna.Framework.GameTime)">
+            <summary>
+            Performs every-frame updates including updating root sizes to fill the entire screen, 
+            cursor update, keyboard update, gamepad updates, and raising events on all controls.
+            </summary>
+            <param name="gameTime">The GameTime obtained from the Game class in the Update call.</param>
+        </member>
+        <member name="P:MonoGameGum.Input.AnalogButton.Position">
+            <summary>
+            The current value of the AnalogButton, with ranges 0 - 1
+            </summary>
+        </member>
+        <member name="M:MonoGameGum.Input.AnalogButton.Clear">
+            <summary>
+            Clears all analog button state, resetting it to initial values.
+            This resets both current and previous states to prevent spurious push/release events.
+            </summary>
+        </member>
+        <member name="F:MonoGameGum.Input.DeadzoneInterpolationType.Instant">
+            <summary>
+            No interpolation is performed. Values less than the deadzone are set to 0.
+            </summary>
+        </member>
+        <member name="F:MonoGameGum.Input.DeadzoneInterpolationType.Linear">
+            <summary>
+            Linear interpolation is performed for values greater than the deadzone. 
+            </summary>
+        </member>
+        <member name="F:MonoGameGum.Input.DeadzoneInterpolationType.Quadratic">
+            <summary>
+            Quadratic (in) interpolation is performed for values greater than the deadzone. This increases
+            accuracy at lower values (values closer to the deadzone) so that small movements are easier to perform.
+            </summary>
+        </member>
+        <member name="F:MonoGameGum.Input.AnalogStick.DPadOnValue">
+            <summary>
+            The DPadOnValue and DPadOffValue
+            values are used to simulate D-Pad control
+            with the analog stick.  When the user is above
+            the absolute value of the mDPadOnValue then it is
+            as if the DPad is held down.  To release the DPad the
+            value must come under the off value.  If there was only
+            one value then the user could hold the stick near the threshold
+            and get rapid on/off values due to the inaccuracy of the analog stick. 
+            Therefore the DPadOnValue must be larger than DPadOffValue. The spread between
+            these values should be large enough to prevent rapid on/off values, but small enough
+            so the user can still release the analog stick and have it feel like a DPad.
+            </summary>
+        </member>
+        <member name="F:MonoGameGum.Input.AnalogStick.DefaultTimeAfterPush">
+            <summary>
+            Number of seconds to wait after a push before repeating.
+            </summary>
+        </member>
+        <member name="F:MonoGameGum.Input.AnalogStick.DefaultTimeBetweenRepeating">
+            <summary>
+            Number of seconds between repeating.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.Input.AnalogStick.IsMaxPositionNormalized">
+            <summary>
+            Whether Position values should be limited so that Position.Length is less than or equal to 1.
+            This is recommended for top-down games.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.Input.AnalogStick.DeadzoneInterpolation">
+            <summary>
+            The type of interpolation to perform up to the max value when outside of the deadzone value.
+            </summary>
+        </member>
+        <member name="M:MonoGameGum.Input.AnalogStick.AsDPadPushed(MonoGameGum.Input.DPadDirection)">
+            <summary>
+            Returns whether the user has pressed a particular direction, returning true only once per push similar to a d-pad. This can be used for UI navigation.
+            </summary>
+            <seealso cref="M:MonoGameGum.Input.AnalogStick.AsDPadDown(MonoGameGum.Input.DPadDirection)"/>
+            <param name="direction">The direction to test</param>
+            <returns>Whether the direction was pressed.</returns>
+        </member>
+        <member name="M:MonoGameGum.Input.AnalogStick.Clear">
+            <summary>
+            Clears all analog stick state, resetting it to initial values.
+            This resets both current and previous states to prevent spurious push/release events.
+            </summary>
+        </member>
+        <member name="T:MonoGameGum.Input.Cursor">
+            <summary>
+            A cursor implementation providing mouse and touch input functionality.
+            This class includes properties necessary for interacting with Gum UI elements, such 
+            as push, click, and position tracking.
+            </summary>
+            <summary>
+            A cursor implementation providing mouse and touch input functionality.
+            This class includes properties necessary for interacting with Gum UI elements, such 
+            as push, click, and position tracking.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.Input.Cursor.CustomCursor">
+            <summary>
+            Gets or sets the custom mouse cursor to display within the application window.
+            </summary>
+            <remarks>Setting this property changes the mouse cursor to the specified value. If set to <see
+            langword="null"/>, the default arrow cursor is used. The available cursor options may vary depending on platform
+            support.</remarks>
+        </member>
+        <member name="P:MonoGameGum.Input.Cursor.TransformMatrix">
+            <summary>
+            Gets or sets the transformation matrix applied to the object, used to determine the cursor's position
+            when interacting with Gum UI elements.
+            </summary>
+            <remarks>The transformation matrix defines how the object's coordinates are mapped, including
+            translation, rotation, scaling, or skewing. This is often used when Gum is rendered
+            on a render target, or in a modified viewport.</remarks>
+        </member>
+        <member name="P:MonoGameGum.Input.Cursor.LastInputDevice">
+            <summary>
+            Gets the most recent input device used to interact with the application. This is used
+            to modify how behavior is interpreted, such as whether to consider cursor hover states.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.Input.Cursor.X">
+            <summary>
+            The cursor's Y position in screen space (pixels from left of the window).
+            This is measured in screen pixels, and does not consider camera zoom.
+            For zoom, see <see cref="M:MonoGameGum.Input.Cursor.XRespectingGumZoomAndBounds"/>.
+            </summary>
+        </member>
+        <member name="M:MonoGameGum.Input.Cursor.XRespectingGumZoomAndBounds">
+            <summary>
+            Returns the cursor's horizontal position considering camera zoom and the graphics device viewport bounds.
+            </summary>
+            <returns>The cursor's position</returns>
+        </member>
+        <member name="P:MonoGameGum.Input.Cursor.Y">
+            <summary>
+            The cursor's Y position in screen space (pixels from top of the window).
+            This is measured in screen pixels, and does not consider camera zoom.
+            For zoom, see <see cref="M:MonoGameGum.Input.Cursor.YRespectingGumZoomAndBounds"/>.
+            </summary>
+        </member>
+        <member name="M:MonoGameGum.Input.Cursor.YRespectingGumZoomAndBounds">
+            <summary>
+            Returns the cursor's vertical position considering the camera zoom and the graphics device viewport bounds.
+            </summary>
+            <returns>The cursor's position</returns>
+        </member>
+        <member name="P:MonoGameGum.Input.Cursor.LastX">
+            <summary>
+            Gets the value of the X value last frame, used to calculate changes.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.Input.Cursor.LastY">
+            <summary>
+            Gets the value of the Y value last frame, used to calculate changes.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.Input.Cursor.XChange">
+            <summary>
+            Returns the screen space (in pixels) change on the X axis since the last frame.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.Input.Cursor.YChange">
+            <summary>
+            Returns the screen space (in pixel) change on the Y axis since the last frame.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.Input.Cursor.ScrollWheelChange">
+            <summary>
+            Gets the amount of scroll wheel movement since the last frame, measured in detents.
+            </summary>
+            <remarks>A detent represents a single notch or click of the scroll wheel, typically corresponding to a
+            value of 120 units. This property is useful for detecting discrete scroll actions in input handling
+            scenarios.</remarks>
+        </member>
+        <member name="P:MonoGameGum.Input.Cursor.ZVelocity">
+            <summary>
+            The movement rate of the controlling input (usually mouse) on the z axis. 
+            For the mouse this refers to the scroll wheel.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.Input.Cursor.PrimaryPush">
+            <summary>
+            Gets a value indicating whether a primary input action, such as a mouse left button press or a new touch, was
+            initiated during the current frame.
+            </summary>
+            <remarks>This property detects the start of a primary input event, which may originate from either a
+            mouse or a touch device depending on the last input used. It is typically used to determine when the user begins
+            an interaction, such as clicking or tapping, in real-time input scenarios.</remarks>
+        </member>
+        <member name="P:MonoGameGum.Input.Cursor.PrimaryDown">
+            <summary>
+            Gets a value indicating whether the primary input action is currently active, such as a mouse left button press
+            or a touch contact.
+            </summary>
+            <remarks>This property reflects the state of the primary input based on the last input device used. If
+            the mouse is the last input device, it returns <see langword="true"/> when the left mouse button is pressed. If
+            touch is the last input device, it returns <see langword="true"/> when there is at least one active touch
+            contact.</remarks>
+        </member>
+        <member name="P:MonoGameGum.Input.Cursor.PrimaryClick">
+            <summary>
+            Gets a value indicating whether a primary click input was detected in the current frame, either from a mouse or
+            a touch device.
+            </summary>
+            <remarks>A primary click is considered to have occurred when the left mouse button is released after
+            being pressed, or when all touch points are released after being present in the previous frame. This property is
+            typically used to detect user selection or activation actions in input handling scenarios.</remarks>
+        </member>
+        <member name="P:MonoGameGum.Input.Cursor.VisualPushed">
+            <summary>
+            Gets or sets the Visual that was under the cursor when the cursor (left button)
+            was pushed.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.Input.Cursor.FrameworkElementPushed">
+            <summary>
+            Gets the control that was under the cursor when the cursor (left button) was pushed.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.Input.Cursor.VisualRightPushed">
+            <summary>
+            Gets or sets the Visual that was under the cursor when the cursor right button
+            was pushed.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.Input.Cursor.FrameworkElementRightPushed">
+            <summary>
+            Gets the control that was under the cursor when the cursor right button was pushed.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.Input.Cursor.VisualOver">
+            <summary>
+            Gets or sets the Visual that was under the cursor the last time it was updated.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.Input.Cursor.FrameworkElementOver">
+            <summary>
+            Gets the control that is currently under the cursor.
+            </summary>
+        </member>
+        <member name="M:MonoGameGum.Input.CursorExtensions.GetEventFailureReason(Gum.Wireframe.ICursor,Gum.Forms.Controls.FrameworkElement)">
+            <summary>
+            Returns information about why events may not be happening for the argument FrameworkElement.
+            </summary>
+            <param name="cursor">A reference to the cursor, such as GumService.Default.Cursor</param>
+            <param name="frameworkElement">The FrameworkElement such as a Button.</param>
+            <returns>A string explaining why events are not being raised, or null if events should be happening.</returns>
+        </member>
+        <member name="M:MonoGameGum.Input.CursorExtensions.GetEventFailureReason(Gum.Wireframe.ICursor,Gum.Wireframe.InteractiveGue)">
+            <summary>
+            Returns information about why events may not be happening for the argument InteractiveGue.
+            </summary>
+            <param name="cursor">A reference to the cursor, such as GumService.Default.Cursor</param>
+            <param name="interactiveGue">The InteractiveGue, which is usually a Visual for a Forms control.</param>
+            <returns>A string explaining why events are not being raised, or null if events should be happening.</returns>
+        </member>
+        <member name="T:MonoGameGum.Input.DPadDirection">
+            <summary>
+            Represents directional input for D-Pad and analog stick direction queries.
+            </summary>
+        </member>
+        <member name="F:MonoGameGum.Input.DPadDirection.Up">
+            <summary>
+            Upward direction.
+            </summary>
+        </member>
+        <member name="F:MonoGameGum.Input.DPadDirection.Down">
+            <summary>
+            Downward direction.
+            </summary>
+        </member>
+        <member name="F:MonoGameGum.Input.DPadDirection.Left">
+            <summary>
+            Leftward direction.
+            </summary>
+        </member>
+        <member name="F:MonoGameGum.Input.DPadDirection.Right">
+            <summary>
+            Rightward direction.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.Input.GamePad.IsConnected">
+            <summary>
+            Returns whether the gamepad is currently connected.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.Input.GamePad.WasDisconnectedThisFrame">
+            <summary>
+            Returns whether the gamepad was disconnected this frame (was connected last frame, but not connected this frame).
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.Input.GamePad.LeftStick">
+            <summary>
+            Returns a reference to the left analog stick. This value will always be non-null even if the gamepad doesn't have a physical analog stick.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.Input.GamePad.RightStick">
+            <summary>
+            Returns a reference to the right analog stick. This value will always be non-null even if the gamepad doesn't have a physical analog stick.
+            </summary>
+        </member>
+        <member name="F:MonoGameGum.Input.GamePad.mLeftTrigger">
+            <summary>
+            The left trigger values as reported directly by the gamepad, not flipped for Gamecube
+            </summary>
+        </member>
+        <member name="F:MonoGameGum.Input.GamePad.mRightTrigger">
+            <summary>
+            The right trigger values as reported directly by the gamepad, not flipped for Gamecube
+            </summary>
+        </member>
+        <member name="M:MonoGameGum.Input.GamePad.#ctor">
+            <summary>
+            Creates a new GamePad instance with all inputs initialized to neutral/default states.
+            </summary>
+        </member>
+        <member name="M:MonoGameGum.Input.GamePad.GetButtonIndex(Microsoft.Xna.Framework.Input.Buttons)">
+            <summary>
+            Converts a Buttons enum value (which is a bitfield) to an array index based on bit position.
+            For example: DPadUp (0x1) -> index 0, DPadDown (0x2) -> index 1, DPadLeft (0x4) -> index 2, etc.
+            </summary>
+        </member>
+        <member name="M:MonoGameGum.Input.GamePad.Clear">
+            <summary>
+            Clears all gamepad input state while preserving connection status.
+            This resets both current and previous states to prevent spurious button release events.
+            </summary>
+        </member>
+        <member name="M:MonoGameGum.Input.GamePad.ButtonDown(Microsoft.Xna.Framework.Input.Buttons)">
+            <summary>
+            Returns whether the specified button is currently pressed down.
+            </summary>
+            <param name="button">The button to check, including face buttons, shoulders, triggers, and DPad directions.</param>
+            <returns>True if the button is currently pressed, false otherwise.</returns>
+        </member>
+        <member name="M:MonoGameGum.Input.GamePad.ButtonPushed(Microsoft.Xna.Framework.Input.Buttons)">
+            <summary>
+            Returns whether the specified button was pushed this frame (pressed this frame but not pressed last frame).
+            </summary>
+            <param name="button">The button to check, including face buttons, shoulders, triggers, DPad directions, and thumbstick directions.</param>
+            <returns>True if the button was pushed this frame, false otherwise.</returns>
+        </member>
+        <member name="M:MonoGameGum.Input.GamePad.ButtonReleased(Microsoft.Xna.Framework.Input.Buttons)">
+            <summary>
+            Returns whether the specified button was released this frame (released this frame but pressed last frame).
+            </summary>
+            <param name="button">The button to check, including face buttons, shoulders, triggers, and DPad directions.</param>
+            <returns>True if the button was released this frame, false otherwise.</returns>
+        </member>
+        <member name="M:MonoGameGum.Input.GamePad.ButtonRepeatRate(Microsoft.Xna.Framework.Input.Buttons,System.Double,System.Double)">
+            <summary>
+            Returns whether the argument was pushed this frame, or whether it is continually being held down and a "repeat" press
+            has occurred.
+            </summary>
+            <param name="button">The button to test, which includes DPad directions.</param>
+            <param name="timeAfterPush">The number of seconds after initial push to wait before raising repeat rates. This value is typically larger than timeBetweenRepeating.</param>
+            <param name="timeBetweenRepeating">The number of seconds between repeats once the timeAfterPush. This value is typically smaller than timeAfterPush.</param>
+            <returns>Whether the button was pushed or repeated this frame.</returns>
+        </member>
+        <member name="T:MonoGameGum.Input.Keyboard">
+            <summary>
+            Provides keyboard input handling for XNA-like projects such as MonoGame and KNI.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.Input.Keyboard.KeyboardStateProcessor">
+            <summary>
+            Gets or sets the processor responsible for reading and reporting raw input data.
+            </summary>
+            <remarks>
+            This is sety by default on the Keyboard and should not be modified except for unit tests or
+            to customize how input reading is done in advanced scenarios.
+            </remarks>
+        </member>
+        <member name="P:MonoGameGum.Input.Keyboard.RepeatDelay">
+            <summary>
+            Delay that happens after initial keypress, before the key is repeated.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.Input.Keyboard.RepeatRate">
+            <summary>
+            Time to wait before repeating the character (letter, number, symbol) that is held down
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.Input.Keyboard.IsShiftDown">
+            <summary>
+            Returns whether either Shift key is currently held down.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.Input.Keyboard.IsCtrlDown">
+            <summary>
+            Returns whether either Control key is currently held down.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.Input.Keyboard.IsAltDown">
+            <summary>
+            Returns whether either Alt key is currently held down.
+            </summary>
+        </member>
+        <member name="P:MonoGameGum.Input.Keyboard.KeysTyped">
+            <summary>
+            Returns a collection of keys that were typed this frame.
+            </summary>
+        </member>
+        <member name="M:MonoGameGum.Input.Keyboard.#ctor(Microsoft.Xna.Framework.Game)">
+            <summary>
+            Instantiates a new Keyboard instance, optionally subscribing to the provided Game's Window TextInput event.
+            </summary>
+            <param name="game">The optional Game. If passed, the keyboard attempts to subscribe to the Game's Window TextInput event
+            if it is available on the current platform.</param>
+        </member>
+        <member name="M:MonoGameGum.Input.Keyboard.Activity(System.Double,Microsoft.Xna.Framework.Game)">
+            <summary>
+            Gathers all the keyboard input since the last frame using Monogame's TextInput and Keyboard.GetKeys()
+            Since Keyboard.GetKeys() doesn't handle repeate rate, attempts to handle that also by ignorning keys 
+            pressed too fast.
+            </summary>
+            <param name="currentTime"></param>
+            <param name="game"></param>
+        </member>
+        <member name="M:MonoGameGum.Input.KeyboardStateProcessor.Clear">
+            <summary>
+            Clears the keyboard states, simulating the keyboard
+            not having any values down or pressed
+            </summary>
+        </member>
         <member name="T:RenderingLibrary.Content.ContentLoader">
             <summary>
             Provides a simple implementation of IContentLoader for applications
             using the LoaderManager and not specifying their own custom ContentLoader.
             This content loader uses the default SystemManagers internally.
+            </summary>
+        </member>
+        <member name="P:RenderingLibrary.Content.ContentLoader.XnaContentManager">
+            <summary>
+            The ContentManager to use when loading files processed by the content pipeline.
             </summary>
         </member>
         <member name="M:RenderingLibrary.Content.ContentLoader.LoadTextureFromFile(System.String,RenderingLibrary.SystemManagers)">
@@ -826,11 +2280,37 @@
             <param name="managers">The optional SystemManagers to use when loading the file to obtain a GraphicsDevice</param>
             <returns>The loaded Texture2D</returns>
         </member>
-        <member name="F:RenderingLibrary.Graphics.BitmapCharacterInfo.XOffset">
+        <member name="F:RenderingLibrary.Graphics.BitmapCharacterInfo.XAdvance">
+            <summary>
+            The number of pixels to advance after this character as the starting point for the next character. This value
+            ignores XOffsetInPixels, and it is not affected by the texture coordinate values.
+            </summary>
+        </member>
+        <member name="F:RenderingLibrary.Graphics.BitmapCharacterInfo.XOffsetInPixels">
             <summary>
             The offset of the character when drawn from the current X position. This value lets
             a character get drawn further to the right or left without changing the X position of the
             next character.
+            </summary>
+        </member>
+        <member name="P:RenderingLibrary.Graphics.BitmapFont.LineHeightInPixels">
+            <summary>
+            The number of pixels from the top of the line to the bottom of the line, including ascenders and descenders.
+            </summary>
+        </member>
+        <member name="P:RenderingLibrary.Graphics.BitmapFont.BaselineY">
+            <summary>
+            The number of pixels from the top of the line to the baseline.
+            </summary>
+        </member>
+        <member name="P:RenderingLibrary.Graphics.BitmapFont.DescenderHeight">
+            <summary>
+            The number of pixels from the baseline to the bottom of the line.
+            </summary>
+        </member>
+        <member name="P:RenderingLibrary.Graphics.BitmapFont.Characters">
+            <summary>
+            An array holding information about each character in the font.
             </summary>
         </member>
         <member name="M:RenderingLibrary.Graphics.BitmapFont.ReAssignTextures">
@@ -850,13 +2330,14 @@
             <param name="toReplace"></param>
             <param name="objectRequestingRender"></param>
             <param name="numberOfLettersToRender">The maximum number of characters to render.</param>
+            <param name="lineHeightMultiplier"></param>
             <returns></returns>
         </member>
-        <member name="M:RenderingLibrary.Graphics.BitmapFont.DrawTextLines(System.Collections.Generic.List{System.String},RenderingLibrary.Graphics.HorizontalAlignment,System.Object,System.Int32,System.Collections.Generic.List{System.Int32},RenderingLibrary.Graphics.SpriteRenderer,System.Drawing.Color,System.Single,System.Single,System.Single,System.Single,System.Single,System.Nullable{System.Int32},System.Nullable{RenderingLibrary.Graphics.TextRenderingPositionMode},System.Single)">
+        <member name="M:RenderingLibrary.Graphics.BitmapFont.DrawTextLines(System.Collections.Generic.List{System.String},RenderingLibrary.Graphics.HorizontalAlignment,System.Object,System.Int32,System.Collections.Generic.List{System.Int32},RenderingLibrary.Graphics.SpriteRenderer,System.Drawing.Color,System.Single,System.Single,System.Single,System.Single,System.Single,System.Nullable{System.Int32},System.Nullable{RenderingLibrary.Graphics.TextRenderingPositionMode},System.Single,System.Boolean,Gum.Graphics.OverlapDirection)">
             <summary>
             
             </summary>
-            <param name="lines"></param>
+            <param name="lines">The lines of text to draw</param>
             <param name="horizontalAlignment"></param>
             <param name="objectRequestingChange"></param>
             <param name="requiredWidth"></param>
@@ -865,12 +2346,15 @@
             <param name="color"></param>
             <param name="xOffset"></param>
             <param name="yOffset"></param>
-            <param name="rotation"></param>
+            <param name="rotationDegrees"></param>
             <param name="scaleX"></param>
             <param name="scaleY"></param>
             <param name="numberOfLettersToRender"></param>
             <param name="overrideTextRenderingPositionMode"></param>
             <param name="lineHeightMultiplier"></param>
+            <param name="shiftForOutline"></param>
+            <param name="overlapDirection">Controls which direction is letters are drawn, so that they can overlap 
+            with the letters to the right on top or the left on top.</param>
             <returns>The rectangle of the drawn text. This will return the same value regardless of alignment.</returns>
         </member>
         <member name="M:RenderingLibrary.Graphics.BitmapFont.RenderAtlasedTextureToScreen(System.Collections.Generic.List{System.String},RenderingLibrary.Graphics.HorizontalAlignment,System.Single,System.Drawing.Color,System.Single,System.Single,RenderingLibrary.SystemManagers,RenderingLibrary.Graphics.SpriteRenderer,System.Object)">
@@ -901,11 +2385,15 @@
             <param name="requiredHeight">The required height returned by this method.</param>
             <param name="widths">The widths of the individual lines.</param>
         </member>
-        <member name="M:RenderingLibrary.Graphics.BitmapFont.MeasureString(System.String)">
+        <member name="M:RenderingLibrary.Graphics.BitmapFont.MeasureString(System.String,RenderingLibrary.Graphics.HorizontalMeasurementStyle)">
             <summary>
             Returns the number of pixels (horizontally) required to render the argument string.
             </summary>
             <param name="line">The line of text.</param>
+            <param name="horizontalMeasurementStyle">How to measure the last letter in the line. This can be used
+            to adjust whether the last letter should be trimmed according to its width, or if it should advance using XAdvance.
+            TrimRight trims the advance and uses the PixelRight-PixelLeft value to determine the last letter's width.
+            Full uses the letter's XAdvance to determine the last letter's width.</param>
             <returns>The number of pixels needed to render this text horizontally.</returns>
         </member>
         <member name="M:RenderingLibrary.Graphics.ImageData.RemoveRow(System.Int32)">
@@ -913,6 +2401,15 @@
             Removes the index row from the contained data.  Row 0 is the top of the texture.
             </summary>
             <param name="rowToRemove">The index of the row to remove.  Index 0 is the top row.</param>
+        </member>
+        <member name="P:RenderingLibrary.Graphics.NineSlice.Visible">
+            <inheritdoc/>
+        </member>
+        <member name="P:RenderingLibrary.Graphics.NineSlice.AbsoluteVisible">
+            <inheritdoc/>
+        </member>
+        <member name="P:RenderingLibrary.Graphics.NineSlice.RenderingLibrary#Graphics#IVisible#Parent">
+            <inheritdoc/>
         </member>
         <member name="M:RenderingLibrary.Graphics.NineSlice.LoadAtlasedTexture(System.String,RenderingLibrary.Graphics.AtlasedTexture)">
             <summary>
@@ -941,6 +2438,12 @@
             The texture used to render solid objects. If SinglePixelSourceRectangle is null, the entire texture is used. Otherwise
             the portion of SinglePixelTexture is applied.
             </summary>
+        </member>
+        <member name="M:RenderingLibrary.Graphics.Renderer.TryGetSinglePixelTexture">
+            <summary>
+            Returns the SinglePixelTexture if it exists, or null if not. This tolerates nulls, unlike the property.
+            </summary>
+            <returns>The SinglePixelTexture if it is not null</returns>
         </member>
         <member name="F:RenderingLibrary.Graphics.Renderer.SinglePixelSourceRectangle">
             <summary>
@@ -980,9 +2483,56 @@
             rendering to end itself so that they can start sprite batch.
             </summary>
         </member>
+        <member name="T:RenderingLibrary.Graphics.CustomEffectManager">
+            <summary>
+            Manages custom effects from the custom shader file. Main purposes:
+            <list type="number">
+            <item><description>Caches effect parameters and techniques to avoid lookups during rendering.</description></item>
+            <item><description>Handles compatibility between old and new effect specifications with automatic fallback.</description></item>
+            <item><description>Provides methods to retrieve techniques based on:
+            <list type="bullet">
+            <item><description>Texture filtering (Point/Linear)</description></item>
+            <item><description>Color source (VertexColor/ColorModifier)</description></item>
+            <item><description>Color operation (Add, Subtract, Modulate, etc.)</description></item>
+            <item><description>Gamma correction (Linearize)</description></item>
+            </list>
+            </description></item>
+            </list>
+            This class is designed for use by renderers and custom graphics code.
+            </summary>
+        </member>
         <member name="P:RenderingLibrary.Graphics.Sprite.EffectiveRectangle">
             <summary>
             Returns the effective source rectangle, which may be the same as the SourceRectangle unless an AtlasedTexture is used.
+            </summary>
+        </member>
+        <member name="P:RenderingLibrary.Graphics.Sprite.Visible">
+            <inheritdoc/>
+        </member>
+        <member name="P:RenderingLibrary.Graphics.Sprite.AbsoluteVisible">
+            <inheritdoc/>
+        </member>
+        <member name="P:RenderingLibrary.Graphics.Sprite.RenderingLibrary#Graphics#IVisible#Parent">
+            <inheritdoc/>
+        </member>
+        <member name="P:RenderingLibrary.Graphics.BeginParameters.ChangeRecord">
+            <summary>
+            A list of changes that happened with these same parameters which required changing either the Texture or SpriteFont.
+            If this list is empty, no items were drawn with a Texture/SpriteFont. If any items were drawn, at least one item is
+            present in this list.
+            </summary>
+        </member>
+        <member name="F:RenderingLibrary.Graphics.DimensionSnapping.SideSnapping">
+            <summary>
+            Snaps each side (top, bottom, left, and right) independently.
+            For example, the bottom
+            will get rounded to the nearest screen pixel regardless of
+            the height of an object
+            </summary>
+        </member>
+        <member name="F:RenderingLibrary.Graphics.DimensionSnapping.DimensionSnapping">
+            <summary>
+            Snaps 
             </summary>
         </member>
         <member name="F:RenderingLibrary.Graphics.InlineVariable.VariableName">
@@ -1038,6 +2588,12 @@
             create an effect where the text prints out letter-by-letter.
             </summary>
         </member>
+        <member name="P:RenderingLibrary.Graphics.Text.MaxNumberOfLines">
+            <summary>
+            The maximum number of lines to display. This can be used to 
+            limit how many lines of text are displayed at one time.
+            </summary>
+        </member>
         <member name="P:RenderingLibrary.Graphics.Text.StoredMarkupText">
             <summary>
             Stores the markup text including BBCode. This should not be
@@ -1047,11 +2603,95 @@
             to use this.
             </summary>
         </member>
+        <member name="P:RenderingLibrary.Graphics.Text.DescenderHeight">
+            <summary>
+            DescenderHeight in pixels as defined by the BitmapFont, ignoring FontScale.
+            </summary>
+        </member>
+        <member name="P:RenderingLibrary.Graphics.Text.LineHeightInPixels">
+            <summary>
+            Line height in pixels as defined by the BitmapFont, ignoring FontScale
+            </summary>
+        </member>
+        <member name="P:RenderingLibrary.Graphics.Text.Customizations">
+            <summary>
+            Customization functions, where the key is the name of the custom function in bbcode, and the Func returns
+            customization per letter.
+            </summary>
+            <example>
+            LetterCustomization SineWave(int index, string textInBlock)
+            {
+              // Index is the letter, it will get called for each character in the block, starting at 0
+              // textInBlock is the entire block, in case the function needs to reference it.
+              return new LetterCustomization
+              {
+                OffsetY = MathF.Sin(DateTime.Now.TotalSeconds + index/5);
+              };
+            }
+            // This would be used as follows:
+            Text.Customizations["SineWave"] = SineWave;
+            </example>
+        </member>
+        <member name="M:RenderingLibrary.Graphics.Text.MeasureString(System.String)">
+            <summary>
+            Returns the size of the string, ignoring font scale, but considering the bitmap font.
+            </summary>
+            <param name="whatToMeasure"></param>
+            <returns></returns>
+        </member>
+        <member name="P:RenderingLibrary.Graphics.Text.Visible">
+            <inheritdoc/>
+        </member>
+        <member name="P:RenderingLibrary.Graphics.Text.AbsoluteVisible">
+            <inheritdoc/>
+        </member>
         <member name="M:RenderingLibrary.Graphics.SolidRectangle.GetAtlasedTexture">
             <summary>
             Checks if the Colored Rectangle texture is located in a loaded atlas.
             </summary>
             <returns>Returns atlased texture if it exists.</returns>
+        </member>
+        <member name="P:RenderingLibrary.Graphics.SolidRectangle.Visible">
+            <inheritdoc/>
+        </member>
+        <member name="P:RenderingLibrary.Graphics.SolidRectangle.AbsoluteVisible">
+            <inheritdoc/>
+        </member>
+        <member name="P:RenderingLibrary.Graphics.SolidRectangle.RenderingLibrary#Graphics#IVisible#Parent">
+            <inheritdoc/>
+        </member>
+        <member name="P:RenderingLibrary.Math.Geometry.Line.Visible">
+            <inheritdoc/>
+        </member>
+        <member name="P:RenderingLibrary.Math.Geometry.Line.AbsoluteVisible">
+            <inheritdoc/>
+        </member>
+        <member name="P:RenderingLibrary.Math.Geometry.Line.RenderingLibrary#Graphics#IVisible#Parent">
+            <inheritdoc/>
+        </member>
+        <member name="P:RenderingLibrary.Math.Geometry.LineCircle.Visible">
+            <inheritdoc/>
+        </member>
+        <member name="P:RenderingLibrary.Math.Geometry.LineCircle.AbsoluteVisible">
+            <inheritdoc/>
+        </member>
+        <member name="P:RenderingLibrary.Math.Geometry.LineCircle.RenderingLibrary#Graphics#IVisible#Parent">
+            <inheritdoc/>
+        </member>
+        <member name="P:RenderingLibrary.Math.Geometry.LineGrid.Visible">
+            <inheritdoc/>
+        </member>
+        <member name="P:RenderingLibrary.Math.Geometry.LineGrid.AbsoluteVisible">
+            <inheritdoc/>
+        </member>
+        <member name="P:RenderingLibrary.Math.Geometry.LineGrid.RenderingLibrary#Graphics#IVisible#Parent">
+            <inheritdoc/>
+        </member>
+        <member name="M:RenderingLibrary.Math.Geometry.LinePolygon.SetPoints(System.Collections.Generic.ICollection{System.Numerics.Vector2})">
+            <summary>
+            Sets the relative points that make up the polygon.
+            </summary>
+            <param name="points">The points in relative space, where 0,0 is the origin of the polygon.</param>
         </member>
         <member name="M:RenderingLibrary.Math.Geometry.LinePolygon.IsPointInside(System.Single,System.Single)">
             <summary>
@@ -1067,6 +2707,15 @@
             </summary>
             <param name="index">The 0-based index.</param>
             <returns>The position of the point at the argument index in object space.</returns>
+        </member>
+        <member name="P:RenderingLibrary.Math.Geometry.LinePolygon.Visible">
+            <inheritdoc/>
+        </member>
+        <member name="P:RenderingLibrary.Math.Geometry.LinePolygon.AbsoluteVisible">
+            <inheritdoc/>
+        </member>
+        <member name="P:RenderingLibrary.Math.Geometry.LinePolygon.RenderingLibrary#Graphics#IVisible#Parent">
+            <inheritdoc/>
         </member>
         <member name="P:RenderingLibrary.Math.Geometry.LinePrimitive.BreakIntoSegments">
             <summary>
@@ -1149,12 +2798,7 @@
             Clears all vectors from the primitive line object.
             </summary>
         </member>
-        <member name="M:RenderingLibrary.Math.Geometry.LinePrimitive.Render(RenderingLibrary.Graphics.SpriteRenderer,RenderingLibrary.SystemManagers)">
-            <summary>
-            Renders the primtive line object.
-            </summary>
-            <param name="spriteRenderer">The sprite renderer to use to render the primitive line object.</param>
-        </member>
+        <!-- Badly formed XML comment ignored for member "M:RenderingLibrary.Math.Geometry.LinePrimitive.Render(RenderingLibrary.Graphics.SpriteRenderer,RenderingLibrary.SystemManagers)" -->
         <member name="M:RenderingLibrary.Math.Geometry.LinePrimitive.CreateCircle(System.Single,System.Int32)">
             <summary>
             Creates a circle starting from 0, 0.
@@ -1168,11 +2812,44 @@
             This allows LineRectangles to not render without making their children invisible.
             </summary>
         </member>
+        <member name="P:RenderingLibrary.Math.Geometry.LineRectangle.Visible">
+            <inheritdoc/>
+        </member>
+        <member name="P:RenderingLibrary.Math.Geometry.LineRectangle.AbsoluteVisible">
+            <inheritdoc/>
+        </member>
+        <member name="P:RenderingLibrary.Math.Geometry.LineRectangle.RenderingLibrary#Graphics#IVisible#Parent">
+            <inheritdoc/>
+        </member>
+        <member name="P:RenderingLibrary.SystemManagers.Renderer">
+            <summary>
+            The Renderer used by this SystemManagers. This is created automatically when
+            calling Initialize, and this should only be set in unit tests.
+            </summary>
+        </member>
         <member name="P:RenderingLibrary.SystemManagers.GlobalFontScale">
             <summary>
             The font scale value. This can be used to scale all fonts globally, 
             generally in response to a font scaling value like the Android font scale setting.
             </summary>
+        </member>
+        <member name="M:RenderingLibrary.SystemManagers.LoadEmbeddedFont(System.String)">
+            <summary>
+            Loads a font and associated PNG file.  Files are embedded and stored with names like:
+                {AssemblyPrefix}.{filename}.{extension}
+                KniGum.Font18Arial_0.png
+                FnaGum.Font18Arial_0.png
+                MonoGameGum.Content.Font18Arial_0.png
+            </summary>
+            <param name="fontName">The filename without the extension</param>
+            <returns></returns>
+        </member>
+        <member name="M:RenderingLibrary.SystemManagers.LoadEmbeddedTexture2d(System.String)">
+            <summary>
+            Loads a texture into the Disposable cache from the Embedded Resource within the application.
+            </summary>
+            <param name="embeddedTexture2dName"></param>
+            <returns></returns>
         </member>
         <member name="M:RenderingLibrary.SystemManagers.Activity(System.Double)">
             <summary>
