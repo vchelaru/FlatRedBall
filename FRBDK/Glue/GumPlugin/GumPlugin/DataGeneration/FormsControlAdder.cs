@@ -3,6 +3,7 @@ using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
+using Gum.DataTypes;
 using Gum.DataTypes.Behaviors;
 using Gum.DataTypes.Variables;
 using GumPlugin.Managers;
@@ -212,7 +213,9 @@ public static class FormsControlAdder
 
                 FileManager.SaveEmbeddedResource(assembly, resource, destination);
 
-                var behaviorSave = FileManager.XmlDeserialize<BehaviorSave>(destination);
+                var (behaviorContent, _) = GumFileSerializer.ReadAndDetectFormat(destination);
+                var behaviorSave = GumFileSerializer.DeserializeBehaviorSave(behaviorContent,
+                    AppState.Self.GumProjectSave?.Version ?? int.MaxValue);
 
                 var project = AppState.Self.GumProjectSave;
 

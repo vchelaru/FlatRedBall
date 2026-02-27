@@ -636,7 +636,8 @@ namespace GumPlugin.Managers
                                 ComponentSave gumComponentSave = null;
                                 try
                                 {
-                                    gumComponentSave = FileManager.XmlDeserialize<ComponentSave>(absoluteFileName);
+                                    var (gucxContent, _) = GumFileSerializer.ReadAndDetectFormat(absoluteFileName);
+                                    gumComponentSave = GumFileSerializer.DeserializeElementSave<ComponentSave>(gucxContent, ObjectFinder.Self.GumProjectSave?.Version ?? int.MaxValue);
                                     gumComponentSave.FileName = absoluteFileName;
                                     // See an explanation for this in LoadGumxIfNecessaryFromDirectory
                                     gumComponentSave.Initialize(gumComponentSave.DefaultState);
@@ -654,7 +655,8 @@ namespace GumPlugin.Managers
                                 ScreenSave gumScreenSave = null;
                                 try
                                 {
-                                    gumScreenSave = FileManager.XmlDeserialize<ScreenSave>(absoluteFileName);
+                                    var (gusxContent, _) = GumFileSerializer.ReadAndDetectFormat(absoluteFileName);
+                                    gumScreenSave = GumFileSerializer.DeserializeElementSave<ScreenSave>(gusxContent, ObjectFinder.Self.GumProjectSave?.Version ?? int.MaxValue);
                                     gumScreenSave.FileName = absoluteFileName;
                                     // See an explanation for this in LoadGumxIfNecessaryFromDirectory
                                     gumScreenSave.Initialize(gumScreenSave.DefaultState);
@@ -673,7 +675,8 @@ namespace GumPlugin.Managers
                                 StandardElementSave standardElementSave = null;
                                 try
                                 {
-                                    standardElementSave = FileManager.XmlDeserialize<StandardElementSave>(absoluteFileName);
+                                    var (gutxContent, _) = GumFileSerializer.ReadAndDetectFormat(absoluteFileName);
+                                    standardElementSave = GumFileSerializer.DeserializeElementSave<StandardElementSave>(gutxContent, ObjectFinder.Self.GumProjectSave?.Version ?? int.MaxValue);
                                     standardElementSave.FileName = absoluteFileName;
                                     // See an explanation for this in LoadGumxIfNecessaryFromDirectory
                                     standardElementSave.Initialize(standardElementSave.DefaultState);

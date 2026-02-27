@@ -55,8 +55,9 @@ public class FileChangeManager : Singleton<FileChangeManager>
                 {
                     try
                     {
-                        var newBehavior =
-                            FileManager.XmlDeserialize<BehaviorSave>(filePath.FullPath);
+                        var (behaviorContent, _) = GumFileSerializer.ReadAndDetectFormat(filePath.FullPath);
+                        var newBehavior = GumFileSerializer.DeserializeBehaviorSave(behaviorContent,
+                            AppState.Self.GumProjectSave?.Version ?? int.MaxValue);
 
                         // remove behavior
                         AppState.Self.GumProjectSave.Behaviors.RemoveAll(item => item.Name == newBehavior.Name);
@@ -115,7 +116,10 @@ public class FileChangeManager : Singleton<FileChangeManager>
                 // It could have been deleted so check...
                 if (filePath.Exists())
                 {
-                    GlueCommands.Self.TryMultipleTimes(() => screen = FileManager.XmlDeserialize<ScreenSave>(filePath.FullPath));
+                    GlueCommands.Self.TryMultipleTimes(() => {
+                        var (screenContent, _) = GumFileSerializer.ReadAndDetectFormat(filePath.FullPath);
+                        screen = GumFileSerializer.DeserializeElementSave<ScreenSave>(screenContent, gumProject.Version);
+                    });
                 }
 
                 if (screen != null)
@@ -143,7 +147,10 @@ public class FileChangeManager : Singleton<FileChangeManager>
                 ComponentSave component = null;
                 if (filePath.Exists())
                 {
-                    GlueCommands.Self.TryMultipleTimes(() => component = FileManager.XmlDeserialize<ComponentSave>(filePath.FullPath));
+                    GlueCommands.Self.TryMultipleTimes(() => {
+                        var (componentContent, _) = GumFileSerializer.ReadAndDetectFormat(filePath.FullPath);
+                        component = GumFileSerializer.DeserializeElementSave<ComponentSave>(componentContent, gumProject.Version);
+                    });
                     component.Initialize(component.DefaultState);
 
                     // since the gum project didn't change, it should be here
@@ -164,7 +171,10 @@ public class FileChangeManager : Singleton<FileChangeManager>
             else if (extension == GumProjectSave.StandardExtension)
             {
                 StandardElementSave standard = null;
-                GlueCommands.Self.TryMultipleTimes(() => standard = FileManager.XmlDeserialize<StandardElementSave>(filePath.FullPath));
+                GlueCommands.Self.TryMultipleTimes(() => {
+                    var (standardContent, _) = GumFileSerializer.ReadAndDetectFormat(filePath.FullPath);
+                    standard = GumFileSerializer.DeserializeElementSave<StandardElementSave>(standardContent, gumProject.Version);
+                });
                 standard.Initialize(standard.DefaultState);
 
                 var oldStandard = gumProject.StandardElements.FirstOrDefault(item => item.Name == standard.Name);

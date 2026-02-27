@@ -4,501 +4,571 @@
         <name>GumCommon</name>
     </assembly>
     <members>
-        <member name="T:Gum.Wireframe.BindableGue">
+        <member name="T:Gum.Collections.GraphicalUiElementCollection">
             <summary>
-            The base object for all Gum runtime objects. It contains functionality for
-            setting variables, states, and performing layout. The GraphicalUiElement can
-            wrap an underlying rendering object.
+            A wrapper collection that presents an ObservableCollection&lt;IRenderableIpso&gt; as ObservableCollection&lt;GraphicalUiElement&gt;.
+            Maintains bidirectional synchronization between the inner collection and this wrapper.
             </summary>
         </member>
-        <member name="P:Gum.Wireframe.InputEventArgs.InputDevice">
+        <member name="P:Gum.Collections.GraphicalUiElementCollection.Empty">
             <summary>
-            The input device which was responsible for this event, such as the Gamepad.
+            Gets a read-only empty collection that can be safely returned when no children exist.
             </summary>
         </member>
-        <member name="T:Gum.Wireframe.SelectionChangedEventArgs">
+        <member name="P:Gum.Collections.GraphicalUiElementCollection.IsReadOnly">
             <summary>
-            Contains information about objects which have been added to or removed from the current selection.
-            This is typically used by Gum Forms for elements which support selection such as ListBox.
+            Gets whether this collection is read-only.
             </summary>
         </member>
-        <member name="P:Gum.Wireframe.SelectionChangedEventArgs.RemovedItems">
+        <member name="M:Gum.Collections.GraphicalUiElementCollection.#ctor(System.Collections.ObjectModel.ObservableCollection{RenderingLibrary.Graphics.IRenderableIpso})">
             <summary>
-            The items which were just removed from selection.
+            Creates a wrapper around an existing IRenderableIpso collection.
             </summary>
         </member>
-        <member name="P:Gum.Wireframe.SelectionChangedEventArgs.AddedItems">
+        <member name="M:Gum.Collections.GraphicalUiElementCollection.#ctor">
             <summary>
-            The items which were just added to selection.
+            Private constructor for creating the empty read-only singleton.
             </summary>
         </member>
-        <member name="T:Gum.Wireframe.InteractiveGue">
+        <member name="M:Gum.Collections.GraphicalUiElementCollection.InnerCollection_CollectionChanged(System.Object,System.Collections.Specialized.NotifyCollectionChangedEventArgs)">
             <summary>
-            The base object for all Gum runtime objects. It contains functionality for
-            setting variables, states, and performing layout. The GraphicalUiElement can
-            wrap an underlying rendering object.
+            Handles changes from the inner IRenderableIpso collection and syncs them to this collection.
             </summary>
         </member>
-        <member name="P:Gum.Wireframe.InteractiveGue.HasEvents">
+        <member name="M:Gum.Collections.GraphicalUiElementCollection.ThrowIfReadOnly">
             <summary>
-            Whether this instance supports events and whether the Cursor considers this when
-            determining what it is over. Typically this is assigned once based 
-            on its type, usually when objects are created from a Gum project. Objects which 
-            should consume cursor events without raising them should keep this value set to true
-            but should set IsEnabled to false.
+            Throws an exception if the collection is read-only.
             </summary>
         </member>
-        <member name="P:Gum.Wireframe.InteractiveGue.RaiseChildrenEventsOutsideOfBounds">
+        <member name="M:Gum.Collections.GraphicalUiElementCollection.InsertItem(System.Int32,Gum.Wireframe.GraphicalUiElement)">
             <summary>
-            Whether to check each individual child for raising UI events even if the cursor
-            is outside of the bounds of this object. Setting this to false can have a slight
-            performance cost since each child is checked even if the cursor is not over this.
+            Inserts an item into the collection at the specified index.
             </summary>
         </member>
-        <member name="P:Gum.Wireframe.InteractiveGue.IsEnabled">
+        <member name="M:Gum.Collections.GraphicalUiElementCollection.RemoveItem(System.Int32)">
             <summary>
-            Whether this is enabled. If this is false, then this will not raise events.
+            Removes the item at the specified index.
             </summary>
         </member>
-        <member name="P:Gum.Wireframe.InteractiveGue.FormsControlAsObject">
+        <member name="M:Gum.Collections.GraphicalUiElementCollection.SetItem(System.Int32,Gum.Wireframe.GraphicalUiElement)">
             <summary>
-            Provides an uncasted reference to the Gum Forms element which uses this as visual element.
+            Replaces the item at the specified index.
             </summary>
         </member>
-        <member name="E:Gum.Wireframe.InteractiveGue.Click">
+        <member name="M:Gum.Collections.GraphicalUiElementCollection.ClearItems">
             <summary>
-            Event which is raised whenever this is clicked by a cursor. A click occurs
-            when the cursor is over this and is first pushed, then released.
+            Clears all items from the collection.
             </summary>
         </member>
-        <member name="E:Gum.Wireframe.InteractiveGue.Push">
+        <member name="M:Gum.Collections.GraphicalUiElementCollection.MoveItem(System.Int32,System.Int32)">
             <summary>
-            Event shich is raised whenever this is pushed by a cursor. A push occurs
-            when the cursor is over this and the left mouse button is pushed (not down last frame,
-            down this frame).
+            Moves an item from one index to another.
             </summary>
         </member>
-        <member name="E:Gum.Wireframe.InteractiveGue.LosePush">
+        <member name="T:Gum.StateAnimation.Runtime.AnimationController">
             <summary>
-            Event which is raised whenever this loses a push. A push occurs when the
-            cursor is over this window and the left mouse button is pushed. A push is lost
-            if the left mouse button is released or if the user moves the cursor so that it
-            is no longer over this while the mouse button is pressed. 
-            </summary>
-            <remarks>
-            LosePush is often used to change the state of a button back to its regular state.
-            </remarks>
-        </member>
-        <member name="E:Gum.Wireframe.InteractiveGue.RollOn">
-            <summary>
-            Event raised when the cursor first moves over this object.
+            Controls the playback of animations on a GraphicalUiElement, managing state, timing, and events.
             </summary>
         </member>
-        <member name="E:Gum.Wireframe.InteractiveGue.RollOff">
+        <member name="P:Gum.StateAnimation.Runtime.AnimationController.CurrentAnimation">
             <summary>
-            Event when the cursor first leaves this object.
+            Gets the currently playing or paused animation, or null if no animation is loaded.
             </summary>
         </member>
-        <member name="E:Gum.Wireframe.InteractiveGue.RollOver">
+        <member name="P:Gum.StateAnimation.Runtime.AnimationController.CurrentTime">
             <summary>
-            Event raised every frame the cursor is over this object and the Cursor has changed position.
+            Gets the current playback time of the animation in seconds.
             </summary>
         </member>
-        <member name="E:Gum.Wireframe.InteractiveGue.HoverOver">
+        <member name="P:Gum.StateAnimation.Runtime.AnimationController.IsPlaying">
             <summary>
-            Event raised every frame the cursor is over this object whether the Cursor has changed positions or not.
+            Gets whether an animation is currently playing (not paused or stopped).
             </summary>
         </member>
-        <member name="E:Gum.Wireframe.InteractiveGue.Dragging">
+        <member name="P:Gum.StateAnimation.Runtime.AnimationController.IsPaused">
             <summary>
-            Event raised when the cursor pushes on an object and moves. This is similar to RollOver, but is raised even
-            if outside of the bounds of the object.
+            Gets whether the current animation is paused.
             </summary>
         </member>
-        <member name="E:Gum.Wireframe.InteractiveGue.EnabledChange">
+        <member name="P:Gum.StateAnimation.Runtime.AnimationController.IsStopped">
             <summary>
-            Event raised when the Enabled property changed.
+            Gets whether no animation is currently playing or paused.
             </summary>
         </member>
-        <member name="E:Gum.Wireframe.InteractiveGue.MouseWheelScroll">
+        <member name="E:Gum.StateAnimation.Runtime.AnimationController.OnStarted">
             <summary>
-            Eent raised when the mouse wheel has been scrolled while the cursor is over this instance.
-            This event is raised bottom-up, with the root object having the opportunity to handle the roll over.
-            If a control sets the argument RoutedEventArgs Handled to true, the children objects 
-            will not have this event raised.
+            Raised when an animation starts playing.
             </summary>
         </member>
-        <member name="E:Gum.Wireframe.InteractiveGue.RollOverBubbling">
+        <member name="E:Gum.StateAnimation.Runtime.AnimationController.OnCompleted">
             <summary>
-            Event raised when the mouse rolls over this instance. This event is raised top-down, with the
-            child object having the opportunity to handle the roll over first. If a control sets the argument 
-            RoutedEventArgs Handled to true,
-            then parent objects will not have this event raised.
+            Raised when an animation completes (reaches its end and does not loop).
             </summary>
         </member>
-        <member name="E:Gum.Wireframe.InteractiveGue.RemovedAsPushed">
+        <member name="E:Gum.StateAnimation.Runtime.AnimationController.OnStopped">
             <summary>
-            Event raised when this Window is pushed, then is no longer the pushed window due to a cursor releasing the primary button.
+            Raised when an animation is stopped before completion.
             </summary>
         </member>
-        <member name="M:Gum.Wireframe.InteractiveGue.HasCursorOver(Gum.Wireframe.ICursor)">
+        <member name="E:Gum.StateAnimation.Runtime.AnimationController.OnPaused">
             <summary>
-            Returns whether the argument cursor is over this instance. If RaiseChildrenEventsOutsideOfBounds is set
-            to true, then each of the individual chilren are also checked if the cursor is not inside this object's bounds.
-            </summary>
-            <param name="cursor">The cursor to check whether it is over this.</param>
-            <returns>Whether the cursor is over this.</returns>
-        </member>
-        <member name="M:Gum.Wireframe.InteractiveGue.AddNextPushAction(System.Action)">
-            <summary>
-            Adds an action to be called the next time the Cursor performs a push action 
-            (the left button is not down the previous frame but is down this frame). The 
-            argument action is invoked one time.
-            </summary>
-            <param name="action">The action to invoke one time.</param>
-            <exception cref="T:System.ArgumentNullException">Thrown if the argument action is null.</exception>
-        </member>
-        <member name="M:Gum.Wireframe.InteractiveGue.AddNextClickAction(System.Action)">
-            <summary>
-            Adds an action to be called the next time the Cursor performs a click action
-            (the left button was down last frame and is released this frame). The argument
-            action is invoked one time.
-            </summary>
-            <param name="action">The action to invoke one time.</param>
-            <exception cref="T:System.ArgumentNullException">Thrown if the argument action is null.</exception>
-        </member>
-        <member name="M:Gum.Wireframe.IInputReceiver.OnGainFocus">
-            <summary>
-            Called by the engine automatically when an IInputReceiver gains focus.
-            </summary>
-            <remarks>
-            The implementation of this method should raise the GainFocus event.
-            </remarks>
-        </member>
-        <member name="M:Gum.Wireframe.IInputReceiver.OnLoseFocus">
-            <summary>
-            Called by the engine automatically when an IInputReceiver loses focus.
+            Raised when a playing animation is paused.
             </summary>
         </member>
-        <member name="M:Gum.Wireframe.IInputReceiver.OnFocusUpdate">
+        <member name="E:Gum.StateAnimation.Runtime.AnimationController.OnResumed">
             <summary>
-            Called every frame if this has focus. Allows general every-frame updates such as
-            handling gamepad input.
+            Raised when a paused animation is resumed.
             </summary>
         </member>
-        <member name="P:Gum.Wireframe.ICursor.PrimaryClickNoSlide">
+        <member name="M:Gum.StateAnimation.Runtime.AnimationController.Play(Gum.StateAnimation.Runtime.AnimationRuntime)">
             <summary>
-            Returns whether the cursor has been clicked without movement between the push and release.
-            Simple implementations can return PrimaryClick, but more complex implementations may want to
-            consider a movement threshold.
+            Starts playing the specified animation from the beginning.
+            </summary>
+            <param name="animation">The AnimationRuntime to play.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when animation is null.</exception>
+        </member>
+        <member name="M:Gum.StateAnimation.Runtime.AnimationController.Pause">
+            <summary>
+            Pauses the currently playing animation, preserving the current time.
             </summary>
         </member>
-        <member name="T:Gum.Wireframe.GraphicalUiElement">
+        <member name="M:Gum.StateAnimation.Runtime.AnimationController.Resume">
             <summary>
-            The base object for all Gum runtime objects. It contains functionality for
-            setting variables, states, and performing layout. The GraphicalUiElement can
-            wrap an underlying rendering object.
+            Resumes a paused animation from its current time.
             </summary>
         </member>
-        <member name="F:Gum.Wireframe.GraphicalUiElement.mWhatThisContains">
+        <member name="M:Gum.StateAnimation.Runtime.AnimationController.Stop">
             <summary>
-            A flat list of all GraphicalUiElements contained by this element. For example, if this GraphicalUiElement
-            is a Screen, this list is all GraphicalUielements for every instance contained regardless of hierarchy.
+            Stops the current animation and resets the time to zero.
             </summary>
         </member>
-        <member name="P:Gum.Wireframe.GraphicalUiElement.EffectiveManagers">
+        <member name="M:Gum.StateAnimation.Runtime.AnimationController.Restart">
             <summary>
-            Returns this instance's SystemManagers, or climbs up the parent/child relationship
-            until a non-null SystemsManager is found. Otherwise, returns null.
+            Restarts the current animation from the beginning without changing the playing state.
             </summary>
         </member>
-        <member name="P:Gum.Wireframe.GraphicalUiElement.CanvasWidth">
+        <member name="M:Gum.StateAnimation.Runtime.AnimationController.Update(System.Double,Gum.Wireframe.GraphicalUiElement)">
             <summary>
-            The X "world units" that the entire gum rendering system uses. This is essentially the "top level" container's width.
-            For a game which renders at 1:1, this will match the game's resolution. 
+            Updates the animation state and applies it to the target GraphicalUiElement.
+            Called internally during the update loop.
+            </summary>
+            <param name="secondDifference">The time elapsed since the last update in seconds.</param>
+            <param name="target">The GraphicalUiElement to apply the animation to.</param>
+        </member>
+        <member name="T:Gum.StateAnimation.Runtime.AnimationState">
+            <summary>
+            Represents the playback state of an animation.
             </summary>
         </member>
-        <member name="P:Gum.Wireframe.GraphicalUiElement.CanvasHeight">
+        <member name="F:Gum.StateAnimation.Runtime.AnimationState.Stopped">
             <summary>
-            The Y "world units" that the entire gum rendering system uses. This is essentially the "top level" container's height.
-            For a game which renders at 1:1, this will match the game's resolution. 
+            No animation is playing or the animation has completed.
             </summary>
         </member>
-        <member name="P:Gum.Wireframe.GraphicalUiElement.RenderingLibrary#IPositionedSizedObject#X">
+        <member name="F:Gum.StateAnimation.Runtime.AnimationState.Playing">
             <summary>
-            The X position of this object as an IPositionedSizedObject. This does not consider origins
-            so it will use the default origin, which is top-left for most types.
+            The animation is actively playing.
             </summary>
         </member>
-        <member name="P:Gum.Wireframe.GraphicalUiElement.RenderingLibrary#IPositionedSizedObject#Y">
+        <member name="F:Gum.StateAnimation.Runtime.AnimationState.Paused">
             <summary>
-            The Y position of this object as an IPositionedSizedObject. This does not consider origins
-            so it will use the default origin, which is top-left for most types.
+            The animation is paused at its current time.
             </summary>
         </member>
-        <member name="M:Gum.Wireframe.GraphicalUiElement.GetAbsoluteWidth">
+        <member name="T:Gum.StateAnimation.SaveClasses.AnimationSave">
             <summary>
-            Returns the absolute width of the GraphicalUiElement in pixels (as opposed to using its WidthUnits)
-            </summary>
-            <returns>The absolute width in pixels.</returns>
-        </member>
-        <member name="M:Gum.Wireframe.GraphicalUiElement.GetAbsoluteHeight">
-            <summary>
-            Returns the absolute height of the GraphicalUiElement in pixels (as opposed to using its HeightUnits)
-            </summary>
-            <returns>The absolute height in pixels.</returns>
-        </member>
-        <member name="P:Gum.Wireframe.GraphicalUiElement.StackSpacing">
-            <summary>
-            The number of pixels spacing between each child if this is has a ChildrenLayout of 
-            TopToBottomStack or LeftToRightStack.
+            A serializable animation which contains a list of States (keyframes), Animations (sub-animations), and Events (timed named events)
             </summary>
         </member>
-        <member name="P:Gum.Wireframe.GraphicalUiElement.Rotation">
+        <member name="T:Gum.Localization.LocalizationService">
             <summary>
-            Rotation in degrees. Positive value rotates counterclockwise.
+            Manages localization strings and language support for the application.
+            Implements ILocalizationService for portability across different contexts.
             </summary>
         </member>
-        <member name="P:Gum.Wireframe.GraphicalUiElement.ElementGueContainingThis">
+        <member name="M:Gum.Localization.LocalizationService.AddDatabase(System.Collections.Generic.Dictionary{System.String,System.String[]},System.Collections.Generic.List{System.String})">
             <summary>
-            The ScreenSave or Component which contains this instance.
+            Adds a localization database from a dictionary of string IDs to translations.
+            </summary>
+            <param name="entryDictionary">Dictionary mapping string IDs to arrays of translations (one per language).</param>
+            <param name="headerList">List of language names corresponding to the translation arrays.</param>
+        </member>
+        <member name="M:Gum.Localization.LocalizationService.Translate(System.String)">
+            <summary>
+            Translates a string ID to the current language.
+            </summary>
+            <param name="stringId">The string ID to translate.</param>
+            <returns>The translated string, or the original string with "(loc)" suffix if not found.</returns>
+        </member>
+        <member name="M:Gum.Localization.LocalizationService.TranslateForLanguage(System.String,System.Int32)">
+            <summary>
+            Translates a string ID to a specific language.
+            </summary>
+            <param name="stringID">The string ID to translate.</param>
+            <param name="language">The language index to translate to.</param>
+            <returns>The translated string, or the original string with "(loc)" suffix if not found.</returns>
+        </member>
+        <member name="M:Gum.Localization.LocalizationServiceExtensions.AddResxDatabase(Gum.Localization.ILocalizationService,System.String)">
+            <summary>
+            Loads localization data from a base .resx file and any satellite .resx files
+            discovered by convention in the same directory (e.g., Strings.resx, Strings.es.resx,
+            Strings.fr.resx).
+            </summary>
+            <param name="service">The localization service to populate.</param>
+            <param name="baseResxFilePath">Path to the base (default language) .resx file.</param>
+        </member>
+        <member name="M:Gum.Localization.LocalizationServiceExtensions.AddResxDatabase(Gum.Localization.ILocalizationService,System.Collections.Generic.IEnumerable{System.ValueTuple{System.String,System.IO.Stream}})">
+            <summary>
+            Loads localization data from multiple .resx streams, one per language. Each stream
+            should contain standard .resx XML. The first stream is treated as the default language.
+            </summary>
+            <param name="service">The localization service to populate.</param>
+            <param name="resxStreams">A collection of (languageName, stream) pairs, one per language.</param>
+        </member>
+        <member name="P:Gum.DataTypes.Behaviors.ElementBehaviorReference.ProjectName">
+            <summary>
+            Currently unused - this will eventually be used to reference behaviors
+            from different Gum projects.
             </summary>
         </member>
-        <member name="P:Gum.Wireframe.GraphicalUiElement.ContainedElements">
+        <member name="F:Gum.DataTypes.DimensionUnitType.Absolute">
             <summary>
-            A flat list of all GraphicalUiElements contained by this element. For example, if this GraphicalUiElement
-            is a Screen, this list is all GraphicalUielements for every instance contained regardless of hierarchy.
-            </summary>
-            <remarks>
-            Since this is an interface using ContainedElements in a foreach allocates memory
-            and this can actually be significant in a game that updates its UI frequently.
-            </remarks>
-        </member>
-        <member name="P:Gum.Wireframe.GraphicalUiElement.Children">
-            <summary>
-            Returns the direct hierarchical children of this. Note that this does not return all objects contained in the element, only direct children. 
+            Width and Height values are measured in absolute pixel values
             </summary>
         </member>
-        <member name="P:Gum.Wireframe.GraphicalUiElement.AbsoluteX">
+        <member name="F:Gum.DataTypes.DimensionUnitType.PercentageOfParent">
             <summary>
-            Returns the absolute (screen space) X of the origin of the GraphicalUiElement. Note that
-            this considers the XOrigin, and will apply rotation.
+            Width and Height values are measured in percentage of parent, where 100 is 100% of the parent's width
             </summary>
         </member>
-        <member name="P:Gum.Wireframe.GraphicalUiElement.AbsoluteLeft">
+        <member name="F:Gum.DataTypes.DimensionUnitType.RelativeToParent">
             <summary>
-            Returns the absolute X (in screen space) of the left edge of the GraphicalUielement.
+            Width and Height values are measured in pixels relative to the parent, where a value of 0
+            equals the size of the parent. Positive values are larger than the parent. Negative values are
+            smaller than the parent.
             </summary>
         </member>
-        <member name="P:Gum.Wireframe.GraphicalUiElement.AbsoluteY">
+        <member name="F:Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile">
             <summary>
-            Returns the absolute Y (screen space) of the origin of the GraphicalUiElement. Note that
-            this considers the YOrigin, and will apply rotation
+            Width and Height values are measured in percentage of the source file , where 100 is 100% of the source file's width
+            or height. Width and Height values consider texture coordinates, so if custom coordinates are used, then
+            the Width and Height values are multplied by the visible portion of the source file.
             </summary>
         </member>
-        <member name="P:Gum.Wireframe.GraphicalUiElement.AbsoluteTop">
+        <member name="F:Gum.DataTypes.DimensionUnitType.RelativeToChildren">
             <summary>
-            Returns the absolute Y (in screen space) of the top edge of the GraphicalUiElement.
+            Width and Height values are measured in pixels relative to the necessary size to contain children. A larger
+            value adds additional padding.
             </summary>
         </member>
-        <member name="P:Gum.Wireframe.GraphicalUiElement.TextureTop">
+        <member name="F:Gum.DataTypes.DimensionUnitType.PercentageOfOtherDimension">
             <summary>
-            The pixel coorinate of the top of the displayed region.
+            The selected dimension is measured in percentage of the other dimension. For example, if WidthUnits 
+            is set to PercentageOfOtherDimension and Width is set to 50, then the Width is 50% of the Height.
+            Only one of the two dimensions should use this unit type.
             </summary>
         </member>
-        <member name="P:Gum.Wireframe.GraphicalUiElement.TextureLeft">
+        <member name="F:Gum.DataTypes.DimensionUnitType.MaintainFileAspectRatio">
             <summary>
-            The pixel coorinate of the left of the displayed region.
+            The selected dimension is a percentage of the necessary value for maintaining the aspect ratio of the file.
+            For example, if WidthUnits is set to MaintainFileAspectRatio and Width is set to 100, then the
+            effective width value is set to match the aspect ratio of the file. This considers texture coordinates.
             </summary>
         </member>
-        <member name="P:Gum.Wireframe.GraphicalUiElement.TextureWidth">
+        <member name="F:Gum.DataTypes.DimensionUnitType.Ratio">
             <summary>
-            The pixel width of the source rectangle on the referenced texture.
+            The Width or Height of the parent is distributed among all siblings using Ratio after
+            subtracting the Width and Height values of siblings using Absolute values.
             </summary>
         </member>
-        <member name="P:Gum.Wireframe.GraphicalUiElement.TextureHeight">
+        <member name="F:Gum.DataTypes.DimensionUnitType.AbsoluteMultipliedByFontScale">
             <summary>
-            The pixel height of the source rectangle on the referenced texture.
-            </summary>
-        </member>
-        <member name="P:Gum.Wireframe.GraphicalUiElement.Wrap">
-            <summary>
-            Whether the texture address should wrap.
-            </summary>
-        </member>
-        <member name="P:Gum.Wireframe.GraphicalUiElement.WrapsChildren">
-            <summary>
-            Whether contained children should wrap. This only applies if ChildrenLayout is set to 
-            ChildrenLayout.LeftToRightStack or ChildrenLayout.TopToBottomStack.
-            </summary>
-        </member>
-        <member name="P:Gum.Wireframe.GraphicalUiElement.ClipsChildren">
-            <summary>
-            Whether the rendering of this object's children should be clipped to the bounds of this object. If false
-            then children can render outside of the bounds of this object.
-            </summary>
-        </member>
-        <member name="E:Gum.Wireframe.GraphicalUiElement.SizeChanged">
-            <summary>
-            Event raised whenever this instance's absolute size changes. This size change can occur by a direct value being
-            set (such as Width or WidthUnits), or by an indirect value changing, such as if a Parent is resized and if
-            this uses a WidthUnits depending on the parent.
-            </summary>
-        </member>
-        <member name="M:Gum.Wireframe.GraphicalUiElement.UpdateLayout(Gum.Wireframe.GraphicalUiElement.ParentUpdateType,System.Int32,System.Nullable{Gum.Converters.XOrY})">
-            <summary>
-            Performs an update to this, and optionally to its parent and children depending on the parameters.
-            </summary>
-            <param name="parentUpdateType">A filter determining whether whether to update the parent. If All is passed, then
-            the parent will always update. If other properties are passed, then the update happens only if the parent matches
-            the update type. For example if ParentUpdateType.IfParentStacks is passed, then an update happens if the parent stacks its children.</param>
-            <param name="childrenUpdateDepth"></param>
-            <param name="xOrY"></param>
-        </member>
-        <member name="M:Gum.Wireframe.GraphicalUiElement.SetInitialState">
-            <summary>
-            Sets the default state.
+            Width and Height values are measured in absolute pixels multiplied by the device's font scale.
             </summary>
             <remarks>
-            This function is virtual so that derived classes can override it
-            and provide a quicker method for setting default states
+            Not all platforms support this value. If this value is not supported, absolute pixel values are used
             </remarks>
         </member>
-        <member name="M:Gum.Wireframe.GraphicalUiElement.AddToManagers">
+        <member name="F:Gum.DataTypes.DimensionUnitType.ScreenPixel">
             <summary>
-            Adds this as a renderable to the SystemManagers if not already added. If already added
-            this does not perform any operations - it can be safely called multiple times.
+            Width and Height values are measured in screen pixels. If the Camera is zoomed 100% then 
+            values are the same as Absolute. Zooming the camera affects absolute size.
             </summary>
         </member>
-        <member name="M:Gum.Wireframe.GraphicalUiElement.AddToManagers(RenderingLibrary.ISystemManagers,RenderingLibrary.Graphics.Layer)">
+        <member name="M:Gum.DataTypes.DimensionUnitTypeExtensions.GetIsPixelBased(Gum.DataTypes.DimensionUnitType)">
             <summary>
-            Adds this as a renderable to the SystemManagers on the argument layer if not already added
-            to SystemManagers. If already added
-            this does not perform any operations - it can be safely called multiple times, but
-            calling it multiple times will not move this to a different layer.
+            Returns whether one unit represents one pixel. 
+            </summary>
+            <param name="unitType">The unit type.</param>
+            <returns>Whether one unit represents one pixel.</returns>
+        </member>
+        <member name="P:Gum.DataTypes.ElementReference.Link">
+            <summary>
+            The location of the file relative to the project if it differs from the Name. By default
+            this will be empty, so the Name will be used to load/save the element. However, if this is not null,
+            then this value is used instead to load the referenced element.
             </summary>
         </member>
-        <member name="M:Gum.Wireframe.GraphicalUiElement.SetProperty(System.String,System.Object)">
+        <member name="M:Gum.DataTypes.GumFileSerializer.GetCompactSerializer(System.Type)">
             <summary>
-            Sets a variable on this object (such as "X") to the argument value
-            (such as 100.0f). This can be a primitive property like Height, or it can be
-            a state.
-            </summary>
-            <param name="propertyName">The name of the variable on this object such as X or Height. If the property is a state, then the name should be "{CategoryName}State".</param>
-            <param name="value">The value, casted to the correct type.</param>
-        </member>
-        <member name="M:Gum.Wireframe.GraphicalUiElement.GetGraphicalUiElementByName(System.String)">
-            <summary>
-            Searches for and returns a GraphicalUiElement in this instance by name. Returns null
-            if not found.
-            </summary>
-            <param name="name">The case-sensitive name to search for.</param>
-            <returns>The found GraphicalUiElement, or null if no match is found.</returns>
-        </member>
-        <member name="M:Gum.Wireframe.GraphicalUiElement.GetGraphicalUiElementByName(System.String[])">
-            <summary>
-            Performs a recursive search for graphical UI elements, where eacn name in the parameters
-            is the name of a GraphicalUiElement one level deeper than the last.
-            </summary>
-            <param name="names">The names to search for, allowing retrieval multiple levels deep.</param>
-            <returns>The found element, or null if no match is found.</returns>
-        </member>
-        <member name="M:Gum.Wireframe.GraphicalUiElement.AnimateSelf(System.Double)">
-            <summary>
-            Performs AnimationChain (.achx) animation on this and all children recurisvely.
-            This is typically called on the top-level object (usually Screen) when Gum is running
-            in a game.
+            Full compact serializer: VariableSave and InstanceSave members as XML attributes.
+            Use for v2 files where both variables and instances are in attribute format.
             </summary>
         </member>
-        <member name="T:Gum.Wireframe.ElementWithState">
+        <member name="M:Gum.DataTypes.GumFileSerializer.GetLegacyInstancesCompactSerializer(System.Type)">
             <summary>
-            Represents an element with state and optional instance which can be used in a list to define the instance 
-            path from a screen down to the instance used to get variables recursively.
-            </summary>
-            <example>
-            A stack of elements may be as follows:
-            * MainPage.MainMenuInstance
-            * MainMenu.CancelButtonInstance
-            * StandardButton.TextInstance
-            * Text
-            </example>
-        </member>
-        <member name="P:Gum.Managers.TypedElementReference.OwnerOfReferencingObject">
-            <summary>
-            The owner of the reference. This may be the owner of the StateSave that has a variable referending the type, 
-            or the owner of the instance. If the element is an instance of the type, then this is the element that is referenced.
+            Mixed serializer: VariableSave members as XML attributes, InstanceSave as child elements.
+            Use for transitional files saved before instance compaction was introduced.
             </summary>
         </member>
-        <member name="P:Gum.Managers.TypedElementReference.ReferencingObject">
+        <member name="M:Gum.DataTypes.GumFileSerializer.IsElementContentCompact(System.String)">
             <summary>
-            The object that is doing the referencing. This could be an InstanceSave, a VariableSave, a VariableListSave, or a BehaviorReference.
+            Returns true when <paramref name="content"/> contains attribute-style element tags
+            that indicate a compact (v2) element or behavior file.
+            Files with no variables or instances are indistinguishable and default to non-compact.
             </summary>
         </member>
-        <member name="F:Gum.Managers.ObjectFinder.cachedDictionary">
+        <member name="M:Gum.DataTypes.GumFileSerializer.ReadAndDetectFormat(System.String)">
             <summary>
-            Provides quick access to Gum objects by name. Elements do not prefix their type
-            so a Screen would be "MainScreen" rather than "Screens/MainScreen"
+            Reads a file and detects whether it is in compact (v2) format or legacy (v1) format.
+            V1 files serialize VariableSave and InstanceSave properties as child elements.
+            V2 files serialize them as XML attributes: &lt;Variable Type="..." Name="..." /&gt;
+            or &lt;Instance Name="..." BaseType="..." /&gt;.
+            Files with no variables or instances are indistinguishable and default to non-compact.
+            Returns both the file content and whether it is in compact format.
             </summary>
         </member>
-        <member name="M:Gum.Managers.ObjectFinder.GetScreen(System.String)">
+        <member name="M:Gum.DataTypes.GumFileSerializer.DeserializeElementSave``1(System.String,System.Int32)">
             <summary>
-            Returns the ScreenSave with matching name in the current glue project. Case is ignored when making name comparisons
+            Deserializes an <see cref="T:Gum.DataTypes.ElementSave"/> subtype from already-loaded XML text,
+            selecting compact or legacy XML deserialization based on the content and project version.
+            </summary>
+        </member>
+        <member name="M:Gum.DataTypes.GumFileSerializer.DeserializeBehaviorSave(System.String,System.Int32)">
+            <summary>
+            Deserializes a <see cref="T:Gum.DataTypes.Behaviors.BehaviorSave"/> from already-loaded XML text,
+            selecting compact or legacy XML deserialization based on the content and project version.
+            </summary>
+        </member>
+        <member name="P:Gum.DataTypes.ElementSave.AllStates">
+            <summary>
+            Returns all states in the element including categorized states. For uncategorized states, see
+            the States property.
+            </summary>
+        </member>
+        <member name="M:Gum.DataTypes.ElementSave.GetInstance(System.String)">
+            <summary>
+            Returns the instance by name owned by this element.
+            </summary>
+            <remarks>
+            This only searches the top-level for instances, but inheritance will result in DefinedByBase being set to true, so
+            a true recursive search isn't needed.
+            </remarks>
+            <param name="name">The case-sensitive name of the instance.</param>
+            <returns>The found instance, or null if no matches are found.</returns>
+        </member>
+        <member name="P:Gum.DataTypes.GumLoadResult.ErrorMessage">
+            <summary>
+            Error message about why the load may have failed. This does not include errors about missing files - for missing files see the MissingFiles list.
+            </summary>
+            <remarks>
+            Errors include situations like a malformed XML file - errors which tools like Gum cannot recover from. Missing files, while resulting
+            in an incomplete load, do not put the project in an unusable state, so we do not consider them errors.
+            </remarks>
+        </member>
+        <member name="T:Gum.DataTypes.GumProjectSave">
+            <summary>
+            Represents the data stored in a .gumx file. GumProjectSave
+            instances can be XML Serialized to a .gumx file.
+            </summary>
+            <remarks>
+            GumProjectSaves contain references to screens, components, standard elements, and behaviors.
+            </remarks>
+        </member>
+        <member name="F:Gum.DataTypes.GumProjectSave.GumxVersions.InitialVersion">
+            <summary>
+            The initial version of the .gumx format.
+            </summary>
+        </member>
+        <member name="F:Gum.DataTypes.GumProjectSave.GumxVersions.AttributeVersion">
+            <summary>
+            Element references (screen, component, standard element, behavior) store their Name as an XML
+            attribute instead of a child element, producing a more compact file format.
+            </summary>
+        </member>
+        <member name="F:Gum.DataTypes.GumProjectSave.NativeVersion">
+            <summary>
+            The highest <see cref="T:Gum.DataTypes.GumProjectSave.GumxVersions"/> value that this version of the Gum tool supports.
+            When a new <see cref="T:Gum.DataTypes.GumProjectSave.GumxVersions"/> value is added, update this constant to match.
+            </summary>
+        </member>
+        <member name="P:Gum.DataTypes.GumProjectSave.ParentProjectRoot">
+            <summary>
+            The folder of the root of the parent project if this Gum project is part of a larger project (like a game project or android app).
+            This is a relative path like "../../"
+            </summary>
+        </member>
+        <member name="M:Gum.DataTypes.GumProjectSave.GetScreenSave(System.String)">
+            <summary>
+             shortcut function to fetch a specific screen from your gum project.
+            <code ang="csharp">
+            //same as :
+            screen.Find(item => item.Name == "name");
+            </code>
+             
             </summary>
             <param name="screenName"></param>
             <returns></returns>
         </member>
-        <member name="M:Gum.Managers.ObjectFinder.GetElementSave(Gum.DataTypes.InstanceSave)">
-            <summary>
-            Returns the ElementSave (Screen, Component, or Standard Element) for the argument instance
-            </summary>
-            <param name="instance">The instance to find the matching element for</param>
-            <returns>The matching ElementSave, or null if none is found</returns>
+        <member name="M:Gum.DataTypes.GumProjectSave.GetComponentSave(System.String)">
+             <summary>
+             shortcut function to fetch a specific component from your gum project
+            
+             <code ang="csharp">
+             //same as :
+             components.Find(item => item.Name == "name");
+             </code>
+             </summary>
+             <param name="componentName"></param>
+             <returns></returns>
         </member>
-        <member name="M:Gum.Managers.ObjectFinder.GetElementSave(System.String)">
-            <summary>
-            Returns the ElementSave (Screen, Component, or Standard Element) for the argument elementName
-            </summary>
-            <param name="elementName">The name of the ElementSave to search for</param>
-            <returns>The matching ElementSave, or null if none is found</returns>
+        <member name="M:Gum.DataTypes.GumProjectSave.GetStandardElementSave(System.String)">
+             <summary>
+             shortcut function to fetch a specific standard elements from your gum project.
+            
+             <code ang="csharp">
+             //same as :
+             standards.Find(item => item.Name == "name");
+             </code>
+             </summary>
+             <param name="standardElementName"></param>
+             <returns></returns>
         </member>
-        <member name="M:Gum.Managers.ObjectFinder.GetElementsReferencing(Gum.DataTypes.ElementSave,System.Collections.Generic.List{Gum.DataTypes.ElementSave},System.Collections.Generic.List{Gum.DataTypes.InstanceSave})">
+        <member name="P:Gum.DataTypes.InstanceSave.ParentContainer">
             <summary>
-            Returns a list of Elements that include InstanceSaves that use the argument
-            elementSave as their BaseType, or that use an ElementSave deriving from elementSave
-            as their BaseType.
+            The ElementSave which contains this instance.
             </summary>
-            <param name="elementSave">The ElementSave to search for.</param>
-            <returns>A List containing all Elements</returns>
         </member>
-        <member name="M:Gum.Managers.ObjectFinder.GetBaseElements(Gum.DataTypes.ElementSave)">
+        <member name="M:Gum.DataTypes.Variables.StateSave.GetVariableSave(System.String)">
             <summary>
-            Returns a list of ElementSaves inheriting from the argument elementSave, with the most derived first in the list, and the most base last in the list
+            Performs a non-recursive search for the variable with the given name. 
+            This will return the first variable found with the given name or null if 
+            not found.
             </summary>
-            <param name="elementSave">The element for which to get the inheritance list.</param>
-            <returns>The list, with the most derived (direct inheritance) first.</returns>
+            <param name="variableName">The variable name</param>
+            <returns>The found variable, or null if not found.</returns>
         </member>
-        <member name="M:Gum.Managers.ObjectFinder.GetElementReferencesToThis(Gum.DataTypes.ElementSave)">
+        <member name="M:Gum.DataTypes.Variables.StateSave.GetValue(System.String)">
             <summary>
-            Returns a list of TypedElementReferences which include all items that reference the argument element.
+            Attempts to get the value for the argument variableName, or null if not found.
             </summary>
-            <param name="element">The argument element.</param>
-            <returns>All referenced to this.</returns>
+            <param name="variableName">The qualified variable name</param>
+            <returns>The value found, or null</returns>
         </member>
-        <member name="M:Gum.Managers.ObjectFinder.GetRootVariable(System.String,Gum.DataTypes.InstanceSave)">
+        <member name="P:Gum.DataTypes.Variables.VariableListSave.Type">
             <summary>
-            Returns the root variable (defined on the standard element usually) for the argument instance.
+             The type of each individual item in the list. For example, this should be "int" rather than a list of int
             </summary>
-            <param name="name">The name, including the period such as "InstanceName.X"</param>
-            <param name="instance">The instance, which should match the instance in the variable name.</param>
-            <returns>The root VariableSave</returns>
         </member>
-        <member name="M:Gum.Managers.ObjectFinder.GetRootVariable(System.String,Gum.DataTypes.ElementSave)">
+        <member name="T:Gum.DataTypes.Variables.VariableSaveValues">
             <summary>
-            Returns the root variable (defined on the standard element usually) for the argument instance.
+            Struct representation of VariableSave which can be used in situations where
+            heap allocation should not occur
             </summary>
-            <param name="name">Fully qualified variable name</param>
-            <param name="element">The element containing the variable</param>
-            <returns>The root variable if found</returns>
+        </member>
+        <member name="P:Gum.DataTypes.Variables.VariableSave.SourceObject">
+            <summary>
+            The name of the object that this variable references. For example if the variable is "MyButton.Text", then the SourceObject is "MyButton"
+            </summary>
+        </member>
+        <member name="P:Gum.DataTypes.Variables.VariableSave.ExposedAsName">
+            <summary>
+            If a Component contains an instance then the variable
+            of that instance is only editable inside that component.
+            The user must explicitly expose that variable.  If the variable
+            is exposed then this variable is set.
+            </summary>
+        </member>
+        <member name="P:Gum.DataTypes.Variables.VariableSave.SetsValue">
+            <summary>
+            Determines whether a null value should be set, or whether the variable is
+            an ignored value.  If this value is true, then null values will be set on the underlying data.
+            </summary>
+        </member>
+        <member name="M:Gum.DataTypes.Variables.VariableSave.GetRootName">
+            <summary>
+            Returns the name of the variable on the instance. For example "Rectangle.X" would return "X".
+            If this does not have a SourceObect, then the Name is returned.
+            </summary>
+            <returns>The root name (name on the instance)</returns>
+        </member>
+        <member name="M:Gum.DataTypes.Variables.StateSaveExtensionMethods.Initialize(Gum.DataTypes.Variables.StateSave)">
+            <summary>
+            Fixes enumeration values and sorts all variables alphabetically
+            </summary>
+            <param name="stateSave">The state to initialize.</param>
+        </member>
+        <member name="M:Gum.DataTypes.Variables.StateSaveExtensionMethods.GetValueRecursive(Gum.DataTypes.Variables.StateSave,System.String)">
+            <summary>
+            Returns the value of the variable name from this state. If not found, will follow inheritance to find 
+            the value from the base.
+            </summary>
+            <param name="stateSave">The state in the current element.</param>
+            <param name="variableName">The variable name</param>
+            <returns>The value found recursively, where the most-derived value has priority.</returns>
+        </member>
+        <member name="M:Gum.DataTypes.Variables.StateSaveExtensionMethods.GetVariableRecursive(Gum.DataTypes.Variables.StateSave,System.String)">
+            <summary>
+            Returns the first instance of an existing VariableSave recursively. Returns null if not found.
+            </summary>
+            <param name="stateSave">The possible state that contains the variable. 
+            If it doesn't, then the code will recursively go to base types.</param>
+            <param name="variableName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Gum.DataTypes.Variables.StateSaveExtensionMethods.SetValue(Gum.DataTypes.Variables.StateSave,System.String,System.Object,Gum.DataTypes.InstanceSave,System.String)">
+            <summary>
+            Sets the value on the argument instance save, determining internally if it is a VariableSave or VariableListSave.
+            </summary>
+            <param name="stateSave">The StateSave which contains the variable, or which will be given the new variable.</param>
+            <param name="variableName">The name of the variable</param>
+            <param name="value">The value of the variable</param>
+            <param name="instanceSave">The instance modified by the variable.</param>
+            <param name="variableType">The type of the variable. If this is a VariableList, then the type of the items inside the list (like int)</param>
+        </member>
+        <member name="M:Gum.DataTypes.Variables.StateSaveExtensionMethods.AssignVariableSave(Gum.DataTypes.Variables.StateSave,System.String,System.Object,Gum.DataTypes.InstanceSave,System.String)">
+            <summary>
+            Assigns a value to a variable.  If the variable doesn't exist then the variable is instantiated, then the value is assigned.
+            </summary>
+            <param name="stateSave">The StateSave that contains the variable.  The variable will be added to this StateSave if it doesn't exist.</param>
+            <param name="variableName">The name of the variable to look for.</param>
+            <param name="value">The value to assign to the variable.</param>
+            <param name="instanceSave">The instance that owns this variable.  This may be null.</param>
+            <param name="variableType">The type of the variable.  This is only needed if the value is null.</param>
+        </member>
+        <member name="M:Gum.DataTypes.Variables.StateSaveExtensionMethods.Merge(Gum.DataTypes.Variables.StateSave,Gum.DataTypes.Variables.StateSave,System.Single,System.Collections.Generic.List{Gum.DataTypes.Variables.VariableSaveValues})">
+            <summary>
+            Merges two states into a list of VariableSaveValues. This is an efficient way to perform state interpolation.
+            </summary>
+            <param name="firstState">The first state.</param>
+            <param name="secondState">The second state.</param>
+            <param name="secondRatio">The ratio of the second state. This value should be between 0 and 1.</param>
+            <param name="mergedValues">The resulting values.</param>
+            <exception cref="T:System.ArgumentNullException">If either of the argument states are null.</exception>
+        </member>
+        <member name="M:Gum.DataTypes.Variables.StateSaveExtensionMethods.GetValueConsideringInterpolation(System.Object,System.Object,System.Single)">
+            <summary>
+            Returns a value that is the interpolation between the first and second values if the value is cast as an object. The value must ultimately be a numeric value.
+            </summary>
+            <param name="firstValue">The first value as a numeric value.</param>
+            <param name="secondValue">The second value as a numeric value.</param>
+            <param name="interpolationValue">A value between 0 and 1. A value of 0 returns the firstValue. A value of 1 returns the second value.</param>
+            <returns>The resulting interpolated value, matching the type of the arguments.</returns>
+        </member>
+        <member name="M:Gum.DataTypes.ElementSaveExtensionMethods.GetStateSaveCategoryRecursively(Gum.DataTypes.IStateContainer,System.Func{Gum.DataTypes.Variables.StateSaveCategory,System.Boolean},Gum.DataTypes.IStateContainer@)">
+            <returns>
+            The first category of this element that meets the given <paramref name="condition"/>.
+            </returns>
         </member>
         <member name="M:Gum.DataTypes.GumProjectSaveExtensionMethods.Initialize(Gum.DataTypes.GumProjectSave,System.Boolean)">
             <summary>
@@ -545,68 +615,6 @@
             Returns the value of the variable from the bottom of the stack by climbing back up to find the most derived assignment
             </summary>
         </member>
-        <member name="M:Gum.DataTypes.Variables.StateSaveExtensionMethods.Initialize(Gum.DataTypes.Variables.StateSave)">
-            <summary>
-            Fixes enumeration values and sorts all variables alphabetically
-            </summary>
-            <param name="stateSave">The state to initialize.</param>
-        </member>
-        <member name="M:Gum.DataTypes.Variables.StateSaveExtensionMethods.GetValueRecursive(Gum.DataTypes.Variables.StateSave,System.String)">
-            <summary>
-            Returns the value of the variable name from this state. If not found, will follow inheritance to find 
-            the value from the base.
-            </summary>
-            <param name="stateSave">The state in the current element.</param>
-            <param name="variableName">The variable name</param>
-            <returns>The value found recursively, where the most-derived value has priority.</returns>
-        </member>
-        <member name="M:Gum.DataTypes.Variables.StateSaveExtensionMethods.GetVariableRecursive(Gum.DataTypes.Variables.StateSave,System.String)">
-            <summary>
-            Returns the first instance of an existing VariableSave recursively. 
-            </summary>
-            <param name="stateSave">The possible state that contains the variable. If it doesn't, then the code will recursively go to base types.</param>
-            <param name="variableName"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Gum.DataTypes.Variables.StateSaveExtensionMethods.SetValue(Gum.DataTypes.Variables.StateSave,System.String,System.Object,Gum.DataTypes.InstanceSave,System.String)">
-            <summary>
-            Sets the value on the argument instance save, determining internally if it is a VariableSave or VariableListSave.
-            </summary>
-            <param name="stateSave">The StateSave which contains the variable, or which will be given the new variable.</param>
-            <param name="variableName">The name of the variable</param>
-            <param name="value">The value of the variable</param>
-            <param name="instanceSave">The instance modified by the variable.</param>
-            <param name="variableType">The type of the variable. If this is a VariableList, then the type of the items inside the list (like int)</param>
-        </member>
-        <member name="M:Gum.DataTypes.Variables.StateSaveExtensionMethods.AssignVariableSave(Gum.DataTypes.Variables.StateSave,System.String,System.Object,Gum.DataTypes.InstanceSave,System.String)">
-            <summary>
-            Assigns a value to a variable.  If the variable doesn't exist then the variable is instantiated, then the value is assigned.
-            </summary>
-            <param name="stateSave">The StateSave that contains the variable.  The variable will be added to this StateSave if it doesn't exist.</param>
-            <param name="variableName">The name of the variable to look for.</param>
-            <param name="value">The value to assign to the variable.</param>
-            <param name="instanceSave">The instance that owns this variable.  This may be null.</param>
-            <param name="variableType">The type of the variable.  This is only needed if the value is null.</param>
-        </member>
-        <member name="M:Gum.DataTypes.Variables.StateSaveExtensionMethods.Merge(Gum.DataTypes.Variables.StateSave,Gum.DataTypes.Variables.StateSave,System.Single,System.Collections.Generic.List{Gum.DataTypes.Variables.VariableSaveValues})">
-            <summary>
-            Merges two states into a list of VariableSaveValues. This is an efficient way to perform state interpolation.
-            </summary>
-            <param name="firstState">The first state.</param>
-            <param name="secondState">The second state.</param>
-            <param name="secondRatio">The ratio of the second state. This value should be between 0 and 1.</param>
-            <param name="mergedValues">The resulting values.</param>
-            <exception cref="T:System.ArgumentNullException">If either of the argument states are null.</exception>
-        </member>
-        <member name="M:Gum.DataTypes.Variables.StateSaveExtensionMethods.GetValueConsideringInterpolation(System.Object,System.Object,System.Single)">
-            <summary>
-            Returns a value that is the interpolation between the first and second values if the value is cast as an object. The value must ultimately be a numeric value.
-            </summary>
-            <param name="firstValue">The first value as a numeric value.</param>
-            <param name="secondValue">The second value as a numeric value.</param>
-            <param name="interpolationValue">A value between 0 and 1. A value of 0 returns the firstValue. A value of 1 returns the second value.</param>
-            <returns>The resulting interpolated value, matching the type of the arguments.</returns>
-        </member>
         <member name="M:Gum.DataTypes.VariableSaveExtensionMethods.FixEnumerations(Gum.DataTypes.Variables.VariableSave)">
             <summary>
             Converts integer values to their corresponding enumeration values. This should be called
@@ -614,6 +622,914 @@
             </summary>
             <param name="variableSave">The VariableSave to fix.</param>
             <returns>Whether any changes were made.</returns>
+        </member>
+        <member name="T:Gum.Managers.PositionUnitType">
+            <summary>
+            Enumeration used for positioning which differentiates between
+            vertical and horizontal values. These are not used by runtimes,
+            only used in the tool to be explicit.
+            </summary>
+        </member>
+        <member name="P:Gum.Managers.TypedElementReference.OwnerOfReferencingObject">
+            <summary>
+            The owner of the reference. This may be the owner of the StateSave that has a variable referending the type, 
+            or the owner of the instance. If the element is an instance of the type, then this is the element that is referenced.
+            </summary>
+        </member>
+        <member name="P:Gum.Managers.TypedElementReference.ReferencingObject">
+            <summary>
+            The object that is doing the referencing. This could be an InstanceSave, a VariableSave, a VariableListSave, or a BehaviorReference.
+            </summary>
+        </member>
+        <member name="F:Gum.Managers.ObjectFinder.cachedDictionary">
+            <summary>
+            Provides quick access to Gum objects by name. Elements do not prefix their type
+            so a Screen would be "MainScreen" rather than "Screens/MainScreen"
+            </summary>
+        </member>
+        <member name="P:Gum.Managers.ObjectFinder.GumProjectSave">
+            <summary>
+            The currently-loaded GumProjectSave.
+            </summary>
+        </member>
+        <member name="M:Gum.Managers.ObjectFinder.EnableCache">
+            <summary>
+            Enables caching of all elements in the project. If cache was previously disabled,
+            then this creates the cache and holds it until DisableCache is called. If cache was
+            already enabled, this increments the count. Any call to enable cache should be paired
+            with a DisableCache call.
+            </summary>
+        </member>
+        <member name="M:Gum.Managers.ObjectFinder.DisableCache">
+            <summary>
+            Disables the in-memory cache for dictionary lookups, releasing any cached data if no other cache enables
+            remain active. This should be called every time EnableCache is called.
+            </summary>
+            <remarks>If multiple cache enable calls have been made, the cache will only be disabled after
+            all corresponding disables have been called. Once disabled, subsequent lookups will not use cached data
+            until the cache is re-enabled.</remarks>
+        </member>
+        <member name="M:Gum.Managers.ObjectFinder.GetScreen(System.String)">
+            <summary>
+            Returns the ScreenSave with matching name in the current glue project. Case is ignored when making name comparisons
+            </summary>
+            <param name="screenName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Gum.Managers.ObjectFinder.GetElementSave(Gum.DataTypes.InstanceSave)">
+            <summary>
+            Returns the ElementSave (Screen, Component, or Standard Element) for the argument instance
+            </summary>
+            <param name="instance">The instance to find the matching element for</param>
+            <returns>The matching ElementSave, or null if none is found</returns>
+        </member>
+        <member name="M:Gum.Managers.ObjectFinder.GetElementSave(System.String)">
+            <summary>
+            Returns the ElementSave (Screen, Component, or Standard Element) for the argument elementName. The name should be relative to its directory, so
+            if looking for MainMenu, then this should pass "MainMenu" and not "Screens/MainMenu"
+            </summary>
+            <param name="elementName">The name of the ElementSave to search for</param>
+            <returns>The matching ElementSave, or null if none is found</returns>
+        </member>
+        <member name="M:Gum.Managers.ObjectFinder.GetElementsReferencing(Gum.DataTypes.ElementSave,System.Collections.Generic.List{Gum.DataTypes.ElementSave},System.Collections.Generic.List{Gum.DataTypes.InstanceSave})">
+            <summary>
+            Returns a list of Elements that include InstanceSaves that use the argument
+            elementSave as their BaseType, or that use an ElementSave deriving from elementSave
+            as their BaseType.
+            </summary>
+            <param name="elementSave">The ElementSave to search for.</param>
+            <param name="list">An optional list to fill. If null, a new list will be created. This can help reduce allocation if this method is called frequently.</param>
+            <param name="foundInstances">An optional list of InstanceSaves to fill with the instances that reference the argument elementSave. If null, instances will not be recorded.</param>
+            <returns>A List containing all Elements</returns>
+        </member>
+        <member name="M:Gum.Managers.ObjectFinder.GetBaseElements(Gum.DataTypes.ElementSave)">
+            <summary>
+            Returns a list of ElementSaves inheriting from the argument elementSave, with the most derived first in the list, and the most base last in the list
+            </summary>
+            <param name="elementSave">The element for which to get the inheritance list.</param>
+            <returns>The list, with the most derived (direct inheritance) first.</returns>
+        </member>
+        <member name="M:Gum.Managers.ObjectFinder.GetElementReferencesToThis(Gum.DataTypes.ElementSave)">
+            <summary>
+            Returns a list of TypedElementReferences which include all items that reference the argument element.
+            </summary>
+            <param name="element">The argument element.</param>
+            <returns>All referenced to this.</returns>
+        </member>
+        <member name="M:Gum.Managers.ObjectFinder.GetRootVariable(System.String,Gum.DataTypes.InstanceSave)">
+            <summary>
+            Returns the root variable (defined on the standard element usually) for the argument instance.
+            </summary>
+            <param name="name">The name, including the period such as "InstanceName.X"</param>
+            <param name="instance">The instance, which should match the instance in the variable name.</param>
+            <returns>The root VariableSave</returns>
+        </member>
+        <member name="M:Gum.Managers.ObjectFinder.GetRootVariable(System.String,Gum.DataTypes.ElementSave)">
+            <summary>
+            Returns the root variable (defined on the standard element usually) for the argument instance.
+            </summary>
+            <param name="name">Fully qualified variable name</param>
+            <param name="element">The element containing the variable</param>
+            <returns>The root variable if found</returns>
+        </member>
+        <member name="F:Gum.Converters.GeneralUnitType.PixelsFromSmall">
+            <summary>
+            Units are measured in pixels. 
+            X values are measured relative to the left side.
+            Y values are measured relative to the top side.
+            </summary>
+        </member>
+        <member name="F:Gum.Converters.GeneralUnitType.PixelsFromLarge">
+            <summary>
+            Units are measured in pixels.
+            X values are measured relative to the right side.
+            Y values are measured relative to the bottom side.
+            </summary>
+        </member>
+        <member name="F:Gum.Converters.GeneralUnitType.PixelsFromMiddle">
+            <summary>
+            Units are measured in pixels.
+            X values are measured relative to the horizontal center.
+            Y values are measured relative to the vertical center.
+            </summary>
+        </member>
+        <member name="F:Gum.Converters.GeneralUnitType.Percentage">
+            <summary>
+            Units are measured in percentage of the parent's dimensions.
+            X values are precentage of width, with 0 at the left edge, 100 at the right edge.
+            Y values are percentage of height, with 0 at the top edge, 100 at the bottom edge.
+            </summary>
+        </member>
+        <member name="F:Gum.Converters.GeneralUnitType.PercentageOfFile">
+            <summary>
+            Unit values are measured in percentage of the current object's file.
+            X values are a percentage of file width.
+            Y values are a percentage of file height.
+            </summary>
+        </member>
+        <member name="F:Gum.Converters.GeneralUnitType.PixelsFromBaseline">
+            <summary>
+            Pixels relative to the parent's baseline. This only applies for Y values,
+            and only if the parent type has baseline values (Text).
+            </summary>
+        </member>
+        <member name="F:Gum.Wireframe.TagInfo.StartIndex">
+            <summary>
+            The index that this tag begins in text that includes all bbcode tags
+            </summary>
+        </member>
+        <member name="F:Gum.Wireframe.TagInfo.StartStrippedIndex">
+            <summary>
+            The index that this tag begins after tags have been stripped from the text.
+            </summary>
+        </member>
+        <member name="M:Gum.Wireframe.BbCodeParser.Parse(System.String,System.Collections.Generic.HashSet{System.String})">
+            <summary>
+            Returns a list of FoundTags in the argument text. Only tags in the availableTags set are returned.
+            </summary>
+            <param name="text">The text populated with tags.</param>
+            <param name="availableTags">The available tags for parsing. Tags can be lower-case.</param>
+            <returns>The list of found tags.</returns>
+        </member>
+        <member name="T:Gum.Wireframe.BindableGue">
+            <summary>
+            The base object for all Gum runtime objects. It contains functionality for
+            setting variables, states, and performing layout. The GraphicalUiElement can
+            wrap an underlying rendering object.
+            </summary>
+        </member>
+        <member name="P:Gum.Wireframe.InputEventArgs.InputDevice">
+            <summary>
+            The input device which was responsible for this event, such as the Gamepad.
+            </summary>
+        </member>
+        <member name="T:Gum.Wireframe.SelectionChangedEventArgs">
+            <summary>
+            Contains information about objects which have been added to or removed from the current selection.
+            This is typically used by Gum Forms for elements which support selection such as ListBox.
+            </summary>
+        </member>
+        <member name="P:Gum.Wireframe.SelectionChangedEventArgs.RemovedItems">
+            <summary>
+            The items which were just removed from selection.
+            </summary>
+        </member>
+        <member name="P:Gum.Wireframe.SelectionChangedEventArgs.AddedItems">
+            <summary>
+            The items which were just added to selection.
+            </summary>
+        </member>
+        <member name="T:Gum.Wireframe.InteractiveGue">
+            <summary>
+            The base object for all interactive Gum runtime objects. It provides events for cursor interaction which can be used
+            to create full interactive controls
+            </summary>
+        </member>
+        <member name="P:Gum.Wireframe.InteractiveGue.CurrentGameTime">
+            <summary>
+            The current game time in seconds, assigned internally when calling GumService.Update. 
+            This can be used by UI elements to perform
+            timing-based actions, such as moving a slider on a long press.
+            </summary>
+        </member>
+        <member name="P:Gum.Wireframe.InteractiveGue.HasEvents">
+            <summary>
+            Whether this instance supports events and whether the Cursor considers this when
+            determining what it is over. Typically this is assigned once based 
+            on its type, usually when objects are created from a Gum project.
+            </summary>
+        </member>
+        <member name="P:Gum.Wireframe.InteractiveGue.RaiseChildrenEventsOutsideOfBounds">
+            <summary>
+            Whether to check each individual child for raising UI events even if the cursor
+            is outside of the bounds of this object. Setting this to false can have a slight
+            performance cost since each child is checked even if the cursor is not over this.
+            </summary>
+        </member>
+        <member name="P:Gum.Wireframe.InteractiveGue.IsEnabled">
+            <summary>
+            Whether this is enabled. If this is false, then this will not raise events.
+            </summary>
+        </member>
+        <member name="P:Gum.Wireframe.InteractiveGue.FormsControlAsObject">
+            <summary>
+            Provides an uncasted reference to the Gum Forms element which uses this as visual element.
+            </summary>
+        </member>
+        <member name="E:Gum.Wireframe.InteractiveGue.Click">
+            <summary>
+            Event raised when this is clicked by a cursor. A click occurs
+            when the cursor is over this and is first pushed, then released.
+            </summary>
+        </member>
+        <member name="E:Gum.Wireframe.InteractiveGue.ClickPreview">
+            <summary>
+            Event raised when this is clicked by a cursor. A click occurs
+            when the cursor is over this and is first pushed, then released.
+            Preview events are received by parents before children, and if the event
+            is handled, children do not receive the event.
+            </summary>
+        </member>
+        <member name="E:Gum.Wireframe.InteractiveGue.DoubleClick">
+            <summary>
+            Event raised when this is double-clicked by a cursor. A double-click occurs
+            when the cursor is over this and the left mouse button is clicked twice in rapid succession.
+            </summary>
+        </member>
+        <member name="E:Gum.Wireframe.InteractiveGue.Dragging">
+            <summary>
+            Event raised when the cursor pushes on an object and moves. This is similar to RollOver, 
+            but is raised even if outside of the bounds of the object. This can be used if an 
+            object is to be moved by dragging since it will be raised even if the user moves the 
+            cursor quickly outside of its bounds.
+            </summary>
+        </member>
+        <member name="E:Gum.Wireframe.InteractiveGue.EnabledChange">
+            <summary>
+            Event raised when the Enabled property changed.
+            </summary>
+        </member>
+        <member name="E:Gum.Wireframe.InteractiveGue.HoverOver">
+            <summary>
+            Event raised every frame the cursor is over this object whether the cursor has changed positions or not.
+            </summary>
+        </member>
+        <member name="E:Gum.Wireframe.InteractiveGue.LosePush">
+            <summary>
+            Event raised when this loses a push. A push occurs when the
+            cursor is over this window and the left mouse button is pushed. A push is lost
+            if the left mouse button is released or if the user moves the cursor so that it
+            is no longer over this while the mouse button is pressed. 
+            </summary>
+            <remarks>
+            LosePush is often used to change the state of a button back to its regular state.
+            </remarks>
+        </member>
+        <member name="E:Gum.Wireframe.InteractiveGue.MouseWheelScroll">
+            <summary>
+            Event raised when the mouse wheel has been scrolled while the cursor is over this instance.
+            This event is first raised on children, then bubbles up to parents. If a control sets the argument
+            Handled to true, then parent objects will not receive this event.
+            </summary>
+        </member>
+        <member name="E:Gum.Wireframe.InteractiveGue.PushPreview">
+            <summary>
+            Event raised when this is pushed by a cursor. A push occurs
+            when the cursor is over this and the left mouse button is pushed (not down last frame,
+            down this frame). Preview events are received by parents before children, and if the event
+            is handled, children do not receive the event.
+            </summary>
+        </member>
+        <member name="E:Gum.Wireframe.InteractiveGue.Push">
+            <summary>
+            Event raised when this is pushed by a cursor. A push occurs
+            when the cursor is over this and the left mouse button is pushed (not down last frame,
+            down this frame).
+            </summary>
+        </member>
+        <member name="E:Gum.Wireframe.InteractiveGue.RemovedAsPushed">
+            <summary>
+            Event raised when this Window is pushed, then is no longer the pushed window due to a cursor releasing the primary button.
+            This can be used to detect the end of a drag operation, or to reset the state of a button.
+            </summary>
+        </member>
+        <member name="E:Gum.Wireframe.InteractiveGue.RightClick">
+            <summary>
+            Event raised when this is right-clicked by a cursor. A right-click occurs
+            when the cursor is over this and is first pushed, then released.
+            </summary>
+        </member>
+        <member name="E:Gum.Wireframe.InteractiveGue.RollOff">
+            <summary>
+            Event raised when the cursor first leaves this object.
+            </summary>
+        </member>
+        <member name="E:Gum.Wireframe.InteractiveGue.RollOn">
+            <summary>
+            Event raised when the cursor first moves over this object. This is only received if the
+            cursor is moved directly over this object. If it is instead moved over a child object
+            which has its own events, then the parent will receive this event.
+            </summary>
+        </member>
+        <member name="E:Gum.Wireframe.InteractiveGue.RollOver">
+            <summary>
+            Event raised every frame the cursor is over this object and the Cursor has changed position.
+            This event is not raised if the cursor has moved off of the object. For events raised when the 
+            cursor is not over this instance, see Dragging.
+            </summary>
+        </member>
+        <member name="E:Gum.Wireframe.InteractiveGue.RollOverBubbling">
+            <summary>
+            Event raised when the mouse rolls over this instance. Bubbling events are raised top-down, with the
+            child object having the opportunity to handle the roll over first. If a control sets the argument 
+            RoutedEventArgs Handled to true,
+            then parent objects will not receive this event raised.
+            </summary>
+        </member>
+        <member name="M:Gum.Wireframe.InteractiveGue.HasCursorOver(Gum.Wireframe.ICursor,RenderingLibrary.Graphics.Layer)">
+            <summary>
+            Returns whether the argument cursor is over this instance. If RaiseChildrenEventsOutsideOfBounds is set
+            to true, then each of the individual chilren are also checked if the cursor is not inside this object's bounds.
+            </summary>
+            <remarks>
+            This method is marked as virtual so that derived types can override it to provide custom
+            cursor hit detection.
+            </remarks>
+            <param name="cursor">The cursor to check whether it is over this.</param>
+            <returns>Whether the cursor is over this.</returns>
+        </member>
+        <member name="M:Gum.Wireframe.InteractiveGue.AddNextPushAction(System.Action)">
+            <summary>
+            Adds an action to be called the next time the Cursor performs a push action 
+            (the left button is not down the previous frame but is down this frame). The 
+            argument action is invoked one time.
+            </summary>
+            <param name="action">The action to invoke one time.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if the argument action is null.</exception>
+        </member>
+        <member name="M:Gum.Wireframe.InteractiveGue.AddNextClickAction(System.Action)">
+            <summary>
+            Adds an action to be called the next time the Cursor performs a click action
+            (the left button was down last frame and is released this frame). The argument
+            action is invoked one time.
+            </summary>
+            <param name="action">The action to invoke one time.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if the argument action is null.</exception>
+        </member>
+        <member name="M:Gum.Wireframe.IInputReceiver.OnGainFocus">
+            <summary>
+            Called by the engine automatically when an IInputReceiver gains focus.
+            </summary>
+            <remarks>
+            The implementation of this method should raise the GainFocus event.
+            </remarks>
+        </member>
+        <member name="M:Gum.Wireframe.IInputReceiver.OnLoseFocus">
+            <summary>
+            Called by the engine automatically when an IInputReceiver loses focus.
+            </summary>
+        </member>
+        <member name="M:Gum.Wireframe.IInputReceiver.OnFocusUpdate">
+            <summary>
+            Called every frame if this has focus. Allows general every-frame updates such as
+            handling gamepad input.
+            </summary>
+        </member>
+        <member name="M:Gum.Wireframe.IInputReceiver.OnFocusUpdatePreview(Gum.Wireframe.RoutedEventArgs)">
+            <summary>
+            Called every frame before OnFocusUpdate with the root-most control calling this first, then
+            down to its children. If this is handled, children do not receive this event.
+            </summary>
+            <param name="args">Args, which if IsHandled is set to true prevent children from receiving this </param>
+        </member>
+        <member name="T:Gum.Wireframe.VisualOverBehavior">
+            <summary>
+            Determines how to evaluate whether to show visual over states based on the HasEvents property.
+            </summary>
+            <remarks>
+            FlatRedBall was built around the assumption that HasEvents is not enough to determine whether
+            a visual should respond to Cursor events. This is because users may set HasEvents on a StandardElement
+            in the Gum tool, which would default all instances of that standard to have the value set to true. This 
+            could result in controls which use this visual unexpectedly having their events swallowed by the child visual.
+            To avoid this, FlatRedBall checks both HasEvents and whether any events are actually attached to the visual.
+            However, this behavior is very confusing, and as new runtimes are introduced we can simplify things. To continue
+            to support the old FRB behavior, this enum exists to allow users to select the old behavior or the new simplified behavior.
+            Over time, we may get rid of the old behavior completely, or at least default to the new one.
+            </remarks>
+        </member>
+        <member name="F:Gum.Wireframe.VisualOverBehavior.OnlyIfEventsAreNotNullAndHasEventsIsTrue">
+            <summary>
+            VisualOver is only set if HasEvents is true and if the visual has events attached. This 
+            exists to support old projects. New projects should use IfHasEventsIsTrue
+            </summary>
+        </member>
+        <member name="P:Gum.Wireframe.ICursor.PrimaryClickNoSlide">
+            <summary>
+            Returns whether the cursor has been clicked without movement between the push and release.
+            Simple implementations can return PrimaryClick, but more complex implementations may want to
+            consider a movement threshold.
+            </summary>
+        </member>
+        <member name="P:Gum.Wireframe.ICursor.WindowPushed">
+            <summary>
+            Returns the visual that was last pushed.
+            </summary>
+        </member>
+        <member name="T:Gum.Wireframe.GraphicalUiElement">
+            <summary>
+            The base object for all Gum runtime objects. It contains functionality for
+            setting variables, states, and performing layout. The GraphicalUiElement can
+            wrap an underlying rendering object.
+            GraphicalUiElements are also considered "Visuals" for Forms objects such as Button and TextBox.
+            </summary>
+        </member>
+        <member name="F:Gum.Wireframe.GraphicalUiElement.UpdateLayoutCallCount">
+            <summary>
+            The total number of layout calls that have been performed since the application has started running.
+            This value can be used as a rough indication of the layout cost and to measure whether efforts to reduce
+            layout calls have been effective.
+            </summary>
+        </member>
+        <member name="F:Gum.Wireframe.GraphicalUiElement.mWhatThisContains">
+            <summary>
+            A flat list of all GraphicalUiElements contained by this element. For example, if this GraphicalUiElement
+            is a Screen, this list is all GraphicalUielements for every instance contained regardless of hierarchy.
+            </summary>
+        </member>
+        <member name="P:Gum.Wireframe.GraphicalUiElement.EffectiveManagers">
+            <summary>
+            Returns this instance's SystemManagers, or climbs up the parent/child relationship
+            until a non-null SystemsManager is found. Otherwise, returns null.
+            </summary>
+        </member>
+        <member name="P:Gum.Wireframe.GraphicalUiElement.AbsoluteVisible">
+            <inheritdoc/>
+        </member>
+        <member name="P:Gum.Wireframe.GraphicalUiElement.Visible">
+            <inheritdoc/>
+        </member>
+        <member name="P:Gum.Wireframe.GraphicalUiElement.RenderingLibrary#Graphics#IVisible#Parent">
+            <inheritdoc/>
+        </member>
+        <member name="P:Gum.Wireframe.GraphicalUiElement.CanvasWidth">
+            <summary>
+            The X "world units" that the entire gum rendering system uses. This is essentially the "top level" container's width.
+            For a game which renders at 1:1, this will match the game's resolution. 
+            </summary>
+        </member>
+        <member name="P:Gum.Wireframe.GraphicalUiElement.CanvasHeight">
+            <summary>
+            The Y "world units" that the entire gum rendering system uses. This is essentially the "top level" container's height.
+            For a game which renders at 1:1, this will match the game's resolution. 
+            </summary>
+        </member>
+        <member name="P:Gum.Wireframe.GraphicalUiElement.RenderingLibrary#IPositionedSizedObject#X">
+            <summary>
+            The X position of this object as an IPositionedSizedObject. This does not consider origins
+            so it will use the default origin, which is top-left for most types.
+            </summary>
+        </member>
+        <member name="P:Gum.Wireframe.GraphicalUiElement.RenderingLibrary#IPositionedSizedObject#Y">
+            <summary>
+            The Y position of this object as an IPositionedSizedObject. This does not consider origins
+            so it will use the default origin, which is top-left for most types.
+            </summary>
+        </member>
+        <member name="M:Gum.Wireframe.GraphicalUiElement.GetAbsoluteWidth">
+            <summary>
+            Returns the absolute width of the GraphicalUiElement in pixels (as opposed to using its WidthUnits)
+            </summary>
+            <returns>The absolute width in pixels.</returns>
+        </member>
+        <member name="M:Gum.Wireframe.GraphicalUiElement.GetAbsoluteHeight">
+            <summary>
+            Returns the absolute height of the GraphicalUiElement in pixels (as opposed to using its HeightUnits)
+            </summary>
+            <returns>The absolute height in pixels.</returns>
+        </member>
+        <member name="P:Gum.Wireframe.GraphicalUiElement.StackSpacing">
+            <summary>
+            The number of pixels spacing between each child if this has a ChildrenLayout of 
+            TopToBottomStack or LeftToRightStack. This has no affect on other types of ChildrenLayout, 
+            including AutoGridHorizontal or AutoGridVertical.
+            </summary>
+        </member>
+        <member name="P:Gum.Wireframe.GraphicalUiElement.UseFixedStackChildrenSize">
+            <summary>
+            Whether to use the same spacing for all children. If true then the size of the first element is used as the height for all other children. This option
+            is primraily used for performance reasons as it can make layouts for large collections of stacked children faster.
+            </summary>
+        </member>
+        <member name="P:Gum.Wireframe.GraphicalUiElement.Rotation">
+            <summary>
+            Rotation in degrees. Positive value rotates counterclockwise.
+            </summary>
+        </member>
+        <member name="P:Gum.Wireframe.GraphicalUiElement.ElementGueContainingThis">
+            <summary>
+            The ScreenSave or Component which contains this instance.
+            </summary>
+        </member>
+        <member name="P:Gum.Wireframe.GraphicalUiElement.ContainedElements">
+            <summary>
+            A flat list of all GraphicalUiElements contained by this element. For example, if this GraphicalUiElement
+            is a Screen, this list is all GraphicalUielements for every instance contained regardless of hierarchy.
+            </summary>
+            <remarks>
+            Since this is an interface using ContainedElements in a foreach allocates memory
+            and this can actually be significant in a game that updates its UI frequently.
+            </remarks>
+        </member>
+        <member name="P:Gum.Wireframe.GraphicalUiElement.RenderingLibrary#Graphics#IRenderableIpso#Children">
+            <summary>
+            Returns the direct hierarchical children of this. 
+            Note that this does not return all objects contained in the element, only direct children. 
+            </summary>
+        </member>
+        <member name="P:Gum.Wireframe.GraphicalUiElement.AbsoluteX">
+            <summary>
+            Returns the absolute (screen space) X of the origin of the GraphicalUiElement. Note that
+            this considers the XOrigin, and will apply rotation.
+            </summary>
+        </member>
+        <member name="P:Gum.Wireframe.GraphicalUiElement.AbsoluteLeft">
+            <summary>
+            Returns the absolute X (in screen space) of the left edge of the GraphicalUielement.
+            </summary>
+        </member>
+        <member name="P:Gum.Wireframe.GraphicalUiElement.AbsoluteY">
+            <summary>
+            Returns the absolute Y (screen space) of the origin of the GraphicalUiElement. Note that
+            this considers the YOrigin, and will apply rotation
+            </summary>
+        </member>
+        <member name="P:Gum.Wireframe.GraphicalUiElement.AbsoluteTop">
+            <summary>
+            Returns the absolute Y (in screen space) of the top edge of the GraphicalUiElement.
+            </summary>
+        </member>
+        <member name="P:Gum.Wireframe.GraphicalUiElement.AbsoluteRight">
+            <summary>
+            Returns the right side in absolute pixel coordinates
+            </summary>
+        </member>
+        <member name="P:Gum.Wireframe.GraphicalUiElement.AbsoluteBottom">
+            <summary>
+            Returns the bottom side in absolute pixel coordinates
+            </summary>
+        </member>
+        <member name="P:Gum.Wireframe.GraphicalUiElement.TextureTop">
+            <summary>
+            The pixel coorinate of the top of the displayed region.
+            </summary>
+        </member>
+        <member name="P:Gum.Wireframe.GraphicalUiElement.TextureLeft">
+            <summary>
+            The pixel coordinate of the left of the displayed region.
+            </summary>
+        </member>
+        <member name="P:Gum.Wireframe.GraphicalUiElement.TextureWidth">
+            <summary>
+            The pixel width of the source rectangle on the referenced texture.
+            </summary>
+        </member>
+        <member name="P:Gum.Wireframe.GraphicalUiElement.TextureHeight">
+            <summary>
+            The pixel height of the source rectangle on the referenced texture.
+            </summary>
+        </member>
+        <member name="P:Gum.Wireframe.GraphicalUiElement.TextureWidthScale">
+            <summary>
+            The width scale to apply to the texture width when using TextureAddress.DimensionsBased.
+            If TextureAddress.DimensionsBased is not used, this value is ignored.
+            </summary>
+        </member>
+        <member name="P:Gum.Wireframe.GraphicalUiElement.TextureHeightScale">
+            <summary>
+            The height scale to apply to the texture width when using TextureAddress.DimensionsBased.
+            If TextureAddress.DimensionsBased is not used, this value is ignored.
+            </summary>
+        </member>
+        <member name="P:Gum.Wireframe.GraphicalUiElement.Wrap">
+            <summary>
+            Whether the texture address should wrap.
+            </summary>
+        </member>
+        <member name="P:Gum.Wireframe.GraphicalUiElement.WrapsChildren">
+            <summary>
+            Whether contained children should wrap. This only applies if ChildrenLayout is set to 
+            ChildrenLayout.LeftToRightStack or ChildrenLayout.TopToBottomStack.
+            </summary>
+        </member>
+        <member name="P:Gum.Wireframe.GraphicalUiElement.ClipsChildren">
+            <summary>
+            Whether the rendering of this object's children should be clipped to the bounds of this object. If false
+            then children can render outside of the bounds of this object.
+            </summary>
+        </member>
+        <member name="P:Gum.Wireframe.GraphicalUiElement.AnimationController">
+            <summary>
+            Gets the AnimationController that manages animation playback for this element.
+            Use this to control animations (play, pause, stop), check playback state, and subscribe to animation events.
+            </summary>
+        </member>
+        <member name="M:Gum.Wireframe.GraphicalUiElement.PlayAnimation(Gum.StateAnimation.Runtime.AnimationRuntime)">
+            <summary>
+            Starts playing the specified AnimationRuntime.
+            </summary>
+            <param name="animation">the AnimationRuntime object</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when animation is null.</exception>
+        </member>
+        <member name="M:Gum.Wireframe.GraphicalUiElement.StopAnimation">
+            <summary>
+            Stops the currently playing animation.
+            </summary>
+        </member>
+        <member name="E:Gum.Wireframe.GraphicalUiElement.SizeChanged">
+            <summary>
+            Event raised whenever this instance's absolute size changes. This size change can occur by a direct value being
+            set (such as Width or WidthUnits), or by an indirect value changing, such as if a Parent is resized and if
+            this uses a WidthUnits depending on the parent.
+            </summary>
+        </member>
+        <member name="M:Gum.Wireframe.GraphicalUiElement.UpdateLayout(Gum.Wireframe.GraphicalUiElement.ParentUpdateType,System.Int32,System.Nullable{Gum.Converters.XOrY})">
+            <summary>
+            Performs an update to this, and optionally to its parent and children depending on the parameters.
+            </summary>
+            <param name="parentUpdateType">A filter determining whether whether to update the parent. If All is passed, then
+            the parent will always update. If other properties are passed, then the update happens only if the parent matches
+            the update type. For example if ParentUpdateType.IfParentStacks is passed, then an update happens if the parent stacks its children.</param>
+            <param name="childrenUpdateDepth"></param>
+            <param name="xOrY"></param>
+        </member>
+        <member name="M:Gum.Wireframe.GraphicalUiElement.ClearDirtyLayoutState">
+            <summary>
+            Clears the layout and font dirty state, resulting in no layout logic being
+            performed on the next resume layout. This method should only be used 
+            if you intend to manually perform layouts after a layout resume. Otherwise, calling
+            this can cause layouts to behave incorrectly
+            </summary>
+        </member>
+        <member name="M:Gum.Wireframe.GraphicalUiElement.Anchor(Gum.Wireframe.Anchor)">
+            <summary>
+            Sets the X, Y, Units and Origin values for an element, based on the Anchor Enum types.  If the element implements IText, also sets Text Alignment.
+            </summary>
+            <param name="anchor"></param>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:Gum.Wireframe.GraphicalUiElement.GetAnchor">
+            <summary>
+            Attempts to determine if the element is anchored utilizing the X, Y, Units, and Origins.  
+            </summary>
+            <returns>If a suitable Anchor position is identified, returns that Anchor Enum, otherwise null.</returns>
+        </member>
+        <member name="M:Gum.Wireframe.GraphicalUiElement.AfterFullCreation">
+            <summary>
+            Method which is called after a control is fully created when it is created from a FrameworkElement 
+            when ToGraphicalUiElement or SetGraphicalUiElement are called. 
+            </summary>
+        </member>
+        <member name="M:Gum.Wireframe.GraphicalUiElement.SetInitialState">
+            <summary>
+            Sets the default state.
+            </summary>
+            <remarks>
+            This function is virtual so that derived classes can override it
+            and provide a quicker method for setting default states
+            </remarks>
+        </member>
+        <member name="M:Gum.Wireframe.GraphicalUiElement.AddToManagers">
+            <summary>
+            Adds this as a renderable to the SystemManagers if not already added. If already added
+            this does not perform any operations - it can be safely called multiple times.
+            </summary>
+        </member>
+        <member name="M:Gum.Wireframe.GraphicalUiElement.AddToManagers(RenderingLibrary.ISystemManagers,RenderingLibrary.Graphics.Layer)">
+            <summary>
+            Adds this as a renderable to the SystemManagers on the argument layer if not already added
+            to SystemManagers. If already added
+            this does not perform any operations - it can be safely called multiple times, but
+            calling it multiple times will not move this to a different layer.
+            </summary>
+        </member>
+        <member name="M:Gum.Wireframe.GraphicalUiElement.SetProperty(System.String,System.Object)">
+            <summary>
+            Sets a variable on this object (such as "X") to the argument value
+            (such as 100.0f). This can be a primitive property like Height, or it can be
+            a state.
+            </summary>
+            <param name="propertyName">The name of the variable on this object such as X or Height. If the property is a state, then the name should be "{CategoryName}State".</param>
+            <param name="value">The value, casted to the correct type.</param>
+        </member>
+        <member name="M:Gum.Wireframe.GraphicalUiElement.GetGraphicalUiElementByName(System.String)">
+            <summary>
+            Searches recursively for and returns a GraphicalUiElement in this instance by name. Returns null
+            if not found.
+            </summary>
+            <param name="name">The case-sensitive name to search for.</param>
+            <returns>The found GraphicalUiElement, or null if no match is found.</returns>
+        </member>
+        <member name="M:Gum.Wireframe.GraphicalUiElement.GetGraphicalUiElementByName(System.String[])">
+            <summary>
+            Performs a recursive search for graphical UI elements, where eacn name in the parameters
+            is the name of a GraphicalUiElement one level deeper than the last.
+            </summary>
+            <param name="names">The names to search for, allowing retrieval multiple levels deep.</param>
+            <returns>The found element, or null if no match is found.</returns>
+        </member>
+        <member name="M:Gum.Wireframe.GraphicalUiElement.FillListWithChildrenByTypeRecursively``1(System.Collections.Generic.List{``0})">
+            <summary>
+            Populates a list with all the children matching the argument type. Performs the search in a recursive fashion.
+            </summary>
+            <param name="listToFill">List to populate. The type to search for is inferred from the element type and must be an <see cref="T:RenderingLibrary.Graphics.IRenderableIpso"/>.
+            The user has the responsability of instantiating and clearing this list.</param>
+        </member>
+        <member name="M:Gum.Wireframe.GraphicalUiElement.FillListWithChildrenByTypeRecursively``1">
+            <summary>
+            Returns a list with all the children matching the argument type. Performs the search in a recursive fashion.
+            </summary>
+            <typeparam name="T">Type to search for. Must be an <see cref="T:Gum.Wireframe.GraphicalUiElement"/>.</typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:Gum.Wireframe.GraphicalUiElement.RunAnimation(System.Double)">
+            <summary>
+            Updates the current animation state based on the elapsed time.
+            </summary>
+            <param name="secondDifference">The time elapsed since the last update, in seconds.</param>
+        </member>
+        <member name="M:Gum.Wireframe.GraphicalUiElement.AnimateSelf(System.Double)">
+            <summary>
+            Performs AnimationChain (.achx) animation on this and all children recurisvely.
+            This is typically called on the top-level object (usually Screen) when Gum is running
+            in a game.
+            </summary>
+        </member>
+        <member name="M:Gum.Wireframe.GraphicalUiElementExtensions.ApplyAnimation(Gum.Wireframe.GraphicalUiElement,System.Int32,System.Double)">
+            <summary>
+            Sets variables on the argument GraphicalUiElement from the animation at the specified index based on the given time.
+            </summary>
+            <param name="graphicalUiElement">The GraphicalUiElement on which to apply the animation.</param>
+            <param name="index">The index of the animation to apply.</param>
+            <param name="timeInSeconds">The elapsed time since the animation started, in seconds.</param>
+        </member>
+        <member name="M:Gum.Wireframe.GraphicalUiElementExtensions.ApplyAnimation(Gum.Wireframe.GraphicalUiElement,System.String,System.Double)">
+            <summary>
+            Sets variables on the argument GraphicalUiElement from the animation with the specified name based on the given time.
+            </summary>
+            <param name="graphicalUiElement">The GraphicalUiElement on which to apply the animation.</param>
+            <param name="name">The name of the animation to apply.</param>
+            <param name="timeInSeconds">The elapsed time since the animation started, in seconds.</param>
+        </member>
+        <member name="M:Gum.Wireframe.GraphicalUiElementExtensions.ApplyAnimation(Gum.Wireframe.GraphicalUiElement,Gum.StateAnimation.Runtime.AnimationRuntime,System.Double)">
+            <summary>
+            Sets variables on the argument GraphicalUiElement from the specified AnimationRuntime based on the given time.
+            </summary>
+            <param name="graphicalUiElement">The GraphicalUiElement on which to apply the animation</param>
+            <param name="animation">The AnimationRuntime object to apply</param>
+            <param name="timeInSeconds">The elapesd time since the animation started, in seconds.</param>
+            <exception cref="T:System.InvalidOperationException"></exception>
+        </member>
+        <member name="M:Gum.Wireframe.GraphicalUiElementExtensions.PlayAnimation(Gum.Wireframe.GraphicalUiElement,System.Int32)">
+            <summary>
+            Starts playing the animation at the specified index.
+            </summary>
+            <param name="graphicalUiElement">The GraphicalUiElement on which to play the animation.</param>
+            <param name="index">The index of the animation to play.</param>
+        </member>
+        <member name="M:Gum.Wireframe.GraphicalUiElementExtensions.PlayAnimation(Gum.Wireframe.GraphicalUiElement,System.String)">
+            <summary>
+            Starts playing the animation with the specified name.
+            </summary>
+            <param name="graphicalUiElement">The GraphicalUiElement on which to play the animation.</param>
+            <param name="name">The name of the animation to play.</param>
+        </member>
+        <member name="M:Gum.Wireframe.GraphicalUiElementExtensions.GetAnimation(Gum.Wireframe.GraphicalUiElement,System.Int32)">
+            <summary>
+            Gets the animation at the specified index.
+            </summary>
+            <param name="graphicalUiElement">the GraphicalUiElement to get the animation from</param>
+            <param name="index">the index of the animation to get</param>
+            <returns>The animation if found, otherwise returns null.</returns>
+        </member>
+        <member name="M:Gum.Wireframe.GraphicalUiElementExtensions.GetAnimation(Gum.Wireframe.GraphicalUiElement,System.String)">
+            <summary>
+            Get the animation at the specified name.
+            </summary>
+            <param name="graphicalUiElement">The GraphicalUiElement to get the animation from</param>
+            <param name="animationName">The name of the animation to get</param>
+            <returns>The animation if found, otherwise returns null.</returns>
+        </member>
+        <member name="T:Gum.Wireframe.ElementWithState">
+            <summary>
+            Represents an element with state and optional instance which can be used in a list to define the instance 
+            path from a screen down to the instance used to get variables recursively.
+            </summary>
+            <example>
+            A stack of elements may be as follows:
+            * MainPage.MainMenuInstance
+            * MainMenu.CancelButtonInstance
+            * StandardButton.TextInstance
+            * Text
+            </example>
+        </member>
+        <member name="F:Gum.Content.AnimationChain.AnimationChainListSave.FileRelativeTextures">
+            <summary>
+            Whether files (usually image files) referenced by this object (and .achx) are
+            relative to the .achx itself. If false, then file references will be stored as absolute. 
+            If true, then file reference,s will be stored relative to the .achx itself. This value should
+            be true so that a .achx can be moved to a different file system or computer and still
+            have valid references.
+            </summary>
+        </member>
+        <member name="M:Gum.Content.AnimationChain.AnimationChainListSave.Dispose">
+            <summary>
+            Create a "save" object from a regular animation chain list
+            </summary>
+        </member>
+        <member name="F:Gum.Content.AnimationChain.AnimationChainSave.ParentFile">
+            <summary>
+            This is used if the AnimationChain actually comes from 
+            a file like a .gif.
+            </summary>
+        </member>
+        <member name="F:Gum.Content.AnimationChain.AnimationFrameSave.FlipHorizontal">
+            <summary>
+            Whether the texture should be flipped horizontally.
+            </summary>
+        </member>
+        <member name="F:Gum.Content.AnimationChain.AnimationFrameSave.FlipVertical">
+            <summary>
+            Whether the texture should be flipped on the vertidally.
+            </summary>
+        </member>
+        <member name="F:Gum.Content.AnimationChain.AnimationFrameSave.TextureName">
+            <summary>
+            Used in XML Serialization of AnimationChains - this should
+            not explicitly be set by the user.
+            </summary>
+        </member>
+        <member name="F:Gum.Content.AnimationChain.AnimationFrameSave.FrameLength">
+            <summary>
+            The amount of time in seconds the AnimationFrame should be shown for.
+            </summary>
+        </member>
+        <member name="F:Gum.Content.AnimationChain.AnimationFrameSave.LeftCoordinate">
+            <summary>
+            The left coordinate in texture coordinates of the AnimationFrame.  Default is 0.
+            This may be in UV coordinates or pixel coordinates.
+            </summary>
+        </member>
+        <member name="F:Gum.Content.AnimationChain.AnimationFrameSave.RightCoordinate">
+            <summary>
+            The right coordinate in texture coordinates of the AnimationFrame.  Default is 1.
+            This may be in UV coordinates or pixel coordinates.
+            </summary>
+        </member>
+        <member name="F:Gum.Content.AnimationChain.AnimationFrameSave.TopCoordinate">
+            <summary>
+            The top coordinate in texture coordinates of the AnimationFrame.  Default is 0.
+            This may be in UV coordinates or pixel coordinates.
+            </summary>
+        </member>
+        <member name="F:Gum.Content.AnimationChain.AnimationFrameSave.BottomCoordinate">
+            <summary>
+            The bottom coordinate in texture coordinates of the AnimationFrame.  Default is 1.
+            This may be in UV coordinates or pixel coordinates.
+            </summary>
+        </member>
+        <member name="F:Gum.Content.AnimationChain.AnimationFrameSave.RelativeX">
+            <summary>
+            The relative X position of the object that is using this AnimationFrame.  This
+            is only applied if the IAnimationChainAnimatable's UseAnimationRelativePosition is
+            set to true.
+            </summary>
+        </member>
+        <member name="F:Gum.Content.AnimationChain.AnimationFrameSave.RelativeY">
+            <summary>
+            The relative Y position of the object that is using this AnimationFrame.  This
+            is only applied if the IAnimationChainAnimatable's UseAnimationRelativePosition is
+            set to true.
+            </summary>
         </member>
         <member name="M:GumRuntime.ElementSaveExtensions.ApplyVariableReferences(Gum.Wireframe.GraphicalUiElement,Gum.DataTypes.Variables.StateSave)">
             <summary>
@@ -630,6 +1546,20 @@
             <param name="referenceOwner">The owner that owns the variable reference, such as the instance.</param>
             <param name="referenceString">The string such as "X = SomeItem.X"</param>
             <param name="stateSave">The state save which owns the variable reference.</param>
+        </member>
+        <member name="M:RenderingLibrary.Graphics.Fonts.BmfcSave.WaitForExitAsync(System.Diagnostics.Process,System.Threading.CancellationToken)">
+            <summary>
+            Waits asynchronously for the process to exit.
+            </summary>
+            <param name="process">The process to wait for cancellation.</param>
+            <param name="cancellationToken">A cancellation token. If invoked, the task will return 
+            immediately as canceled.</param>
+            <returns>A Task representing waiting for the process to end.</returns>
+        </member>
+        <member name="P:RenderingLibrary.Graphics.ParsedFontFile.GetPagesAsArrayOfStrings">
+            <summary>
+            Returns the Pages (List of texture filenames) as an array of strings
+            </summary>
         </member>
         <member name="M:RenderingLibrary.Graphics.IRenderable.PreRender">
             <summary>
@@ -661,6 +1591,12 @@
             Whether to flip the sprite horizontally.
             </summary>
         </member>
+        <member name="P:RenderingLibrary.Graphics.RenderableBase.AbsoluteVisible">
+            <inheritdoc/>
+        </member>
+        <member name="P:RenderingLibrary.Graphics.RenderableBase.RenderingLibrary#Graphics#IVisible#Parent">
+            <inheritdoc/>
+        </member>
         <member name="P:RenderingLibrary.Graphics.LayerCameraSettings.IsInScreenSpace">
             <summary>
             Whether the current layer is in Screen Space. If true, then the Camera position does
@@ -678,6 +1614,44 @@
             This is a stable sort on Z.  It's incredibly fast on already-sorted lists so we'll do this over something like the built-in 
             binary sorts that .NET offers.
             </summary>
+        </member>
+        <member name="T:RenderingLibrary.Graphics.IVisible">
+            <summary>
+            Interface for objects which have visibility, and which
+            can be part of a visibility hierarchy.
+            </summary>
+        </member>
+        <member name="P:RenderingLibrary.Graphics.IVisible.Visible">
+            <summary>
+            Gets or sets a value indicating whether this object is locally visible.
+            This does not account for parent visibility; use <see cref="P:RenderingLibrary.Graphics.IVisible.AbsoluteVisible"/> 
+            to determine if the object is actually visible in the hierarchy.
+            </summary>
+            <value>
+            <c>true</c> if this object is visible; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:RenderingLibrary.Graphics.IVisible.Parent">
+            <summary>
+            Gets the parent object in the visibility hierarchy.
+            </summary>
+            <value>
+            The parent <see cref="T:RenderingLibrary.Graphics.IVisible"/> object, or <c>null</c> if this object has no parent.
+            </value>
+        </member>
+        <member name="P:RenderingLibrary.Graphics.IVisible.AbsoluteVisible">
+            <summary>
+            Gets a value indicating whether this object is absolutely visible, 
+            taking into account the visibility of all ancestors in the hierarchy.
+            </summary>
+            <value>
+            <c>true</c> if this object and all of its ancestors are visible; otherwise, <c>false</c>.
+            </value>
+            <remarks>
+            This property recursively checks the visibility of the entire parent chain.
+            An object is only absolutely visible if both its own <see cref="P:RenderingLibrary.Graphics.IVisible.Visible"/> property 
+            is <c>true</c> and all of its parents are absolutely visible.
+            </remarks>
         </member>
         <member name="P:RenderingLibrary.Camera.Zoom">
             <summary>
@@ -729,12 +1703,154 @@
             <param name="ipso">The argument ipso</param>
             <returns>The top parent</returns>
         </member>
-        <member name="M:RenderingLibrary.IPositionedSizedObjectExtensionMethods.GetAbsoluteRotation(RenderingLibrary.Graphics.IRenderableIpso)">
+        <member name="M:RenderingLibrary.IPositionedSizedObjectExtensionMethods.GetAbsoluteRotation(RenderingLibrary.Graphics.IRenderableIpso,System.Boolean)">
             <summary>
             Returns the absolute rotation in degrees.
             </summary>
             <param name="ipso">The object for which to return rotation.</param>
+            <param name="ignoreParentRotationIfRenderTarget">If true, then the parent's rotation is ignored if the parent
+            is a render target. This is needed because a child's rotation should not be modified by its parent if the parent
+            is a render target since the rotation is automatically cascaded.</param>
             <returns>The rotation in degrees.</returns>
+        </member>
+        <member name="T:ToolsUtilities.FileManager">
+            <summary>
+            Utility class used to help dealing with files.
+            </summary>
+        </member>
+        <member name="M:ToolsUtilities.FileManager.GetExtension(System.String)">
+            <summary>
+            Returns the extension in a filename.
+            </summary>
+            <remarks>
+            The extension returned will not contain a period.
+            
+            <para>
+            <code>
+            // this code returns a string containing "png", not ".png"
+            FileManager.GetExtension(@"FolderName/myImage.png");
+            </code>
+            </para>
+            </remarks>
+            <param name="fileName">The filename.</param>
+            <returns>Returns the extension or an empty string if no period is found in the filename.</returns>
+        </member>
+        <member name="M:ToolsUtilities.FileManager.RemoveExtension(System.String)">
+            <summary>
+            Returns the fileName without an extension, or makes no changes if fileName has no extension.
+            </summary>
+            <param name="fileName">The file name.</param>
+            <returns>The file name with extension removed if an extension existed.</returns>
+        </member>
+        <member name="M:ToolsUtilities.FileManager.RemovePath(System.String@)">
+            <summary>
+            Modifies the fileName by removing its path, or makes no changes if the fileName has no path.
+            </summary>
+            <param name="fileName">The file name to change</param>
+        </member>
+        <member name="M:ToolsUtilities.FileManager.RemovePath(System.String)">
+            <summary>
+            Returns the fileName without a path, or makes no changes if the fileName has no path.
+            </summary>
+            <param name="fileName">The file name.</param>
+            <returns>The modified fileName if a path is found.</returns>
+        </member>
+        <member name="M:ToolsUtilities.FileManager.GetAllFilesInDirectory(System.String,System.String)">
+            <summary>
+            Returns a List containing all files which match the fileType argument which are 
+            in the directory argument or a subfolder.  This recurs, returning all files.
+            </summary>
+            <param name="directory">String representing the directory to search.  If an empty
+            string is passed, the method will search starting in the directory holding the .exe.</param>
+            <param name="fileType">The file type to search for specified as an extension.  The extension
+            can either have a period or not.  That is ".jpg" and "jpg" are both valid fileType arguments.  An empty
+            or null value for this parameter will return all files regardless of file type.</param>
+            <returns>A list containing all of the files found which match the fileType.</returns>
+        </member>
+        <member name="M:ToolsUtilities.FileManager.GetAllFilesInDirectory(System.String,System.String,System.Int32)">
+            <summary>
+            Returns a List containing all files which match the fileType argument which are within
+            the depthToSearch folder range relative to the directory argument.
+            </summary>
+            <param name="directory">String representing the directory to search.  If an empty
+            string is passed, the method will search starting in the directory holding the .exe.</param>
+            <param name="fileType">The file type to search for specified as an extension.  The extension
+            can either have a period or not.  That is ".jpg" and "jpg" are both valid fileType arguments.  An empty
+            or null value for this parameter will return all files regardless of file type.</param>
+            <param name="depthToSearch">The depth to search through.  If the depthToSearch
+            is 0, only the argument directory will be searched. To search infinte depth, use int.MaxValue</param>
+            <returns>A list containing all of the files found which match the fileType.</returns>
+        </member>
+        <member name="P:ToolsUtilities.FileManager.UserApplicationDataForThisApplication">
+            <summary>
+            Returns a full path for a folder which can be used to save user data. 
+            </summary>
+            <example>
+            System.IO.File.SaveText("File Contents", FlatRedBall.UserApplicationDataForThisApplication + "File.txt");
+            </example>
+        </member>
+        <member name="M:ToolsUtilities.FilePath.RemoveExtension">
+            <summary>
+            Returns a new FilePath with no extension.
+            </summary>
+            <returns>The new FilePath which has its extension removed.</returns>
+        </member>
+        <member name="M:ToolsUtilities.StringFunctions.GetIntAfter(System.String,System.String)">
+            <summary>
+            Returns the first integer found after the argument stringToSearchFor in whereToSearch.
+            </summary>
+            <remarks>
+            This method is used to help simplify parsing of text files and data strings.
+            If stringToSearchFor is "Y:" and whereToSearch is "X: 30, Y:32", then the value
+            of 32 will be returned.
+            </remarks>
+            <param name="stringToSearchFor">The string pattern to search for.</param>
+            <param name="whereToSearch">The string that will be searched.</param>
+            <returns>The integer value found after the argument stringToSearchFor.</returns>
+        </member>
+        <member name="M:ToolsUtilities.StringFunctions.GetIntAfter(System.String,System.String,System.Int32)">
+            <summary>
+            Returns the first integer found after the argument stringToSearchFor.  The search begins
+            at the argument startIndex.
+            </summary>
+            <param name="stringToSearchFor">The string pattern to search for.</param>
+            <param name="whereToSearch">The string that will be searched.</param>
+            <param name="startIndex">The index to begin searching at.  This method
+            will ignore any instances of stringToSearchFor which begin at an index smaller
+            than the argument startIndex.</param>
+            <returns></returns>
+        </member>
+        <member name="M:ToolsUtilities.StringFunctions.IncrementNumberAtEnd(System.String)">
+            <summary>
+            Increments the number at the end of a string or adds a number if none exists.
+            </summary>
+            <remarks>
+            This method begins looking at the end of a string for numbers and moves towards the beginning of the string
+            until it encounters a character which is not a numerical digit or the beginning of the string.  "Sprite123" would return
+            "Sprite124", and "MyString" would return "MyString1".
+            </remarks>
+            <param name="originalString">The string to "increment".</param>
+            <returns>Returns a string with the number at the end incremented, or with a number added on the end if none existed before.</returns>
+        </member>
+        <member name="M:ToolsUtilities.StringFunctions.InsertSpacesInCamelCaseString(System.String)">
+            <summary>
+            Inserts spaces before every capital letter in a camel-case
+            string.  Ignores the first letter.
+            </summary>
+            <remarks>
+            For example "HelloThereIAmCamelCase" becomes
+            "Hello There I Am Camel Case".
+            </remarks>
+            <param name="originalString">The string in which to insert spaces.</param>
+            <returns>The string with spaces inserted.</returns>
+        </member>
+        <member name="M:ToolsUtilitiesStandard.Helpers.MathHelper.ToRadians(System.Single)">
+            <summary>Converts degrees to radians.</summary>
+            <param name="degrees">The angle in degrees.</param>
+        </member>
+        <member name="M:ToolsUtilitiesStandard.Helpers.MathHelper.ToDegrees(System.Single)">
+            <summary>Converts radians to degrees.</summary>
+            <param name="radians">The angle in radians.</param>
         </member>
     </members>
 </doc>
