@@ -1,4 +1,4 @@
-﻿using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.VSHelpers;
@@ -19,20 +19,20 @@ using GeneralResponse = ToolsUtilities.GeneralResponse;
 
 namespace OfficialPlugins.FrbSourcePlugin.Managers;
 
-internal static class AddSourceManager
+internal class AddSourceManager
 {
-    static string GithubFilePath =>
+    string GithubFilePath =>
         System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "GitHub");
 
-    public static string DefaultFrbFilePath =>
+    public string DefaultFrbFilePath =>
         System.IO.Path.Combine(GithubFilePath, "FlatRedBall");
 
-    public static string DefaultGumFilePath =>
+    public string DefaultGumFilePath =>
         System.IO.Path.Combine(GithubFilePath, "Gum");
 
     #region DesktopGlNetFramework Projects
 
-    public static List<ProjectReference> SharedShprojReferences = new List<ProjectReference>
+    public List<ProjectReference> SharedShprojReferences = new List<ProjectReference>
     {
         new ProjectReference()
         {
@@ -77,7 +77,7 @@ internal static class AddSourceManager
 
     };
 
-    public static List<ProjectReference> DesktopGlNetFramework = new List<ProjectReference>
+    public List<ProjectReference> DesktopGlNetFramework = new List<ProjectReference>
     {
         new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\StateInterpolation\\StateInterpolation.DesktopGL.csproj", ProjectRootType = FrbOrGum.Frb},
         new ProjectReference(){ RelativeProjectFilePath = $"Engines\\FlatRedBallXNA\\FlatRedBall\\FlatRedBallDesktopGL.csproj", ProjectRootType = FrbOrGum.Frb},
@@ -90,7 +90,7 @@ internal static class AddSourceManager
 
     #region DesktopGlNet6 Projects
 
-    public static List<ProjectReference> DesktopGlNet6 = new List<ProjectReference>
+    public List<ProjectReference> DesktopGlNet6 = new List<ProjectReference>
     {
         new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\StateInterpolation\\StateInterpolation.DesktopGlNet6\\StateInterpolation.DesktopNet6.csproj", ProjectRootType = FrbOrGum.Frb},
         new ProjectReference(){ RelativeProjectFilePath = $"Engines\\FlatRedBallXNA\\FlatRedBallDesktopGLNet6\\FlatRedBallDesktopGLNet6.csproj", ProjectRootType = FrbOrGum.Frb},
@@ -98,17 +98,17 @@ internal static class AddSourceManager
         new ProjectReference(){ RelativeProjectFilePath = $"GumCore\\GumCoreXnaPc\\GumCore.DesktopGlNet6\\GumCore.DesktopGlNet6.csproj", ProjectRootType = FrbOrGum.Gum},
     };
 
-    static ProjectReference GumSkia = new ProjectReference
+    ProjectReference GumSkia = new ProjectReference
     {
-        RelativeProjectFilePath = $"Gum\\SvgPlugin\\SkiaInGumShared\\SkiaInGum.csproj",
-        ProjectRootType = FrbOrGum.Gum
+        RelativeProjectFilePath = $"Engines\\SkiaGum\\SkiaInGum.csproj",
+        ProjectRootType = FrbOrGum.Frb
     };
 
     #endregion
 
     #region DesktopFNA Projects
 
-    public static List<ProjectReference> DesktopFNA = new List<ProjectReference>
+    public List<ProjectReference> DesktopFNA = new List<ProjectReference>
     {
         new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\StateInterpolation\\StateInterpolation.FNA\\StateInterpolation.FNA.csproj", ProjectRootType = FrbOrGum.Frb},
         new ProjectReference(){ RelativeProjectFilePath = $"Engines\\FlatRedBallXNA\\FlatRedBall.FNA\\FlatRedBall.FNA.csproj", ProjectRootType = FrbOrGum.Frb},
@@ -116,13 +116,13 @@ internal static class AddSourceManager
         new ProjectReference(){ RelativeProjectFilePath = $"GumCore\\GumCoreXnaPc\\GumCore.FNA\\GumCore.FNA.csproj", ProjectRootType = FrbOrGum.Gum},
     };
 
-    private static ProjectReference GumSkiaFNA = new ProjectReference
+    private ProjectReference GumSkiaFNA = new ProjectReference
     {
-        RelativeProjectFilePath = $"Gum\\SvgPlugin\\SkiaInGumShared\\SkiaInGum.FNA.csproj",
-        ProjectRootType = FrbOrGum.Gum
+        RelativeProjectFilePath = $"Engines\\SkiaGum\\SkiaInGum.FNA.csproj",
+        ProjectRootType = FrbOrGum.Frb
     };
 
-    private static ProjectReference FNA = new ProjectReference
+    private ProjectReference FNA = new ProjectReference
     {
         RelativeProjectFilePath = $"Engines\\FlatRedBallXNA\\3rd Party Libraries\\FNA\\FNA.Core.csproj",
         ProjectRootType = FrbOrGum.Frb
@@ -132,7 +132,7 @@ internal static class AddSourceManager
 
     #region Web Projects
 
-    public static List<ProjectReference> Web = new List<ProjectReference>
+    public List<ProjectReference> Web = new List<ProjectReference>
     {
         new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\StateInterpolation\\StateInterpolation.Kni.Web\\StateInterpolation.Kni.Web.csproj", ProjectRootType = FrbOrGum.Frb},
         new ProjectReference(){ RelativeProjectFilePath = $"Engines\\FlatRedBallXNA\\KniWeb\\FlatRedBallKniWeb.csproj", ProjectRootType = FrbOrGum.Frb},
@@ -142,7 +142,7 @@ internal static class AddSourceManager
     #endregion
 
     #region Android Projects
-    public static List<ProjectReference> AndroidXamarin = new List<ProjectReference>
+    public List<ProjectReference> AndroidXamarin = new List<ProjectReference>
     {
         new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\StateInterpolation\\StateInterpolation.Android.csproj", ProjectRootType = FrbOrGum.Frb},
         new ProjectReference(){ RelativeProjectFilePath = $"Engines\\FlatRedBallXNA\\FlatRedBall\\FlatRedBallAndroidv2.csproj", ProjectRootType = FrbOrGum.Frb},
@@ -150,7 +150,7 @@ internal static class AddSourceManager
         new ProjectReference(){ RelativeProjectFilePath = $"GumCore\\GumCoreXnaPc\\GumCoreAndroid.csproj", ProjectRootType = FrbOrGum.Gum},
     };
 
-    public static List<ProjectReference> AndroidNet8 = new List<ProjectReference>
+    public List<ProjectReference> AndroidNet8 = new List<ProjectReference>
     {
         new ProjectReference(){ RelativeProjectFilePath =
             $"Engines\\Forms\\FlatRedBall.Forms\\StateInterpolation\\StateInterpolation.AndroidMonoGame\\StateInterpolation.AndroidMonoGame.csproj",
@@ -174,7 +174,7 @@ internal static class AddSourceManager
 
     #region iOS
 
-    public static List<ProjectReference> IosXamarin = new List<ProjectReference>
+    public List<ProjectReference> IosXamarin = new List<ProjectReference>
     {
         new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\StateInterpolation\\StateInterpolation.iOS.csproj", ProjectRootType = FrbOrGum.Frb},
         new ProjectReference(){ RelativeProjectFilePath = $"Engines\\FlatRedBallXNA\\FlatRedBall\\FlatRedBalliOS.csproj", ProjectRootType = FrbOrGum.Frb},
@@ -182,7 +182,7 @@ internal static class AddSourceManager
         new ProjectReference(){ RelativeProjectFilePath = $"GumCore\\GumCoreXnaPc\\GumCoreiOS.csproj", ProjectRootType = FrbOrGum.Gum},
     };
 
-    public static List<ProjectReference> IosNet8 = new List<ProjectReference>
+    public List<ProjectReference> IosNet8 = new List<ProjectReference>
     {
         new ProjectReference(){ RelativeProjectFilePath =
             $"Engines\\Forms\\FlatRedBall.Forms\\StateInterpolation\\StateInterpolation.iOSMonoGame\\StateInterpolation.iOSMonoGame.csproj",
@@ -206,7 +206,7 @@ internal static class AddSourceManager
 
     #region XnaNet4 (old)
 
-    public static List<ProjectReference> XnaNet4 = new List<ProjectReference>
+    public List<ProjectReference> XnaNet4 = new List<ProjectReference>
     {
         new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\StateInterpolation\\StateInterpolation.csproj", ProjectRootType = FrbOrGum.Frb},
         new ProjectReference(){ RelativeProjectFilePath = $"Engines\\FlatRedBallXNA\\FlatRedBall\\FlatRedBallXna4.csproj", ProjectRootType = FrbOrGum.Frb},
@@ -216,16 +216,16 @@ internal static class AddSourceManager
 
     #endregion
 
-    public static async Task HandleLinkToSourceClicked(AddFrbSourceViewModel viewModel) =>
+    public async Task HandleLinkToSourceClicked(AddFrbSourceViewModel viewModel) =>
         await LinkToSourceInternal(viewModel.FrbRootFolder, viewModel.GumRootFolder, viewModel.IncludeGumSkia, viewModel.VisualStudioProject);
 
-    public static async Task LinkToSourceUsingDefaults(VisualStudioProject visualStudioProject)
+    public async Task LinkToSourceUsingDefaults(VisualStudioProject visualStudioProject)
     {
         var includeGumSkia = visualStudioProject is MonoGameDesktopGlNetCoreProject;
 
         await LinkToSourceInternal(DefaultFrbFilePath, DefaultGumFilePath, includeGumSkia, visualStudioProject);
     }
-    private static async Task LinkToSourceInternal(string frbRootFolder, string gumRootFolder, bool includeGumSkia, VisualStudioProject vsProject)
+    private async Task LinkToSourceInternal(string frbRootFolder, string gumRootFolder, bool includeGumSkia, VisualStudioProject vsProject)
     {
         List<VisualStudioProject> projects = new List<VisualStudioProject>();
 
@@ -261,7 +261,7 @@ internal static class AddSourceManager
         }, "Linking game to FRB Source");
     }
 
-    private static GeneralResponse LinkVsProjectToSource(string frbRootFolder, string gumRootFolder, bool includeGumSkia, VisualStudioProject vsProject)
+    private GeneralResponse LinkVsProjectToSource(string frbRootFolder, string gumRootFolder, bool includeGumSkia, VisualStudioProject vsProject)
     {
         var slnFilePath = GlueState.Self.SlnFileForProject(vsProject);
 
@@ -392,7 +392,7 @@ internal static class AddSourceManager
         return addSourceResponse;
     }
 
-    private static List<ProjectReference> GetNecessaryProjectReferencesForProject(VisualStudioProject vsProject)
+    private List<ProjectReference> GetNecessaryProjectReferencesForProject(VisualStudioProject vsProject)
     {
         if (vsProject is AndroidMonoGameNet8Project)
         {
@@ -431,7 +431,7 @@ internal static class AddSourceManager
         }
     }
 
-    private static bool ValidateSourceFRB(string path, List<ProjectReference> projectReferences, out string error)
+    private bool ValidateSourceFRB(string path, List<ProjectReference> projectReferences, out string error)
     {
         if (!Directory.Exists(path))
         {
@@ -449,7 +449,7 @@ internal static class AddSourceManager
         return true;
     }
 
-    private static bool CheckFileExists(string path, out string error)
+    private bool CheckFileExists(string path, out string error)
     {
         if (!File.Exists(path))
         {
@@ -461,7 +461,7 @@ internal static class AddSourceManager
         return true;
     }
 
-    private static bool ValidateSourceGum(string path, List<ProjectReference> projectReferences, out string error)
+    private bool ValidateSourceGum(string path, List<ProjectReference> projectReferences, out string error)
     {
         if (!Directory.Exists(path))
         {
@@ -480,7 +480,7 @@ internal static class AddSourceManager
         return true;
     }
 
-    private static void AddProjectReference(VSSolution sln, List<CsprojReference> existingProjectReferences, VisualStudioProject proj,
+    private void AddProjectReference(VSSolution sln, List<CsprojReference> existingProjectReferences, VisualStudioProject proj,
         GeneralResponse addGeneralResponse, ProjectReference reference,
         string frbRootFolder, string gumRootFolder
         )
@@ -518,7 +518,7 @@ internal static class AddSourceManager
         }
     }
 
-    private static void RemoveDllReference(VisualStudioProject project, string referenceName)
+    private void RemoveDllReference(VisualStudioProject project, string referenceName)
     {
         if (project.EvaluatedItems.Any(item => item.ItemType == "Reference" && item.EvaluatedInclude.StartsWith(referenceName)))
         {
@@ -528,7 +528,7 @@ internal static class AddSourceManager
         }
     }
 
-    private static void RemoveNugetReference(VisualStudioProject project, string referenceName)
+    private void RemoveNugetReference(VisualStudioProject project, string referenceName)
     {
         var item = project.EvaluatedItems.FirstOrDefault(item => item.ItemType == "PackageReference" && item.EvaluatedInclude == referenceName);
 
@@ -540,7 +540,7 @@ internal static class AddSourceManager
 
 
 
-    private static bool AddProject(List<CsprojReference> existingProjects, FilePath solution, FilePath project)
+    private bool AddProject(List<CsprojReference> existingProjects, FilePath solution, FilePath project)
     {
         var relativePath = new FilePath(project.RelativeTo(solution.GetDirectoryContainingThis()));
 
@@ -556,7 +556,7 @@ internal static class AddSourceManager
         return true;
     }
 
-    private static bool AddSharedProject(List<CsprojReference> existingProjects, FilePath solution, FilePath project, Guid projectTypeId, Guid projectId, string projectName)
+    private bool AddSharedProject(List<CsprojReference> existingProjects, FilePath solution, FilePath project, Guid projectTypeId, Guid projectId, string projectName)
     {
         var relativePath = project.RelativeTo(solution.GetDirectoryContainingThis());
 

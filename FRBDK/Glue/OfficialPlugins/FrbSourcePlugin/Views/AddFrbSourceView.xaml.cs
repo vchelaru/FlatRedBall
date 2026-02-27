@@ -1,6 +1,5 @@
 ﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.VSHelpers.Projects;
-using OfficialPlugins.FrbSourcePlugin.Managers;
 using OfficialPlugins.FrbSourcePlugin.ViewModels;
 using System;
 using System.Linq;
@@ -16,9 +15,9 @@ namespace OfficialPlugins.FrbSourcePlugin.Views;
 /// </summary>
 public partial class AddFrbSourceView : UserControl
 {
-    AddFrbSourceViewModel ViewModel => DataContext as AddFrbSourceViewModel;
+    AddFrbSourceViewModel ViewModel => (AddFrbSourceViewModel)DataContext;
 
-    public Action LinkToSourceClicked;
+    public Action? LinkToSourceClicked;
 
     public AddFrbSourceView()
     {
@@ -76,5 +75,5 @@ public partial class AddFrbSourceView : UserControl
         instanceMember.PropertiesToSetOnDisplayer[nameof(FileSelectionDisplay.IsFolderDialog)] = true;
     }
 
-    private void LinkToSourceButton_Click(object sender, RoutedEventArgs e) => LinkToSourceClicked();
+    private void LinkToSourceButton_Click(object sender, RoutedEventArgs e) => LinkToSourceClicked?.Invoke();
 }
