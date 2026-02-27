@@ -717,7 +717,7 @@ namespace OfficialPlugins.VariableDisplay
                 var sorted = category.Members
                     .OrderBy(item =>
                     {
-                        var castedItem = item as DataGridItem;
+                        var castedItem = (DataGridItem)item;
                         var index = variableDefinitions.IndexOf(castedItem.UnmodifiedVariableName);
 
                         if (index == -1)

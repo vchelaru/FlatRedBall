@@ -275,7 +275,7 @@ namespace OfficialPlugins.Wizard.Models
                             }
                         }
                     }
-                    return null;
+                    return GeneralResponse.SuccessfulResponse;
                 };
 
                 formsData.NextClicked += () =>
