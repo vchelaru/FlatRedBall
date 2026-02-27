@@ -62,6 +62,7 @@ namespace PluginTestbed.GlobalContentManagerPlugins
 
         private ToolStripMenuItem _linkToSourceMenuItem;
         private readonly GlueState _glueState;
+        private readonly AddSourceManager _addSourceManager;
 
         public override string FriendlyName => "FRB Source";
 
@@ -70,6 +71,7 @@ namespace PluginTestbed.GlobalContentManagerPlugins
         public FrbSourcePlugin()
         {
             _glueState = GlueState.Self;
+            _addSourceManager = new AddSourceManager();
         }
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
@@ -152,13 +154,13 @@ namespace PluginTestbed.GlobalContentManagerPlugins
 
             // Github for desktop has a standard folder for source files, so let's default to that if it exists
 
-            if (System.IO.Directory.Exists(AddSourceManager.DefaultFrbFilePath))
+            if (System.IO.Directory.Exists(_addSourceManager.DefaultFrbFilePath))
             {
-                ViewModel.FrbRootFolder = AddSourceManager.DefaultFrbFilePath;
+                ViewModel.FrbRootFolder = _addSourceManager.DefaultFrbFilePath;
             }
-            if (System.IO.Directory.Exists(AddSourceManager.DefaultGumFilePath))
+            if (System.IO.Directory.Exists(_addSourceManager.DefaultGumFilePath))
             {
-                ViewModel.GumRootFolder = AddSourceManager.DefaultGumFilePath;
+                ViewModel.GumRootFolder = _addSourceManager.DefaultGumFilePath;
             }
 
             var alreadyLinked = project.IsFrbSourceLinked();
@@ -182,7 +184,7 @@ namespace PluginTestbed.GlobalContentManagerPlugins
             control.LinkToSourceClicked += async () =>
             {
                 GlueCommands.Self.DialogCommands.ShowToast("Adding Source...", TimeSpan.FromSeconds(999));
-                await AddSourceManager.HandleLinkToSourceClicked(ViewModel);
+                await _addSourceManager.HandleLinkToSourceClicked(ViewModel);
                 Tab.Hide();
                 GlueCommands.Self.DialogCommands.HideToast();
 
@@ -190,13 +192,13 @@ namespace PluginTestbed.GlobalContentManagerPlugins
             Tab = CreateTab(control, "Add FRB Source");
         }
 
-        public bool HasFrbAndGumReposInDefaultLocation() => 
-            System.IO.Directory.Exists(AddSourceManager.DefaultFrbFilePath) &&
-            System.IO.Directory.Exists(AddSourceManager.DefaultGumFilePath);
+        public bool HasFrbAndGumReposInDefaultLocation() =>
+            System.IO.Directory.Exists(_addSourceManager.DefaultFrbFilePath) &&
+            System.IO.Directory.Exists(_addSourceManager.DefaultGumFilePath);
 
         public async Task AddFrbSourceToDefaultLocation(VisualStudioProject visualStudioProject)
         {
-            await AddSourceManager.LinkToSourceUsingDefaults(visualStudioProject);
+            await _addSourceManager.LinkToSourceUsingDefaults(visualStudioProject);
         }
     }
 }

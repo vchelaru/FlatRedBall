@@ -7,26 +7,25 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace OfficialPlugins.FrbSourcePlugin.ViewModels
+namespace OfficialPlugins.FrbSourcePlugin.ViewModels;
+
+public class AddFrbSourceViewModel : ViewModel
 {
-    public class AddFrbSourceViewModel : ViewModel
+    public Visibility AlreadyLinkedMessageVisibility
     {
-        public Visibility AlreadyLinkedMessageVisibility
-        {
-            get => Get<Visibility>();
-            set => Set(value);
-        }
-        public string FrbRootFolder { get; set; }
-        public string GumRootFolder { get; set; }
-        public bool IncludeGumSkia { get; set; }
-
-        public VisualStudioProject VisualStudioProject
-        {
-            get => Get<VisualStudioProject>();
-            set => Set(value);
-        }
-
-        [DependsOn(nameof(VisualStudioProject))]
-        public string Title => $"Add source to {VisualStudioProject}?";
+        get => Get<Visibility>();
+        set => Set(value);
     }
+    public string FrbRootFolder { get; set; }
+    public string GumRootFolder { get; set; }
+    public bool IncludeGumSkia { get; set; }
+
+    public VisualStudioProject VisualStudioProject
+    {
+        get => Get<VisualStudioProject>();
+        set => Set(value);
+    }
+
+    [DependsOn(nameof(VisualStudioProject))]
+    public string Title => $"Add source to {VisualStudioProject}?";
 }
