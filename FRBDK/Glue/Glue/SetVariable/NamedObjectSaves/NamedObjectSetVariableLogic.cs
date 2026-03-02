@@ -22,15 +22,18 @@ using GlueFormsCore.SetVariable.NamedObjectSaves;
 using FlatRedBall.Glue.Managers;
 using System.Threading.Tasks;
 using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
+using FlatRedBall.Glue.Services;
 
 namespace FlatRedBall.Glue.SetVariable
 {
     public class NamedObjectSetVariableLogic
     {
         Dictionary<string, Action<NamedObjectSave, object>> PropertiesToMethods = new Dictionary<string, Action<NamedObjectSave, object>>();
+        NameVerifier _nameVerifier;
 
         public NamedObjectSetVariableLogic()
         {
+            _nameVerifier = Builder.Get<NameVerifier>();
             PropertiesToMethods = new Dictionary<string, Action<NamedObjectSave, object>>();
 
             PropertiesToMethods.Add("TextureAddressMode", ReactToTextureAddressMode);
@@ -740,7 +743,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             string whyItIsntValid;
 
-            NameVerifier.IsNamedObjectNameValid(namedObjectSave.InstanceName, out whyItIsntValid);
+            _nameVerifier.IsNamedObjectNameValid(namedObjectSave.InstanceName, out whyItIsntValid);
 
             if (!string.IsNullOrEmpty(whyItIsntValid))
             {

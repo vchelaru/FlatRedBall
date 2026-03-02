@@ -14,6 +14,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using FlatRedBall.Utilities;
+using FlatRedBall.Glue.Services;
 using Localization;
 using Microsoft.Build.Framework;
 
@@ -73,6 +74,8 @@ namespace FlatRedBall.Glue.ViewModels
 
     public class AddObjectViewModel : ViewModel
     {
+        NameVerifier _nameVerifier;
+
         #region SourceType
 
         public SourceType SourceType 
@@ -681,6 +684,7 @@ namespace FlatRedBall.Glue.ViewModels
 
         public AddObjectViewModel()
         {
+            _nameVerifier = Builder.Get<NameVerifier>();
             IsCallActivityChecked = true;
             FlatRedBallAndCustomTypes = new List<AssetTypeInfo>();
             GumTypes = new List<AssetTypeInfo>();
@@ -706,7 +710,7 @@ namespace FlatRedBall.Glue.ViewModels
             newName = newName.Replace(" ", "");
 
             string throwaway;
-            bool isInvalid = NameVerifier.IsNamedObjectNameValid(newName, out throwaway);
+            bool isInvalid = _nameVerifier.IsNamedObjectNameValid(newName, out throwaway);
 
             if (!isInvalid)
             {

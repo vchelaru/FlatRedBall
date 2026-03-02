@@ -34,6 +34,7 @@ using System.Windows.Data;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins.Refactoring.Views;
 using static FlatRedBall.Glue.SaveClasses.GlueProjectSave;
 using Microsoft.VisualBasic;
+using FlatRedBall.Glue.Services;
 using GeneralResponse = ToolsUtilities.GeneralResponse;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
@@ -90,6 +91,13 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
         }
     }
 
+    NameVerifier _nameVerifier;
+
+    public ElementCommands()
+    {
+        _nameVerifier = Builder.Get<NameVerifier>();
+    }
+
     #endregion
 
     #region RenameElement (both screens and entities)
@@ -110,11 +118,11 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
             string whyItIsntValid;
             if (elementToRename is ScreenSave)
             {
-                isValid = NameVerifier.IsScreenNameValid(newFullElementName, elementToRename as ScreenSave, out whyItIsntValid);
+                isValid = _nameVerifier.IsScreenNameValid(newFullElementName, elementToRename as ScreenSave, out whyItIsntValid);
             }
             else
             {
-                isValid = NameVerifier.IsEntityNameValid(newFullElementName, elementToRename as EntitySave, out whyItIsntValid);
+                isValid = _nameVerifier.IsEntityNameValid(newFullElementName, elementToRename as EntitySave, out whyItIsntValid);
 
             }
 
@@ -1364,7 +1372,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
         string fileWithoutPath = FileManager.RemovePath(FileManager.RemoveExtension(absoluteFileName));
 
         bool isValid = 
-            NameVerifier.IsReferencedFileNameValid(fileWithoutPath, ati, referencedFileSaveToReturn, (GlueElement)containerForFile, out whyItIsntValid);
+            _nameVerifier.IsReferencedFileNameValid(fileWithoutPath, ati, referencedFileSaveToReturn, (GlueElement)containerForFile, out whyItIsntValid);
 
         if (!isValid)
         {
@@ -1585,7 +1593,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
         string eventName = viewModel.EventName;
 
         string failureMessage;
-        bool isInvalid = NameVerifier.IsEventNameValid(eventName,
+        bool isInvalid = _nameVerifier.IsEventNameValid(eventName,
             glueElement, out failureMessage);
 
         if (isInvalid)

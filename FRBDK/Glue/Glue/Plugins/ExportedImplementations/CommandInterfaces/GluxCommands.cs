@@ -71,7 +71,10 @@ public class GluxCommands : IGluxCommands
 
     IProjectCommands projectCommands = new ProjectCommands();
 
-    ElementCommands mElementCommands = new ElementCommands();
+    ElementCommands mElementCommands;
+
+    NameVerifier _nameVerifier;
+    ReferencedFileSaveSetPropertyManager _referencedFileSaveSetPropertyManager;
 
     static GluxCommands mSelf;
 
@@ -85,6 +88,13 @@ public class GluxCommands : IGluxCommands
             }
             return mSelf;
         }
+    }
+
+    public GluxCommands()
+    {
+        _nameVerifier = Builder.Get<NameVerifier>();
+        _referencedFileSaveSetPropertyManager = Builder.Get<ReferencedFileSaveSetPropertyManager>();
+        mElementCommands = Builder.Get<ElementCommands>();
     }
 
     public IScreenCommands ScreenCommands => mElementCommands;
@@ -416,7 +426,7 @@ public class GluxCommands : IGluxCommands
         ValidationResponse validationResponse = new ValidationResponse();
         customClassSave = null;
         string whyIsntValid;
-        if (!NameVerifier.IsCustomClassNameValid(className, out whyIsntValid))
+        if (!_nameVerifier.IsCustomClassNameValid(className, out whyIsntValid))
         {
             validationResponse.OperationResult = OperationResult.Failure;
             validationResponse.Message = whyIsntValid;
@@ -489,9 +499,6 @@ public class GluxCommands : IGluxCommands
             string name = viewModel.FileName;
             AssetTypeInfo resultAssetTypeInfo =
                 viewModel.SelectedAssetTypeInfo;
-
-            string errorMessage;
-
 
             rfs = await GlueProjectSaveExtensionMethods.AddReferencedFileSave(
                 element, directory, name, resultAssetTypeInfo,
@@ -880,7 +887,7 @@ public class GluxCommands : IGluxCommands
         string fileWithoutPath = FileManager.RemovePath(FileManager.RemoveExtension(absoluteFileName));
 
         bool isValid =
-            NameVerifier.IsReferencedFileNameValid(fileWithoutPath, ati, referencedFileSaveToReturn, containerForFile, out whyItIsntValid);
+            _nameVerifier.IsReferencedFileNameValid(fileWithoutPath, ati, referencedFileSaveToReturn, containerForFile, out whyItIsntValid);
 
         if (!isValid)
         {
@@ -1446,7 +1453,7 @@ public class GluxCommands : IGluxCommands
             var destinationDirectoryOnDisk = desiredFolder?.FullPath ?? FileManager.GetDirectory(file);
             var extension = FileManager.GetExtension(rfs.Name);
 
-            while (!NameVerifier.IsReferencedFileNameValid(stripped,
+            while (!_nameVerifier.IsReferencedFileNameValid(stripped,
                 newRfs.GetAssetTypeInfo(), 
                 newRfs, 
                 container, 
@@ -3527,7 +3534,7 @@ public class GluxCommands : IGluxCommands
         }
 
         string whyIsInvalid = null;
-        NameVerifier.IsDirectoryNameValid(newName, out whyIsInvalid);
+        _nameVerifier.IsDirectoryNameValid(newName, out whyIsInvalid);
 
         if (string.IsNullOrEmpty(whyIsInvalid) && Directory.Exists(newDirectoryNameAbsolute))
         {
@@ -3583,7 +3590,7 @@ public class GluxCommands : IGluxCommands
                         // dont' move, it's already been moved based on the folder name change
                         const bool shouldMove = false;
                         // This is in global content currently
-                        await ReferencedFileSaveSetPropertyManager.ForceReactToRenamedReferencedFileAsync(
+                        await _referencedFileSaveSetPropertyManager.ForceReactToRenamedReferencedFileAsync(
                             oldName, rfs.Name, rfs, container:null, shouldMove:shouldMove);
                     }
                 }

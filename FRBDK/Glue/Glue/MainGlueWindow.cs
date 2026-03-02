@@ -654,13 +654,11 @@ public partial class MainGlueWindow : Form
         EditorObjects.IoC.Container.Set(new SetPropertyManager());
         EditorObjects.IoC.Container.Set(new NamedObjectSetVariableLogic());
         EditorObjects.IoC.Container.Set(new StateSaveCategorySetVariableLogic());
-        EditorObjects.IoC.Container.Set(new StateSaveSetVariableLogic());
-        EditorObjects.IoC.Container.Set(new EventResponseSaveSetVariableLogic());
-        EditorObjects.IoC.Container.Set(new ReferencedFileSaveSetPropertyManager());
-        EditorObjects.IoC.Container.Set(new CustomVariableSaveSetPropertyLogic());
+
+EditorObjects.IoC.Container.Set(new CustomVariableSaveSetPropertyLogic());
         EditorObjects.IoC.Container.Set(new EntitySaveSetPropertyLogic());
         EditorObjects.IoC.Container.Set(new ScreenSaveSetVariableLogic());
-        EditorObjects.IoC.Container.Set(new GlobalContentSetVariableLogic());
+
         EditorObjects.IoC.Container.Set(new PluginUpdater());
 
         EditorObjects.IoC.Container.Set<IGlueState>(GlueState.Self);

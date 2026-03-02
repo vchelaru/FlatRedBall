@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.MVVM;
+using FlatRedBall.Glue.Services;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
@@ -30,6 +31,8 @@ public enum TmxOptions
 
 public class AddScreenViewModel : ViewModel
 {
+    NameVerifier _nameVerifier;
+
     public bool HasChangedScreenTextBox
     {
         get => Get<bool>();
@@ -41,7 +44,7 @@ public class AddScreenViewModel : ViewModel
     {
         get
         {
-            if(!NameVerifier.IsScreenNameValid(ScreenName, null, out string whyItIsntValid))
+            if(!_nameVerifier.IsScreenNameValid(ScreenName, null, out string whyItIsntValid))
             {
                 return whyItIsntValid;
             }
@@ -328,6 +331,7 @@ public class AddScreenViewModel : ViewModel
 
     public AddScreenViewModel()
     {
+        _nameVerifier = Builder.Get<NameVerifier>();
         IsAddMapLayeredTileMapChecked = true;
         IsAddListsForEntitiesChecked = true;
         AvailableTmxFiles = new ObservableCollection<string>();

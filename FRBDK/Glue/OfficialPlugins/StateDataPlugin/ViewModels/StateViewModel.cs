@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.Services;
 using OfficialPlugins.StateDataPlugin.Managers;
 using System;
 using System.Collections.Generic;
@@ -114,6 +115,7 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
     {
         IElement element;
         StateSaveCategory category;
+        NameVerifier _nameVerifier;
 
         public string Name
         {
@@ -135,7 +137,7 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
                 }
                 else
                 {
-                    NameVerifier.IsStateNameValid(Name, element, category, 
+                    _nameVerifier.IsStateNameValid(Name, element, category,
                         BackingData, out whyItIsInvalid);
                 }
 
@@ -163,6 +165,7 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
 
         public StateViewModel(StateSave state, StateSaveCategory category, GlueElement element)
         {
+            _nameVerifier = Builder.Get<NameVerifier>();
             this.category = category;
             this.element = element;
 

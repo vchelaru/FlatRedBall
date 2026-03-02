@@ -6,6 +6,7 @@ using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Reflection;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.Services;
 using FlatRedBall.Glue.TypeConversions;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,8 @@ namespace GlueFormsCore.ViewModels;
 
 public class AddCustomVariableViewModel : ViewModel
 {
+    NameVerifier _nameVerifier;
+
     #region Top-level Properties
 
     public GlueElement Element
@@ -86,7 +89,7 @@ public class AddCustomVariableViewModel : ViewModel
 
             if (DesiredVariableType == CustomVariableType.New)
             {
-                isValid = NameVerifier.IsCustomVariableNameValid(NewVariableName, null, Element, ref whyIsntValid);
+                isValid = _nameVerifier.IsCustomVariableNameValid(NewVariableName, null, Element, ref whyIsntValid);
             }
 
             if (!isValid)
@@ -442,6 +445,7 @@ public class AddCustomVariableViewModel : ViewModel
 
     public AddCustomVariableViewModel(GlueElement glueElement)
     {
+        _nameVerifier = Builder.Get<NameVerifier>();
         AvailableCategories = new ObservableCollection<string>();
         AvailableExposedVariables = new ObservableCollection<string>();
 

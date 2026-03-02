@@ -14,7 +14,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 using FlatRedBall.Glue.SaveClasses.Helpers;
 using Glue;
 using FlatRedBall.Glue.SaveClasses;
-using EditorObjects.IoC;
+using FlatRedBall.Glue.Services;
 
 namespace FlatRedBall.Glue.SetVariable;
 
@@ -65,7 +65,7 @@ public class SetPropertyManager
         #region EventResponseSave
         if (GlueState.Self.CurrentEventResponseSave != null)
         {
-            Container.Get<EventResponseSaveSetVariableLogic>().ReactToChange(
+            Builder.Get<EventResponseSaveSetVariableLogic>().ReactToChange(
                 variableNameAsDisplayed, oldValue, GlueState.Self.CurrentEventResponseSave, GlueState.Self.CurrentElement);
         }
 
@@ -75,7 +75,7 @@ public class SetPropertyManager
 
         else if (GlueState.Self.CurrentStateSave != null)
         {
-            Container.Get<StateSaveSetVariableLogic>().ReactToStateSaveChangedValue(
+            Builder.Get<StateSaveSetVariableLogic>().ReactToStateSaveChangedValue(
                 GlueState.Self.CurrentStateSave, GlueState.Self.CurrentStateSaveCategory, variableNameAsDisplayed, oldValue,
                 GlueState.Self.CurrentElement, ref updateTreeView);
 
@@ -88,7 +88,7 @@ public class SetPropertyManager
 
         else if (GlueState.Self.CurrentNamedObjectSave != null)
         {
-            await Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
+            await Builder.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
                 variableNameAsDisplayed, oldValue, parentGridItemName, GlueState.Self.CurrentNamedObjectSave);
         }
 
@@ -98,7 +98,7 @@ public class SetPropertyManager
 
         else if (GlueState.Self.CurrentReferencedFileSave != null)
         {
-            Container.Get<ReferencedFileSaveSetPropertyManager>().ReactToChangedReferencedFile(
+            Builder.Get<ReferencedFileSaveSetPropertyManager>().ReactToChangedReferencedFile(
                 variableNameAsDisplayed, oldValue, ref updateTreeView);
         }
 
@@ -108,13 +108,13 @@ public class SetPropertyManager
 
         else if (GlueState.Self.CurrentCustomVariable != null)
         {
-            await Container.Get<CustomVariableSaveSetPropertyLogic>().ReactToCustomVariableChangedValue(
+            await Builder.Get<CustomVariableSaveSetPropertyLogic>().ReactToCustomVariableChangedValue(
                 variableNameAsDisplayed, GlueState.Self.CurrentCustomVariable, oldValue);
         }
         else if (mPropertyGrid.SelectedObject != null && mPropertyGrid.SelectedObject is PropertyGridDisplayer &&
             GlueState.Self.CurrentElement != null && GlueState.Self.CurrentElement.GetCustomVariableRecursively(variableName) != null)
         {
-            await Container.Get<CustomVariableSaveSetPropertyLogic>().ReactToCustomVariableChangedValue(
+            await Builder.Get<CustomVariableSaveSetPropertyLogic>().ReactToCustomVariableChangedValue(
                 variableName, GlueState.Self.CurrentElement.GetCustomVariableRecursively(variableName), oldValue);
         }
         #endregion
@@ -123,7 +123,7 @@ public class SetPropertyManager
         #region Entity
         else if (GlueState.Self.CurrentEntitySave != null)
         {
-            Container.Get<EntitySaveSetPropertyLogic>().ReactToEntityChangedProperty(variableNameAsDisplayed, oldValue, GlueState.Self.CurrentEntitySave);
+            Builder.Get<EntitySaveSetPropertyLogic>().ReactToEntityChangedProperty(variableNameAsDisplayed, oldValue, GlueState.Self.CurrentEntitySave);
             pushReactToChangedProperty = false;
         }
 
@@ -133,7 +133,7 @@ public class SetPropertyManager
 
         else if (GlueState.Self.CurrentScreenSave != null)
         {
-            Container.Get<ScreenSaveSetVariableLogic>().ReactToScreenChangedValue(variableNameAsDisplayed, oldValue);
+            Builder.Get<ScreenSaveSetVariableLogic>().ReactToScreenChangedValue(variableNameAsDisplayed, oldValue);
         }
 
         #endregion
@@ -142,7 +142,7 @@ public class SetPropertyManager
 
         else if (GlueState.Self.CurrentTreeNode?.Root.IsGlobalContentContainerNode() == true)
         {
-            Container.Get<GlobalContentSetVariableLogic>().ReactToGlobalContentChangedValue(
+            Builder.Get<GlobalContentSetVariableLogic>().ReactToGlobalContentChangedValue(
                 variableNameAsDisplayed, oldValue, ref updateTreeView);
         }
 

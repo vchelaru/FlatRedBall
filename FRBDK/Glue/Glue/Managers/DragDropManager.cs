@@ -1210,7 +1210,9 @@ public class DragDropManager : Singleton<DragDropManager>
 
                     if (areNamedTheSame)
                     {
-                        response.Fail($"The file {originalReferencedFileSave.GetInstanceName()} has the same name as the target screen. it will not be added since this is not allowed.");
+                        var screenOrComponent = elementDroppingIn is ScreenSave ? "screen" : "component";
+                        response.Fail($"The file {originalReferencedFileSave.GetInstanceName()} " +
+                            $"has the same name as the target {screenOrComponent}. it will not be added since this is not allowed.");
                     }
 
                     if (response.Succeeded)

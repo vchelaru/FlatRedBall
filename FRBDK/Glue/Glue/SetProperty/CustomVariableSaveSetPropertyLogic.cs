@@ -14,6 +14,7 @@ using GlueFormsCore.Managers;
 using System.Threading.Tasks;
 using FlatRedBall.Glue.Managers;
 using System.Windows.Media.Animation;
+using FlatRedBall.Glue.Services;
 using Gum.DataTypes;
 
 namespace FlatRedBall.Glue.SetVariable;
@@ -21,6 +22,13 @@ namespace FlatRedBall.Glue.SetVariable;
 
 public class CustomVariableSaveSetPropertyLogic
 {
+    NameVerifier _nameVerifier;
+
+    public CustomVariableSaveSetPropertyLogic()
+    {
+        _nameVerifier = Builder.Get<NameVerifier>();
+    }
+
     public async Task ReactToCustomVariableChangedValue(string changedMember, CustomVariable customVariable, object oldValue)
     {
         var element = ObjectFinder.Self.GetElementContaining(customVariable);
@@ -229,7 +237,7 @@ public class CustomVariableSaveSetPropertyLogic
 
     #region Name
 
-    private static async Task ReactToChangedCustomVariableNameAsync(string oldName, CustomVariable customVariable)
+    private async Task ReactToChangedCustomVariableNameAsync(string oldName, CustomVariable customVariable)
     {
         var currentElement = GlueState.Self.CurrentElement;
         var currentVariable = GlueState.Self.CurrentCustomVariable;
@@ -238,7 +246,7 @@ public class CustomVariableSaveSetPropertyLogic
         {
             /////////////////////Early Out///////////////////////////////
             string whyItIsntValid = "";
-            bool isNameValid = NameVerifier.IsCustomVariableNameValid(customVariable.Name, customVariable, currentElement, ref whyItIsntValid);
+            bool isNameValid = _nameVerifier.IsCustomVariableNameValid(customVariable.Name, customVariable, currentElement, ref whyItIsntValid);
             string newName = currentVariable.Name;
 
             if (customVariable.GetIsVariableState() && oldName != newName)

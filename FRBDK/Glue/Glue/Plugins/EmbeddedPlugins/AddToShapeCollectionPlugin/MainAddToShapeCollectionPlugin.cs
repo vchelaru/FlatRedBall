@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text;
+using FlatRedBall.Glue.Services;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -19,6 +20,13 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.AddToShapeCollectionPlugin
     [Export(typeof(PluginBase))]
     public class MainAddToShapeCollectionPlugin : EmbeddedPlugin
     {
+        NameVerifier _nameVerifier;
+
+        public MainAddToShapeCollectionPlugin()
+        {
+            _nameVerifier = Builder.Get<NameVerifier>();
+        }
+
         public override void StartUp()
         {
             this.ReactToTreeViewRightClickHandler += HandleTreeViewRightClick;
@@ -79,7 +87,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.AddToShapeCollectionPlugin
             await GlueCommands.Self.GluxCommands.SetVariableOnAsync(namedObjectSave, "Points", points);
         }
 
-        private static async Task<NamedObjectSave> HandleAddShape(string message, AssetTypeInfo ati)
+        private async Task<NamedObjectSave> HandleAddShape(string message, AssetTypeInfo ati)
         {
             NamedObjectSave toReturn = null;
 
@@ -91,7 +99,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.AddToShapeCollectionPlugin
             if (tiw.ShowDialog() is true)
             {
                 string whyItIsntValid;
-                NameVerifier.IsNamedObjectNameValid(tiw.Result, out whyItIsntValid);
+                _nameVerifier.IsNamedObjectNameValid(tiw.Result, out whyItIsntValid);
 
                 if (!string.IsNullOrEmpty(whyItIsntValid))
                 {
