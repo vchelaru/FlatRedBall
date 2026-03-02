@@ -976,6 +976,8 @@
             cursor hit detection.
             </remarks>
             <param name="cursor">The cursor to check whether it is over this.</param>
+            <param name="layer">Optional layer to use for coordinate conversion. 
+            If this is null, then the top-most parent GraphicalUiElement's layer will be used.</param>
             <returns>Whether the cursor is over this.</returns>
         </member>
         <member name="M:Gum.Wireframe.InteractiveGue.AddNextPushAction(System.Action)">
