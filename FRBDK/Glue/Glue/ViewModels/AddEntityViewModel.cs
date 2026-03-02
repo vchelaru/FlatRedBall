@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -21,6 +22,8 @@ namespace GlueFormsCore.ViewModels
 
     public class AddEntityViewModel : ViewModel
     {
+        NameVerifier _nameVerifier;
+
         public string Name
         {
             get => Get<string>();
@@ -49,7 +52,7 @@ namespace GlueFormsCore.ViewModels
         {
             get
             {
-                var isValid = NameVerifier.IsEntityNameValid(Name, null, out string whyIsntValid);
+                var isValid = _nameVerifier.IsEntityNameValid(Name, null, out string whyIsntValid);
 
                 if (!isValid)
                 {
@@ -383,6 +386,7 @@ namespace GlueFormsCore.ViewModels
 
         public AddEntityViewModel()
         {
+            _nameVerifier = Builder.Get<NameVerifier>();
             ObjectsDisablingCollidableCheckbox = new ObservableCollection<object>();
             IsCreateFactoryChecked = true;
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using FlatRedBall.Glue.Elements;
@@ -19,9 +19,9 @@ public class NameVerifier
             '~', '`', '!', '@', '#', '$', '%', '^', '&', '*',
             '(', ')', '-', '=', '+', ';', '\'', ':', '"', '<',
             ',', '>', '.', '/', '\\', '?', '[', '{', ']', '}',
-            '|', 
+            '|',
             // Spaces are handled separately
-        //    ' ' 
+        //    ' '
         };
     // We now allow underscore ( '_' )
 
@@ -183,7 +183,7 @@ public class NameVerifier
 
     #region Directory
 
-    public static bool IsDirectoryNameValid(string directory, out string whyItIsntValid)
+    public bool IsDirectoryNameValid(string directory, out string whyItIsntValid)
     {
         whyItIsntValid = "";
 
@@ -197,7 +197,7 @@ public class NameVerifier
 
     #region Referenced File Save
 
-    public static bool IsReferencedFileNameValid(string name, AssetTypeInfo ati, ReferencedFileSave rfs, GlueElement container, out string whyItIsntValid)
+    public bool IsReferencedFileNameValid(string name, AssetTypeInfo ati, ReferencedFileSave rfs, GlueElement container, out string whyItIsntValid)
     {
         whyItIsntValid = "";
 
@@ -208,7 +208,7 @@ public class NameVerifier
         {
             string unqualifiedContainerName = FileManager.RemovePath(container.Name);
 
-            if (unqualifiedContainerName.ToLowerInvariant() == FileManager.RemovePath(FileManager.RemoveExtension(name)))
+            if (unqualifiedContainerName.ToLowerInvariant() == FileManager.RemovePath(FileManager.RemoveExtension(name)).ToLowerInvariant())
             {
                 string containerType = "Entity";
 
@@ -274,7 +274,7 @@ public class NameVerifier
         return returnValue;
     }
 
-    private static void CheckForRfsWithMatchingFileName(GlueElement container, string name, ReferencedFileSave rfsToSkip, ref string whyItIsntValid)
+    private void CheckForRfsWithMatchingFileName(GlueElement container, string name, ReferencedFileSave rfsToSkip, ref string whyItIsntValid)
     {
 
         if (container == null)
@@ -312,7 +312,7 @@ public class NameVerifier
 
     #endregion
 
-    internal static bool IsCustomClassNameValid(string name, out string whyItIsntValid)
+    internal bool IsCustomClassNameValid(string name, out string whyItIsntValid)
     {
         whyItIsntValid = "";
 
@@ -350,7 +350,7 @@ public class NameVerifier
     /// <param name="screenSave">The screen which may be renamed.</param>
     /// <param name="whyItIsntValid">Information about why the name is invalid which can be displayed to the user.</param>
     /// <returns>Whether the name is valid.</returns>
-    public static bool IsScreenNameValid(string name, ScreenSave screenSave, out string whyItIsntValid)
+    public bool IsScreenNameValid(string name, ScreenSave screenSave, out string whyItIsntValid)
     {
         string screensOrEntitiesPrefix = "Screens\\";
         var strippedName = name?.Replace("/", "\\");
@@ -393,7 +393,7 @@ public class NameVerifier
         return string.IsNullOrEmpty(whyItIsntValid);
     }
 
-    public static bool IsEntityNameValid(string name, EntitySave entitySave, out string whyItIsntValid)
+    public bool IsEntityNameValid(string name, EntitySave entitySave, out string whyItIsntValid)
     {
         string screensOrEntitiesPrefix = "Entities\\";
 
@@ -440,7 +440,7 @@ public class NameVerifier
 
     #endregion
 
-    public static bool IsStateCategoryNameValid(string name, out string whyItIsntValid)
+    public bool IsStateCategoryNameValid(string name, out string whyItIsntValid)
     {
         whyItIsntValid = null;
 
@@ -454,7 +454,7 @@ public class NameVerifier
         return string.IsNullOrEmpty(whyItIsntValid);
     }
 
-    public static bool IsStateNameValid(string name, IElement element, StateSaveCategory category, StateSave currentStateSave, out string whyItIsntValid)
+    public bool IsStateNameValid(string name, IElement element, StateSaveCategory category, StateSave currentStateSave, out string whyItIsntValid)
     {
         whyItIsntValid = null;
 
@@ -508,12 +508,12 @@ public class NameVerifier
         return string.IsNullOrEmpty(whyItIsntValid);
     }
 
-    public static bool IsNamedObjectNameValid(string name, out string whyItIsntValid)
+    public bool IsNamedObjectNameValid(string name, out string whyItIsntValid)
     {
         return IsNamedObjectNameValid(name, GlueState.Self.CurrentNamedObjectSave, out whyItIsntValid);
     }
 
-    public static bool IsNamedObjectNameValid(string name, NamedObjectSave namedObject, out string whyItIsntValid)
+    public bool IsNamedObjectNameValid(string name, NamedObjectSave namedObject, out string whyItIsntValid)
     {
         bool isDefinedInBaseButNotSetByDerived = false;
 
@@ -599,7 +599,7 @@ public class NameVerifier
         return string.IsNullOrEmpty(whyItIsntValid);
     }
 
-    private static bool IsPositionedObjectMember(string name)
+    private bool IsPositionedObjectMember(string name)
     {
         Type type = typeof(PositionedObject);
 
@@ -615,11 +615,11 @@ public class NameVerifier
         return false;
     }
 
-    private static void RemoveNosFromElementIfNecessary(NamedObjectSave namedObject, out int wasRemovedFromIndex, out IElement element, out NamedObjectSave containingNos)
+    private void RemoveNosFromElementIfNecessary(NamedObjectSave namedObject, out int wasRemovedFromIndex, out IElement element, out NamedObjectSave containingNos)
     {
         // We want to see if this name is already being used by other NOS's.
         // However, if this NOS is already part of the current element, then the
-        // check for whether it's being used will always return true - because it's 
+        // check for whether it's being used will always return true - because it's
         // being used by itself.  We don't want itself from returning the name as invalid
         // so we're going to remove it from the NOS list before running the check, then we'll
         // insert it back to the appropriate place.
@@ -649,10 +649,10 @@ public class NameVerifier
         }
     }
 
-    public static bool IsEventNameValid(string name, IElement currentElement, out string failureMessage)
+    public bool IsEventNameValid(string name, IElement currentElement, out string failureMessage)
     {
         string whyItIsntValid = "";
-        var didFailureOccur = NameVerifier.IsCustomVariableNameValid(name, null, currentElement, ref whyItIsntValid) == false;
+        var didFailureOccur = IsCustomVariableNameValid(name, null, currentElement, ref whyItIsntValid) == false;
         failureMessage = null;
         if (didFailureOccur)
         {
@@ -668,7 +668,7 @@ public class NameVerifier
         return didFailureOccur;
     }
 
-    private static void CheckForFileNameWindowsReserved(string name, out string whyNotValid)
+    private void CheckForFileNameWindowsReserved(string name, out string whyNotValid)
     {
         whyNotValid = null;
         if (InvalidWindowsFileNames.Any(n => n.Equals(name, StringComparison.OrdinalIgnoreCase)))
@@ -677,7 +677,7 @@ public class NameVerifier
         }
     }
 
-    private static void CheckForExistingEntity(string name, ref string whyItIsntValid)
+    private void CheckForExistingEntity(string name, ref string whyItIsntValid)
     {
         if (ObjectFinder.Self.GetEntitySaveUnqualified(name) != null)
         {
@@ -685,7 +685,7 @@ public class NameVerifier
         }
     }
 
-    private static void CheckForCommonImproperNames(string name, ref string whyItIsntValid)
+    private void CheckForCommonImproperNames(string name, ref string whyItIsntValid)
     {
         if (string.IsNullOrEmpty(name))
         {
@@ -723,7 +723,7 @@ public class NameVerifier
     }
 
 
-    internal static bool IsCustomVariableNameValid(string variableName, CustomVariable customVariable, IElement containingElement, ref string whyItIsntValid)
+    internal bool IsCustomVariableNameValid(string variableName, CustomVariable customVariable, IElement containingElement, ref string whyItIsntValid)
     {
         CheckForCommonImproperNames(variableName, ref whyItIsntValid);
 
@@ -766,7 +766,7 @@ public class NameVerifier
 
     }
 
-    public static bool DoesTunneledVariableAlreadyExist(string sourceObject, string sourceObjectProperty, IElement element)
+    public bool DoesTunneledVariableAlreadyExist(string sourceObject, string sourceObjectProperty, IElement element)
     {
         if (!string.IsNullOrEmpty(sourceObject))
         {

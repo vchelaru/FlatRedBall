@@ -7,12 +7,20 @@ using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Services;
 
 namespace FlatRedBall.Glue.SetVariable
 {
     // Made public for unit tests
     public class StateSaveSetVariableLogic
     {
+        NameVerifier _nameVerifier;
+
+        public StateSaveSetVariableLogic()
+        {
+            _nameVerifier = Builder.Get<NameVerifier>();
+        }
+
         public void ReactToStateSaveChangedValue(StateSave stateSave, StateSaveCategory category, string changedMember, object oldValue, GlueElement stateOwner, ref bool updateTreeView)
         {
             if (changedMember != "Name")
@@ -23,7 +31,7 @@ namespace FlatRedBall.Glue.SetVariable
             if (changedMember == "Name")
             {
                 string whyItIsntValid;
-                if (!NameVerifier.IsStateNameValid(stateSave.Name, 
+                if (!_nameVerifier.IsStateNameValid(stateSave.Name,
                     GlueState.Self.CurrentElement, GlueState.Self.CurrentStateSaveCategory, GlueState.Self.CurrentStateSave, out whyItIsntValid))
                 {
                     stateSave.Name = (string)oldValue;

@@ -20,6 +20,7 @@ using FlatRedBall.Glue.VSHelpers.Projects;
 using System.Globalization;
 using System.IO;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
+using FlatRedBall.Glue.Services;
 using GlueFormsCore.Managers;
 
 namespace FlatRedBall.Glue.SaveClasses;
@@ -155,7 +156,7 @@ public static class GlueProjectSaveExtensionMethods
 
         string whyIsntValid;
 
-        if (!NameVerifier.IsReferencedFileNameValid(fileName, resultAssetTypeInfo, rfs, element, out whyIsntValid))
+        if (!Builder.Get<NameVerifier>().IsReferencedFileNameValid(fileName, resultAssetTypeInfo, rfs, element, out whyIsntValid))
         {
             errorMessage = "Invalid file name:\n" + fileName + "\n" + whyIsntValid;
         }
@@ -209,6 +210,11 @@ public static class GlueProjectSaveExtensionMethods
         }
 
         #endregion
+
+        if (errorMessage != null)
+        {
+            GlueCommands.Self.DialogCommands.ShowMessageBox(errorMessage);
+        }
 
         if (option != null && rfs != null)
         {

@@ -20,6 +20,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using FlatRedBall.Glue.Services;
 using GeneralResponse = ToolsUtilities.GeneralResponse;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
@@ -36,6 +37,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
     class FileCommands : IFileCommands
     {
+        NameVerifier _nameVerifier;
+        ReferencedFileSaveSetPropertyManager _referencedFileSaveSetPropertyManager;
+
+        public FileCommands()
+        {
+            _nameVerifier = Builder.Get<NameVerifier>();
+            _referencedFileSaveSetPropertyManager = Builder.Get<ReferencedFileSaveSetPropertyManager>();
+        }
 
         GlueCommands GlueCommands => GlueCommands.Self;
 
@@ -424,7 +433,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 //rfs.SetNameNoCall(oldName);
             }
-            else if (NameVerifier.IsReferencedFileNameValid(instanceName, rfs.GetAssetTypeInfo(), rfs, container, out whyIsntValid) == false)
+            else if (_nameVerifier.IsReferencedFileNameValid(instanceName, rfs.GetAssetTypeInfo(), rfs, container, out whyIsntValid) == false)
             {
                 MessageBox.Show(whyIsntValid);
                 //rfs.SetNameNoCall(oldName);
@@ -432,7 +441,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             else
             {
                 rfs.Name = newName;
-                ReferencedFileSaveSetPropertyManager.ReactToRenamedReferencedFile(
+                _referencedFileSaveSetPropertyManager.ReactToRenamedReferencedFile(
                     oldName, rfs.Name, rfs, container);
                 didRename = true;
             }

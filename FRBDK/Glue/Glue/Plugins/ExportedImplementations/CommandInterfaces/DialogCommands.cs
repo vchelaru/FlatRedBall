@@ -28,6 +28,7 @@ using EditorObjects.SaveClasses;
 using System.Runtime.InteropServices;
 using System.Reflection.Metadata;
 using System.Windows.Interop;
+using FlatRedBall.Glue.Services;
 using System.Reflection;
 
 
@@ -35,6 +36,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 
 class DialogCommands : IDialogCommands
 {
+    NameVerifier _nameVerifier;
+
+    public DialogCommands()
+    {
+        _nameVerifier = Builder.Get<NameVerifier>();
+    }
+
     #region Project
 
     public async void ShowLoadProjectDialog()
@@ -109,7 +117,7 @@ class DialogCommands : IDialogCommands
 
         if (shouldAdd == true)
         {
-            bool isValid = NameVerifier.IsNamedObjectNameValid(addObjectViewModel.ObjectName, out string whyItIsntValid);
+            bool isValid = _nameVerifier.IsNamedObjectNameValid(addObjectViewModel.ObjectName, out string whyItIsntValid);
 
             if (isValid)
             {
@@ -633,7 +641,7 @@ class DialogCommands : IDialogCommands
 
             string whyIsntValid;
 
-            if (!NameVerifier.IsEntityNameValid(entityName, null, out whyIsntValid))
+            if (!_nameVerifier.IsEntityNameValid(entityName, null, out whyIsntValid))
             {
                 MessageBox.Show(whyIsntValid);
             }
@@ -895,7 +903,7 @@ class DialogCommands : IDialogCommands
     {
         string whyItIsntValid = "";
         var resultName = viewModel.ResultName;
-        var didFailureOccur = NameVerifier.IsCustomVariableNameValid(resultName, null, currentElement, ref whyItIsntValid) == false;
+        var didFailureOccur = Builder.Get<NameVerifier>().IsCustomVariableNameValid(resultName, null, currentElement, ref whyItIsntValid) == false;
         failureMessage = null;
         if (didFailureOccur)
         {
@@ -903,7 +911,7 @@ class DialogCommands : IDialogCommands
 
         }
 
-        if (!didFailureOccur && NameVerifier.DoesTunneledVariableAlreadyExist(viewModel.SelectedTunneledObject, viewModel.SelectedTunneledVariableName, currentElement))
+        if (!didFailureOccur && Builder.Get<NameVerifier>().DoesTunneledVariableAlreadyExist(viewModel.SelectedTunneledObject, viewModel.SelectedTunneledVariableName, currentElement))
         {
             didFailureOccur = true;
             failureMessage = String.Format(L.Texts.VariableAlreadyModifying, viewModel.SelectedTunneledVariableName, viewModel.SelectedTunneledObject);
@@ -976,7 +984,7 @@ class DialogCommands : IDialogCommands
         {
             string whyItIsntValid;
 
-            if (!NameVerifier.IsScreenNameValid(addScreenWindow.Result, null, out whyItIsntValid))
+            if (!_nameVerifier.IsScreenNameValid(addScreenWindow.Result, null, out whyItIsntValid))
             {
                 MessageBox.Show(whyItIsntValid);
             }
@@ -1267,7 +1275,7 @@ class DialogCommands : IDialogCommands
         {
             string whyItIsntValid;
 
-            if (!NameVerifier.IsStateCategoryNameValid(tiw.Result, out whyItIsntValid))
+            if (!_nameVerifier.IsStateCategoryNameValid(tiw.Result, out whyItIsntValid))
             {
                 GlueGui.ShowMessageBox(whyItIsntValid);
             }
@@ -1295,7 +1303,7 @@ class DialogCommands : IDialogCommands
             var currentElement = GlueState.Self.CurrentElement;
 
             string whyItIsntValid;
-            if (!NameVerifier.IsStateNameValid(tiw.Result, currentElement, GlueState.Self.CurrentStateSaveCategory, GlueState.Self.CurrentStateSave, out whyItIsntValid))
+            if (!_nameVerifier.IsStateNameValid(tiw.Result, currentElement, GlueState.Self.CurrentStateSaveCategory, GlueState.Self.CurrentStateSave, out whyItIsntValid))
             {
                 GlueGui.ShowMessageBox(whyItIsntValid);
             }

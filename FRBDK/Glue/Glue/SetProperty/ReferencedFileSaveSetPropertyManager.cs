@@ -21,12 +21,20 @@ using FlatRedBall.Glue.Plugins;
 using System.Threading.Tasks;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins.ProjectExclusionPlugin;
 using EditorObjects.IoC;
+using FlatRedBall.Glue.Services;
 using FlatRedBall.Glue.VSHelpers.Projects;
 
 namespace FlatRedBall.Glue.SetVariable
 {
     public class ReferencedFileSaveSetPropertyManager
     {
+        NameVerifier _nameVerifier;
+
+        public ReferencedFileSaveSetPropertyManager()
+        {
+            _nameVerifier = Builder.Get<NameVerifier>();
+        }
+
         internal void ReactToChangedReferencedFile(string changedMember, object oldValue)
         {
             var throwaway = false;
@@ -339,7 +347,7 @@ namespace FlatRedBall.Glue.SetVariable
             {
                 // We swapped to something that must use the content pipeline, so let's set it to true
                 rfs.UseContentPipeline = true;
-                Container.Get<ReferencedFileSaveSetPropertyManager>().ReactToChangedReferencedFile(
+                ReactToChangedReferencedFile(
                     nameof(rfs.UseContentPipeline), oldValue:false);
 
             }
@@ -347,13 +355,13 @@ namespace FlatRedBall.Glue.SetVariable
             {
                 // we swapped to something that does not use the content pipeline, so let's set it to false
                 rfs.UseContentPipeline = false;
-                Container.Get<ReferencedFileSaveSetPropertyManager>().ReactToChangedReferencedFile(
+                ReactToChangedReferencedFile(
                     nameof(rfs.UseContentPipeline), oldValue: true);
             }
 
         }
 
-        public static void ReactToRenamedReferencedFile(string oldName, string newName, ReferencedFileSave rfs, GlueElement container)
+        public void ReactToRenamedReferencedFile(string oldName, string newName, ReferencedFileSave rfs, GlueElement container)
         {
             string oldDirectory = FileManager.GetDirectory(oldName);
             string newDirectory = FileManager.GetDirectory(newName);
@@ -378,7 +386,7 @@ namespace FlatRedBall.Glue.SetVariable
 
                 rfs.SetNameNoCall(oldName);
             }
-            else if (NameVerifier.IsReferencedFileNameValid(instanceName, rfs.GetAssetTypeInfo(), rfs, container, out whyIsntValid) == false)
+            else if (_nameVerifier.IsReferencedFileNameValid(instanceName, rfs.GetAssetTypeInfo(), rfs, container, out whyIsntValid) == false)
             {
                 MessageBox.Show(whyIsntValid);
                 rfs.SetNameNoCall(oldName);
@@ -396,7 +404,7 @@ namespace FlatRedBall.Glue.SetVariable
             }
         }
 
-        public static async Task ForceReactToRenamedReferencedFileAsync(string oldName, string newName, ReferencedFileSave rfs, IElement container, bool shouldMove)
+        public async Task ForceReactToRenamedReferencedFileAsync(string oldName, string newName, ReferencedFileSave rfs, IElement container, bool shouldMove)
         {
             await TaskManager.Self.AddAsync(async () =>
             {
