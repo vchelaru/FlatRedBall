@@ -118,7 +118,7 @@ internal class ElementVariantCodeGenerator : ElementComponentCodeGenerator
                 {
                     // If it's null, just use whatever is defined on the base
                     var rightSide = CustomVariableCodeGenerator.GetRightSideOfEquals(matchingVariable, derivedElement);
-                    if (IsTypeFileType(matchingVariable.Type) && !string.IsNullOrEmpty(rightSide))
+                    if (IsTypeFileType(matchingVariable.Type) && !string.IsNullOrEmpty(rightSide) && rightSide != "null")
                     {
                         // put quotes around it:
                         rightSide = $"\"{rightSide}\"";
@@ -274,9 +274,7 @@ internal class ElementVariantCodeGenerator : ElementComponentCodeGenerator
 
     private static bool IsTypeFileType(string type)
     {
-        return type == 
-            // todo - add more here...
-            "AnimationChainList"; 
+        return CustomVariableExtensionMethods.GetIsFile(type);
     }
 
     static bool ShouldSkipVariantField(CustomVariable customVariable)

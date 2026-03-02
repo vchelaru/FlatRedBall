@@ -189,7 +189,7 @@ public class CustomVariableSaveSetPropertyLogic
                     // with a variable definition. Let's be safe and require ATIs for now:
                     if (variableDefinition != null)
                     {
-                        GlueCommands.Self.GluxCommands.SetVariableOn(namedObjectOwningVariable, customVariable.SourceObjectProperty, customVariable.DefaultValue, false, false);
+                        GlueCommands.Self.GluxCommands.SetVariableOn(namedObjectOwningVariable, propertyName, customVariable.DefaultValue, false, false);
                     }
                 }
             }
