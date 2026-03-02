@@ -1250,7 +1250,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
 
         variable.DefaultValue = value;
 
-        await EditorObjects.IoC.Container.Get<CustomVariableSaveSetPropertyLogic>().ReactToCustomVariableChangedValue(
+        await Builder.Get<CustomVariableSaveSetPropertyLogic>().ReactToCustomVariableChangedValue(
             "DefaultValue", variable, oldValue);
 
 

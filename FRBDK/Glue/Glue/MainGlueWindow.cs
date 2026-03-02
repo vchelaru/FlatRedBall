@@ -290,7 +290,7 @@ public partial class MainGlueWindow : Form
         GlueGui.Initialize(mMenu);
         initializationWindow.Show();
 
-        SetScreenMessage("Initialiizing FlatRedBall");
+        SetScreenMessage("Initializing FlatRedBall");
 
         // Add Glue.Common
         PropertyValuePair.AdditionalAssemblies.Add(typeof(PlatformSpecificType).Assembly);
@@ -651,11 +651,11 @@ public partial class MainGlueWindow : Form
 
     private static void AddObjectsToIocContainer()
     {
+        // obsolete, this shouldn't be used - we are moving to builder.cs
         EditorObjects.IoC.Container.Set(new SetPropertyManager());
         EditorObjects.IoC.Container.Set(new NamedObjectSetVariableLogic());
         EditorObjects.IoC.Container.Set(new StateSaveCategorySetVariableLogic());
 
-EditorObjects.IoC.Container.Set(new CustomVariableSaveSetPropertyLogic());
         EditorObjects.IoC.Container.Set(new EntitySaveSetPropertyLogic());
         EditorObjects.IoC.Container.Set(new ScreenSaveSetVariableLogic());
 

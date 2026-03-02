@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace EditorObjects.IoC;
 
+[Obsolete("This is moving to Builder.cs for proper DI")]
 public class Container
 {
     private static readonly Dictionary<Type, object> mObjects = new ();
