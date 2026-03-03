@@ -514,8 +514,17 @@ namespace FlatRedBall.Content
 			}
 #endif
 
-
-            T asset = base.Load<T>(assetName);
+            // MonoGame has a regression preventing absolute paths for xnb loading.
+            // More info here: https://github.com/vchelaru/FlatRedBall/issues/1832
+            // Until this is fixed (if ever) let's do relative paths:
+            var assetNameToLoad = assetName;
+#if !KNI
+            if (Path.IsPathRooted(assetNameToLoad))
+            {
+                assetNameToLoad = Path.GetRelativePath(AppDomain.CurrentDomain.BaseDirectory, assetNameToLoad);
+            }
+#endif
+            T asset = base.Load<T>(assetNameToLoad);
 #endif
 			if (!mAssets.ContainsKey(assetName))
 			{
