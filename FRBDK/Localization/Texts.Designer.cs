@@ -70,15 +70,6 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Code Generation.
-        /// </summary>
-        public static string CodeGeneration {
-            get {
-                return ResourceManager.GetString("CodeGeneration", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Collapse All.
         /// </summary>
         public static string CollapseAll {
@@ -768,15 +759,6 @@ namespace Localization {
         public static string EnterCustomClassDeleteContents {
             get {
                 return ResourceManager.GetString("EnterCustomClassDeleteContents", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Enter the new file&apos;s name:.
-        /// </summary>
-        public static string EnterFile {
-            get {
-                return ResourceManager.GetString("EnterFile", resourceCulture);
             }
         }
         

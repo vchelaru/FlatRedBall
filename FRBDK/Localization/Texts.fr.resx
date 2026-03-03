@@ -672,9 +672,6 @@
   <data name="ViewBuiltProjectSizes" xml:space="preserve">
     <value>Voir les tailles des projets construits</value>
   </data>
-  <data name="CodeGeneration" xml:space="preserve">
-    <value>Génération de code</value>
-  </data>
   <data name="ContentPipelineSettings" xml:space="preserve">
     <value>Paramètres du canal de contenu</value>
   </data>
@@ -764,9 +761,6 @@
   </data>
   <data name="Search" xml:space="preserve">
     <value>Recherche...</value>
-  </data>
-  <data name="EnterFile" xml:space="preserve">
-    <value>Entrez le nom du nouveau fichier :</value>
   </data>
   <data name="Label" xml:space="preserve">
     <value>Étiquette</value>

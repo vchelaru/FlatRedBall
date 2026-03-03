@@ -5,7 +5,6 @@ using System.Text;
 using EditorObjects.SaveClasses;
 using FlatRedBall.IO;
 using FlatRedBall.Glue.Controls;
-using System.Windows.Forms;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using L = Localization;
 using Glue;
@@ -111,53 +110,65 @@ public class BuildToolAssociationManager
             }
         }
 
-        NewFileWindow nfw = new NewFileWindow();
-        nfw.ComboBoxMessage = "Build";
-
-        int commandLineArgumentsId = nfw.AddTextBox("Enter extra command line arguments:");
-            
         bool showNoneOption = Elements.AvailableAssetTypes.Self.AllAssetTypes
             .Any(item => item.Extension == sourceExtension && string.IsNullOrEmpty(item.CustomBuildToolName));
 
-        if(showNoneOption)
-        {
-            nfw.AddOption($"<None>");
-        }
+        var defaultResultName = FileManager.RemoveExtension(FileManager.RemovePath(fileName));
 
-        foreach (BuildToolAssociation bta in btaList)
-        {
-            nfw.AddOption(bta);
-        }
+        // Local variables to receive results from the lambda (out params can't be captured)
+        bool localUserCancelled = false;
+        bool localUserPickedNone = false;
+        string localRfsName = null;
+        string localExtraArgs = "";
 
-        if (btaList.Count != 0)
+        // WPF windows must be constructed and shown on the UI (STA) thread
+        GlueCommands.Self.DoOnUiThread(() =>
         {
-            nfw.SelectedItem = btaList[0];
-        }
+            NewFileWindow nfw = new NewFileWindow();
+            nfw.ComboBoxMessage = "Build";
 
-        nfw.ResultName = FileManager.RemoveExtension(FileManager.RemovePath(fileName));
-        DialogResult result = DialogResult.Cancel;
-        
-        GlueCommands.Self.DoOnUiThread(() => result = nfw.ShowDialog(MainGlueWindow.Self));
-        //result = nfw.ShowDialog();
-        extraCommandLineArguments = "";
+            int commandLineArgumentsId = nfw.AddTextBox("Enter extra command line arguments:");
 
-        if (result == DialogResult.OK)
-        {
-            buildToolAssociation = nfw.SelectedItem as BuildToolAssociation;
-            if (buildToolAssociation != null)
+            if (showNoneOption)
             {
-                rfsName = nfw.ResultName;
-                extraCommandLineArguments = nfw.GetValueFromId(commandLineArgumentsId);
+                nfw.AddOption($"<None>");
+            }
+
+            foreach (BuildToolAssociation bta in btaList)
+            {
+                nfw.AddOption(bta);
+            }
+
+            if (btaList.Count != 0)
+            {
+                nfw.SelectedItem = btaList[0];
+            }
+
+            nfw.ResultName = defaultResultName;
+
+            if (nfw.ShowDialog() == true)
+            {
+                buildToolAssociation = nfw.SelectedItem as BuildToolAssociation;
+                if (buildToolAssociation != null)
+                {
+                    localRfsName = nfw.ResultName;
+                    localExtraArgs = nfw.GetValueFromId(commandLineArgumentsId);
+                }
+                else
+                {
+                    localUserPickedNone = nfw.SelectedItem is string && (nfw.SelectedItem as string) == $"<None>";
+                }
             }
             else
             {
-                userPickedNone = nfw.SelectedItem is string && (nfw.SelectedItem as string) == $"<None>";
+                localUserCancelled = true;
             }
-        }
-        else
-        {
-            userCancelled = true;
-        }
+        });
+
+        userCancelled = localUserCancelled;
+        userPickedNone = localUserPickedNone;
+        rfsName = localRfsName;
+        extraCommandLineArguments = localExtraArgs;
 
 
 
