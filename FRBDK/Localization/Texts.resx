@@ -673,9 +673,6 @@ for {1}?</value>
   <data name="ViewBuiltProjectSizes" xml:space="preserve">
     <value>View Built Project Sizes</value>
   </data>
-  <data name="CodeGeneration" xml:space="preserve">
-    <value>Code Generation</value>
-  </data>
   <data name="ContentPipelineSettings" xml:space="preserve">
     <value>Content Pipeline Settings</value>
   </data>
@@ -765,9 +762,6 @@ for {1}?</value>
   </data>
   <data name="Search" xml:space="preserve">
     <value>Search...</value>
-  </data>
-  <data name="EnterFile" xml:space="preserve">
-    <value>Enter the new file's name:</value>
   </data>
   <data name="Label" xml:space="preserve">
     <value>Label</value>

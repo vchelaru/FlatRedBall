@@ -77,7 +77,7 @@
 
         <StackPanel 
             Grid.Row="1" >
-            <Label Margin="0,6,0,0" Content="{x:Static localization:Texts.EnterFile}" />
+            <Label Margin="0,6,0,0" Content="Enter the new file's name:" />
             <TextBox x:Name="TextBox"
                     KeyDown="TextBox_KeyDown"
                     TextChanged="TextBox_TextChanged"

@@ -195,9 +195,11 @@ public static class GlueProjectSaveExtensionMethods
             // that's exactly what we're doing.
             rfs = await AddExistingFileManager.Self.AddSingleFile(createdFile, option, elementToAddTo:element, forcedAti:resultAssetTypeInfo);
 
-            if (rfs == null && !userCancelled)
+            if (rfs == null)
             {
-                throw new NullReferenceException("The RFS shouldn't be null");
+                // User cancelled a dialog inside AddSingleFile (e.g. build tool selection),
+                // or an error occurred that AddSingleFile already reported.
+                return rfs;
             }
 
             if(rfs != null)

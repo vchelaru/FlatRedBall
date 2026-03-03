@@ -51,7 +51,7 @@ namespace OfficialPlugins.CodeGenerationPlugin
             if (control == null)
             {
                 control = new CodeGenerationControl();
-                tab = base.CreateTab(control, Localization.Texts.CodeGeneration, TabLocation.Bottom);
+                tab = base.CreateTab(control, "Code Generation", TabLocation.Bottom);
             }
             tab.Show();
             tab.Focus();
