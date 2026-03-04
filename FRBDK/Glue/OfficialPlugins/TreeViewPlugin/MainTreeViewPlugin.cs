@@ -33,6 +33,8 @@ class MainTreeViewPlugin : PluginBase
 
     MainTreeViewViewModel MainViewModel = new MainTreeViewViewModel();
 
+    SelectionLogic selectionLogic;
+
     PluginTab pluginTab;
 
     #endregion
@@ -59,7 +61,7 @@ class MainTreeViewPlugin : PluginBase
         RightClickHelper.Initialize();
 
 
-        SelectionLogic.Initialize(MainViewModel, mainView);
+        selectionLogic = new SelectionLogic(MainViewModel, mainView);
 
         pluginTab = CreateTab(mainView, "Explorer", TabLocation.Left);
         pluginTab.CanClose = false;
@@ -153,12 +155,12 @@ class MainTreeViewPlugin : PluginBase
 
     private async void HandleItemsSelected(List<ITreeNode> selectedTreeNodes)
     {
-        if(SelectionLogic.IsUpdatingThisSelectionOnGlueEvent )
+        if(selectionLogic.IsUpdatingThisSelectionOnGlueEvent )
         {
-            var wasPushingSelection = SelectionLogic.IsPushingSelectionOutToGlue;
-            var wasSuppressingFocus = SelectionLogic.SuppressFocus;
-            SelectionLogic.SuppressFocus = true;
-            SelectionLogic.IsPushingSelectionOutToGlue = false;
+            var wasPushingSelection = selectionLogic.IsPushingSelectionOutToGlue;
+            var wasSuppressingFocus = selectionLogic.SuppressFocus;
+            selectionLogic.SuppressFocus = true;
+            selectionLogic.IsPushingSelectionOutToGlue = false;
 
             MainViewModel.DeselectResursively(true);
 
@@ -170,24 +172,24 @@ class MainTreeViewPlugin : PluginBase
 
                 if(selectedTreeNode is NodeViewModel vm)
                 {
-                    await SelectionLogic.SelectByTreeNode(vm, addToSelection, selectAndScroll:isLast);
+                    await selectionLogic.SelectByTreeNode(vm, addToSelection, selectAndScroll:isLast);
                 }
                 else if (selectedTreeNode.Tag != null)
                 {
-                    await SelectionLogic.SelectByTag(selectedTreeNode.Tag, addToSelection);
+                    await selectionLogic.SelectByTag(selectedTreeNode.Tag, addToSelection);
                 }
                 else if(selectedTreeNode != null)
                 {
-                    await SelectionLogic.SelectByPath(selectedTreeNode.GetRelativeFilePath(), addToSelection);
+                    await selectionLogic.SelectByPath(selectedTreeNode.GetRelativeFilePath(), addToSelection);
                 }
                 else
                 {
-                    await SelectionLogic.SelectByTreeNode(null, false);
+                    await selectionLogic.SelectByTreeNode(null, false);
                 }
             }
 
-            SelectionLogic.IsPushingSelectionOutToGlue = wasPushingSelection;
-            SelectionLogic.SuppressFocus = wasSuppressingFocus;
+            selectionLogic.IsPushingSelectionOutToGlue = wasPushingSelection;
+            selectionLogic.SuppressFocus = wasSuppressingFocus;
 
         }
 
@@ -199,11 +201,11 @@ class MainTreeViewPlugin : PluginBase
 
     private async void HandleRefreshGlobalContentTreeNode()
     {
-        ITreeNode parentTreeNode = SelectionLogic.CurrentNode?.Parent;
+        ITreeNode parentTreeNode = selectionLogic.CurrentNode?.Parent;
         var parentNodeViewModel = parentTreeNode as NodeViewModel;
-        var oldRfs = SelectionLogic.CurrentNode?.Tag as ReferencedFileSave;
+        var oldRfs = selectionLogic.CurrentNode?.Tag as ReferencedFileSave;
         var isGlobalContentRfs =
-            SelectionLogic.CurrentNode != null &&
+            selectionLogic.CurrentNode != null &&
             oldRfs != null &&
             parentTreeNode != null &&
             (parentTreeNode.IsGlobalContentContainerNode() || parentTreeNode.IsChildOfGlobalContent());
@@ -214,10 +216,10 @@ class MainTreeViewPlugin : PluginBase
 
         if (parentTreeNode != null)
         {
-            indexInParent = SelectionLogic.CurrentNode?.Parent.Children.IndexOf(SelectionLogic.CurrentNode);
+            indexInParent = selectionLogic.CurrentNode?.Parent.Children.IndexOf(selectionLogic.CurrentNode);
         }
 
-        var oldSelection = SelectionLogic.CurrentNode;
+        var oldSelection = selectionLogic.CurrentNode;
 
         MainViewModel.RefreshGlobalContentTreeNodes();
 
@@ -233,12 +235,12 @@ class MainTreeViewPlugin : PluginBase
 
             if(index > -1 && MainViewModel.IsInTreeView(parentNodeViewModel))
             {
-                var wasPushingSelection = SelectionLogic.IsPushingSelectionOutToGlue;
+                var wasPushingSelection = selectionLogic.IsPushingSelectionOutToGlue;
                 // If the tag changed, push it back out:
-                SelectionLogic.IsPushingSelectionOutToGlue = true;
+                selectionLogic.IsPushingSelectionOutToGlue = true;
                 var newSelection = parentNodeViewModel.Children[index];
-                await SelectionLogic.SelectByTreeNode(newSelection, false);
-                SelectionLogic.IsPushingSelectionOutToGlue = wasPushingSelection;
+                await selectionLogic.SelectByTreeNode(newSelection, false);
+                selectionLogic.IsPushingSelectionOutToGlue = wasPushingSelection;
             }
         }
     }
@@ -261,9 +263,9 @@ class MainTreeViewPlugin : PluginBase
 
     private async void HandleRefreshTreeNodeFor(GlueElement element, TreeNodeRefreshType treeNodeRefreshType)
     {
-        var oldTag = SelectionLogic.CurrentNode?.Tag;
-        var oldNode = SelectionLogic.CurrentNode;
-        var currentNode = SelectionLogic.CurrentNode;
+        var oldTag = selectionLogic.CurrentNode?.Tag;
+        var oldNode = selectionLogic.CurrentNode;
+        var currentNode = selectionLogic.CurrentNode;
         MainViewModel.RefreshTreeNodeFor(element, treeNodeRefreshType);
 
         if(treeNodeRefreshType == TreeNodeRefreshType.All)
@@ -293,36 +295,36 @@ class MainTreeViewPlugin : PluginBase
             // current category and recreating its viewmodel
             // in the middle of a view model change.
 
-            var wasPushingSelection = SelectionLogic.IsPushingSelectionOutToGlue;
+            var wasPushingSelection = selectionLogic.IsPushingSelectionOutToGlue;
             // If the tag changed, push it back out:
-            SelectionLogic.IsPushingSelectionOutToGlue = oldTag != currentNode?.Tag;
+            selectionLogic.IsPushingSelectionOutToGlue = oldTag != currentNode?.Tag;
             // todo - need to add currentTreeNodes (plural)
-            await SelectionLogic.SelectByTag(currentNode.Tag, false);
-            SelectionLogic.IsPushingSelectionOutToGlue = wasPushingSelection;
+            await selectionLogic.SelectByTag(currentNode.Tag, false);
+            selectionLogic.IsPushingSelectionOutToGlue = wasPushingSelection;
 
             // This can happen if the last item in a category (like a variable) is removed. If so, push
             // the change out:
-            if (SelectionLogic.CurrentNode == null && GlueState.Self.CurrentTreeNode != null)
+            if (selectionLogic.CurrentNode == null && GlueState.Self.CurrentTreeNode != null)
             {
                 GlueState.Self.CurrentTreeNode = null;
             }
         }
-        
+
     }
 
     private async void HandleRefreshDirectoryTreeNodes()
     {
-        var oldTag = SelectionLogic.CurrentNode?.Tag;
+        var oldTag = selectionLogic.CurrentNode?.Tag;
 
         MainViewModel.RefreshDirectoryNodes();
-        
-        if(oldTag != null && SelectionLogic.CurrentNode?.Tag != oldTag)
+
+        if(oldTag != null && selectionLogic.CurrentNode?.Tag != oldTag)
         {
-            var wasPushingSelection = SelectionLogic.IsPushingSelectionOutToGlue;
+            var wasPushingSelection = selectionLogic.IsPushingSelectionOutToGlue;
             // If the tag changed, push it back out:
-            SelectionLogic.IsPushingSelectionOutToGlue = false;
-            await SelectionLogic.SelectByTag(oldTag, false);
-            SelectionLogic.IsPushingSelectionOutToGlue = wasPushingSelection;
+            selectionLogic.IsPushingSelectionOutToGlue = false;
+            await selectionLogic.SelectByTag(oldTag, false);
+            selectionLogic.IsPushingSelectionOutToGlue = wasPushingSelection;
         }
     }
 

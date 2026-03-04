@@ -211,11 +211,11 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 {
                     if(value)
                     {
-                        SelectionLogic.HandleSelected(this, focus:true, replaceSelection:true);
+                        SelectionLogic.Current.HandleSelected(this, focus:true, replaceSelection:true);
                     }
                     else
                     {
-                        SelectionLogic.HandleDeselection(this);
+                        SelectionLogic.Current.HandleDeselection(this);
                     }
                 }
             }

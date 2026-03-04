@@ -70,7 +70,7 @@ public partial class MainTreeViewControl : UserControl
 
         if (e.Key == Key.Enter)
         {
-            var selectedNode = SelectionLogic.CurrentNode;
+            var selectedNode = SelectionLogic.Current.CurrentNode;
             GlueCommands.Self.TreeNodeCommands.HandleTreeNodeDoubleClicked(selectedNode);
             e.Handled = true;
         }
@@ -82,7 +82,7 @@ public partial class MainTreeViewControl : UserControl
         else if(e.Key==Key.N && ctrlDown)
         {
             e.Handled=true;
-            ITreeNode currentNode = SelectionLogic.CurrentNode;
+            ITreeNode currentNode = SelectionLogic.Current.CurrentNode;
             if(currentNode.IsFilesContainerNode())
             {
                 await GlueCommands.Self.DialogCommands.ShowAddNewFileDialogAsync();
@@ -118,9 +118,9 @@ public partial class MainTreeViewControl : UserControl
         }
         else if(e.Key == Key.F2)
         {
-            if(SelectionLogic.CurrentNode?.IsEditable == true)
+            if(SelectionLogic.Current.CurrentNode?.IsEditable == true)
             {
-                SelectionLogic.CurrentNode.IsEditing = true;
+                SelectionLogic.Current.CurrentNode.IsEditing = true;
             }
         }
         else if(await HotkeyManager.Self.TryHandleKeys(e, isTextBoxFocused:false))
@@ -214,7 +214,7 @@ public partial class MainTreeViewControl : UserControl
 
     public void RefreshRightClickMenu(ITreeNode forcedNode = null)
     {
-        var node = forcedNode ?? SelectionLogic.CurrentNode;
+        var node = forcedNode ?? SelectionLogic.Current.CurrentNode;
 
         RightClickContextMenu.Items.Clear();
         if(node != null)
@@ -285,7 +285,7 @@ public partial class MainTreeViewControl : UserControl
         var frameworkElementPushed = (objectPushed as FrameworkElement);
         if (frameworkElementPushed?.DataContext as NodeViewModel == nodePushed)
         {
-            SelectionLogic.HandleSelected(nodePushed, focus: true, replaceSelection: true);
+            SelectionLogic.Current.HandleSelected(nodePushed, focus: true, replaceSelection: true);
 
         }
 
@@ -357,7 +357,7 @@ public partial class MainTreeViewControl : UserControl
             }
             else
             {
-                await SelectionLogic.SelectByTag(targetNode.Tag, false);
+                await SelectionLogic.Current.SelectByTag(targetNode.Tag, false);
 
                 var items = RightClickHelper.GetRightClickItems(targetNode, MenuShowingAction.RightButtonDrag, nodePushed);
 
@@ -475,13 +475,13 @@ public partial class MainTreeViewControl : UserControl
         if(nodeWaitingOnSelection != null)
         {
             // don't push deselection out:
-            //var wasPushing = SelectionLogic.IsPushingSelectionOutToGlue;
-            //SelectionLogic.IsPushingSelectionOutToGlue = false;
+            //var wasPushing = SelectionLogic.Current.IsPushingSelectionOutToGlue;
+            //SelectionLogic.Current.IsPushingSelectionOutToGlue = false;
             //ViewModel.DeselectResursively();
-            //SelectionLogic.IsPushingSelectionOutToGlue = wasPushing;
+            //SelectionLogic.Current.IsPushingSelectionOutToGlue = wasPushing;
             //nodeWaitingOnSelection.IsSelected = true;
 
-            SelectionLogic.HandleSelected(nodeWaitingOnSelection, focus: true, replaceSelection: true);
+            SelectionLogic.Current.HandleSelected(nodeWaitingOnSelection, focus: true, replaceSelection: true);
 
             nodeWaitingOnSelection = null;
         }
@@ -503,7 +503,7 @@ public partial class MainTreeViewControl : UserControl
     {
         // If we rely on the selected node, then double-clicking the up or down arrows
         // on the scroll bar also cause a strong select. Instead, use what was actually clicked:
-        //var selectedNode = SelectionLogic.CurrentNode;
+        //var selectedNode = SelectionLogic.Current.CurrentNode;
         var objectPushed = e.OriginalSource;
         var frameworkElementPushed = (objectPushed as FrameworkElement);
         var nodeViewModel = frameworkElementPushed?.DataContext as NodeViewModel;
@@ -564,7 +564,7 @@ public partial class MainTreeViewControl : UserControl
 
     private async void SearchBar_ClearSearchButtonClicked()
     {
-        var whatWasSelected = SelectionLogic.CurrentNode?.Tag;
+        var whatWasSelected = SelectionLogic.Current.CurrentNode?.Tag;
 
         ViewModel.SearchBoxText = string.Empty;
         ViewModel.ScreenRootNode.IsExpanded = false;
@@ -572,8 +572,8 @@ public partial class MainTreeViewControl : UserControl
         ViewModel.GlobalContentRootNode.IsExpanded = false;
         if (whatWasSelected != null)
         {
-            await SelectionLogic.SelectByTag(whatWasSelected, false);
-            SelectionLogic.CurrentNode?.ExpandParentsRecursively();
+            await SelectionLogic.Current.SelectByTag(whatWasSelected, false);
+            SelectionLogic.Current.CurrentNode?.ExpandParentsRecursively();
         }
     }
 
@@ -626,7 +626,7 @@ public partial class MainTreeViewControl : UserControl
         if (foundSomething)
         {
             ViewModel.SearchBoxText = String.Empty;
-            SelectionLogic.CurrentNode?.Focus(this);
+            SelectionLogic.Current.CurrentNode?.Focus(this);
         }
     }
 
@@ -735,11 +735,11 @@ public partial class MainTreeViewControl : UserControl
             {
 
                 // don't focus because if we do that, the right-click menu on this disappears
-                SelectionLogic.SuppressFocus = true;
+                SelectionLogic.Current.SuppressFocus = true;
                 node.ExpandParentsRecursively();
                 node.IsExpanded = true;
                 GlueState.Self.CurrentTreeNode = node;
-                SelectionLogic.SuppressFocus = false;
+                SelectionLogic.Current.SuppressFocus = false;
 
             }
         }
@@ -880,6 +880,6 @@ public partial class MainTreeViewControl : UserControl
 
     private void MainTreeView_OnContextMenuOpening_(object sender, ContextMenuEventArgs e)
     {
-        e.Handled = SelectionLogic.CurrentNode is null;
+        e.Handled = SelectionLogic.Current.CurrentNode is null;
     }
 }

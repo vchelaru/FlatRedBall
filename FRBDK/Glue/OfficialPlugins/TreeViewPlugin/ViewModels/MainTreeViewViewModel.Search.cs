@@ -1,4 +1,6 @@
+using FlatRedBall.Glue;
 using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Events;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
@@ -52,7 +54,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                     // Actually, strip off folder completely, as this can cause confusion:
                     //var name = entity.Name.Substring("entities\\".Length);
                     var name = entity.GetStrippedName();
-                    var matchWeight = GetMatchWeight(name);
+                    var matchWeight = SearchMatcher.GetMatchWeight(name, SearchText);
                     if (matchWeight > 0)
                     {
                         var vm = new GlueElementNodeViewModel(null, entity, false);
@@ -70,7 +72,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 {
                     //var name = screen.Name.Substring("screens\\".Length);
                     var name = screen.GetStrippedName();
-                    var matchWeight = GetMatchWeight(name);
+                    var matchWeight = SearchMatcher.GetMatchWeight(name, SearchText);
                     if (matchWeight > 0)
                     {
                         var vm = new GlueElementNodeViewModel(null, screen, false);
@@ -86,7 +88,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             {
                 foreach (var file in ObjectFinder.Self.GetAllReferencedFiles())
                 {
-                    var matchWeight = GetMatchWeight(file.Name);
+                    var matchWeight = SearchMatcher.GetMatchWeight(file.Name, SearchText);
                     if (matchWeight > 0)
                     {
                         var vm = NodeFor(file);
@@ -105,7 +107,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             foreach (var nos in namedObjects)
             {
-                var matchWeight = GetMatchWeight(nos.InstanceName, nos.DefinedByBase);
+                var matchWeight = SearchMatcher.GetMatchWeight(nos.InstanceName, SearchText, nos.DefinedByBase);
                 if (matchWeight > 0)
                 {
                     var node = new NodeViewModel(TreeNodeType.NamedObjectSaveNode );
@@ -128,7 +130,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             foreach (var category in categories)
             {
-                var matchWeight = GetMatchWeight(category.Name);
+                var matchWeight = SearchMatcher.GetMatchWeight(category.Name, SearchText);
                 if (matchWeight > 0)
                 {
                     var treeNode = new NodeViewModel(TreeNodeType.StateCategoryNode );
@@ -141,7 +143,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             }
             foreach (var state in states)
             {
-                var matchWeight = GetMatchWeight(state.Name);
+                var matchWeight = SearchMatcher.GetMatchWeight(state.Name, SearchText);
                 if (matchWeight > 0)
                 {
                     var treeNode = new NodeViewModel(TreeNodeType.StateNode);
@@ -156,7 +158,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             foreach (var variable in variables)
             {
-                var matchWeight = GetMatchWeight(variable.Name, variable.DefinedByBase);
+                var matchWeight = SearchMatcher.GetMatchWeight(variable.Name, SearchText, variable.DefinedByBase);
                 if (matchWeight > 0)
                 {
                     var treeNode = new NodeViewModel(TreeNodeType.CustomVariableNode);
@@ -178,7 +180,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             foreach (var eventItem in events)
             {
-                var matchWeight = GetMatchWeight(eventItem.EventName);
+                var matchWeight = SearchMatcher.GetMatchWeight(eventItem.EventName, SearchText);
                 if(matchWeight > 0)
                 {
                     var treeNode = new NodeViewModel(TreeNodeType.EventNode);
@@ -210,7 +212,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             void AddFoldersRecurisively(List<NodeViewModel> tempListForSortingFilteredResults, NodeViewModel possibleFolderNode)
             {
-                var matchWeight = GetMatchWeight(possibleFolderNode.Text);
+                var matchWeight = SearchMatcher.GetMatchWeight(possibleFolderNode.Text, SearchText);
                 if(matchWeight > 0 && possibleFolderNode.Text.EndsWith(".cs") == false && possibleFolderNode.Tag == null &&
                     (((ITreeNode)possibleFolderNode).IsFolderForGlobalContentFiles() || ((ITreeNode)possibleFolderNode).IsFolderInFilesContainerNode()))
                 {
@@ -288,76 +290,6 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                         }
                     }
                 }
-            }
-
-            double GetMatchWeight(string itemName, bool isDefinedByBase = false)
-            {
-                var itemNameToLower = itemName.ToLowerInvariant();
-
-                var weight = 0.0;
-                if (itemName == searchTermCaseSensitive)
-                {
-                    // Search: Sprite
-                    // Actual: Sprite
-                    weight = 1;
-                }
-                else if (searchTermCaseSensitive != null && itemName.StartsWith(searchTermCaseSensitive))
-                {
-                    // Search: Spri
-                    // Actual: Sprite
-                    weight = 0.8;
-                }
-                else if (itemNameToLower == searchToLower)
-                {
-                    // Search: sprite
-                    // Actual: Sprite
-                    weight = 0.7;
-                }
-                else if (searchTermCaseSensitive != null && CamelCaseMatchUpper(itemName, searchTermCaseSensitive))
-                {
-                    // Search MGE
-                    // Actual: MachineGunEnemy
-                    weight = 0.65;
-                }
-                else if (searchToLower != null && itemNameToLower.StartsWith(searchToLower))
-                {
-                    // Search: spri
-                    // Actual: Sprite
-                    weight = 0.6;
-                }
-                else if (searchTermCaseSensitive != null && itemName.Contains(searchTermCaseSensitive))
-                {
-                    // Search: rit
-                    // Actual: Sprite
-                    weight = 0.5;
-                }
-                else if (searchToLower != null && itemNameToLower.Contains(searchToLower))
-                {
-                    // Search: magetod
-                    // Actual: DamageToDeal
-                    weight = 0.4;
-                }
-
-                // if defined by base, then we make this weigh slightly less so that it shows up after the original definitions
-                if(isDefinedByBase)
-                {
-                    weight -= .001f;
-                }
-
-                return weight;
-            }
-            bool CamelCaseMatchUpper(string itemName, string searchTermCaseSensitive)
-            {
-                string upperCaseLetters = string.Empty;
-                for (int i = 0; i < itemName.Length; i++)
-                {
-                    if (char.IsUpper(itemName[i]))
-                    {
-                        upperCaseLetters += itemName[i];
-                    }
-                }
-
-                return upperCaseLetters.StartsWith(searchTermCaseSensitive);
             }
 
             if (FlattenedSelectedItem == null)

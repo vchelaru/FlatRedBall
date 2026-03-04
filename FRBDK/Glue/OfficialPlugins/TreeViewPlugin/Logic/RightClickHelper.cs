@@ -190,9 +190,9 @@ public static class RightClickHelper
                 AddSeparator();
                 Add("Rename", () =>
                 {
-                    if (SelectionLogic.CurrentNode?.IsEditable == true)
+                    if (SelectionLogic.Current.CurrentNode?.IsEditable == true)
                     {
-                        SelectionLogic.CurrentNode.IsEditing = true;
+                        SelectionLogic.Current.CurrentNode.IsEditing = true;
                     }
                 });
                 AddEvent("Find all references to this", FindAllReferencesClick);
@@ -235,9 +235,9 @@ public static class RightClickHelper
                 AddSeparator();
                 Add("Rename", () =>
                 {
-                    if (SelectionLogic.CurrentNode?.IsEditable == true)
+                    if (SelectionLogic.Current.CurrentNode?.IsEditable == true)
                     {
-                        SelectionLogic.CurrentNode.IsEditing = true;
+                        SelectionLogic.Current.CurrentNode.IsEditing = true;
                     }
                 });
                 mExportElement.Text = "Export Entity";
