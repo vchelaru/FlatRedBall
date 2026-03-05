@@ -50,86 +50,14 @@ public class ObjectFinder : IObjectFinder
         }
     }
 
-    public List<ReferencedFileSave> GetReferencedFileSavesFromSource(string sourceFile)
-    {
-        var toReturn = new List<ReferencedFileSave>();
+    public List<ReferencedFileSave> GetReferencedFileSavesFromSource(string sourceFile) =>
+        ReferenceService.Self.GetReferencedFileSavesFromSource(sourceFile);
 
-        sourceFile = sourceFile.ToLowerInvariant();
-        if (GlueProject != null)
-        {
-            foreach (ScreenSave screenSave in GlueProject.Screens)
-            {
-                foreach (ReferencedFileSave rfs in screenSave.ReferencedFiles)
-                {
-                    if (rfs.IsFileSourceForThis(sourceFile))
-                    {
-                        toReturn.Add(rfs);
-                    }
-                }
-            }
+    public List<ReferencedFileSave> GetAllReferencedFiles() =>
+        ReferenceService.Self.GetAllReferencedFiles();
 
-            foreach (EntitySave entitySave in GlueProject.Entities)
-            {
-                foreach (ReferencedFileSave rfs in entitySave.ReferencedFiles)
-                {
-                    if (rfs.IsFileSourceForThis(sourceFile))
-                    {
-                        toReturn.Add(rfs);
-                    }
-                }
-            }
-
-            foreach (ReferencedFileSave rfs in GlueProject.GlobalFiles)
-            {
-                if (rfs.IsFileSourceForThis(sourceFile))
-                {
-                    toReturn.Add(rfs);
-                }
-            }
-        }
-
-        return toReturn;
-    }
-
-    public List<ReferencedFileSave> GetAllReferencedFiles()
-    {
-        if (GlueProject != null)
-        {
-            return GlueProject.GetAllReferencedFiles();
-        }
-        else
-        {
-            return new List<ReferencedFileSave>();
-        }
-    }
-
-    public List<ReferencedFileSave> GetMatchingReferencedFiles(ReferencedFileSave rfs)
-    {
-        // The same file 
-        // can be referenced 
-        // in multiple parts in 
-        // a Glue project.  For example,
-        // one .scnx file may be used in two
-        // unrelated Entities.  Or a RFS may be
-        // both in GlobalContent as well as in an
-        // Entity.  In this case, the two RFS's should
-        // be linked.  Changing a property on one (like
-        // whether to use the content pipeline) should be
-        // also changed on the other.
-        List<ReferencedFileSave> toReturn = new List<ReferencedFileSave>();
-
-        List<ReferencedFileSave> allRfses = GetAllReferencedFiles();
-
-        foreach (ReferencedFileSave possibleRfs in allRfses)
-        {
-            if (possibleRfs != rfs && possibleRfs.Name == rfs.Name)
-            {
-                toReturn.Add(possibleRfs);
-            }
-        }
-
-        return toReturn;
-    }
+    public List<ReferencedFileSave> GetMatchingReferencedFiles(ReferencedFileSave rfs) =>
+        ReferenceService.Self.GetMatchingReferencedFiles(rfs);
 
     #endregion
 
@@ -542,36 +470,8 @@ public class ObjectFinder : IObjectFinder
         return null;
     }
 
-    public List<GlueElement> GetAllElementsReferencingFile(string rfsName)
-    {
-        var returnList = new List<GlueElement>();
-
-        foreach (ScreenSave screenSave in GlueProject.Screens)
-        {
-            foreach (ReferencedFileSave rfs in screenSave.ReferencedFiles)
-            {
-                if (rfs.Name == rfsName)
-                {
-                    returnList.Add(screenSave);
-                    break;
-                }
-            }
-        }
-
-        foreach (EntitySave entitySave in GlueProject.Entities)
-        {
-            foreach (ReferencedFileSave rfs in entitySave.ReferencedFiles)
-            {
-                if (rfs.Name == rfsName)
-                {
-                    returnList.Add(entitySave);
-                    break;
-                }
-            }
-        }
-
-        return returnList;
-    }
+    public List<GlueElement> GetAllElementsReferencingFile(string rfsName) =>
+        ReferenceService.Self.GetAllElementsReferencingFile(rfsName);
 
     #endregion
 
@@ -654,201 +554,44 @@ public class ObjectFinder : IObjectFinder
 
     #region Inheritance
 
-    public List<EntitySave> GetAllEntitiesThatInheritFrom(EntitySave baseEntity)
-    {
-        return GetAllEntitiesThatInheritFrom(baseEntity.Name);
-    }
+    public List<EntitySave> GetAllEntitiesThatInheritFrom(EntitySave baseEntity) =>
+        ReferenceService.Self.GetAllEntitiesThatInheritFrom(baseEntity);
 
-    public List<EntitySave> GetAllEntitiesThatInheritFrom(string baseEntity)
-    {
-        List<EntitySave> derivedEntities = new List<EntitySave>();
+    public List<EntitySave> GetAllEntitiesThatInheritFrom(string baseEntity) =>
+        ReferenceService.Self.GetAllEntitiesThatInheritFrom(baseEntity);
 
-        for (int i = 0; i < GlueProject.Entities.Count; i++)
-        {
-            EntitySave entitySave = GlueProject.Entities[i];
+    public List<ScreenSave> GetAllScreensThatInheritFrom(ScreenSave baseScreen) =>
+        ReferenceService.Self.GetAllScreensThatInheritFrom(baseScreen);
 
-            if (entitySave.InheritsFrom(baseEntity))
-            {
-                derivedEntities.Add(entitySave);
-            }
-        }
+    public List<ScreenSave> GetAllScreensThatInheritFrom(string baseScreen) =>
+        ReferenceService.Self.GetAllScreensThatInheritFrom(baseScreen);
 
-        return derivedEntities;
-    }
+    public List<GlueElement> GetAllElementsThatInheritFrom(string elementName) =>
+        ReferenceService.Self.GetAllElementsThatInheritFrom(elementName);
 
-    public List<ScreenSave> GetAllScreensThatInheritFrom(ScreenSave baseScreen)
-    {
-        return GetAllScreensThatInheritFrom(baseScreen.Name);
-    }
+    public List<GlueElement> GetAllElementsThatInheritFrom(IElement baseElement) =>
+        ReferenceService.Self.GetAllElementsThatInheritFrom(baseElement);
 
-    public List<ScreenSave> GetAllScreensThatInheritFrom(string baseScreen)
-    {
-        List<ScreenSave> derivedScreens = new List<ScreenSave>();
+    public bool GetIfInherits(GlueElement derivedElement, GlueElement baseElement) =>
+        ReferenceService.Self.GetIfInherits(derivedElement, baseElement);
 
-        for (int i = 0; i < GlueProject.Screens.Count; i++)
-        {
-            ScreenSave screenSave = GlueProject.Screens[i];
+    public GlueElement GetRootBaseElement(GlueElement element) =>
+        ReferenceService.Self.GetRootBaseElement(element);
 
-            if (screenSave.InheritsFrom(baseScreen))
-            {
-                derivedScreens.Add(screenSave);
-            }
-        }
+    public GlueElement GetBaseElement(IElement derivedElement) =>
+        ReferenceService.Self.GetBaseElement(derivedElement);
 
-        return derivedScreens;
-    }
-
-    public List<GlueElement> GetAllElementsThatInheritFrom(string elementName)
-    {
-        var element = GetElement(elementName);
-
-        return GetAllElementsThatInheritFrom(element);
-    }
-
-    public List<GlueElement> GetAllElementsThatInheritFrom(IElement baseElement)
-    {
-        var derivedElements = new List<GlueElement>();
-        var count = 0;
-        var isScreen = baseElement is ScreenSave;
-        var isEntity = baseElement is EntitySave;
-
-        if (baseElement is ScreenSave)
-            count = GlueProject.Screens.Count;
-        else if (baseElement is EntitySave)
-            count = GlueProject.Entities.Count;
-
-        for (var i = 0; i < count; i++)
-        {
-            bool add;
-            GlueElement derivedElement;
-
-            if (isScreen)
-            {
-                derivedElement = GlueProject.Screens[i];
-                add = GlueProject.Screens[i].InheritsFrom(baseElement.Name);
-            }
-            else if (isEntity)
-            {
-                derivedElement = GlueProject.Entities[i];
-                add = GlueProject.Entities[i].InheritsFrom(baseElement.Name);
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
-
-            if (add)
-            {
-                derivedElements.Add(derivedElement);
-            }
-        }
-
-        return derivedElements;
-    }
-
-    public bool GetIfInherits(GlueElement derivedElement, GlueElement baseElement)
-    {
-        var allDerived = GetAllElementsThatInheritFrom(baseElement);
-
-        return allDerived.Contains(derivedElement);
-    }
-
-    public GlueElement GetRootBaseElement(GlueElement element)
-    {
-        GlueElement derived = null;
-
-        if (!string.IsNullOrEmpty(element?.BaseElement))
-        {
-            derived = GetElement(element.BaseElement);
-        }
-
-        if (derived == null)
-        {
-            return element;
-        }
-        else
-        {
-            return GetRootBaseElement(derived);
-        }
-    }
-
-    public GlueElement GetBaseElement(IElement derivedElement)
-    {
-        if (!string.IsNullOrEmpty(derivedElement?.BaseElement))
-        {
-            return GetElement(derivedElement.BaseElement);
-        }
-        else
-        {
-            return null;
-        }
-    }
-
-    public GlueElement GetBaseElementRecursively(GlueElement derivedElement)
-    {
-        GlueElement baseElement = null;
-        if (!string.IsNullOrEmpty(derivedElement?.BaseElement))
-        {
-            baseElement = GetElement(derivedElement.BaseElement);
-        }
-
-        if (baseElement == null)
-        {
-            return derivedElement;
-        }
-        else
-        {
-            return GetBaseElementRecursively(baseElement);
-        }
-    }
+    public GlueElement GetBaseElementRecursively(GlueElement derivedElement) =>
+        ReferenceService.Self.GetBaseElementRecursively(derivedElement);
 
     /// <summary>
     /// Returns all base elements, with the most derived first, and the most base last.
     /// </summary>
-    /// <param name="derivedElement">The derived element for which to get all base.</param>
-    /// <returns>An ordered list of base elements, with the most derived first</returns>
-    public List<GlueElement> GetAllBaseElementsRecursively(GlueElement derivedElement)
-    {
-        var baseElements = new List<GlueElement>();
+    public List<GlueElement> GetAllBaseElementsRecursively(GlueElement derivedElement) =>
+        ReferenceService.Self.GetAllBaseElementsRecursively(derivedElement);
 
-        while (!string.IsNullOrEmpty(derivedElement.BaseElement))
-        {
-            var baseElement = GetElement(derivedElement.BaseElement);
-
-            if (baseElement == null)
-            {
-                break;
-            }
-            else
-            {
-                baseElements.Add(baseElement);
-                derivedElement = baseElement;
-            }
-        }
-
-        return baseElements;
-    }
-
-    public List<GlueElement> GetAllDerivedElementsRecursive(GlueElement baseElement)
-    {
-        HashSet<GlueElement> toReturnHashSet = new HashSet<GlueElement>();
-
-        AddAllDerivedElementsRecursive(baseElement, toReturnHashSet);
-
-        return toReturnHashSet.ToList();
-    }
-
-    private void AddAllDerivedElementsRecursive(GlueElement baseElement, HashSet<GlueElement> derivedElements)
-    {
-        var directDerived = GetAllElementsThatInheritFrom(baseElement);
-
-        foreach (var derived in directDerived)
-        {
-            derivedElements.Add(derived);
-
-            AddAllDerivedElementsRecursive(derived, derivedElements);
-        }
-    }
+    public List<GlueElement> GetAllDerivedElementsRecursive(GlueElement baseElement) =>
+        ReferenceService.Self.GetAllDerivedElementsRecursive(baseElement);
 
     #endregion
 
@@ -858,164 +601,24 @@ public class ObjectFinder : IObjectFinder
     /// Returns a fully recursive enumerable of all NamedObjectSaves in the project. This includes
     /// NamedObjectSaves in lists and in derived elements.
     /// </summary>
-    public IEnumerable<NamedObjectSave> GetAllNamedObjects()
-    {
-        foreach (ScreenSave screenSave in GlueProject.Screens)
-        {
-            foreach (NamedObjectSave nos in screenSave.AllNamedObjects)
-            {
-                yield return nos;
-            }
-        }
+    public IEnumerable<NamedObjectSave> GetAllNamedObjects() =>
+        ReferenceService.Self.GetAllNamedObjects();
 
-        foreach (EntitySave entitySave in GlueProject.Entities)
-        {
-            foreach (NamedObjectSave nos in entitySave.AllNamedObjects)
-            {
-                yield return nos;
-            }
-        }
-    }
-
-    public List<NamedObjectSave> GetAllNamedObjectsThatUseElement(IElement element)
-    {
-        if (element is EntitySave)
-        {
-            return GetAllNamedObjectsThatUseEntity(element as EntitySave);
-        }
-        else
-        {
-            return new List<NamedObjectSave>();
-        }
-    }
-
+    public List<NamedObjectSave> GetAllNamedObjectsThatUseElement(IElement element) =>
+        ReferenceService.Self.GetAllNamedObjectsThatUseElement(element);
 
     /// <summary>
     /// Returns all NamedObjectSaves which have any reference to the argument entity. This includes references such as
     /// variant variables.
     /// </summary>
-    /// <param name="entity">The entity to find the references for</param>
-    /// <returns>The NamedObjects that reference the entity.</returns>
-    public List<NamedObjectSave> GetAllNamedObjectsThatUseEntity(EntitySave entity)
-    {
-        return GetAllNamedObjectsThatUseEntity(entity.Name);
-    }
+    public List<NamedObjectSave> GetAllNamedObjectsThatUseEntity(EntitySave entity) =>
+        ReferenceService.Self.GetAllNamedObjectsThatUseEntity(entity);
 
+    public List<NamedObjectSave> GetAllNamedObjectsThatUseEntity(string baseEntity) =>
+        ReferenceService.Self.GetAllNamedObjectsThatUseEntity(baseEntity);
 
-    public List<NamedObjectSave> GetAllNamedObjectsThatUseEntity(string baseEntity)
-    {
-        List<NamedObjectSave> namedObjects = new List<NamedObjectSave>();
-
-        foreach (EntitySave entitySave in GlueProject.Entities)
-        {
-            GetAllNamedObjectsThatUseElement(entitySave.NamedObjects, namedObjects, baseEntity, SourceType.Entity, entitySave);
-        }
-
-
-        foreach (ScreenSave screenSave in GlueProject.Screens)
-        {
-            GetAllNamedObjectsThatUseElement(screenSave.NamedObjects, namedObjects, baseEntity, SourceType.Entity, screenSave);
-        }
-
-        return namedObjects;
-    }
-
-    public List<NamedObjectSave> GetAllNamedObjectsThatUseEntityAsVariableType(string entityType)
-    {
-        List<NamedObjectSave> namedObjects = new List<NamedObjectSave>();
-
-
-        foreach (EntitySave entitySave in GlueProject.Entities)
-        {
-            FillFrom(entitySave);
-        }
-
-
-        foreach (ScreenSave screenSave in GlueProject.Screens)
-        {
-            FillFrom(screenSave);
-        }
-
-        void FillFrom(GlueElement element)
-        {
-            foreach (var nos in element.AllNamedObjects)
-            {
-                foreach (var variable in nos.InstructionSaves)
-                {
-                    // We can't look at the type, because to do that we would have
-                    // to find the entity or screen with the matching type. That could
-                    // have been renamed, so we just have to trust that the value matches...
-                    var startsWithScreensOrEntities =
-                        variable.Type.StartsWith("Screens.") || variable.Type.StartsWith("Entities.");
-                    var endsWithType =
-                        // old style:
-                        variable.Type.EndsWith("Type") ||
-                        // new style:
-                        variable.Type.EndsWith("Variant");
-                    if (startsWithScreensOrEntities && endsWithType && (variable.Value as string) == entityType)
-                    {
-                        namedObjects.Add(nos);
-                        break;
-                    }
-                }
-            }
-        }
-
-        return namedObjects;
-    }
-
-    private void GetAllNamedObjectsThatUseElement(List<NamedObjectSave> sourceList, List<NamedObjectSave> listToAddTo, string name, SourceType sourceType, GlueElement parentGlueElement)
-    {
-        bool DoesNosMatchType(NamedObjectSave nos)
-        {
-            if (nos == null)
-            {
-                return false;
-            }
-            else if (nos.SourceType == sourceType && nos.SourceClassType == name)
-            {
-                return true;
-            }
-            else if (nos.SourceType == SourceType.FlatRedBallType && nos.IsList && nos.SourceClassGenericType == name)
-            {
-                return true;
-            }
-            return false;
-        }
-        foreach (NamedObjectSave nos in sourceList)
-        {
-            if (DoesNosMatchType(nos))
-            {
-                listToAddTo.Add(nos);
-            }
-            else if (nos.IsCollisionRelationship())
-            {
-                var firstItem = nos.Properties.GetValue<string>("FirstCollisionName");
-                var secondItem = nos.Properties.GetValue<string>("SecondCollisionName");
-
-                var firstNos = parentGlueElement.GetNamedObjectRecursively(firstItem);
-                var secondNos = parentGlueElement.GetNamedObjectRecursively(secondItem);
-
-                if (DoesNosMatchType(firstNos) || DoesNosMatchType(secondNos))
-                {
-                    listToAddTo.Add(nos);
-                }
-            }
-            else
-            {
-                foreach (var variable in nos.InstructionSaves)
-                {
-                    if (variable.Type?.StartsWith("Entities.") == true && variable.Value is string asString && asString == name)
-                    {
-                        listToAddTo.Add(nos);
-                        break;
-                    }
-                }
-            }
-            GetAllNamedObjectsThatUseElement(nos.ContainedObjects, listToAddTo, name, sourceType, parentGlueElement);
-        }
-
-    }
+    public List<NamedObjectSave> GetAllNamedObjectsThatUseEntityAsVariableType(string entityType) =>
+        ReferenceService.Self.GetAllNamedObjectsThatUseEntityAsVariableType(entityType);
 
     public INamedObjectContainer GetNamedObjectContainer(string namedObjectContainerName)
     {
@@ -1587,96 +1190,18 @@ public class ObjectFinder : IObjectFinder
         return (foundVariable, valueOnState);
     }
 
-    public List<CustomVariable> GetVariablesReferencingElementType(string elementType)
-    {
-        List<CustomVariable> customVariables = new List<CustomVariable>();
-
-        foreach (EntitySave entitySave in GlueProject.Entities)
-        {
-            FillFrom(entitySave);
-        }
-
-
-        foreach (ScreenSave screenSave in GlueProject.Screens)
-        {
-            FillFrom(screenSave);
-        }
-
-        void FillFrom(GlueElement elementSave)
-        {
-            foreach (var customVariable in elementSave.CustomVariables)
-            {
-                // We can't look at the type, because to do that we would have
-                // to find the entity or screen with the matching type. That could
-                // have been renamed, so we just have to trust that the value matches...
-                var startsWithScreensOrEntities =
-                    customVariable.Type.StartsWith("Screens.") || customVariable.Type.StartsWith("Entities.");
-                // This assumes "Type" but we also have variants. I'm not sure
-                // why we do this check because a prefix of Screens. or Entities. should be sufficient but
-                // I suppose it's a little safer?
-                var endsWithType = customVariable.Type.EndsWith("Type") ||
-                    customVariable.Type.EndsWith("Variant");
-
-                var elementTypeWithVariant = elementType.Replace("\\", ".") + "Variant";
-
-                if (startsWithScreensOrEntities && endsWithType)
-                {
-                    if ((customVariable.DefaultValue as string) == elementType)
-                    {
-                        customVariables.Add(customVariable);
-                    }
-                    else if (customVariable.Type == elementTypeWithVariant)
-                    {
-                        customVariables.Add(customVariable);
-                    }
-                }
-            }
-        }
-
-        return customVariables;
-    }
+    public List<CustomVariable> GetVariablesReferencingElementType(string elementType) =>
+        ReferenceService.Self.GetVariablesReferencingElementType(elementType);
 
     #endregion
 
-
-    public int GetHierarchyDepth(GlueElement element)
-    {
-        var baseElement = GetBaseElement(element);
-
-        if (baseElement == null)
-        {
-            return 0;
-        }
-        else
-        {
-            return 1 + GetHierarchyDepth(baseElement);
-        }
-    }
+    public int GetHierarchyDepth(GlueElement element) =>
+        ReferenceService.Self.GetHierarchyDepth(element);
 
     /// <summary>
-    /// Returns all elements involved in the inheritance chain, with the most basic type first, and most derive types
-    /// after. The argument will be added as the last element in the list.
+    /// Returns all elements involved in the inheritance chain, with the most basic type first and most
+    /// derived types after. The argument will be added as the last element in the list.
     /// </summary>
-    /// <param name="derivedElement">The most derived element.</param>
-    /// <returns>A list of elements representing the inhreitance chain, including the argument GlueElement.</returns>
-    public List<GlueElement> GetInheritanceChain(GlueElement derivedElement)
-    {
-        List<GlueElement> toReturn = new List<GlueElement>();
-
-        toReturn.Add(derivedElement);
-
-        var currentElement = derivedElement;
-        while (currentElement != null)
-        {
-            var baseElement = GetBaseElement(currentElement);
-
-            if (baseElement != null)
-            {
-                toReturn.Insert(0, baseElement);
-            }
-            currentElement = baseElement;
-        }
-
-        return toReturn;
-    }
+    public List<GlueElement> GetInheritanceChain(GlueElement derivedElement) =>
+        ReferenceService.Self.GetInheritanceChain(derivedElement);
 }

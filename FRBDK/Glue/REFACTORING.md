@@ -59,7 +59,230 @@ The `TreeViewPlugin` is a self-contained plugin that owns the explorer panel (Sc
 - [x] **Extract `ITreeViewDisplay` interface from `MainTreeViewControl`** ✅ 2026-03-04
 - [x] **Decouple `NodeViewModel` from `SelectionLogic`**: Replace direct `SelectionLogic.Current.HandleSelected/HandleDeselection` calls in `NodeViewModel` with a delegate or event. The `SelectionLogic` instance (or plugin) would subscribe. This removes the `Logic` → `ViewModel` → `Logic` circular coupling. ✅ 2026-03-04
 - [x] **Inject `GlueState`/`GlueCommands` into `MainTreeViewViewModel`**: Introduce constructor parameters or a context object so the ViewModel does not call static singletons directly. Enables unit testing of search and refresh logic. ✅ 2026-03-04
-- [ ] **Extract search logic into a `TreeSearchService`**: `MainTreeViewViewModel.Search.cs` builds filtered lists from project data — pure logic with no UI concerns. Move to a separate class injected via constructor.
+- [x] **Unit tests for tree-navigation methods in `Search.cs`**: `TreeNodeByDirectory`, `TreeNodeForDirectoryOrEntityNode`, `TreeNodeForDirectoryOrScreenNode`, `GetTreeNodeByQualifiedPath`, `GetTreeNodeByTag`, and `IsInTreeView` are all pure tree-structure traversal with no static dependencies — 30 `[WpfFact]` tests added in `SearchNavigationTests`. ✅ 2026-03-04
+- [ ] **Extract search logic into a `TreeSearchService`**: `MainTreeViewViewModel.Search.cs` still calls `ObjectFinder.Self.GetAllReferencedFiles()`, `FileManager.*`, and `ProjectManager.*` in `RefreshFlattenedList`. Extracting this method into a service class and wrapping those statics behind an interface would unlock unit tests for the filtered search list logic.
+
+## RightClickHelper — Architecture and Refactoring Plan
+
+### Current state (2026-03-04)
+
+`RightClickHelper` is a `public static` class (~1,500 lines) in the `FlatRedBall.Glue.FormHelpers` namespace,
+but physically lives in `OfficialPlugins/TreeViewPlugin/Logic/`. This namespace/location mismatch reflects
+organic growth — it was written as a shared helper but is tightly coupled to the TreeViewPlugin.
+
+#### Identified problems
+
+1. **Static God Object** — all `static`, no injection points. Impossible to unit-test as-is.
+
+2. **`GlueState.Self` / `GlueCommands.Self` called directly** inside `PopulateRightClickMenuItemsShared`
+   — prevents mocking for tests.
+
+3. **Pre-created items in `Initialize()`** — items like `mMoveToTop`, `mDuplicate`,
+   `addObjectToolStripMenuItem` are created once and reused across all menu invocations (WinForms artifact).
+   A WPF ViewModel design would use `ICommand` bindings instead.
+
+4. **Decision logic and UI construction are entangled** — `PopulateRightClickMenuItemsShared` decides
+   which items to show AND creates WinForms objects in the same pass. No way to test "which items appear
+   for this node type" without standing up the full editor.
+
+5. **Wrong namespace** — `FlatRedBall.Glue.FormHelpers` but lives inside the TreeViewPlugin. Should
+   eventually move to `OfficialPlugins.TreeViewPlugin.Logic`.
+
+### Suggested refactoring path (in order)
+
+- [x] **Extract `GetItemDescriptors`** ✅ 2026-03-04 — See completed refactors below.
+
+- [ ] **Delete dead `AddRemoveFromProjectItems()`** — now unreachable private static method left after
+  the extraction. Safe to delete; remove it in a small cleanup PR.
+
+- [ ] **Migrate pre-created items to `ICommand`** — the pre-created `GeneralToolStripMenuItem` fields
+  from `Initialize()` should become `ICommand` properties on a future `RightClickViewModel`. This removes
+  the WinForms pre-allocation pattern entirely.
+
+- [ ] **Inject `IObjectFinder`** — `GetItemDescriptors` still calls `ObjectFinder.Self` in the
+  `IsNamedObjectNode` branch (abstract-entity list check). Wrap behind an interface to make that branch
+  testable.
+
+- [ ] **Move into the plugin and rename** — change namespace to `OfficialPlugins.TreeViewPlugin.Logic`,
+  rename to `RightClickLogic` or `RightClickService`, make it an instance class injected into
+  `MainTreeViewPlugin`.
+
+- [ ] **Inject `IGlueCommands`** — `GetItemDescriptors` currently takes a `Func<ReferencedFileSave, bool>
+  fileExists` delegate as a workaround for the file-existence check. Once `IGlueCommands` is injected,
+  replace the delegate with a direct call.
+
+### `RightClickItemDescriptor` design
+
+The descriptor type (`OfficialPlugins.TreeViewPlugin.Logic.RightClickItemDescriptor`) handles three cases:
+
+| Source | Fields used |
+|--------|-------------|
+| Fresh item (`Add(text, action)`) | `Text`, `Handler`, optionally `Image` |
+| Pre-created item (`AddItem(mMoveToTop)`) | `Text` (may update the item's text), `PreCreatedItem` |
+| Separator (`AddSeparator()`) | `IsSeparator = true` |
+| Sub-menu (`Copy Name...`) | `Text`, `Handler`, `SubItems` |
+
+Tests use `descriptor.Text` to assert which items would appear. Tests do NOT call
+`RightClickHelper.Initialize()`, so `PreCreatedItem` will be `null` in test scenarios — but `Text` is
+always set explicitly via `item?.Text ?? fallbackText` so assertions still work.
+
+### What is testable after the extraction (2026-03-04)
+
+- Which items appear for each node type (EntityRootNode, ScreenRootNode, EntityNode, ScreenNode, DirectoryNode, etc.)
+- Conditional items (e.g., FileVersion-gated items, GameScreen-specific items, PooledByFactory items)
+- The new right-click command added after this refactor
+
+### What is NOT yet testable
+
+- Handler correctness (lambdas still call `GlueCommands.Self`, `GluxCommands.Self`, `SelectionLogic.Current`, etc.)
+- The `IsNamedObjectNode` abstract-entity list check (calls `ObjectFinder.Self`)
+- File-existence check in `IsReferencedFile` (workaround: pass `fileExists` delegate in production, `null` in tests → item never shown in tests)
+
+---
+
+## Reference-Finding — Architecture and Refactoring Plan
+
+### Current state (2026-03-04)
+
+Reference-finding logic ("who uses X?") is scattered across at least seven locations with no single
+authoritative service. The closest thing to a hub is `ObjectFinder`, but it is a large catch-all class
+that also handles element lookup by name/type, making it hard to test or inject.
+
+#### Locations with reference-finding logic
+
+| Location | What it finds |
+|----------|--------------|
+| `Glue/Elements/ObjectFinder.cs` | Inheritance chains, named-object usages, file references, variable type usages — the primary hub |
+| `Glue/Controls/ElementReferenceListWindow.xaml.cs` | Inline CSV/variable reference logic duplicated outside of ObjectFinder |
+| `Glue/Managers/InheritanceManager.cs` | Calls reference-finding methods to propagate base-element changes to all derived elements |
+| `Glue/SaveClasses/IElementExtensionMethods.cs` | File-reference extension methods (`GetReferencedFileSaveRecursively`, `GetAllReferencedFileSavesRecursively`, etc.) |
+| `Glue/Managers/FindManager.cs` | Interface/base: `IfReferencedFileSaveIsReferenced()` |
+| `OfficialPlugins/TreeViewPlugin/Logic/FindManager.cs` | Implementation of the above — relationship unclear |
+| `Glue/Managers/FileReferenceManager.cs` | Manager-level file→element reference tracking |
+| `GumPlugin/GumPlugin/Managers/FileReferenceTracker.cs` | Plugin-specific file reference tracking, may overlap with core |
+
+#### Identified problems
+
+1. **No single `IReferenceService`** — callers reach into `ObjectFinder.Self` (static singleton) directly.
+   Impossible to inject or mock.
+
+2. **`ElementReferenceListWindow` contains business logic** — the CSV/variable reference lookup in
+   `PopulateWithReferencesTo(ReferencedFileSave)` is inline in the UI class rather than delegated to a
+   service. The window should only display results.
+
+3. **Two `FindManager` classes** — one in `Glue/Managers/` and one in `OfficialPlugins/TreeViewPlugin/Logic/`.
+   The relationship (interface vs. implementation? duplication?) is unclear and should be resolved.
+
+4. **`ObjectFinder` has too many responsibilities** — element lookup, file lookup, inheritance traversal,
+   named-object search, and variable-type search all live in one 1,000+ line class. The reference-finding
+   group should be separated from the element-lookup group.
+
+5. **`FileReferenceManager` and `ObjectFinder` file methods may overlap** — it's unclear whether
+   `FileReferenceManager` is a cache/index on top of `ObjectFinder` or an independent parallel
+   implementation.
+
+### Suggested refactoring path (in order)
+
+- [x] **Audit and document `ObjectFinder` method groups** ✅ 2026-03-04 — See inventory below.
+
+#### `ObjectFinder` method inventory (2026-03-04)
+
+62 methods total. Grouped by responsibility:
+
+**Element Lookup** (15) — find a screen/entity/named object/variable/state by name or type
+`GetAllElements`, `GetEntitySave` ×2, `GetElementUnqualified`, `GetElementsUnqualified`,
+`GetEntitySaveUnqualified`, `GetScreenSave`, `GetScreenSaveUnqualified`, `GetIElement` (obsolete alias),
+`GetElement` ×2, `DoesEntityExist`, `GetStateSaveCategory` ×2, `GetElementDefiningStateCategory`
+
+**Reference Finding** (10) — "who uses X?"
+`GetReferencedFileSavesFromSource`, `GetAllReferencedFiles`, `GetMatchingReferencedFiles`,
+`GetAllElementsReferencingFile`, `GetAllNamedObjects`, `GetAllNamedObjectsThatUseElement`,
+`GetAllNamedObjectsThatUseEntity` ×2, `GetAllNamedObjectsThatUseEntityAsVariableType`,
+`GetVariablesReferencingElementType`
+
+**Inheritance Traversal** (14) — walk up/down the inheritance chain
+`GetAllEntitiesThatInheritFrom` ×2, `GetAllScreensThatInheritFrom` ×2,
+`GetAllElementsThatInheritFrom` ×2, `GetIfInherits`, `GetRootBaseElement`, `GetBaseElement`,
+`GetBaseElementRecursively`, `GetAllBaseElementsRecursively`, `GetAllDerivedElementsRecursive`,
+`GetHierarchyDepth`, `GetInheritanceChain`
+
+**Container / List Resolution** (14) — find what owns an object, or what list should hold it
+`GetElementContaining` ×6 (overloads for NOS, RFS, EventResponse, StateSave, CustomVariable,
+StateSaveCategory), `GetNamedObjectContainer`, `GetDefaultListToContain` ×3,
+`GetPossibleListsToContain` ×3
+
+**Variable / Property Resolution** (9) — get variable values and definitions
+`GetNamedObjectFor`, `GetVariableContainer`, `GetBaseCustomVariable`, `GetRootCustomVariable` ×2,
+`GetVariableDefinition`, `GetPropertyValueRecursively`, `GetValueRecursively` ×2
+
+**File Resolution** (4) — path conversion and CSV class lookup
+`MakeAbsoluteContent`, `GetFirstCsvUsingClass` ×2, `GetCustomClassFor`
+
+**NamedObject Hierarchy** (1)
+`GetRootDefiningObject`
+
+**Private helpers** (3): `AddAllDerivedElementsRecursive`, `GetAllNamedObjectsThatUseElement` (overload),
+`GetVariableOnInstance`
+
+---
+
+**Extraction target for `ReferenceService`**: the **Reference Finding** (10) and **Inheritance
+Traversal** (14) groups — 24 methods. Everything else stays on `ObjectFinder`.
+
+- [x] **Clarify the two `FindManager` classes** ✅ 2026-03-04 — `Glue/Managers/FindManager.cs`
+  contained `IFindManager` (the interface) plus ~230 lines of entirely commented-out WinForms dead code.
+  `OfficialPlugins/TreeViewPlugin/Logic/FindManager.cs` was the sole live implementation.
+  Actions taken: deleted the dead class body, renamed the file to `IFindManager.cs`, restored the
+  accidentally-omitted `GlobalContentFilesPath` property (used by `RuntimeDebuggingPlugin` but missing
+  from the interface), and added the corresponding implementation to `FindManager`.
+  `IFindManager` mixes two concerns (tree-node lookup and `IfReferencedFileSaveIsReferenced`) — the
+  latter will eventually move to `IReferenceService`.
+
+- [x] **Clarify `FileReferenceManager` vs. `ObjectFinder` file methods** ✅ 2026-03-04 — No overlap.
+  They operate at different levels: `ObjectFinder` file methods query the **Glue project model** (which
+  `ReferencedFileSave` objects exist, which elements reference a given RFS name); `FileReferenceManager`
+  operates at the **disk/content level** (which content files does an asset file import on disk, cached by
+  write time via `ContentParser` + plugin system). `TileGraphicsPlugin/Managers/FileReferenceManager` and
+  `GumPlugin/Managers/FileReferenceTracker` are plugin providers that feed format-specific file
+  dependencies into the core `FileReferenceManager` — not duplicates. The name collision between the
+  Glue-core and TileGraphics managers is unfortunate but harmless (different namespaces, different
+  responsibilities). No code changes required.
+
+- [x] **Extract `ReferenceService`** ✅ 2026-03-04 — Created `Glue/Elements/ReferenceService.cs`.
+  Moved 24 public methods (+ 2 private helpers) out of `ObjectFinder` into `ReferenceService`:
+  - **File/RFS reference finding (4)**: `GetReferencedFileSavesFromSource`, `GetAllReferencedFiles`,
+    `GetMatchingReferencedFiles`, `GetAllElementsReferencingFile`
+  - **Named-object/entity reference finding (5)**: `GetAllNamedObjects`,
+    `GetAllNamedObjectsThatUseElement`, `GetAllNamedObjectsThatUseEntity` ×2,
+    `GetAllNamedObjectsThatUseEntityAsVariableType`
+  - **Variable/type reference finding (1)**: `GetVariablesReferencingElementType`
+  - **Inheritance traversal (14)**: `GetAllEntitiesThatInheritFrom` ×2,
+    `GetAllScreensThatInheritFrom` ×2, `GetAllElementsThatInheritFrom` ×2, `GetIfInherits`,
+    `GetRootBaseElement`, `GetBaseElement`, `GetBaseElementRecursively`,
+    `GetAllBaseElementsRecursively`, `GetAllDerivedElementsRecursive`, `GetHierarchyDepth`,
+    `GetInheritanceChain`
+
+  `ReferenceService` reads `GlueProject` via `ObjectFinder.Self.GlueProject` and delegates
+  `GetElement()` lookups back to `ObjectFinder.Self`. `ObjectFinder` retains thin one-line forwarding
+  stubs for all 24 methods so all existing call sites continue to work unchanged.
+  `ReferenceService.Self` is a static singleton accessor (same transitional pattern as `SelectionLogic`).
+  Zero behavior change. Verified: `Glue.csproj` and `OfficialPlugins.csproj` compile with no C# errors.
+
+- [x] **Move inline reference logic out of `ElementReferenceListWindow`** ✅ 2026-03-04 — Added four
+  `GetReferencesTo` / `GetReferencesToElement` overloads to `ReferenceService` returning
+  `IReadOnlyList<object>`, each bundling all reference types for a given subject:
+  - `GetReferencesTo(ReferencedFileSave)` — owning-element RFS + file-sourced NOS + CSV custom variables
+  - `GetReferencesToElement(IElement)` — NOS usages + inheritance + NextScreen links
+  - `GetReferencesTo(NamedObjectSave, IElement)` — tunneling CustomVariables + derived-element NOS
+  - `GetReferencesTo(CustomVariable, IElement)` — states that set it + derived variables + event responses
+
+  `ElementReferenceListWindow` is now a pure display class: each `Populate*` method is a 3-line foreach
+  over the service result. The window no longer imports `ObjectFinder` or contains any query logic.
+  Zero behavior change. `Glue.csproj` builds with 0 errors.
+
+- [ ] **Inject `IReferenceService` into consumers** — `InheritanceManager` and the tree-view/right-click
+  code are the primary consumers. Inject via constructor so they can be unit-tested without a live
+  `ObjectFinder`.
 
 ## Known Areas Needing Improvement
 
@@ -136,6 +359,45 @@ Replaced both calls with two `internal static` delegates on `NodeViewModel`:
 `SelectionLogic` constructor now wires these delegates to `HandleSelected` and `HandleDeselection`. The `using OfficialPlugins.TreeViewPlugin.Logic;` import was removed from `NodeViewModel.cs`.
 
 Added `InternalsVisibleTo("DynamicProxyGenAssembly2")` to `OfficialPlugins.csproj` (required for Moq to proxy the `internal ITreeViewDisplay` interface). Added two delegate-wiring tests to `SelectionLogicTests`: `IsSelected_True_InvokesNodeSelectedDelegate` and `IsSelected_False_InvokesNodeDeselectedDelegate`, which use spy lambdas to confirm the correct delegate fires without depending on `GlueState.Self`.
+
+### 2026-03-04 — Extract `GetItemDescriptors` from `RightClickHelper`
+
+`PopulateRightClickMenuItemsShared` was a ~500-line `private static` method that both decided which menu
+items to show AND built the WinForms `GeneralToolStripMenuItem` objects. No seam existed between the
+two concerns.
+
+Extracted `internal static IReadOnlyList<RightClickItemDescriptor> GetItemDescriptors(ITreeNode,
+IGlueState, MenuShowingAction, ITreeNode?, bool shiftHeld, Func<ReferencedFileSave, bool>? fileExists)`
+into a new method. It contains the complete `if/else if` node-type decision chain and returns a list of
+`RightClickItemDescriptor` values (see descriptor design in the plan section above).
+
+`PopulateRightClickMenuItemsShared` is now a thin materialization loop that calls `GetItemDescriptors`
+(passing `GlueState.Self`, `(Control.ModifierKeys & Keys.Shift) != 0`, and `rfs =>
+GlueCommands.Self.GetAbsoluteFilePath(rfs).Exists()`) and converts each descriptor to a
+`GeneralToolStripMenuItem`.
+
+`GlueState.Self.CurrentGlueProject` calls inside the decision logic are replaced with the injected
+`IGlueState` parameter. `GlueState.Self.CurrentElement` (collision relationships branch) likewise.
+
+`AddRemoveFromProjectItems()` is now dead code — its logic was inlined into `GetItemDescriptors` as a
+local `RemoveItems()` function.
+
+Zero behavior change. Tests can now call `GetItemDescriptors` with a mock `IGlueState` and a real or
+stub `ITreeNode` to assert which items appear for a given node type.
+
+### 2026-03-04 — Unit tests for tree-navigation methods in `Search.cs`
+
+Added `SearchNavigationTests` (30 `[WpfFact]` tests) covering the pure tree-navigation methods in `MainTreeViewViewModel.Search.cs`:
+
+- `TreeNodeByDirectory` — direct child, nested path, missing intermediate, case-insensitive matching, trailing slash
+- `TreeNodeForDirectoryOrEntityNode` / `TreeNodeForDirectoryOrScreenNode` — empty path returns root, non-empty delegates to directory search
+- `GetTreeNodeByQualifiedPath` — entity/screen/global content roots, child lookup, deep nesting, not-found returns null, unknown root throws `InvalidOperationException`
+- `GetTreeNodeByTag` — tag in entity/screen/global content tree, nested tag, tag not found
+- `IsInTreeView` — nodes under each of the three roots, deep nesting, orphan node returns false
+
+These methods have no static singleton dependencies — all they touch is `_glueState`/`_glueCommands` (mocked) and `NodeViewModel` tree structure built directly in each test.
+
+**Still blocked** (requires `ObjectFinder.Self` and `FileManager.*` wrappers): `RefreshFlattenedList` — covered by the next step below.
 
 ### 2026-03-04 — Inject `IGlueState`/`IGlueCommands` into `MainTreeViewViewModel` and `SelectionLogic`
 
