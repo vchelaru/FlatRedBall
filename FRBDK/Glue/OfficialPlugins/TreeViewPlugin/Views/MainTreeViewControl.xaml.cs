@@ -25,7 +25,7 @@ namespace OfficialPlugins.TreeViewPlugin.Views;
 /// <summary>
 /// Interaction logic for MainTreeViewControl.xaml
 /// </summary>
-public partial class MainTreeViewControl : UserControl
+public partial class MainTreeViewControl : UserControl, ITreeViewDisplay
 {
     #region Enums
 
@@ -210,6 +210,29 @@ public partial class MainTreeViewControl : UserControl
         // tree nodes may get selected when they are created rather than through a click (which changes the 
         // view model). Vic isn't sure why so this is a little bit of a hack:
         RefreshRightClickMenu(nodePushed);
+    }
+
+    void ITreeViewDisplay.RefreshRightClickMenu() => RefreshRightClickMenu(forcedNode: null);
+
+    public void ScrollNodeIntoView(NodeViewModel node) => MainTreeView.ScrollIntoView(node);
+
+    public void UpdateTreeViewLayout() => MainTreeView.UpdateLayout();
+
+    public void FocusNode(NodeViewModel node)
+    {
+        var container = MainTreeView.ItemContainerGenerator.ContainerFromItem(node) as ListBoxItem;
+        if (container != null)
+        {
+            try
+            {
+                container.Focus();
+                System.Windows.Input.Keyboard.Focus(container);
+            }
+            catch (Exception)
+            {
+                // Focus can fail silently — see NodeViewModel.Focus for original comment
+            }
+        }
     }
 
     public void RefreshRightClickMenu(ITreeNode forcedNode = null)
@@ -626,7 +649,7 @@ public partial class MainTreeViewControl : UserControl
         if (foundSomething)
         {
             ViewModel.SearchBoxText = String.Empty;
-            SelectionLogic.Current.CurrentNode?.Focus(this);
+            FocusNode(SelectionLogic.Current.CurrentNode);
         }
     }
 

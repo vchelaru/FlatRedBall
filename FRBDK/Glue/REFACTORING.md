@@ -56,7 +56,7 @@ The `TreeViewPlugin` is a self-contained plugin that owns the explorer panel (Sc
 
 ### Suggested next steps (in order)
 
-- [ ] **Extract `ITreeViewDisplay` interface from `MainTreeViewControl`**: `SelectionLogic` calls `mainView.RefreshRightClickMenu()`, `mainView.MainTreeView.UpdateLayout()`, and `mainView.MainTreeView.ScrollIntoView()`. Extracting these into an interface would allow mocking the view in tests and unlock testing of `HandleSelected`, `HandleDeselection`, and `SelectByTreeNode`.
+- [x] **Extract `ITreeViewDisplay` interface from `MainTreeViewControl`** ✅ 2026-03-04
 - [ ] **Decouple `NodeViewModel` from `SelectionLogic`**: Replace direct `SelectionLogic.Current.HandleSelected/HandleDeselection` calls in `NodeViewModel` with a delegate or event. The `SelectionLogic` instance (or plugin) would subscribe. This removes the `Logic` → `ViewModel` → `Logic` circular coupling.
 - [ ] **Inject `GlueState`/`GlueCommands` into `MainTreeViewViewModel`**: Introduce constructor parameters or a context object so the ViewModel does not call static singletons directly. Enables unit testing of search and refresh logic.
 - [ ] **Extract search logic into a `TreeSearchService`**: `MainTreeViewViewModel.Search.cs` builds filtered lists from project data — pure logic with no UI concerns. Move to a separate class injected via constructor.
@@ -100,6 +100,22 @@ Converted to a proper instance class:
 - `MainTreeViewPlugin` stores the instance as a field (`selectionLogic`) and uses it directly; other callers use `SelectionLogic.Current`
 
 Zero behavior change. The `Current` accessor is a transitional pattern — the remaining work is to decouple `NodeViewModel` from `SelectionLogic` entirely (see next steps above).
+
+### 2026-03-04 — Extract `ITreeViewDisplay` from `MainTreeViewControl`
+
+`SelectionLogic` previously took `MainTreeViewControl` (a concrete WPF `UserControl`) as a constructor parameter and called three things on it directly: `mainView.RefreshRightClickMenu()`, `mainView.MainTreeView.UpdateLayout()`, and `mainView.MainTreeView.ScrollIntoView()`. Additionally, `NodeViewModel` had a `Focus(MainTreeViewControl)` method that accessed `MainTreeView.ItemContainerGenerator` directly.
+
+Extracted `ITreeViewDisplay` interface (`Views/ITreeViewDisplay.cs`) with four members:
+- `RefreshRightClickMenu()` — already existed on `MainTreeViewControl`
+- `ScrollNodeIntoView(NodeViewModel)` — wraps `MainTreeView.ScrollIntoView`
+- `UpdateTreeViewLayout()` — wraps `MainTreeView.UpdateLayout`
+- `FocusNode(NodeViewModel)` — focus logic moved here from `NodeViewModel.Focus(MainTreeViewControl)`
+
+`MainTreeViewControl` implements `ITreeViewDisplay`. `SelectionLogic` now depends only on `ITreeViewDisplay`. `NodeViewModel.Focus(MainTreeViewControl)` deleted — its logic lives in `MainTreeViewControl.FocusNode`.
+
+Added `SelectionLogicTests` with constructor/default-state/mock-wiring tests. `HandleDeselection` on an empty selection is the first test that validates `ITreeViewDisplay` is properly called (`RefreshRightClickMenu` on the mock).
+
+**Remaining blocker for deeper `SelectionLogic` tests**: `RefreshGlueState` calls `GlueState.Self.CurrentTreeNodes` when selection changes (`forcePushToGlue = true`). Tests that invoke `HandleSelected` need either a real or mock `GlueState.Self` — this is addressed by the "Inject GlueState/GlueCommands" next step.
 
 ### 2026-03-04 — Extract `SearchMatcher` from `MainTreeViewViewModel`
 

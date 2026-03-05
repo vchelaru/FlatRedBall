@@ -20,7 +20,7 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
         public static SelectionLogic Current { get; private set; }
 
         MainTreeViewViewModel mainViewModel;
-        MainTreeViewControl mainView;
+        ITreeViewDisplay mainView;
 
         List<NodeViewModel> currentNodes = new List<NodeViewModel>();
 
@@ -75,7 +75,7 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
 
         #endregion
 
-        public SelectionLogic(MainTreeViewViewModel mainViewModel, MainTreeViewControl mainView)
+        public SelectionLogic(MainTreeViewViewModel mainViewModel, ITreeViewDisplay mainView)
         {
             this.mainViewModel = mainViewModel;
             this.mainView = mainView;
@@ -146,7 +146,7 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
 
             if (nodeViewModel != null && nodeViewModel.IsSelected && focus)
             {
-                nodeViewModel.Focus(mainView);
+                mainView.FocusNode(nodeViewModel);
             }
 
             RefreshGlueState(didSelectionChange);
@@ -254,14 +254,14 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
                     // If we don't do this, sometimes it doesn't scroll into view...
                     await System.Threading.Tasks.Task.Delay(120);
 
-                    mainView.MainTreeView.UpdateLayout();
+                    mainView.UpdateTreeViewLayout();
 
-                    mainView.MainTreeView.ScrollIntoView(treeNode);
+                    mainView.ScrollNodeIntoView(treeNode);
 
                     // Do this after the delay
                     if (treeNode?.IsSelected == true && !suppressFocusCopy)
                     {
-                        treeNode.Focus(mainView);
+                        mainView.FocusNode(treeNode);
                     }
                 }
             }
