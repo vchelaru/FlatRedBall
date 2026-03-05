@@ -1,14 +1,9 @@
-﻿using FlatRedBall.Glue;
+﻿using System.Linq;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using OfficialPlugins.TreeViewPlugin.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
 
 namespace OfficialPlugins.TreeViewPlugin.Logic
 {
@@ -19,6 +14,8 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
         public FindManager(MainTreeViewViewModel mainViewModel) => this.mainViewModel = mainViewModel;
 
         public ITreeNode GlobalContentTreeNode => mainViewModel.GlobalContentRootNode;
+
+        public string GlobalContentFilesPath => GlueCommands.Self.FileCommands.GetGlobalContentFolder().FullPath;
 
         /// <summary>
         /// Returns whether the given ReferencedFileSave is referenced by either any element or by Global Content

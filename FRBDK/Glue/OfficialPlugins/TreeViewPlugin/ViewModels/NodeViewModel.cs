@@ -6,9 +6,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
-using OfficialPlugins.TreeViewPlugin.Logic;
 using OfficialPlugins.TreeViewPlugin.Models;
-using OfficialPlugins.TreeViewPlugin.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -36,6 +34,13 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
     public class NodeViewModel : ViewModel, ITreeNode
     {
+        #region Selection delegates
+        // Wired up by SelectionLogic. Invoked when IsSelected changes so NodeViewModel has no
+        // compile-time dependency on SelectionLogic.
+        internal static Action<NodeViewModel, bool, bool>? NodeSelected;
+        internal static Action<NodeViewModel>? NodeDeselected;
+        #endregion
+
         #region External DllImport
         [DllImport("Shlwapi.dll", CharSet = CharSet.Unicode)]
         private static extern int StrCmpLogicalW(string x, string y);
@@ -211,11 +216,11 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 {
                     if(value)
                     {
-                        SelectionLogic.HandleSelected(this, focus:true, replaceSelection:true);
+                        NodeSelected?.Invoke(this, true, true);
                     }
                     else
                     {
-                        SelectionLogic.HandleDeselection(this);
+                        NodeDeselected?.Invoke(this);
                     }
                 }
             }
@@ -333,25 +338,6 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             foreach (var child in this.Children)
             {
                 child.CollapseRecursively();
-            }
-        }
-
-        public void Focus(MainTreeViewControl mainView)
-        {
-            var container = mainView.MainTreeView.ItemContainerGenerator.ContainerFromItem(this) as ListBoxItem;
-            // This is needed to handle focusing because otherwise clicks on teh treeview don't focus.
-            if (container != null)
-            {
-                try
-                {
-                    container.Focus();
-                    System.Windows.Input.Keyboard.Focus(container);
-                }
-                catch (Exception)
-                {
-                    // not sure why but it can crash. Added breakpoint here to see if I can catch what's up. If it does fail for
-                    // other users we prob don't want to do anything, just fail silently.
-                }
             }
         }
 

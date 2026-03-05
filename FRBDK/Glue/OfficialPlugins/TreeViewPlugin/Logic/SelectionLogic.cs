@@ -1,6 +1,5 @@
-﻿using FlatRedBall.Glue.Events;
+using FlatRedBall.Glue.Events;
 using FlatRedBall.Glue.FormHelpers;
-using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using OfficialPlugins.TreeViewPlugin.ViewModels;
 using OfficialPlugins.TreeViewPlugin.Views;
@@ -13,66 +12,81 @@ using System.Windows.Controls;
 
 namespace OfficialPlugins.TreeViewPlugin.Logic
 {
-    internal static class SelectionLogic
+    internal class SelectionLogic
     {
         #region Fields/Properties
 
-        static MainTreeViewViewModel mainViewModel;
-        static MainTreeViewControl mainView;
+        public static SelectionLogic Current { get; private set; }
 
-        static List<NodeViewModel> currentNodes = new List<NodeViewModel>();
+        MainTreeViewViewModel mainViewModel;
+        ITreeViewDisplay mainView;
+        readonly Action<IReadOnlyList<ITreeNode>> _reportSelection;
 
-        public static bool IsUpdatingThisSelectionOnGlueEvent = true;
-        public static bool IsPushingSelectionOutToGlue = true;
+        List<NodeViewModel> currentNodes = new List<NodeViewModel>();
 
-        public static NodeViewModel CurrentNode
+        public bool IsUpdatingThisSelectionOnGlueEvent = true;
+        public bool IsPushingSelectionOutToGlue = true;
+        public bool SuppressFocus = false;
+
+        public NodeViewModel CurrentNode
         {
             get => currentNodes.FirstOrDefault();
         }
 
-        public static NamedObjectSave CurrentNamedObjectSave
-        {
-            set => _=SelectByTag(value, false);
-        }
-
-        public static ReferencedFileSave CurrentReferencedFileSave
+        public NamedObjectSave CurrentNamedObjectSave
         {
             set => _ = SelectByTag(value, false);
         }
 
-        public static CustomVariable CurrentCustomVariable
+        public ReferencedFileSave CurrentReferencedFileSave
         {
             set => _ = SelectByTag(value, false);
         }
 
-        public static EventResponseSave CurrentEventResponseSave
+        public CustomVariable CurrentCustomVariable
         {
             set => _ = SelectByTag(value, false);
         }
 
-        public static StateSave CurrentStateSave
+        public EventResponseSave CurrentEventResponseSave
         {
             set => _ = SelectByTag(value, false);
         }
 
-        public static StateSaveCategory CurrentStateSaveCategory
+        public StateSave CurrentStateSave
         {
             set => _ = SelectByTag(value, false);
         }
 
-        public static EntitySave CurrentEntitySave
+        public StateSaveCategory CurrentStateSaveCategory
         {
             set => _ = SelectByTag(value, false);
         }
 
-        public static ScreenSave CurrentScreenSave
+        public EntitySave CurrentEntitySave
+        {
+            set => _ = SelectByTag(value, false);
+        }
+
+        public ScreenSave CurrentScreenSave
         {
             set => _ = SelectByTag(value, false);
         }
 
         #endregion
 
-        public static void HandleDeselection(NodeViewModel nodeViewModel)
+        public SelectionLogic(MainTreeViewViewModel mainViewModel, ITreeViewDisplay mainView,
+            Action<IReadOnlyList<ITreeNode>> reportSelection)
+        {
+            this.mainViewModel = mainViewModel;
+            this.mainView = mainView;
+            _reportSelection = reportSelection;
+            Current = this;
+            NodeViewModel.NodeSelected = (node, focus, replace) => HandleSelected(node, focus, replace);
+            NodeViewModel.NodeDeselected = HandleDeselection;
+        }
+
+        public void HandleDeselection(NodeViewModel nodeViewModel)
         {
             if (currentNodes.Contains(nodeViewModel))
             {
@@ -82,7 +96,7 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
             RefreshGlueState(false);
         }
 
-        public static void HandleSelected(NodeViewModel nodeViewModel, bool focus, bool replaceSelection)
+        public void HandleSelected(NodeViewModel nodeViewModel, bool focus, bool replaceSelection)
         {
             IsUpdatingThisSelectionOnGlueEvent = false;
 
@@ -112,14 +126,14 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
             {
                 didSelectionChange = currentNodes.Any(item => item.Tag == nodeViewModel.Tag) == false;
 
-                if(!didSelectionChange && replaceSelection)
+                if (!didSelectionChange && replaceSelection)
                 {
                     didSelectionChange = currentNodes.Contains(nodeViewModel) == false;
                 }
             }
 
 
-            if(replaceSelection)
+            if (replaceSelection)
             {
                 currentNodes.Clear();
 
@@ -136,7 +150,7 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
 
             if (nodeViewModel != null && nodeViewModel.IsSelected && focus)
             {
-                nodeViewModel.Focus(mainView);
+                mainView.FocusNode(nodeViewModel);
             }
 
             RefreshGlueState(didSelectionChange);
@@ -144,14 +158,14 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
             IsUpdatingThisSelectionOnGlueEvent = true;
         }
 
-        private static void RefreshGlueState(bool forcePushToGlue)
+        private void RefreshGlueState(bool forcePushToGlue)
         {
             if (IsPushingSelectionOutToGlue
                 // The node can change if the user deletes a tree node and then a new one
                 // automatically gets re-selected. In this case, we do still want to push the selection out.
                 || forcePushToGlue)
             {
-                GlueState.Self.CurrentTreeNodes = currentNodes;
+                _reportSelection(currentNodes);
             }
 
             // We used to refresh here on a normal click. This is unnecessary
@@ -165,13 +179,13 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
             mainView.RefreshRightClickMenu();
         }
 
-        internal static async Task SelectByPath(string path, bool addToSelection)
+        internal async Task SelectByPath(string path, bool addToSelection)
         {
             var treeNode = mainViewModel.GetTreeNodeByRelativePath(path);
             await SelectByTreeNode(treeNode, addToSelection);
         }
 
-        public static async Task SelectByTag(object value, bool addToSelection)
+        public async Task SelectByTag(object value, bool addToSelection)
         {
             NodeViewModel treeNode = value == null ? null : mainViewModel.GetTreeNodeByTag(value);
 
@@ -179,9 +193,7 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
 
         }
 
-        public static bool SuppressFocus = false;
-
-        public static async Task SelectByTreeNode(NodeViewModel treeNode, bool addToSelection, bool selectAndScroll = true)
+        public async Task SelectByTreeNode(NodeViewModel treeNode, bool addToSelection, bool selectAndScroll = true)
         {
             // record the value here since we delay on this method
             var suppressFocusCopy = SuppressFocus;
@@ -189,37 +201,37 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
             {
                 if (currentNodes.Count > 0 && !addToSelection)
                 {
-                    SelectionLogic.IsUpdatingThisSelectionOnGlueEvent = false;
+                    IsUpdatingThisSelectionOnGlueEvent = false;
 
                     mainViewModel.DeselectResursively(true);
                     //currentNode.IsSelected = false;
                     currentNodes.Clear();
 
-                    SelectionLogic.IsUpdatingThisSelectionOnGlueEvent = true;
+                    IsUpdatingThisSelectionOnGlueEvent = true;
                 }
             }
             else
             {
                 if (treeNode != null && (treeNode.IsSelected == false || currentNodes.Contains(treeNode) == false))
                 {
-                    if(CurrentNode?.IsSelected == false && !addToSelection)
+                    if (CurrentNode?.IsSelected == false && !addToSelection)
                     {
                         mainViewModel.DeselectResursively(true);
                         // Selecting a tree node deselects the current node, but that can take some time and cause
-                        // some inconsistent behavior. To solve this, we will forcefully deselect the current node 
+                        // some inconsistent behavior. To solve this, we will forcefully deselect the current node
                         // so the consequence of selecting this node is immediate:
-                        foreach(var node in currentNodes)
+                        foreach (var node in currentNodes)
                         {
                             node.IsSelected = false;
                         }
                         // do we null out currentNode
                     }
-                    if(suppressFocusCopy)
+                    if (suppressFocusCopy)
                     {
                         treeNode.SetSelectNoSelectionLogic(true);
-                        if(addToSelection)
+                        if (addToSelection)
                         {
-                            if(currentNodes.Contains(treeNode) == false)
+                            if (currentNodes.Contains(treeNode) == false)
                             {
                                 currentNodes.Add(treeNode);
                             }
@@ -235,7 +247,7 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
                         treeNode.IsSelected = true;
                     }
 
-                    if(selectAndScroll)
+                    if (selectAndScroll)
                     {
                         treeNode.ExpandParentsRecursively();
                     }
@@ -246,23 +258,17 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
                     // If we don't do this, sometimes it doesn't scroll into view...
                     await System.Threading.Tasks.Task.Delay(120);
 
-                    mainView.MainTreeView.UpdateLayout();
+                    mainView.UpdateTreeViewLayout();
 
-                    mainView.MainTreeView.ScrollIntoView(treeNode);
+                    mainView.ScrollNodeIntoView(treeNode);
 
                     // Do this after the delay
-                    if(treeNode?.IsSelected == true && !suppressFocusCopy)
+                    if (treeNode?.IsSelected == true && !suppressFocusCopy)
                     {
-                        treeNode.Focus(mainView);
+                        mainView.FocusNode(treeNode);
                     }
                 }
             }
-        }
-
-        public static void Initialize(MainTreeViewViewModel mainViewModel, MainTreeViewControl mainView)
-        {
-            SelectionLogic.mainViewModel = mainViewModel;
-            SelectionLogic.mainView = mainView;
         }
     }
 }
