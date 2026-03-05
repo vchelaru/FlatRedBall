@@ -15,6 +15,7 @@ public interface IReferenceService
     IReadOnlyList<object> GetReferencesToElement(IElement element);
     IReadOnlyList<object> GetReferencesTo(NamedObjectSave namedObjectSave, IElement container);
     IReadOnlyList<object> GetReferencesTo(CustomVariable customVariable, IElement container);
+    CustomVariableReferences GetCustomVariableReferences(CustomVariable customVariable, IElement container);
 
     #endregion
 

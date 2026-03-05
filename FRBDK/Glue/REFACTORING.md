@@ -92,16 +92,15 @@ organic growth — it was written as a shared helper but is tightly coupled to t
 
 - [x] **Extract `GetItemDescriptors`** ✅ 2026-03-04 — See completed refactors below.
 
-- [ ] **Delete dead `AddRemoveFromProjectItems()`** — now unreachable private static method left after
-  the extraction. Safe to delete; remove it in a small cleanup PR.
+- [x] **Delete dead `AddRemoveFromProjectItems()`** ✅ 2026-03-04 — unreachable private static method removed.
 
 - [ ] **Migrate pre-created items to `ICommand`** — the pre-created `GeneralToolStripMenuItem` fields
   from `Initialize()` should become `ICommand` properties on a future `RightClickViewModel`. This removes
   the WinForms pre-allocation pattern entirely.
 
-- [ ] **Inject `IObjectFinder`** — `GetItemDescriptors` still calls `ObjectFinder.Self` in the
-  `IsNamedObjectNode` branch (abstract-entity list check). Wrap behind an interface to make that branch
-  testable.
+- [ ] **Inject `IObjectFinder`** — `GetItemDescriptors` still calls `ObjectFinder.Self.GetEntitySave` in the
+  `IsNamedObjectNode` branch. The `GetAllDerivedElementsRecursive` call in that branch was migrated
+  to `ReferenceService.Self` (2026-03-04). Full injection requires wrapping `GetEntitySave` behind an interface.
 
 - [ ] **Move into the plugin and rename** — change namespace to `OfficialPlugins.TreeViewPlugin.Logic`,
   rename to `RightClickLogic` or `RightClickService`, make it an instance class injected into
