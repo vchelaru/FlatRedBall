@@ -257,4 +257,67 @@ public class SearchResultsTests
         first.DefinedByBase.ShouldBeFalse();
         second.DefinedByBase.ShouldBeTrue();
     }
+
+    // 13–17: typing "f ", "e ", "s ", "o ", "v " (prefix only, no search term) should
+    // return all items of that type. Currently broken because GetMatchWeight returns 0
+    // for an empty search term even when a prefix filter is active.
+
+    [WpfFact]
+    public void PrefixF_EmptySearch_ReturnsAllFiles()
+    {
+        var rfs = new ReferencedFileSave { Name = "Content/MyFile.png" };
+
+        var results = Search(files: new[] { rfs }, searchText: "", prefixText: "f");
+
+        results.ShouldNotBeEmpty();
+        results.ShouldAllBe(n => n.Tag is ReferencedFileSave);
+    }
+
+    [WpfFact]
+    public void PrefixE_EmptySearch_ReturnsAllEntities()
+    {
+        var entity = MakeEntity("Player");
+
+        var results = Search(entities: new[] { entity }, searchText: "", prefixText: "e");
+
+        results.ShouldNotBeEmpty();
+        results.ShouldAllBe(n => n.Tag is EntitySave);
+    }
+
+    [WpfFact]
+    public void PrefixS_EmptySearch_ReturnsAllScreens()
+    {
+        var screen = MakeScreen("GameScreen");
+
+        var results = Search(screens: new[] { screen }, searchText: "", prefixText: "s");
+
+        results.ShouldNotBeEmpty();
+        results.ShouldAllBe(n => n.Tag is ScreenSave);
+    }
+
+    [WpfFact]
+    public void PrefixO_EmptySearch_ReturnsAllNamedObjects()
+    {
+        var nos = new NamedObjectSave { InstanceName = "SpriteInstance" };
+        var entity = MakeEntity("Player");
+        entity.NamedObjects.Add(nos);
+
+        var results = Search(entities: new[] { entity }, searchText: "", prefixText: "o");
+
+        results.ShouldNotBeEmpty();
+        results.ShouldAllBe(n => n.Tag is NamedObjectSave);
+    }
+
+    [WpfFact]
+    public void PrefixV_EmptySearch_ReturnsAllVariables()
+    {
+        var variable = new CustomVariable { Name = "Speed" };
+        var entity = MakeEntity("Player");
+        entity.CustomVariables.Add(variable);
+
+        var results = Search(entities: new[] { entity }, searchText: "", prefixText: "v");
+
+        results.ShouldNotBeEmpty();
+        results.ShouldAllBe(n => n.Tag is CustomVariable);
+    }
 }

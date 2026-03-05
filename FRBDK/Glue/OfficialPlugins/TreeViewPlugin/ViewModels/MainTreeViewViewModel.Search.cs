@@ -46,6 +46,14 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             var hasPrefix = !string.IsNullOrEmpty(prefixText);
 
+            // "f " with no trailing text → show all files; no prefix and no text → show nothing
+            if (string.IsNullOrEmpty(searchText) && !hasPrefix) return results;
+
+            double MatchWeight(string name, bool isDefinedByBase = false) =>
+                string.IsNullOrEmpty(searchText)
+                    ? (isDefinedByBase ? 0.999 : 1.0)
+                    : SearchMatcher.GetMatchWeight(name, searchText, isDefinedByBase);
+
             List<StateSaveCategory> categories = new List<StateSaveCategory>();
             List<StateSave> states = new List<StateSave>();
             List<NamedObjectSave> namedObjects = new List<NamedObjectSave>();
@@ -67,7 +75,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                     // Actually, strip off folder completely, as this can cause confusion:
                     //var name = entity.Name.Substring("entities\\".Length);
                     var name = entity.GetStrippedName();
-                    var matchWeight = SearchMatcher.GetMatchWeight(name, searchText);
+                    var matchWeight = MatchWeight(name);
                     if (matchWeight > 0)
                     {
                         var vm = new GlueElementNodeViewModel(null, entity, false);
@@ -85,7 +93,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 {
                     //var name = screen.Name.Substring("screens\\".Length);
                     var name = screen.GetStrippedName();
-                    var matchWeight = SearchMatcher.GetMatchWeight(name, searchText);
+                    var matchWeight = MatchWeight(name);
                     if (matchWeight > 0)
                     {
                         var vm = new GlueElementNodeViewModel(null, screen, false);
@@ -101,7 +109,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             {
                 foreach (var file in files)
                 {
-                    var matchWeight = SearchMatcher.GetMatchWeight(file.Name, searchText);
+                    var matchWeight = MatchWeight(file.Name);
                     if (matchWeight > 0)
                     {
                         var vm = NodeFor(file);
@@ -120,7 +128,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             foreach (var nos in namedObjects)
             {
-                var matchWeight = SearchMatcher.GetMatchWeight(nos.InstanceName, searchText, nos.DefinedByBase);
+                var matchWeight = MatchWeight(nos.InstanceName,nos.DefinedByBase);
                 if (matchWeight > 0)
                 {
                     var node = new NodeViewModel(TreeNodeType.NamedObjectSaveNode);
@@ -141,7 +149,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             foreach (var category in categories)
             {
-                var matchWeight = SearchMatcher.GetMatchWeight(category.Name, searchText);
+                var matchWeight = MatchWeight(category.Name);
                 if (matchWeight > 0)
                 {
                     var treeNode = new NodeViewModel(TreeNodeType.StateCategoryNode);
@@ -154,7 +162,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             }
             foreach (var state in states)
             {
-                var matchWeight = SearchMatcher.GetMatchWeight(state.Name, searchText);
+                var matchWeight = MatchWeight(state.Name);
                 if (matchWeight > 0)
                 {
                     var treeNode = new NodeViewModel(TreeNodeType.StateNode);
@@ -169,7 +177,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             foreach (var variable in variables)
             {
-                var matchWeight = SearchMatcher.GetMatchWeight(variable.Name, searchText, variable.DefinedByBase);
+                var matchWeight = MatchWeight(variable.Name,variable.DefinedByBase);
                 if (matchWeight > 0)
                 {
                     var treeNode = new NodeViewModel(TreeNodeType.CustomVariableNode);
@@ -191,7 +199,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             foreach (var eventItem in events)
             {
-                var matchWeight = SearchMatcher.GetMatchWeight(eventItem.EventName, searchText);
+                var matchWeight = MatchWeight(eventItem.EventName);
                 if (matchWeight > 0)
                 {
                     var treeNode = new NodeViewModel(TreeNodeType.EventNode);
@@ -222,7 +230,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             void AddFoldersRecurisively(List<NodeViewModel> list, NodeViewModel possibleFolderNode)
             {
-                var matchWeight = SearchMatcher.GetMatchWeight(possibleFolderNode.Text, searchText);
+                var matchWeight = MatchWeight(possibleFolderNode.Text);
                 if (matchWeight > 0 && possibleFolderNode.Text.EndsWith(".cs") == false && possibleFolderNode.Tag == null &&
                     (((ITreeNode)possibleFolderNode).IsFolderForGlobalContentFiles() || ((ITreeNode)possibleFolderNode).IsFolderInFilesContainerNode()))
                 {

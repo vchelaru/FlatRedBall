@@ -17,6 +17,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using Xceed.Wpf.Toolkit.Primitives;
 
@@ -113,6 +114,13 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             get => Get<NodeViewModel?>();
             set => Set(value);
         }
+
+        public ICommand OpenFileCommand => _openFileCommand ??= new CommandBase<NodeViewModel>(node =>
+        {
+            if (node?.Tag is ReferencedFileSave rfs)
+                _glueCommands.FileCommands.OpenReferencedFileInDefaultProgram(rfs);
+        }, (Func<NodeViewModel, bool>?)null);
+        private ICommand? _openFileCommand;
 
 
         public IEnumerable Root
