@@ -362,7 +362,7 @@ public class ObjectFinder : IObjectFinder
         return null;
 
     }
-
+        
     bool IsContainedInListOrAsChild(List<NamedObjectSave> namedObjects, NamedObjectSave objectToFind)
     {
         // This was done before to prevent access of objects during tasks.

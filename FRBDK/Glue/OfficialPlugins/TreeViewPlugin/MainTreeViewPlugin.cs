@@ -1,4 +1,4 @@
-﻿using FlatRedBall.Glue.FormHelpers;
+using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Navigation;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
@@ -59,9 +59,6 @@ class MainTreeViewPlugin : PluginBase
         MainViewModel.HasUserDismissedTips = GlueState.Self.GlueSettingsSave.Properties
             .GetValue<bool>(nameof(MainViewModel.HasUserDismissedTips));
         mainView.DataContext = MainViewModel;
-
-        RightClickHelper.Initialize();
-
 
         selectionLogic = new SelectionLogic(MainViewModel, mainView,
             nodes => GlueState.Self.CurrentTreeNodes = nodes);

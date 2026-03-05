@@ -114,7 +114,7 @@ public class BindableGue : GraphicalUiElement
         {
             foreach (var gue in this.WhatThisContains)
             {
-                (gue as BindableGue)?.RemoveBindingContextRecursively();
+                (gue as GraphicalUiElement)?.RemoveBindingContextRecursively();
             }
         }
     }
