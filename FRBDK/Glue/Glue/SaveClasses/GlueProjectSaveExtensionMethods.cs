@@ -728,11 +728,11 @@ public static class GlueProjectSaveExtensionMethods
     {
         foreach (var screen in instance.Screens)
         {
-            InheritanceManager.UpdateFromBaseType(screen, showPopupAboutObjectErrors:false);
+            InheritanceManager.Self.UpdateFromBaseType(screen, showPopupAboutObjectErrors:false);
         }
         foreach (var entity in instance.Entities)
         {
-            InheritanceManager.UpdateFromBaseType(entity, showPopupAboutObjectErrors:false);
+            InheritanceManager.Self.UpdateFromBaseType(entity, showPopupAboutObjectErrors:false);
         }
     }
 }

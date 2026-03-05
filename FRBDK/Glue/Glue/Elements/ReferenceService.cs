@@ -12,9 +12,9 @@ namespace FlatRedBall.Glue.Elements;
 /// <see cref="ObjectFinder"/> retains thin forwarding stubs for backward compatibility;
 /// prefer calling this class directly in new code.
 /// </summary>
-public class ReferenceService
+public class ReferenceService : IReferenceService
 {
-    public static ReferenceService Self { get; } = new ReferenceService();
+    public static IReferenceService Self { get; internal set; } = new ReferenceService();
 
     // ReferenceService reads the live project through ObjectFinder so there is only one
     // source of truth for GlueProject. Methods that need element lookup delegate back to

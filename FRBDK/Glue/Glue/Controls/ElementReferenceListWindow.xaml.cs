@@ -12,35 +12,38 @@ namespace FlatRedBall.Glue.Controls;
 /// </summary>
 public partial class ElementReferenceListWindow
 {
-    public ElementReferenceListWindow()
+    readonly IReferenceService _referenceService;
+
+    public ElementReferenceListWindow(IReferenceService referenceService)
     {
+        _referenceService = referenceService;
         InitializeComponent();
     }
 
     public void PopulateWithReferencesTo(ReferencedFileSave rfs)
     {
-        foreach (var item in ReferenceService.Self.GetReferencesTo(rfs))
+        foreach (var item in _referenceService.GetReferencesTo(rfs))
             ItemListView.Items.Add(item);
         UpdateTextToReferenceCount();
     }
 
     public void PopulateWithReferencesToElement(IElement element)
     {
-        foreach (var item in ReferenceService.Self.GetReferencesToElement(element))
+        foreach (var item in _referenceService.GetReferencesToElement(element))
             ItemListView.Items.Add(item);
         UpdateTextToReferenceCount();
     }
 
     public void PopulateWithReferencesTo(NamedObjectSave namedObjectSave, IElement container)
     {
-        foreach (var item in ReferenceService.Self.GetReferencesTo(namedObjectSave, container))
+        foreach (var item in _referenceService.GetReferencesTo(namedObjectSave, container))
             ItemListView.Items.Add(item);
         UpdateTextToReferenceCount();
     }
 
     public void PopulateWithReferencesTo(CustomVariable customVariable, IElement container)
     {
-        foreach (var item in ReferenceService.Self.GetReferencesTo(customVariable, container))
+        foreach (var item in _referenceService.GetReferencesTo(customVariable, container))
             ItemListView.Items.Add(item);
         UpdateTextToReferenceCount();
     }

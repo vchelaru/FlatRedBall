@@ -1177,7 +1177,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
             }
         }
 
-        InheritanceManager.UpdateAllDerivedElementFromBaseValues(regenerateCode:false, currentElement: element);
+        InheritanceManager.Self.UpdateAllDerivedElementFromBaseValues(regenerateCode:false, currentElement: element);
 
         CustomVariableHelper.SetDefaultValueFor(newVariable, element);
 
@@ -1663,7 +1663,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
     [Obsolete("Use InheritanceManager UpdateFromBaseType")]
     public bool UpdateFromBaseType(GlueElement glueElement, bool showPopupAboutObjectErrors = true)
     {
-        return InheritanceManager.UpdateFromBaseType(glueElement, showPopupAboutObjectErrors);
+        return InheritanceManager.Self.UpdateFromBaseType(glueElement, showPopupAboutObjectErrors);
     }
 
 

@@ -414,7 +414,7 @@ public class CustomVariableSaveSetPropertyLogic
 
             }
 
-            InheritanceManager.UpdateAllDerivedElementFromBaseValues(true, element);
+            InheritanceManager.Self.UpdateAllDerivedElementFromBaseValues(true, element);
         }
     }
 

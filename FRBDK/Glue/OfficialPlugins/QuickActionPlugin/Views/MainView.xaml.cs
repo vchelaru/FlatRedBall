@@ -127,7 +127,7 @@ namespace OfficialPlugins.QuickActionPlugin.Views
             var newNos = await GlueCommands.Self.GluxCommands.AddNewNamedObjectToAsync(viewModel, gameScreen, null);
 
             newNos.ExposedInDerived = true;
-            InheritanceManager.UpdateAllDerivedElementFromBaseValues(regenerateCode:false, gameScreen);
+            InheritanceManager.Self.UpdateAllDerivedElementFromBaseValues(regenerateCode:false, gameScreen);
             AnyButtonClicked();
         }
 

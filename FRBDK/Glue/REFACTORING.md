@@ -280,15 +280,39 @@ Traversal** (14) groups — 24 methods. Everything else stays on `ObjectFinder`.
   over the service result. The window no longer imports `ObjectFinder` or contains any query logic.
   Zero behavior change. `Glue.csproj` builds with 0 errors.
 
-- [ ] **Inject `IReferenceService` into consumers** — `InheritanceManager` and the tree-view/right-click
-  code are the primary consumers. Inject via constructor so they can be unit-tested without a live
-  `ObjectFinder`.
+- [x] **Inject `IReferenceService` into consumers** ✅ 2026-03-04 — Created `IReferenceService` interface,
+  converted `InheritanceManager` to an instance class with `IReferenceService` constructor injection,
+  injected into `ElementReferenceListWindow` via constructor. See completed refactors below.
 
 ## Known Areas Needing Improvement
 
 <!-- Add notes here as problem areas are identified -->
 
 ## Completed Refactors
+
+### 2026-03-04 — Reference-finding centralization
+
+Audited all reference-finding code across the codebase and consolidated it into a new `ReferenceService`:
+
+- **`Glue/Managers/FindManager.cs` → deleted** — contained only dead commented-out WinForms code plus the `IFindManager` interface.
+- **`Glue/Managers/IFindManager.cs` → created** — clean interface-only file. Also restored the missing `GlobalContentFilesPath` property (was accidentally commented out, causing a latent compile error in `RuntimeDebuggingPlugin`).
+- **`OfficialPlugins/TreeViewPlugin/Logic/FindManager.cs`** — added `GlobalContentFilesPath` implementation.
+- **`Glue/Elements/ReferenceService.cs` → created** — 24 public methods + 2 private helpers + 4 composite `GetReferencesTo` query methods extracted from `ObjectFinder` and `ElementReferenceListWindow`.
+- **`Glue/Elements/ObjectFinder.cs`** — all 24 moved methods replaced with one-line forwarding stubs. Zero behavior change for existing callers.
+- **`Glue/Controls/ElementReferenceListWindow.xaml.cs`** — reduced to a pure display class. Each `Populate*` method is now a 3-line foreach over `ReferenceService.Self`.
+
+**Follow-up done (2026-03-04):** `IReferenceService` extracted and injected — see completed refactors below.
+
+### 2026-03-04 — Extract `IReferenceService`, inject into `InheritanceManager` and `ElementReferenceListWindow`
+
+- **`Glue/Elements/IReferenceService.cs` → created** — interface with all 28 public methods from `ReferenceService` (composite queries, file/RFS finding, named-object/entity finding, variable/type finding, inheritance traversal).
+- **`Glue/Elements/ReferenceService.cs`** — added `: IReferenceService`. `Self` property type changed from `ReferenceService` to `IReferenceService` with `internal set` (same transitional pattern as `SelectionLogic.Current`; tests can swap the singleton for a mock).
+- **`Glue/Managers/InheritanceManager.cs`** — converted from `static class` to instance class. Constructor takes `IReferenceService`. Added `public static InheritanceManager Self { get; internal set; }` accessor. All 13 call sites across 10 files updated from `InheritanceManager.Method()` to `InheritanceManager.Self.Method()`. `_referenceService` used in place of `ReferenceService.Self` for all 8 reference-finding calls.
+- **`Glue/Services/Builder.cs`** — added `InheritanceManager.Self = new InheritanceManager(ReferenceService.Self)` in the composition-root `Build()` method alongside the other singleton initializations.
+- **`Glue/Controls/ElementReferenceListWindow.xaml.cs`** — constructor now takes `IReferenceService referenceService`; stored as `_referenceService` field. All 4 `Populate*` methods use `_referenceService` instead of `ReferenceService.Self`.
+- **`OfficialPlugins/TreeViewPlugin/Logic/RightClickHelper.cs`** — updated the single `new ElementReferenceListWindow()` instantiation to pass `ReferenceService.Self`.
+
+Zero behavior change. `ObjectFinder.Self` forwarding stubs unchanged.
 
 ### 2026-03-04 — Split `MainTreeViewViewModel` into partial class files
 

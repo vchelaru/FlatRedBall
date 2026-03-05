@@ -1265,7 +1265,7 @@ public static class RightClickHelper
     {
 
         // find all references, findallreferences, find references
-        ElementReferenceListWindow erlw = new ElementReferenceListWindow();
+        ElementReferenceListWindow erlw = new ElementReferenceListWindow(ReferenceService.Self);
         erlw.Show();
         if (GlueState.Self.CurrentReferencedFileSave != null)
         {
