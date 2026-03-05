@@ -241,6 +241,8 @@ internal class BottomWindowManager
             if (
                 // There's no animation to show...
                 _viewModel.CurrentAnimationChain == null ||
+                // ...there are no frames to animate...
+                _viewModel.CurrentAnimationChain.VisibleChildren.Count == 0 ||
                 // ...there is an animation to show, but we are showing a frame too, so we don't want to animate over it.
                 _viewModel.CurrentAnimationFrame != null)
                 return;

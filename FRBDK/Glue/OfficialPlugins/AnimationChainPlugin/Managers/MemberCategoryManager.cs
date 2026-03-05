@@ -42,7 +42,7 @@ internal class MemberCategoryManager
 
         List<MemberCategory> toReturn = new List<MemberCategory>();
 
-        var mainCategory = new MemberCategory();
+        var mainCategory = new MemberCategory("Animation");
         toReturn.Add(mainCategory);
 
         var nameMember = Add(nameof(AnimationChainViewModel.Name), isReadOnly:false);
@@ -87,7 +87,7 @@ internal class MemberCategoryManager
     {
         var list = new List<MemberCategory>();
 
-        var currentCategory = new MemberCategory();
+        var currentCategory = new MemberCategory("Animation Frame");
         list.Add(currentCategory);
 
         var isAtlas = animationFrame.Parent?.FilePath.Extension == "atlas";
@@ -154,7 +154,7 @@ internal class MemberCategoryManager
     {
         var list = new List<MemberCategory>();
 
-        var mainCategory = new MemberCategory();
+        var mainCategory = new MemberCategory("Circle");
         list.Add(mainCategory);
 
         Add(nameof(circle.Name));
