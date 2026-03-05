@@ -81,7 +81,6 @@ namespace Npc.Managers
             if (!File.Exists(saveAsName))
             {
                 throw new Exception("The file wasn't extracted correctly");
-                succeeded = false;
             }
 
             return succeeded;

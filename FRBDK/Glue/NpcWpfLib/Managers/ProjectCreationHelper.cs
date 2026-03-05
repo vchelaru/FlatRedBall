@@ -833,7 +833,7 @@ public static class ProjectCreationHelper
                 System.Threading.Thread.Sleep(msSleep);
                 if(failureCount >= numberOfTimesToTry)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }

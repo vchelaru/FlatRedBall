@@ -7,7 +7,8 @@
              xmlns:pt="http://propertytools.org/wpf" 
              xmlns:controls="clr-namespace:GlueFormsCore.Controls;assembly=GlueFormsCore"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             mc:Ignorable="d" 
+             xmlns:formHelpers="clr-namespace:FlatRedBall.Glue.FormHelpers;assembly=GlueFormsCore"
+             mc:Ignorable="d"
              PreviewKeyDown="UserControl_PreviewKeyDown"
              d:DesignHeight="450" d:DesignWidth="350">
     <UserControl.Resources>
@@ -142,12 +143,13 @@
                             Margin="0,2"
                             ></controls:SearchBar>
 
-        <ListBox x:Name="FlatList" 
+        <ListBox x:Name="FlatList"
                  ItemsSource= "{Binding FlattenedItems}"
                  SelectedItem ="{Binding FlattenedSelectedItem}"
                  Grid.Row="4"
                  Visibility="{Binding SearchListVisibility}"
                  PreviewMouseLeftButtonDown="FlatList_MouseLeftButtonDown"
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                  >
             <ListBox.ItemTemplate>
                 <DataTemplate>
@@ -158,10 +160,32 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <Image Grid.Column="0" Source="{Binding ImageSource}" Width="18" Margin="0 0 4 0"/>
-                        <pt:EditableTextBlock Grid.Column="1" Text="{Binding Text}" 
-                                              FontWeight="{Binding FontWeight}" 
-                                              />
+                        <Grid Grid.Column="1" ClipToBounds="True">
+                            <pt:EditableTextBlock Text="{Binding Text}"
+                                                  FontWeight="{Binding FontWeight}"
+                                                  />
+                        </Grid>
                         <!--IsEditing="{Binding IsEditing}"-->
+                        <Button Grid.Column="2"
+                                Command="{Binding DataContext.OpenFileCommand,
+                                                  RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                CommandParameter="{Binding}"
+                                ToolTip="Open file"
+                                Padding="2,0"
+                                VerticalAlignment="Center">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding TreeNodeType}"
+                                                     Value="{x:Static formHelpers:TreeNodeType.ReferencedFileSaveNode}">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                            <materialDesign:PackIcon Kind="OpenInNew" Width="14" Height="14"/>
+                        </Button>
                     </Grid>
                 </DataTemplate>
             </ListBox.ItemTemplate>

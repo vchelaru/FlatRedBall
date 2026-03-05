@@ -7,6 +7,7 @@
     <UseWindowsForms>true</UseWindowsForms>
     <RootNamespace>Npc</RootNamespace>
     <NoWarn>1591</NoWarn>
+    <nullable>enable</nullable>
   </PropertyGroup>
 
   <ItemGroup>

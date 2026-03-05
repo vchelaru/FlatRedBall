@@ -602,6 +602,17 @@ public partial class MainTreeViewControl : UserControl, ITreeViewDisplay
 
     private void FlatList_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
+        // This handler is wired to PreviewMouseLeftButtonDown, which fires before the
+        // Button.Click event. If the click originated inside a Button (e.g. the open-file
+        // arrow), return early so the button can handle it without SelectSearchNode hiding
+        // the list first.
+        var dep = e.OriginalSource as DependencyObject;
+        while (dep != null && dep is not ListBoxItem)
+        {
+            if (dep is Button) return;
+            dep = VisualTreeHelper.GetParent(dep);
+        }
+
         var objectPushed = e.OriginalSource;
         var frameworkElementPushed = (objectPushed as FrameworkElement);
 
