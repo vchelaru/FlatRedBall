@@ -3,7 +3,7 @@ using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Events;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.MVVM;
-using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.ViewModels;
@@ -96,6 +96,9 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         #endregion
 
         #region Fields/Properties
+
+        readonly IGlueState _glueState;
+        readonly IGlueCommands _glueCommands;
 
         public NodeViewModel ScreenRootNode { get; private set; }
         public NodeViewModel EntityRootNode { get; private set; }
@@ -235,8 +238,10 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         #endregion
 
-        public MainTreeViewViewModel()
+        public MainTreeViewViewModel(IGlueState glueState, IGlueCommands glueCommands)
         {
+            _glueState = glueState;
+            _glueCommands = glueCommands;
             ScreenRootNode =
                 new NodeViewModel(TreeNodeType.ScreenRootNode) { Text = "Screens" };
 

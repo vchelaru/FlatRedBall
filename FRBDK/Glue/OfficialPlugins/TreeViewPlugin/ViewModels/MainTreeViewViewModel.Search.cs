@@ -2,7 +2,6 @@ using FlatRedBall.Glue;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Events;
 using FlatRedBall.Glue.FormHelpers;
-using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using OfficialPlugins.TreeViewPlugin.Logic;
@@ -21,7 +20,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         private void RefreshFlattenedList()
         {
             ///////////////////Early Out///////////////////
-            if (GlueState.Self.CurrentGlueProject == null)
+            if (_glueState.CurrentGlueProject == null)
             {
                 return;
             }
@@ -47,7 +46,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             var showEvents = !hasPrefix;
             var showFolders = !hasPrefix;
 
-            foreach (var entity in GlueState.Self.CurrentGlueProject.Entities.ToArray())
+            foreach (var entity in _glueState.CurrentGlueProject.Entities.ToArray())
             {
                 if (!hasPrefix || PrefixText == "e")
                 {
@@ -67,7 +66,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 AddInternalObjectsToLists(entity);
             }
 
-            foreach (var screen in GlueState.Self.CurrentGlueProject.Screens.ToArray())
+            foreach (var screen in _glueState.CurrentGlueProject.Screens.ToArray())
             {
                 if (!hasPrefix || PrefixText == "s")
                 {

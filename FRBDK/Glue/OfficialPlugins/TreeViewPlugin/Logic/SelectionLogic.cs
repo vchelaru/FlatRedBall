@@ -1,6 +1,5 @@
 using FlatRedBall.Glue.Events;
 using FlatRedBall.Glue.FormHelpers;
-using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using OfficialPlugins.TreeViewPlugin.ViewModels;
 using OfficialPlugins.TreeViewPlugin.Views;
@@ -21,6 +20,7 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
 
         MainTreeViewViewModel mainViewModel;
         ITreeViewDisplay mainView;
+        readonly Action<IReadOnlyList<ITreeNode>> _reportSelection;
 
         List<NodeViewModel> currentNodes = new List<NodeViewModel>();
 
@@ -75,11 +75,15 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
 
         #endregion
 
-        public SelectionLogic(MainTreeViewViewModel mainViewModel, ITreeViewDisplay mainView)
+        public SelectionLogic(MainTreeViewViewModel mainViewModel, ITreeViewDisplay mainView,
+            Action<IReadOnlyList<ITreeNode>> reportSelection)
         {
             this.mainViewModel = mainViewModel;
             this.mainView = mainView;
+            _reportSelection = reportSelection;
             Current = this;
+            NodeViewModel.NodeSelected = (node, focus, replace) => HandleSelected(node, focus, replace);
+            NodeViewModel.NodeDeselected = HandleDeselection;
         }
 
         public void HandleDeselection(NodeViewModel nodeViewModel)
@@ -161,7 +165,7 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
                 // automatically gets re-selected. In this case, we do still want to push the selection out.
                 || forcePushToGlue)
             {
-                GlueState.Self.CurrentTreeNodes = currentNodes;
+                _reportSelection(currentNodes);
             }
 
             // We used to refresh here on a normal click. This is unnecessary

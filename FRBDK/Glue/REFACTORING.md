@@ -57,8 +57,8 @@ The `TreeViewPlugin` is a self-contained plugin that owns the explorer panel (Sc
 ### Suggested next steps (in order)
 
 - [x] **Extract `ITreeViewDisplay` interface from `MainTreeViewControl`** ✅ 2026-03-04
-- [ ] **Decouple `NodeViewModel` from `SelectionLogic`**: Replace direct `SelectionLogic.Current.HandleSelected/HandleDeselection` calls in `NodeViewModel` with a delegate or event. The `SelectionLogic` instance (or plugin) would subscribe. This removes the `Logic` → `ViewModel` → `Logic` circular coupling.
-- [ ] **Inject `GlueState`/`GlueCommands` into `MainTreeViewViewModel`**: Introduce constructor parameters or a context object so the ViewModel does not call static singletons directly. Enables unit testing of search and refresh logic.
+- [x] **Decouple `NodeViewModel` from `SelectionLogic`**: Replace direct `SelectionLogic.Current.HandleSelected/HandleDeselection` calls in `NodeViewModel` with a delegate or event. The `SelectionLogic` instance (or plugin) would subscribe. This removes the `Logic` → `ViewModel` → `Logic` circular coupling. ✅ 2026-03-04
+- [x] **Inject `GlueState`/`GlueCommands` into `MainTreeViewViewModel`**: Introduce constructor parameters or a context object so the ViewModel does not call static singletons directly. Enables unit testing of search and refresh logic. ✅ 2026-03-04
 - [ ] **Extract search logic into a `TreeSearchService`**: `MainTreeViewViewModel.Search.cs` builds filtered lists from project data — pure logic with no UI concerns. Move to a separate class injected via constructor.
 
 ## Known Areas Needing Improvement
@@ -124,3 +124,25 @@ Added `SelectionLogicTests` with constructor/default-state/mock-wiring tests. `H
 Call sites in `RefreshFlattenedList` updated to `SearchMatcher.GetMatchWeight(name, SearchText)`.
 
 Added `InternalsVisibleTo("GlueUnitTests")` to `OfficialPlugins.csproj` and wrote `SearchMatcherTests` covering all weight tiers (exact, case-sensitive prefix, case-insensitive exact, camel case, case-insensitive prefix, contains, no match) plus ordering invariants and the `isDefinedByBase` penalty.
+
+### 2026-03-04 — Decouple `NodeViewModel` from `SelectionLogic`
+
+`NodeViewModel.IsSelected` setter previously called `SelectionLogic.Current.HandleSelected` and `SelectionLogic.Current.HandleDeselection` directly, giving `NodeViewModel` a compile-time dependency on `SelectionLogic` (a `Logic` class depending on a `ViewModel`, and vice versa — circular coupling).
+
+Replaced both calls with two `internal static` delegates on `NodeViewModel`:
+- `NodeViewModel.NodeSelected` — `Action<NodeViewModel, bool, bool>` (node, focus, replaceSelection)
+- `NodeViewModel.NodeDeselected` — `Action<NodeViewModel>`
+
+`SelectionLogic` constructor now wires these delegates to `HandleSelected` and `HandleDeselection`. The `using OfficialPlugins.TreeViewPlugin.Logic;` import was removed from `NodeViewModel.cs`.
+
+Added `InternalsVisibleTo("DynamicProxyGenAssembly2")` to `OfficialPlugins.csproj` (required for Moq to proxy the `internal ITreeViewDisplay` interface). Added two delegate-wiring tests to `SelectionLogicTests`: `IsSelected_True_InvokesNodeSelectedDelegate` and `IsSelected_False_InvokesNodeDeselectedDelegate`, which use spy lambdas to confirm the correct delegate fires without depending on `GlueState.Self`.
+
+### 2026-03-04 — Inject `IGlueState`/`IGlueCommands` into `MainTreeViewViewModel` and `SelectionLogic`
+
+`MainTreeViewPlugin` is the composition root and the only class now allowed to call static singletons. All lower-level classes receive their dependencies via constructor injection.
+
+**`MainTreeViewViewModel`**: Added `IGlueState glueState` and `IGlueCommands glueCommands` constructor parameters (stored as `readonly` fields `_glueState` / `_glueCommands`). All `GlueState.Self.*` and `GlueCommands.Self.*` calls in `Refresh.cs` and `Search.cs` replaced with field access. `MainTreeViewPlugin` field initializer moved to `StartUp()` so `GlueState.Self` is available at construction time.
+
+**`SelectionLogic`**: `GlueState.Self.CurrentTreeNodes = ...` (the one singleton call remaining) replaced with an `Action<IReadOnlyList<ITreeNode>> reportSelection` callback injected via constructor. `MainTreeViewPlugin` passes `nodes => GlueState.Self.CurrentTreeNodes = nodes`. Tests pass a no-op spy lambda — `SelectionLogicTests` no longer needs any reference to `GlueState`.
+
+**Still static** (left for future steps): `ProjectManager.*`, `ObjectFinder.Self`, `FileManager.*` — these have no direct `IGlueState`/`IGlueCommands` equivalent and require more effort to wrap.

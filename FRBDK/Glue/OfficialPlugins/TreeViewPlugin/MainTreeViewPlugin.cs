@@ -31,7 +31,7 @@ class MainTreeViewPlugin : PluginBase
 
     MainTreeViewControl mainView;
 
-    MainTreeViewViewModel MainViewModel = new MainTreeViewViewModel();
+    MainTreeViewViewModel MainViewModel;
 
     SelectionLogic selectionLogic;
 
@@ -41,6 +41,8 @@ class MainTreeViewPlugin : PluginBase
 
     public override void StartUp()
     {
+        MainViewModel = new MainTreeViewViewModel(GlueState.Self, GlueCommands.Self);
+
         var pixelHeight = GlueState.Self.GlueSettingsSave.BookmarkRowHeight > 0
             ? GlueState.Self.GlueSettingsSave.BookmarkRowHeight
             : 100;
@@ -61,7 +63,8 @@ class MainTreeViewPlugin : PluginBase
         RightClickHelper.Initialize();
 
 
-        selectionLogic = new SelectionLogic(MainViewModel, mainView);
+        selectionLogic = new SelectionLogic(MainViewModel, mainView,
+            nodes => GlueState.Self.CurrentTreeNodes = nodes);
 
         pluginTab = CreateTab(mainView, "Explorer", TabLocation.Left);
         pluginTab.CanClose = false;

@@ -1,7 +1,6 @@
 using FlatRedBall.Glue;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.FormHelpers;
-using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
@@ -47,7 +46,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             }
             var elementTreeNode = GetElementTreeNode(element);
 
-            var project = GlueState.Self.CurrentGlueProject;
+            var project = _glueState.CurrentGlueProject;
 
             var shouldShow = !element.IsHiddenInTreeView &&
                 (
@@ -195,7 +194,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                     // I don't know why - that seems wrong, because we want to
                     // show all files that are part of the project. The project should
                     // decide what to show, not what is on disk.
-                    var absoluteRfs = GlueCommands.Self.GetAbsoluteFilePath(rfs);
+                    var absoluteRfs = _glueCommands.GetAbsoluteFilePath(rfs);
 
                     var nodeToAddTo = TreeNodeForDirectory(absoluteRfs.GetDirectoryContainingThis()) ??
                         GlobalContentRootNode;
@@ -223,7 +222,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             #endregion
 
-            string contentDirectory = GlueState.Self.ContentDirectory;
+            string contentDirectory = _glueState.ContentDirectory;
             AddDirectoryNodes(contentDirectory + "GlobalContent/", GlobalContentRootNode, null);
 
 
@@ -245,10 +244,10 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         internal void RefreshDirectoryNodes()
         {
-            AddDirectoryNodes(GlueState.Self.CurrentGlueProjectDirectory + "Entities/", EntityRootNode, ScreenOrEntity.Entity);
-            AddDirectoryNodes(GlueState.Self.CurrentGlueProjectDirectory + "Screens/", ScreenRootNode, ScreenOrEntity.Screen);
+            AddDirectoryNodes(_glueState.CurrentGlueProjectDirectory + "Entities/", EntityRootNode, ScreenOrEntity.Entity);
+            AddDirectoryNodes(_glueState.CurrentGlueProjectDirectory + "Screens/", ScreenRootNode, ScreenOrEntity.Screen);
 
-            string contentDirectory = GlueState.Self.ContentDirectory;
+            string contentDirectory = _glueState.ContentDirectory;
 
             AddDirectoryNodes(contentDirectory + "GlobalContent/", GlobalContentRootNode, screenOrEntity:null);
         }
@@ -256,7 +255,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         public void RefreshBookmarks()
         {
             Bookmarks.Clear();
-            var project = GlueState.Self.CurrentGlueProject;
+            var project = _glueState.CurrentGlueProject;
 
             if(project?.Bookmarks == null)
             {
@@ -365,7 +364,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                     if (((ITreeNode)treeNode).IsDirectoryNode())
                     {
 
-                        string directory = GlueCommands.Self.GetAbsoluteFileName(treeNode.GetRelativeFilePath(), isGlobalContent);
+                        string directory = _glueCommands.GetAbsoluteFileName(treeNode.GetRelativeFilePath(), isGlobalContent);
 
                         directory = FileManager.Standardize(directory);
 
@@ -413,7 +412,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 if (treeNodeToAddTo == null && !string.IsNullOrEmpty(directory))
                 {
                     // If it's null that may mean the directory doesn't exist.  We should make it
-                    string absoluteDirectory = GlueCommands.Self.GetAbsoluteFileName(containingDirectory, false);
+                    string absoluteDirectory = _glueCommands.GetAbsoluteFileName(containingDirectory, false);
                     if (!Directory.Exists(absoluteDirectory))
                     {
                         Directory.CreateDirectory(absoluteDirectory);
@@ -472,7 +471,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 if(treeNodeToAddTo == null && !string.IsNullOrEmpty(directory))
                 {
                     // If it's null that may mean the directory doesn't exist.  We should make it
-                    string absoluteDirectory = GlueCommands.Self.GetAbsoluteFileName(containingDirectory, false);
+                    string absoluteDirectory = _glueCommands.GetAbsoluteFileName(containingDirectory, false);
                     if (!Directory.Exists(absoluteDirectory))
                     {
                         Directory.CreateDirectory(absoluteDirectory);
