@@ -34,7 +34,7 @@ public class CameraLogic
 
     GumSKElement Canvas;
 
-    BindableGue Background;
+    GraphicalUiElement Background;
 
     static double? windowsScaleFactor = null;
     public static double WindowsScaleFactor
@@ -67,7 +67,7 @@ public class CameraLogic
 
     public void Initialize(System.Windows.Controls.UserControl view,
         ICameraZoomViewModel cameraZoomViewModel, GumSKElement canvas,
-        BindableGue background)
+        GraphicalUiElement background)
     {
         Canvas = canvas;
         View = view;
