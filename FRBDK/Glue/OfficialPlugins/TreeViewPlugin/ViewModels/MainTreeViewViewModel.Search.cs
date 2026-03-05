@@ -16,22 +16,35 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
     {
         #region Search for Nodes
 
-        List<NodeViewModel> tempListForSortingFilteredResults = new List<NodeViewModel>();
         private void RefreshFlattenedList()
         {
-            ///////////////////Early Out///////////////////
-            if (_glueState.CurrentGlueProject == null)
-            {
-                return;
-            }
-            /////////////////End Early Out////////////////
+            if (_glueState.CurrentGlueProject == null) return;
 
-            var searchToLower = SearchText?.ToLowerInvariant();
-            var searchTermCaseSensitive = SearchText;
+            var results = CollectSearchResults(
+                _glueState.CurrentGlueProject.Entities,
+                _glueState.CurrentGlueProject.Screens,
+                ObjectFinder.Self.GetAllReferencedFiles(),
+                SearchText,
+                PrefixText);
 
-            tempListForSortingFilteredResults.Clear();
+            FlattenedItems.Clear();
+            foreach (var item in results)
+                FlattenedItems.Add(item);
 
-            var hasPrefix = !string.IsNullOrEmpty(PrefixText);
+            if (FlattenedSelectedItem == null)
+                FlattenedSelectedItem = FlattenedItems.FirstOrDefault();
+        }
+
+        internal List<NodeViewModel> CollectSearchResults(
+            IEnumerable<EntitySave> entities,
+            IEnumerable<ScreenSave> screens,
+            IEnumerable<ReferencedFileSave> files,
+            string? searchText,
+            string prefixText)
+        {
+            var results = new List<NodeViewModel>();
+
+            var hasPrefix = !string.IsNullOrEmpty(prefixText);
 
             List<StateSaveCategory> categories = new List<StateSaveCategory>();
             List<StateSave> states = new List<StateSave>();
@@ -41,76 +54,76 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             var showStates = !hasPrefix;
             var showCategories = !hasPrefix;
-            var showObjects = !hasPrefix || PrefixText == "o";
-            var showVariables = !hasPrefix || PrefixText == "v";
+            var showObjects = !hasPrefix || prefixText == "o";
+            var showVariables = !hasPrefix || prefixText == "v";
             var showEvents = !hasPrefix;
             var showFolders = !hasPrefix;
 
-            foreach (var entity in _glueState.CurrentGlueProject.Entities.ToArray())
+            foreach (var entity in entities.ToArray())
             {
-                if (!hasPrefix || PrefixText == "e")
+                if (!hasPrefix || prefixText == "e")
                 {
                     // strip off "entities\\"
                     // Actually, strip off folder completely, as this can cause confusion:
                     //var name = entity.Name.Substring("entities\\".Length);
                     var name = entity.GetStrippedName();
-                    var matchWeight = SearchMatcher.GetMatchWeight(name, SearchText);
+                    var matchWeight = SearchMatcher.GetMatchWeight(name, searchText);
                     if (matchWeight > 0)
                     {
                         var vm = new GlueElementNodeViewModel(null, entity, false);
                         vm.SearchTermMatchWeight = matchWeight;
-                        tempListForSortingFilteredResults.Add(vm);
+                        results.Add(vm);
                     }
                 }
 
                 AddInternalObjectsToLists(entity);
             }
 
-            foreach (var screen in _glueState.CurrentGlueProject.Screens.ToArray())
+            foreach (var screen in screens.ToArray())
             {
-                if (!hasPrefix || PrefixText == "s")
+                if (!hasPrefix || prefixText == "s")
                 {
                     //var name = screen.Name.Substring("screens\\".Length);
                     var name = screen.GetStrippedName();
-                    var matchWeight = SearchMatcher.GetMatchWeight(name, SearchText);
+                    var matchWeight = SearchMatcher.GetMatchWeight(name, searchText);
                     if (matchWeight > 0)
                     {
                         var vm = new GlueElementNodeViewModel(null, screen, false);
                         vm.SearchTermMatchWeight = matchWeight;
-                        tempListForSortingFilteredResults.Add(vm);
+                        results.Add(vm);
                     }
                 }
 
                 AddInternalObjectsToLists(screen);
             }
 
-            if (!hasPrefix || PrefixText == "f")
+            if (!hasPrefix || prefixText == "f")
             {
-                foreach (var file in ObjectFinder.Self.GetAllReferencedFiles())
+                foreach (var file in files)
                 {
-                    var matchWeight = SearchMatcher.GetMatchWeight(file.Name, SearchText);
+                    var matchWeight = SearchMatcher.GetMatchWeight(file.Name, searchText);
                     if (matchWeight > 0)
                     {
                         var vm = NodeFor(file);
                         vm.SearchTermMatchWeight = matchWeight;
-                        tempListForSortingFilteredResults.Add(vm);
+                        results.Add(vm);
                     }
                 }
             }
 
-            if(showFolders)
+            if (showFolders)
             {
-                AddFoldersRecurisively(tempListForSortingFilteredResults, ScreenRootNode);
-                AddFoldersRecurisively(tempListForSortingFilteredResults, EntityRootNode);
-                AddFoldersRecurisively(tempListForSortingFilteredResults, GlobalContentRootNode);
+                AddFoldersRecurisively(results, ScreenRootNode);
+                AddFoldersRecurisively(results, EntityRootNode);
+                AddFoldersRecurisively(results, GlobalContentRootNode);
             }
 
             foreach (var nos in namedObjects)
             {
-                var matchWeight = SearchMatcher.GetMatchWeight(nos.InstanceName, SearchText, nos.DefinedByBase);
+                var matchWeight = SearchMatcher.GetMatchWeight(nos.InstanceName, searchText, nos.DefinedByBase);
                 if (matchWeight > 0)
                 {
-                    var node = new NodeViewModel(TreeNodeType.NamedObjectSaveNode );
+                    var node = new NodeViewModel(TreeNodeType.NamedObjectSaveNode);
 
                     node.ImageSource = NamedObjectsRootNodeViewModel.GetIcon(nos);
 
@@ -121,29 +134,27 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                     node.SearchTermMatchWeight = matchWeight;
                     node.Text = $"{nos.InstanceName} ({nos.ClassType}) in {nos.GetContainer()}";
                     node.Tag = nos;
-                    //LayersTreeNode.SelectedImageKey = "layerList.png";
-                    //LayersTreeNode.ImageKey = "layerList.png";
 
-                    tempListForSortingFilteredResults.Add(node);
+                    results.Add(node);
                 }
             }
 
             foreach (var category in categories)
             {
-                var matchWeight = SearchMatcher.GetMatchWeight(category.Name, SearchText);
+                var matchWeight = SearchMatcher.GetMatchWeight(category.Name, searchText);
                 if (matchWeight > 0)
                 {
-                    var treeNode = new NodeViewModel(TreeNodeType.StateCategoryNode );
+                    var treeNode = new NodeViewModel(TreeNodeType.StateCategoryNode);
                     treeNode.ImageSource = NodeViewModel.FolderClosedIcon;
                     treeNode.Text = category.ToString();
                     treeNode.Tag = category;
                     treeNode.SearchTermMatchWeight = matchWeight;
-                    tempListForSortingFilteredResults.Add(treeNode);
+                    results.Add(treeNode);
                 }
             }
             foreach (var state in states)
             {
-                var matchWeight = SearchMatcher.GetMatchWeight(state.Name, SearchText);
+                var matchWeight = SearchMatcher.GetMatchWeight(state.Name, searchText);
                 if (matchWeight > 0)
                 {
                     var treeNode = new NodeViewModel(TreeNodeType.StateNode);
@@ -151,18 +162,18 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                     treeNode.Text = state.ToString();
                     treeNode.Tag = state;
                     treeNode.SearchTermMatchWeight = matchWeight;
-                    tempListForSortingFilteredResults.Add(treeNode);
+                    results.Add(treeNode);
                 }
 
             }
 
             foreach (var variable in variables)
             {
-                var matchWeight = SearchMatcher.GetMatchWeight(variable.Name, SearchText, variable.DefinedByBase);
+                var matchWeight = SearchMatcher.GetMatchWeight(variable.Name, searchText, variable.DefinedByBase);
                 if (matchWeight > 0)
                 {
                     var treeNode = new NodeViewModel(TreeNodeType.CustomVariableNode);
-                    if(variable.DefinedByBase)
+                    if (variable.DefinedByBase)
                     {
                         treeNode.ImageSource = NodeViewModel.VariableIconDerived;
                     }
@@ -173,24 +184,29 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                     treeNode.Text = variable.ToString();
                     treeNode.Tag = variable;
                     treeNode.SearchTermMatchWeight = matchWeight;
-                    tempListForSortingFilteredResults.Add(treeNode);
+                    results.Add(treeNode);
                 }
 
             }
 
             foreach (var eventItem in events)
             {
-                var matchWeight = SearchMatcher.GetMatchWeight(eventItem.EventName, SearchText);
-                if(matchWeight > 0)
+                var matchWeight = SearchMatcher.GetMatchWeight(eventItem.EventName, searchText);
+                if (matchWeight > 0)
                 {
                     var treeNode = new NodeViewModel(TreeNodeType.EventNode);
                     treeNode.ImageSource = NodeViewModel.EventIcon;
                     treeNode.Text = eventItem.ToString();
                     treeNode.Tag = eventItem;
                     treeNode.SearchTermMatchWeight = matchWeight;
-                    tempListForSortingFilteredResults.Add(treeNode);
+                    results.Add(treeNode);
                 }
             }
+
+            return results
+                .OrderByDescending(item => item.SearchTermMatchWeight)
+                .ThenBy(item => item.Text)
+                .ToList();
 
             NodeViewModel NodeFor(ReferencedFileSave rfs)
             {
@@ -204,16 +220,10 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 return nodeForFile;
             }
 
-            var sorted = tempListForSortingFilteredResults
-                .OrderByDescending(item => item.SearchTermMatchWeight)
-                .ThenBy(item => item.Text);
-
-            FlattenedItems.Clear();
-
-            void AddFoldersRecurisively(List<NodeViewModel> tempListForSortingFilteredResults, NodeViewModel possibleFolderNode)
+            void AddFoldersRecurisively(List<NodeViewModel> list, NodeViewModel possibleFolderNode)
             {
-                var matchWeight = SearchMatcher.GetMatchWeight(possibleFolderNode.Text, SearchText);
-                if(matchWeight > 0 && possibleFolderNode.Text.EndsWith(".cs") == false && possibleFolderNode.Tag == null &&
+                var matchWeight = SearchMatcher.GetMatchWeight(possibleFolderNode.Text, searchText);
+                if (matchWeight > 0 && possibleFolderNode.Text.EndsWith(".cs") == false && possibleFolderNode.Tag == null &&
                     (((ITreeNode)possibleFolderNode).IsFolderForGlobalContentFiles() || ((ITreeNode)possibleFolderNode).IsFolderInFilesContainerNode()))
                 {
                     var node = new NodeViewModel(TreeNodeType.GeneralDirectoryNode);
@@ -221,18 +231,13 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                     node.Tag = possibleFolderNode;
                     node.Text = $"{possibleFolderNode.Text} ({((ITreeNode) possibleFolderNode).GetRelativeFilePath()})";
                     node.SearchTermMatchWeight = matchWeight;
-                    tempListForSortingFilteredResults.Add(node);
+                    list.Add(node);
                 }
 
-                foreach(var child in possibleFolderNode.Children)
+                foreach (var child in possibleFolderNode.Children)
                 {
-                    AddFoldersRecurisively(tempListForSortingFilteredResults, child);
+                    AddFoldersRecurisively(list, child);
                 }
-            }
-
-            foreach (var item in sorted)
-            {
-                FlattenedItems.Add(item);
             }
 
             void AddInternalObjectsToLists(GlueElement element)
@@ -290,11 +295,6 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                         }
                     }
                 }
-            }
-
-            if (FlattenedSelectedItem == null)
-            {
-                FlattenedSelectedItem = FlattenedItems.FirstOrDefault();
             }
         }
 
