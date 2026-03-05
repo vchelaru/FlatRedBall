@@ -664,7 +664,7 @@ public class DragDropManager : Singleton<DragDropManager>
                 targetContainer.States.Add(toAdd);
             }
 
-            InheritanceManager.UpdateAllDerivedElementFromBaseValues(true, currentElement);
+            InheritanceManager.Self.UpdateAllDerivedElementFromBaseValues(true, currentElement);
 
             GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(targetContainer);
             GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(targetContainer);

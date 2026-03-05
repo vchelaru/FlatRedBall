@@ -170,7 +170,7 @@ namespace FlatRedBall.Glue.SetVariable
 
                 SetExposedByDerivedRecursively(namedObjectSave, oldValue);
 
-                InheritanceManager.UpdateAllDerivedElementFromBaseValues(true, element);
+                InheritanceManager.Self.UpdateAllDerivedElementFromBaseValues(true, element);
             }
 
 
@@ -473,7 +473,7 @@ namespace FlatRedBall.Glue.SetVariable
                 }
             }
 
-            InheritanceManager.UpdateAllDerivedElementFromBaseValues(true, element);
+            InheritanceManager.Self.UpdateAllDerivedElementFromBaseValues(true, element);
         }
 
 

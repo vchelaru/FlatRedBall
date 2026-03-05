@@ -497,7 +497,7 @@ public static class RightClickHelper
                 if (isAbstractEntity)
                 {
                     // It's okay if it's abstract, so long as there are derived entities that are not abstract:
-                    var derived = ObjectFinder.Self.GetAllDerivedElementsRecursive(genericEntityType);
+                    var derived = ReferenceService.Self.GetAllDerivedElementsRecursive(genericEntityType);
                     var hasNonAbstract = derived.Any(item => !IsAbstract(item));
                     shouldAdd = hasNonAbstract;
                 }
@@ -561,6 +561,9 @@ public static class RightClickHelper
 
         else if (targetNode.IsCustomVariable())
         {
+            var customVar = targetNode.Tag as CustomVariable;
+            var containingElement = targetNode.GetContainingElementTreeNode()?.Tag as GlueElement;
+
             list.AddRange(RemoveItems());
             list.Add(RightClickItemDescriptor.Separator);
             list.Add(PreCreated(mFindAllReferences, "Find all references to this"));
@@ -571,6 +574,20 @@ public static class RightClickHelper
             list.Add(PreCreated(mMoveUp, $"^ {L.Texts.MoveUp}"));
             list.Add(PreCreated(mMoveDown, $"v {L.Texts.MoveDown}"));
             list.Add(PreCreated(mMoveToBottom, $"vv {L.Texts.MoveBottom}"));
+
+            if (customVar?.SetByDerived == true && containingElement != null)
+            {
+                var derivedElements = ReferenceService.Self.GetAllElementsThatInheritFrom(containingElement);
+                if (derivedElements.Count > 0)
+                {
+                    list.Add(RightClickItemDescriptor.Separator);
+                    list.Add(new RightClickItemDescriptor
+                    {
+                        Text = "Set all derived values to default",
+                        Handler = () => HandleSetAllDerivedVariablesToDefault(customVar, containingElement)
+                    });
+                }
+            }
         }
 
         #endregion
@@ -1119,46 +1136,6 @@ public static class RightClickHelper
         }
     }
 
-
-    private static void AddRemoveFromProjectItems()
-    {
-        AddItem(removeFromProjectToolStripMenuItem);
-
-        if (GlueState.Self.CurrentReferencedFileSave != null ||
-            GlueState.Self.CurrentNamedObjectSave != null ||
-            GlueState.Self.CurrentEventResponseSave != null ||
-            GlueState.Self.CurrentCustomVariable != null ||
-            GlueState.Self.CurrentStateSave != null ||
-            GlueState.Self.CurrentStateSaveCategory != null)
-        {
-            if (GlueState.Self.CurrentScreenSave != null)
-            {
-                removeFromProjectToolStripMenuItem.Text = "Remove from Screen";
-            }
-            else if (GlueState.Self.CurrentEntitySave != null)
-            {
-                removeFromProjectToolStripMenuItem.Text = "Remove from Entity";
-            }
-            else
-            {
-                removeFromProjectToolStripMenuItem.Text = "Remove from Global Content";
-            }
-
-            if(GlueState.Self.CurrentReferencedFileSave?.IsCreatedByWildcard == true)
-            {
-                removeFromProjectToolStripMenuItem.Text = $"Delete [{GlueState.Self.CurrentReferencedFileSave.Name}]";
-            }
-        }
-        else
-        {
-            removeFromProjectToolStripMenuItem.Text = "Remove item";
-        }
-        if ((Control.ModifierKeys & Keys.Shift) != 0)
-        {
-            AddItem(mRemoveFromProjectQuick);
-        }
-    }
-
     static void mFillValuesFromVariables_Click(object sender, EventArgs e)
     {
         StateSave stateSave = GlueState.Self.CurrentStateSave;
@@ -1181,6 +1158,46 @@ public static class RightClickHelper
 
             GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
 
+            GluxCommands.Self.SaveProjectAndElements();
+        }
+    }
+
+    private static void HandleSetAllDerivedVariablesToDefault(CustomVariable baseVariable, GlueElement baseElement)
+    {
+        var refs = ReferenceService.Self.GetCustomVariableReferences(baseVariable, baseElement);
+        var changes = refs.DerivedVariableReferences
+            .Where(r => !Equals(r.Variable.DefaultValue, baseVariable.DefaultValue))
+            .ToList();
+
+        if (changes.Count == 0)
+        {
+            GlueCommands.Self.DialogCommands.ShowMessageBox(
+                $"All derived values for '{baseVariable.Name}' are already at the default value.",
+                "No changes");
+            return;
+        }
+
+        var baseDefault = baseVariable.DefaultValue?.ToString() ?? "(null)";
+        var sb = new System.Text.StringBuilder();
+        sb.AppendLine($"Reset '{baseVariable.Name}' to default ({baseDefault}) in:");
+        sb.AppendLine();
+        foreach (var (element, variable) in changes)
+        {
+            var current = variable.DefaultValue?.ToString() ?? "(null)";
+            sb.AppendLine($"  {element.Name}: {current} \u2192 {baseDefault}");
+        }
+
+        var result = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(
+            sb.ToString(),
+            "Set all derived values to default");
+
+        if (result == System.Windows.MessageBoxResult.Yes)
+        {
+            foreach (var (element, variable) in changes)
+            {
+                variable.DefaultValue = null;
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element, generateDerivedElements: false);
+            }
             GluxCommands.Self.SaveProjectAndElements();
         }
     }
@@ -1265,7 +1282,7 @@ public static class RightClickHelper
     {
 
         // find all references, findallreferences, find references
-        ElementReferenceListWindow erlw = new ElementReferenceListWindow();
+        ElementReferenceListWindow erlw = new ElementReferenceListWindow(ReferenceService.Self);
         erlw.Show();
         if (GlueState.Self.CurrentReferencedFileSave != null)
         {

@@ -12,9 +12,9 @@ namespace FlatRedBall.Glue.Elements;
 /// <see cref="ObjectFinder"/> retains thin forwarding stubs for backward compatibility;
 /// prefer calling this class directly in new code.
 /// </summary>
-public class ReferenceService
+public class ReferenceService : IReferenceService
 {
-    public static ReferenceService Self { get; } = new ReferenceService();
+    public static IReferenceService Self { get; internal set; } = new ReferenceService();
 
     // ReferenceService reads the live project through ObjectFinder so there is only one
     // source of truth for GlueProject. Methods that need element lookup delegate back to
@@ -133,32 +133,81 @@ public class ReferenceService
     /// </summary>
     public IReadOnlyList<object> GetReferencesTo(CustomVariable customVariable, IElement container)
     {
+        var refs = GetCustomVariableReferences(customVariable, container);
         var results = new List<object>();
+        foreach (var (_, state) in refs.StateReferences)
+            results.Add(state);
+        foreach (var (_, variable) in refs.DerivedVariableReferences)
+            results.Add(variable);
+        foreach (var (_, nos) in refs.TunneledFromInstances)
+            results.Add(nos);
+        foreach (var (_, nos) in refs.InstancesOfOwnerType)
+            results.Add(nos);
+        foreach (var ers in refs.EventReferences)
+            results.Add(ers);
+        return results;
+    }
 
-        foreach (var state in container.AllStates)
+    public CustomVariableReferences GetCustomVariableReferences(CustomVariable customVariable, IElement container)
+    {
+        var refs = new CustomVariableReferences();
+
+        if (container is GlueElement glueElement)
         {
-            if (state.InstructionSaves.Any(instr =>
-                    string.Equals(instr.Member, customVariable.Name, StringComparison.OrdinalIgnoreCase)))
+            foreach (var state in glueElement.AllStates)
             {
-                results.Add(state);
+                if (state.InstructionSaves.Any(instr =>
+                        string.Equals(instr.Member, customVariable.Name, StringComparison.OrdinalIgnoreCase)))
+                {
+                    refs.StateReferences.Add((glueElement, state));
+                }
             }
         }
 
-        foreach (var variable in GetAllElementsThatInheritFrom(container)
-                     .SelectMany(e => e.CustomVariables
+        foreach (var derivedElement in GetAllElementsThatInheritFrom(container))
+        {
+            foreach (var variable in derivedElement.CustomVariables
                          .Where(v => v.DefinedByBase &&
                                      string.Equals(v.Name, customVariable.Name,
-                                         StringComparison.OrdinalIgnoreCase))))
+                                         StringComparison.OrdinalIgnoreCase)))
+            {
+                refs.DerivedVariableReferences.Add((derivedElement, variable));
+            }
+        }
+
+        // TunneledFromInstances — the NOS this variable delegates through, if any
+        if (!string.IsNullOrEmpty(customVariable.SourceObject) && container is GlueElement ownerForTunnel)
         {
-            results.Add(variable);
+            var tunneledNos = ownerForTunnel.GetNamedObjectRecursively(customVariable.SourceObject);
+            if (tunneledNos != null)
+                refs.TunneledFromInstances.Add((ownerForTunnel, tunneledNos));
+        }
+
+        // InstancesOfOwnerType — NOS in any element typed to the owner that explicitly set this variable
+        if (container is EntitySave ownerEntity)
+        {
+            foreach (var element in GlueProject.Screens.Cast<GlueElement>()
+                         .Concat(GlueProject.Entities.Cast<GlueElement>()))
+            {
+                foreach (var nos in element.AllNamedObjects)
+                {
+                    if (nos.SourceType == SourceType.Entity &&
+                        nos.SourceClassType == ownerEntity.Name &&
+                        nos.InstructionSaves.Any(instr =>
+                            string.Equals(instr.Member, customVariable.Name, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        refs.InstancesOfOwnerType.Add((element, nos));
+                    }
+                }
+            }
         }
 
         foreach (var ers in container.GetEventsOnVariable(customVariable.Name))
         {
-            results.Add(ers);
+            refs.EventReferences.Add(ers);
         }
 
-        return results;
+        return refs;
     }
 
     #endregion

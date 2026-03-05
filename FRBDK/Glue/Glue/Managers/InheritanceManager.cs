@@ -1,4 +1,4 @@
-﻿using FlatRedBall.Glue.Controls;
+using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Parsing;
@@ -17,20 +17,20 @@ namespace GlueFormsCore.Managers;
 
 public class InheritanceManager
 {
-    //Used to prevent recursive references and inheritence
-    public static int VerificationId
-    {
-        get;
-        set;
-    }
+    public static InheritanceManager Self { get; internal set; }
 
-    static InheritanceManager()
+    //Used to prevent recursive references and inheritence
+    public static int VerificationId { get; set; }
+
+    readonly IReferenceService _referenceService;
+
+    public InheritanceManager(IReferenceService referenceService)
     {
-        VerificationId = 0;
+        _referenceService = referenceService;
     }
 
     // The name is vague and the method does a ton, so it might be good to figure out a way to break this up
-    public static void UpdateAllDerivedElementFromBaseValues(bool regenerateCode, GlueElement currentElement = null)
+    public void UpdateAllDerivedElementFromBaseValues(bool regenerateCode, GlueElement currentElement = null)
     {
         currentElement = currentElement ?? GlueState.Self.CurrentElement;
 
@@ -39,15 +39,15 @@ public class InheritanceManager
 
         if (currentElement is EntitySave currentEntity)
         {
-            List<EntitySave> derivedEntities = ObjectFinder.Self.GetAllEntitiesThatInheritFrom(currentEntity.Name);
+            List<EntitySave> derivedEntities = _referenceService.GetAllEntitiesThatInheritFrom(currentEntity.Name);
 
-            List<NamedObjectSave> nosList = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(currentEntity.Name);
+            List<NamedObjectSave> nosList = _referenceService.GetAllNamedObjectsThatUseEntity(currentEntity.Name);
 
             for (int i = 0; i < derivedEntities.Count; i++)
             {
                 EntitySave entitySave = derivedEntities[i];
 
-                nosList.AddRange(ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(entitySave.Name));
+                nosList.AddRange(_referenceService.GetAllNamedObjectsThatUseEntity(entitySave.Name));
 
                 GlueCommands.Self.GluxCommands.ElementCommands.UpdateFromBaseType(entitySave);
 
@@ -75,7 +75,7 @@ public class InheritanceManager
         }
         else if (currentElement is ScreenSave currentScreenSave)
         {
-            List<ScreenSave> derivedScreens = ObjectFinder.Self.GetAllScreensThatInheritFrom(currentScreenSave.Name);
+            List<ScreenSave> derivedScreens = _referenceService.GetAllScreensThatInheritFrom(currentScreenSave.Name);
 
             for (int i = 0; i < derivedScreens.Count; i++)
             {
@@ -92,7 +92,7 @@ public class InheritanceManager
         }
     }
 
-    public static void ReactToChangedBaseScreen(object oldValue, ScreenSave screenSave)
+    public void ReactToChangedBaseScreen(object oldValue, ScreenSave screenSave)
     {
         if (VerifyInheritanceGraph(screenSave) == CheckResult.Failed)
         {
@@ -105,7 +105,7 @@ public class InheritanceManager
         }
     }
 
-    public static void ReactToChangedBaseEntity(string oldValue, EntitySave entitySave)
+    public void ReactToChangedBaseEntity(string oldValue, EntitySave entitySave)
     {
         bool isValidBase = GetIfCurrentEntityBaseIsValid(entitySave);
 
@@ -123,7 +123,7 @@ public class InheritanceManager
 
             if (oldEntity != null)
             {
-                var allObjects = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(oldEntity);
+                var allObjects = _referenceService.GetAllNamedObjectsThatUseEntity(oldEntity);
                 var screens = allObjects.Select(item => item.GetContainer())
                     .Where(item => item as ScreenSave != null)
                     .Select(item => item as ScreenSave);
@@ -136,7 +136,7 @@ public class InheritanceManager
 
             if (newEntity != null)
             {
-                var allObjects = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(newEntity);
+                var allObjects = _referenceService.GetAllNamedObjectsThatUseEntity(newEntity);
                 var screens = allObjects.Select(item => item.GetContainer())
                     .Where(item => item as ScreenSave != null)
                     .Select(item => item as ScreenSave);
@@ -166,7 +166,7 @@ public class InheritanceManager
         }
     }
 
-    private static bool GetIfCurrentEntityBaseIsValid(EntitySave entitySave)
+    private bool GetIfCurrentEntityBaseIsValid(EntitySave entitySave)
     {
         bool isValidBase = true;
 
@@ -176,7 +176,7 @@ public class InheritanceManager
             List<EntitySave> thisAndDerivedFromThisList;
             List<EntitySave> baseEntities = new List<EntitySave>();
 
-            thisAndDerivedFromThisList = ObjectFinder.Self.GetAllEntitiesThatInheritFrom(entitySave.Name);
+            thisAndDerivedFromThisList = _referenceService.GetAllEntitiesThatInheritFrom(entitySave.Name);
             thisAndDerivedFromThisList.Add(entitySave);
 
             EntitySave newBase = ObjectFinder.Self.GetEntitySave(entitySave.BaseEntity);
@@ -275,7 +275,7 @@ public class InheritanceManager
         return isValidBase;
     }
 
-    private static void AskToPreserveVariablesAfterInheritanceChange(EntitySave entitySave, List<CustomVariable> variablesBefore)
+    private void AskToPreserveVariablesAfterInheritanceChange(EntitySave entitySave, List<CustomVariable> variablesBefore)
     {
         foreach (CustomVariable oldVariable in variablesBefore)
         {
@@ -336,7 +336,7 @@ public class InheritanceManager
         return listToReturn;
     }
 
-    internal static CheckResult VerifyInheritanceGraph(INamedObjectContainer node)
+    internal CheckResult VerifyInheritanceGraph(INamedObjectContainer node)
     {
         var project = GlueState.Self.CurrentGlueProject;
         if (project != null)
@@ -408,7 +408,7 @@ public class InheritanceManager
     /// </summary>
     /// <param name="glueElement">The base Glue element to update.</param>
     /// <returns>Whether the object updated</returns>
-    public static bool UpdateFromBaseType(GlueElement glueElement, bool showPopupAboutObjectErrors = true)
+    public bool UpdateFromBaseType(GlueElement glueElement, bool showPopupAboutObjectErrors = true)
     {
         bool haveChangesOccurred = false;
         if (ObjectFinder.Self.GlueProject != null)
@@ -427,7 +427,7 @@ public class InheritanceManager
     /// <param name="derivedGlueElement">The derived element which conains named objects which should be upated.</param>
     /// <param name="showPopupAboutObjectErrors">Whether to show popups on errors. This should be true if this is called in response to a UI action.</param>
     /// <returns>Whether any changes have happened on the NamedObjects, which means a save is needed.</returns>
-    private static bool UpdateNamedObjectsFromBaseType(GlueElement derivedGlueElement, bool showPopupAboutObjectErrors)
+    private bool UpdateNamedObjectsFromBaseType(GlueElement derivedGlueElement, bool showPopupAboutObjectErrors)
     {
         bool haveChangesOccurred = false;
 
@@ -715,10 +715,9 @@ public class InheritanceManager
         }
     }
 
-    private static void UpdateCustomVariablesFromBaseType(GlueElement derivedElement)
+    private void UpdateCustomVariablesFromBaseType(GlueElement derivedElement)
     {
-        GlueElement baseElement =
-            ObjectFinder.Self.GetBaseElement(derivedElement);
+        GlueElement baseElement = _referenceService.GetBaseElement(derivedElement);
 
         List<CustomVariable> customVariablesBeforeUpdate = derivedElement.CustomVariables
             .Where(item => item.DefinedByBase)
@@ -749,7 +748,7 @@ public class InheritanceManager
             if (!alreadyContainedAsDefinedByBase)
             {
                 // There isn't a variable by this
-                // name that is already DefinedByBase, 
+                // name that is already DefinedByBase,
                 // but there may still be a variable that
                 // is just a regular variable - and in that
                 // case we want to connect the existing variable
@@ -784,7 +783,7 @@ public class InheritanceManager
                     // set the value there.
                     customVariable.SourceObject = null;
                     customVariable.SourceObjectProperty = null;
-                        
+
                     // December 13, 2025
                     // When we create a variable
                     // in a derived element, the derived

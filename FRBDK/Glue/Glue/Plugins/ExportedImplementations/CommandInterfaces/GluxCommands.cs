@@ -2762,7 +2762,7 @@ public class GluxCommands : IGluxCommands
 
 
 
-        InheritanceManager.UpdateAllDerivedElementFromBaseValues(true, element);
+        InheritanceManager.Self.UpdateAllDerivedElementFromBaseValues(true, element);
 
         EditorObjects.IoC.Container.Get<GlueErrorManager>().ClearFixedErrors();
 

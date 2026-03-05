@@ -32,7 +32,7 @@ class EntitySaveSetPropertyLogic
 
         if (changedMember == nameof(EntitySave.BaseEntity))
         {
-            InheritanceManager.ReactToChangedBaseEntity(oldValue as string, entitySave);
+            InheritanceManager.Self.ReactToChangedBaseEntity(oldValue as string, entitySave);
         }
 
         #endregion

@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Managers;
+using GlueFormsCore.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
@@ -46,6 +48,7 @@ public class Builder
         App = builder.Build();
 
         // These methods are needed until we kill singletons:
+        InheritanceManager.Self = new InheritanceManager(ReferenceService.Self);
         ProjectLoader.Self.Initialize(Get<IProjectCommands>());
         (GlueCommands.Self.ProjectCommands as ProjectCommands).Initialize(Get<FileReferenceManager>());
 

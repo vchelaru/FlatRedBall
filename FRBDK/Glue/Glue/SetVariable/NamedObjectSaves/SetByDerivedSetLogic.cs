@@ -128,7 +128,7 @@ namespace GlueFormsCore.SetVariable.NamedObjectSaves
             if(didSet)
             {
                 await TaskManager.Self.AddAsync(
-                    () => InheritanceManager.UpdateAllDerivedElementFromBaseValues(true, element), 
+                    () => InheritanceManager.Self.UpdateAllDerivedElementFromBaseValues(true, element),
                     "UpdateAllDerivedElementFromBaseValues", doOnUiThread:true);
             }
 

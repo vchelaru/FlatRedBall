@@ -37,7 +37,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             else if (propertyName == nameof(ScreenSave.BaseScreen))
             {
-                InheritanceManager.ReactToChangedBaseScreen(oldValue, screenSave);
+                InheritanceManager.Self.ReactToChangedBaseScreen(oldValue, screenSave);
 
                 // update all base elements through codegen because those could have updated their Type
                 var allBase = ObjectFinder.Self.GetAllBaseElementsRecursively(screenSave);
