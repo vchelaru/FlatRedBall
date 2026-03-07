@@ -131,7 +131,7 @@ namespace FlatRedBall.Input
             
             if (otherInput is OrPressableInput orInput2)
             {
-                orInput2.AddInput(otherInput);
+                orInput2.AddInput(thisInput);
                 return orInput2;
             }
             
