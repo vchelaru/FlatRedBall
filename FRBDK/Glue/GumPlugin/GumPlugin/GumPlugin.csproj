@@ -263,14 +263,10 @@
     <EmbeddedResource Include="Embedded\GumAnimation.cs" />
     <EmbeddedResource Include="Embedded\GumCollidableExtensions.cs" />
 
-    <EmbeddedResource Include="..\..\..\..\..\Gum\Tools\Gum.ProjectServices\Templates\FormsTemplate\Behaviors\*.behx"
-                      Link="Embedded\FormsGumProject\Behaviors\%(Filename)%(Extension)" />
-    <EmbeddedResource Include="..\..\..\..\..\Gum\Tools\Gum.ProjectServices\Templates\FormsTemplate\Components\**\*.gucx"
-                      Link="Embedded\FormsGumProject\Components\%(RecursiveDir)%(Filename)%(Extension)" />
-    <EmbeddedResource Include="..\..\..\..\..\Gum\Tools\Gum.ProjectServices\Templates\FormsTemplate\Standards\*.gutx"
-                      Link="Embedded\FormsGumProject\Standards\%(Filename)%(Extension)" />
-    <EmbeddedResource Include="..\..\..\..\..\Gum\Tools\Gum.ProjectServices\Templates\FormsTemplate\UISpriteSheet.png"
-                      Link="Embedded\FormsGumProject\UISpriteSheet.png" />
+    <EmbeddedResource Include="..\..\..\..\..\Gum\Tools\Gum.ProjectServices\Templates\FormsTemplate\Behaviors\*.behx" Link="Embedded\FormsGumProject\Behaviors\%(Filename)%(Extension)" />
+    <EmbeddedResource Include="..\..\..\..\..\Gum\Tools\Gum.ProjectServices\Templates\FormsTemplate\Components\**\*.gucx" Link="Embedded\FormsGumProject\Components\%(RecursiveDir)%(Filename)%(Extension)" />
+    <EmbeddedResource Include="..\..\..\..\..\Gum\Tools\Gum.ProjectServices\Templates\FormsTemplate\Standards\*.gutx" Link="Embedded\FormsGumProject\Standards\%(Filename)%(Extension)" />
+    <EmbeddedResource Include="..\..\..\..\..\Gum\Tools\Gum.ProjectServices\Templates\FormsTemplate\UISpriteSheet.png" Link="Embedded\FormsGumProject\UISpriteSheet.png" />
     <EmbeddedResource Include="Embedded\GumIdb.cs" />
     <EmbeddedResource Include="Embedded\GumToFrbShapeRelationship.cs" />
     <EmbeddedResource Include="Embedded\PositionedObjectGueWrapper.cs" />
