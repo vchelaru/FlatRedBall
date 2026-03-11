@@ -544,7 +544,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             if(Tag is GlueElement element)
             {
                 var oldName = element.Name;
-                var newName = oldName.Substring(0, oldName.IndexOf("\\") + 1) + Text;
+                var newName = oldName.Substring(0, oldName.LastIndexOf("\\") + 1) + Text;
 
                 await GlueCommands.Self.GluxCommands.ElementCommands.RenameElement(element, newName);
 
