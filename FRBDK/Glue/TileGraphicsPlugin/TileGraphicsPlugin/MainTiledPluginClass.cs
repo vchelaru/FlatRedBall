@@ -326,7 +326,7 @@ public class MainTiledPluginClass : PluginBase
             }
         };
 
-        this.ReactToElementVariableChange += async (element, variable) =>
+        this.ReactToGlueElementVariableChanged += async (element, variable, oldValue) =>
         {
             if ((element as EntitySave)?.CreatedByOtherEntities == true)
             {

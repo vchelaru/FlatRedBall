@@ -1,39 +1,40 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Forms;
-using FlatRedBall.Glue.VSHelpers.Projects;
-using Glue;
-using FlatRedBall.IO;
-using FlatRedBall.Glue.SaveClasses;
-using FlatRedBall.Glue.Controls;
-using System.IO;
-using System.Diagnostics;
-using FlatRedBall.Glue.Parsing;
-using FlatRedBall.Glue.IO;
-using FlatRedBall.Glue.Elements;
-using FlatRedBall.Utilities;
 using System.Collections;
-using FlatRedBall.Glue.Plugins;
-using FlatRedBall.Glue.IO.Zip;
-using FlatRedBall.Glue.Plugins.ExportedImplementations;
-using FlatRedBall.Glue.Plugins.ExportedInterfaces;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Windows.Media.Imaging;
+using FlatRedBall.Glue.Controls;
+using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.Events;
-using FlatRedBall.Glue.SaveClasses.Helpers;
-using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 using FlatRedBall.Glue.Factories;
+using FlatRedBall.Glue.IO;
+using FlatRedBall.Glue.IO.Zip;
 using FlatRedBall.Glue.Managers;
-using FlatRedBall.Glue.ViewModels;
-using GlueFormsCore.FormHelpers;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
+using FlatRedBall.Glue.Parsing;
+using FlatRedBall.Glue.Plugins;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
-using FlatRedBall.Glue.Utilities;
-using System.Windows.Media.Imaging;
-using L = Localization;
 using FlatRedBall.Glue.Plugins.Interfaces;
+using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.SaveClasses.Helpers;
+using FlatRedBall.Glue.SetVariable;
+using FlatRedBall.Glue.Utilities;
+using FlatRedBall.Glue.ViewModels;
+using FlatRedBall.Glue.VSHelpers.Projects;
+using FlatRedBall.IO;
+using FlatRedBall.Utilities;
+using Glue;
+using GlueFormsCore.FormHelpers;
+using Newtonsoft.Json;
 using OfficialPlugins.TreeViewPlugin.Logic;
+using L = Localization;
 
 namespace FlatRedBall.Glue.FormHelpers;
 
@@ -965,11 +966,11 @@ public static class RightClickHelper
         }
     }
 
-    private static void HandleSetAllDerivedVariablesToDefault(CustomVariable baseVariable, GlueElement baseElement)
+    private static async void HandleSetAllDerivedVariablesToDefault(CustomVariable baseVariable, GlueElement baseElement)
     {
         var refs = ReferenceService.Self.GetCustomVariableReferences(baseVariable, baseElement);
         var changes = refs.DerivedVariableReferences
-            .Where(r => !Equals(r.Variable.DefaultValue, baseVariable.DefaultValue))
+            .Where(r => r.Variable.DefaultValue != null)
             .ToList();
 
         if (changes.Count == 0)
@@ -998,7 +999,12 @@ public static class RightClickHelper
         {
             foreach (var (element, variable) in changes)
             {
+                var oldValue = variable.DefaultValue;
                 variable.DefaultValue = null;
+
+                await FlatRedBall.Glue.Services.Builder.Get<CustomVariableSaveSetPropertyLogic>().ReactToCustomVariableChangedValue(
+                    "DefaultValue", variable, oldValue);
+
                 GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element, generateDerivedElements: false);
             }
             GluxCommands.Self.SaveProjectAndElements();
