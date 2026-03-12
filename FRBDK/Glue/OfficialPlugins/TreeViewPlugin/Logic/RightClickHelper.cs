@@ -34,7 +34,6 @@ using Glue;
 using GlueFormsCore.FormHelpers;
 using Newtonsoft.Json;
 using OfficialPlugins.TreeViewPlugin.Logic;
-using L = Localization;
 
 namespace FlatRedBall.Glue.FormHelpers;
 
@@ -108,6 +107,9 @@ public static class RightClickHelper
 
     private static void PopulateRightClickMenuItemsShared(ITreeNode targetNode, MenuShowingAction menuShowingAction, ITreeNode draggedNode)
     {
+        if (System.Windows.Application.Current != null)
+            CreateImages();
+
         var descriptors = GetItemDescriptors(
             targetNode, GlueState.Self, menuShowingAction, draggedNode,
             shiftHeld: (Control.ModifierKeys & Keys.Shift) != 0,
@@ -148,9 +150,6 @@ public static class RightClickHelper
         bool shiftHeld = false,
         Func<ReferencedFileSave, bool>? fileExists = null)
     {
-        if (System.Windows.Application.Current != null)
-            CreateImages();
-
         var list = new List<RightClickItemDescriptor>();
 
         // Uses glueState instead of GlueState.Self so it is mockable in tests.
@@ -176,7 +175,7 @@ public static class RightClickHelper
             }
             else
             {
-                removeText = "Remove item";
+                removeText = "Remove Item";
             }
 
             yield return new RightClickItemDescriptor
@@ -188,19 +187,29 @@ public static class RightClickHelper
             if (shiftHeld)
                 yield return new RightClickItemDescriptor
                 {
-                    Text = L.Texts.RemoveFromProjectQuick,
+                    Text = "Remove from Project Quick (ONLY IF YOU KNOW WHAT YOU'RE DOING!)",
                     Handler = () => RemoveFromProjectQuick(null, EventArgs.Empty)
                 };
         }
 
         RightClickItemDescriptor AddFileSubMenu() => new()
         {
-            Text = L.Texts.FileAdd,
+            Text = "Add File",
             Handler = () => { },
             SubItems = new[]
             {
-                new RightClickItemDescriptor { Text = L.Texts.FileNew, Handler = async () => await GlueCommands.Self.DialogCommands.ShowAddNewFileDialogAsync() },
+                new RightClickItemDescriptor { Text = "New File", Handler = async () => await GlueCommands.Self.DialogCommands.ShowAddNewFileDialogAsync() },
                 new RightClickItemDescriptor { Text = "Existing File(s)", Handler = () => GlueCommands.Self.DialogCommands.ShowAddExistingFileDialog() },
+            }
+        };
+
+        RightClickItemDescriptor RenameItem() => new()
+        {
+            Text = "Rename",
+            Handler = () =>
+            {
+                if (SelectionLogic.Current.CurrentNode?.IsEditable == true)
+                    SelectionLogic.Current.CurrentNode.IsEditing = true;
             }
         };
 
@@ -213,44 +222,46 @@ public static class RightClickHelper
             {
                 if (draggedNode?.IsEntityNode() == true)
                 {
-                    list.Add(new RightClickItemDescriptor { Text = L.Texts.EntityAddInstance, Handler = () => OnAddEntityInstanceClick(targetNode, draggedNode) });
-                    list.Add(new RightClickItemDescriptor { Text = L.Texts.EntityListAdd, Handler = () => OnAddEntityListClick(targetNode, draggedNode) });
+                    list.Add(new RightClickItemDescriptor { Text = "Add Entity Instance", Handler = () => OnAddEntityInstanceClick(targetNode, draggedNode) });
+                    list.Add(new RightClickItemDescriptor { Text = "Add Entity List", Handler = () => OnAddEntityListClick(targetNode, draggedNode) });
                 }
             }
             else
             {
-                list.Add(new RightClickItemDescriptor { Text = "Set as StartUp Screen (first screen when running)", Handler = SetStartupScreen, Image = StartupScreenImage });
+                // Config
+                list.Add(new RightClickItemDescriptor { Text = "Set as Startup Screen", Handler = SetStartupScreen, Image = StartupScreenImage });
                 list.Add(new RightClickItemDescriptor
                 {
-                    Text = screen.IsRequiredAtStartup ? L.Texts.ScreenRemoveRequirement : L.Texts.MakeRequiredAtStartup,
+                    Text = screen.IsRequiredAtStartup ? "Remove Startup Requirement" : "Make Required at Startup",
                     Handler = () => ToggleRequiredAtStartupClick(null, EventArgs.Empty)
                 });
-                list.Add(new RightClickItemDescriptor { Text = L.Texts.ScreenExport, Handler = () => ExportElementClick(null, EventArgs.Empty) });
-
-                if (targetNode.Tag is ScreenSave { Name: "Screens\\GameScreen" })
-                    list.Add(new RightClickItemDescriptor { Text = "Create Level Screen", Handler = () => GlueCommands.Self.DialogCommands.ShowAddNewScreenDialog() });
-
-                list.AddRange(RemoveItems());
                 list.Add(RightClickItemDescriptor.Separator);
-                list.Add(new RightClickItemDescriptor
-                {
-                    Text = "Rename",
-                    Handler = () =>
-                    {
-                        if (SelectionLogic.Current.CurrentNode?.IsEditable == true)
-                            SelectionLogic.Current.CurrentNode.IsEditing = true;
-                    }
-                });
-                list.Add(new RightClickItemDescriptor { Text = L.Texts.Duplicate, Handler = async () => await GlueCommands.Self.GluxCommands.CopyGlueElement(screen) });
-                list.Add(new RightClickItemDescriptor { Text = "Find all references to this", Handler = () => FindAllReferencesClick(null, EventArgs.Empty) });
-                list.Add(new RightClickItemDescriptor { Text = L.Texts.RefreshUi, Handler = () => OnRefreshTreeNodesClick(null, EventArgs.Empty) });
 
-                if (glueState.CurrentGlueProject?.FileVersion >= (int)GlueProjectSave.GluxVersions.GlueSavedToJson)
+                // Creation
+                if (targetNode.Tag is ScreenSave { Name: "Screens\\GameScreen" })
                 {
-                    list.Add(new RightClickItemDescriptor { Text = L.Texts.ScreenSaveForceJson, Handler = () => ForceSaveElementJson(targetNode.Tag as GlueElement) });
-                    list.Add(new RightClickItemDescriptor { Text = L.Texts.ViewInExplorer, Handler = () => ViewElementInExplorer(targetNode.Tag as GlueElement), Image = FolderImage });
+                    list.Add(new RightClickItemDescriptor { Text = "Create Level Screen", Handler = () => GlueCommands.Self.DialogCommands.ShowAddNewScreenDialog() });
+                    list.Add(RightClickItemDescriptor.Separator);
                 }
-                list.Add(new RightClickItemDescriptor { Text = L.Texts.FileOpenCs, Handler = () => OpenCsFile(targetNode.Tag as GlueElement) });
+
+                // Common ops
+                list.Add(RenameItem());
+                list.Add(new RightClickItemDescriptor { Text = "Duplicate", Handler = async () => await GlueCommands.Self.GluxCommands.CopyGlueElement(screen) });
+                list.AddRange(RemoveItems());
+                list.Add(new RightClickItemDescriptor { Text = "Export Screen", Handler = () => ExportElementClick(null, EventArgs.Empty) });
+                list.Add(RightClickItemDescriptor.Separator);
+
+                // Discovery
+                if (glueState.CurrentGlueProject?.FileVersion >= (int)GlueProjectSave.GluxVersions.GlueSavedToJson)
+                    list.Add(new RightClickItemDescriptor { Text = "View in Explorer", Handler = () => ViewElementInExplorer(targetNode.Tag as GlueElement), Image = FolderImage });
+                list.Add(new RightClickItemDescriptor { Text = "Open Custom Code", Handler = () => OpenCsFile(targetNode.Tag as GlueElement) });
+                list.Add(RightClickItemDescriptor.Separator);
+
+                // Maintenance
+                list.Add(new RightClickItemDescriptor { Text = "Find All References", Handler = () => FindAllReferencesClick(null, EventArgs.Empty) });
+                list.Add(new RightClickItemDescriptor { Text = "Refresh UI", Handler = () => OnRefreshTreeNodesClick(null, EventArgs.Empty) });
+                if (glueState.CurrentGlueProject?.FileVersion >= (int)GlueProjectSave.GluxVersions.GlueSavedToJson)
+                    list.Add(new RightClickItemDescriptor { Text = "Force Save Screen JSON", Handler = () => ForceSaveElementJson(targetNode.Tag as GlueElement) });
             }
         }
 
@@ -262,39 +273,35 @@ public static class RightClickHelper
         {
             if (action == MenuShowingAction.RightButtonDrag && draggedNode?.IsEntityNode() == true)
             {
-                list.Add(new RightClickItemDescriptor { Text = L.Texts.EntityAddInstance, Handler = () => OnAddEntityInstanceClick(targetNode, draggedNode) });
-                list.Add(new RightClickItemDescriptor { Text = L.Texts.EntityListAdd, Handler = () => OnAddEntityListClick(targetNode, draggedNode) });
+                list.Add(new RightClickItemDescriptor { Text = "Add Entity Instance", Handler = () => OnAddEntityInstanceClick(targetNode, draggedNode) });
+                list.Add(new RightClickItemDescriptor { Text = "Add Entity List", Handler = () => OnAddEntityListClick(targetNode, draggedNode) });
             }
             else
             {
                 EntitySave entitySave = targetNode.Tag as EntitySave;
 
+                // Creation
                 list.Add(new RightClickItemDescriptor { Text = "Add Derived Entity", Handler = () => ShowAddDerivedEntityDialog(entitySave), Image = DerivedEntity });
                 list.Add(RightClickItemDescriptor.Separator);
+
+                // Common ops
+                list.Add(RenameItem());
+                list.Add(new RightClickItemDescriptor { Text = "Duplicate", Handler = async () => await GlueCommands.Self.GluxCommands.CopyGlueElement(entitySave) });
                 list.AddRange(RemoveItems());
-                list.Add(RightClickItemDescriptor.Separator);
-                list.Add(new RightClickItemDescriptor
-                {
-                    Text = "Rename",
-                    Handler = () =>
-                    {
-                        if (SelectionLogic.Current.CurrentNode?.IsEditable == true)
-                            SelectionLogic.Current.CurrentNode.IsEditing = true;
-                    }
-                });
-                list.Add(new RightClickItemDescriptor { Text = L.Texts.Duplicate, Handler = async () => await GlueCommands.Self.GluxCommands.CopyGlueElement(entitySave) });
                 list.Add(new RightClickItemDescriptor { Text = "Export Entity", Handler = () => ExportElementClick(null, EventArgs.Empty) });
-                list.Add(new RightClickItemDescriptor { Text = "Find all references to this", Handler = () => FindAllReferencesClick(null, EventArgs.Empty) });
+                list.Add(RightClickItemDescriptor.Separator);
 
-                if (entitySave.PooledByFactory)
-                    list.Add(new RightClickItemDescriptor { Text = L.Texts.ResetVariablesPoolingAdd, Handler = () => mAddResetVariablesForPooling_Click(null, EventArgs.Empty) });
-
-                list.Add(new RightClickItemDescriptor { Text = L.Texts.RefreshUi, Handler = () => OnRefreshTreeNodesClick(null, EventArgs.Empty) });
-
+                // Discovery
                 if (glueState.CurrentGlueProject?.FileVersion >= (int)GlueProjectSave.GluxVersions.GlueSavedToJson)
-                    list.Add(new RightClickItemDescriptor { Text = L.Texts.ViewInExplorer, Handler = () => ViewElementInExplorer(targetNode.Tag as GlueElement), Image = FolderImage });
+                    list.Add(new RightClickItemDescriptor { Text = "View in Explorer", Handler = () => ViewElementInExplorer(targetNode.Tag as GlueElement), Image = FolderImage });
+                list.Add(new RightClickItemDescriptor { Text = "Open Custom Code", Handler = () => OpenCsFile(targetNode.Tag as GlueElement) });
+                list.Add(RightClickItemDescriptor.Separator);
 
-                list.Add(new RightClickItemDescriptor { Text = L.Texts.FileOpenCs, Handler = () => OpenCsFile(targetNode.Tag as GlueElement) });
+                // Maintenance
+                list.Add(new RightClickItemDescriptor { Text = "Find All References", Handler = () => FindAllReferencesClick(null, EventArgs.Empty) });
+                if (entitySave.PooledByFactory)
+                    list.Add(new RightClickItemDescriptor { Text = "Add Reset Variables for Pooling", Handler = () => mAddResetVariablesForPooling_Click(null, EventArgs.Empty) });
+                list.Add(new RightClickItemDescriptor { Text = "Refresh UI", Handler = () => OnRefreshTreeNodesClick(null, EventArgs.Empty) });
             }
         }
 
@@ -305,10 +312,10 @@ public static class RightClickHelper
         else if (targetNode.IsFilesContainerNode() || targetNode.IsFolderInFilesContainerNode())
         {
             list.Add(AddFileSubMenu());
-            list.Add(new RightClickItemDescriptor { Text = L.Texts.FolderAdd, Handler = () => RightClickHelper.AddFolderClick(targetNode), Image = FolderImage });
+            list.Add(new RightClickItemDescriptor { Text = "Add Folder", Handler = () => RightClickHelper.AddFolderClick(targetNode), Image = FolderImage });
             list.Add(RightClickItemDescriptor.Separator);
-            list.Add(new RightClickItemDescriptor { Text = L.Texts.ViewInExplorer, Handler = () => RightClickHelper.ViewInExplorerClick(targetNode), Image = FolderImage });
-            list.Add(new RightClickItemDescriptor { Text = L.Texts.CopyPathClipboard, Handler = () => HandleCopyToClipboardClick(targetNode) });
+            list.Add(new RightClickItemDescriptor { Text = "View in Explorer", Handler = () => RightClickHelper.ViewInExplorerClick(targetNode), Image = FolderImage });
+            list.Add(new RightClickItemDescriptor { Text = "Copy Path to Clipboard", Handler = () => HandleCopyToClipboardClick(targetNode) });
             list.Add(RightClickItemDescriptor.Separator);
             if (targetNode.IsFolderInFilesContainerNode())
                 list.Add(new RightClickItemDescriptor { Text = "Delete Folder", Handler = () => GlueCommands.Self.GluxCommands.DeleteFolderClick(targetNode) });
@@ -327,12 +334,12 @@ public static class RightClickHelper
 
             if (action == MenuShowingAction.RightButtonDrag && !isSameObject && draggedNode.IsEntityNode())
             {
-                list.Add(new RightClickItemDescriptor { Text = L.Texts.EntityAddInstance, Handler = () => OnAddEntityInstanceClick(targetNode, draggedNode) });
-                list.Add(new RightClickItemDescriptor { Text = L.Texts.EntityListAdd, Handler = () => OnAddEntityListClick(targetNode, draggedNode) });
+                list.Add(new RightClickItemDescriptor { Text = "Add Entity Instance", Handler = () => OnAddEntityInstanceClick(targetNode, draggedNode) });
+                list.Add(new RightClickItemDescriptor { Text = "Add Entity List", Handler = () => OnAddEntityListClick(targetNode, draggedNode) });
             }
             else
             {
-                list.Add(new RightClickItemDescriptor { Text = L.Texts.ObjectAdd, Handler = () => GlueCommands.Self.DialogCommands.ShowAddNewObjectDialog() });
+                list.Add(new RightClickItemDescriptor { Text = "Add Object", Handler = () => GlueCommands.Self.DialogCommands.ShowAddNewObjectDialog() });
             }
         }
 
@@ -342,7 +349,7 @@ public static class RightClickHelper
 
         else if (targetNode.IsRootLayerNode())
         {
-            list.Add(new RightClickItemDescriptor { Text = L.Texts.LayerAdd, Handler = () => HandleAddLayerClick(null, EventArgs.Empty) });
+            list.Add(new RightClickItemDescriptor { Text = "Add Layer", Handler = () => HandleAddLayerClick(null, EventArgs.Empty) });
         }
 
         #endregion
@@ -351,7 +358,7 @@ public static class RightClickHelper
 
         else if (targetNode.IsRootCollisionRelationshipsNode())
         {
-            list.Add(new RightClickItemDescriptor { Text = L.Texts.RightClick_Add_Collision_Relationship, Handler = () => AddNewCollisionRelationshipTo(glueState.CurrentElement), Image = CollisionRelationshipImage });
+            list.Add(new RightClickItemDescriptor { Text = "Add Collision Relationship", Handler = () => AddNewCollisionRelationshipTo(glueState.CurrentElement), Image = CollisionRelationshipImage });
         }
 
         #endregion
@@ -361,9 +368,11 @@ public static class RightClickHelper
         else if (targetNode.IsGlobalContentContainerNode())
         {
             list.Add(AddFileSubMenu());
-            list.Add(new RightClickItemDescriptor { Text = L.Texts.FolderAdd, Handler = () => RightClickHelper.AddFolderClick(targetNode), Image = FolderImage });
-            list.Add(new RightClickItemDescriptor { Text = "Re-Generate Code", Handler = () => HandleReGenerateCodeClick(targetNode) });
-            list.Add(new RightClickItemDescriptor { Text = L.Texts.ViewInExplorer, Handler = () => RightClickHelper.ViewInExplorerClick(targetNode), Image = FolderImage });
+            list.Add(new RightClickItemDescriptor { Text = "Add Folder", Handler = () => RightClickHelper.AddFolderClick(targetNode), Image = FolderImage });
+            list.Add(RightClickItemDescriptor.Separator);
+            list.Add(new RightClickItemDescriptor { Text = "View in Explorer", Handler = () => RightClickHelper.ViewInExplorerClick(targetNode), Image = FolderImage });
+            list.Add(RightClickItemDescriptor.Separator);
+            list.Add(new RightClickItemDescriptor { Text = "Regenerate Code", Handler = () => HandleReGenerateCodeClick(targetNode) });
         }
 
         #endregion
@@ -373,8 +382,8 @@ public static class RightClickHelper
         else if (targetNode.IsRootEntityNode())
         {
             list.Add(new RightClickItemDescriptor { Text = "Add Entity", Handler = () => GlueCommands.Self.DialogCommands.ShowAddNewEntityDialog(), Image = EntityImage });
-            list.Add(new RightClickItemDescriptor { Text = L.Texts.FolderAdd, Handler = () => RightClickHelper.AddFolderClick(targetNode), Image = FolderImage });
-            list.Add(new RightClickItemDescriptor { Text = L.Texts.EntityImport, Handler = () => ImportElementClick(targetNode) });
+            list.Add(new RightClickItemDescriptor { Text = "Add Folder", Handler = () => RightClickHelper.AddFolderClick(targetNode), Image = FolderImage });
+            list.Add(new RightClickItemDescriptor { Text = "Import Entity", Handler = () => ImportElementClick(targetNode) });
         }
 
         #endregion
@@ -383,9 +392,9 @@ public static class RightClickHelper
 
         else if (targetNode.IsRootScreenNode())
         {
-            list.Add(new RightClickItemDescriptor { Text = L.Texts.ScreenAdd, Handler = () => GlueCommands.Self.DialogCommands.ShowAddNewScreenDialog(), Image = ScreenImage });
-            list.Add(new RightClickItemDescriptor { Text = L.Texts.FolderAdd, Handler = () => RightClickHelper.AddFolderClick(targetNode), Image = FolderImage });
-            list.Add(new RightClickItemDescriptor { Text = L.Texts.ScreenImport, Handler = () => ImportElementClick(targetNode) });
+            list.Add(new RightClickItemDescriptor { Text = "Add Screen", Handler = () => GlueCommands.Self.DialogCommands.ShowAddNewScreenDialog(), Image = ScreenImage });
+            list.Add(new RightClickItemDescriptor { Text = "Add Folder", Handler = () => RightClickHelper.AddFolderClick(targetNode), Image = FolderImage });
+            list.Add(new RightClickItemDescriptor { Text = "Import Screen", Handler = () => ImportElementClick(targetNode) });
         }
 
         #endregion
@@ -404,7 +413,7 @@ public static class RightClickHelper
 
             list.Add(new RightClickItemDescriptor
             {
-                Text = L.Texts.VariableAdd,
+                Text = "Add Variable",
                 Handler = () => GlueCommands.Self.DialogCommands.ShowAddNewVariableDialog(CustomVariableType.New, container: targetElement)
             });
         }
@@ -415,7 +424,7 @@ public static class RightClickHelper
 
         else if (targetNode.IsRootEventsNode())
         {
-            list.Add(new RightClickItemDescriptor { Text = L.Texts.EventAdd, Handler = () => AddEventClicked(null, EventArgs.Empty) });
+            list.Add(new RightClickItemDescriptor { Text = "Add Event", Handler = () => AddEventClicked(null, EventArgs.Empty) });
         }
 
         #endregion
@@ -424,23 +433,10 @@ public static class RightClickHelper
 
         else if (targetNode.IsNamedObjectNode())
         {
-            list.AddRange(RemoveItems());
-            list.Add(new RightClickItemDescriptor { Text = L.Texts.VariableResetEdit, Handler = EditResetVariablesClick });
-            list.Add(RightClickItemDescriptor.Separator);
-            list.Add(new RightClickItemDescriptor { Text = "Find all references to this", Handler = () => FindAllReferencesClick(null, EventArgs.Empty) });
-            list.Add(new RightClickItemDescriptor { Text = L.Texts.GoToDefinition, Handler = () => GlueCommands.Self.DialogCommands.GoToDefinitionOfSelection() });
-            list.Add(RightClickItemDescriptor.Separator);
-            list.Add(new RightClickItemDescriptor { Text = L.Texts.Duplicate, Handler = () => DuplicateClick(null, EventArgs.Empty) });
-            list.Add(RightClickItemDescriptor.Separator);
-            list.Add(new RightClickItemDescriptor { Text = $"^^ {L.Texts.MoveToTop}", Handler = () => MoveToTopClick(null, EventArgs.Empty), ShortcutKeyDisplayString = "Alt+Shift+Up" });
-            list.Add(new RightClickItemDescriptor { Text = $"^ {L.Texts.MoveUp}", Handler = () => MoveUpClick(null, EventArgs.Empty), ShortcutKeyDisplayString = "Alt+Up" });
-            list.Add(new RightClickItemDescriptor { Text = $"v {L.Texts.MoveDown}", Handler = () => MoveDownClick(null, EventArgs.Empty), ShortcutKeyDisplayString = "Alt+Down" });
-            list.Add(new RightClickItemDescriptor { Text = $"vv {L.Texts.MoveBottom}", Handler = () => MoveToBottomClick(null, EventArgs.Empty), ShortcutKeyDisplayString = "Alt+Shift+Down" });
-            list.Add(RightClickItemDescriptor.Separator);
-
             // In case something has changed which can happen mid wizard
             var currentNamedObject = targetNode.Tag as NamedObjectSave;
 
+            // Creation
             if (currentNamedObject.IsList &&
                 !string.IsNullOrEmpty(currentNamedObject.SourceClassGenericType) &&
                 !currentNamedObject.SetByDerived)
@@ -457,12 +453,33 @@ public static class RightClickHelper
                     shouldAdd = hasNonAbstract;
                 }
                 if (shouldAdd)
-                    list.Add(new RightClickItemDescriptor { Text = L.Texts.ObjectAdd, Handler = () => GlueCommands.Self.DialogCommands.ShowAddNewObjectDialog() });
+                {
+                    list.Add(new RightClickItemDescriptor { Text = "Add Object", Handler = () => GlueCommands.Self.DialogCommands.ShowAddNewObjectDialog() });
+                    list.Add(RightClickItemDescriptor.Separator);
+                }
             }
             else if (currentNamedObject?.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.ShapeCollection)
             {
-                list.Add(new RightClickItemDescriptor { Text = L.Texts.ObjectAdd, Handler = () => GlueCommands.Self.DialogCommands.ShowAddNewObjectDialog() });
+                list.Add(new RightClickItemDescriptor { Text = "Add Object", Handler = () => GlueCommands.Self.DialogCommands.ShowAddNewObjectDialog() });
+                list.Add(RightClickItemDescriptor.Separator);
             }
+
+            // Common ops
+            list.Add(new RightClickItemDescriptor { Text = "Duplicate", Handler = () => DuplicateClick(null, EventArgs.Empty) });
+            list.AddRange(RemoveItems());
+            list.Add(RightClickItemDescriptor.Separator);
+
+            // Ordering
+            list.Add(new RightClickItemDescriptor { Text = "^^ Move to Top", Handler = () => MoveToTopClick(null, EventArgs.Empty), ShortcutKeyDisplayString = "Alt+Shift+Up" });
+            list.Add(new RightClickItemDescriptor { Text = "^ Move Up", Handler = () => MoveUpClick(null, EventArgs.Empty), ShortcutKeyDisplayString = "Alt+Up" });
+            list.Add(new RightClickItemDescriptor { Text = "v Move Down", Handler = () => MoveDownClick(null, EventArgs.Empty), ShortcutKeyDisplayString = "Alt+Down" });
+            list.Add(new RightClickItemDescriptor { Text = "vv Move to Bottom", Handler = () => MoveToBottomClick(null, EventArgs.Empty), ShortcutKeyDisplayString = "Alt+Shift+Down" });
+            list.Add(RightClickItemDescriptor.Separator);
+
+            // Maintenance
+            list.Add(new RightClickItemDescriptor { Text = "Find All References", Handler = () => FindAllReferencesClick(null, EventArgs.Empty) });
+            list.Add(new RightClickItemDescriptor { Text = "Go to Definition", Handler = () => GlueCommands.Self.DialogCommands.GoToDefinitionOfSelection() });
+            list.Add(new RightClickItemDescriptor { Text = "Edit Reset Variables", Handler = EditResetVariablesClick });
         }
 
         #endregion
@@ -471,43 +488,45 @@ public static class RightClickHelper
 
         else if (targetNode.IsReferencedFile())
         {
-            list.Add(new RightClickItemDescriptor { Text = L.Texts.ViewInExplorer, Handler = () => RightClickHelper.ViewInExplorerClick(targetNode), Image = FolderImage });
-            list.Add(new RightClickItemDescriptor { Text = L.Texts.Open, Handler = () => HandleOpen(targetNode) });
-            list.Add(new RightClickItemDescriptor { Text = "Find all references to this", Handler = () => FindAllReferencesClick(null, EventArgs.Empty) });
-
             var rfs = targetNode.Tag as ReferencedFileSave;
             var name = rfs.GetInstanceName();
             var strippedName = FileManager.RemovePath(FileManager.RemoveExtension(rfs.Name));
 
+            // Discovery
+            list.Add(new RightClickItemDescriptor { Text = "Open", Handler = () => HandleOpen(targetNode) });
+            list.Add(new RightClickItemDescriptor { Text = "View in Explorer", Handler = () => RightClickHelper.ViewInExplorerClick(targetNode), Image = FolderImage });
             list.Add(new RightClickItemDescriptor
             {
                 Text = "Copy Name...",
                 Handler = () => { },
                 SubItems = new[]
                 {
-                    new RightClickItemDescriptor { Text = L.Texts.CopyPathClipboard, Handler = () => HandleCopyToClipboardClick(targetNode) },
+                    new RightClickItemDescriptor { Text = "Copy Path to Clipboard", Handler = () => HandleCopyToClipboardClick(targetNode) },
                     new RightClickItemDescriptor { Text = $"Copy Code Instance Name ({name})", Handler = () => Clipboard.SetText(name) },
                     new RightClickItemDescriptor { Text = $"Copy Stripped Name ({strippedName})", Handler = () => Clipboard.SetText(strippedName) },
                 }
             });
+            list.Add(RightClickItemDescriptor.Separator);
 
-            list.Add(RightClickItemDescriptor.Separator);
-            list.Add(new RightClickItemDescriptor { Text = "Create Zip Package", Handler = () => CreateZipPackageClick(null, EventArgs.Empty) });
-            list.Add(RightClickItemDescriptor.Separator);
+            // Common ops
             list.AddRange(RemoveItems());
+            list.Add(RightClickItemDescriptor.Separator);
+
+            // Maintenance / tools
+            list.Add(new RightClickItemDescriptor { Text = "Find All References", Handler = () => FindAllReferencesClick(null, EventArgs.Empty) });
 
             if (FileManager.GetExtension(rfs.Name) == "csv" || rfs.TreatAsCsv)
             {
-                list.Add(RightClickItemDescriptor.Separator);
-                list.Add(new RightClickItemDescriptor { Text = L.Texts.CreatedClass, Handler = SetCreatedClassClick });
-                list.Add(new RightClickItemDescriptor { Text = "Re-Generate Code", Handler = () => HandleReGenerateCodeClick(targetNode) });
+                list.Add(new RightClickItemDescriptor { Text = "Set Created Class", Handler = SetCreatedClassClick });
+                list.Add(new RightClickItemDescriptor { Text = "Regenerate Code", Handler = () => HandleReGenerateCodeClick(targetNode) });
             }
 
-            list.Add(new RightClickItemDescriptor { Text = L.Texts.CopyBuildFolder, Handler = () => HandleCopyToBuildFolder(null, EventArgs.Empty) });
+            list.Add(new RightClickItemDescriptor { Text = "Copy to Build Folder", Handler = () => HandleCopyToBuildFolder(null, EventArgs.Empty) });
+            list.Add(new RightClickItemDescriptor { Text = "Create Zip Package", Handler = () => CreateZipPackageClick(null, EventArgs.Empty) });
 
             bool fileMissing = fileExists != null && !fileExists(rfs);
             if (fileMissing)
-                list.Add(new RightClickItemDescriptor { Text = L.Texts.FileCreateForMissing, Handler = () => CreateNewFileForMissingFileClick(null, EventArgs.Empty) });
+                list.Add(new RightClickItemDescriptor { Text = "Create New File for Missing File", Handler = () => CreateNewFileForMissingFileClick(null, EventArgs.Empty) });
         }
 
         #endregion
@@ -519,16 +538,20 @@ public static class RightClickHelper
             var customVar = targetNode.Tag as CustomVariable;
             var containingElement = targetNode.GetContainingElementTreeNode()?.Tag as GlueElement;
 
+            // Common ops
+            list.Add(new RightClickItemDescriptor { Text = "Duplicate", Handler = () => DuplicateClick(null, EventArgs.Empty) });
             list.AddRange(RemoveItems());
             list.Add(RightClickItemDescriptor.Separator);
-            list.Add(new RightClickItemDescriptor { Text = "Find all references to this", Handler = () => FindAllReferencesClick(null, EventArgs.Empty) });
+
+            // Ordering
+            list.Add(new RightClickItemDescriptor { Text = "^^ Move to Top", Handler = () => MoveToTopClick(null, EventArgs.Empty), ShortcutKeyDisplayString = "Alt+Shift+Up" });
+            list.Add(new RightClickItemDescriptor { Text = "^ Move Up", Handler = () => MoveUpClick(null, EventArgs.Empty), ShortcutKeyDisplayString = "Alt+Up" });
+            list.Add(new RightClickItemDescriptor { Text = "v Move Down", Handler = () => MoveDownClick(null, EventArgs.Empty), ShortcutKeyDisplayString = "Alt+Down" });
+            list.Add(new RightClickItemDescriptor { Text = "vv Move to Bottom", Handler = () => MoveToBottomClick(null, EventArgs.Empty), ShortcutKeyDisplayString = "Alt+Shift+Down" });
             list.Add(RightClickItemDescriptor.Separator);
-            list.Add(new RightClickItemDescriptor { Text = L.Texts.Duplicate, Handler = () => DuplicateClick(null, EventArgs.Empty) });
-            list.Add(RightClickItemDescriptor.Separator);
-            list.Add(new RightClickItemDescriptor { Text = $"^^ {L.Texts.MoveToTop}", Handler = () => MoveToTopClick(null, EventArgs.Empty), ShortcutKeyDisplayString = "Alt+Shift+Up" });
-            list.Add(new RightClickItemDescriptor { Text = $"^ {L.Texts.MoveUp}", Handler = () => MoveUpClick(null, EventArgs.Empty), ShortcutKeyDisplayString = "Alt+Up" });
-            list.Add(new RightClickItemDescriptor { Text = $"v {L.Texts.MoveDown}", Handler = () => MoveDownClick(null, EventArgs.Empty), ShortcutKeyDisplayString = "Alt+Down" });
-            list.Add(new RightClickItemDescriptor { Text = $"vv {L.Texts.MoveBottom}", Handler = () => MoveToBottomClick(null, EventArgs.Empty), ShortcutKeyDisplayString = "Alt+Shift+Down" });
+
+            // Maintenance
+            list.Add(new RightClickItemDescriptor { Text = "Find All References", Handler = () => FindAllReferencesClick(null, EventArgs.Empty) });
 
             if (customVar?.SetByDerived == true && containingElement != null)
             {
@@ -538,7 +561,7 @@ public static class RightClickHelper
                     list.Add(RightClickItemDescriptor.Separator);
                     list.Add(new RightClickItemDescriptor
                     {
-                        Text = "Set all derived values to default",
+                        Text = "Set All Derived Values to Default",
                         Handler = () => HandleSetAllDerivedVariablesToDefault(customVar, containingElement)
                     });
                 }
@@ -551,8 +574,8 @@ public static class RightClickHelper
 
         else if (targetNode.IsCodeNode())
         {
-            list.Add(new RightClickItemDescriptor { Text = L.Texts.ViewInExplorer, Handler = () => RightClickHelper.ViewInExplorerClick(targetNode), Image = FolderImage });
-            list.Add(new RightClickItemDescriptor { Text = "Re-Generate Code", Handler = () => HandleReGenerateCodeClick(targetNode) });
+            list.Add(new RightClickItemDescriptor { Text = "View in Explorer", Handler = () => RightClickHelper.ViewInExplorerClick(targetNode), Image = FolderImage });
+            list.Add(new RightClickItemDescriptor { Text = "Regenerate Code", Handler = () => HandleReGenerateCodeClick(targetNode) });
         }
 
         #endregion
@@ -561,7 +584,7 @@ public static class RightClickHelper
 
         else if (targetNode.IsRootCodeNode())
         {
-            list.Add(new RightClickItemDescriptor { Text = "Re-Generate Code", Handler = () => HandleReGenerateCodeClick(targetNode) });
+            list.Add(new RightClickItemDescriptor { Text = "Regenerate Code", Handler = () => HandleReGenerateCodeClick(targetNode) });
         }
 
         #endregion
@@ -570,22 +593,16 @@ public static class RightClickHelper
 
         else if (targetNode.IsDirectoryNode())
         {
-            list.Add(new RightClickItemDescriptor { Text = L.Texts.ViewContentFolder, Handler = () => ViewContentFolderInExplorer(targetNode) });
-
-            if (!targetNode.IsChildOfGlobalContent())
-                list.Add(new RightClickItemDescriptor { Text = "View code folder", Handler = () => ViewCodeFolderInExplorerClick(targetNode) });
-
-            list.Add(new RightClickItemDescriptor { Text = L.Texts.CopyPathClipboard, Handler = () => HandleCopyToClipboardClick(targetNode) });
-            list.Add(RightClickItemDescriptor.Separator);
-            list.Add(new RightClickItemDescriptor { Text = L.Texts.FolderAdd, Handler = () => RightClickHelper.AddFolderClick(targetNode), Image = FolderImage });
-
             bool isEntityContainingFolder = targetNode.Root.IsRootEntityNode();
             bool isScreenContainingFolder = targetNode.Root.IsRootScreenNode();
+
+            // Creation
+            list.Add(new RightClickItemDescriptor { Text = "Add Folder", Handler = () => RightClickHelper.AddFolderClick(targetNode), Image = FolderImage });
 
             if (isEntityContainingFolder)
             {
                 list.Add(new RightClickItemDescriptor { Text = "Add Entity", Handler = () => GlueCommands.Self.DialogCommands.ShowAddNewEntityDialog(), Image = EntityImage });
-                list.Add(new RightClickItemDescriptor { Text = L.Texts.EntityImport, Handler = () => ImportElementClick(targetNode) });
+                list.Add(new RightClickItemDescriptor { Text = "Import Entity", Handler = () => ImportElementClick(targetNode) });
             }
             else if (isScreenContainingFolder)
             {
@@ -598,9 +615,20 @@ public static class RightClickHelper
             }
 
             list.Add(RightClickItemDescriptor.Separator);
-            list.Add(new RightClickItemDescriptor { Text = L.Texts.FolderDelete, Handler = () => GluxCommands.Self.DeleteFolderClick(targetNode) });
+
+            // Discovery
+            list.Add(new RightClickItemDescriptor { Text = "View Content Folder", Handler = () => ViewContentFolderInExplorer(targetNode) });
+
+            if (!targetNode.IsChildOfGlobalContent())
+                list.Add(new RightClickItemDescriptor { Text = "View Code Folder", Handler = () => ViewCodeFolderInExplorerClick(targetNode) });
+
+            list.Add(new RightClickItemDescriptor { Text = "Copy Path to Clipboard", Handler = () => HandleCopyToClipboardClick(targetNode) });
+            list.Add(RightClickItemDescriptor.Separator);
+
+            // Destructive
             if (isEntityContainingFolder || isScreenContainingFolder)
-                list.Add(new RightClickItemDescriptor { Text = L.Texts.FolderRename, Handler = () => HandleRenameFolderClick(targetNode) });
+                list.Add(new RightClickItemDescriptor { Text = "Rename Folder", Handler = () => HandleRenameFolderClick(targetNode) });
+            list.Add(new RightClickItemDescriptor { Text = "Delete Folder", Handler = () => GluxCommands.Self.DeleteFolderClick(targetNode) });
         }
 
         #endregion
@@ -619,7 +647,8 @@ public static class RightClickHelper
 
         else if (targetNode.IsStateCategoryNode())
         {
-            list.Add(new RightClickItemDescriptor { Text = L.Texts.StateAdd, Handler = () => AddStateClick(null, EventArgs.Empty) });
+            list.Add(new RightClickItemDescriptor { Text = "Add State", Handler = () => AddStateClick(null, EventArgs.Empty) });
+            list.Add(RightClickItemDescriptor.Separator);
             list.AddRange(RemoveItems());
         }
 
@@ -629,11 +658,10 @@ public static class RightClickHelper
 
         else if (targetNode.IsStateNode())
         {
+            list.Add(new RightClickItemDescriptor { Text = "Duplicate", Handler = () => DuplicateClick(null, EventArgs.Empty) });
             list.AddRange(RemoveItems());
             list.Add(RightClickItemDescriptor.Separator);
-            list.Add(new RightClickItemDescriptor { Text = L.Texts.Duplicate, Handler = () => DuplicateClick(null, EventArgs.Empty) });
-            list.Add(RightClickItemDescriptor.Separator);
-            list.Add(new RightClickItemDescriptor { Text = L.Texts.VariableFillValues, Handler = () => mFillValuesFromVariables_Click(null, EventArgs.Empty) });
+            list.Add(new RightClickItemDescriptor { Text = "Fill Values from Variables", Handler = () => mFillValuesFromVariables_Click(null, EventArgs.Empty) });
         }
 
         #endregion
@@ -946,8 +974,8 @@ public static class RightClickHelper
         IElement element = GlueState.Self.CurrentElement;
 
         var result = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(
-            String.Format(L.Texts.QuestionFillValuesDefault, stateSave.Name),
-            L.Texts.FillValuesDefault);
+            String.Format("Are you sure you want to fill all values in the {0} State from the default variable values?  All previous values will be lost", stateSave.Name),
+            "Fill values from default?");
 
         if (result == System.Windows.MessageBoxResult.Yes)
         {
@@ -1139,7 +1167,7 @@ public static class RightClickHelper
         // addfolder, add folder, add new folder, addnewfolder
         CustomizableTextInputWindow tiw = new()
         {
-            Message = L.Texts.NewFolderEnter,
+            Message = "Enter new folder name",
         };
 
         if (tiw.ShowDialog() is true)
@@ -1169,7 +1197,7 @@ public static class RightClickHelper
 
         if (GlueState.Self.CurrentGlueProject == null)
         {
-            GlueCommands.Self.DialogCommands.ShowMessageBox(L.Texts.ProjectGlueLoadOrCreateFirst);
+            GlueCommands.Self.DialogCommands.ShowMessageBox("You must first load or create a Glue project");
         }
         else
         {
@@ -1243,11 +1271,11 @@ public static class RightClickHelper
                 if (GlueState.Self.CurrentElement != null)
                 {
                     var screenOrEntity = (GlueState.Self.CurrentEntitySave != null) ? "Entities" : "Screens";
-                    GlueCommands.Self.DialogCommands.ShowMessageBox(String.Format(L.Texts.FolderGlueMadeWhenFileAdded, screenOrEntity, screenOrEntity));
+                    GlueCommands.Self.DialogCommands.ShowMessageBox(String.Format("This {0} does not have a content folder. It will be created when a file is added to this {1}.", screenOrEntity, screenOrEntity));
                 }
                 else
                 {
-                    GlueCommands.Self.DialogCommands.ShowMessageBox(L.Texts.FolderGlueNotMadeLackFiles);
+                    GlueCommands.Self.DialogCommands.ShowMessageBox("Glue has not created this content folder yet since it doesn't contain any files.");
                 }
             }
         }
@@ -1258,7 +1286,7 @@ public static class RightClickHelper
     {
         CustomizableTextInputWindow inputWindow = new()
         {
-            Message = L.Texts.NewFolderEnter,
+            Message = "Enter new folder name",
             Result = treeNode.Text
         };
 
@@ -1322,7 +1350,7 @@ public static class RightClickHelper
         {
             if (string.IsNullOrEmpty(rfs.SourceFile))
             {
-                GlueCommands.Self.DialogCommands.ShowMessageBox(L.Texts.ObjectNullSource, L.Texts.ErrorOpeningFolder);
+                GlueCommands.Self.DialogCommands.ShowMessageBox("This object has a null source file.", "Error opening folder");
             }
             else
             {
@@ -1404,7 +1432,7 @@ public static class RightClickHelper
 
         if (string.IsNullOrEmpty(fileName))
         {
-            GlueCommands.Self.DialogCommands.ShowMessageBox(String.Format(L.Texts.ErrorCouldNotPackageFileRelative, rfs.Name));
+            GlueCommands.Self.DialogCommands.ShowMessageBox(String.Format("Could not create packaged file - likely because the file {0} contains files that are not relative.", rfs.Name));
         }
         else
         {
