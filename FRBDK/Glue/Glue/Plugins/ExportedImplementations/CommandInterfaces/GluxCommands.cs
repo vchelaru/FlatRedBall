@@ -193,16 +193,7 @@ public class GluxCommands : IGluxCommands
                 settings.Formatting = Formatting.Indented;
                 settings.DefaultValueHandling = DefaultValueHandling.Ignore;
 
-                GlueElement clone = null;
-
-                if (element is ScreenSave asScreenSave)
-                {
-                    clone = asScreenSave.CloneJson();
-                }
-                else if (element is EntitySave asEntitySave)
-                {
-                    clone = asEntitySave.CloneJson();
-                }
+                GlueElement? clone = CloneElement(element);
 
                 PrepareForJsonSerialization(clone);
 
@@ -2802,11 +2793,7 @@ public class GluxCommands : IGluxCommands
                 newVariable.Name = StringFunctions.IncrementNumberAtEnd(newVariable.Name);
             }
 
-            if (!original.IsTunneling)
-            {
-                await GlueCommands.Self.GluxCommands.EntityCommands.AddCustomVariableToElementAsync(newVariable, toElement);
-            }
-            else if (original.IsTunneling && toElement.GetNamedObject(original.SourceObject) != null)
+            if (!original.IsTunneling || toElement.GetNamedObject(original.SourceObject) != null)
             {
                 await GlueCommands.Self.GluxCommands.EntityCommands.AddCustomVariableToElementAsync(newVariable, toElement);
             }
@@ -2960,18 +2947,9 @@ public class GluxCommands : IGluxCommands
     {
         await TaskManager.Self.AddAsync(async () =>
         {
-            GlueElement newElement = null;
+            var newElement = CloneElement(original);
 
-            if (original is EntitySave asEntitySave)
-            {
-                newElement = asEntitySave.CloneJson();
-            }
-            else if (original is ScreenSave asScreenSave)
-            {
-                newElement = asScreenSave.CloneJson();
-            }
-
-            newElement.Name = original.Name + "Copy";
+            newElement!.Name = original.Name + "Copy";
 
             while (ObjectFinder.Self.GetElement(newElement.Name) != null)
             {
@@ -2979,6 +2957,14 @@ public class GluxCommands : IGluxCommands
             }
 
             newElement.FixAllTypes();
+
+            // Read the original custom code before adding the new element (which creates its own default file)
+            var originalCustomCodePath = GlueCommands.Self.FileCommands.GetCustomCodeFilePath(original);
+            string? originalCustomCodeContents = null;
+            if (originalCustomCodePath.Exists())
+            {
+                originalCustomCodeContents = FileManager.FromFileText(originalCustomCodePath.FullPath);
+            }
 
             if (newElement is ScreenSave newScreenSave)
             {
@@ -2989,17 +2975,37 @@ public class GluxCommands : IGluxCommands
                 GlueCommands.Self.GluxCommands.EntityCommands.AddEntity(newEntitySave);
             }
 
+            // Copy the custom code file, renaming only the class declaration
+            if (originalCustomCodeContents != null)
+            {
+                string oldClassName = FileManager.RemovePath(original.Name);
+                string newClassName = FileManager.RemovePath(newElement.Name);
+
+                string newContents = originalCustomCodeContents;
+                RefactorManager.Self.RenameClassInCode(oldClassName, newClassName, ref newContents);
+
+                var newCustomCodePath = GlueCommands.Self.FileCommands.GetCustomCodeFilePath(newElement);
+                FileManager.SaveText(newContents, newCustomCodePath.FullPath);
+            }
+
             // notify plugins that new objects were added. Even though we didn't go through the normal
             // call to add objects (since it's handled by paste), we need to let plugins know that new objects
-            // were added. 
+            // were added.
             var newNamedObjects = newElement.AllNamedObjects.ToList();
             await PluginManager.ReactToNewObjectListAsync(newNamedObjects);
 
         }, $"Adding copy of {original}");
     }
 
+    private static GlueElement? CloneElement(GlueElement element) => element switch
+    {
+        EntitySave e => e.CloneJson(),
+        ScreenSave s => s.CloneJson(),
+        _ => null
+    };
+
     #endregion
-    
+
     #region Entity
 
     public ToolsUtilities.GeneralResponse<List<FileChange>> MoveElementCodeFilesToDirectory(GlueElement entitySave, FilePath targetDirectory)
