@@ -1644,7 +1644,7 @@ public class Xbox360GamePad : IInputDevice
             {
                 GamepadLayout = GamepadLayout.Xbox360;
             }
-            else if (name.Contains("Nintendo") == true)
+            else if (name.Contains("Nintendo") == true || name.Contains(" NSW "))
             {
                 GamepadLayout = GamepadLayout.SwitchPro;
             }
