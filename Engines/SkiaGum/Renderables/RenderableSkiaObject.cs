@@ -172,6 +172,42 @@ namespace SkiaGum.Renderables
             set { strokeWidth = value; needsUpdate = true; }
         }
 
+        float strokeDashLength;
+        /// <summary>
+        /// Length of each dash segment in pixels when using a dashed stroke.
+        /// A value of 0 (the default) produces a solid stroke.
+        /// </summary>
+        public float StrokeDashLength
+        {
+            get => strokeDashLength;
+            set
+            {
+                if (value != strokeDashLength)
+                {
+                    strokeDashLength = value;
+                    needsUpdate = true;
+                }
+            }
+        }
+
+        float strokeGapLength;
+        /// <summary>
+        /// Length of each gap between dashes in pixels when using a dashed stroke.
+        /// Ignored when <see cref="StrokeDashLength"/> is 0.
+        /// </summary>
+        public float StrokeGapLength
+        {
+            get => strokeGapLength;
+            set
+            {
+                if (value != strokeGapLength)
+                {
+                    strokeGapLength = value;
+                    needsUpdate = true;
+                }
+            }
+        }
+
         public int Red
         {
             get => Color.R;
@@ -1032,6 +1068,12 @@ namespace SkiaGum.Renderables
                             DropshadowBlurX / 3.0f,
                             DropshadowBlurY / 3.0f,
                             dropshadowSkColor);
+            }
+
+            if (!IsFilled && StrokeDashLength > 0 && StrokeGapLength > 0)
+            {
+                paint.PathEffect = SKPathEffect.CreateDash(
+                    new[] { StrokeDashLength, StrokeGapLength }, phase: 0);
             }
 
             return paint;
