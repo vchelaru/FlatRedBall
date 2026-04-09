@@ -1345,6 +1345,28 @@ namespace FlatRedBall.Math
         }
 
         /// <summary>
+        /// Determines where a value lies between two points normalized to [0,1] range.
+        /// </summary>
+        /// <param name="value1">The start of the range.</param>
+        /// <param name="value2">The end of the range.</param>
+        /// <param name="amount">The point within the range you want to calculate.</param>
+        /// <returns>
+        /// A value representing where the "amount" parameter falls within the range defined by value1 and value2.
+        /// Returns 0 if amount equals value1 and 1 if amount equals value2.
+        /// Returns values outside the 0-1 range if the amount parameter falls outside the range defined by value1 and value2.
+        /// For example, if amount is less than value1, the return value will be negative.
+        /// If amount is greater than value2, the return value will be greater than 1.
+        /// </returns>
+        public static float InverseLerp(float value1, float value2, float amount)
+        {
+            // Avoid zero division
+            if (value1 == value2) return 0f;
+
+            // Normalize to [0,1] range
+            return (amount - value1) / (value2 - value1);
+        }
+
+        /// <summary>
         /// Wraps an angle from 0 to TwoPi
         /// </summary>
         /// <param name="angle">The angle to wrap</param>
