@@ -1,0 +1,150 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:controls="clr-namespace:AnimationEditor.App.Controls"
+        xmlns:models="clr-namespace:AnimationEditor.App.Models"
+        mc:Ignorable="d" d:DesignWidth="1400" d:DesignHeight="900"
+        x:Class="AnimationEditor.App.MainWindow"
+        Title="AnimationEditor"
+        MinWidth="900" MinHeight="600">
+
+    <DockPanel>
+        <!-- ── Menu bar ── -->
+        <Menu DockPanel.Dock="Top" x:Name="MainMenu">
+            <MenuItem Header="_File">
+                <MenuItem Header="_New"          x:Name="MenuNew"    InputGesture="Ctrl+N" />
+                <MenuItem Header="_Load..."       x:Name="MenuLoad"   InputGesture="Ctrl+L" />
+                <MenuItem Header="_Save"          x:Name="MenuSave"   InputGesture="Ctrl+S" />
+                <MenuItem Header="Save _As..."    x:Name="MenuSaveAs" />
+                <Separator />
+                <MenuItem Header="Load _Recent"   x:Name="MenuLoadRecent" />
+            </MenuItem>
+            <MenuItem Header="_Help">
+                <MenuItem Header="_About"         x:Name="MenuAbout" />
+            </MenuItem>
+        </Menu>
+
+        <!-- ── Wireframe toolbar ── -->
+        <Border DockPanel.Dock="Top"
+                BorderBrush="#333"
+                BorderThickness="0,0,0,1"
+                Background="#1e1e1e"
+                Padding="4,3">
+            <WrapPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <TextBlock Text="Texture:" VerticalAlignment="Center" Margin="0,0,4,0" Foreground="LightGray" />
+                <ComboBox x:Name="TextureCombo"
+                          MinWidth="220"
+                          MaxWidth="400"
+                          Margin="0,0,12,0"
+                          PlaceholderText="(none)" />
+
+                <ToggleButton x:Name="MagicWandToggle"
+                              Content="✦ Magic Wand"
+                              Margin="0,0,6,0"
+                              ToolTip.Tip="Click = set frame; Ctrl+Click = add new frame" />
+
+                <CheckBox x:Name="SnapToGridCheck"
+                          Content="Grid"
+                          VerticalAlignment="Center"
+                          Margin="0,0,4,0" />
+
+                <NumericUpDown x:Name="GridSizeInput"
+                               Value="16"
+                               Minimum="1"
+                               Maximum="512"
+                               Width="70"
+                               Margin="0,0,12,0"
+                               IsEnabled="{Binding #SnapToGridCheck.IsChecked}" />
+
+                <TextBlock Text="Zoom:" VerticalAlignment="Center" Margin="0,0,4,0" Foreground="LightGray" />
+                <ComboBox x:Name="ZoomCombo"
+                          Width="90"
+                          SelectedIndex="3">
+                    <ComboBoxItem Content="10%" />
+                    <ComboBoxItem Content="25%" />
+                    <ComboBoxItem Content="50%" />
+                    <ComboBoxItem Content="100%" />
+                    <ComboBoxItem Content="200%" />
+                    <ComboBoxItem Content="400%" />
+                    <ComboBoxItem Content="800%" />
+                </ComboBox>
+            </WrapPanel>
+        </Border>
+
+        <!-- ── Main content: TreeView | [Wireframe / Preview] ── -->
+        <Grid ColumnDefinitions="220,4,*">
+
+            <!-- ── Left: Animation tree ── -->
+            <Grid Grid.Column="0" RowDefinitions="*,Auto">
+                <TreeView x:Name="AnimTree" Grid.Row="0"
+                          Background="#1a1a1a"
+                          SelectionMode="Single">
+                    <TreeView.ItemTemplate>
+                        <TreeDataTemplate x:DataType="models:TreeNodeVm"
+                                          ItemsSource="{Binding Children}">
+                            <TextBlock Text="{Binding Header}"
+                                       Foreground="LightGray"
+                                       Padding="2,1" />
+                        </TreeDataTemplate>
+                    </TreeView.ItemTemplate>
+                </TreeView>
+                <Border Grid.Row="1"
+                        BorderBrush="#333" BorderThickness="0,1,0,0"
+                        Background="#1a1a1a" Padding="4,3">
+                    <Button x:Name="AddChainBtn"
+                            Content="+ Add Chain"
+                            HorizontalAlignment="Stretch" />
+                </Border>
+            </Grid>
+
+            <!-- ── Splitter ── -->
+            <GridSplitter Grid.Column="1"
+                          ResizeDirection="Columns"
+                          Background="#444"
+                          HorizontalAlignment="Stretch" />
+
+            <!-- ── Right: Wireframe (top) + Preview (bottom) ── -->
+            <Grid Grid.Column="2" RowDefinitions="*,4,Auto,220">
+
+                <!-- Wireframe panel fills top -->
+                <controls:WireframeControl x:Name="WireframeCtrl" Grid.Row="0" />
+
+                <!-- Horizontal splitter between wireframe and preview -->
+                <GridSplitter Grid.Row="1"
+                              ResizeDirection="Rows"
+                              Background="#444"
+                              HorizontalAlignment="Stretch" />
+
+                <!-- ── Preview toolbar ── -->
+                <Border Grid.Row="2"
+                        BorderBrush="#333" BorderThickness="0,0,0,1"
+                        Background="#1e1e1e" Padding="4,3">
+                    <WrapPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <ToggleButton x:Name="OnionSkinToggle"
+                                      Content="Onion Skin"
+                                      Margin="0,0,8,0"
+                                      ToolTip.Tip="Show previous frame at 50% alpha" />
+                        <CheckBox x:Name="ShowGuidesCheck"
+                                  Content="Guides"
+                                  VerticalAlignment="Center"
+                                  Margin="0,0,12,0" />
+                        <TextBlock Text="Zoom:" VerticalAlignment="Center"
+                                   Margin="0,0,4,0" Foreground="LightGray" />
+                        <ComboBox x:Name="PreviewZoomCombo" Width="90" SelectedIndex="3">
+                            <ComboBoxItem Content="10%" />
+                            <ComboBoxItem Content="25%" />
+                            <ComboBoxItem Content="50%" />
+                            <ComboBoxItem Content="100%" />
+                            <ComboBoxItem Content="200%" />
+                            <ComboBoxItem Content="400%" />
+                        </ComboBox>
+                    </WrapPanel>
+                </Border>
+
+                <!-- Preview panel -->
+                <controls:PreviewControl x:Name="PreviewCtrl" Grid.Row="3" />
+            </Grid>
+        </Grid>
+    </DockPanel>
+</Window>

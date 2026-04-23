@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/AnimationEditor.App/AnimationEditor.App.csproj" />
+    <Project Path="src/AnimationEditor.Core/AnimationEditor.Core.csproj" />
+  </Folder>
+</Solution>
