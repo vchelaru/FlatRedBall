@@ -78,6 +78,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)..\..\..\..\..\Gum\MonoGameGum\Forms\Controls\ToggleButton.cs">
       <Link>Controls\%(Filename)%(Extension)</Link>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\..\..\..\..\Gum\MonoGameGum\Forms\Controls\Tooltip.cs">
+      <Link>Controls\%(Filename)%(Extension)</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\..\..\..\..\Gum\MonoGameGum\Forms\Controls\ToolTipService.cs">
+      <Link>Controls\%(Filename)%(Extension)</Link>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)..\..\..\..\..\Gum\MonoGameGum\Forms\Controls\UserControl.cs">
       <Link>Controls\%(Filename)%(Extension)</Link>
     </Compile>
