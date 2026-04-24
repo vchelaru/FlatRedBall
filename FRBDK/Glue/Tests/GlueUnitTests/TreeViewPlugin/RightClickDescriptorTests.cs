@@ -38,7 +38,7 @@ public class RightClickDescriptorTests
 
         var texts = GetTexts(node.Object);
 
-        texts.ShouldContain(Localization.Texts.Duplicate);
+        texts.ShouldContain("Duplicate");
     }
 
     [Fact]
@@ -51,7 +51,7 @@ public class RightClickDescriptorTests
                                     .ToList();
 
         int renameIdx = items.FindIndex(d => d.Text == "Rename");
-        int duplicateIdx = items.FindIndex(d => d.Text == Localization.Texts.Duplicate);
+        int duplicateIdx = items.FindIndex(d => d.Text == "Duplicate");
 
         renameIdx.ShouldBeGreaterThanOrEqualTo(0);
         duplicateIdx.ShouldBeGreaterThan(renameIdx);
@@ -70,7 +70,29 @@ public class RightClickDescriptorTests
             .Select(d => d.Text)
             .ToList();
 
-        texts.ShouldNotContain(Localization.Texts.Duplicate);
+        texts.ShouldNotContain("Duplicate");
+    }
+
+    [Fact]
+    public void EntityNode_HasExportNotExportEntity()
+    {
+        var node = MakeNode(TreeNodeType.EntityNode, new EntitySave { Name = "Entities\\Player" });
+
+        var texts = GetTexts(node.Object);
+
+        texts.ShouldContain("Export");
+        texts.ShouldNotContain("Export Entity");
+    }
+
+    [Fact]
+    public void EntityNode_HasRemoveNotRemoveItem()
+    {
+        var node = MakeNode(TreeNodeType.EntityNode, new EntitySave { Name = "Entities\\Player" });
+
+        var texts = GetTexts(node.Object);
+
+        texts.ShouldContain("Remove");
+        texts.ShouldNotContain("Remove Item");
     }
 
     #endregion
@@ -84,7 +106,7 @@ public class RightClickDescriptorTests
 
         var texts = GetTexts(node.Object);
 
-        texts.ShouldContain(Localization.Texts.Duplicate);
+        texts.ShouldContain("Duplicate");
     }
 
     [Fact]
@@ -97,7 +119,7 @@ public class RightClickDescriptorTests
                                     .ToList();
 
         int renameIdx = items.FindIndex(d => d.Text == "Rename");
-        int duplicateIdx = items.FindIndex(d => d.Text == Localization.Texts.Duplicate);
+        int duplicateIdx = items.FindIndex(d => d.Text == "Duplicate");
 
         renameIdx.ShouldBeGreaterThanOrEqualTo(0);
         duplicateIdx.ShouldBeGreaterThan(renameIdx);
@@ -115,7 +137,112 @@ public class RightClickDescriptorTests
             .Select(d => d.Text)
             .ToList();
 
-        texts.ShouldNotContain(Localization.Texts.Duplicate);
+        texts.ShouldNotContain("Duplicate");
+    }
+
+    [Fact]
+    public void ScreenNode_HasExportNotExportScreen()
+    {
+        var node = MakeNode(TreeNodeType.ScreenNode, new ScreenSave { Name = "Screens\\GameScreen" });
+
+        var texts = GetTexts(node.Object);
+
+        texts.ShouldContain("Export");
+        texts.ShouldNotContain("Export Screen");
+    }
+
+    [Fact]
+    public void ScreenNode_HasRemoveNotRemoveItem()
+    {
+        var node = MakeNode(TreeNodeType.ScreenNode, new ScreenSave { Name = "Screens\\GameScreen" });
+
+        var texts = GetTexts(node.Object);
+
+        texts.ShouldContain("Remove");
+        texts.ShouldNotContain("Remove Item");
+    }
+
+    #endregion
+
+    #region RootEntityNode
+
+    [Fact]
+    public void RootEntityNode_ContainsViewInExplorer()
+    {
+        var node = MakeNode(TreeNodeType.EntityRootNode);
+
+        var texts = GetTexts(node.Object);
+
+        texts.ShouldContain("View in Explorer");
+    }
+
+    #endregion
+
+    #region RootScreenNode
+
+    [Fact]
+    public void RootScreenNode_ContainsViewInExplorer()
+    {
+        var node = MakeNode(TreeNodeType.ScreenRootNode);
+
+        var texts = GetTexts(node.Object);
+
+        texts.ShouldContain("View in Explorer");
+    }
+
+    #endregion
+
+    #region ReferencedFileNode
+
+    [Fact]
+    public void ReferencedFileNode_ContainsRename()
+    {
+        var rfs = new ReferencedFileSave { Name = "GlobalContent/SomeFile.png" };
+        var node = MakeNode(TreeNodeType.ReferencedFileSaveNode, rfs);
+
+        var state = MakeGlueState();
+        state.Setup(s => s.CurrentReferencedFileSave).Returns(rfs);
+
+        var texts = GetTexts(node.Object, state.Object);
+
+        texts.ShouldContain("Rename");
+    }
+
+    [Fact]
+    public void ReferencedFileNode_HasRemoveNotRemoveFromContext()
+    {
+        var rfs = new ReferencedFileSave { Name = "GlobalContent/SomeFile.png" };
+        var node = MakeNode(TreeNodeType.ReferencedFileSaveNode, rfs);
+
+        var state = MakeGlueState();
+        state.Setup(s => s.CurrentReferencedFileSave).Returns(rfs);
+
+        var texts = GetTexts(node.Object, state.Object);
+
+        texts.ShouldContain("Remove");
+        texts.ShouldNotContain("Remove from Screen");
+        texts.ShouldNotContain("Remove from Entity");
+        texts.ShouldNotContain("Remove from Global Content");
+    }
+
+    [Fact]
+    public void ReferencedFileNode_CopyNameComesAfterRemove()
+    {
+        var rfs = new ReferencedFileSave { Name = "GlobalContent/SomeFile.png" };
+        var node = MakeNode(TreeNodeType.ReferencedFileSaveNode, rfs);
+
+        var state = MakeGlueState();
+        state.Setup(s => s.CurrentReferencedFileSave).Returns(rfs);
+
+        var items = RightClickHelper.GetItemDescriptors(node.Object, state.Object, MenuShowingAction.RegularRightClick)
+                                    .Where(d => !d.IsSeparator)
+                                    .ToList();
+
+        int removeIdx = items.FindIndex(d => d.Text == "Remove");
+        int copyNameIdx = items.FindIndex(d => d.Text == "Copy Name...");
+
+        removeIdx.ShouldBeGreaterThanOrEqualTo(0);
+        copyNameIdx.ShouldBeGreaterThan(removeIdx);
     }
 
     #endregion

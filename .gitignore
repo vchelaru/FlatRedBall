@@ -34,3 +34,4 @@ Tests/GlueTestProjectDesktopGl/GlueTestProjectDesktopGl/GlueSettings/TreeViewPlu
 !/Samples/BeefballKni/**/*.Generated.cs
 Tests/TestProjectDesktopNet6/TestProjectDesktopNet6/Content/GumLastChangeFilePath.txt
 Tests/TestProjectDesktopNet6/TestProjectDesktopNet6/Content/GumProject/ProjectCodeSettings.codsj
+.claude/settings.local.json
