@@ -455,4 +455,238 @@ public class AppCommandsChainTests
             ApplicationEvents.Self.AnimationChainsChanged -= Handler;
         }
     }
+
+    // ── FlipFrameHorizontally (F09) ──────────────────────────────────────────
+
+    [Fact]
+    public void FlipFrameHorizontally_TogglesFlipHorizontalOnFrame()
+    {
+        TestHelpers.SetupFreshAcls();
+        var frame = new AnimationFrameSave { FlipHorizontal = false };
+
+        AppCommands.Self.FlipFrameHorizontally(frame);
+
+        Assert.True(frame.FlipHorizontal);
+    }
+
+    [Fact]
+    public void FlipFrameHorizontally_TogglesBackWhenCalledTwice()
+    {
+        TestHelpers.SetupFreshAcls();
+        var frame = new AnimationFrameSave { FlipHorizontal = false };
+
+        AppCommands.Self.FlipFrameHorizontally(frame);
+        AppCommands.Self.FlipFrameHorizontally(frame);
+
+        Assert.False(frame.FlipHorizontal);
+    }
+
+    [Fact]
+    public void FlipFrameHorizontally_DoesNotAffectFlipVertical()
+    {
+        TestHelpers.SetupFreshAcls();
+        var frame = new AnimationFrameSave { FlipHorizontal = false, FlipVertical = true };
+
+        AppCommands.Self.FlipFrameHorizontally(frame);
+
+        Assert.True(frame.FlipVertical);
+    }
+
+    [Fact]
+    public void FlipFrameHorizontally_RaisesAnimationChainsChanged()
+    {
+        TestHelpers.SetupFreshAcls();
+        var frame = new AnimationFrameSave();
+        bool fired = false;
+        void Handler() => fired = true;
+        ApplicationEvents.Self.AnimationChainsChanged += Handler;
+        try
+        {
+            AppCommands.Self.FlipFrameHorizontally(frame);
+            Assert.True(fired);
+        }
+        finally
+        {
+            ApplicationEvents.Self.AnimationChainsChanged -= Handler;
+        }
+    }
+
+    // ── FlipFrameVertically (F10) ────────────────────────────────────────────
+
+    [Fact]
+    public void FlipFrameVertically_TogglesFlipVerticalOnFrame()
+    {
+        TestHelpers.SetupFreshAcls();
+        var frame = new AnimationFrameSave { FlipVertical = false };
+
+        AppCommands.Self.FlipFrameVertically(frame);
+
+        Assert.True(frame.FlipVertical);
+    }
+
+    [Fact]
+    public void FlipFrameVertically_TogglesBackWhenCalledTwice()
+    {
+        TestHelpers.SetupFreshAcls();
+        var frame = new AnimationFrameSave { FlipVertical = false };
+
+        AppCommands.Self.FlipFrameVertically(frame);
+        AppCommands.Self.FlipFrameVertically(frame);
+
+        Assert.False(frame.FlipVertical);
+    }
+
+    [Fact]
+    public void FlipFrameVertically_DoesNotAffectFlipHorizontal()
+    {
+        TestHelpers.SetupFreshAcls();
+        var frame = new AnimationFrameSave { FlipVertical = false, FlipHorizontal = true };
+
+        AppCommands.Self.FlipFrameVertically(frame);
+
+        Assert.True(frame.FlipHorizontal);
+    }
+
+    [Fact]
+    public void FlipFrameVertically_RaisesAnimationChainsChanged()
+    {
+        TestHelpers.SetupFreshAcls();
+        var frame = new AnimationFrameSave();
+        bool fired = false;
+        void Handler() => fired = true;
+        ApplicationEvents.Self.AnimationChainsChanged += Handler;
+        try
+        {
+            AppCommands.Self.FlipFrameVertically(frame);
+            Assert.True(fired);
+        }
+        finally
+        {
+            ApplicationEvents.Self.AnimationChainsChanged -= Handler;
+        }
+    }
+
+    // ── RenameChain (TV07) ────────────────────────────────────────────────────
+
+    [Fact]
+    public void RenameChain_UniqueNewName_ReturnsTrueAndUpdatesName()
+    {
+        var acls = TestHelpers.SetupFreshAcls();
+        var chain = TestHelpers.MakeChain(acls, "OldName");
+
+        bool result = AppCommands.Self.RenameChain(chain, "NewName");
+
+        Assert.True(result);
+        Assert.Equal("NewName", chain.Name);
+    }
+
+    [Fact]
+    public void RenameChain_SameName_ReturnsTrueWithoutChange()
+    {
+        var acls = TestHelpers.SetupFreshAcls();
+        var chain = TestHelpers.MakeChain(acls, "Walk");
+
+        bool result = AppCommands.Self.RenameChain(chain, "Walk");
+
+        Assert.True(result);
+        Assert.Equal("Walk", chain.Name);
+    }
+
+    [Fact]
+    public void RenameChain_DuplicateNameExistsOnOtherChain_ReturnsFalseAndNameUnchanged()
+    {
+        var acls = TestHelpers.SetupFreshAcls();
+        var chainA = TestHelpers.MakeChain(acls, "Walk");
+        var chainB = TestHelpers.MakeChain(acls, "Run");
+
+        bool result = AppCommands.Self.RenameChain(chainA, "Run");
+
+        Assert.False(result);
+        Assert.Equal("Walk", chainA.Name);
+        Assert.Equal("Run",  chainB.Name);
+    }
+
+    [Fact]
+    public void RenameChain_UniqueNewName_RaisesAnimationChainsChanged()
+    {
+        var acls = TestHelpers.SetupFreshAcls();
+        var chain = TestHelpers.MakeChain(acls, "A");
+        bool fired = false;
+        void Handler() => fired = true;
+        ApplicationEvents.Self.AnimationChainsChanged += Handler;
+        try
+        {
+            AppCommands.Self.RenameChain(chain, "B");
+            Assert.True(fired);
+        }
+        finally
+        {
+            ApplicationEvents.Self.AnimationChainsChanged -= Handler;
+        }
+    }
+
+    [Fact]
+    public void RenameChain_DuplicateName_DoesNotRaiseAnimationChainsChanged()
+    {
+        var acls = TestHelpers.SetupFreshAcls();
+        var chainA = TestHelpers.MakeChain(acls, "Walk");
+        TestHelpers.MakeChain(acls, "Run");
+        bool fired = false;
+        void Handler() => fired = true;
+        ApplicationEvents.Self.AnimationChainsChanged += Handler;
+        try
+        {
+            AppCommands.Self.RenameChain(chainA, "Run");
+            Assert.False(fired);
+        }
+        finally
+        {
+            ApplicationEvents.Self.AnimationChainsChanged -= Handler;
+        }
+    }
+
+    // ── RenameFrame / SetFrameTextureName (TV08) ───────────────────────────────
+
+    [Fact]
+    public void RenameFrame_SetsTextureNameOnFrame()
+    {
+        TestHelpers.SetupFreshAcls();
+        var frame = new FlatRedBall.Content.AnimationChain.AnimationFrameSave
+            { TextureName = "old.png" };
+
+        AppCommands.Self.RenameFrame(frame, "new.png");
+
+        Assert.Equal("new.png", frame.TextureName);
+    }
+
+    [Fact]
+    public void RenameFrame_RaisesAnimationChainsChanged()
+    {
+        TestHelpers.SetupFreshAcls();
+        var frame = new FlatRedBall.Content.AnimationChain.AnimationFrameSave();
+        bool fired = false;
+        void Handler() => fired = true;
+        ApplicationEvents.Self.AnimationChainsChanged += Handler;
+        try
+        {
+            AppCommands.Self.RenameFrame(frame, "hero.png");
+            Assert.True(fired);
+        }
+        finally
+        {
+            ApplicationEvents.Self.AnimationChainsChanged -= Handler;
+        }
+    }
+
+    [Fact]
+    public void RenameFrame_EmptyString_SetsEmptyTextureName()
+    {
+        TestHelpers.SetupFreshAcls();
+        var frame = new FlatRedBall.Content.AnimationChain.AnimationFrameSave
+            { TextureName = "something.png" };
+
+        AppCommands.Self.RenameFrame(frame, string.Empty);
+
+        Assert.Equal(string.Empty, frame.TextureName);
+    }
 }

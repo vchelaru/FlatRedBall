@@ -191,11 +191,12 @@ public class WireframeControl : Control
             yield return new SKPoint(r.Right, r.Bottom);
         }
 
-        private static SKRect ToScreen(SKRect r, RenderSnapshot s) =>
-            new(s.PanX + r.Left * s.Zoom,
-                s.PanY + r.Top * s.Zoom,
-                s.PanX + r.Right * s.Zoom,
-                s.PanY + r.Bottom * s.Zoom);
+        private static SKRect ToScreen(SKRect r, RenderSnapshot s)
+        {
+            var (l, t, rr, b) = WireframeTransform.TextureRectToScreen(
+                r.Left, r.Top, r.Right, r.Bottom, s.PanX, s.PanY, s.Zoom);
+            return new SKRect(l, t, rr, b);
+        }
     }
 
     // ── Fields ────────────────────────────────────────────────────────────────
@@ -292,8 +293,9 @@ public class WireframeControl : Control
     {
         // Normalise path for comparison
         string? norm = string.IsNullOrEmpty(filePath) ? null : new FilePath(filePath).Standardized;
+        Console.WriteLine($"[Wireframe] LoadTexture: filePath={filePath ?? "(null)"}, norm={norm ?? "(null)"}, _loadedTexturePath={_loadedTexturePath ?? "(null)"}, fileExists={norm != null && File.Exists(norm)}");
 
-        if (_loadedTexturePath == norm) return;
+        if (_loadedTexturePath == norm) { Console.WriteLine("[Wireframe] LoadTexture: skipped (same path)"); return; }
 
         // Save camera for the texture we're leaving
         if (_loadedTexturePath != null)
@@ -333,21 +335,18 @@ public class WireframeControl : Control
     /// <summary>Re-detect the current texture from the selection, reload it, and refresh frames.</summary>
     public void RefreshAll()
     {
-        LoadTexture(DetermineTexturePath());
+        var path = DetermineTexturePath();
+        Console.WriteLine($"[Wireframe] RefreshAll: DetermineTexturePath={path ?? "(null)"}");
+        LoadTexture(path);
     }
 
     /// <summary>Set zoom by whole-number percentage (e.g. 100 = 1× fit).</summary>
     public void SetZoomPercent(int percent)
     {
-        float newZoom = Math.Clamp(percent / 100f, 0.05f, 32f);
-        // Zoom toward centre of control
+        float newZoom = Math.Clamp(percent / 100f, WireframeTransform.MinZoom, WireframeTransform.MaxZoom);
         float cx = (float)Bounds.Width / 2;
         float cy = (float)Bounds.Height / 2;
-        float wx = (cx - _panX) / _zoom;
-        float wy = (cy - _panY) / _zoom;
-        _zoom = newZoom;
-        _panX = cx - wx * _zoom;
-        _panY = cy - wy * _zoom;
+        (_panX, _panY, _zoom) = WireframeTransform.ZoomToward(cx, cy, newZoom / _zoom, _panX, _panY, _zoom);
         InvalidateVisual();
     }
 
@@ -458,8 +457,8 @@ public class WireframeControl : Control
         // 3. Snap-to-grid Ctrl+click → create frame
         if (_showGrid && _gridSize > 0 && isCtrl)
         {
-            int gx = _gridSize * ((int)world.X / _gridSize);
-            int gy = _gridSize * ((int)world.Y / _gridSize);
+            int gx = GridSnapper.Snap(world.X, _gridSize);
+            int gy = GridSnapper.Snap(world.Y, _gridSize);
             FrameCreatedFromRegion?.Invoke(gx, gy, gx + _gridSize, gy + _gridSize);
             return;
         }
@@ -475,8 +474,10 @@ public class WireframeControl : Control
 
         if (_isPanning)
         {
-            _panX = _panAnchorX + (float)(pos.X - _panAnchor.X);
-            _panY = _panAnchorY + (float)(pos.Y - _panAnchor.Y);
+            (_panX, _panY) = WireframeTransform.Pan(
+                _panAnchorX, _panAnchorY,
+                (float)_panAnchor.X, (float)_panAnchor.Y,
+                (float)pos.X, (float)pos.Y);
             InvalidateVisual();
             return;
         }
@@ -528,11 +529,7 @@ public class WireframeControl : Control
 
     private void ZoomToward(float sx, float sy, float factor)
     {
-        float wx = (sx - _panX) / _zoom;
-        float wy = (sy - _panY) / _zoom;
-        _zoom = Math.Clamp(_zoom * factor, 0.05f, 32f);
-        _panX = sx - wx * _zoom;
-        _panY = sy - wy * _zoom;
+        (_panX, _panY, _zoom) = WireframeTransform.ZoomToward(sx, sy, factor, _panX, _panY, _zoom);
         InvalidateVisual();
     }
 
@@ -581,8 +578,8 @@ public class WireframeControl : Control
         }
         else if (_showGrid && _gridSize > 0)
         {
-            int gx = _gridSize * ((int)world.X / _gridSize);
-            int gy = _gridSize * ((int)world.Y / _gridSize);
+            int gx = GridSnapper.Snap(world.X, _gridSize);
+            int gy = GridSnapper.Snap(world.Y, _gridSize);
             _showPreview = true;
             _previewRect = new SKRect(gx, gy, gx + _gridSize, gy + _gridSize);
             InvalidateVisual();
@@ -639,14 +636,18 @@ public class WireframeControl : Control
 
     // ── Coordinate transforms ─────────────────────────────────────────────────
 
-    private SKPoint ScreenToTexture(float sx, float sy) =>
-        new((sx - _panX) / _zoom, (sy - _panY) / _zoom);
+    private SKPoint ScreenToTexture(float sx, float sy)
+    {
+        var (tx, ty) = WireframeTransform.ScreenToTexture(sx, sy, _panX, _panY, _zoom);
+        return new SKPoint(tx, ty);
+    }
 
-    private SKRect ToScreen(SKRect r) =>
-        new(_panX + r.Left * _zoom,
-            _panY + r.Top  * _zoom,
-            _panX + r.Right  * _zoom,
-            _panY + r.Bottom * _zoom);
+    private SKRect ToScreen(SKRect r)
+    {
+        var (l, t, rr, b) = WireframeTransform.TextureRectToScreen(
+            r.Left, r.Top, r.Right, r.Bottom, _panX, _panY, _zoom);
+        return new SKRect(l, t, rr, b);
+    }
 
     // ── Helpers ───────────────────────────────────────────────────────────────
 
@@ -706,12 +707,9 @@ public class WireframeControl : Control
     private void CenterTexture()
     {
         if (_bitmap is null) return;
-        double ctrlW = Bounds.Width  > 0 ? Bounds.Width  : 800;
-        double ctrlH = Bounds.Height > 0 ? Bounds.Height : 600;
-        _zoom = (float)Math.Min(ctrlW / _bitmap.Width, ctrlH / _bitmap.Height) * 0.85f;
-        _zoom = Math.Clamp(_zoom, 0.05f, 4f);
-        _panX = (float)(ctrlW - _bitmap.Width  * _zoom) / 2f;
-        _panY = (float)(ctrlH - _bitmap.Height * _zoom) / 2f;
+        float ctrlW = (float)(Bounds.Width  > 0 ? Bounds.Width  : 800);
+        float ctrlH = (float)(Bounds.Height > 0 ? Bounds.Height : 600);
+        (_panX, _panY, _zoom) = WireframeTransform.CenterFit(_bitmap.Width, _bitmap.Height, ctrlW, ctrlH);
     }
 
     private string? DetermineTexturePath()
@@ -719,8 +717,14 @@ public class WireframeControl : Control
         string? textureName = SelectedState.Self.SelectedFrame?.TextureName
                            ?? SelectedState.Self.SelectedChain?.Frames?.FirstOrDefault()?.TextureName;
 
-        if (string.IsNullOrEmpty(textureName) || string.IsNullOrEmpty(ProjectManager.Self.FileName))
+        Console.WriteLine($"[Wireframe] DetermineTexturePath: SelectedFrame={SelectedState.Self.SelectedFrame?.TextureName ?? "(null)"}, textureName={textureName ?? "(null)"}, FileName={ProjectManager.Self.FileName ?? "(null)"}");
+
+        if (string.IsNullOrEmpty(textureName))
             return null;
+
+        // If no ACHX is saved yet, the texture path is already absolute.
+        if (string.IsNullOrEmpty(ProjectManager.Self.FileName))
+            return textureName;
 
         return FlatRedBall.IO.FileManager.GetDirectory(ProjectManager.Self.FileName) + textureName;
     }

@@ -1,4 +1,5 @@
 using AnimationEditor.Core.IO;
+using AnimationEditor.Core.Rendering;
 using FlatRedBall.Content.AnimationChain;
 using FlatRedBall.Content.Math.Geometry;
 using System;
@@ -87,6 +88,9 @@ namespace AnimationEditor.Core.CommandsAndState
 
         public void RefreshAnimationFrameDisplay() =>
             RefreshAnimationFrameDisplayRequested?.Invoke();
+
+        public void RefreshWireframe() =>
+            RefreshWireframeRequested?.Invoke();
 
         public void SaveCurrentAnimationChainList(string fileName = null)
         {
@@ -296,6 +300,38 @@ namespace AnimationEditor.Core.CommandsAndState
             ApplicationEvents.Self.RaiseAnimationChainsChanged();
         }
 
+        /// <summary>
+        /// Rename a chain.  Returns <c>false</c> (no-op) when another chain in the same ACLS
+        /// already uses <paramref name="newName"/>; returns <c>true</c> on success.
+        /// </summary>
+        public bool RenameChain(AnimationChainSave chain, string newName)
+        {
+            if (chain.Name == newName) return true;
+
+            var acls = ProjectManager.Self.AnimationChainListSave;
+            if (acls is not null &&
+                acls.AnimationChains.Any(c => !ReferenceEquals(c, chain) && c.Name == newName))
+                return false;
+
+            chain.Name = newName;
+            RefreshChainNodeRequested?.Invoke(chain);
+            SaveCurrentAnimationChainList();
+            ApplicationEvents.Self.RaiseAnimationChainsChanged();
+            return true;
+        }
+
+        /// <summary>
+        /// Set the texture name (file path) of a frame — the in-tree rename action (TV08).
+        /// Fires <see cref="ApplicationEvents.AnimationChainsChanged"/> and saves.
+        /// </summary>
+        public void RenameFrame(AnimationFrameSave frame, string newTextureName)
+        {
+            frame.TextureName = newTextureName;
+            RefreshFrameNodeRequested?.Invoke(frame);
+            SaveCurrentAnimationChainList();
+            ApplicationEvents.Self.RaiseAnimationChainsChanged();
+        }
+
         public void AddFrame(AnimationChainSave chain, string? textureName = null)
         {
             var frame = new AnimationFrameSave
@@ -379,6 +415,22 @@ namespace AnimationEditor.Core.CommandsAndState
             RefreshChainNodeRequested?.Invoke(chain);
             SaveCurrentAnimationChainList();
             ApplicationEvents.Self.RaiseAnimationChainsChanged();
+        }
+
+        public void FlipFrameHorizontally(AnimationFrameSave frame)
+        {
+            frame.FlipHorizontal = !frame.FlipHorizontal;
+            SaveCurrentAnimationChainList();
+            ApplicationEvents.Self.RaiseAnimationChainsChanged();
+            RefreshWireframeRequested?.Invoke();
+        }
+
+        public void FlipFrameVertically(AnimationFrameSave frame)
+        {
+            frame.FlipVertical = !frame.FlipVertical;
+            SaveCurrentAnimationChainList();
+            ApplicationEvents.Self.RaiseAnimationChainsChanged();
+            RefreshWireframeRequested?.Invoke();
         }
 
         public void FlipChainHorizontally(AnimationChainSave chain)
@@ -479,6 +531,216 @@ namespace AnimationEditor.Core.CommandsAndState
                 acls.AnimationChains.Add(c);
             RefreshTreeViewRequested?.Invoke();
             SaveCurrentAnimationChainList();
+            ApplicationEvents.Self.RaiseAnimationChainsChanged();
+        }
+
+        // ── A16: Adjust Offsets ───────────────────────────────────────────────
+
+        /// <summary>
+        /// Justify (Bottom) — sets each frame's RelativeY so the bottom pixel edge
+        /// aligns to y=0, divided by <paramref name="offsetMultiplier"/>.
+        /// Requires the texture height for each frame; callers supply a resolver
+        /// delegate so this method stays free of rendering code.
+        /// </summary>
+        /// <param name="chain">Chain whose frames will be adjusted.</param>
+        /// <param name="getTextureHeight">
+        ///     Returns the texture height in pixels for a given frame,
+        ///     or <c>null</c> when no texture is loaded.
+        /// </param>
+        /// <param name="offsetMultiplier">Preview offset multiplier (PL12), default 1.0.</param>
+        public void AdjustOffsetsJustifyBottom(
+            AnimationChainSave chain,
+            Func<AnimationFrameSave, float?> getTextureHeight,
+            float offsetMultiplier = 1f)
+        {
+            foreach (var frame in chain.Frames)
+            {
+                var height = getTextureHeight(frame);
+                if (height.HasValue)
+                    AdjustOffsetCalculator.ApplyJustifyBottom([frame], height.Value, offsetMultiplier);
+            }
+            SaveCurrentAnimationChainList();
+            ApplicationEvents.Self.RaiseAnimationChainsChanged();
+            RefreshWireframeRequested?.Invoke();
+        }
+
+        /// <summary>
+        /// Adjust All — shifts or overwrites RelativeX/Y of every frame in
+        /// <paramref name="chain"/> by the given amounts.
+        /// </summary>
+        public void AdjustOffsetsAdjustAll(
+            AnimationChainSave chain,
+            float? deltaX,
+            float? deltaY,
+            bool relative)
+        {
+            AdjustOffsetCalculator.ApplyAdjustAll(chain.Frames, deltaX, deltaY, relative);
+            SaveCurrentAnimationChainList();
+            ApplicationEvents.Self.RaiseAnimationChainsChanged();
+            RefreshWireframeRequested?.Invoke();
+        }
+
+        // ── A17: Scale Frame Times ────────────────────────────────────────────
+
+        /// <summary>
+        /// Scales all frame lengths so the total duration of <paramref name="chain"/>
+        /// equals <paramref name="targetTotalDuration"/>, keeping ratios proportional.
+        /// </summary>
+        public void ScaleFrameTimesProportional(
+            AnimationChainSave chain,
+            float targetTotalDuration)
+        {
+            FrameTimeScaler.ApplyKeepProportional(chain.Frames, targetTotalDuration);
+            SaveCurrentAnimationChainList();
+            ApplicationEvents.Self.RaiseAnimationChainsChanged();
+        }
+
+        /// <summary>
+        /// Sets every frame in <paramref name="chain"/> to the same duration:
+        /// <paramref name="targetTotalDuration"/> / frame count.
+        /// </summary>
+        public void ScaleFrameTimesSetAllSame(
+            AnimationChainSave chain,
+            float targetTotalDuration)
+        {
+            FrameTimeScaler.ApplySetAllSame(chain.Frames, targetTotalDuration);
+            SaveCurrentAnimationChainList();
+            ApplicationEvents.Self.RaiseAnimationChainsChanged();
+        }
+
+        // ── F12: Add Multiple Frames ──────────────────────────────────────────
+
+        /// <summary>
+        /// Adds <paramref name="count"/> new frames to <paramref name="chain"/>,
+        /// optionally auto-incrementing UV cells.
+        /// Returns <c>true</c> if any frame's auto-incremented UV exceeded texture
+        /// bounds (so the UI can warn the user).
+        /// </summary>
+        public bool AddMultipleFrames(
+            AnimationChainSave chain,
+            int count,
+            bool incrementUV)
+        {
+            var lastFrame = chain.Frames.Count > 0 ? chain.Frames[^1] : null;
+            var result    = BatchFrameBuilder.BuildBatch(lastFrame, count, incrementUV);
+
+            foreach (var frame in result.Frames)
+            {
+                chain.Frames.Add(frame);
+                SelectedState.Self.SelectedFrame = frame;
+            }
+
+            RefreshChainNodeRequested?.Invoke(chain);
+            SaveCurrentAnimationChainList();
+            ApplicationEvents.Self.RaiseAnimationChainsChanged();
+
+            return result.ExceededTextureBounds;
+        }
+
+        // ── IO15: Adjust UV after texture resize ──────────────────────────────
+
+        /// <summary>
+        /// Adjusts UV coordinates of every frame in the current ACLS that references
+        /// <paramref name="absoluteTextureFilePath"/> after it was resized from
+        /// (<paramref name="oldWidth"/> × <paramref name="oldHeight"/>) to
+        /// (<paramref name="newWidth"/> × <paramref name="newHeight"/>).
+        /// Returns the list of frames that were modified.
+        /// </summary>
+        public List<AnimationFrameSave> AdjustUVAfterResize(
+            string absoluteTextureFilePath,
+            int oldWidth, int oldHeight,
+            int newWidth, int newHeight)
+        {
+            var acls = ProjectManager.Self.AnimationChainListSave;
+            if (acls is null) return [];
+
+            var aclsDir = string.IsNullOrEmpty(ProjectManager.Self.FileName)
+                ? string.Empty
+                : System.IO.Path.GetDirectoryName(ProjectManager.Self.FileName) ?? string.Empty;
+
+            var modified = TextureResizeAdjuster.AdjustAll(
+                acls, aclsDir, absoluteTextureFilePath,
+                oldWidth, oldHeight, newWidth, newHeight);
+
+            if (modified.Count > 0)
+            {
+                SaveCurrentAnimationChainList();
+                ApplicationEvents.Self.RaiseAnimationChainsChanged();
+                RefreshWireframeRequested?.Invoke();
+            }
+
+            return modified;
+        }
+
+        // ── IO11: File > New ──────────────────────────────────────────────────
+
+        /// <summary>
+        /// Resets the editor to an empty, unsaved state:
+        /// creates a fresh <see cref="AnimationChainListSave"/>, clears the file name,
+        /// clears all selections, and notifies the UI.
+        /// </summary>
+        public void NewFile()
+        {
+            ProjectManager.Self.AnimationChainListSave = new AnimationChainListSave();
+            ProjectManager.Self.FileName = string.Empty;
+            SelectedState.Self.SelectedChain = null;
+            SelectedState.Self.SelectedFrame = null;
+            RefreshTreeViewRequested?.Invoke();
+            ApplicationEvents.Self.RaiseAnimationChainsChanged();
+        }
+
+        // ── WF09: Create frame from magic-wand pixel bounds ───────────────────
+
+        /// <summary>
+        /// Creates a new <see cref="AnimationFrameSave"/> whose UV coordinates correspond
+        /// to the pixel bounding box returned by the flood-fill (magic wand) tool, then
+        /// appends it to <paramref name="chain"/> and selects it.
+        /// </summary>
+        /// <param name="chain">Chain to add the frame to.</param>
+        /// <param name="textureName">Relative texture path (stored as-is in the frame).</param>
+        /// <param name="minX">Left pixel bound of the region (inclusive).</param>
+        /// <param name="minY">Top pixel bound of the region (inclusive).</param>
+        /// <param name="maxX">Right pixel bound of the region (exclusive).</param>
+        /// <param name="maxY">Bottom pixel bound of the region (exclusive).</param>
+        /// <param name="bitmapWidth">Full width of the texture in pixels.</param>
+        /// <param name="bitmapHeight">Full height of the texture in pixels.</param>
+        public void AddFrameFromPixelBounds(
+            AnimationChainSave chain,
+            string textureName,
+            int minX, int minY, int maxX, int maxY,
+            int bitmapWidth, int bitmapHeight)
+        {
+            var frame = new AnimationFrameSave
+            {
+                TextureName         = textureName,
+                LeftCoordinate      = minX / (float)bitmapWidth,
+                RightCoordinate     = maxX / (float)bitmapWidth,
+                TopCoordinate       = minY / (float)bitmapHeight,
+                BottomCoordinate    = maxY / (float)bitmapHeight,
+                FrameLength         = 0.1f,
+                ShapeCollectionSave = new FlatRedBall.Content.Math.Geometry.ShapeCollectionSave()
+            };
+
+            chain.Frames.Add(frame);
+            SelectedState.Self.SelectedFrame = frame;
+            RefreshChainNodeRequested?.Invoke(chain);
+            ApplicationEvents.Self.RaiseAnimationChainsChanged();
+        }
+
+        // ── Texture assignment (WF10b — write direction) ─────────────────────────
+
+        /// <summary>
+        /// Sets the texture name on <paramref name="frame"/> and fires change events so
+        /// the tree view and preview panel refresh. This is the write-direction complement
+        /// to <see cref="TextureListBuilder.GetAvailableTextures"/>.
+        /// </summary>
+        /// <param name="frame">The frame whose texture should change. No-ops when null.</param>
+        /// <param name="textureName">Relative texture path to assign (may be null to clear).</param>
+        public void SetFrameTextureName(AnimationFrameSave frame, string? textureName)
+        {
+            if (frame == null) return;
+            frame.TextureName = textureName;
+            RefreshFrameNodeRequested?.Invoke(frame);
             ApplicationEvents.Self.RaiseAnimationChainsChanged();
         }
     }

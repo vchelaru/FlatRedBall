@@ -11,17 +11,26 @@ public static class TextureDropProcessor
         AnimationChainSave? targetChain,
         AnimationFrameSave? targetFrame,
         string droppedFilePath,
-        string achxFileName,
+        string? achxFileName,
         bool createFrameOnCtrl)
     {
-        if (string.IsNullOrWhiteSpace(droppedFilePath) || string.IsNullOrWhiteSpace(achxFileName))
+        if (string.IsNullOrWhiteSpace(droppedFilePath))
             return TextureDropResult.NotApplied;
 
         if (!string.Equals(FileManager.GetExtension(droppedFilePath), "png", StringComparison.OrdinalIgnoreCase))
             return TextureDropResult.NotApplied;
 
-        var achxFolder = FileManager.GetDirectory(achxFileName);
-        var relativeTexturePath = FileManager.MakeRelative(droppedFilePath, achxFolder);
+        // When no ACHX is saved yet, use the absolute texture path.
+        string relativeTexturePath;
+        if (string.IsNullOrWhiteSpace(achxFileName))
+        {
+            relativeTexturePath = droppedFilePath;
+        }
+        else
+        {
+            var achxFolder = FileManager.GetDirectory(achxFileName);
+            relativeTexturePath = FileManager.MakeRelative(droppedFilePath, achxFolder);
+        }
 
         if (targetFrame is not null)
         {

@@ -53,5 +53,32 @@ namespace AnimationEditor.Core.CommandsAndState
         }
 
         public AnimationFrameSave CurrentFrame => SelectedState.Self.SelectedFrame;
+
+        // ── PL11: Sprite alignment ────────────────────────────────────────────
+
+        private SpriteAlignment _spriteAlignment = SpriteAlignment.Center;
+        /// <summary>
+        /// Controls how the preview sprite is placed relative to the FlatRedBall origin.
+        /// Default matches the FRB default: <see cref="SpriteAlignment.Center"/>.
+        /// </summary>
+        public SpriteAlignment SpriteAlignment
+        {
+            get => _spriteAlignment;
+            set => _spriteAlignment = value;
+        }
+
+        // ── PL12: Preview offset multiplier ──────────────────────────────────
+
+        private float _offsetMultiplier = 1f;
+        /// <summary>
+        /// Divides stored <c>RelativeX/Y</c> before displaying in the property panel,
+        /// and multiplies back when the user sets a value.
+        /// Persisted in <c>AESettingsSave</c>.  Default 1 (no scaling).
+        /// </summary>
+        public float OffsetMultiplier
+        {
+            get => _offsetMultiplier;
+            set => _offsetMultiplier = value == 0f ? 1f : value; // guard: 0 treated as 1
+        }
     }
 }

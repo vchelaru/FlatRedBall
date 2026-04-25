@@ -3,7 +3,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="clr-namespace:AnimationEditor.App.Controls"
-        xmlns:models="clr-namespace:AnimationEditor.App.Models"
+        xmlns:models="clr-namespace:AnimationEditor.Core.ViewModels;assembly=AnimationEditor.Core"
         mc:Ignorable="d" d:DesignWidth="1400" d:DesignHeight="900"
         x:Class="AnimationEditor.App.MainWindow"
         Title="AnimationEditor"
@@ -57,6 +57,16 @@
                                Margin="0,0,12,0"
                                IsEnabled="{Binding #SnapToGridCheck.IsChecked}" />
 
+                <Separator Margin="4,0" />
+                <TextBlock Text="Units:" VerticalAlignment="Center" Margin="0,0,4,0" Foreground="LightGray" />
+                <ComboBox x:Name="UnitTypeCombo"
+                          Width="148"
+                          Margin="0,0,12,0"
+                          SelectedIndex="0">
+                    <ComboBoxItem Content="Pixel" />
+                    <ComboBoxItem Content="Texture Coordinate" />
+                    <ComboBoxItem Content="Sprite Sheet" />
+                </ComboBox>
                 <TextBlock Text="Zoom:" VerticalAlignment="Center" Margin="0,0,4,0" Foreground="LightGray" />
                 <ComboBox x:Name="ZoomCombo"
                           Width="90"
@@ -72,14 +82,20 @@
             </WrapPanel>
         </Border>
 
-        <!-- ── Main content: TreeView | [Wireframe / Preview] ── -->
-        <Grid ColumnDefinitions="220,4,*">
+        <!-- ── Main content: TreeView | [Wireframe / Preview] | Property Panel ── -->
+        <Grid ColumnDefinitions="220,4,*,4,240">
 
             <!-- ── Left: Animation tree ── -->
             <Grid Grid.Column="0" RowDefinitions="*,Auto">
                 <TreeView x:Name="AnimTree" Grid.Row="0"
                           Background="#1a1a1a"
-                          SelectionMode="Single">
+                          SelectionMode="Multiple">
+                    <TreeView.Styles>
+                        <Style Selector="TreeViewItem">
+                            <Setter Property="IsExpanded"
+                                    Value="{ReflectionBinding IsExpanded, Mode=TwoWay}" />
+                        </Style>
+                    </TreeView.Styles>
                     <TreeView.ItemTemplate>
                         <TreeDataTemplate x:DataType="models:TreeNodeVm"
                                           ItemsSource="{Binding Children}">
@@ -89,6 +105,16 @@
                         </TreeDataTemplate>
                     </TreeView.ItemTemplate>
                 </TreeView>
+
+                <!-- placeholder removed — property inspector is now in column 4 -->
+
+                <!-- ── (property inspector moved to right column) ── -->
+
+                <!-- ══ dummy placeholder to close old row 1 ══
+                     The Border below is kept as a structural anchor
+                     but collapsed so it takes no space.            -->
+
+                <!-- ── Add Chain button ── -->
                 <Border Grid.Row="1"
                         BorderBrush="#333" BorderThickness="0,1,0,0"
                         Background="#1a1a1a" Padding="4,3">
@@ -98,13 +124,13 @@
                 </Border>
             </Grid>
 
-            <!-- ── Splitter ── -->
+            <!-- ── Splitter (left | middle) ── -->
             <GridSplitter Grid.Column="1"
                           ResizeDirection="Columns"
                           Background="#444"
                           HorizontalAlignment="Stretch" />
 
-            <!-- ── Right: Wireframe (top) + Preview (bottom) ── -->
+            <!-- ── Middle: Wireframe (top) + Preview (bottom) ── -->
             <Grid Grid.Column="2" RowDefinitions="*,4,Auto,220">
 
                 <!-- Wireframe panel fills top -->
@@ -139,12 +165,264 @@
                             <ComboBoxItem Content="200%" />
                             <ComboBoxItem Content="400%" />
                         </ComboBox>
+                        <Separator Margin="8,0" />
+                        <Button x:Name="StopBtn" Content="⏹" Width="28" Height="24"
+                                Margin="0,0,2,0" ToolTip.Tip="Stop / Reset" />
+                        <Button x:Name="PlayBtn" Content="▶" Width="28" Height="24"
+                                Margin="0,0,2,0" ToolTip.Tip="Play" />
+                        <Button x:Name="PauseBtn" Content="⏸" Width="28" Height="24"
+                                Margin="0,0,12,0" ToolTip.Tip="Pause" />
+                        <TextBlock Text="Speed:" VerticalAlignment="Center"
+                                   Margin="0,0,4,0" Foreground="LightGray" />
+                        <NumericUpDown x:Name="SpeedInput"
+                                       Value="1.0" Minimum="0.1" Maximum="10"
+                                       Increment="0.1" FormatString="0.0#"
+                                       Width="80" />
                     </WrapPanel>
                 </Border>
 
                 <!-- Preview panel -->
                 <controls:PreviewControl x:Name="PreviewCtrl" Grid.Row="3" />
             </Grid>
+
+            <!-- ── Splitter (middle | right) ── -->
+            <GridSplitter Grid.Column="3"
+                          ResizeDirection="Columns"
+                          Background="#444"
+                          HorizontalAlignment="Stretch" />
+
+            <!-- ── Right: Property Inspector ── -->
+            <Border Grid.Column="4"
+                    BorderBrush="#333" BorderThickness="1,0,0,0"
+                    Background="#161616">
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                              VerticalScrollBarVisibility="Auto">
+                        <StackPanel Margin="4,4,4,4" Spacing="0">
+
+                            <!-- No selection placeholder -->
+                            <TextBlock x:Name="PropNoneLabel"
+                                       Text="No selection"
+                                       Foreground="#555"
+                                       FontStyle="Italic"
+                                       HorizontalAlignment="Center"
+                                       Margin="0,8,0,0" />
+
+                            <!-- ── Frame properties ── -->
+                            <StackPanel x:Name="PropFramePanel" IsVisible="False" Spacing="2">
+                                <Border BorderBrush="#444" BorderThickness="0,0,0,1"
+                                        Padding="2,2,2,3" Margin="0,0,0,3">
+                                    <TextBlock Text="Frame" Foreground="#aaa"
+                                               FontWeight="SemiBold" FontSize="11" />
+                                </Border>
+                                <Grid ColumnDefinitions="78,*">
+                                    <TextBlock Text="Flip H" VerticalAlignment="Center"
+                                               Foreground="LightGray" FontSize="11" />
+                                    <CheckBox x:Name="PropFlipH" Grid.Column="1" />
+                                </Grid>
+                                <Grid ColumnDefinitions="78,*">
+                                    <TextBlock Text="Flip V" VerticalAlignment="Center"
+                                               Foreground="LightGray" FontSize="11" />
+                                    <CheckBox x:Name="PropFlipV" Grid.Column="1" />
+                                </Grid>
+                                <Grid ColumnDefinitions="78,*">
+                                    <TextBlock Text="Frame Len" VerticalAlignment="Center"
+                                               Foreground="LightGray" FontSize="11" />
+                                    <NumericUpDown x:Name="PropFrameLen" Grid.Column="1"
+                                                   Minimum="0.001" Maximum="60"
+                                                   Increment="0.05" FormatString="0.000" />
+                                </Grid>
+                                <Grid ColumnDefinitions="78,*">
+                                    <TextBlock Text="Relative X" VerticalAlignment="Center"
+                                               Foreground="LightGray" FontSize="11" />
+                                    <NumericUpDown x:Name="PropRelX" Grid.Column="1"
+                                                   Minimum="-10000" Maximum="10000"
+                                                   Increment="1" FormatString="0.000" />
+                                </Grid>
+                                <Grid ColumnDefinitions="78,*">
+                                    <TextBlock Text="Relative Y" VerticalAlignment="Center"
+                                               Foreground="LightGray" FontSize="11" />
+                                    <NumericUpDown x:Name="PropRelY" Grid.Column="1"
+                                                   Minimum="-10000" Maximum="10000"
+                                                   Increment="1" FormatString="0.000" />
+                                </Grid>
+                                <Grid ColumnDefinitions="78,*">
+                                    <TextBlock Text="Texture" VerticalAlignment="Center"
+                                               Foreground="LightGray" FontSize="11" />
+                                    <TextBox x:Name="PropTextureName" Grid.Column="1"
+                                             FontSize="10" IsReadOnly="True" Opacity="0.7" />
+                                </Grid>
+                                <!-- Pixel / SpriteSheet coord fields -->
+                                <StackPanel x:Name="PropPixelSection" Spacing="2">
+                                    <Grid ColumnDefinitions="78,*">
+                                        <TextBlock Text="X" VerticalAlignment="Center"
+                                                   Foreground="LightGray" FontSize="11" />
+                                        <NumericUpDown x:Name="PropPixelX" Grid.Column="1"
+                                                       Minimum="0" Maximum="16384" Increment="1" />
+                                    </Grid>
+                                    <Grid ColumnDefinitions="78,*">
+                                        <TextBlock Text="Y" VerticalAlignment="Center"
+                                                   Foreground="LightGray" FontSize="11" />
+                                        <NumericUpDown x:Name="PropPixelY" Grid.Column="1"
+                                                       Minimum="0" Maximum="16384" Increment="1" />
+                                    </Grid>
+                                    <Grid ColumnDefinitions="78,*">
+                                        <TextBlock Text="Width" VerticalAlignment="Center"
+                                                   Foreground="LightGray" FontSize="11" />
+                                        <NumericUpDown x:Name="PropPixelW" Grid.Column="1"
+                                                       Minimum="1" Maximum="16384" Increment="1" />
+                                    </Grid>
+                                    <Grid ColumnDefinitions="78,*">
+                                        <TextBlock Text="Height" VerticalAlignment="Center"
+                                                   Foreground="LightGray" FontSize="11" />
+                                        <NumericUpDown x:Name="PropPixelH" Grid.Column="1"
+                                                       Minimum="1" Maximum="16384" Increment="1" />
+                                    </Grid>
+                                </StackPanel>
+                                <!-- Texture Coordinate fields -->
+                                <StackPanel x:Name="PropTcSection" IsVisible="False" Spacing="2">
+                                    <Grid ColumnDefinitions="78,*">
+                                        <TextBlock Text="Left" VerticalAlignment="Center"
+                                                   Foreground="LightGray" FontSize="11" />
+                                        <NumericUpDown x:Name="PropTcLeft" Grid.Column="1"
+                                                       Minimum="0" Maximum="1"
+                                                       Increment="0.001" FormatString="0.0000" />
+                                    </Grid>
+                                    <Grid ColumnDefinitions="78,*">
+                                        <TextBlock Text="Right" VerticalAlignment="Center"
+                                                   Foreground="LightGray" FontSize="11" />
+                                        <NumericUpDown x:Name="PropTcRight" Grid.Column="1"
+                                                       Minimum="0" Maximum="1"
+                                                       Increment="0.001" FormatString="0.0000" />
+                                    </Grid>
+                                    <Grid ColumnDefinitions="78,*">
+                                        <TextBlock Text="Top" VerticalAlignment="Center"
+                                                   Foreground="LightGray" FontSize="11" />
+                                        <NumericUpDown x:Name="PropTcTop" Grid.Column="1"
+                                                       Minimum="0" Maximum="1"
+                                                       Increment="0.001" FormatString="0.0000" />
+                                    </Grid>
+                                    <Grid ColumnDefinitions="78,*">
+                                        <TextBlock Text="Bottom" VerticalAlignment="Center"
+                                                   Foreground="LightGray" FontSize="11" />
+                                        <NumericUpDown x:Name="PropTcBottom" Grid.Column="1"
+                                                       Minimum="0" Maximum="1"
+                                                       Increment="0.001" FormatString="0.0000" />
+                                    </Grid>
+                                </StackPanel>
+                                <!-- Sprite Sheet tile fields -->
+                                <StackPanel x:Name="PropTileSection" IsVisible="False" Spacing="2">
+                                    <Border BorderBrush="#444" BorderThickness="0,1,0,0"
+                                            Margin="0,4,0,2" Padding="0,3,0,0">
+                                        <TextBlock Text="Tile" Foreground="#aaa"
+                                                   FontWeight="SemiBold" FontSize="11" />
+                                    </Border>
+                                    <Grid ColumnDefinitions="78,*">
+                                        <TextBlock Text="Cell W" VerticalAlignment="Center"
+                                                   Foreground="LightGray" FontSize="11" />
+                                        <NumericUpDown x:Name="PropCellW" Grid.Column="1"
+                                                       Minimum="1" Maximum="4096" Increment="1" />
+                                    </Grid>
+                                    <Grid ColumnDefinitions="78,*">
+                                        <TextBlock Text="Cell H" VerticalAlignment="Center"
+                                                   Foreground="LightGray" FontSize="11" />
+                                        <NumericUpDown x:Name="PropCellH" Grid.Column="1"
+                                                       Minimum="1" Maximum="4096" Increment="1" />
+                                    </Grid>
+                                    <Grid ColumnDefinitions="78,*">
+                                        <TextBlock Text="Tile X" VerticalAlignment="Center"
+                                                   Foreground="LightGray" FontSize="11" />
+                                        <NumericUpDown x:Name="PropTileX" Grid.Column="1"
+                                                       Minimum="0" Maximum="4096" Increment="1" />
+                                    </Grid>
+                                    <Grid ColumnDefinitions="78,*">
+                                        <TextBlock Text="Tile Y" VerticalAlignment="Center"
+                                                   Foreground="LightGray" FontSize="11" />
+                                        <NumericUpDown x:Name="PropTileY" Grid.Column="1"
+                                                       Minimum="0" Maximum="4096" Increment="1" />
+                                    </Grid>
+                                </StackPanel>
+                            </StackPanel>
+
+                            <!-- ── Rectangle properties ── -->
+                            <StackPanel x:Name="PropRectPanel" IsVisible="False" Spacing="2">
+                                <Border BorderBrush="#444" BorderThickness="0,0,0,1"
+                                        Padding="2,2,2,3" Margin="0,0,0,3">
+                                    <TextBlock Text="Rectangle" Foreground="#aaa"
+                                               FontWeight="SemiBold" FontSize="11" />
+                                </Border>
+                                <Grid ColumnDefinitions="78,*">
+                                    <TextBlock Text="Name" VerticalAlignment="Center"
+                                               Foreground="LightGray" FontSize="11" />
+                                    <TextBox x:Name="PropRectName" Grid.Column="1" FontSize="11" />
+                                </Grid>
+                                <Grid ColumnDefinitions="78,*">
+                                    <TextBlock Text="X" VerticalAlignment="Center"
+                                               Foreground="LightGray" FontSize="11" />
+                                    <NumericUpDown x:Name="PropRectX" Grid.Column="1"
+                                                   Minimum="-10000" Maximum="10000"
+                                                   Increment="1" FormatString="0.000" />
+                                </Grid>
+                                <Grid ColumnDefinitions="78,*">
+                                    <TextBlock Text="Y" VerticalAlignment="Center"
+                                               Foreground="LightGray" FontSize="11" />
+                                    <NumericUpDown x:Name="PropRectY" Grid.Column="1"
+                                                   Minimum="-10000" Maximum="10000"
+                                                   Increment="1" FormatString="0.000" />
+                                </Grid>
+                                <Grid ColumnDefinitions="78,*">
+                                    <TextBlock Text="Scale X" VerticalAlignment="Center"
+                                               Foreground="LightGray" FontSize="11" />
+                                    <NumericUpDown x:Name="PropRectScaleX" Grid.Column="1"
+                                                   Minimum="0.001" Maximum="10000"
+                                                   Increment="0.5" FormatString="0.000" />
+                                </Grid>
+                                <Grid ColumnDefinitions="78,*">
+                                    <TextBlock Text="Scale Y" VerticalAlignment="Center"
+                                               Foreground="LightGray" FontSize="11" />
+                                    <NumericUpDown x:Name="PropRectScaleY" Grid.Column="1"
+                                                   Minimum="0.001" Maximum="10000"
+                                                   Increment="0.5" FormatString="0.000" />
+                                </Grid>
+                            </StackPanel>
+
+                            <!-- ── Circle properties ── -->
+                            <StackPanel x:Name="PropCirclePanel" IsVisible="False" Spacing="2">
+                                <Border BorderBrush="#444" BorderThickness="0,0,0,1"
+                                        Padding="2,2,2,3" Margin="0,0,0,3">
+                                    <TextBlock Text="Circle" Foreground="#aaa"
+                                               FontWeight="SemiBold" FontSize="11" />
+                                </Border>
+                                <Grid ColumnDefinitions="78,*">
+                                    <TextBlock Text="Name" VerticalAlignment="Center"
+                                               Foreground="LightGray" FontSize="11" />
+                                    <TextBox x:Name="PropCircleName" Grid.Column="1" FontSize="11" />
+                                </Grid>
+                                <Grid ColumnDefinitions="78,*">
+                                    <TextBlock Text="X" VerticalAlignment="Center"
+                                               Foreground="LightGray" FontSize="11" />
+                                    <NumericUpDown x:Name="PropCircleX" Grid.Column="1"
+                                                   Minimum="-10000" Maximum="10000"
+                                                   Increment="1" FormatString="0.000" />
+                                </Grid>
+                                <Grid ColumnDefinitions="78,*">
+                                    <TextBlock Text="Y" VerticalAlignment="Center"
+                                               Foreground="LightGray" FontSize="11" />
+                                    <NumericUpDown x:Name="PropCircleY" Grid.Column="1"
+                                                   Minimum="-10000" Maximum="10000"
+                                                   Increment="1" FormatString="0.000" />
+                                </Grid>
+                                <Grid ColumnDefinitions="78,*">
+                                    <TextBlock Text="Radius" VerticalAlignment="Center"
+                                               Foreground="LightGray" FontSize="11" />
+                                    <NumericUpDown x:Name="PropCircleRadius" Grid.Column="1"
+                                                   Minimum="0.001" Maximum="10000"
+                                                   Increment="0.5" FormatString="0.000" />
+                                </Grid>
+                            </StackPanel>
+
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
         </Grid>
     </DockPanel>
 </Window>

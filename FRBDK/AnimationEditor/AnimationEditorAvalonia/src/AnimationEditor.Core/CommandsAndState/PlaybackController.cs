@@ -26,6 +26,18 @@ public class PlaybackController
     /// <summary>Accumulated playback time in seconds (wraps at chain total time).</summary>
     public double AnimTime => _animTime;
 
+    /// <summary>
+    /// When <c>false</c>, <see cref="Advance"/> is a no-op so the animation is paused.
+    /// Defaults to <c>true</c>.
+    /// </summary>
+    public bool IsPlaying { get; private set; } = true;
+
+    /// <summary>
+    /// Multiplier applied to the delta inside <see cref="Advance"/>.
+    /// 1.0 = normal speed, 2.0 = double, 0.5 = half.
+    /// </summary>
+    public double SpeedMultiplier { get; set; } = 1.0;
+
     // ── Events ────────────────────────────────────────────────────────────────
 
     /// <summary>
@@ -46,6 +58,12 @@ public class PlaybackController
         Reset();
     }
 
+    /// <summary>Resume playback (undoes <see cref="Pause"/>).</summary>
+    public void Play() => IsPlaying = true;
+
+    /// <summary>Pause playback at the current frame without resetting time or frame index.</summary>
+    public void Pause() => IsPlaying = false;
+
     /// <summary>Reset time and frame index to zero without changing the active chain.</summary>
     public void Reset()
     {
@@ -61,10 +79,12 @@ public class PlaybackController
     /// </summary>
     public void Advance(double deltaSeconds)
     {
+        if (!IsPlaying) return;
+
         var chain = _chain;
         if (chain is null || chain.Frames.Count <= 1) return;
 
-        _animTime += deltaSeconds;
+        _animTime += deltaSeconds * SpeedMultiplier;
 
         double totalTime = 0;
         foreach (var f in chain.Frames)

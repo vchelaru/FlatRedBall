@@ -1,5 +1,6 @@
 using AnimationEditor.Core;
 using AnimationEditor.Core.CommandsAndState;
+using AnimationEditor.Core.Rendering;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -56,6 +57,16 @@ public class PreviewControl : Control
         get => _showGuides;
         set { _showGuides = value; InvalidateVisual(); }
     }
+
+    public double SpeedMultiplier
+    {
+        get => _playback.SpeedMultiplier;
+        set => _playback.SpeedMultiplier = value;
+    }
+
+    public void Play()  => _playback.Play();
+    public void Pause() => _playback.Pause();
+    public void StopPlayback() { _playback.Reset(); InvalidateVisual(); }
 
     // ── Constructor ───────────────────────────────────────────────────────────
 
@@ -315,14 +326,12 @@ public class PreviewControl : Control
                 Color         = new SKColor(255, 255, 255, (byte)(255 * alpha))
             };
 
-            bool flip = frame.FlipHorizontal || frame.FlipVertical;
+            bool flip = FlipScaleCalculator.IsFlipped(frame.FlipHorizontal, frame.FlipVertical);
             if (flip)
             {
                 canvas.Save();
-                canvas.Scale(
-                    frame.FlipHorizontal ? -1f : 1f,
-                    frame.FlipVertical   ? -1f : 1f,
-                    cx, cy);
+                var (scaleX, scaleY) = FlipScaleCalculator.Compute(frame.FlipHorizontal, frame.FlipVertical);
+                canvas.Scale(scaleX, scaleY, cx, cy);
             }
 
             canvas.DrawBitmap(bm, src, dst, paint);

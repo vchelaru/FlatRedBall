@@ -3,4 +3,8 @@
     <Project Path="src/AnimationEditor.App/AnimationEditor.App.csproj" />
     <Project Path="src/AnimationEditor.Core/AnimationEditor.Core.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/AnimationEditor.Core.Tests/AnimationEditor.Core.Tests.csproj" />
+    <Project Path="tests/AnimationEditor.App.Tests/AnimationEditor.App.Tests.csproj" />
+  </Folder>
 </Solution>

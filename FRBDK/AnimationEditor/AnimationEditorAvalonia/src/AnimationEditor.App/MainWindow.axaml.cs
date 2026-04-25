@@ -1,8 +1,10 @@
 using AnimationEditor.Core;
 using AnimationEditor.Core.CommandsAndState;
+using AnimationEditor.Core.Data;
 using AnimationEditor.Core.DragDrop;
 using AnimationEditor.Core.Models;
-using AnimationEditor.App.Models;
+using AnimationEditor.Core.Rendering;
+using AnimationEditor.Core.ViewModels;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
@@ -24,6 +26,7 @@ namespace AnimationEditor.App;
 public partial class MainWindow : Window
 {
     private AppSettingsModel _appSettings = new();
+    private bool _suppressPropRefresh;
 
     private FilePath SettingsFilePath =>
         (FilePath)(Path.GetDirectoryName(
@@ -40,6 +43,8 @@ public partial class MainWindow : Window
         WireWireframeControl();
         WirePreviewControls();
         WireTreeView();
+        WirePropertyPanel();
+        WirePlaybackControls();
 
         Opened += OnOpened;
     }
@@ -98,9 +103,13 @@ public partial class MainWindow : Window
         SnapToGridCheck.IsCheckedChanged += OnSnapToGridChanged;
         GridSizeInput.ValueChanged += OnGridSizeChanged;
         ZoomCombo.SelectionChanged += OnZoomComboChanged;
+        UnitTypeCombo.SelectionChanged += OnUnitTypeComboChanged;
 
         // Apply initial grid state
         WireframeCtrl.SetGrid(false, 16);
+
+        // Sync UnitTypeCombo to current AppState
+        UnitTypeCombo.SelectedIndex = (int)AppState.Self.UnitType;
     }
 
     private void OnTextureComboChanged(object? sender, SelectionChangedEventArgs e)
@@ -135,6 +144,15 @@ public partial class MainWindow : Window
             var numStr = text.TrimEnd('%');
             if (int.TryParse(numStr, out int pct))
                 WireframeCtrl.SetZoomPercent(pct);
+        }
+    }
+
+    private void OnUnitTypeComboChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        if (UnitTypeCombo.SelectedIndex >= 0)
+        {
+            AppState.Self.UnitType = (UnitType)UnitTypeCombo.SelectedIndex;
+            Dispatcher.UIThread.InvokeAsync(RefreshPropertyPanel);
         }
     }
 
@@ -212,6 +230,8 @@ public partial class MainWindow : Window
         Dispatcher.UIThread.InvokeAsync(SyncTextureCombo);
         // Sync tree selection
         Dispatcher.UIThread.InvokeAsync(SyncTreeSelection);
+        // Refresh property inspector
+        Dispatcher.UIThread.InvokeAsync(RefreshPropertyPanel);
     }
 
     // ── Texture combo helpers ─────────────────────────────────────────────────
@@ -408,7 +428,18 @@ public partial class MainWindow : Window
 
     private void OnTreeDragOver(object? sender, DragEventArgs e)
     {
-        var firstFile = GetFirstDroppedFilePath(e);
+        // Use TryGetFiles() — the correct Avalonia 12 API for OS file drops
+        string? firstFile = e.DataTransfer.TryGetFiles()?                  
+            .FirstOrDefault()?.Path.LocalPath;
+
+        // Fallback for internal drag sources that use the Items API
+        if (firstFile is null)
+        {
+            firstFile = e.DataTransfer.Items?
+                .Select(i => i.TryGetFile())
+                .FirstOrDefault(f => f is not null)?.Path.LocalPath;
+        }
+
         if (!string.IsNullOrEmpty(firstFile) &&
             string.Equals(Path.GetExtension(firstFile), ".png", StringComparison.OrdinalIgnoreCase))
         {
@@ -425,8 +456,20 @@ public partial class MainWindow : Window
     private void OnTreeDrop(object? sender, DragEventArgs e)
     {
         var firstFile = GetFirstDroppedFilePath(e);
-        if (string.IsNullOrEmpty(firstFile) || string.IsNullOrEmpty(ProjectManager.Self.FileName))
+        Console.WriteLine($"[DragDrop] OnTreeDrop: firstFile={firstFile ?? "(null)"}, FileName={ProjectManager.Self.FileName ?? "(null)"}");
+
+        if (string.IsNullOrEmpty(firstFile))
+        {
+            Console.WriteLine("[DragDrop] Aborted: no file found in drop data");
             return;
+        }
+
+        // If no ACHX is saved yet, allow the drop but use an absolute texture path.
+        // Relative-path conversion requires a base directory; without one we fall back to absolute.
+        if (string.IsNullOrEmpty(ProjectManager.Self.FileName))
+        {
+            Console.WriteLine("[DragDrop] Warning: no ACHX file saved yet — texture path will be absolute");
+        }
 
         var targetNode = AnimTree.SelectedItem as TreeNodeVm;
 
@@ -438,6 +481,8 @@ public partial class MainWindow : Window
             targetChain = ObjectFinder.Self.GetAnimationChainContaining(targetFrame);
         }
 
+        Console.WriteLine($"[DragDrop] targetChain={targetChain?.Name ?? "(null)"}, targetFrame={targetFrame?.TextureName ?? "(null)"}, ctrl={e.KeyModifiers.HasFlag(KeyModifiers.Control)}");
+
         var result = TextureDropProcessor.ApplyPngDrop(
             targetChain,
             targetFrame,
@@ -445,8 +490,13 @@ public partial class MainWindow : Window
             ProjectManager.Self.FileName,
             e.KeyModifiers.HasFlag(KeyModifiers.Control));
 
+        Console.WriteLine($"[DragDrop] Result={result}");
+
         if (result == TextureDropResult.NotApplied)
+        {
+            Console.WriteLine("[DragDrop] NotApplied — no chain or frame targeted, or non-PNG dropped");
             return;
+        }
 
         if (targetFrame is not null)
         {
@@ -470,43 +520,47 @@ public partial class MainWindow : Window
         }
 
         RefreshTextureCombo();
+        AppCommands.Self.RefreshWireframe();
         ApplicationEvents.Self.RaiseAnimationChainsChanged();
         e.Handled = true;
     }
 
     private static string? GetFirstDroppedFilePath(DragEventArgs e)
     {
-        var first = e.DataTransfer.Items?
-            .Select(item => item.TryGetFile())
-            .FirstOrDefault(file => file is not null);
+        // Log item formats so we can see exactly what the OS provides
+        var itemFormats = e.DataTransfer.Items?
+            .Select(i => "[" + string.Join(",", i.Formats) + "]")
+            .ToList();
+        Console.WriteLine($"[DragDrop] Items and their formats: {(itemFormats == null ? "(null)" : string.Join(" ", itemFormats))}");
+        Console.WriteLine($"[DragDrop] Contains(DataFormat.File)={e.DataTransfer.Contains(DataFormat.File)}");
 
-        return first?.Path.LocalPath;
+        // Correct Avalonia 12 API for OS file drops
+        var files = e.DataTransfer.TryGetFiles()?.ToList();
+        Console.WriteLine($"[DragDrop] TryGetFiles() count={files?.Count ?? -1}");
+        if (files?.Count > 0)
+        {
+            var path = files[0].Path.LocalPath;
+            Console.WriteLine($"[DragDrop] resolved path={path}");
+            return path;
+        }
+
+        // Fallback: per-item TryGetFile()
+        var items = e.DataTransfer.Items?.ToList();
+        Console.WriteLine($"[DragDrop] Items count={items?.Count ?? -1}");
+        foreach (var item in items ?? new())
+            Console.WriteLine($"[DragDrop] Item: Formats=[{string.Join(",", item.Formats)}] TryGetFile={item.TryGetFile()?.Path?.LocalPath ?? "(null)"}");
+
+        var fallback = items?
+            .Select(item => item.TryGetFile())
+            .FirstOrDefault(f => f is not null);
+        Console.WriteLine($"[DragDrop] Items fallback resolved={fallback?.Path.LocalPath ?? "(null)"}");
+        return fallback?.Path.LocalPath;
     }
 
     private void OnTreeSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         if (AnimTree.SelectedItem is not TreeNodeVm vm) return;
-
-        // Suppress re-entrant loops by checking whether the value changed
-        switch (vm.Data)
-        {
-            case AnimationChainSave chain:
-                if (SelectedState.Self.SelectedChain != chain)
-                    SelectedState.Self.SelectedChain = chain;
-                break;
-            case AnimationFrameSave frame:
-                if (SelectedState.Self.SelectedFrame != frame)
-                    SelectedState.Self.SelectedFrame = frame;
-                break;
-            case AxisAlignedRectangleSave rect:
-                if (SelectedState.Self.SelectedRectangle != rect)
-                    SelectedState.Self.SelectedRectangle = rect;
-                break;
-            case CircleSave circle:
-                if (SelectedState.Self.SelectedCircle != circle)
-                    SelectedState.Self.SelectedCircle = circle;
-                break;
-        }
+        TreeBuilder.RouteNodeSelection(vm);
     }
 
     // ── Tree refresh ──────────────────────────────────────────────────────────
@@ -515,12 +569,8 @@ public partial class MainWindow : Window
     {
         var acls = ProjectManager.Self.AnimationChainListSave;
 
-        // Preserve expanded chain names
-        var expanded = _treeRoots
-            .Where(n => n.Data is AnimationChainSave)
-            .Where(n => IsNodeExpanded(n))
-            .Select(n => ((AnimationChainSave)n.Data!).Name)
-            .ToHashSet();
+        // Preserve expanded chain names before clearing
+        var expanded = TreeBuilder.GetExpandedChainNames(_treeRoots).ToHashSet();
 
         _treeRoots.Clear();
 
@@ -528,7 +578,9 @@ public partial class MainWindow : Window
 
         foreach (var chain in acls.AnimationChains)
         {
-            var node = BuildChainNode(chain);
+            var node = TreeBuilder.BuildChainNode(chain);
+            // Restore expand state — keep true if no prior state recorded yet
+            node.IsExpanded = expanded.Count == 0 || expanded.Contains(chain.Name);
             _treeRoots.Add(node);
         }
 
@@ -541,15 +593,14 @@ public partial class MainWindow : Window
         var node = FindChainNode(chain);
         if (node is null)
         {
-            var newNode = BuildChainNode(chain);
-            _treeRoots.Add(newNode);
+            _treeRoots.Add(TreeBuilder.BuildChainNode(chain));
         }
         else
         {
             node.Header = chain.Name;
             node.Children.Clear();
             foreach (var frame in chain.Frames)
-                node.Children.Add(BuildFrameNode(frame, chain));
+                node.Children.Add(TreeBuilder.BuildFrameNode(frame));
         }
     }
 
@@ -564,12 +615,12 @@ public partial class MainWindow : Window
 
         if (frameNode is null)
         {
-            chainNode.Children.Add(BuildFrameNode(frame, chain!));
+            chainNode.Children.Add(TreeBuilder.BuildFrameNode(frame));
         }
         else
         {
-            frameNode.Header = BuildFrameHeader(frame);
-            // Refresh shapes
+            frameNode.Header = TreeBuilder.BuildFrameHeader(frame);
+            // Rebuild shape children via TreeBuilder
             frameNode.Children.Clear();
             if (frame.ShapeCollectionSave is not null)
             {
@@ -581,63 +632,19 @@ public partial class MainWindow : Window
         }
     }
 
-    // ── Tree builder helpers ──────────────────────────────────────────────────
-
-    private static TreeNodeVm BuildChainNode(AnimationChainSave chain)
-    {
-        var node = new TreeNodeVm { Header = chain.Name, Data = chain };
-        foreach (var frame in chain.Frames)
-            node.Children.Add(BuildFrameNode(frame, chain));
-        return node;
-    }
-
-    private static TreeNodeVm BuildFrameNode(AnimationFrameSave frame, AnimationChainSave chain)
-    {
-        var node = new TreeNodeVm { Header = BuildFrameHeader(frame), Data = frame };
-        if (frame.ShapeCollectionSave is not null)
-        {
-            foreach (var r in frame.ShapeCollectionSave.AxisAlignedRectangleSaves)
-                node.Children.Add(new TreeNodeVm { Header = r.Name, Data = r });
-            foreach (var c in frame.ShapeCollectionSave.CircleSaves)
-                node.Children.Add(new TreeNodeVm { Header = c.Name, Data = c });
-        }
-        return node;
-    }
-
-    private static string BuildFrameHeader(AnimationFrameSave frame)
-    {
-        if (string.IsNullOrEmpty(frame.TextureName))
-            return "<UNTEXTURED>";
-
-        string name = System.IO.Path.GetFileName(frame.TextureName);
-        return $"{name}";
-    }
-
     private TreeNodeVm? FindChainNode(AnimationChainSave chain) =>
         _treeRoots.FirstOrDefault(n => n.Data is AnimationChainSave c && c == chain);
-
-    private static bool IsNodeExpanded(TreeNodeVm _) => true; // always expand by default
 
     private void SyncTreeSelection()
     {
         var selFrame = SelectedState.Self.SelectedFrame;
         var selChain = SelectedState.Self.SelectedChain;
 
-        TreeNodeVm? target = null;
-
-        if (selFrame is not null)
-        {
-            var chainNode = _treeRoots
-                .FirstOrDefault(n => n.Data is AnimationChainSave chain &&
-                                     chain.Frames.Contains(selFrame));
-            if (chainNode is not null)
-                target = chainNode.Children
-                    .FirstOrDefault(n => n.Data is AnimationFrameSave f && f == selFrame);
-        }
-        else if (selChain is not null)
-        {
-            target = FindChainNode(selChain);
-        }
+        TreeNodeVm? target = selFrame is not null
+            ? TreeBuilder.FindNodeForData(_treeRoots, selFrame)
+            : selChain is not null
+                ? TreeBuilder.FindNodeForData(_treeRoots, selChain)
+                : null;
 
         if (target is not null && AnimTree.SelectedItem != target)
             AnimTree.SelectedItem = target;
@@ -773,6 +780,278 @@ public partial class MainWindow : Window
         };
 
         _ = dialog.ShowDialog(this);
+    }
+
+    // ── Property panel wiring ─────────────────────────────────────────────────
+
+    private void WirePropertyPanel()
+    {
+        PropFlipH.IsCheckedChanged += (_, _) => ApplyFrameFlip();
+        PropFlipV.IsCheckedChanged += (_, _) => ApplyFrameFlip();
+        PropFrameLen.ValueChanged  += (_, _) => ApplyFrameLen();
+        PropRelX.ValueChanged      += (_, _) => ApplyFrameRelative();
+        PropRelY.ValueChanged      += (_, _) => ApplyFrameRelative();
+        PropPixelX.ValueChanged    += (_, _) => ApplyFramePixelCoords();
+        PropPixelY.ValueChanged    += (_, _) => ApplyFramePixelCoords();
+        PropPixelW.ValueChanged    += (_, _) => ApplyFramePixelCoords();
+        PropPixelH.ValueChanged    += (_, _) => ApplyFramePixelCoords();
+        PropTcLeft.ValueChanged    += (_, _) => ApplyFrameTcCoords();
+        PropTcRight.ValueChanged   += (_, _) => ApplyFrameTcCoords();
+        PropTcTop.ValueChanged     += (_, _) => ApplyFrameTcCoords();
+        PropTcBottom.ValueChanged  += (_, _) => ApplyFrameTcCoords();
+        PropCellW.ValueChanged     += (_, _) => ApplyFrameCellSize();
+        PropCellH.ValueChanged     += (_, _) => ApplyFrameCellSize();
+        PropTileX.ValueChanged     += (_, _) => ApplyFrameTileCoords();
+        PropTileY.ValueChanged     += (_, _) => ApplyFrameTileCoords();
+
+        PropRectName.LostFocus     += (_, _) => ApplyRectProps();
+        PropRectX.ValueChanged     += (_, _) => ApplyRectProps();
+        PropRectY.ValueChanged     += (_, _) => ApplyRectProps();
+        PropRectScaleX.ValueChanged += (_, _) => ApplyRectProps();
+        PropRectScaleY.ValueChanged += (_, _) => ApplyRectProps();
+
+        PropCircleName.LostFocus   += (_, _) => ApplyCircleProps();
+        PropCircleX.ValueChanged   += (_, _) => ApplyCircleProps();
+        PropCircleY.ValueChanged   += (_, _) => ApplyCircleProps();
+        PropCircleRadius.ValueChanged += (_, _) => ApplyCircleProps();
+    }
+
+    private void RefreshPropertyPanel()
+    {
+        _suppressPropRefresh = true;
+        try
+        {
+            var frame = SelectedState.Self.SelectedFrame;
+            var rect  = SelectedState.Self.SelectedRectangle;
+            var circ  = SelectedState.Self.SelectedCircle;
+
+            PropNoneLabel.IsVisible   = frame is null && rect is null && circ is null;
+            PropFramePanel.IsVisible  = frame is not null;
+            PropRectPanel.IsVisible   = rect  is not null;
+            PropCirclePanel.IsVisible = circ  is not null;
+
+            if (frame is not null)
+            {
+                PropFlipH.IsChecked  = frame.FlipHorizontal;
+                PropFlipV.IsChecked  = frame.FlipVertical;
+                PropFrameLen.Value   = (decimal)frame.FrameLength;
+                PropRelX.Value       = (decimal)frame.RelativeX;
+                PropRelY.Value       = (decimal)frame.RelativeY;
+                PropTextureName.Text = frame.TextureName ?? "";
+
+                var unitType = AppState.Self.UnitType;
+                PropPixelSection.IsVisible = unitType != UnitType.TextureCoordinate;
+                PropTcSection.IsVisible    = unitType == UnitType.TextureCoordinate;
+                PropTileSection.IsVisible  = unitType == UnitType.SpriteSheet;
+
+                if (unitType == UnitType.TextureCoordinate)
+                {
+                    PropTcLeft.Value   = (decimal)frame.LeftCoordinate;
+                    PropTcRight.Value  = (decimal)frame.RightCoordinate;
+                    PropTcTop.Value    = (decimal)frame.TopCoordinate;
+                    PropTcBottom.Value = (decimal)frame.BottomCoordinate;
+                }
+                else
+                {
+                    var (bmpW, bmpH) = WireframeCtrl.BitmapSize;
+                    if (bmpW > 0 && bmpH > 0)
+                    {
+                        PropPixelX.Value = FrameDisplayValues.GetPixelX(frame, bmpW);
+                        PropPixelY.Value = FrameDisplayValues.GetPixelY(frame, bmpH);
+                        PropPixelW.Value = FrameDisplayValues.GetPixelWidth(frame, bmpW);
+                        PropPixelH.Value = FrameDisplayValues.GetPixelHeight(frame, bmpH);
+                    }
+
+                    if (unitType == UnitType.SpriteSheet)
+                    {
+                        var tmi = SelectedState.Self.SelectedTileMapInformation;
+                        int cellW = tmi?.TileWidth  > 0 ? tmi.TileWidth  : 16;
+                        int cellH = tmi?.TileHeight > 0 ? tmi.TileHeight : 16;
+                        PropCellW.Value = cellW;
+                        PropCellH.Value = cellH;
+
+                        var (bmpW2, bmpH2) = WireframeCtrl.BitmapSize;
+                        if (bmpW2 > 0 && bmpH2 > 0 && cellW > 0 && cellH > 0)
+                        {
+                            PropTileX.Value = FrameDisplayValues.GetTileX(frame, cellW, bmpW2);
+                            PropTileY.Value = FrameDisplayValues.GetTileY(frame, cellH, bmpH2);
+                        }
+                    }
+                }
+            }
+
+            if (rect is not null)
+            {
+                PropRectName.Text    = rect.Name   ?? "";
+                PropRectX.Value      = (decimal)rect.X;
+                PropRectY.Value      = (decimal)rect.Y;
+                PropRectScaleX.Value = (decimal)rect.ScaleX;
+                PropRectScaleY.Value = (decimal)rect.ScaleY;
+            }
+
+            if (circ is not null)
+            {
+                PropCircleName.Text    = circ.Name   ?? "";
+                PropCircleX.Value      = (decimal)circ.X;
+                PropCircleY.Value      = (decimal)circ.Y;
+                PropCircleRadius.Value = (decimal)circ.Radius;
+            }
+        }
+        finally
+        {
+            _suppressPropRefresh = false;
+        }
+    }
+
+    // ── Property apply methods ────────────────────────────────────────────────
+
+    private void ApplyFrameFlip()
+    {
+        if (_suppressPropRefresh) return;
+        var frame = SelectedState.Self.SelectedFrame;
+        if (frame is null) return;
+        frame.FlipHorizontal = PropFlipH.IsChecked == true;
+        frame.FlipVertical   = PropFlipV.IsChecked == true;
+        ApplicationEvents.Self.RaiseAnimationChainsChanged();
+        AppCommands.Self.RefreshWireframe();
+    }
+
+    private void ApplyFrameLen()
+    {
+        if (_suppressPropRefresh) return;
+        var frame = SelectedState.Self.SelectedFrame;
+        if (frame is null || !PropFrameLen.Value.HasValue) return;
+        frame.FrameLength = (float)PropFrameLen.Value.Value;
+        ApplicationEvents.Self.RaiseAnimationChainsChanged();
+    }
+
+    private void ApplyFrameRelative()
+    {
+        if (_suppressPropRefresh) return;
+        var frame = SelectedState.Self.SelectedFrame;
+        if (frame is null) return;
+        if (PropRelX.Value.HasValue) frame.RelativeX = (float)PropRelX.Value.Value;
+        if (PropRelY.Value.HasValue) frame.RelativeY = (float)PropRelY.Value.Value;
+        ApplicationEvents.Self.RaiseAnimationChainsChanged();
+        AppCommands.Self.RefreshWireframe();
+    }
+
+    private void ApplyFramePixelCoords()
+    {
+        if (_suppressPropRefresh) return;
+        var frame = SelectedState.Self.SelectedFrame;
+        if (frame is null) return;
+        var (bmpW, bmpH) = WireframeCtrl.BitmapSize;
+        if (bmpW <= 0 || bmpH <= 0) return;
+        if (!PropPixelX.Value.HasValue || !PropPixelY.Value.HasValue ||
+            !PropPixelW.Value.HasValue || !PropPixelH.Value.HasValue) return;
+
+        PixelFrameEditor.SetX(frame,      (int)PropPixelX.Value.Value, bmpW);
+        PixelFrameEditor.SetY(frame,      (int)PropPixelY.Value.Value, bmpH);
+        PixelFrameEditor.SetWidth(frame,  (int)PropPixelW.Value.Value, bmpW);
+        PixelFrameEditor.SetHeight(frame, (int)PropPixelH.Value.Value, bmpH);
+        ApplicationEvents.Self.RaiseAnimationChainsChanged();
+        AppCommands.Self.RefreshWireframe();
+    }
+
+    private void ApplyFrameTcCoords()
+    {
+        if (_suppressPropRefresh) return;
+        var frame = SelectedState.Self.SelectedFrame;
+        if (frame is null) return;
+        if (PropTcLeft.Value.HasValue)   frame.LeftCoordinate   = (float)PropTcLeft.Value.Value;
+        if (PropTcRight.Value.HasValue)  frame.RightCoordinate  = (float)PropTcRight.Value.Value;
+        if (PropTcTop.Value.HasValue)    frame.TopCoordinate    = (float)PropTcTop.Value.Value;
+        if (PropTcBottom.Value.HasValue) frame.BottomCoordinate = (float)PropTcBottom.Value.Value;
+        ApplicationEvents.Self.RaiseAnimationChainsChanged();
+        AppCommands.Self.RefreshWireframe();
+    }
+
+    private void ApplyFrameCellSize()
+    {
+        if (_suppressPropRefresh) return;
+        if (!PropCellW.Value.HasValue || !PropCellH.Value.HasValue) return;
+        var frame = SelectedState.Self.SelectedFrame;
+        if (frame is null || string.IsNullOrEmpty(frame.TextureName)) return;
+
+        var tmi = SelectedState.Self.SelectedTileMapInformation;
+        if (tmi is null)
+        {
+            tmi = new TileMapInformation { Name = frame.TextureName };
+            ProjectManager.Self.TileMapInformationList.TileMapInfos.Add(tmi);
+        }
+        tmi.TileWidth  = (int)PropCellW.Value.Value;
+        tmi.TileHeight = (int)PropCellH.Value.Value;
+        ApplicationEvents.Self.RaiseAnimationChainsChanged();
+        AppCommands.Self.RefreshWireframe();
+    }
+
+    private void ApplyFrameTileCoords()
+    {
+        if (_suppressPropRefresh) return;
+        var frame = SelectedState.Self.SelectedFrame;
+        if (frame is null) return;
+        if (!PropTileX.Value.HasValue || !PropTileY.Value.HasValue) return;
+        var (bmpW, bmpH) = WireframeCtrl.BitmapSize;
+        if (bmpW <= 0 || bmpH <= 0) return;
+
+        int cellW = PropCellW.Value.HasValue ? (int)PropCellW.Value.Value : 16;
+        int cellH = PropCellH.Value.HasValue ? (int)PropCellH.Value.Value : 16;
+        if (cellW <= 0 || cellH <= 0) return;
+
+        var (left, right) = TileCoordinateCalculator.GetLeftRight((int)PropTileX.Value.Value, cellW, bmpW);
+        var (top,  bot)   = TileCoordinateCalculator.GetTopBottom((int)PropTileY.Value.Value, cellH, bmpH);
+        frame.LeftCoordinate   = left;
+        frame.RightCoordinate  = right;
+        frame.TopCoordinate    = top;
+        frame.BottomCoordinate = bot;
+        ApplicationEvents.Self.RaiseAnimationChainsChanged();
+        AppCommands.Self.RefreshWireframe();
+    }
+
+    private void ApplyRectProps()
+    {
+        if (_suppressPropRefresh) return;
+        var rect = SelectedState.Self.SelectedRectangle;
+        if (rect is null) return;
+        rect.Name = PropRectName.Text ?? "";
+        if (PropRectX.Value.HasValue)      rect.X      = (float)PropRectX.Value.Value;
+        if (PropRectY.Value.HasValue)      rect.Y      = (float)PropRectY.Value.Value;
+        if (PropRectScaleX.Value.HasValue) rect.ScaleX = (float)PropRectScaleX.Value.Value;
+        if (PropRectScaleY.Value.HasValue) rect.ScaleY = (float)PropRectScaleY.Value.Value;
+        ApplicationEvents.Self.RaiseAnimationChainsChanged();
+        AppCommands.Self.RefreshWireframe();
+        var frame = SelectedState.Self.SelectedFrame;
+        if (frame is not null) AppCommands.Self.RefreshTreeNode(frame);
+    }
+
+    private void ApplyCircleProps()
+    {
+        if (_suppressPropRefresh) return;
+        var circ = SelectedState.Self.SelectedCircle;
+        if (circ is null) return;
+        circ.Name = PropCircleName.Text ?? "";
+        if (PropCircleX.Value.HasValue)      circ.X      = (float)PropCircleX.Value.Value;
+        if (PropCircleY.Value.HasValue)      circ.Y      = (float)PropCircleY.Value.Value;
+        if (PropCircleRadius.Value.HasValue) circ.Radius = (float)PropCircleRadius.Value.Value;
+        ApplicationEvents.Self.RaiseAnimationChainsChanged();
+        AppCommands.Self.RefreshWireframe();
+        var frame = SelectedState.Self.SelectedFrame;
+        if (frame is not null) AppCommands.Self.RefreshTreeNode(frame);
+    }
+
+    // ── Playback controls wiring ──────────────────────────────────────────────
+
+    private void WirePlaybackControls()
+    {
+        StopBtn.Click  += (_, _) => PreviewCtrl.StopPlayback();
+        PlayBtn.Click  += (_, _) => PreviewCtrl.Play();
+        PauseBtn.Click += (_, _) => PreviewCtrl.Pause();
+        SpeedInput.ValueChanged += (_, e) =>
+        {
+            if (e.NewValue.HasValue)
+                PreviewCtrl.SpeedMultiplier = (double)e.NewValue.Value;
+        };
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────

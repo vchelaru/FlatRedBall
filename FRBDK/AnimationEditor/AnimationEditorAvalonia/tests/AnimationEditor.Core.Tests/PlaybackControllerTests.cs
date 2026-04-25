@@ -172,4 +172,117 @@ public class PlaybackControllerTests
 
         Assert.Equal(1, ctrl.CurrentFrameIndex);
     }
+
+    // ── Pause / Play (PL02) ───────────────────────────────────────────────────
+
+    [Fact]
+    public void IsPlaying_DefaultsToTrue()
+    {
+        var ctrl = new PlaybackController();
+        Assert.True(ctrl.IsPlaying);
+    }
+
+    [Fact]
+    public void Pause_SetsIsPlayingFalse()
+    {
+        var ctrl = new PlaybackController();
+        ctrl.Pause();
+        Assert.False(ctrl.IsPlaying);
+    }
+
+    [Fact]
+    public void Play_SetsIsPlayingTrue_AfterPause()
+    {
+        var ctrl = new PlaybackController();
+        ctrl.Pause();
+        ctrl.Play();
+        Assert.True(ctrl.IsPlaying);
+    }
+
+    [Fact]
+    public void Advance_DoesNotMoveFrame_WhenPaused()
+    {
+        var ctrl = new PlaybackController();
+        ctrl.SetChain(MakeChain(3, 0.1f));
+        ctrl.Pause();
+
+        ctrl.Advance(0.5); // would skip to frame 2 if playing
+
+        Assert.Equal(0, ctrl.CurrentFrameIndex);
+        Assert.Equal(0.0, ctrl.AnimTime);
+    }
+
+    [Fact]
+    public void Advance_ResumesMovement_AfterPlay()
+    {
+        var ctrl = new PlaybackController();
+        ctrl.SetChain(MakeChain(3, 0.1f));
+        ctrl.Pause();
+        ctrl.Advance(0.5); // no-op while paused
+        ctrl.Play();
+        ctrl.Advance(0.15); // now playing → frame 1
+
+        Assert.Equal(1, ctrl.CurrentFrameIndex);
+    }
+
+    [Fact]
+    public void Pause_DoesNotFireFrameIndexChanged()
+    {
+        var ctrl = new PlaybackController();
+        ctrl.SetChain(MakeChain(3, 0.1f));
+        int eventCount = 0;
+        ctrl.FrameIndexChanged += _ => eventCount++;
+
+        ctrl.Pause();
+        ctrl.Advance(0.5); // paused → no advancement → no event
+
+        Assert.Equal(0, eventCount);
+    }
+
+    // ── SpeedMultiplier (PL04) ────────────────────────────────────────────────
+
+    [Fact]
+    public void SpeedMultiplier_DefaultsToOne()
+    {
+        var ctrl = new PlaybackController();
+        Assert.Equal(1.0, ctrl.SpeedMultiplier);
+    }
+
+    [Fact]
+    public void Advance_WithDoubleSpeed_AdvancesTwiceAsFast()
+    {
+        var ctrl = new PlaybackController();
+        ctrl.SetChain(MakeChain(3, 0.1f));
+        ctrl.SpeedMultiplier = 2.0;
+
+        // At 2× speed, 0.075 s of real time = 0.15 s of anim time → frame 1
+        ctrl.Advance(0.075);
+
+        Assert.Equal(1, ctrl.CurrentFrameIndex);
+    }
+
+    [Fact]
+    public void Advance_WithHalfSpeed_AdvancesHalfAsFast()
+    {
+        var ctrl = new PlaybackController();
+        ctrl.SetChain(MakeChain(3, 0.1f));
+        ctrl.SpeedMultiplier = 0.5;
+
+        // At 0.5× speed, 0.3 s of real time = 0.15 s of anim time → frame 1
+        ctrl.Advance(0.3);
+
+        Assert.Equal(1, ctrl.CurrentFrameIndex);
+    }
+
+    [Fact]
+    public void Advance_WithZeroSpeed_DoesNotAdvanceFrame()
+    {
+        var ctrl = new PlaybackController();
+        ctrl.SetChain(MakeChain(3, 0.1f));
+        ctrl.SpeedMultiplier = 0.0;
+
+        ctrl.Advance(999.0); // any real delta → 0 anim delta
+
+        Assert.Equal(0, ctrl.CurrentFrameIndex);
+    }
 }
