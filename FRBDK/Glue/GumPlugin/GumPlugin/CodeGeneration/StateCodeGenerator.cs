@@ -150,6 +150,15 @@ public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
             Skip("IgnoredByParentSize");
         }
 
+        if (version >= (int)GluxVersions.NineSliceHasTilingMiddleSections)
+        {
+            Include("IsTilingMiddleSections");
+        }
+        else
+        {
+            Skip("IsTilingMiddleSections");
+        }
+
         if (version >= (int)GluxVersions.GumTextHasIsBold)
         {
             // We can include this one, it's handled by

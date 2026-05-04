@@ -198,6 +198,9 @@ namespace FlatRedBall.Glue.SaveClasses
             // Added retroactively at the same version so upgrading to 66 brings both changes in.
             PositionedNodeHasTag = 66,
 
+            // March 15, 2026
+            NineSliceHasTilingMiddleSections = 67,
+
             // Stop! If adding an entry here, modify SyntaxVersionAttribute on FlatRedBallServices
             // and LatestVersion down below
             // and update the docs
@@ -207,7 +210,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.GumHasGueVirtualIsPointInside;
+        public const int LatestVersion = (int)GluxVersions.NineSliceHasTilingMiddleSections;
 
         public int FileVersion { get; set; }
 

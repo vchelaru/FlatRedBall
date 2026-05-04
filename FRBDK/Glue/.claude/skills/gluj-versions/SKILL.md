@@ -35,6 +35,20 @@ When you do this, also gate the previously-ungated code in any embedded code fil
 - If the embedded file does not already have a `$GLUE_VERSIONS$` token at the very top, add one. That token is what the code generator replaces with `#define` lines for each enum symbol whose value is `<= FileVersion`. Without it, no `#if SymbolName` guard in the file will ever evaluate true.
 - Wrap the new API usage in `#if SymbolName || REFERENCES_FRB_SOURCE`. The `REFERENCES_FRB_SOURCE` arm keeps the code live for projects that reference FRB as source rather than NuGet, where the symbol isn't defined but the API exists.
 
+## Embedded code files: where they live and conventions
+
+Embedded code files are templates that get copied into user projects by plugins. They live under `FRBDK/Glue/<Plugin>/EmbeddedCodeFiles/*.cs` and are registered for inclusion via `CodeItemAdderManager` (e.g. `FRBDK/Glue/TileGraphicsPlugin/TileGraphicsPlugin/Managers/CodeItemAdderManager.cs`).
+
+For a known-good reference of the `$GLUE_VERSIONS$` + `#if SymbolName || REFERENCES_FRB_SOURCE` pattern, see `FRBDK/Glue/TileGraphicsPlugin/TileGraphicsPlugin/EmbeddedCodeFiles/CollidableListVsTileShapeCollectionRelationship.cs`.
+
+Style: these files target older language levels because they get compiled into a wide range of user projects. **Do not** introduce C# 8 nullable reference annotations (`object?`, `string?`, etc.) just because your editor accepts them — match the surrounding sibling files, which use plain `object` / `string`.
+
+## Caveat: gating an added optional parameter
+
+Wrapping a *newly added optional parameter* in `#if` is the standard pattern but it has a sharp edge: the parameter visibly disappears from the method signature on projects below the gating version. Callers passing the argument by position simply don't compile (loud, easy to fix), but callers passing it by name (`FillFromPredicate(..., tagForAddedNodes: x)`) get a confusing "no such parameter" error rather than a version-mismatch hint.
+
+This is the price of supporting projects that don't pull FRB as source — every embedded file in the codebase does it the same way. Mention this tradeoff if a user is on the fence about gating vs. raising the minimum version.
+
 ## When gating behavior on a version
 
 Compare `FileVersion` against a named `GluxVersions` member, never a magic number:

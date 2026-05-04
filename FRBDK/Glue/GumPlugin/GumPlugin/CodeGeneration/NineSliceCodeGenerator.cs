@@ -15,6 +15,10 @@ public class NineSliceCodeGenerator
         _glueState.CurrentGlueProject?.FileVersion >= (int)GluxVersions.GumNineSliceHasAnimate ||
         _glueState.CurrentMainProject?.IsFrbSourceLinked() == true;
 
+    bool HasNineSliceTilingMiddleSections =>
+        _glueState.CurrentGlueProject?.FileVersion >= (int)GluxVersions.NineSliceHasTilingMiddleSections ||
+        _glueState.CurrentMainProject?.IsFrbSourceLinked() == true;
+
     public NineSliceCodeGenerator(GlueState glueState)
     {
         _glueState = glueState;
@@ -28,6 +32,11 @@ public class NineSliceCodeGenerator
         if(!HasNineSliceAnimate)
         {
             variablesToIgnore.Add("Animate");
+        }
+
+        if(!HasNineSliceTilingMiddleSections)
+        {
+            variablesToIgnore.Add("IsTilingMiddleSections");
         }
     }
 }
