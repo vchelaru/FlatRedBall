@@ -1,4 +1,6 @@
-﻿using FlatRedBall.Math;
+﻿$GLUE_VERSIONS$
+
+using FlatRedBall.Math;
 using FlatRedBall.TileGraphics;
 using Microsoft.Xna.Framework;
 using System;
@@ -103,7 +105,11 @@ namespace FlatRedBall.AI.Pathfinding
             }
         }
 
-        public static void FillFromPredicate(this TileNodeNetwork nodeNetwork, LayeredTileMap layeredTileMap, Func<List<NamedValue>, bool> predicate, MapDrawableBatch layer = null, float offsetX = 0, float offsetY = 0, object? tagForAddedNodes = null)
+        public static void FillFromPredicate(this TileNodeNetwork nodeNetwork, LayeredTileMap layeredTileMap, Func<List<NamedValue>, bool> predicate, MapDrawableBatch layer = null, float offsetX = 0, float offsetY = 0
+#if PositionedNodeHasTag || REFERENCES_FRB_SOURCE
+            , object tagForAddedNodes = null
+#endif
+            )
         {
             var dimensionHalf = layeredTileMap.WidthPerTile.Value / 2.0f;
 
@@ -152,7 +158,9 @@ namespace FlatRedBall.AI.Pathfinding
                         var centerY = bottom + dimensionHalf + offsetY;
 
                         var node = nodeNetwork.AddAndLinkTiledNodeWorld(centerX, centerY);
+#if PositionedNodeHasTag || REFERENCES_FRB_SOURCE
                         node.Tag = tagForAddedNodes;
+#endif
                     }
                 }
             }

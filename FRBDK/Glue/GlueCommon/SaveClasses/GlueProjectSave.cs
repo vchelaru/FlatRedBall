@@ -194,6 +194,9 @@ namespace FlatRedBall.Glue.SaveClasses
 
             // January 29, 2026
             GumHasGueVirtualIsPointInside = 66,
+            // January 17, 2026 - shipped before version 66 was cut, but missed being gated.
+            // Added retroactively at the same version so upgrading to 66 brings both changes in.
+            PositionedNodeHasTag = 66,
 
             // Stop! If adding an entry here, modify SyntaxVersionAttribute on FlatRedBallServices
             // and LatestVersion down below
