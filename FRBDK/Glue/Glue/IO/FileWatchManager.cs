@@ -52,20 +52,36 @@ namespace FlatRedBall.Glue.IO
             filesWaitingToBeFlushed = new ChangedFileGroup();
         }
 
+        // Default suppression window for self-saves. Matches Gum's
+        // FileWatchIgnoreList default. Long enough to cover a slow disk +
+        // antivirus + OS event delivery cycle, short enough that a stale
+        // suppression doesn't swallow legitimate user edits.
+        private static readonly TimeSpan DefaultSelfSaveSuppressionWindow = TimeSpan.FromSeconds(5);
+
+        /// <summary>
+        /// Suppresses watcher reactions to a file Glue is about to write itself.
+        /// Despite the name, this is now TIME-BASED (default 5s window) -- it
+        /// silently absorbs any number of OS events the save produces. The old
+        /// counter-based behavior was fragile because atomic-save writes fire
+        /// Created + Deleted + Renamed events for a single save, while in-place
+        /// writes fire only Modified, and a fixed-N counter mismatched the
+        /// actual event count. See <see cref="ChangedFileGroup"/>'s class
+        /// summary for the full rationale.
+        ///
+        /// All existing call sites have been left unchanged; they automatically
+        /// get the time-based upgrade through this facade. New call sites can
+        /// use this method or call <see cref="IgnoreChangeOnFileUntil(FilePath, DateTimeOffset)"/>
+        /// directly with an explicit expiration.
+        /// </summary>
         public static void IgnoreNextChangeOnFile(FilePath filePath) => IgnoreNextChangeOnFile(filePath.FullPath);
 
+        /// <inheritdoc cref="IgnoreNextChangeOnFile(FilePath)"/>
         public static void IgnoreNextChangeOnFile(string file)
         {
-            // all changed file groups share the same instance, so we only
-            // have to use one of them:
-            
 #if !UNIT_TESTS
-            filesWaitingToBeFlushed.IgnoreNextChangeOn(file);
-            //if(FileManager.GetExtension(file) == "csproj")
-            //{
-            //    Plugins.PluginManager.ReceiveOutput($"Ignore {file} {mChangedProjectFiles.NumberOfTimesToIgnore(file)} times");
-            //}
-
+            filesWaitingToBeFlushed.IgnoreChangeOnFileUntil(
+                new FilePath(file),
+                DateTimeOffset.Now + DefaultSelfSaveSuppressionWindow);
 #endif
         }
 
