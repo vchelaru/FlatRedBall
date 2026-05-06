@@ -630,7 +630,9 @@ namespace FlatRedBall.Screens
 
                         if(first != null)
                         {
-                            message += $"\nFirst sprite Name:{first.Name ?? "<null>"}, Position:{first.Position}, Parent:{first.Parent?.Name ?? "<null>"}, Texture:{first.Texture?.Name ?? "<null>"}";
+                            message += $"\nFirst sprite Name:{first.Name ?? "<null>"}, Position:{first.Position}" +
+                                $", Parent:{first.Parent?.Name ?? "<null>"}, Texture:{first.Texture?.Name ?? "<null>"}" +
+                                $", AnimationChains:{first.AnimationChains?.Name ?? "<null>"}, CurrentChainName:{first.CurrentChainName ?? "<null>"}";
                         }
 
                         messages.Add(message);
