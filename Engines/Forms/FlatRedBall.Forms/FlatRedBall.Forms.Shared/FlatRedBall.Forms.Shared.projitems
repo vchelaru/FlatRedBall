@@ -102,6 +102,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)..\..\..\..\..\Gum\GumCommon\Mvvm\PropertyPathObserver.cs">
       <Link>Data\%(Filename)%(Extension)</Link>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)..\..\..\..\..\Gum\MonoGameGum\Forms\FrameworkElementTreeExtensions.cs">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)..\..\..\..\..\Gum\MonoGameGum\Forms\GraphicalUiElementFormsExtensions.cs">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
     </Compile>
