@@ -1,7 +1,7 @@
 ﻿using FlatRedBall.IO;
 using OfficialPlugins.AnimationChainPlugin.ViewModels;
 using OfficialPlugins.SpritePlugin.Managers;
-using SkiaGum.GueDeriving;
+using Gum.GueDeriving;
 using SkiaGum.Wpf;
 using SkiaSharp;
 using System;
