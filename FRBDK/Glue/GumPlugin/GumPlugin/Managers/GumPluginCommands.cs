@@ -237,6 +237,10 @@ public class GumPluginCommands : Singleton<GumPluginCommands>
                 await SaveGumxAsync();
             }
 
+            // The removed screen was registered in GumIdb.Generated.cs, so
+            // regenerate that file to drop the now-stale type association.
+            CodeGeneratorManager.Self.GenerateAndSaveRuntimeAssociations();
+
         }, $"Gum Plugin - Reacting to removed screen {gumScreen}");
 
     }
