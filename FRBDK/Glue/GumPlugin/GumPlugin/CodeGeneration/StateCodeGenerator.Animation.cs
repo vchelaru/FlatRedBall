@@ -10,7 +10,7 @@ using FlatRedBall.IO;
 using Gum.DataTypes;
 using GumPlugin.Managers;
 using GumPlugin.Managers;
-using StateAnimationPlugin.SaveClasses;
+using Gum.StateAnimation.SaveClasses;
 
 namespace GumPlugin.CodeGeneration;
 

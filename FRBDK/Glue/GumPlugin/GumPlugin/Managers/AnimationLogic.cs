@@ -2,7 +2,7 @@
 using FlatRedBall.IO;
 using Gum.DataTypes;
 using GumPlugin.Managers;
-using StateAnimationPlugin.SaveClasses;
+using Gum.StateAnimation.SaveClasses;
 using System;
 using System.Collections.Generic;
 using System.Text;
