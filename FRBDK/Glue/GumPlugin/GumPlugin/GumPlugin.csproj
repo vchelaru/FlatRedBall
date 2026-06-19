@@ -183,12 +183,6 @@
     <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Math\MathFunctions.cs" Link="Embedded\LibraryFiles\RenderingLibrary\MathFunctions.cs" />
     <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\SystemManagers.cs" Link="Embedded\LibraryFiles\RenderingLibrary\SystemManagers.cs" />
     <Compile Include="..\..\..\..\..\Gum\GumRuntime\BbCodeParser.cs" Link="BbCodeParser.cs" />
-    <Compile Include="..\..\..\..\..\Gum\Gum\StateAnimationPlugin\SaveClasses\AnimatedStateSave.cs" Link="Animation\AnimatedStateSave.cs" />
-    <Compile Include="..\..\..\..\..\Gum\Gum\StateAnimationPlugin\SaveClasses\AnimationReferenceSave.cs" Link="Animation\AnimationReferenceSave.cs" />
-    <Compile Include="..\..\..\..\..\Gum\Gum\StateAnimationPlugin\SaveClasses\AnimationSave.cs" Link="Animation\AnimationSave.cs" />
-    <Compile Include="..\..\..\..\..\Gum\Gum\StateAnimationPlugin\SaveClasses\ElementAnimationReferenceSave.cs" Link="Animation\ElementAnimationReferenceSave.cs" />
-    <Compile Include="..\..\..\..\..\Gum\Gum\StateAnimationPlugin\SaveClasses\ElementAnimationsSave.cs" Link="Animation\ElementAnimationsSave.cs" />
-    <Compile Include="..\..\..\..\..\Gum\Gum\StateAnimationPlugin\SaveClasses\NamedEventSave.cs" Link="Animation\NamedEventSave.cs" />
     <EmbeddedResource Include="..\..\..\..\..\Gum\ToolsUtilities\FileManager.cs" Link="Embedded\LibraryFiles\ToolsUtilities\FileManager.cs" />
     <EmbeddedResource Include="..\..\..\..\..\Gum\ToolsUtilities\ReflectionManager.cs" Link="Embedded\LibraryFiles\ToolsUtilities\ReflectionManager.cs" />
     <EmbeddedResource Include="..\..\..\..\..\Gum\ToolsUtilities\StringFunctions.cs" Link="Embedded\LibraryFiles\ToolsUtilities\StringFunctions.cs" />

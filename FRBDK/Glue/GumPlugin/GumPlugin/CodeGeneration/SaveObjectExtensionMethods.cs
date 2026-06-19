@@ -1,7 +1,7 @@
 ﻿using FlatRedBall.IO;
 using Gum.DataTypes;
 using Gum.DataTypes.Variables;
-using StateAnimationPlugin.SaveClasses;
+using Gum.StateAnimation.SaveClasses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
