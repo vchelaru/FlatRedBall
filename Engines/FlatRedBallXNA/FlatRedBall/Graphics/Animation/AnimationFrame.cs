@@ -107,6 +107,34 @@ namespace FlatRedBall.Graphics.Animation
         /// </summary>
         public ShapeCollectionSave ShapeCollectionSave;
 
+        /// <summary>
+        /// Optional per-frame red tint channel in the 0 - 1 range. Loaded from the .achx file (stored there as 0 - 255).
+        /// When non-null this is applied to the Sprite during animation playback; null means "unset".
+        /// </summary>
+        public float? Red;
+
+        /// <summary>
+        /// Optional per-frame green tint channel in the 0 - 1 range. Applied to the Sprite when non-null.
+        /// </summary>
+        public float? Green;
+
+        /// <summary>
+        /// Optional per-frame blue tint channel in the 0 - 1 range. Applied to the Sprite when non-null.
+        /// </summary>
+        public float? Blue;
+
+        /// <summary>
+        /// Optional per-frame alpha (opacity) in the 0 - 1 range. Applied to the Sprite when non-null.
+        /// Independent of ColorOperation.
+        /// </summary>
+        public float? Alpha;
+
+        /// <summary>
+        /// Optional per-frame color operation. Applied to the Sprite when non-null, gating how the
+        /// Red/Green/Blue channels combine with the texture.
+        /// </summary>
+        public FlatRedBall.Graphics.ColorOperation? ColorOperation;
+
         #endregion
 
         #region Properties

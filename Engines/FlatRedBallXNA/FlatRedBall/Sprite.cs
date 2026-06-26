@@ -1647,12 +1647,49 @@ namespace FlatRedBall
                 RelativePosition.Y = frame.RelativeY;
             }
 
+            ApplyAnimationFrameColor(frame);
+
             foreach (var instruction in frame.Instructions)
             {
                 instruction.Execute();
             }
 
             UpdateScale();
+        }
+
+        /// <summary>
+        /// Applies the optional per-frame color values (tint, alpha, color operation) from the AnimationFrame
+        /// to this Sprite. Frames which carry no color data leave the Sprite's color completely untouched, so
+        /// existing animations are unaffected.
+        /// </summary>
+        private void ApplyAnimationFrameColor(AnimationFrame frame)
+        {
+            // Alpha is independent of the color operation - apply it whenever the frame specifies it.
+            if (frame.Alpha.HasValue)
+            {
+                this.Alpha = frame.Alpha.Value;
+            }
+
+            if (frame.ColorOperation.HasValue)
+            {
+                this.ColorOperation = frame.ColorOperation.Value;
+
+                // Unset channels resolve to the operation's identity value so a partially-specified tint
+                // behaves predictably: Modulate (multiply) leaves a channel unchanged at 1, Add at 0.
+                float identity = frame.ColorOperation.Value == Graphics.ColorOperation.Add ? 0f : 1f;
+
+                this.Red = frame.Red ?? identity;
+                this.Green = frame.Green ?? identity;
+                this.Blue = frame.Blue ?? identity;
+            }
+            else
+            {
+                // No color operation specified: apply only the channels that are set, leaving the Sprite's
+                // current ColorOperation and unspecified channels alone.
+                if (frame.Red.HasValue) this.Red = frame.Red.Value;
+                if (frame.Green.HasValue) this.Green = frame.Green.Value;
+                if (frame.Blue.HasValue) this.Blue = frame.Blue.Value;
+            }
         }
 
         public void ClearTimeRelatedStates()
