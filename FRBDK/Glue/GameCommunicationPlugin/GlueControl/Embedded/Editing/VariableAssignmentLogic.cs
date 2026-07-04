@@ -485,7 +485,7 @@ namespace GlueControl.Editing
                     bool convertFileNamesToObjects = true;
                     if (instruction.Value is string valueAsString)
                     {
-                        stateValue = global::GlueControl.Editing.VariableAssignmentLogic.ConvertStringToType(instruction.Type, valueAsString, false, out throwawayConversion, convertFileNamesToObjects);
+                        stateValue = global::GlueControl.Editing.VariableAssignmentLogic.ConvertStringToType(instruction.Type, valueAsString, false, out throwawayConversion, convertFileNamesToObjects, targetInstance?.GetType());
                     }
                     GlueControl.Editing.VariableAssignmentLogic.SetVariable(
                         "this." + instruction.Member,
@@ -1201,7 +1201,7 @@ namespace GlueControl.Editing
             return variableValue;
         }
 
-        static object GetFileFromUnqualifiedName(string unqualifiedName)
+        static object GetFileFromUnqualifiedName(string unqualifiedName, Type contextualInstanceType = null)
         {
             var file = GlobalContent.GetFile(unqualifiedName);
 
@@ -1229,10 +1229,23 @@ namespace GlueControl.Editing
                 }
             }
 
+            // Or is it scoped to the instance we're actually assigning the variable on? This covers live-editing
+            // an entity's own referenced files (e.g. a State's AnimationChainList/Texture2D variable) while that
+            // entity is running in a normal Screen, not just in the EntityViewingScreen sandbox above.
+            if (file == null && contextualInstanceType != null)
+            {
+                var getFileMethod = contextualInstanceType.GetMethod("GetFile");
+
+                if (getFileMethod != null)
+                {
+                    file = getFileMethod.Invoke(null, new object[] { unqualifiedName });
+                }
+            }
+
             return file;
         }
 
-        public static object ConvertStringToType(string type, string variableValue, bool isState, out string conversionReport, bool convertFileNamesToObjects = true)
+        public static object ConvertStringToType(string type, string variableValue, bool isState, out string conversionReport, bool convertFileNamesToObjects = true, Type contextualInstanceType = null)
         {
             object convertedValue = variableValue;
             const string inWithSpaces = " in ";
@@ -1451,7 +1464,7 @@ namespace GlueControl.Editing
                         {
                             if (!string.IsNullOrWhiteSpace(variableValue))
                             {
-                                convertedValue = GetFileFromUnqualifiedName(variableValue);
+                                convertedValue = GetFileFromUnqualifiedName(variableValue, contextualInstanceType);
 
                                 if(convertedValue == null && variableValue.Contains(".") == false)
                                 {
@@ -1478,7 +1491,7 @@ namespace GlueControl.Editing
                             if (!string.IsNullOrWhiteSpace(variableValue))
                             {
                                 // try unqualified first:
-                                convertedValue = GetFileFromUnqualifiedName(variableValue);
+                                convertedValue = GetFileFromUnqualifiedName(variableValue, contextualInstanceType);
 
                                 if (convertedValue == null && variableValue.Contains(".") == false)
                                 {

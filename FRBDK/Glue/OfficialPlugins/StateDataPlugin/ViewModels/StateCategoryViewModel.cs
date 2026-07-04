@@ -3,6 +3,7 @@ using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.Services;
 using OfficialPlugins.StateDataPlugin.Managers;
 using System;
 using System.Collections.Generic;
@@ -102,8 +103,12 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
 
         #region Initialize
 
-        public StateCategoryViewModel(StateSaveCategory category, GlueElement element)
+        readonly NameVerifier nameVerifier;
+
+        public StateCategoryViewModel(StateSaveCategory category, GlueElement element, NameVerifier nameVerifier = null)
         {
+            this.nameVerifier = nameVerifier ?? Builder.Get<NameVerifier>();
+
             this.ignoreExcludedVariableChanges = true;
 
             this.IsVariableManagementVisible = false;
@@ -116,7 +121,7 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
 
             foreach (var state in category.States)
             {
-                var stateViewModel = new StateViewModel(state, category, element);
+                var stateViewModel = new StateViewModel(state, category, element, this.nameVerifier);
                 stateViewModel.ValueChanged += HandleStateViewModelValueChanged;
                 AssignEventsOn(stateViewModel);
                 States.Add(stateViewModel);
@@ -187,7 +192,7 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
         private void CreateBlankViewModelAtEnd(GlueElement element)
         {
             // add the blank one:
-            var blankRowViewModel = new StateViewModel(null, category, element);
+            var blankRowViewModel = new StateViewModel(null, category, element, nameVerifier);
             blankRowViewModel.ValueChanged += HandleStateViewModelValueChanged;
 
             AssignEventsOn(blankRowViewModel);
@@ -239,6 +244,14 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
 
         private void HandleStateViewModelValueChanged(StateViewModel stateViewModel, StateVariableViewModel stateVariableViewModel)
         {
+            // If BackingData is null, the user is editing the blank/bottom-most row which doesn't have a
+            // state yet. That's expected - once the row gets a name, HandlePropertyOnStateChanged creates
+            // the StateSave and CopyViewModelValuesToState replays all of this row's values into it.
+            if (stateViewModel.BackingData == null)
+            {
+                return;
+            }
+
             var value = stateVariableViewModel.Value;
             var element = GlueState.Self.CurrentElement;
             var customVariable = element.GetCustomVariable(stateVariableViewModel.VariableName);

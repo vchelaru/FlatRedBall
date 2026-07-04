@@ -163,9 +163,9 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
         /// </summary>
         public event Action<StateViewModel, StateVariableViewModel> ValueChanged;
 
-        public StateViewModel(StateSave state, StateSaveCategory category, GlueElement element)
+        public StateViewModel(StateSave state, StateSaveCategory category, GlueElement element, NameVerifier nameVerifier = null)
         {
-            _nameVerifier = Builder.Get<NameVerifier>();
+            _nameVerifier = nameVerifier ?? Builder.Get<NameVerifier>();
             this.category = category;
             this.element = element;
 
