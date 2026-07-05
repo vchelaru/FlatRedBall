@@ -3404,41 +3404,29 @@ class FillVertexLogic
                 #endregion
 
                 arrayAtIndex[vertNum + 0].Position = spriteAtIndex.mVertices[3].Position;
-                arrayAtIndex[vertNum + 0].TextureCoordinate = spriteAtIndex.mVertices[3].TextureCoordinate;
-
                 arrayAtIndex[vertNum + 1].Position = spriteAtIndex.mVertices[0].Position;
-                arrayAtIndex[vertNum + 1].TextureCoordinate = spriteAtIndex.mVertices[0].TextureCoordinate;
-
                 arrayAtIndex[vertNum + 2].Position = spriteAtIndex.mVertices[1].Position;
-                arrayAtIndex[vertNum + 2].TextureCoordinate = spriteAtIndex.mVertices[1].TextureCoordinate;
+                arrayAtIndex[vertNum + 5].Position = spriteAtIndex.mVertices[2].Position;
+
+                // Corners are TopLeft/TopRight/BottomRight/BottomLeft of mVertices[0]/[1]/[2]/[3] respectively.
+                // FlipDiagonal/FlipHorizontal/FlipVertical are reflections, not rotations, so they're applied
+                // by permuting which corner's texture coordinate lands on which quad vertex.
+                var flippedCorners = TextureCoordinateFlipper.Flip(
+                    spriteAtIndex.mVertices[0].TextureCoordinate,
+                    spriteAtIndex.mVertices[1].TextureCoordinate,
+                    spriteAtIndex.mVertices[2].TextureCoordinate,
+                    spriteAtIndex.mVertices[3].TextureCoordinate,
+                    spriteAtIndex.FlipDiagonal,
+                    spriteAtIndex.FlipHorizontal,
+                    spriteAtIndex.FlipVertical);
+
+                arrayAtIndex[vertNum + 0].TextureCoordinate = flippedCorners.BottomLeft;
+                arrayAtIndex[vertNum + 1].TextureCoordinate = flippedCorners.TopLeft;
+                arrayAtIndex[vertNum + 2].TextureCoordinate = flippedCorners.TopRight;
+                arrayAtIndex[vertNum + 5].TextureCoordinate = flippedCorners.BottomRight;
 
                 arrayAtIndex[vertNum + 3] = arrayAtIndex[vertNum + 0];
                 arrayAtIndex[vertNum + 4] = arrayAtIndex[vertNum + 2];
-
-                arrayAtIndex[vertNum + 5].Position = spriteAtIndex.mVertices[2].Position;
-                arrayAtIndex[vertNum + 5].TextureCoordinate = spriteAtIndex.mVertices[2].TextureCoordinate;
-
-                if (spriteAtIndex.FlipHorizontal)
-                {
-                    arrayAtIndex[vertNum + 0].TextureCoordinate = arrayAtIndex[vertNum + 5].TextureCoordinate;
-                    arrayAtIndex[vertNum + 5].TextureCoordinate = arrayAtIndex[vertNum + 3].TextureCoordinate;
-                    arrayAtIndex[vertNum + 3].TextureCoordinate = arrayAtIndex[vertNum + 0].TextureCoordinate;
-
-                    arrayAtIndex[vertNum + 2].TextureCoordinate = arrayAtIndex[vertNum + 1].TextureCoordinate;
-                    arrayAtIndex[vertNum + 1].TextureCoordinate = arrayAtIndex[vertNum + 4].TextureCoordinate;
-                    arrayAtIndex[vertNum + 4].TextureCoordinate = arrayAtIndex[vertNum + 2].TextureCoordinate;
-                }
-
-                if (spriteAtIndex.FlipVertical)
-                {
-                    arrayAtIndex[vertNum + 0].TextureCoordinate = arrayAtIndex[vertNum + 1].TextureCoordinate;
-                    arrayAtIndex[vertNum + 1].TextureCoordinate = arrayAtIndex[vertNum + 3].TextureCoordinate;
-                    arrayAtIndex[vertNum + 3].TextureCoordinate = arrayAtIndex[vertNum + 0].TextureCoordinate;
-
-                    arrayAtIndex[vertNum + 2].TextureCoordinate = arrayAtIndex[vertNum + 5].TextureCoordinate;
-                    arrayAtIndex[vertNum + 5].TextureCoordinate = arrayAtIndex[vertNum + 4].TextureCoordinate;
-                    arrayAtIndex[vertNum + 4].TextureCoordinate = arrayAtIndex[vertNum + 2].TextureCoordinate;
-                }
             }
 
             #endregion

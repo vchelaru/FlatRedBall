@@ -46,6 +46,17 @@ namespace FlatRedBall.Content.AnimationChain
         }
 
         /// <summary>
+        /// Whether the texture should be flipped diagonally (mirrored about the line running from
+        /// the top-left to the bottom-right). Combines with FlipHorizontal/FlipVertical to produce
+        /// all 8 orientations of a square.
+        /// </summary>
+        public bool FlipDiagonal;
+        public bool ShouldSerializeFlipDiagonal()
+        {
+            return FlipDiagonal == true;
+        }
+
+        /// <summary>
         /// Used in XML Serialization of AnimationChains - this should
         /// not explicitly be set by the user.
         /// </summary>
@@ -165,6 +176,7 @@ namespace FlatRedBall.Content.AnimationChain
             TextureName = template.TextureName;
             FlipVertical = template.FlipVertical;
             FlipHorizontal = template.FlipHorizontal;
+            FlipDiagonal = template.FlipDiagonal;
 
             LeftCoordinate = template.LeftCoordinate;
             RightCoordinate = template.RightCoordinate;
@@ -222,6 +234,7 @@ namespace FlatRedBall.Content.AnimationChain
             }
             frame.FlipHorizontal = FlipHorizontal;
             frame.FlipVertical = FlipVertical;
+            frame.FlipDiagonal = FlipDiagonal;
 
             if (coordinateType == TextureCoordinateType.UV)
             {
@@ -284,6 +297,9 @@ namespace FlatRedBall.Content.AnimationChain
                         break;
                     case "FlipVertical":
                         toReturn.FlipVertical = SceneSave.AsBool(subElement);
+                        break;
+                    case "FlipDiagonal":
+                        toReturn.FlipDiagonal = SceneSave.AsBool(subElement);
                         break;
                     case "TextureName":
                         toReturn.TextureName = subElement.Value;

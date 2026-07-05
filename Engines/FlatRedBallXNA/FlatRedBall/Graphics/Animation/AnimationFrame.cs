@@ -48,6 +48,13 @@ namespace FlatRedBall.Graphics.Animation
         public bool FlipVertical;
 
         /// <summary>
+        /// Whether the texture should be flipped diagonally (mirrored about the line running from
+        /// the top-left to the bottom-right). Combines with FlipHorizontal/FlipVertical to produce
+        /// all 8 orientations of a square.
+        /// </summary>
+        public bool FlipDiagonal;
+
+        /// <summary>
         /// Used in XML Serialization of AnimationChains - this should
         /// not explicitly be set by the user.
         /// </summary>
@@ -177,6 +184,7 @@ namespace FlatRedBall.Graphics.Animation
             FrameLength = frameLength;
             FlipHorizontal = false;
             FlipVertical = false;
+            FlipDiagonal = false;
             
             Instructions = new List<Instruction>();
 
@@ -202,6 +210,7 @@ namespace FlatRedBall.Graphics.Animation
             FrameLength = frameLength;
             FlipHorizontal = false;
             FlipVertical = false;
+            FlipDiagonal = false;
 
             Instructions = new List<Instruction>();
 

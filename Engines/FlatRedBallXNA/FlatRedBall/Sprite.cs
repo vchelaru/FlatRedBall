@@ -90,6 +90,7 @@ namespace FlatRedBall
         internal float mPixelSize;
         bool mFlipHorizontal;
         bool mFlipVertical;
+        bool mFlipDiagonal;
         #endregion
 
         #region Scale
@@ -563,6 +564,18 @@ namespace FlatRedBall
         {
             get { return mFlipVertical; }
             set { mFlipVertical = value; }
+        }
+
+        /// <summary>
+        /// Whether to flip the Sprite's texture diagonally (mirrored about the line running from
+        /// the top-left to the bottom-right). Combines with FlipHorizontal/FlipVertical to produce
+        /// all 8 orientations of a square. If a Sprite is animated, this value will be overwritten
+        /// by the AnimationChain being used.
+        /// </summary>
+        public bool FlipDiagonal
+        {
+            get { return mFlipDiagonal; }
+            set { mFlipDiagonal = value; }
         }
 
         /// <summary>
@@ -1639,6 +1652,7 @@ namespace FlatRedBall
             {
                 mFlipHorizontal = frame.FlipHorizontal;
                 mFlipVertical = frame.FlipVertical;
+                mFlipDiagonal = frame.FlipDiagonal;
             }
 
             if (mUseAnimationRelativePosition)
@@ -1716,6 +1730,7 @@ namespace FlatRedBall
 
             sprite.FlipHorizontal = FlipHorizontal;
             sprite.FlipVertical = FlipVertical;
+            sprite.FlipDiagonal = FlipDiagonal;
             sprite.ColorOperation = mColorOperation;
 
             // Although the Scale has already been set at this point, set it again so that it will
