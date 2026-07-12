@@ -3,6 +3,7 @@ using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.VSHelpers.Projects;
 using FlatRedBall.Glue.Events;
 using FlatRedBall.Glue.FormHelpers;
+using FlatRedBall.IO;
 using System.Linq;
 
 namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
@@ -73,6 +74,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
         }
 
         string CurrentGlueProjectDirectory { get; }
+
+        FilePath CurrentCodeProjectFileName { get; }
 
         string ContentDirectory
         {
@@ -205,6 +208,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
 
         public string CurrentGlueProjectDirectory { get; set; }
 
+        public FilePath CurrentCodeProjectFileName { get; set; }
+
         public bool IsReferencingFrbSource { get; set; }
 
         public int? EngineDllSyntaxVersion { get; private set; }
@@ -254,6 +259,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
                 this.ProjectSpecificSettingsFolder = glueState.ProjectSpecificSettingsFolder;
 
                 this.CurrentGlueProjectDirectory = glueState.CurrentGlueProjectDirectory;
+
+                this.CurrentCodeProjectFileName = glueState.CurrentCodeProjectFileName;
             }
         }
 

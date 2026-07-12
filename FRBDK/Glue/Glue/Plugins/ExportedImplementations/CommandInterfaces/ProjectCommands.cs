@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
+﻿using FlatRedBall.Glue.Plugins.ExportedInterfaces;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using System;
@@ -28,6 +29,11 @@ class ProjectCommands : IProjectCommands
 {
     private FileReferenceManager _fileReferenceManager;
 
+    // Transitional pattern (see REFACTORING.md): defaults to the real singleton in production, so this
+    // is a zero-behavior-change substitution for the ~30 previous GlueState.Self reads in this class.
+    // Tests can override via this internal field to avoid needing a live GlueState.Self.
+    internal IGlueState _glueState = GlueState.Self;
+
     public void Initialize(FileReferenceManager fileReferenceManager)
     {
         _fileReferenceManager = fileReferenceManager;
@@ -47,7 +53,7 @@ class ProjectCommands : IProjectCommands
     public void SaveProjectsImmediately()
     {
         TaskManager.Self.WarnIfNotInTask();
-        var toLock = GlueState.Self.CurrentMainProject;
+        var toLock = _glueState.CurrentMainProject;
 
         ///////////////////////early out///////////////////////
         if (toLock == null)
@@ -62,7 +68,7 @@ class ProjectCommands : IProjectCommands
             // been updated to the "evaluated" list, not if it needs to
             // be saved.
             //if (mProjectBase != null && mProjectBase.IsDirty)
-            var mainProject = GlueState.Self.CurrentMainProject;
+            var mainProject = _glueState.CurrentMainProject;
             // toList to reduce the chance of having a collection modified exception:
             var projects = ProjectManager.SyncedProjects.ToList();
             if (mainProject != null)
@@ -124,7 +130,7 @@ class ProjectCommands : IProjectCommands
     public void CreateAndAddPartialFile(IElement element, string partialName, string code)
     {
         var fileName = element.Name + ".Generated." + partialName + ".cs";
-        var fullFileName = GlueState.Self.CurrentMainProject.Directory + fileName;
+        var fullFileName = _glueState.CurrentMainProject.Directory + fileName;
 
         var save = false; // we'll be doing manual saving after it's created
         ProjectManager.CodeProjectHelper.CreateAndAddPartialGeneratedCodeFile(fileName, save);
@@ -135,7 +141,7 @@ class ProjectCommands : IProjectCommands
 
     public void AddContentFileToProject(string absoluteFileName, bool saveProjects = true)
     {
-        GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(GlueState.Self.CurrentMainProject, absoluteFileName, false, false, null);
+        GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(_glueState.CurrentMainProject, absoluteFileName, false, false, null);
         if (saveProjects)
         {
             SaveProjects();
@@ -180,8 +186,8 @@ class ProjectCommands : IProjectCommands
 
                 if (wasAnythingModified)
                 {
-                    GlueState.Self.CurrentMainProject.ReevaluateItems();
-                    foreach (var item in GlueState.Self.SyncedProjects)
+                    _glueState.CurrentMainProject.ReevaluateItems();
+                    foreach (var item in _glueState.SyncedProjects)
                     {
                         (item as VisualStudioProject)?.ReevaluateItems();
                     }
@@ -226,12 +232,12 @@ class ProjectCommands : IProjectCommands
                     useContentPipeline = false;
                 }
             }
-            var projectName = GlueState.Self.CurrentMainProject.Name;
+            var projectName = _glueState.CurrentMainProject.Name;
             var isExcludedFromProject = referencedFileSave.ProjectsToExcludeFrom.Contains(projectName);
             if (!isExcludedFromProject)
             {
                 var absoluteFilePath = GlueCommands.Self.GetAbsoluteFilePath(referencedFileSave);
-                wasAnythingAdded = UpdateFileMembershipInProject(GlueState.Self.CurrentMainProject, absoluteFilePath,
+                wasAnythingAdded = UpdateFileMembershipInProject(_glueState.CurrentMainProject, absoluteFilePath,
                     useContentPipeline, false,
                     fileRfs: referencedFileSave,
                     reEvaluateAfterAdd: reEvaluateAfterAdd,
@@ -273,10 +279,12 @@ class ProjectCommands : IProjectCommands
     {
         bool wasProjectModified = false;
         ///////////////////Early Out/////////////////////
-        if (project == null || GlueState.Self.CurrentMainProject == null) return wasProjectModified;
+        if (project == null || _glueState.CurrentMainProject == null) return wasProjectModified;
+
+        if (ShouldSkipBecauseDirectory(fileName)) return wasProjectModified;
 
         /////////////////End Early Out//////////////////
-        bool preserveCase = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.CaseSensitiveLoading;
+        bool preserveCase = _glueState.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.CaseSensitiveLoading;
 
         string fileToAddAbsolute = fileName.FullPath;
 
@@ -436,6 +444,16 @@ class ProjectCommands : IProjectCommands
         return wasProjectModified;
     }
 
+    /// <summary>
+    /// Whether <paramref name="fileName"/> should be skipped by UpdateFileMembershipInProject because it
+    /// refers to a directory rather than a file. Directories can reach this method via FileSystemWatcher
+    /// Created/Renamed events (which fire for folders too, not just files) or via the recursive "referenced
+    /// files" walk. A directory's path always ends with a path separator, and MSBuild rejects that as an
+    /// Include value ("A file item cannot end with a path separator."), so callers must bail out before any
+    /// Include gets written.
+    /// </summary>
+    internal static bool ShouldSkipBecauseDirectory(FilePath fileName) => fileName.IsDirectory;
+
     private static bool GetIfShouldUseContentPipeline(FilePath filePath, ReferencedFileSave rfs = null)
     {
         // grab the RFS and see if the rfs forces it
@@ -460,10 +478,10 @@ class ProjectCommands : IProjectCommands
         return useContentPipeline;
     }
 
-    private static bool ShouldFileBeInContentProject(FilePath filePath)
+    private bool ShouldFileBeInContentProject(FilePath filePath)
     {
-        var mainContentProject = GlueState.Self.CurrentMainContentProject;
-        var mainProject = GlueState.Self.CurrentMainProject;
+        var mainContentProject = _glueState.CurrentMainContentProject;
+        var mainProject = _glueState.CurrentMainProject;
 
         bool toReturn = false;
 
@@ -538,14 +556,14 @@ class ProjectCommands : IProjectCommands
     {
         //////////////Early Out///////////////////
         // Just in case this is called when the project is unloaded:
-        if (GlueState.Self.CurrentGlueProject == null)
+        if (_glueState.CurrentGlueProject == null)
         {
             return;
         }
         ////////////End Early Out////////////////
 
         // see if the file exists. If not, create it:
-        FilePath filePath = GlueState.Self.CurrentGlueProjectDirectory + relativeFileName;
+        FilePath filePath = _glueState.CurrentGlueProjectDirectory + relativeFileName;
 
         CreateAndAddCodeFile(filePath);
     }
@@ -569,7 +587,7 @@ class ProjectCommands : IProjectCommands
 
         ProjectItem added = null;
 
-        var mainProject = GlueState.Self.CurrentMainProject;
+        var mainProject = _glueState.CurrentMainProject;
 
         if (mainProject?.CodeProject == null)
         {
@@ -593,7 +611,7 @@ class ProjectCommands : IProjectCommands
     {
         await TaskManager.Self.AddAsync(() =>
         {
-            var mainProject = GlueState.Self.CurrentMainProject;
+            var mainProject = _glueState.CurrentMainProject;
             if (mainProject.CodeProject.IsFilePartOfProject(codeFilePath.FullPath) == false)
             {
                 ((VisualStudioProject)mainProject.CodeProject).AddCodeBuildItem(codeFilePath.FullPath);
@@ -605,7 +623,7 @@ class ProjectCommands : IProjectCommands
 
     public void CopyToBuildFolder(ReferencedFileSave rfs)
     {
-        FilePath source = GlueState.Self.ContentDirectory + rfs.Name;
+        FilePath source = _glueState.ContentDirectory + rfs.Name;
 
         CopyToBuildFolder(source);
     }
@@ -631,23 +649,23 @@ class ProjectCommands : IProjectCommands
         {
             // This is the location when running from Glue
             // Maybe eventually I'll fix glue build to build to the same location as the project...
-            if (absoluteSource.Exists() && GlueState.Self.CurrentMainProject != null)
+            if (absoluteSource.Exists() && _glueState.CurrentMainProject != null)
             {
-                var fileToCopyItem = GlueState.Self.CurrentMainProject.GetItem(absoluteSource);
+                var fileToCopyItem = _glueState.CurrentMainProject.GetItem(absoluteSource);
 
 
                 if (fileToCopyItem != null)
                 {
-                    var outputDirectory = GlueState.Self.CurrentMainProject.GetOutputDirectory() + "Content/";
+                    var outputDirectory = _glueState.CurrentMainProject.GetOutputDirectory() + "Content/";
 
-                    FilePath destination = outputDirectory + FileManager.MakeRelative(absoluteSource.FullPath, GlueState.Self.ContentDirectory);
+                    FilePath destination = outputDirectory + FileManager.MakeRelative(absoluteSource.FullPath, _glueState.ContentDirectory);
 
                     var link = fileToCopyItem.GetLink();
                     if (!string.IsNullOrEmpty(link))
                     {
                         // it seems that links have Content already appended so we should not have content
 
-                        destination = GlueState.Self.CurrentMainProject.GetOutputDirectory() + link;
+                        destination = _glueState.CurrentMainProject.GetOutputDirectory() + link;
                     }
 
                     try
@@ -673,10 +691,10 @@ class ProjectCommands : IProjectCommands
         }, CopyToBuildFolderTaskIdFor(absoluteSource), taskExecutionPreference);
     }
 
-    private static void CopyToBuildFolder(FilePath absoluteSource, string outputPathRelativeToCsProj)
+    private void CopyToBuildFolder(FilePath absoluteSource, string outputPathRelativeToCsProj)
     {
-        string buildFolder = FileManager.GetDirectory(GlueState.Self.CurrentCodeProjectFileName.FullPath) + outputPathRelativeToCsProj + "Content/";
-        string destination = buildFolder + FileManager.MakeRelative(absoluteSource.FullPath, GlueState.Self.ContentDirectory);
+        string buildFolder = FileManager.GetDirectory(_glueState.CurrentCodeProjectFileName.FullPath) + outputPathRelativeToCsProj + "Content/";
+        string destination = buildFolder + FileManager.MakeRelative(absoluteSource.FullPath, _glueState.ContentDirectory);
 
         string destinationFolder = FileManager.GetDirectory(destination);
 
@@ -721,14 +739,14 @@ class ProjectCommands : IProjectCommands
         }
         else if (treeNodeToAddTo.IsRootEntityNode())
         {
-            string directory = GlueState.Self.CurrentGlueProjectDirectory + "Entities/" +
+            string directory = _glueState.CurrentGlueProjectDirectory + "Entities/" +
                 folderName;
 
             Directory.CreateDirectory(directory);
         }
         else if (treeNodeToAddTo.IsRootScreenNode())
         {
-            string directory = GlueState.Self.CurrentGlueProjectDirectory + "Screens/" + folderName;
+            string directory = _glueState.CurrentGlueProjectDirectory + "Screens/" + folderName;
 
             Directory.CreateDirectory(directory);
         }
@@ -786,14 +804,14 @@ class ProjectCommands : IProjectCommands
             var isGlobalContentDirectory = treeNodeToAddTo.IsFolderForGlobalContentFiles();
             if (isGlobalContentDirectory)
             {
-                directory = GlueState.Self.ContentDirectory +
+                directory = _glueState.ContentDirectory +
                     treeNodeToAddTo.GetRelativeFilePath() +
                     folderName;
             }
             else
             {
 
-                directory = GlueState.Self.CurrentGlueProjectDirectory +
+                directory = _glueState.CurrentGlueProjectDirectory +
                         treeNodeToAddTo.GetRelativeFilePath() +
                         folderName;
             }
@@ -845,7 +863,7 @@ class ProjectCommands : IProjectCommands
 
     public void MakeGeneratedCodeItemsNestedImmediately()
     {
-        foreach (var bi in GlueState.Self.CurrentMainProject.EvaluatedItems)
+        foreach (var bi in _glueState.CurrentMainProject.EvaluatedItems)
         {
 
             string biInclude = bi.UnevaluatedInclude;
@@ -865,9 +883,9 @@ class ProjectCommands : IProjectCommands
                     // make sure there is an object to nest under in this directory
                     string whatToNextUnderWithPath = FileManager.GetDirectory(bi.UnevaluatedInclude, RelativeType.Relative) + whatToNestUnder;
 
-                    if (GlueState.Self.CurrentMainProject.GetItem(whatToNextUnderWithPath) != null)
+                    if (_glueState.CurrentMainProject.GetItem(whatToNextUnderWithPath) != null)
                     {
-                        GlueState.Self.CurrentMainProject.MakeBuildItemNested(bi, whatToNestUnder);
+                        _glueState.CurrentMainProject.MakeBuildItemNested(bi, whatToNestUnder);
 
                         foreach (VisualStudioProject project in ProjectManager.SyncedProjects)
                         {
@@ -920,7 +938,7 @@ class ProjectCommands : IProjectCommands
     {
         //////////////Early Out///////////////////
         // Just in case this is called when the project is unloaded:
-        if (GlueState.Self.CurrentGlueProject == null)
+        if (_glueState.CurrentGlueProject == null)
         {
             return null;
         }
@@ -935,14 +953,14 @@ class ProjectCommands : IProjectCommands
             throw new ArgumentException(nameof(versionNumber));
         }
 
-        var hasNugetsEmbeddedInCsproj = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.NugetPackageInCsproj;
+        var hasNugetsEmbeddedInCsproj = _glueState.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.NugetPackageInCsproj;
         // If not....do we fail silently?
         // So far this is for adding Newtonsoft json, and if we don't have it the user will get a compile error so maybe that's enough to guide them?
         if (hasNugetsEmbeddedInCsproj)
         {
             return await TaskManager.Self.AddAsync(() =>
             {
-                var mainProject = GlueState.Self.CurrentMainProject;
+                var mainProject = _glueState.CurrentMainProject;
 
                 if (mainProject?.CodeProject == null)
                 {
@@ -971,7 +989,7 @@ class ProjectCommands : IProjectCommands
 
     public void AddAssemblyBinding(string name, string publicKeyToken, string oldVersion, string newVersion)
     {
-        string appConfig = FileManager.GetDirectory(GlueState.Self.CurrentCodeProjectFileName.FullPath) + "app.config";
+        string appConfig = FileManager.GetDirectory(_glueState.CurrentCodeProjectFileName.FullPath) + "app.config";
 
         if (File.Exists(appConfig))
         {
@@ -1036,14 +1054,14 @@ class ProjectCommands : IProjectCommands
 
         ProjectBase syncedProject = null;
 
-        if (GlueState.Self.CurrentMainProject.FullFileName == filePath)
+        if (_glueState.CurrentMainProject.FullFileName == filePath)
         {
             doesProjectAlreadyExist = true;
         }
 
         if (!doesProjectAlreadyExist)
         {
-            foreach (var project in GlueState.Self.SyncedProjects)
+            foreach (var project in _glueState.SyncedProjects)
             {
                 var existingFileName = project.FullFileName;
                 if (existingFileName == filePath)
@@ -1058,12 +1076,14 @@ class ProjectCommands : IProjectCommands
         {
             syncedProject = ProjectCreator.CreateProject(filePath.FullPath).Project;
 
-            syncedProject.OriginalProjectBaseIfSynced = GlueState.Self.CurrentMainProject;
+            syncedProject.OriginalProjectBaseIfSynced = _glueState.CurrentMainProject;
 
             syncedProject.Load(filePath.FullPath);
 
             lock (ProjectManager.SyncedProjects)
             {
+                // IGlueState.SyncedProjects is intentionally read-only (IEnumerable<ProjectBase>); the
+                // mutable concrete list lives on the singleton, so mutation goes through it directly.
                 GlueState.Self.SyncedProjects.Add(syncedProject);
             }
 
