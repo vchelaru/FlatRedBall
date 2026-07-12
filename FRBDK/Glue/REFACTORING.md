@@ -285,9 +285,65 @@ Traversal** (14) groups — 24 methods. Everything else stays on `ObjectFinder`.
 
 ## Known Areas Needing Improvement
 
-<!-- Add notes here as problem areas are identified -->
+- **`ProjectCommands.UpdateFileMembershipInProject`** is a ~170-line method with no seams — it touches
+  a concrete `VisualStudioProject` (abstract, but its constructor requires a live MSBuild `Project`, so
+  it can't be constructed in a unit test), `FileReferenceManager`, and `PluginManager` all inline. The
+  `GlueState.Self` dependency was removed (see below), but `VisualStudioProject` remains the blocker.
+  Fully unit-testing this method would require extracting an `IVisualStudioProject`-style seam around
+  the MSBuild-backed project type — out of scope until a feature actually needs to touch this method
+  again.
 
 ## Completed Refactors
+
+### 2026-07-12 — Inject `IGlueState` into `ProjectCommands`
+
+Follow-up to the directory-path fix below. `ProjectCommands` had ~40 direct `GlueState.Self` reads
+across the class (not just the bug's method) — the largest concentration of static-singleton coupling
+of any class touched by that fix. Converted it to the same transitional pattern already used for
+`SelectionLogic.Current`/`ReferenceService.Self` elsewhere in this doc:
+
+- Added `internal IGlueState _glueState = GlueState.Self;` to `ProjectCommands`, defaulting to the real
+  singleton (zero behavior change in production) with an internal setter tests can override.
+- Replaced all reads of `GlueState.Self.*` in `ProjectCommands.cs` with `_glueState.*`, **except** one:
+  `AddSyncedProject`'s `GlueState.Self.SyncedProjects.Add(syncedProject)` mutates the list, and
+  `IGlueState.SyncedProjects` is intentionally read-only (`IEnumerable<ProjectBase>`) — that one call
+  stays on the concrete singleton rather than widening the interface's mutation surface for one caller.
+- `IGlueState` was missing `CurrentCodeProjectFileName` (used by `ProjectCommands` but never previously
+  exposed on the interface, only the concrete `GlueState` class) — added it to `IGlueState`, to
+  `GlueStateSnapshot`'s implementation, and to `GlueStateSnapshot.SetFrom` (per its own "STOP! if adding
+  more properties" comment).
+- Two `private static` helper methods (`ShouldFileBeInContentProject`, and an unused 2-arg
+  `CopyToBuildFolder(FilePath, string)` overload — dead code, no call sites found anywhere in the repo)
+  read `_glueState` internally, so both had `static` removed. Safe: both are `private`.
+- Added `InternalsVisibleTo("GlueUnitTests")` / `("DynamicProxyGenAssembly2")` to `Glue.csproj` (it only
+  existed on `OfficialPlugins.csproj` before), since `ProjectCommands` is `internal` and tests need to
+  reach it and its new `_glueState` field.
+
+This unlocks unit-testing any `ProjectCommands` logic that only depends on `IGlueState` — the
+`VisualStudioProject` construction problem noted above is the next, harder blocker.
+
+### 2026-07-12 — Fix directory paths leaking into csproj Include items, pin with a unit test
+
+Bug: Glue was occasionally adding directory paths (e.g. `Content\Entities\Bosses\ResonatorCoil\`) as
+`<Content Include="...">` items in the target project, which MSBuild rejects with "A file item cannot
+end with a path separator." Root cause: `FileSystemWatcher` in `ChangedFileGroup.cs` watches with
+`NotifyFilters.DirectoryName`, so folder `Created`/`Renamed` events flow through
+`UpdateReactor.UpdateFile` → plugins → `ProjectCommands.UpdateFileMembershipInProject` the same as file
+events, and that method never checked whether the incoming `FilePath` was a directory before handing it
+to `VisualStudioProject.AddContentBuildItem` → `mProject.AddItem`.
+
+`UpdateFileMembershipInProject` itself can't be unit-tested directly: it depends on `GlueState.Self` and
+a concrete `VisualStudioProject`, and `VisualStudioProject`'s constructor requires a live MSBuild
+`Project` (dereferenced immediately in `GetDotNetVersion()`), so it can't be instantiated or mocked in a
+test without loading a real `.csproj` from disk. Rather than take on that larger extraction to add one
+test, the directory check itself — the actual fix — was pulled out into a standalone, pure, testable
+method: `internal static bool ShouldSkipBecauseDirectory(FilePath fileName)`. `UpdateFileMembershipInProject`
+calls it as an early-out; `ProjectCommandsTests.cs` (new, `Tests/GlueUnitTests/CommandInterfaces/`) pins
+it directly against the exact path shape from the bug report (trailing separator, both `\` and `/`) plus
+ordinary file paths that must NOT be skipped.
+
+See "Known Areas Needing Improvement" above for the larger `VisualStudioProject` testability gap this
+left unaddressed.
 
 ### 2026-03-04 — Reference-finding centralization
 
