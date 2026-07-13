@@ -265,10 +265,17 @@ namespace FlatRedBall.Glue.Managers
 
         public TaskManager()
         {
-            new Thread(StartDoTaskManagerLoop)
+            var thread = new Thread(StartDoTaskManagerLoop)
             {
                 IsBackground = true
-            }.Start();
+            };
+            // Some tasks (such as ProjectLoader's missing-custom-file check) create WPF
+            // controls (e.g. MultiButtonMessageBoxWpf), which require an STA thread. Without
+            // this, the thread defaults to MTA and those tasks throw
+            // "The calling thread must be STA" when they run off of file-watcher-triggered
+            // reloads instead of directly from the (STA) UI thread.
+            thread.SetApartmentState(ApartmentState.STA);
+            thread.Start();
         }
 
         void StartDoTaskManagerLoop()
