@@ -111,6 +111,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\IListExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FrameworkElementTemplate.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\CursorExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)..\..\..\..\..\Gum\MonoGameGum\Input\CursorExtensions.cs">
+      <Link>Input\CursorEventFailureExtensions.cs</Link>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)GumExtensions\GraphicalUiElementExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\KeyEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Managers\FrameworkElementManager.cs" />
