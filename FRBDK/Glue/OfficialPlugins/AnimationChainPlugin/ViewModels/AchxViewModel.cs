@@ -563,7 +563,14 @@ internal class AchxViewModel : ViewModel
             }
             else
             {
-                animationChainListSave = AnimationChainListSave.FromFile(filePath.FullPath);
+                try
+                {
+                    animationChainListSave = AnimationChainListSave.FromFile(filePath.FullPath);
+                }
+                catch (Exception ex)
+                {
+                    GlueCommands.Self.PrintError($"Error loading .achx file {filePath.FullPath}:\n{ex.Message}");
+                }
             }
 
             if(animationChainListSave != null )
