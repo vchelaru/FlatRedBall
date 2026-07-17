@@ -320,85 +320,88 @@ namespace FlatRedBall.Glue.IO
                 // write out put?
             }
 
-            if(compareResult?.Differences.Count == 0)
+            if (compareResult != null)
             {
-                // no changes!
-                wasHandled = true;
-            }
-            else if (compareResult != null && compareResult.Differences.Count != 0)
-            {
-                // See if only a Screen or Entity changed.  If so, do a simple set of that and be done with it
-                wasHandled = true;
+                var plan = BuildProjectDiffPlan(
+                    compareResult.Differences.Select(d => d.PropertyName),
+                    ProjectManager.GlueProjectSave,
+                    newGlueProjectSave);
 
-                List<string> elementsAlreadyRefreshed = new List<string>();
-
-                //if (comparisonObject.Differences.Count == 1)
-				foreach(var comparison in compareResult.Differences)
+                // Apply whatever collapsed to a single element/file BEFORE checking the outcome.
+                // When the plan ends in FullReloadRequired, this is only the prefix of replacements
+                // that were resolved before the diff that forced the full reload - matching the
+                // original inline loop, which mutated/regenerated each element as it went and only
+                // then bailed on the first unresolvable diff. Those swaps get overwritten by the
+                // full reload that follows anyway, so this is redundant work, not a correctness
+                // issue - but it's the existing, pinned behavior, so it's preserved as-is here.
+                foreach (var replacement in plan.ElementsToReplace)
                 {
-                        //comparisonObject.GetComparisonDifference(comparisonObject.Differences[0]);
-                    int indexInOld = 0;
-                    int indexInNew = 0;
-                    var oldElement = GetElementFromObjectString(comparison.PropertyName, ProjectManager.GlueProjectSave, out indexInOld);
-                    GlueElement replacementElement = GetElementFromObjectString(comparison.PropertyName, newGlueProjectSave, out indexInNew);
-
-                    int fileIndexInOld = -1;
-                    int fileIndexInNew = -1;
-                    ReferencedFileSave oldFile = null;
-                    ReferencedFileSave replacementFile = null;
-                    if(oldElement == null && replacementElement == null)
+                    if (replacement.OldElement is ScreenSave)
                     {
-                        oldFile = GetFileFromObjectString(comparison.PropertyName, ProjectManager.GlueProjectSave, out fileIndexInOld);
-                        replacementFile = GetFileFromObjectString(comparison.PropertyName, newGlueProjectSave, out fileIndexInNew);
-                        //replacement = GetNamedObjectSaveFromObjectString(comparison.PropertyName, newGlueProjectSave, out indexInNew);
+                        ProjectManager.GlueProjectSave.Screens[replacement.Index] = (ScreenSave)replacement.ReplacementElement;
                     }
-                    if (oldElement != null && replacementElement != null && indexInNew == indexInOld)
-					{
-                        if (!elementsAlreadyRefreshed.Contains(oldElement.Name))
-                        {
-                            elementsAlreadyRefreshed.Add(oldElement.Name);
-                            if (oldElement is ScreenSave)
-                            {
-                                ProjectManager.GlueProjectSave.Screens[indexInOld] = newGlueProjectSave.Screens[indexInNew];
-                            }
-                            else // element is EntitySave
-                            {
-                                ProjectManager.GlueProjectSave.Entities[indexInOld] = newGlueProjectSave.Entities[indexInNew];
-                            }
-
-
-                            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(oldElement);
-
-
-                            // Gotta regen this and update the UI and refresh the PropertyGrid if it's selected
-                            GlueCommands.Self.UpdateCommands.Update(replacementElement);
-
-                            // Jan 2, 2023
-                            // Not sure why
-                            // we generate the 
-                            // old one, it should
-                            // be the new one because
-                            // the old one is no longer
-                            // part of the GlueProjectSave
-                            // so finding references during
-                            // codegen will not work correctly.
-                            //GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(oldElement);
-                            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(replacementElement);
-                        }
-					}
-                    else if(oldFile != null && replacementFile != null && fileIndexInOld == fileIndexInNew)
+                    else // element is EntitySave
                     {
-                        ProjectManager.GlueProjectSave.GlobalFiles[fileIndexInOld] = newGlueProjectSave.GlobalFiles[fileIndexInNew];
-
-                        GlueCommands.Self.RefreshCommands.RefreshGlobalContent();
-
-                        GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCode();
+                        ProjectManager.GlueProjectSave.Entities[replacement.Index] = (EntitySave)replacement.ReplacementElement;
                     }
-					else
-					{
-						wasHandled = false;
-						break;
-					}
+
+                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(replacement.OldElement);
+
+                    // Gotta regen this and update the UI and refresh the PropertyGrid if it's selected
+                    GlueCommands.Self.UpdateCommands.Update(replacement.ReplacementElement);
+
+                    // Jan 2, 2023
+                    // Not sure why
+                    // we generate the
+                    // old one, it should
+                    // be the new one because
+                    // the old one is no longer
+                    // part of the GlueProjectSave
+                    // so finding references during
+                    // codegen will not work correctly.
+                    //GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(replacement.OldElement);
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(replacement.ReplacementElement);
                 }
+
+                foreach (var replacement in plan.GlobalFilesToReplace)
+                {
+                    ProjectManager.GlueProjectSave.GlobalFiles[replacement.Index] = replacement.ReplacementFile;
+
+                    GlueCommands.Self.RefreshCommands.RefreshGlobalContent();
+
+                    GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCode();
+                }
+
+                foreach (var propertyName in plan.TopLevelPropertiesChanged)
+                {
+                    // Add a case here for each entry added to DiffableTopLevelProperties.
+                    switch (propertyName)
+                    {
+                        case nameof(GlueProjectSave.StartUpScreen):
+                            var oldStartUpScreen = ProjectManager.GlueProjectSave.Screens
+                                .FirstOrDefault(item => item.Name == ProjectManager.GlueProjectSave.StartUpScreen);
+
+                            ProjectManager.GlueProjectSave.StartUpScreen = newGlueProjectSave.StartUpScreen;
+
+                            GlueCommands.Self.GenerateCodeCommands.GenerateStartupScreenCode();
+
+                            var newStartUpScreen = ProjectManager.GlueProjectSave.Screens
+                                .FirstOrDefault(item => item.Name == ProjectManager.GlueProjectSave.StartUpScreen);
+                            if (oldStartUpScreen != null)
+                            {
+                                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(oldStartUpScreen);
+                            }
+                            if (newStartUpScreen != null)
+                            {
+                                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(newStartUpScreen);
+                            }
+
+                            PluginManager.ReactToChangedStartupScreen();
+                            break;
+                    }
+                }
+
+                wasHandled = plan.Outcome != ProjectDiffOutcome.FullReloadRequired;
             }
             if (!wasHandled)
             {
@@ -426,6 +429,97 @@ namespace FlatRedBall.Glue.IO
                     }
                 }                
             }
+        }
+
+        /// <summary>
+        /// Top-level <see cref="GlueProjectSave"/> properties that are safe to apply directly onto the
+        /// live project instead of forcing a full reload. Each entry here needs a matching case in
+        /// <see cref="ReloadGlux"/>'s apply step to copy the value and trigger whatever codegen/refresh
+        /// that property change requires. Kept as an explicit whitelist rather than reflecting over every
+        /// top-level property - most project-level properties (e.g. <see cref="GlueProjectSave.CustomGameClass"/>,
+        /// <see cref="GlueProjectSave.SuppressBaseTypeGeneration"/>) affect generated code in ways that
+        /// haven't been individually verified safe to apply without a full reload.
+        /// </summary>
+        static readonly HashSet<string> DiffableTopLevelProperties = new HashSet<string>
+        {
+            nameof(GlueProjectSave.StartUpScreen)
+        };
+
+        /// <summary>
+        /// Classifies a set of CompareNetObjects difference property paths (e.g. "Screens[3].SomeProperty")
+        /// against the currently-loaded project and a freshly-reloaded copy. A difference collapses to a
+        /// single Screen/Entity/GlobalFile replacement when its path falls entirely within one
+        /// Screens[i]/Entities[i]/GlobalFiles[i] entry, or to a <see cref="ProjectDiffPlan.TopLevelPropertiesChanged"/>
+        /// entry when it's an exact match for a name in <see cref="DiffableTopLevelProperties"/>. Any other
+        /// difference - an unrecognized project-level property, or a list Count change caused by an
+        /// element being added/removed/reordered - forces <see cref="ProjectDiffOutcome.FullReloadRequired"/>.
+        /// Pure/static: no Glue statics are touched, which is what makes this seam unit-testable independent
+        /// of the rest of <see cref="ReloadGlux"/>.
+        /// </summary>
+        internal static ProjectDiffPlan BuildProjectDiffPlan(
+            IEnumerable<string> differencePropertyNames,
+            GlueProjectSave oldProjectSave,
+            GlueProjectSave newProjectSave)
+        {
+            var plan = new ProjectDiffPlan();
+            var elementsAlreadyRefreshed = new List<string>();
+            bool hasAnyDifference = false;
+
+            foreach (var propertyName in differencePropertyNames)
+            {
+                hasAnyDifference = true;
+
+                var oldElement = GetElementFromObjectString(propertyName, oldProjectSave, out int indexInOld);
+                GlueElement replacementElement = GetElementFromObjectString(propertyName, newProjectSave, out int indexInNew);
+
+                ReferencedFileSave oldFile = null;
+                ReferencedFileSave replacementFile = null;
+                int fileIndexInOld = -1;
+                int fileIndexInNew = -1;
+                if (oldElement == null && replacementElement == null)
+                {
+                    oldFile = GetFileFromObjectString(propertyName, oldProjectSave, out fileIndexInOld);
+                    replacementFile = GetFileFromObjectString(propertyName, newProjectSave, out fileIndexInNew);
+                }
+
+                if (oldElement != null && replacementElement != null && indexInNew == indexInOld)
+                {
+                    if (!elementsAlreadyRefreshed.Contains(oldElement.Name))
+                    {
+                        elementsAlreadyRefreshed.Add(oldElement.Name);
+                        plan.ElementsToReplace.Add(new ElementDiffReplacement
+                        {
+                            Index = indexInOld,
+                            OldElement = oldElement,
+                            ReplacementElement = replacementElement
+                        });
+                    }
+                }
+                else if (oldFile != null && replacementFile != null && fileIndexInOld == fileIndexInNew)
+                {
+                    plan.GlobalFilesToReplace.Add(new GlobalFileDiffReplacement
+                    {
+                        Index = fileIndexInOld,
+                        OldFile = oldFile,
+                        ReplacementFile = replacementFile
+                    });
+                }
+                else if (DiffableTopLevelProperties.Contains(propertyName))
+                {
+                    if (!plan.TopLevelPropertiesChanged.Contains(propertyName))
+                    {
+                        plan.TopLevelPropertiesChanged.Add(propertyName);
+                    }
+                }
+                else
+                {
+                    plan.Outcome = ProjectDiffOutcome.FullReloadRequired;
+                    return plan;
+                }
+            }
+
+            plan.Outcome = hasAnyDifference ? ProjectDiffOutcome.Partial : ProjectDiffOutcome.NoDifferences;
+            return plan;
         }
 
         private static GlueElement GetElementFromObjectString(string element, GlueProjectSave glueProjectSave, out int index)
@@ -560,5 +654,34 @@ namespace FlatRedBall.Glue.IO
 
 
         }
+    }
+
+    internal enum ProjectDiffOutcome
+    {
+        NoDifferences,
+        Partial,
+        FullReloadRequired
+    }
+
+    internal class ElementDiffReplacement
+    {
+        public int Index;
+        public GlueElement OldElement;
+        public GlueElement ReplacementElement;
+    }
+
+    internal class GlobalFileDiffReplacement
+    {
+        public int Index;
+        public ReferencedFileSave OldFile;
+        public ReferencedFileSave ReplacementFile;
+    }
+
+    internal class ProjectDiffPlan
+    {
+        public ProjectDiffOutcome Outcome;
+        public List<ElementDiffReplacement> ElementsToReplace { get; } = new List<ElementDiffReplacement>();
+        public List<GlobalFileDiffReplacement> GlobalFilesToReplace { get; } = new List<GlobalFileDiffReplacement>();
+        public List<string> TopLevelPropertiesChanged { get; } = new List<string>();
     }
 }

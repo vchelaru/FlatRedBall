@@ -293,7 +293,72 @@ Traversal** (14) groups — 24 methods. Everything else stays on `ObjectFinder`.
   the MSBuild-backed project type — out of scope until a feature actually needs to touch this method
   again.
 
+- **`UpdateReactor.ReloadGlux`'s apply step** (swap the replaced Screen/Entity/GlobalFile into
+  `ProjectManager.GlueProjectSave`, then call `GlueCommands.Self.RefreshCommands`/`UpdateCommands`/
+  `GenerateCodeCommands`, or `ProjectLoader.Self.LoadProject` on full reload) still calls
+  `GlueState.Self`/`GlueCommands.Self`/`ObjectFinder.Self`/`ProjectLoader.Self` directly. Unlike
+  `ProjectCommands`, this isn't flagged as a DI-injection target: everything left in that method is
+  side-effecting plumbing (refresh a tree node, trigger codegen, reload from disk), not decision logic.
+  Injecting interfaces here would make the side effects mockable but wouldn't add any test coverage
+  that matters — the actual decision (partial swap vs. full reload) was already extracted into the
+  pure, dependency-free `BuildProjectDiffPlan` (see below), which is where the real seam was. Revisit
+  only if a future feature needs to assert *which* Glue commands fire for a given file change, not just
+  what gets computed.
+
 ## Completed Refactors
+
+### 2026-07-17 — Make `StartUpScreen` diffable so changing it doesn't force a full reload
+
+Setting the startup screen is a common Glue action, but `GluxCommands.SaveGlujFile()` never registers
+a self-save suppression (`FileWatchManager.IgnoreChangeOnFileUntil`) for the `.gluj` path, so its own
+write is picked up by the file watcher like an external edit. That external-edit path (`ReloadGlux` →
+`BuildProjectDiffPlan`) only recognized diffs inside `Screens[i]`/`Entities[i]`/`GlobalFiles[i]` -
+`StartUpScreen` is a top-level `GlueProjectSave` field, so every startup-screen change forced a full
+project reload, which is disruptive mid-workflow.
+
+Added `DiffableTopLevelProperties` (a `HashSet<string>` on `UpdateReactor`, currently just
+`nameof(GlueProjectSave.StartUpScreen)`) and a new `ProjectDiffPlan.TopLevelPropertiesChanged` list.
+`BuildProjectDiffPlan` now collapses a whitelisted top-level property diff into that list instead of
+forcing `FullReloadRequired`. `ReloadGlux`'s apply step handles `StartUpScreen` by copying the value
+onto the live project, calling `GenerateCodeCommands.GenerateStartupScreenCode()`, refreshing the
+old/new startup screen tree nodes, and calling `PluginManager.ReactToChangedStartupScreen()` - mirroring
+what `GluxCommands.StartUpScreenName`'s setter already does for the in-Glue-UI path, minus the
+redundant re-save (the value on disk is already correct; that's what triggered this in the first place).
+
+The whitelist is deliberately narrow: other top-level properties (`CustomGameClass`,
+`SuppressBaseTypeGeneration`, etc.) haven't been individually verified safe to apply without a full
+reload, so they still fall back to `FullReloadRequired`. Adding another diffable property later means
+adding its name to the whitelist and a matching `case` in `ReloadGlux`'s switch - no structural changes.
+
+Added 2 tests to `UpdateReactorTests.cs` (`ShouldApplyStartUpScreenChange_WithoutRequiringFullReload`,
+`ShouldApplyStartUpScreenChangeAlongsideAScreenSwap_WhenBothDiffer`) and repointed the two existing
+"unrecognized property forces full reload" tests from `StartUpScreen` (now recognized) to
+`CustomGameClass` (still not whitelisted).
+
+### 2026-07-17 — Extract `UpdateReactor.BuildProjectDiffPlan`, pin partial-reload behavior
+
+`UpdateReactor.ReloadGlux` handles external edits to the `.glux`/`.gluj`/per-element `.glsj`/`.glej`
+files: it diffs the in-memory project against a freshly-reloaded copy (`CompareNetObjects`) and, when
+every difference collapses to a single `Screens[i]`/`Entities[i]`/`GlobalFiles[i]` entry, swaps just
+that element and regenerates only its code instead of doing a full project reload. This decision logic
+was inline in a ~70-line loop with no test coverage.
+
+Extracted the classification into `internal static ProjectDiffPlan BuildProjectDiffPlan(IEnumerable<string>
+differencePropertyNames, GlueProjectSave oldProjectSave, GlueProjectSave newProjectSave)` — pure and
+static, no Glue singletons touched, so it's constructible and callable directly in a unit test with
+plain `GlueProjectSave`/`ScreenSave`/`EntitySave`/`ReferencedFileSave` instances. `ReloadGlux` now calls
+it and applies `plan.ElementsToReplace`/`plan.GlobalFilesToReplace` before checking
+`plan.Outcome`, preserving an existing quirk exactly: when a difference list contains an unresolvable
+entry (a project-level property, or a list `Count` change from an add/remove/reorder), the replacements
+resolved *before* that entry in iteration order are still applied even though the overall result is
+`FullReloadRequired` — matching the original inline loop's break-after-partial-work behavior byte for
+byte. Zero behavior change; see the new "Known Areas Needing Improvement" bullet above for why this
+stopped at a pure-function seam rather than an `IGlueState`-style DI injection.
+
+Added `Tests/GlueUnitTests/IO/UpdateReactorTests.cs` (8 tests) pinning: no differences, single
+Screen/Entity/GlobalFile replacement, dedup of multiple diffs against the same element, full-reload
+fallback for a project-level property and for a list-Count change, and the partial-work-before-abort
+ordering quirk above.
 
 ### 2026-07-12 — Inject `IGlueState` into `ProjectCommands`
 
