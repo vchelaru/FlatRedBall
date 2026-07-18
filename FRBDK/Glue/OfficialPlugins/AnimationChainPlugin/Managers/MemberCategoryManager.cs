@@ -32,7 +32,7 @@ internal class MemberCategoryManager
     {
         grid.Categories.Clear();
 
-        grid.Categories.AddRange(CreateMemberCategories(selectedAnimationChain, allAnimations));
+        ObservableCollectionExtensionMethods.AddRange(grid.Categories, CreateMemberCategories(selectedAnimationChain, allAnimations));
     }
 
     private List<MemberCategory> CreateMemberCategories(AnimationChainViewModel selectedAnimationChain, AchxViewModel allAnimations)
@@ -127,7 +127,7 @@ internal class MemberCategoryManager
         }
 
         grid.Categories.Clear();
-        grid.Categories.AddRange(list);
+        ObservableCollectionExtensionMethods.AddRange(grid.Categories, list);
         grid.InsertSpacesInCamelCaseMemberNames();
 
         return;
@@ -172,7 +172,7 @@ internal class MemberCategoryManager
         }
 
         grid.Categories.Clear();
-        grid.Categories.AddRange(list);
+        ObservableCollectionExtensionMethods.AddRange(grid.Categories, list);
         grid.InsertSpacesInCamelCaseMemberNames();
 
     }
