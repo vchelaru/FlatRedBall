@@ -402,10 +402,13 @@ public partial class MainGlueWindow : Form
         }
 
         // this gives the search bar focus, so hotkeys work
-        // If we don't wait a little bit, it won't work, so give 
+        // If we don't wait a little bit, it won't work, so give
         // a small delay:
         await Task.Delay(100);
         PluginManager.ReactToCtrlF();
+
+        StartExitWhenQuietWatcherIfRequested();
+
         return;
 
         void SetScreenSubMessage(string message)
@@ -691,6 +694,52 @@ public partial class MainGlueWindow : Form
         Application.DoEvents();
     }
 
+
+    private System.Windows.Forms.Timer _exitWhenQuietTimer;
+    private bool _exitWhenQuietHasBeenBusy;
+    private DateTime _exitWhenQuietLastBusyTime;
+
+    /// <summary>
+    /// Automation hook (see CommandLineManager.ExitWhenQuietSeconds): once tasks have gone from
+    /// busy to idle (TaskManager.Self.AreAllAsyncTasksDone) and stayed idle for the requested
+    /// duration, closes Glue via the normal Close() path (MainGlueWindow_FormClosing/
+    /// CloseAfterTasks) so shutdown is identical to a user closing the window. Deliberately does
+    /// NOT key off any single operation like GenerateAllCode finishing - project load queues
+    /// more work after that, so "idle for N seconds" is the only reliable "actually done" signal.
+    /// </summary>
+    private void StartExitWhenQuietWatcherIfRequested()
+    {
+        var quietSeconds = CommandLineManager.Self.ExitWhenQuietSeconds;
+        if (quietSeconds == null)
+        {
+            return;
+        }
+
+        _exitWhenQuietTimer = new System.Windows.Forms.Timer { Interval = 500 };
+        _exitWhenQuietTimer.Tick += (_, _) =>
+        {
+            if (!TaskManager.Self.AreAllAsyncTasksDone)
+            {
+                _exitWhenQuietHasBeenBusy = true;
+                _exitWhenQuietLastBusyTime = DateTime.Now;
+                return;
+            }
+
+            // Don't exit before any work has even been queued yet (e.g. the project load's
+            // task hasn't been added to TaskManager yet) - only arm once we've seen busy.
+            if (!_exitWhenQuietHasBeenBusy)
+            {
+                return;
+            }
+
+            if ((DateTime.Now - _exitWhenQuietLastBusyTime).TotalSeconds >= quietSeconds.Value)
+            {
+                _exitWhenQuietTimer.Stop();
+                this.Close();
+            }
+        };
+        _exitWhenQuietTimer.Start();
+    }
 
     private static bool _wantsToExit = false;
     private void MainGlueWindow_FormClosing(object sender, FormClosingEventArgs e)
