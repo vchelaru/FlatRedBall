@@ -116,7 +116,9 @@ namespace BuildServerUploaderConsole.Processes
 
         async Task DownloadGum()
         {
-            string url = "http://files.flatredball.com/content/Tools/Gum/Gum.zip"; // Replace with your actual URL
+            // Gum is no longer uploaded to the FRB FTP - it's released on GitHub only.
+            // This pulls the Gum.zip asset from Gum's latest GitHub release.
+            string url = "https://github.com/vchelaru/Gum/releases/latest/download/Gum.zip";
             string targetDirectory = Path.Combine(_destDirectory, "Gum");
             string zipFilePath = Path.Combine(targetDirectory, "Gum.zip");
             string unzipDirectory = targetDirectory;
