@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
 using System.IO;
-using FlatRedBall.IO;
-using Ionic.Zip;
+using System.IO.Compression;
 
 namespace BuildServerUploaderConsole.Processes
 {
@@ -9,8 +7,6 @@ namespace BuildServerUploaderConsole.Processes
     {
         public static void CreateZip(IResults results, string destinationDirectory, string sourceDirectory, string zipFileNameNoExtension)
         {
-            var containedObjects = new List<string>();
-
             string fullZipFileName = sourceDirectory + zipFileNameNoExtension + ".zip";
 
             if (File.Exists(fullZipFileName))
@@ -18,65 +14,25 @@ namespace BuildServerUploaderConsole.Processes
                 File.Delete(fullZipFileName);
             }
 
-            var directories = Directory.GetDirectories(sourceDirectory, "*", SearchOption.TopDirectoryOnly);
+            Directory.CreateDirectory(destinationDirectory);
+            string destinationZipFileName = destinationDirectory + zipFileNameNoExtension + ".zip";
 
-            containedObjects.AddRange(directories);
-
-            for (int i = 0; i < containedObjects.Count; i++)
+            if (File.Exists(destinationZipFileName))
             {
-                containedObjects[i] = containedObjects[i] + "\\";
+                File.Delete(destinationZipFileName);
             }
 
+            results.WriteMessage($" Zipping {sourceDirectory}...");
 
-            containedObjects.AddRange(Directory.GetFiles(sourceDirectory, "*", SearchOption.TopDirectoryOnly));
+            // Written directly to destinationDirectory (never sourceDirectory) so the archive
+            // being created can't be picked up as one of its own entries mid-write.
+            ZipFile.CreateFromDirectory(sourceDirectory, destinationZipFileName, CompressionLevel.Optimal, includeBaseDirectory: false);
 
-            using (var zip = new ZipFile())
-            {
-                foreach (string containedObject in containedObjects)
-                {
+            results.WriteMessage($" Finished saving zip file to {destinationZipFileName}");
 
-                    if (containedObject.EndsWith("\\"))
-                    {
-                        string relativeDirectory = FileManager.MakeRelative(containedObject, sourceDirectory);
-                        zip.AddDirectory(containedObject, relativeDirectory);
-                    }
-                    else
-                    {
-                        zip.AddFile(containedObject, "");
-                    }
-
-                }
-                results.WriteMessage($" Finished adding {containedObjects.Count} files to zip");
-                results.WriteMessage($" Saving {fullZipFileName}...");
-
-                string currentEntry = null;
-                zip.SaveProgress += (sender, args) =>
-                {
-                    if(args.CurrentEntry != null && currentEntry != args.CurrentEntry.FileName)
-                    {
-                        results.WriteMessage($" Zipping {args.CurrentEntry.FileName}");
-                        
-                        currentEntry = args.CurrentEntry.FileName;
-                    }
-                };
-
-                zip.Save(fullZipFileName);
-
-                results.WriteMessage($" Finished saving zip file to {fullZipFileName}");
-
-
-                Directory.CreateDirectory(destinationDirectory);
-
-                results.WriteMessage($" Starting to copy zip file {sourceDirectory} to {zipFileNameNoExtension}.zip");
-
-                File.Copy(fullZipFileName, destinationDirectory + zipFileNameNoExtension + ".zip", true);
-
-
-            }
+            File.Copy(destinationZipFileName, fullZipFileName, true);
 
             results.WriteMessage("Zipped directory " + sourceDirectory + " into " + zipFileNameNoExtension);
         }
-
-        //private static void Zip_SaveProgress(object sender, SaveProgressEventArgs e) => throw new System.NotImplementedException();
     }
 }
