@@ -62,6 +62,10 @@ glue.yml's build matrix only runs `Debug` (Release is commented out).
 
 `Program.cs` also has a `zipanduploadgum` command wired into the manual/debug code path, but **no workflow in this repo calls it** — it uploads Gum to FRB's FTP, a path that's no longer used (see Gum dependency below).
 
+## Building Glue for local testing (landmine)
+
+`Glue.csproj` is just the core editor lib/exe (`GlueFormsCore.exe`) — it does **not** reference plugin projects like `GumPlugin.csproj`. Plugins are separate projects built independently and copied into `Glue/Glue/bin/<Config>/Plugins/<PluginName>/<PluginName>.dll`, which is where Glue actually loads them from at runtime. **`dotnet build FRBDK/Glue/Glue/Glue.csproj` silently leaves that Plugins folder untouched** — no error, no warning, just a stale plugin DLL sitting next to a freshly-built exe. If you're testing a plugin change (e.g. anything in `GumPlugin`), you must build either the whole solution (`dotnet build "FRBDK/Glue/Glue with All.sln"`) or that plugin's `.csproj` explicitly — building `Glue.csproj` alone is not enough and will make it look like your fix "didn't work."
+
 ## Gum dependency (landmine)
 
 `glue.yml` bundles Gum into FRBDK by downloading whatever GitHub currently reports as Gum's **latest** release (`https://github.com/vchelaru/Gum/releases/latest/download/Gum.zip`) — Gum is released on GitHub only, not FTP. This means **running glue.yml before a needed Gum change has been released on GitHub silently bundles the previous Gum build**, with no error. If this release depends on new Gum functionality, publish Gum's release first (Gum repo's `Build and Release Gum Tool` workflow) and confirm it's visible at `gh release view --repo vchelaru/Gum` before running glue.yml here.

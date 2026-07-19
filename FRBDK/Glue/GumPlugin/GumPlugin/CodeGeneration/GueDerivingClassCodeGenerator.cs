@@ -1140,64 +1140,18 @@ public class GueDerivingClassCodeGenerator : Singleton<GueDerivingClassCodeGener
     {
         if (variableSave.Type == "Gum.Managers.PositionUnitType" || variableSave.Type == "PositionUnitType")
         {
-            string rootName = variableSave.GetRootName();
+            // Arc/ColoredCircle/RoundedRectangle's GradientX1Units/GradientX2Units/GradientY1Units/GradientY2Units
+            // used to be exempted from this conversion (as PositionUnitType, special-cased December 28, 2022
+            // because "the SkiaGums use different unit types for gradients"). Gum's runtime has since
+            // standardized these to GeneralUnitType like every other unit property, so the exemption is gone -
+            // it was generating a wrapper property typed PositionUnitType while assigning from a
+            // GeneralUnitType-typed underlying property (CS0266).
+            GeneralUnitType convertedValue =
+                UnitConverter.ConvertToGeneralUnit((PositionUnitType)variableSave.Value);
 
-            // convert from PositionUnitType to GeneralUnitType
-            // Update December 28, 2022
-            // The SkiaGums use different
-            // unit types for gradients, so
-            // let's special case this:
-            var shouldConvert = true;
+            variableValue = convertedValue.ToString();
 
-            var typeOfVariableOwner = element.Name;
-            if(!string.IsNullOrEmpty(variableSave.SourceObject))
-            {
-                var instance = element.GetInstance(variableSave.SourceObject);
-                typeOfVariableOwner = instance.BaseType;
-            }
-
-            if(typeOfVariableOwner == "Arc")
-            {
-                if(rootName == "GradientX1Units" ||
-                   rootName == "GradientX2Units" ||
-                   rootName == "GradientY1Units" ||
-                   rootName == "GradientY2Units")
-                {
-                    shouldConvert = false;
-                }
-            }
-
-            if (typeOfVariableOwner == "ColoredCircle")
-            {
-                if (rootName == "GradientX1Units" ||
-                   rootName == "GradientX2Units" ||
-                   rootName == "GradientY1Units" ||
-                   rootName == "GradientY2Units")
-                {
-                    shouldConvert = false;
-                }
-            }
-
-            if (typeOfVariableOwner == "RoundedRectangle")
-            {
-                if (rootName == "GradientX1Units" ||
-                    rootName == "GradientX2Units" ||
-                    rootName == "GradientY1Units" ||
-                    rootName == "GradientY2Units")
-                {
-                    shouldConvert = false;
-                }
-            }
-
-            if (shouldConvert)
-            {
-                GeneralUnitType convertedValue =
-                    UnitConverter.ConvertToGeneralUnit((PositionUnitType)variableSave.Value);
-
-                variableValue = convertedValue.ToString();
-
-                variableType = "Gum.Converters.GeneralUnitType";
-            }
+            variableType = "Gum.Converters.GeneralUnitType";
         }
         else if(variableSave.Type == "Gum.DataTypes.DimensionUnitType" || variableSave.Type == "DimensionUnitType")
         {

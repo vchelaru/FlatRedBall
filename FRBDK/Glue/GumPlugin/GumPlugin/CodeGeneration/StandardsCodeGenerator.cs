@@ -537,6 +537,22 @@ namespace GumPlugin.CodeGeneration
                 variableType = "Microsoft.Xna.Framework.Graphics.Texture2D";
             }
 
+            // Gum's runtime standardized Arc/ColoredCircle/RoundedRectangle's gradient-unit properties to
+            // GeneralUnitType, same as XUnits/YUnits already are (see AssetTypeInfoManager.ChangePositionUnitTypes
+            // for the equivalent rename applied to XUnits/YUnits). SkiaStandardElementsManager.AddGradientVariables
+            // still declares these as PositionUnitType, so override the declared property type here rather than
+            // changing the source VariableSave (whose PositionUnitType default value / exclusion list still make
+            // sense as authoring-time data - AdjustEnumerationVariableValue is what converts the value itself).
+            if (variableType == "Gum.Managers.PositionUnitType")
+            {
+                var rootName = variable.GetRootName();
+                if (rootName == "GradientX1Units" || rootName == "GradientX2Units" ||
+                    rootName == "GradientY1Units" || rootName == "GradientY2Units")
+                {
+                    variableType = "Gum.Converters.GeneralUnitType";
+                }
+            }
+
             #endregion
 
             ICodeBlock propertyCodeBlock = currentBlock.Property("public " + variableType, variable.Name.Replace(" ", ""));
