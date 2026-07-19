@@ -17,9 +17,6 @@ FlatRedBall is mature and continually improving. Reported issues are resolved or
 
 ![Alt](https://repobeats.axiom.co/api/embed/7ae6b028681112a205f4f998d47149e5e6db7920.svg "Repobeats analytics image")
 
-### Star Velocity
-[![Sparkline](https://stars.medv.io/vchelaru/FlatRedBall.svg)](https://stars.medv.io/vchelaru/FlatRedBall)
-
 ## Downloading FlatRedBall
 
 For instructions on how to download FlatRedBall (both prebuilt and how to build from source), see [https://flatredball.com/download/](https://docs.flatredball.com/flatredball)
