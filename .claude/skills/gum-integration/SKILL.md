@@ -65,3 +65,4 @@ This is **not** a plain FRB-attach and **not** pure coordinate conversion — it
 
 - [[gum-codegen]] — the version-gating skip-list pipelines for standard-element property/state generation (narrower, Glue-only).
 - [[glue-live-edit]] — covers Gum's dual-zoom sync (`Camera.Main` vs `Renderer.Camera.Zoom`/`LayerCameraSettings.Zoom`) and other edit-mode-specific Gum behavior.
+- [[gum-shared-source]] — how FRB's `.csproj`s pull in Gum/MonoGameGum source files individually rather than sharing a project, and where the two diverge (e.g. `Cursor`).
