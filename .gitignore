@@ -35,3 +35,6 @@ Tests/GlueTestProjectDesktopGl/GlueTestProjectDesktopGl/GlueSettings/TreeViewPlu
 Tests/TestProjectDesktopNet6/TestProjectDesktopNet6/Content/GumLastChangeFilePath.txt
 Tests/TestProjectDesktopNet6/TestProjectDesktopNet6/Content/GumProject/ProjectCodeSettings.codsj
 .claude/settings.local.json
+
+/temp/*
+!/temp/.gitkeep
