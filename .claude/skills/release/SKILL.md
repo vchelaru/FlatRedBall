@@ -1,5 +1,5 @@
 ---
-name: frb1-release
+name: release
 description: FRB1 (engine + Glue) release runbook — gh CLI sequence for Engine.yml/glue.yml, version scheme, release notes. Triggers: cutting a release, IsBeta, BuildServerUploaderConsole, NuGet publish, changeengineversion.
 ---
 
@@ -34,7 +34,7 @@ Both workflows are `workflow_dispatch`-only, run against whatever is currently o
    `gh workflow run glue.yml`
 8. `gh run list --workflow="FlatRedBall Editor" --limit 1` → `gh run watch <id> --exit-status`.
 9. *(Manual, human-only, per GitBook)* Download latest FRBDK, run Glue, confirm version; create a new platformer project and check its `.csproj` version. Also smoke-test against Kid Defense, Cranky Chibi Cthulhu, Battlecrypt Bombers, and the Automated Test Project.
-10. Draft release notes — invoke [[frb1-release-notes]].
+10. Draft release notes — invoke [[release-notes]].
 11. **CHECKPOINT — before making the release public.**
     `gh release create <tag> --draft --notes-file <path> --title "<Month DD, YYYY>"`, review, then `gh release edit <tag> --draft=false`.
 12. *(Manual, human-only)* Post to Discord and share on Twitter/X, per GitBook.
@@ -76,7 +76,7 @@ glue.yml's build matrix only runs `Debug` (Release is commented out).
 
 ## Release notes
 
-Drafting the notes is its own skill — see [[frb1-release-notes]] (fan-out over commits since the last tag, hybrid curated + full changelog format). This skill's step 10 just invokes it and takes the resulting markdown file as `gh release create`'s `--notes-file`.
+Drafting the notes is its own skill — see [[release-notes]] (fan-out over commits since the last tag, hybrid curated + full changelog format). This skill's step 10 just invokes it and takes the resulting markdown file as `gh release create`'s `--notes-file`.
 
 Tags follow `Release_<Month>_<Day>_<Year>` (e.g. `Release_September_23_2025`); some older tags drop the `Release_` prefix. This naming is unrelated to the NuGet version string above — don't conflate the two.
 

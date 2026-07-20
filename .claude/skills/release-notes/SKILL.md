@@ -1,12 +1,12 @@
 ---
-name: frb1-release-notes
-description: Drafts FRB1 release notes from commits/PRs since the last release. Triggers: cutting an FRB1 release, drafting release notes, /frb1-release-notes.
+name: release-notes
+description: Drafts FRB1 release notes from commits/PRs since the last release. Triggers: cutting an FRB1 release, drafting release notes, /release-notes.
 disable-model-invocation: true
 ---
 
 # FRB1 Release Notes
 
-Drafts the release notes markdown from git history since the previous release. Does **not** bump versions, trigger workflows, or publish the release — that's [[frb1-release]]. Only writes the draft.
+Drafts the release notes markdown from git history since the previous release. Does **not** bump versions, trigger workflows, or publish the release — that's [[release]]. Only writes the draft.
 
 Modeled on the Gum repo's `gum-monthly-release` skill (same hybrid curated + full changelog format, same fan-out-to-avoid-summarization fix), adapted for one structural difference: **FRB1's history is not PR-only.** A recent 3.5-month window had 88 commits but only 16 carried a `(#N)` PR suffix — the rest are direct commits, mostly by `vchelaru`. So **commits, not PRs, are the canonical unit** here; PR numbers are used opportunistically for the ~15-20% that have one, not as the primary iteration axis.
 
@@ -93,4 +93,4 @@ Work through `## Open Questions` one at a time with the user, editing the file d
 
 ## Related
 
-- [[frb1-release]] — the rest of the release pipeline (version bump, workflow triggers, actually cutting the tag and publishing). This skill only produces the notes draft that feeds into that pipeline's release-creation step.
+- [[release]] — the rest of the release pipeline (version bump, workflow triggers, actually cutting the tag and publishing). This skill only produces the notes draft that feeds into that pipeline's release-creation step.
