@@ -39,12 +39,22 @@ namespace GameJsonCommunicationPlugin.Common
 
             private set
             {
+                if (_isConnected == value)
+                {
+                    return;
+                }
                 _isConnected = value;
 
                 if(_isConnected)
+                {
+                    LogDiagnostic("Connected (both sockets established)");
                     _eventCaller("GameCommunication_Connected", "");
+                }
                 else
+                {
+                    LogDiagnostic("Disconnected");
                     _eventCaller("GameCommunication_Disconnected", "");
+                }
             }
         }
         private CancellationTokenSource _periodicCheckTaskCancellationToken;
@@ -288,18 +298,66 @@ namespace GameJsonCommunicationPlugin.Common
 
         private async Task<string> SendItemImmediately(Packet item)
         {
-            var packet = JsonConvert.SerializeObject(item);
-            var sendBytes = Encoding.ASCII.GetBytes(packet);
-            long size = sendBytes.LongLength;
+            var socket = glueToGameSocket;
+            try
+            {
+                var packet = JsonConvert.SerializeObject(item);
+                var sendBytes = Encoding.ASCII.GetBytes(packet);
+                long size = sendBytes.LongLength;
 
-            //Send size
-            glueToGameSocket.Send(BitConverter.GetBytes(size));
+                //Send size
+                socket.Send(BitConverter.GetBytes(size));
 
-            //Send payload
-            glueToGameSocket.Send(sendBytes);
+                //Send payload
+                socket.Send(sendBytes);
 
-            string responseString = await ReceiveString(glueToGameSocket);
-            return responseString;
+                string responseString = await ReceiveString(socket);
+                return responseString;
+            }
+            catch (Exception ex) when (ex is SocketException || ex is ObjectDisposedException || ex is NullReferenceException)
+            {
+                // The glueToGame socket died (game closed it, e.g. the game's own
+                // reconnect loop disposed it). Nothing clears IsConnected on the SEND
+                // path otherwise, so without this the manager stays "connected" on a
+                // dead socket forever and every later send fails the same way. Tear the
+                // whole connection down so StatusCheck re-listens and re-handshakes.
+                ResetConnection($"send failed on '{item?.PacketType}': {ex.GetType().Name} {(ex as SocketException)?.SocketErrorCode}");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Fully tears down both sockets and marks the connection dead so the periodic
+        /// StatusCheck re-listens. Must reset BOTH directions together: the handshake is
+        /// order-dependent (byte 1 then byte 2, two accepts), so a half-reset would desync.
+        /// </summary>
+        private void ResetConnection(string reason)
+        {
+            lock (_lock)
+            {
+                if (!_isConnected && glueToGameSocket == null && gameToGlueSocket == null)
+                {
+                    // already torn down
+                    return;
+                }
+
+                LogDiagnostic($"Resetting connection: {reason}");
+
+                try { glueToGameSocket?.Dispose(); } catch { }
+                try { gameToGlueSocket?.Dispose(); } catch { }
+                glueToGameSocket = null;
+                gameToGlueSocket = null;
+
+                // Fires GameCommunication_Disconnected; StatusCheck then re-listens.
+                IsConnected = false;
+            }
+        }
+
+        private void LogDiagnostic(string message)
+        {
+            var full = $"[GameConnection] {message}";
+            System.Diagnostics.Debug.WriteLine(full);
+            try { PluginManager.CallPluginMethod("Compiler Plugin", "HandleOutput", full); } catch { }
         }
 
         private static async Task<string> ReceiveString(Socket socket)

@@ -268,10 +268,34 @@ namespace GlueCommunication
 #endif
                 return responseString;
             }
+            catch (Exception ex) when (ex is SocketException || ex is ObjectDisposedException || ex is NullReferenceException)
+            {
+                // Mirror of the Glue-side fix: the send direction dying must tear the
+                // whole connection down, otherwise _isConnected stays true on a dead
+                // socket and StatusCheck never reconnects.
+                ResetConnection($"send failed on '{item?.PacketType}': {ex.GetType().Name}");
+                throw;
+            }
             finally
             {
                 lastSendStatus = null;
                 sendSemaphore.Release();
+            }
+        }
+
+        private void ResetConnection(string reason)
+        {
+            lock (_lock)
+            {
+                System.Diagnostics.Debug.WriteLine($"[GameConnection] Resetting connection: {reason}");
+
+                _isConnected = false;
+
+                try { glueToGameSocket?.Dispose(); } catch { }
+                try { gameToGlueSocket?.Dispose(); } catch { }
+                glueToGameSocket = null;
+                gameToGlueSocket = null;
+                // StatusCheck sees !_isConnected and calls StartConnecting to re-handshake.
             }
         }
 
