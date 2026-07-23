@@ -312,6 +312,55 @@ Traversal** (14) groups — 24 methods. Everything else stays on `ObjectFinder`.
 
 ## Completed Refactors
 
+### 2026-07-23 — AvailableAssetTypes.Self.Initialize / Collision Plugin asset-type test seam (issue #1894 follow-up)
+
+Follow-up to "Cover `WizardProjectLogic.Apply()` end-to-end" directly below: that entry left the
+`AvailableAssetTypes.CommonAtis`/plugin-loading blocker open. Rather than replicate `PluginManager`'s
+reflection/directory-scan plugin loading in tests (rejected - too big a shift, and would blur the
+third-party extensibility boundary that machinery exists for), this splits the blocker into its two real
+parts and unblocks each directly:
+
+- **`AvailableAssetTypes.CommonAtis`** (Camera/Text/Sprite/Polygon/etc.) is populated by
+  `AvailableAssetTypes.Self.Initialize(startupPath)` from `Content/ContentTypes.csv` - a plain CSV read,
+  nothing plugin-related. `GlueTestBootstrap.EnsureInitialized` now calls it (same call
+  `MainGlueWindow.cs:336` makes), with `startupPath` resolved by walking up from the test assembly's
+  `AppContext.BaseDirectory` to find `Glue/Content/ContentTypes.csv` (mirrors the existing
+  `FindTemplatesRoot` pattern in `NewProjectCreationSmokeTests`) rather than hardcoding a path that only
+  resolves from one machine/output layout.
+- **Per-plugin ATIs** (e.g. `AssetTypeInfoManager.Self.CollisionRelationshipAti`, registered today only
+  from inside `MainCollisionPlugin.StartUp`) are a separate concern: official plugins are already compiled
+  directly into `Glue with All.sln` as a real project reference (not a sideloaded DLL), so their
+  registration can be called directly without touching `PluginManager.LoadPlugins` at all. Split
+  `MainCollisionPlugin.StartUp`'s asset-type registration into `MainCollisionPlugin.RegisterAssetTypes()`
+  (`StartUp` still calls it, unchanged - zero behavior change) and added
+  `GlueTestBootstrap.EnsureCollisionPluginAssetTypesRegistered()`, a separate opt-in call (not part of the
+  always-on `EnsureInitialized`) that invokes it directly. Third-party plugin loading through
+  `PluginManager.LoadPlugins`'s reflection/directory scan is completely untouched.
+
+`GlueUnitTests/CollisionPlugin/CollisionAssetTypeRegistrationTests` pins this: without the registration,
+`NamedObjectSave.GetAssetTypeInfo()` (which resolves by `SourceClassType` string via
+`AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType`, not object identity) can never find
+`CollisionRelationshipAti`, so every production consumer that compares against it - the
+`NamedObjectSaveCodeGenerator.ConstructorFunc` dispatch, `HandleAddEventsForObject`,
+`GetEventSignatureAndArgs`, `CollidableNamedObjectController`, etc. - silently treats a
+collision-relationship `NamedObjectSave` as an unrecognized type. The test adds one via the real
+`GluxCommands.AddNamedObjectToAsync` path, drives real code generation for its containing screen, and
+asserts the lookup now resolves.
+
+**Deliberately not attempted**: driving `CollidableNamedObjectController.CreateCollisionRelationshipBetweenObjects`
+(the real handler `MainCollisionPlugin` wires to `PluginManager.ReactToCreateCollisionRelationshipsBetween`)
+end-to-end. It also calls `GlueCommands.Self.DialogCommands.FocusTab`, which reads
+`PluginManager.TabControlViewModel` - only ever set by a live WinForms `MainGlueWindow` - so it NREs outside
+one. That's a separate, UI-rooted blocker, not an asset-type one.
+
+**Still open after this entry**: the Wizard's `AddSolidCollision`/`AddCloudCollision` steps
+(`MainAddScreenPlugin.AddCollision`) no longer NRE on `AvailableAssetTypes.CommonAtis` (fixed above), but
+hit a different, unrelated NRE one level down: they go through `GluxCommands.AddNewNamedObjectToAsync`,
+which always runs with `updateUi:true` (no way to opt out from that entry point), and that path calls
+`MainGlueWindow.Self.PropertyGrid.Refresh()` - a generic `AddNewNamedObjectToAsync` UI coupling, unrelated
+to collision types specifically. Not fixed here - out of scope for this entry, left for whichever future
+work needs `AddNewNamedObjectToAsync` testable.
+
 ### 2026-07-23 — Unblock WizardProjectLogic AddGameScreen testing (issue #1894 follow-up)
 
 Follow-up to the "Wizard apply-engine test seams" entry directly below: that PR left `HandleAddGameScreen`
@@ -356,14 +405,13 @@ that only sets `AddGameScreen = true`, pinning: the returned `ScreenSave`'s name
 get added to the project.
 
 **Still not covered:**
-- `WizardProjectLogic.Apply()` end-to-end was covered by a follow-up - see the entry directly above this
-  one in the file (most recent first).
-- `AddSolidCollision`/`AddCloudCollision` (and by extension most of the Wizard's other add-on steps):
-  they route through `NamedObjectSaveCodeGenerator.GetDestroyForNamedObject`, which reads
-  `AvailableAssetTypes.CommonAtis` - a catalog populated by scanning every plugin's registered
-  `AssetTypeInfo`s during real `PluginManager` startup - and NREs when that catalog is empty.
-  `GlueTestBootstrap` intentionally does not attempt to replicate plugin loading; that's a materially
-  bigger, separate blocker from the `VisualStudioProject` one this entry unblocks. Still open (issue #1894).
+- `WizardProjectLogic.Apply()` end-to-end was covered by a follow-up - see the entry two above this one in
+  the file (most recent first).
+- `AddSolidCollision`/`AddCloudCollision` (and by extension most of the Wizard's other add-on steps): the
+  `AvailableAssetTypes.CommonAtis` NRE this note used to describe is fixed - see the "AvailableAssetTypes.
+  Self.Initialize / Collision Plugin asset-type test seam" entry directly above this one - but a different,
+  unrelated NRE blocks them one level down (`AddNewNamedObjectToAsync`'s `MainGlueWindow.Self.PropertyGrid`
+  UI coupling). Still open (issue #1894); see that entry for details.
 
 ### 2026-07-23 — Cover `WizardProjectLogic.Apply()` end-to-end (issue #1894 follow-up)
 
@@ -396,9 +444,11 @@ project, `GenerateAllCode` writes `GameScreen.Generated.cs` to disk, and `SavePr
 the project file to disk (`.glux`, since a fresh `GlueProjectSave()` defaults to `FileVersion` 0 - `.gluj`
 requires `GluxVersions.GlueSavedToJson` or later).
 
-This closes the `Apply()`-end-to-end gap issue #1894 was tracking. The one remaining open item under that
-issue is the `AvailableAssetTypes.CommonAtis`/plugin-loading blocker on `AddSolidCollision`/
-`AddCloudCollision` and most other Wizard add-on steps - noted above and still out of scope.
+This closes the `Apply()`-end-to-end gap issue #1894 was tracking. The `AvailableAssetTypes.CommonAtis`/
+plugin-loading blocker on `AddSolidCollision`/`AddCloudCollision` and most other Wizard add-on steps this
+note used to flag as the one remaining open item was split and partly fixed by a follow-up - see the
+"AvailableAssetTypes.Self.Initialize / Collision Plugin asset-type test seam" entry (most recent, near the
+top of this section) for the current state and what's still open.
 
 ### 2026-07-23 — Wizard apply-engine test seams (issue #1894)
 
