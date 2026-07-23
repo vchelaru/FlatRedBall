@@ -1,4 +1,5 @@
-﻿using FlatRedBall.IO;
+﻿using FlatRedBall.Glue.Utilities;
+using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -44,7 +45,9 @@ namespace FlatRedBall.Glue.VSHelpers
 
             if(solution.Exists())
             {
-                var contents = System.IO.File.ReadAllText(solution.FullPath);
+                var contents = RetryHelper.Retry(
+                    () => System.IO.File.ReadAllText(solution.FullPath),
+                    isTransient: ex => ex is IOException);
 
                 if(contents?.Contains(project) == true)
                 {
@@ -61,7 +64,9 @@ namespace FlatRedBall.Glue.VSHelpers
                         // Remove between indexOfStart and indexOfEnd
                         contents = contents.Remove(indexOfStart, endWithLenth - indexOfStart);
 
-                        System.IO.File.WriteAllText(solution.FullPath, contents);
+                        RetryHelper.Retry(
+                            () => System.IO.File.WriteAllText(solution.FullPath, contents),
+                            isTransient: ex => ex is IOException);
                         return true;
                     }
                 }
@@ -69,10 +74,63 @@ namespace FlatRedBall.Glue.VSHelpers
             return false;
         }
 
+        // Thrown internally by AddExistingProjectWithDotNet to route a transient-lock-shaped subprocess
+        // error through RetryHelper.Retry, which retries based on exceptions. Never escapes this class.
+        private class TransientFileLockException : Exception
+        {
+            public TransientFileLockException(string message) : base(message) { }
+        }
+
+        // "dotnet sln add" reports failures (including a locked .sln) via stderr text rather than throwing,
+        // so we check the message shape rather than an exception type here.
+        private static bool IsTransientFileLockMessage(string message) =>
+            !string.IsNullOrEmpty(message) &&
+            (message.IndexOf("being used by another process", StringComparison.OrdinalIgnoreCase) >= 0 ||
+             message.IndexOf("cannot access the file", StringComparison.OrdinalIgnoreCase) >= 0);
+
         public static bool AddExistingProjectWithDotNet(FilePath solution, FilePath project, out string output, out string error)
         {
-            output = null;
-            error = null;
+            string capturedOutput = null;
+            string capturedError = null;
+            bool success;
+
+            try
+            {
+                success = RetryHelper.Retry(
+                    operation: () =>
+                    {
+                        var result = RunDotnetSlnAddOnce(solution, project);
+                        capturedOutput = result.output;
+                        capturedError = result.error;
+
+                        if (!result.success && IsTransientFileLockMessage(result.error))
+                        {
+                            // Only escalate transient-looking failures to an exception so RetryHelper
+                            // retries them. A genuinely malformed project reference (or any other
+                            // non-lock failure) returns false immediately, same as before retries existed.
+                            throw new TransientFileLockException(result.error);
+                        }
+
+                        return result.success;
+                    },
+                    isTransient: ex => ex is TransientFileLockException);
+            }
+            catch (TransientFileLockException)
+            {
+                // All retries exhausted on a transient lock - surface the last real attempt's error,
+                // exactly as the caller would have seen before retries existed.
+                success = false;
+            }
+
+            output = capturedOutput;
+            error = capturedError;
+            return success;
+        }
+
+        private static (bool success, string output, string error) RunDotnetSlnAddOnce(FilePath solution, FilePath project)
+        {
+            string output = null;
+            string error = null;
             try
             {
                 var process = new Process();
@@ -92,24 +150,22 @@ namespace FlatRedBall.Glue.VSHelpers
 
                 process.WaitForExit(10000);
 
-                if (string.IsNullOrEmpty(error))
-                    return true;
-                else
-                    return false;
-
+                return (string.IsNullOrEmpty(error), output, error);
             }
             catch (Exception ex)
             {
                 error = (error ?? "") + ex.ToString();
 
-                return false;
+                return (false, output, error);
             }
         }
 
         public static bool AddExistingProject(FilePath solution, Guid projectTypeId, Guid projectId, string projectName, FilePath projectPath, List<SharedProject> sharedProjects, List<string> projectConfigurations, List<string> solutionConfigurations, out string error)
         {
             //Read file
-            var allLines = File.ReadAllLines(solution.FullPath).ToList();
+            var allLines = RetryHelper.Retry(
+                () => File.ReadAllLines(solution.FullPath),
+                isTransient: ex => ex is IOException).ToList();
 
             //Find Global Section
             int? addLineHere = null;
@@ -221,7 +277,9 @@ namespace FlatRedBall.Glue.VSHelpers
             }
 
             //Save File
-            File.WriteAllLines(solution.FullPath, allLines.ToArray());
+            RetryHelper.Retry(
+                () => File.WriteAllLines(solution.FullPath, allLines.ToArray()),
+                isTransient: ex => ex is IOException);
 
             error = null;
             return true;
