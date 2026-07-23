@@ -24,6 +24,7 @@
     <ProjectReference Include="..\..\Glue\Glue.csproj" />
     <ProjectReference Include="..\..\OfficialPlugins\OfficialPlugins.csproj" />
     <ProjectReference Include="..\..\GumPlugin\GumPlugin\GumPlugin.csproj" />
+    <ProjectReference Include="..\..\TileGraphicsPlugin\TileGraphicsPlugin\TiledPlugin.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -313,6 +313,65 @@ Traversal** (14) groups — 24 methods. Everything else stays on `ObjectFinder`.
 
 ## Completed Refactors
 
+### 2026-07-23 — Real Tiled Plugin coverage, all 5 Wizard call sites (issue #1894 follow-up)
+
+Part of #1894 (reopened) - same shape as PR #1901 (Collision Plugin) and PR #1902 (Gum Plugin), applied to
+all five `PluginManager.CallPluginMethod("Tiled Plugin", ...)` call sites in `WizardProjectLogic` (~lines
+422-483): `SaveFileWithVisuals` (x2, TopDown/Platformer branches), `SaveTilesetFilesToDisk`,
+`AddStandardTilesetOnCurrentFile`, `AddGameplayLayerToCurrentFile`, `AddCollisionBorderToCurrentFile`.
+Entity Input Movement and the `PluginManager.TabControlViewModel` coupling remain separate, still-open
+follow-ups - not touched here.
+
+**No production seam extraction needed - all 5 were directly reachable.** Every one of
+`MainTiledPluginClass`'s five plugin methods is a thin forwarder to a public method on
+`TmxCreationManager.Self` (`SaveTmxWithVisuals`, `SaveTilesetFilesToDisk`, `IncludeDefaultTilesetOn`,
+`IncludeGameplayLayerOn`, `AddCollisionBorderOn`), and `TmxCreationManager` only depends on
+`GlueState.Self.ContentDirectory` / `GlueCommands.Self.FileCommands` / `GlueCommands.Self.GetAbsoluteFilePath`
+plus plain file I/O (`TiledMapSave`, embedded-resource copies) - no live-window dependency anywhere in the
+chain. Inspected `TmxCreationManager.cs` and all of `TMXGlueLib` for `MessageBox.Show` before writing any
+test (this effort's now-standard landmine check) - found none in the real call chain, so no dialog risk.
+`GlueUnitTests.TiledPluginTests.TiledProjectCreationTests` (new file) calls `TmxCreationManager.Self`'s
+methods directly, bypassing `MainTiledPluginClass`/`PluginManager.CallPluginMethod` entirely - all 5 call
+sites covered in one PR, a bigger surface than Gum's single method because there was no external-tool-style
+blocker to stop at.
+
+Six tests, each asserting real file-system side effects (not just "didn't throw"):
+- Two `SaveTmxWithVisuals` tests (TopDown and Platformer levels) assert the correct branch-specific tileset
+  (`ZoriaOverworld.tsx` vs `FrbVisualTiles.tsx`) was copied from embedded resources to disk *and* that the
+  other branch's tileset was NOT copied, and that the reloaded TMX's tileset references were rewritten to
+  point at the new files - proving the branch selection is real, not just "copied everything".
+- `SaveTilesetFilesToDisk` asserts the standard tileset tsx/png land on disk with real (non-empty) embedded
+  bytes.
+- `IncludeDefaultTilesetOn`/`IncludeGameplayLayerOn`/`AddCollisionBorderOn` each seed a real, minimal TMX
+  (built from real `TMXGlueLib` types - `TiledMapSave`/`MapLayer`/`mapLayerData`/`Tileset` - serialized
+  through the same `TiledMapSave.Save`/`FromFile` path production uses, not an embedded template) and assert
+  the mutation: a tileset entry appended, all prior layers replaced with a single new "GameplayLayer" copying
+  the first layer's tile data, and border tiles painted onto the first layer within the method's hardcoded
+  32x32 region.
+
+**Real (if arguably buggy) production behavior found and pinned, not fixed:** `AddCollisionBorderOn`
+hardcodes a 32x32 loop (`for x in 0..32, for y in 0..32`) regardless of the map's actual width/height - real
+levels are typically much larger (e.g. the embedded `OverworldPlatformerA.tmx` template is 75x27). The test
+seeds a 32x32 map to match this real, map-size-agnostic behavior rather than papering over it; not fixed
+since correcting the loop bounds is a product-behavior change outside this test-coverage-only pass.
+
+**Getting real TMX fixtures to round-trip needed one gotcha fix**: `TiledMapSave.FromFile` calls
+`Tileset.Source`'s setter, which by default (`Tileset.ShouldLoadValuesFromSource == true`) tries to load the
+referenced tsx file for real - fine for the `SaveTmxWithVisuals` tests (their tilesets are real files that
+were actually copied to disk), but the three "seed a synthetic TMX" tests use a placeholder tileset source
+(`"Existing.tsx"`) that doesn't exist on disk, so a straight `TiledMapSave.FromFile` call in the test's own
+*verification* code (after the method under test already ran) threw `FileNotFoundException`. Production code
+avoids this by wrapping every `TiledMapSave.FromFile` call with `Tileset.ShouldLoadValuesFromSource = false`;
+the test does the same in a small `LoadTmxForVerification` helper.
+
+`GlueUnitTests.csproj` now references `TiledPlugin.csproj` (`FRBDK/Glue/TileGraphicsPlugin/TileGraphicsPlugin/
+TiledPlugin.csproj` - the project file is named `TiledPlugin.csproj` even though the folder is
+`TileGraphicsPlugin`), same `ProjectReference` pattern as the existing `GumPlugin.csproj` reference. Test
+namespace is `GlueUnitTests.TiledPluginTests`, not `GlueUnitTests.TiledPlugin`, for the same
+shadowing reason as `GumPluginTests` (the real plugin's root namespace is the bare `TiledPlugin`).
+
+151/151 fast tests + 1/1 build-smoke green.
+
 ### 2026-07-23 — Real Gum project-creation coverage, Gum Plugin only (issue #1894 follow-up)
 
 Part of #1894 (reopened) - same shape as PR #1901's Collision Plugin fix, applied to the Gum Plugin's
