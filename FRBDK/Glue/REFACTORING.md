@@ -313,6 +313,67 @@ Traversal** (14) groups — 24 methods. Everything else stays on `ObjectFinder`.
 
 ## Completed Refactors
 
+### 2026-07-23 — Real `FixNamedObjectCollisionType` coverage, Collision Plugin only (issue #1894 reopened)
+
+Issue #1894 was reopened: closing it after the `IMainGlueWindow` PR was premature because everything routed
+through `PluginManager.CallPluginMethod`/`CallPluginMethodAsync` (Gum, Tiled, Entity Input Movement,
+Collision Plugin's `FixNamedObjectCollisionType`) is untested and silently no-ops in a test host instead of
+running the real plugin behavior - `CallPluginMethod` iterates loaded plugins by friendly name and returns
+null if none match, it does not throw. This entry covers the Collision-Plugin slice only, per the reopened
+issue's scoping (Gum/Tiled/Entity-Input-Movement are separate follow-ups).
+
+**No production code changes were needed.** `MainCollisionPlugin.FixNamedObjectCollisionType` (the method
+`WizardProjectLogic.cs`'s two call sites, ~line 996/1033, reach via
+`PluginManager.CallPluginMethod("Collision Plugin", "FixNamedObjectCollisionType", nos)`) was already a
+one-line forwarder to the public static `CollisionRelationshipViewModelController.TryFixSourceClassType` -
+the same "thin forwarder to a directly-callable static method" shape as the earlier
+`MainCollisionPlugin.RegisterAssetTypes` extraction. Of the two seam shapes the issue proposed - (a)
+register a real plugin instance with `PluginManager` so `CallPluginMethod`'s reflection lookup finds it, or
+(b) call the already-extracted static method directly, bypassing `CallPluginMethod` for tests - (b) needed
+zero extraction work, so it's what's used: `GlueUnitTests.CollisionPlugin.FixNamedObjectCollisionTypeTests`
+calls `CollisionRelationshipViewModelController.TryFixSourceClassType` directly.
+
+(a) was investigated and rejected: `PluginManager.CallMethodOnPlugin` always routes through
+`PluginCommand(doOnUiThread: true)`, which reads the private static `PluginManager.mMenuStrip` - only ever
+set by `MainGlueWindow`'s real startup (`PluginManager.ShareMenuStripReference`) - so a lightweight
+test-registered plugin would still NRE there, and reaching a workaround (e.g. a headless `MenuStrip` whose
+`Control.Invoke` executes without a live message loop) rests on unverified WinForms internals not worth the
+risk for this scope.
+
+The test drives the real `WizardProjectLogic.HandleAddGameScreen` path (`AddSolidCollision`/
+`AddCloudCollision = true`) to get real `SolidCollision`/`CloudCollision` `TileShapeCollection`
+`NamedObjectSave`s, then builds a collision-relationship `NamedObjectSave` referencing them via
+`FirstCollisionName`/`SecondCollisionName` (mirroring what
+`CollidableNamedObjectController.CreateCollisionRelationshipBetweenObjects` would produce - see the blocker
+below for why that method isn't driven directly), and calls `TryFixSourceClassType` twice: once with
+`CollisionType = BounceCollision` (asserts `SourceClassType` becomes
+`CollidableVsTileShapeCollectionRelationship<...>`), then again after changing the property to
+`PlatformerSolidCollision` (asserts it becomes `DelegateCollisionRelationship<...>` and differs from the
+first result) - proving the recomputation is driven by the real `CollisionType` property read through
+`AssetTypeInfoManager.GetCollisionRelationshipSourceClassType`, not a stub.
+
+**Still not covered, and why (the real, deeper blocker found here):** `FixNamedObjectCollisionType`'s two
+production call sites live inside `WizardProjectLogic.HandleAddPlayerInstance`, which is unreachable
+end-to-end in a test host for reasons that have nothing to do with `FixNamedObjectCollisionType` itself:
+
+1. The relationship `NamedObjectSave` (`"PlayerVsSolidCollision"`/`"PlayerVsCloudCollision"`) is created by
+   `PluginManager.ReactToCreateCollisionRelationshipsBetween(playerList, collisionNos)`, a static event with
+   no subscriber unless a real `MainCollisionPlugin` instance has run `StartUp`/`AssignEvents` - the same
+   "would need real plugin loading" problem this entry's seam choice avoided.
+2. Even with a subscriber, the handler
+   (`CollidableNamedObjectController.CreateCollisionRelationshipBetweenObjects`) ends by calling
+   `GlueCommands.Self.DialogCommands.FocusTab("Collision")`, which reads `PluginManager.TabControlViewModel`
+   - `private set`, only ever assigned by a live WinForms `MainGlueWindow`. This NREs in a test host.
+
+Point 2 is not new - it's the same blocker the "AvailableAssetTypes.Self.Initialize / Collision Plugin
+asset-type test seam" entry below already flagged as "deliberately not attempted" for
+`CreateCollisionRelationshipBetweenObjects`. It's also not Collision-Plugin-specific: `TabControlViewModel`
+is a `PluginManager`-wide static, the same shape of problem `IMainGlueWindow` solved for
+`MainGlueWindow.Self` - fixing it properly means an `ITabControlViewModel`-style seam across all of
+`PluginManager`, a materially bigger refactor than "Collision Plugin only" scope. Left open; a future pass
+extending the `IMainGlueWindow` pattern to `PluginManager.TabControlViewModel` would unblock this along with
+every other `FocusTab`/tab-selection call site, not just this one.
+
 ### 2026-07-23 — Extract `IMainGlueWindow`, unblock `AddSolidCollision`/`AddCloudCollision` end-to-end (issue #1894 follow-up)
 
 Follow-up to "AvailableAssetTypes.Self.Initialize / Collision Plugin asset-type test seam" directly below:
