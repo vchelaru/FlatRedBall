@@ -81,7 +81,7 @@ public partial class MapTextureButtonContainer : UserControl, IDataUi
             }
             else
             {
-                window.MoveToMainWindowCenterAndSize(Glue.MainGlueWindow.Self, .7f, .85f);
+                window.MoveToMainWindowCenterAndSize((System.Windows.Forms.Form)Glue.MainGlueWindow.Self, .7f, .85f);
                 window.Width = 100 + window.Height; //How to get width of wpf element before window shown?  100 is just some random amount
                 GlueCommands.Self.DialogCommands.MoveToCursor(window);
 

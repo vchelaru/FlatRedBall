@@ -40,21 +40,21 @@ using Wpf = System.Windows;
 
 namespace Glue;
 
-public partial class MainGlueWindow : Form
+public partial class MainGlueWindow : Form, IMainGlueWindow
 {
     #region Fields/Properties
 
-    public bool HasErrorOccurred = false;
+    public bool HasErrorOccurred { get; set; } = false;
 
     public static MainPanelControl MainWpfControl { get; private set; }
-    public static MainGlueWindow Self { get; private set; }
+    public static IMainGlueWindow Self { get; internal set; }
     public static int UiThreadId { get; private set; }
 
     private MenuStrip mMenu;
 
     public IContainer Components => components;
 
-    public PropertyGrid PropertyGrid;
+    public PropertyGrid PropertyGrid { get; set; }
 
     public int NumberOfStoredRecentFiles
     {
@@ -235,8 +235,8 @@ public partial class MainGlueWindow : Form
 
             FrbMenuStripRenderer renderer = new FrbMenuStripRenderer(bg, fg, primary);
 
-            Self.MainMenuStrip.Renderer = renderer;
-            Self.MainMenuStrip.Invalidate();
+            this.MainMenuStrip.Renderer = renderer;
+            this.MainMenuStrip.Invalidate();
         }
     }
 

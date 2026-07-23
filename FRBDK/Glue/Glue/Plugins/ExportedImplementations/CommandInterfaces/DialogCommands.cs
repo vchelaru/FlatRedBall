@@ -1527,7 +1527,7 @@ class DialogCommands : IDialogCommands
 
     public void SetFormOwner(Form form)
     {
-        if (MainGlueWindow.Self != null)
-            form.Owner = MainGlueWindow.Self;
+        if (MainGlueWindow.Self is Form owner)
+            form.Owner = owner;
     }
 }

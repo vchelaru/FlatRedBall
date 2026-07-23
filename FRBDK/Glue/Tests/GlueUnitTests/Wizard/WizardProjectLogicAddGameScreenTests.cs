@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using FlatRedBall.Glue.Managers;
+using Glue;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.Elements;
@@ -131,15 +132,35 @@ public class WizardProjectLogicAddGameScreenTests : IDisposable
         File.Exists(GlueState.Self.GlueProjectFileName.FullPath).ShouldBeTrue();
     }
 
-    // AddSolidCollision/AddCloudCollision were deliberately NOT added as a follow-up test here. The
-    // AvailableAssetTypes.CommonAtis NRE this comment used to describe is now fixed - see
-    // GlueTestBootstrap.EnsureInitialized and REFACTORING.md's "AvailableAssetTypes.Self.Initialize /
-    // Collision Plugin asset-type test seam" entry - but driving AddSolidCollision/AddCloudCollision hits a
-    // different, unrelated NRE one level down: MainAddScreenPlugin.AddCollision goes through
-    // GluxCommands.AddNewNamedObjectToAsync, which always runs with updateUi:true (no way to opt out), and
-    // that path calls MainGlueWindow.Self.PropertyGrid.Refresh() - MainGlueWindow.Self is only ever set by a
-    // live WinForms MainGlueWindow. That's a generic AddNewNamedObjectToAsync UI coupling unrelated to
-    // collision types specifically - out of scope here.
+    // AddSolidCollision/AddCloudCollision were blocked by two separate NREs, both now fixed:
+    // AvailableAssetTypes.CommonAtis (see GlueTestBootstrap.EnsureInitialized) and
+    // MainGlueWindow.Self.PropertyGrid.Refresh() (AddNewNamedObjectToAsync always runs with updateUi:true -
+    // see IMainGlueWindow/FakeMainGlueWindow and REFACTORING.md). Covered end-to-end below.
+    [Fact]
+    public async Task HandleAddGameScreen_ShouldAddSolidAndCloudCollision_WhenRequested()
+    {
+        var vm = new WizardViewModel { AddGameScreen = true, AddSolidCollision = true, AddCloudCollision = true };
+
+        var (gameScreen, solidCollisionNos, cloudCollisionNos) = await WizardProjectLogic.HandleAddGameScreen(vm);
+
+        gameScreen.ShouldNotBeNull();
+        solidCollisionNos.ShouldNotBeNull();
+        solidCollisionNos.InstanceName.ShouldBe("SolidCollision");
+        solidCollisionNos.SourceClassType.ShouldBe("FlatRedBall.TileCollisions.TileShapeCollection");
+        gameScreen.NamedObjects.ShouldContain(solidCollisionNos);
+
+        cloudCollisionNos.ShouldNotBeNull();
+        cloudCollisionNos.InstanceName.ShouldBe("CloudCollision");
+        gameScreen.NamedObjects.ShouldContain(cloudCollisionNos);
+
+        // AddNamedObjectToAsync's updateUi:true path (MainGlueWindow.Self.PropertyGrid.Refresh()) ran
+        // against the fake window instead of NRE-ing - this is the assertion that matters for #1894.
+        ((FakeMainGlueWindow)MainGlueWindow.Self).PropertyGrid.ShouldNotBeNull();
+
+        // Confirms code generation for the screen actually completed for both new objects.
+        var generatedCodeFile = Path.Combine(_tempProjectDirectory, "Screens", "GameScreen.Generated.cs");
+        File.Exists(generatedCodeFile).ShouldBeTrue();
+    }
 
     private class InlineUiThreadMarshaller : IUiThreadMarshaller
     {

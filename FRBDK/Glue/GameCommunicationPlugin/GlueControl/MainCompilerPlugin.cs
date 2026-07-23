@@ -115,7 +115,8 @@ namespace GameCommunicationPlugin.GlueControl
             _variableSendingManager = new VariableSendingManager(_refreshManager);
             _commandReceiver = new CommandReceiver(_refreshManager, _variableSendingManager);
 
-            _modalReportingService = new ModalReportingService(MainGlueWindow.Self, GlueCommands.Self.DialogCommands, CommandSender.Self);
+            _modalReportingService = new ModalReportingService(
+                (System.ComponentModel.ISynchronizeInvoke)MainGlueWindow.Self, GlueCommands.Self.DialogCommands, CommandSender.Self);
             _modalReportingService.Initialize();
 
             CreateBuildControl();
@@ -580,7 +581,7 @@ namespace GameCommunicationPlugin.GlueControl
             var dragDropTimerFrequency = 100; // ms
             dragDropTimer = new Timer(dragDropTimerFrequency);
             dragDropTimer.Elapsed += (not, used) => _dragDropManagerGameWindow.HandleDragDropTimerElapsed(gameHostView);
-            dragDropTimer.SynchronizingObject = MainGlueWindow.Self;
+            dragDropTimer.SynchronizingObject = (System.ComponentModel.ISynchronizeInvoke)MainGlueWindow.Self;
             dragDropTimer.Start();
 
             #endregion

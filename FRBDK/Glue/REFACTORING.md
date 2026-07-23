@@ -312,6 +312,93 @@ Traversal** (14) groups — 24 methods. Everything else stays on `ObjectFinder`.
 
 ## Completed Refactors
 
+### 2026-07-23 — Extract `IMainGlueWindow`, unblock `AddSolidCollision`/`AddCloudCollision` end-to-end (issue #1894 follow-up)
+
+Follow-up to "AvailableAssetTypes.Self.Initialize / Collision Plugin asset-type test seam" directly below:
+that entry's remaining blocker was `MainAddScreenPlugin.AddCollision` → `GluxCommands.AddNewNamedObjectToAsync`
+always running with `updateUi: true` (no way to opt out) and unconditionally calling
+`MainGlueWindow.Self.PropertyGrid.Refresh()` - `MainGlueWindow.Self` is only ever set by a live WinForms
+window. This was the third time a `MainGlueWindow.Self.X` call site NRE'd in a test host and got patched
+one member at a time (`DoOnUiThread`→`Invoke` in #1896, `SaveProjectAndElementsImmediately`→`HasErrorOccurred`
+in #1898) - systemic fix this time: put `MainGlueWindow.Self` itself behind an interface, so every current
+and future call site resolves through one seam.
+
+- **`IMainGlueWindow`** (`Glue/Managers/IMainGlueWindow.cs`) covers every member any call site outside
+  `MainGlueWindow.cs` touches through `MainGlueWindow.Self` - `Invoke`/`BeginInvoke`, `PropertyGrid`,
+  `HasErrorOccurred`, `Close`, `IsDisposed`, `Text`, `Components`, `NumberOfStoredRecentFiles`,
+  `SyncMenuStripWithTheme`, `TryGenerateImplicitWindowStylesFor`, plus `Width`/`Height` and
+  `IWin32Window.Handle` (found only by also grepping for bare `MainGlueWindow.Self` passed *by value* -
+  e.g. `var window = MainGlueWindow.Self; window.Width`, or `ShowDialog(MainGlueWindow.Self)` - a
+  member-only grep for `MainGlueWindow.Self.<name>` misses these). `IMainGlueWindow : IWin32Window` alone
+  fixed every `ShowDialog`/`Show`/`MessageBox.Show(MainGlueWindow.Self, ...)` call site (about a dozen)
+  since `Control` already implements `IWin32Window` via `Handle`.
+- **`MainGlueWindow : Form, IMainGlueWindow`** - two members were plain fields, which can't satisfy an
+  interface property, so `PropertyGrid` and `HasErrorOccurred` became auto-properties (zero behavior
+  change - same get/set semantics, just compiler-backed instead of directly declared).
+- **`MainGlueWindow.Self`** changed from `public static MainGlueWindow Self { get; private set; }` to
+  `public static IMainGlueWindow Self { get; internal set; }` - `internal` (not `public`) so only
+  `GlueTestBootstrap` can swap it, and deliberately still starts `null` and is only ever assigned inside
+  `MainGlueWindow`'s own constructor (`Self = this;`), unlike `GlueCommands.Self`/
+  `TaskManager.UiThreadMarshaller`, which eagerly construct their default in the field initializer.
+  `MainGlueWindow`'s constructor has real WinForms/WPF side effects (spins up a `System.Windows.Application`,
+  calls `SetMsBuildEnvironmentVariable`), so eagerly constructing one at static-field-init time would be a
+  real production behavior change, not the zero-behavior-change this pattern is supposed to guarantee -
+  `Self` staying lazily-null until `Program.cs` constructs the real window preserves exactly today's
+  lifecycle.
+- **Two call sites broke from the interface-vs-concrete-class overload resolution difference, not scope
+  gaps**: `UpdateReactor.cs` and `MainGumPlugin.cs` each called `MainGlueWindow.Self.Invoke((MethodInvoker)x)`.
+  This compiled against the concrete `MainGlueWindow` type only because C# overload resolution for
+  differently-*signed* methods sharing a name merges the derived type's overloads with the base type's
+  (unlike same-signature hiding, which fully replaces) - so `(MethodInvoker)x` was silently resolving to
+  the *inherited, untyped* `Control.Invoke(Delegate)`, not any of `MainGlueWindow`'s own four `Invoke`
+  overloads. `IMainGlueWindow` isn't a `Control` and declares no `Invoke(Delegate)` overload, so that
+  fallback path doesn't exist through the interface. Fixed by changing the cast from `(MethodInvoker)` to
+  `(Action)` at both call sites - same delegate, now resolves to `IMainGlueWindow.Invoke(Action)`, the
+  overload this was always meant to hit.
+- **Three call sites needed the concrete `Form`/`ISynchronizeInvoke`, not `IMainGlueWindow`**: a WinForms
+  `Timer.SynchronizingObject` (`ISynchronizeInvoke`) in `MainCompilerPlugin.cs` (×2, one live, one
+  already-commented-out) and `ModalReportingService`'s constructor param, plus `Form.Owner` in
+  `DialogCommands.SetFormOwner` and a `Form`-typed extension-method parameter in
+  `MapTextureButtonContainer.xaml.cs`. Widening `IMainGlueWindow` to cover `ISynchronizeInvoke` (4 more
+  members, colliding in name with the `Invoke`/`BeginInvoke` already declared) for two framework-interop
+  call sites wasn't worth it - left as explicit casts (`(ISynchronizeInvoke)MainGlueWindow.Self`,
+  `MainGlueWindow.Self is Form owner`) at the call site instead. In production `Self` is always the real
+  `MainGlueWindow`, so these casts never fail; they're a narrower exception than the `IWin32Window`
+  widening above because each has exactly one or two consumers instead of a dozen.
+- **`FakeMainGlueWindow`** (`GlueUnitTests/TestSupport/`) - no-op/harmless implementation, wired into
+  `GlueTestBootstrap.EnsureInitialized` (`MainGlueWindow.Self ??= new FakeMainGlueWindow()`).
+  `Invoke`/`BeginInvoke` run the delegate synchronously (tests are single-threaded). `PropertyGrid` is a
+  real (not mocked) `System.Windows.Forms.PropertyGrid` instance - constructing one needs no running
+  message loop, and a real control means `.Refresh()`/`.SelectedObject` behave exactly like production.
+
+Unblocking `PropertyGrid.Refresh()` immediately surfaced one more, unrelated NRE one level further in:
+`GluxCommands.AddNamedObjectToAsync`'s `updateUi:true` path also sets `GlueState.Self.CurrentNamedObjectSave`,
+whose setter calls `GlueState.Self.Find.TreeNodeByTag(...)` - `GlueState.Self.Find` (`IFindManager`) is only
+ever set by `MainTreeViewPlugin.StartUp` (which also constructs a WPF `MainTreeViewControl`), never run in a
+test host. Same fix shape: added **`FakeFindManager`** (`GlueUnitTests/TestSupport/`, all five `IFindManager`
+members return null/empty/false) and wired it into `GlueTestBootstrap` (`GlueState.Self.Find ??= new
+FakeFindManager()`). `GlueState.CurrentTreeNode`'s setter already tolerates a null tree node (just clears
+the selection), so this needed no other production change.
+
+`GlueUnitTests/Wizard/WizardProjectLogicAddGameScreenTests.HandleAddGameScreen_ShouldAddSolidAndCloudCollision_WhenRequested`
+drives `WizardProjectLogic.HandleAddGameScreen` with `AddSolidCollision`/`AddCloudCollision` both true (the
+one Wizard add-on path #1894 was tracking as still-blocked) and pins: both `NamedObjectSave`s land in the
+screen with the right `InstanceName`/`SourceClassType`, the fake `PropertyGrid` ran instead of NRE-ing, and
+code generation completed (`GameScreen.Generated.cs` written to disk).
+
+**`IUiThreadMarshaller` (added in #1895) is now overlapping, not redundant, with `IMainGlueWindow.Invoke`/
+`BeginInvoke`** - deliberately left both rather than folding one into the other. `IUiThreadMarshaller` is
+reached through `TaskManager.UiThreadMarshaller`/`TaskManager.OnUiThread`/`GlueTask.DoOnUiThread`, a
+narrower, purpose-built seam for "marshal onto the UI thread" that has nothing WinForms-specific in its
+signature (`Action`/`Func<T>`/`Task` only). `IMainGlueWindow` is the *window*, and `Invoke`/`BeginInvoke`
+are two of eleven-plus members alongside `PropertyGrid`/`Text`/`Close`/etc. that have nothing to do with UI
+marshalling. Production's `WinFormsUiThreadMarshaller` already forwards to `MainGlueWindow.Self.Invoke`/
+`BeginInvoke` - that forwarding is the correct relationship between the two seams and doesn't change here.
+Collapsing them would mean either giving `IMainGlueWindow` to every `TaskManager` caller (dragging in
+`PropertyGrid`/`Close`/`Text` for callers that only want "run this on the UI thread") or giving
+`IUiThreadMarshaller` to every window-property caller (which doesn't have `PropertyGrid` etc. to give) -
+neither direction simplifies anything, so both stay, each doing its one job.
+
 ### 2026-07-23 — AvailableAssetTypes.Self.Initialize / Collision Plugin asset-type test seam (issue #1894 follow-up)
 
 Follow-up to "Cover `WizardProjectLogic.Apply()` end-to-end" directly below: that entry left the
