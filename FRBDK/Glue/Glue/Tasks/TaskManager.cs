@@ -255,6 +255,25 @@ namespace FlatRedBall.Glue.Managers
             }
         }
 
+        /// <summary>
+        /// When true, tasks added via Add/AddAsync/AddOrRunIfTasked run inline and synchronously on the
+        /// calling thread instead of being enqueued to the background task-processing thread. Intended
+        /// for test hosts (e.g. xunit) that don't want to spin up, or wait on, TaskManager's dedicated
+        /// STA thread. Must be set before the first access to <see cref="Self"/> for the constructor to
+        /// also skip spinning that thread; the Add methods honor it regardless of when it's set. Defaults
+        /// to false, so production behavior is unchanged.
+        /// </summary>
+        public static bool SynchronousMode { get; set; }
+
+        /// <summary>
+        /// Marshals actions/functions onto Glue's UI thread. Defaults to a wrapper around
+        /// <see cref="global::Glue.MainGlueWindow"/>'s real WinForms Invoke/BeginInvoke, which requires a
+        /// live window with a running message loop. Tests can replace this with an inline passthrough
+        /// (see <see cref="SynchronousMode"/>) so <see cref="OnUiThread(Action)"/>/<see cref="BeginOnUiThread(Action)"/>
+        /// don't require a real window.
+        /// </summary>
+        public static IUiThreadMarshaller UiThreadMarshaller { get; set; } = new WinFormsUiThreadMarshaller();
+
         #endregion
 
         #region Events
@@ -265,6 +284,15 @@ namespace FlatRedBall.Glue.Managers
 
         public TaskManager()
         {
+            if (SynchronousMode)
+            {
+                // Tests run everything inline on the calling thread rather than a dedicated
+                // background thread; treat the calling thread as the "task" thread so
+                // IsInTask()/AddOrRunIfTasked behave the same way they do in production.
+                SyncTaskThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
+                return;
+            }
+
             var thread = new Thread(StartDoTaskManagerLoop)
             {
                 IsBackground = true
@@ -419,7 +447,14 @@ namespace FlatRedBall.Glue.Managers
             glueTask.DisplayInfo = displayInfo;
             glueTask.CustomId = customId;
 
-            AddInternal(glueTask);
+            if (SynchronousMode)
+            {
+                RunSynchronously(glueTask);
+            }
+            else
+            {
+                AddInternal(glueTask);
+            }
             return glueTask;
         }
 
@@ -431,7 +466,14 @@ namespace FlatRedBall.Glue.Managers
             glueTask.TaskExecutionPreference = executionPreference;
             glueTask.DisplayInfo = displayInfo;
             glueTask.CustomId=customId;
-            AddInternal(glueTask);
+            if (SynchronousMode)
+            {
+                RunSynchronously(glueTask);
+            }
+            else
+            {
+                AddInternal(glueTask);
+            }
             return glueTask;
         }
 
@@ -446,8 +488,32 @@ namespace FlatRedBall.Glue.Managers
             glueTask.TaskExecutionPreference = executionPreference;
             glueTask.DisplayInfo = displayInfo;
             glueTask.CustomId = customId;
-            AddInternal(glueTask);
+            if (SynchronousMode)
+            {
+                RunSynchronously(glueTask);
+            }
+            else
+            {
+                AddInternal(glueTask);
+            }
             return glueTask;
+        }
+
+        /// <summary>
+        /// Runs a task inline on the calling thread, bypassing the queue entirely. Used by the Add
+        /// overloads when <see cref="SynchronousMode"/> is enabled.
+        /// </summary>
+        private void RunSynchronously(GlueTaskBase glueTask)
+        {
+            // TaskManager is a process-wide singleton (see Singleton<T>), so whichever thread happens to
+            // construct it first (e.g. in a parallel test run) is the one that gets recorded as
+            // SyncTaskThreadId in the constructor. Re-stamp it here on every synchronous run so
+            // IsInTask()/AddOrRunIfTasked correctly treat *this* calling thread as "in a task",
+            // regardless of construction order.
+            SyncTaskThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
+
+            TaskAddedOrRemoved?.Invoke(TaskEvent.Queued, glueTask);
+            RunTask(glueTask, markAsCurrent: true).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -794,7 +860,7 @@ namespace FlatRedBall.Glue.Managers
             }
             else
             {
-                global::Glue.MainGlueWindow.Self.Invoke(() => action.Invoke().Wait());
+                UiThreadMarshaller.Invoke(() => action.Invoke().Wait());
             }
         }
 
@@ -806,7 +872,7 @@ namespace FlatRedBall.Glue.Managers
             }
             else
             {
-                global::Glue.MainGlueWindow.Self.Invoke(action);
+                UiThreadMarshaller.Invoke(action);
             }
         }
 
@@ -818,7 +884,7 @@ namespace FlatRedBall.Glue.Managers
             }
             else
             {
-                global::Glue.MainGlueWindow.Self.BeginInvoke(action);
+                UiThreadMarshaller.BeginInvoke(action);
             }
         }
 

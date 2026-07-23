@@ -70,7 +70,7 @@ public class GlueTask : GlueTaskBase
     {
         if (DoOnUiThread && !TaskManager.Self.IsOnUiThread)
         {
-            global::Glue.MainGlueWindow.Self.Invoke(Action);
+            TaskManager.UiThreadMarshaller.Invoke(Action);
         }
         else
         {
@@ -89,7 +89,7 @@ public class GlueTask<T> : GlueTaskBase
     {
         if (DoOnUiThread && !TaskManager.Self.IsOnUiThread)
         {
-            Result =  global::Glue.MainGlueWindow.Self.Invoke(() => Result = Func());
+            Result =  TaskManager.UiThreadMarshaller.Invoke(() => Result = Func());
         }
         else
         {
@@ -109,7 +109,7 @@ public class GlueAsyncTask : GlueTaskBase
     {
         if (DoOnUiThread && !TaskManager.Self.IsOnUiThread)
         {
-            await global::Glue.MainGlueWindow.Self.Invoke(() => Func());
+            await TaskManager.UiThreadMarshaller.Invoke(() => Func());
         }
         else
         {
@@ -127,7 +127,7 @@ public class GlueAsyncTask<T> : GlueTaskBase
     {
         if (DoOnUiThread && !TaskManager.Self.IsOnUiThread)
         {
-            Result = await global::Glue.MainGlueWindow.Self.Invoke(() => Func());
+            Result = await TaskManager.UiThreadMarshaller.Invoke(() => Func());
         }
         else
         {
