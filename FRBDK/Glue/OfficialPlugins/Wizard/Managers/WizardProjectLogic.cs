@@ -33,23 +33,24 @@ namespace OfficialPlugins.Wizard.Managers
         }
         #endregion
 
-        // Not covered by an end-to-end unit test - see GitHub issue #1894 and GlueUnitTests.Wizard.WizardProjectLogicTests
-        // for what *is* covered and why.
+        // Apply() itself is still not covered by an end-to-end unit test - see GitHub issue #1894,
+        // REFACTORING.md's "Unblock WizardProjectLogic AddGameScreen testing" entry, and
+        // GlueUnitTests.Wizard.WizardProjectLogicTests / WizardProjectLogicAddGameScreenTests for what *is*
+        // covered and why.
         //
-        // #1894 added test seams for the two couplings it identified (TaskManager's background thread and
-        // MainGlueWindow's Invoke/BeginInvoke - see TaskManager.SynchronousMode/UiThreadMarshaller). Those
-        // seams are real and tested directly. But driving Apply() itself - even for the plugin-free
-        // "bare AddGameScreen" step suggested as a fallback - turns out to be blocked by a *deeper*
-        // coupling than plugins: HandleAddGameScreen -> GluxCommands.ScreenCommands.AddScreen ->
-        // ProjectCommands.CreateAndAddCodeFile, which throws NullReferenceException("Main Project") unless
-        // GlueState.CurrentMainProject is a real, MSBuild-backed VisualStudioProject (abstract, no fake-able
-        // interface). That's the same blocker already called out in REFACTORING.md's "Known Areas Needing
-        // Improvement" section for ProjectCommands - out of scope here, since fully addressing it means
-        // building an IVisualStudioProject seam, a separate and much larger refactor.
+        // #1894 added test seams for TaskManager's background thread and MainGlueWindow's
+        // Invoke/BeginInvoke (TaskManager.SynchronousMode/UiThreadMarshaller). A follow-up unblocked the
+        // "bare AddGameScreen" step specifically: HandleAddGameScreen is now internal and driven directly
+        // in GlueUnitTests.Wizard.WizardProjectLogicAddGameScreenTests, against a real (not fake)
+        // VisualStudioProject backed by a minimal non-SDK .csproj (GlueUnitTests.TestSupport) - no
+        // IVisualStudioProject seam needed after all.
         //
-        // What's genuinely unit tested instead: the pure, side-effect-free decision logic inside each step
-        // that doesn't touch GlueState/TaskManager/plugins - e.g. GetDisplaySettingsFor (the
-        // CameraResolution -> width/height/aspect-ratio mapping used by ApplyMainCameraSettings).
+        // Apply() as a whole remains untested: even with only AddGameScreen set, it unconditionally also
+        // runs GenerateAllCode (walks every element in the project), a "Flush Files" step with a hard-coded
+        // 2.5s+ real delay, and SaveProjectAndElements - a meaningfully bigger surface than AddScreen alone.
+        // Most of the other Wizard steps (player entity, collisions, camera, levels, ...) are also
+        // untested; collisions specifically NRE on AvailableAssetTypes.CommonAtis, which is only populated
+        // by real PluginManager plugin loading - see REFACTORING.md for details.
         public async Task Apply(WizardViewModel vm)
         {
             ///////////////////Early Out/////////////////////
@@ -289,7 +290,10 @@ namespace OfficialPlugins.Wizard.Managers
 
         #region Add GameScreen
 
-        private static async Task<(ScreenSave gameScreen, NamedObjectSave solidCollision, NamedObjectSave cloudCollisionNos)> HandleAddGameScreen(WizardViewModel vm)
+        // internal (not private) so GlueUnitTests can drive the bare AddGameScreen step directly - see
+        // WizardProjectLogicAddGameScreenTests and the comment above Apply() for why Apply() itself isn't
+        // covered end-to-end.
+        internal static async Task<(ScreenSave gameScreen, NamedObjectSave solidCollision, NamedObjectSave cloudCollisionNos)> HandleAddGameScreen(WizardViewModel vm)
         {
             ScreenSave gameScreen = await GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen("GameScreen");
             NamedObjectSave solidCollisionNos = null;

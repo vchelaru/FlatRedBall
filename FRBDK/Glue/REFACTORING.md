@@ -286,12 +286,17 @@ Traversal** (14) groups — 24 methods. Everything else stays on `ObjectFinder`.
 ## Known Areas Needing Improvement
 
 - **`ProjectCommands.UpdateFileMembershipInProject`** is a ~170-line method with no seams — it touches
-  a concrete `VisualStudioProject` (abstract, but its constructor requires a live MSBuild `Project`, so
-  it can't be constructed in a unit test), `FileReferenceManager`, and `PluginManager` all inline. The
-  `GlueState.Self` dependency was removed (see below), but `VisualStudioProject` remains the blocker.
-  Fully unit-testing this method would require extracting an `IVisualStudioProject`-style seam around
-  the MSBuild-backed project type — out of scope until a feature actually needs to touch this method
-  again.
+  a concrete `VisualStudioProject`, `FileReferenceManager`, and `PluginManager` all inline. The
+  `GlueState.Self` dependency was removed (see below), but `VisualStudioProject` remains the blocker to
+  fully unit-testing this specific method (it's ~170 lines with several branches, more than the one call
+  site `GlueUnitTests/TestSupport/TestVisualStudioProjectFactory` was built to unblock — see the
+  "Unblock WizardProjectLogic AddGameScreen testing" entry below). Note that `VisualStudioProject`'s
+  constructor requiring a live MSBuild `Project` is no longer an unconditional blocker: a real (not
+  fake) `VisualStudioProject` can now be constructed in a unit test via a minimal, non-SDK-style `.csproj`
+  written to a temp directory — see `TestVisualStudioProjectFactory`. Widening that factory's coverage to
+  `UpdateFileMembershipInProject`'s branches (content vs. code items, synced projects, etc.) — rather than
+  extracting an `IVisualStudioProject` seam — is the path forward when a feature next needs to touch this
+  method.
 
 - **`UpdateReactor.ReloadGlux`'s apply step** (swap the replaced Screen/Entity/GlobalFile into
   `ProjectManager.GlueProjectSave`, then call `GlueCommands.Self.RefreshCommands`/`UpdateCommands`/
@@ -306,6 +311,62 @@ Traversal** (14) groups — 24 methods. Everything else stays on `ObjectFinder`.
   what gets computed.
 
 ## Completed Refactors
+
+### 2026-07-23 — Unblock WizardProjectLogic AddGameScreen testing (issue #1894 follow-up)
+
+Follow-up to the "Wizard apply-engine test seams" entry directly below: that PR left `HandleAddGameScreen`
+untested because `ProjectCommands.CreateAndAddCodeFile` throws `NullReferenceException("Main Project")`
+unless `GlueState.CurrentMainProject` is a real, MSBuild-backed `VisualStudioProject`, and building a
+fakeable `IVisualStudioProject` seam looked like a separate, much larger refactor (that type's constructor
+takes a live `Microsoft.Build.Evaluation.Project` and dereferences it immediately, and `CurrentMainProject`
+is read as the concrete type in dozens of places, e.g. `is MonoGameDesktopGlBaseProject` checks - widening
+the property to an interface would ripple everywhere).
+
+Turns out no interface extraction was needed. `VisualStudioProject`'s constructor only needs *a* real
+`Project` - it doesn't need one loaded through Glue's SDK-style-project machinery (which requires
+`MSBuildLocator.RegisterDefaults()`, only ever called from `MainGlueWindow`). A bare, non-SDK-style
+`.csproj` (no `Sdk="..."` attribute, no imports) evaluates with zero SDK/toolset resolution, so
+`new Project(path)` and wrapping it in the existing concrete `ClassLibraryProject` works cleanly in a
+plain xunit host. `GlueUnitTests/TestSupport/TestVisualStudioProjectFactory` does exactly this, writing a
+minimal `.csproj` to a fresh temp directory per test.
+
+Getting `GluxCommands.ScreenCommands.AddScreen` to run cleanly from there needed:
+- **One real production fix**: `GlueCommands.DoOnUiThread` (all three overloads) called
+  `MainGlueWindow.Self.Invoke`/`Invoke<T>` directly - a coupling the previous entry's
+  `TaskManager.UiThreadMarshaller` seam didn't reach because it's not on `TaskManager`. Routed through
+  `TaskManager.UiThreadMarshaller` instead, same as the other four call sites. Zero behavior change in
+  production (still resolves to `WinFormsUiThreadMarshaller` by default).
+- **Test-only bootstrap**, in `GlueUnitTests/TestSupport/GlueTestBootstrap`: a handful of one-time calls
+  that mirror what `Glue.exe`'s own startup (`Program.cs`, `MainGlueWindow.cs`) does before
+  `GlueCommands.Self`/`GlueState.Self` are usable - building the app's lightweight DI container
+  (`Services.Builder`), registering `IGlueCommands`/`IGlueState` on the legacy `EditorObjects.IoC.Container`
+  service locator (a second, older locator several command classes still read from directly, e.g.
+  `GenerateCodeCommands.GlueCommands`), and `ProjectManager.Initialize()`/`FileWatchManager.Initialize()`.
+  None of this is faked - it's real production initialization, just never previously run outside a live
+  WinForms app.
+- Per-test setup of `GlueState.CurrentMainProject`, `ObjectFinder.Self.GlueProject`, and
+  `FileManager.RelativeDirectory` (the last one because `ElementCommands.AddScreen` builds its code-file
+  path from that static rather than from the project's own directory - both need to agree for
+  `IsFilePartOfProject` to correctly recognize a freshly-added file).
+
+`HandleAddGameScreen` was changed from `private static` to `internal static` (zero behavior change) so
+`GlueUnitTests/Wizard/WizardProjectLogicAddGameScreenTests.cs` can call it directly with a `WizardViewModel`
+that only sets `AddGameScreen = true`, pinning: the returned `ScreenSave`'s name/tags, that it lands in
+`GlueProjectSave.Screens` and becomes `StartUpScreen`, and that both the custom and generated code files
+get added to the project.
+
+**Still not covered:**
+- `WizardProjectLogic.Apply()` end-to-end. Even with only `AddGameScreen` set, `Apply()` unconditionally
+  also runs "Generate all code" (`GenerateAllCode`, walks every element in the project), a "Flush Files"
+  step with a hard-coded 2.5s+ real delay, and "Saving Project" - a meaningfully larger surface than
+  `AddScreen` alone, and more than issue #1894's stated fallback ("at minimum the AddGameScreen step")
+  required.
+- `AddSolidCollision`/`AddCloudCollision` (and by extension most of the Wizard's other add-on steps):
+  they route through `NamedObjectSaveCodeGenerator.GetDestroyForNamedObject`, which reads
+  `AvailableAssetTypes.CommonAtis` - a catalog populated by scanning every plugin's registered
+  `AssetTypeInfo`s during real `PluginManager` startup - and NREs when that catalog is empty.
+  `GlueTestBootstrap` intentionally does not attempt to replicate plugin loading; that's a materially
+  bigger, separate blocker from the `VisualStudioProject` one this entry unblocks.
 
 ### 2026-07-23 — Wizard apply-engine test seams (issue #1894)
 

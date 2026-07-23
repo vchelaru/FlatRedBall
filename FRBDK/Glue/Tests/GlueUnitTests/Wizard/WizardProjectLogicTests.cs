@@ -8,16 +8,15 @@ namespace GlueUnitTests.Wizard;
 // synchronous-mode / UI-thread-marshaller seams added in this same change (see
 // GlueUnitTests.Tasks.TaskManagerSynchronousModeTests). Those seams are real and directly tested.
 //
-// But driving Apply() itself - even for the plugin-free "bare AddGameScreen" step suggested as a
-// fallback - turns out to be blocked by a deeper coupling than plugins: HandleAddGameScreen ends up in
-// ProjectCommands.CreateAndAddCodeFile, which throws NullReferenceException("Main Project") unless
-// GlueState.CurrentMainProject is a real, MSBuild-backed VisualStudioProject (abstract, no fakeable
-// interface) - the same blocker already called out in REFACTORING.md's "Known Areas Needing Improvement"
-// section. Building an IVisualStudioProject seam to unblock that is a separate, larger refactor, out of
-// scope here.
+// This file covers the pure, side-effect-free decision logic inside an Apply step that doesn't touch
+// GlueState/TaskManager/plugins - GetDisplaySettingsFor, extracted from ApplyMainCameraSettings.
 //
-// What's covered instead: the pure, side-effect-free decision logic inside an Apply step that doesn't
-// touch GlueState/TaskManager/plugins - GetDisplaySettingsFor, extracted from ApplyMainCameraSettings.
+// The "bare AddGameScreen" step is covered separately, in
+// GlueUnitTests.Wizard.WizardProjectLogicAddGameScreenTests - see that file and REFACTORING.md's "Unblock
+// WizardProjectLogic AddGameScreen testing" entry for how the VisualStudioProject construction blocker
+// mentioned in earlier versions of this comment was actually unblocked (no IVisualStudioProject seam
+// needed). Apply() as a whole is still not covered end-to-end - see the comment above
+// WizardProjectLogic.Apply for what's left and why.
 public class WizardProjectLogicTests
 {
     [Theory]
