@@ -1,0 +1,49 @@
+name: Glue Tests (PR)
+
+# Runs on pull requests so tests actually gate merges. The existing glue.yml / Engine.yml are
+# workflow_dispatch-only publish pipelines (they FTP-upload with secrets) and must not run per-PR.
+on:
+  pull_request:
+    branches:
+      - NetStandard
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+    - name: Checkout FRB
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 1
+        path: 'FlatRedBall'
+
+    - name: Checkout Gum
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ github.repository_owner }}/Gum
+        fetch-depth: 1
+        path: 'Gum'
+
+    - name: Install .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: |
+          6.0.x
+          8.0.x
+          9.0.x
+
+    - name: Setup MSBuild.exe
+      uses: microsoft/setup-msbuild@v1.0.2
+
+    - name: Build
+      run: dotnet build -c Debug 'FlatRedBall\FRBDK\Glue\Glue with All.sln'
+
+    # Run via the .sln so $(SolutionDir) is defined (OfficialPlugins has a post-build step that needs it).
+    - name: Run unit tests
+      run: dotnet test 'FlatRedBall\FRBDK\Glue\Glue with All.sln' -c Debug --filter "Category!=BuildSmoke"
+
+    # Slower: creates a project from each template and runs `dotnet build` on it. Needs the net9 SDK
+    # (installed above) and network for the first NuGet restore.
+    - name: Run new-project build smoke test
+      run: dotnet test 'FlatRedBall\FRBDK\Glue\Glue with All.sln' -c Debug --filter "Category=BuildSmoke"

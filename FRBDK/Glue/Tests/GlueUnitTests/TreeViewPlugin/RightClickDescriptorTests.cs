@@ -18,6 +18,10 @@ public class RightClickDescriptorTests
         var mock = new Mock<ITreeNode>() { CallBase = true };
         mock.Setup(n => n.TreeNodeType).Returns(type);
         mock.Setup(n => n.Tag).Returns(tag);
+        // Real tree nodes always have Text; the type-check predicates (e.g. IsRootLayerNode) call
+        // Text.Equals(...), so leaving it null makes CallBase throw. Use the type name — it just needs
+        // to be non-null and not collide with a special node name like "Layers".
+        mock.Setup(n => n.Text).Returns(type.ToString());
         return mock;
     }
 

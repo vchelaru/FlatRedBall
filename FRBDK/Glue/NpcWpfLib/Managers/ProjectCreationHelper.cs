@@ -8,14 +8,24 @@ using Npc.ViewModels;
 using Npc.Managers;
 using ToolsUtilities;
 using System.Threading.Tasks;
-using FRBDKUpdater;
-using UpdaterWpf.Views;
 
 namespace Npc;
 
 public static class ProjectCreationHelper
 {
     #region Fields
+
+    /// <summary>
+    /// Handles user-facing messages. Defaults to a WPF message box; tests can swap in a fake so
+    /// creation can run headless. See <see cref="IProjectCreationNotifier"/>.
+    /// </summary>
+    public static IProjectCreationNotifier Notifier { get; set; } = new WpfProjectCreationNotifier();
+
+    /// <summary>
+    /// Downloads template zips. Defaults to the WPF download window; tests can swap in a fake (or
+    /// supply a local template) so creation can run headless. See <see cref="IDownloadService"/>.
+    /// </summary>
+    public static IDownloadService Downloader { get; set; } = new WpfDownloadService();
 
     /// <summary>
     /// This list contains names which should not be used as project names.
@@ -69,7 +79,7 @@ public static class ProjectCreationHelper
 
     static void ShowMessageBox(string message)
     {
-        System.Windows.MessageBox.Show(message);
+        Notifier.ShowMessage(message);
     }
 
     public static async Task<bool> MakeNewProject(NewProjectViewModel viewModel)
@@ -115,7 +125,7 @@ public static class ProjectCreationHelper
             if (shouldTryDownloading)
             {
                 // Checks for a newer version and downloads it if necessary
-                generalResponse = DownloadFileSync(viewModel, zipToUnpack, projectZipUrl);
+                generalResponse = Downloader.Download(viewModel, zipToUnpack, projectZipUrl);
 
                 if (!generalResponse.Succeeded)
                 {
@@ -312,36 +322,6 @@ public static class ProjectCreationHelper
 
         isFileNameValid = string.IsNullOrEmpty(whyIsInvalid);
         return isFileNameValid;
-    }
-
-    private static GeneralResponse DownloadFileSync(NewProjectViewModel viewModel, string destinationZip, string fileToDownoad)
-    {
-        var urs = new UpdaterRuntimeSettings();
-        urs.FileToDownload = fileToDownoad;
-        urs.FormTitle = "Downloading " + viewModel.SelectedProject.FriendlyName;
-
-        urs.LocationToSaveFile = destinationZip;
-
-        string whereToSaveSettings =
-            FileManager.UserApplicationDataForThisApplication + "DownloadInformation." + UpdaterRuntimeSettings.RuntimeSettingsExtension;
-
-
-        var window = new UpdaterWpf.Views.MainWindow(whereToSaveSettings, urs);
-        window.CancelButtonVisibility = viewModel.IsCancelButtonVisible
-            ? System.Windows.Visibility.Visible
-            : System.Windows.Visibility.Collapsed;
-
-        window.Owner = viewModel.owner;
-        var result = window.ShowDialog();
-
-        if(result == null)
-        {
-            return GeneralResponse.UnsuccessfulWith("Download Cancelled");
-        }
-        else
-        {
-            return window.GeneralResponse ?? GeneralResponse.UnsuccessfulWith("Download Cancelled");
-        }
     }
 
     private static string GetFileToDownload(NewProjectViewModel viewModel)
