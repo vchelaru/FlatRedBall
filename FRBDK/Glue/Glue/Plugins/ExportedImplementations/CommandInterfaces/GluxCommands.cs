@@ -276,7 +276,10 @@ public class GluxCommands : IGluxCommands
         if (ProjectManager.GlueProjectSave != null)
         {
 
-            if (MainGlueWindow.Self.HasErrorOccurred)
+            // MainGlueWindow.Self is null in a plain xunit test host (never a real editor window),
+            // so this and the other MainGlueWindow.Self.HasErrorOccurred reads/writes below are
+            // null-conditional. No behavior change in production - Self is always set there.
+            if (MainGlueWindow.Self?.HasErrorOccurred == true)
             {
                 var projectName = GlueState.Self.GlueProjectFileName.NoPathNoExtension;
 
@@ -385,10 +388,13 @@ public class GluxCommands : IGluxCommands
                         PluginManager.ReceiveError("Error saving glux:\n\n" + e.ToString());
                     });
 
-                    MainGlueWindow.Self.HasErrorOccurred = true;
+                    if (MainGlueWindow.Self != null)
+                    {
+                        MainGlueWindow.Self.HasErrorOccurred = true;
+                    }
                 }
 
-                if (!MainGlueWindow.Self.HasErrorOccurred)
+                if (MainGlueWindow.Self?.HasErrorOccurred != true)
                 {
                     List<FilePath> fileChangesToIgnore = GlueState.Self.CurrentGlueProject.GetAllSerializedFiles(GlueState.Self.GlueProjectFileName);
                     foreach (var fileToIgnore in fileChangesToIgnore)
