@@ -36,6 +36,17 @@ internal static class TestVisualStudioProjectFactory
   </PropertyGroup>
 </Project>");
 
+        // Some production paths (e.g. GluxCommands.AddSingleFileTo, via ProjectManager.ProjectRootDirectory
+        // -> GlueState.CurrentSlnFileName -> ProjectSyncer.LocateSolution) require a .sln next to the
+        // .csproj that textually references it - LocateSolution throws FileNotFoundException otherwise.
+        // This doesn't need to be a build-valid solution file, just one LocateSolution's text search
+        // recognizes (same/base-name .sln in this directory, containing the .csproj's filename).
+        var slnPath = Path.Combine(directory, projectName + ".sln");
+        File.WriteAllText(slnPath, $@"Microsoft Visual Studio Solution File, Format Version 12.00
+Project(""{{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}}"") = ""{projectName}"", ""{projectName}.csproj"", ""{{11111111-1111-1111-1111-111111111111}}""
+EndProject
+");
+
         var project = new Project(csprojPath, null, null, new ProjectCollection());
         return new ClassLibraryProject(project);
     }

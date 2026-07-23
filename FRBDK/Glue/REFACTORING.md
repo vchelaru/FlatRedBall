@@ -313,6 +313,88 @@ Traversal** (14) groups — 24 methods. Everything else stays on `ObjectFinder`.
 
 ## Completed Refactors
 
+### 2026-07-23 — Real Entity Input Movement Plugin coverage (issue #1894 follow-up)
+
+Part of #1894 (reopened) - same shape as PR #1901 (Collision Plugin), #1902 (Gum Plugin), #1903 (Tiled
+Plugin), applied to `WizardProjectLogic.HandleAddPlayerEntity`'s two call sites (~lines 661/677):
+`PluginManager.CallPluginMethod("Entity Input Movement Plugin", "MakeEntityPlatformer"/"MakeEntityTopDown",
+playerEntity)`. With this PR, every `PluginManager.CallPluginMethod`/`CallPluginMethodAsync` call site in
+`WizardProjectLogic.cs` is covered by a real test (Collision, Gum, Tiled, Entity Input Movement) - the only
+remaining open item from #1894 is the `PluginManager.TabControlViewModel` coupling documented in PR #1901's
+entry below, which is a `PluginManager`-wide UI coupling, not a per-plugin gap.
+
+**Unlike the prior three, `MainEntityInputMovementPlugin.MakeEntityPlatformer`/`MakeEntityTopDown` are NOT
+thin forwarders to directly-callable logic** - both route through the plugin's own `mainViewModel` field,
+populated only by `CreateMainView()` (constructs a real WPF `UserControl` and calls `this.CreateTab(...)`,
+the same `PluginManager.TabControlViewModel`-coupled path already out-of-scope per PR #1901). So this test
+does not call `MainEntityInputMovementPlugin` at all - it calls what those two methods themselves delegate
+real work to: `FlatRedBall.PlatformerPlugin.Controllers.MainController.Self.GetViewModel()` /
+`TopDownPlugin.Controllers.MainController.Self.GetViewModel()`, the same singleton view-model source
+`CreateMainView()` initializes `mainViewModel.PlatformerViewModel`/`TopDownViewModel` from. Setting
+`BackingData` + `IsPlatformer`/`IsTopDown = true` on that view model fires the exact same
+`HandleViewModelPropertyChanged` handler production wires up in `GetViewModel()` - real production logic,
+reached one layer below the WPF-view-owning plugin class rather than a fake.
+
+No `MessageBox.Show`/dialog in this call chain: verified by inspection of `PlatformerPlugin`/`TopDownPlugin`
+(no `MessageBox.Show` anywhere in either plugin folder) and of
+`FlatRedBall.Glue.CreatedClass.CustomClassController.SetCsvRfsToUseCustomClass`, the one shared helper on
+this path that does contain one - both plugins call it with `force: true`, which short-circuits the prompt.
+CSV-extension files also bypass `ElementCommands.CheckAndWarnAboutUnknownFileTypes`'s unrecognized-extension
+prompt entirely (that check explicitly excludes `"csv"`).
+
+`GlueUnitTests.EntityInputMovementPluginTests.EntityInputMovementTests` (new file) drives both methods and
+asserts real, meaningful side effects, not just "didn't throw":
+- `MakeEntityPlatformer`: the entity's `IsPlatformer` property persists, `ImplementsICollidable` flips true,
+  the three platformer movement `CustomVariable`s (`GroundMovement`/`AirMovement`/`AfterDoubleJump`) are added
+  with the project's real `PlatformerValues` custom-class type, a `PlatformerValues(Static).csv` is generated
+  to disk with real content and wired up as a `ReferencedFileSave`, and a shared `PlatformerValues`
+  `CustomClassSave` is created and linked to that csv.
+- `MakeEntityTopDown`: the entity's `IsTopDown` property persists, `ImplementsICollidable` flips true, a
+  `TopDownValues(Static).csv` is generated to disk and wired up as a `ReferencedFileSave`, and a shared
+  `TopDownValues` `CustomClassSave` is created and linked to that csv. (Unlike Platformer, `TopDownPlugin`
+  doesn't add any `CustomVariable`s - `AddTopDownGlueVariables` is currently a no-op in production, so
+  nothing to assert there.)
+
+**Three real test-infrastructure gaps found and fixed while building this, none specific to Entity Input
+Movement - all three would have silently affected any future test that reaches the same code paths:**
+1. `GluxCommands.AddSingleFileTo` (used when wiring the generated csv to a `ReferencedFileSave`) reads
+   `ProjectManager.ProjectRootDirectory`, which requires a `.sln` file next to the test's `.csproj` that
+   textually references it - `TestVisualStudioProjectFactory.CreateInNewTempDirectory` only ever wrote a bare
+   `.csproj`. Now also writes a minimal `.sln` (not build-valid, just recognized by
+   `ProjectSyncer.LocateSolution`'s text search) alongside it - a shared-seam fix, benefits every test using
+   this factory.
+2. `ElementCommands.ReactToPropertyChanged` (the path any "flip an `Implements*` flag on an `EntitySave`"
+   call goes through, e.g. `ImplementsICollidable`) resolves `EntitySaveSetPropertyLogic` from the legacy
+   `EditorObjects.IoC.Container`, which `GlueTestBootstrap` never registered (only `MainGlueWindow.cs`'s real
+   startup did) - threw `"container does not contain an entry"`. `GlueTestBootstrap.EnsureInitialized` now
+   registers a real `EntitySaveSetPropertyLogic()` too, matching production's `Container.Set(new
+   EntitySaveSetPropertyLogic())` call.
+3. Running the full suite (not just this file in isolation) deterministically failed with a
+   `NullReferenceException` inside `FileCommands.IsContent` reading
+   `AvailableAssetTypes.Self.AdditionalExtensionsToTreatAsAssets` - null despite
+   `AvailableAssetTypes.CommonAtis` (a separate static set at the very end of the same `Initialize()` call)
+   being non-null. Root cause: `GlueTestBootstrap.EnsureInitialized`'s old guard,
+   `if (AvailableAssetTypes.CommonAtis == null) { AvailableAssetTypes.Self.Initialize(...); }`, was gating on
+   the wrong signal - when running the full suite, `CommonAtis` was already non-null the very first time this
+   bootstrap ran (upstream cause not fully root-caused - no test code calls `AvailableAssetTypes.Self
+   .Initialize` directly), so the guard concluded `Initialize()` had already run on `Self` and skipped it
+   entirely, leaving `Self.AdditionalExtensionsToTreatAsAssets` permanently null for the rest of the run. Only
+   surfaced via a call chain (`AddSingleFileTo` → `FileCommands.IsContent`) no prior #1894 test had reached.
+   Fixed by guarding on the exact instance field this bootstrap needs
+   (`AvailableAssetTypes.Self.AdditionalExtensionsToTreatAsAssets == null`) instead of a same-method side
+   effect (`CommonAtis`) that can apparently already be true from elsewhere - correct regardless of that
+   upstream cause. Also forced `TaskManager.SynchronousMode = true` as the first line of
+   `EnsureInitialized` (before anything else can touch `TaskManager.Self`) as a defensive hardening: leaving
+   it at its default `false` on first access spins up `TaskManager`'s real background thread for the whole
+   process, which no test wants running in a synchronous test host.
+
+Took the most time/retries in this whole task: run-in-isolation passed cleanly on the first real attempt, but
+running the full suite reproducibly failed at exactly the `AvailableAssetTypes` guard above - required adding
+and removing several rounds of temporary `FirstChanceException`/direct-field diagnostics (not left in the
+final code) to pin down that the guard, not a timing race, was the deterministic root cause.
+
+153/153 fast tests + 1/1 build-smoke green.
+
 ### 2026-07-23 — Real Tiled Plugin coverage, all 5 Wizard call sites (issue #1894 follow-up)
 
 Part of #1894 (reopened) - same shape as PR #1901 (Collision Plugin) and PR #1902 (Gum Plugin), applied to

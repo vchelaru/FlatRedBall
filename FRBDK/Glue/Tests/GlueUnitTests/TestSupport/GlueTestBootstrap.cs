@@ -3,6 +3,7 @@ using System.IO;
 using EditorObjects.IoC;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.IO;
+using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using FlatRedBall.Glue.Services;
@@ -26,7 +27,17 @@ namespace GlueUnitTests.TestSupport;
 ///    IgnoreNextChangeOnFile writes to.
 ///  - <see cref="AvailableAssetTypes"/>.Initialize populates <see cref="AvailableAssetTypes.CommonAtis"/>
 ///    (Camera/Text/Sprite/Polygon/etc.) from the same Content/ContentTypes.csv that MainGlueWindow reads -
-///    this is CSV-driven and needs no plugins, unlike the per-plugin ATIs below.
+///    this is CSV-driven and needs no plugins, unlike the per-plugin ATIs below. Guarded on
+///    <c>AvailableAssetTypes.Self.AdditionalExtensionsToTreatAsAssets == null</c>, not on
+///    <c>CommonAtis == null</c>: when running the full test suite, something upstream of this bootstrap
+///    (outside test code - not yet root-caused) already leaves <c>CommonAtis</c> non-null the first time
+///    this method runs, which made the old <c>CommonAtis == null</c> guard skip calling
+///    <c>Initialize</c> on <c>Self</c> entirely, leaving <c>Self.AdditionalExtensionsToTreatAsAssets</c>
+///    permanently null - surfaced as a NullReferenceException deep in
+///    <c>FileCommands.IsContent</c>/<c>GluxCommands.AddSingleFileTo</c>, which only a real "add a csv
+///    ReferencedFileSave" call chain reaches. Guarding on the exact field this bootstrap needs to have set,
+///    rather than a same-method side effect that can apparently already be true from elsewhere, is correct
+///    regardless of that upstream cause.
 ///  - <see cref="MainGlueWindow"/>.Self is given a <see cref="FakeMainGlueWindow"/> (only Program.cs ever
 ///    constructs the real WinForms window, which this test host never does) so any code path reading
 ///    MainGlueWindow.Self - PropertyGrid, HasErrorOccurred, Invoke/BeginInvoke, etc. - gets a harmless
@@ -34,6 +45,23 @@ namespace GlueUnitTests.TestSupport;
 ///  - <see cref="GlueState.Find"/> is given a <see cref="FakeFindManager"/> (only ever set by
 ///    MainTreeViewPlugin.StartUp, which this test host never runs) so tree-node-resolving setters like
 ///    GlueState.CurrentNamedObjectSave don't NRE.
+///  - The legacy <see cref="Container"/> is also given a real <c>EntitySaveSetPropertyLogic</c> (only ever
+///    set by MainGlueWindow.cs's real startup) so <c>ElementCommands.ReactToPropertyChanged</c> - the path
+///    any "flip an Implements* flag on an EntitySave" call goes through, e.g. ImplementsICollidable - can
+///    resolve it instead of throwing "container does not contain an entry".
+///  - <see cref="TaskManager.SynchronousMode"/> is forced on, process-wide, for the lifetime of the test
+///    run (set here, first, before anything else touches <see cref="TaskManager.Self"/>). Individual tests
+///    still flip it in their own constructor/Dispose for documentation purposes, but if it were left at its
+///    default of false at first access, TaskManager's constructor spins up its real dedicated background
+///    thread, which then runs for the entire process - any *other*, unrelated test whose production code
+///    path enqueues work while SynchronousMode happens to be transiently false (e.g. between two tests that
+///    each toggle it locally) leaves that work to be picked up by this still-live background thread later,
+///    racing against whatever a completely different, currently-running test is doing on the main thread.
+///    This was observed as an intermittent NullReferenceException inside a shared, non-thread-safe
+///    List&lt;string&gt; (AvailableAssetTypes.Self.AdditionalExtensionsToTreatAsAssets) when running the
+///    full suite - not a bug in the plugin/production code under test, but in ever letting that background
+///    thread exist at all in a test host. Forcing it here means the thread is never spun up in the first
+///    place, for any test in the assembly.
 ///
 /// Any test that drives production code through GlueCommands.Self/GlueState.Self (rather than calling a
 /// pure static method directly) needs this. Call <see cref="EnsureInitialized"/> once per test.
@@ -54,6 +82,9 @@ internal static class GlueTestBootstrap
             }
             _initialized = true;
 
+            // Must run before any other line here (or in any test): see the SynchronousMode bullet above.
+            TaskManager.SynchronousMode = true;
+
             if (Builder.App == null)
             {
                 new Builder().Build();
@@ -69,13 +100,15 @@ internal static class GlueTestBootstrap
 
             FileWatchManager.Initialize();
 
-            if (AvailableAssetTypes.CommonAtis == null)
+            if (AvailableAssetTypes.Self.AdditionalExtensionsToTreatAsAssets == null)
             {
                 AvailableAssetTypes.Self.Initialize(FindGlueStartupPath());
             }
 
             MainGlueWindow.Self ??= new FakeMainGlueWindow();
             GlueState.Self.Find ??= new FakeFindManager();
+
+            Container.Set(new FlatRedBall.Glue.SetVariable.EntitySaveSetPropertyLogic());
         }
     }
 
