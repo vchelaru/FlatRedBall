@@ -8,6 +8,7 @@ This document tracks the refactoring philosophy, process checklist, and progress
 - **Test before and after**: Write or identify unit tests that cover the area being touched before refactoring, then verify they still pass after.
 - **Preserve behavior**: Refactoring should not change observable behavior. New features come after the refactor, not during.
 - **Follow the seam**: When you find code that's hard to refactor, look for a natural seam to split it rather than forcing a restructure.
+- **Retyping a static `Xyz.Self` from a concrete class to an interface can silently change overload resolution** — a delegate-typed call site (e.g. `Self.Invoke((MethodInvoker)x)`) may have been resolving to a base-class overload only reachable through the concrete type; once `Self` is interface-typed, that overload disappears from resolution with no compiler warning pointing at the real cause. After this kind of retype, grep for delegate casts (`MethodInvoker`, `Action`, `Func`) at call sites of the retyped member and rebuild — don't assume a clean compile plus green tests caught every semantic shift.
 
 ## Checklist for New Feature Work
 
