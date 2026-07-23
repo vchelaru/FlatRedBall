@@ -61,12 +61,12 @@ public class GlueCommands : IGlueCommands
     
     public void DoOnUiThread(Action action)
     {
-        MainGlueWindow.Self.Invoke(action);
+        TaskManager.UiThreadMarshaller.Invoke(action);
     }
 
-    public Task DoOnUiThread(Func<Task> func) => MainGlueWindow.Self.Invoke(func);
+    public Task DoOnUiThread(Func<Task> func) => TaskManager.UiThreadMarshaller.Invoke(func);
 
-    public T DoOnUiThread<T>(Func<T> func) => MainGlueWindow.Self.Invoke(func);
+    public T DoOnUiThread<T>(Func<T> func) => TaskManager.UiThreadMarshaller.Invoke(func);
 
     public void CloseGlueProject(bool shouldSave = true, bool isExiting = false, GlueFormsCore.Controls.InitializationWindowWpf initWindow = null)
     {
