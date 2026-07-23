@@ -31,7 +31,10 @@ jobs:
     - name: Install .NET Core
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: |
+          6.0.x
+          8.0.x
+          9.0.x
 
     # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
     - name: Setup MSBuild.exe
@@ -45,7 +48,16 @@ jobs:
 
     - name: Build
       run: dotnet build -c ${{ matrix.configuration }} 'FlatRedBall\FRBDK\Glue\Glue with All.sln'
-      
+
+    # Run via the .sln so $(SolutionDir) is defined (OfficialPlugins has a post-build step that needs it).
+    - name: Run unit tests
+      run: dotnet test 'FlatRedBall\FRBDK\Glue\Glue with All.sln' -c ${{ matrix.configuration }} --filter "Category!=BuildSmoke"
+
+    # Slower: creates a project from each template and runs `dotnet build` on it. Needs the net9 SDK
+    # (installed above) and network access for the first NuGet restore.
+    - name: Run new-project build smoke test
+      run: dotnet test 'FlatRedBall\FRBDK\Glue\Glue with All.sln' -c ${{ matrix.configuration }} --filter "Category=BuildSmoke"
+
     - name: Zip and upload FRBDK
       env: # Or as an environment variable
         username: ${{ secrets.FTPUSERNAME }}

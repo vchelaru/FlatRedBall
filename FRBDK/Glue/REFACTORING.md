@@ -307,6 +307,28 @@ Traversal** (14) groups — 24 methods. Everything else stays on `ObjectFinder`.
 
 ## Completed Refactors
 
+### 2026-07-23 — Make new-project creation (NPC) testable (issue #1892)
+
+`ProjectCreationHelper` (the New Project Creator in `NpcWpfLib`) was untested despite being one of the
+most common things to break. Its core rename/namespace/guid logic was already UI-free static; the only
+UI couplings were `ShowMessageBox` (7 call sites) and `DownloadFileSync` (an Updater window). Extracted
+those into `IProjectCreationNotifier` and `IDownloadService` (in `NpcWpfLib/Services/`), default-injected
+via settable statics `ProjectCreationHelper.Notifier`/`.Downloader` (WPF impls in production, fakes in
+tests) — zero behavior change, all existing call sites unchanged.
+
+Tests added in `GlueUnitTests/Projects/`:
+- `ProjectCreationHelperTests` — pins name validation, file/dir rename + namespace rewrite, guid replace.
+- `NewProjectCreationSmokeTests` — drives the real `MakeNewProject` against a checked-in template (via
+  `PlatformProjectInfo.LocalSourceFile`, so creation is network-free) then runs `dotnet build` on the
+  result. Tagged `[Trait("Category", "BuildSmoke")]`; currently covers the Desktop GL MonoGame template
+  (Android/iOS/Web/FNA need extra toolchains — see the test's comment).
+
+Also wired `dotnet test` into `.github/workflows/glue.yml` (it previously ran no tests): a fast gate
+(`Category!=BuildSmoke`) plus a separate build-smoke step, both run via the `.sln` so `$(SolutionDir)` is
+defined for OfficialPlugins' post-build step. Fixed 5 pre-existing `RightClickDescriptorTests` failures
+along the way — the mock `ITreeNode` never set up `Text`, so `IsRootLayerNode()`'s `Text.Equals(...)`
+threw; real nodes always have `Text`, so the fix was to configure the mock, not production.
+
 ### 2026-07-17 — Make `StartUpScreen` diffable so changing it doesn't force a full reload
 
 Setting the startup screen is a common Glue action, but `GluxCommands.SaveGlujFile()` never registers
