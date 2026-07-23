@@ -1,13 +1,14 @@
 using System;
-using System.IO;
-using System.Threading.Tasks;
+using System.Linq;
+using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using Gum.DataTypes;
 using GlueUnitTests.TestSupport;
 using GlueUnitTests.Tasks;
-using GumPlugin.Managers;
+using GumPlugin.CodeGeneration;
 using Shouldly;
 
 namespace GlueUnitTests.GumPluginTests;
@@ -22,25 +23,41 @@ namespace GlueUnitTests.GumPluginTests;
 // had the identical latent bug - LineCircle is the same kind of outline-only shape - just not yet hit by
 // any repro because no default template places a Circle).
 //
-// This drives the real, unfaked codegen pipeline (same NewGumProjectCreationLogic.
-// CreateGumProjectInternal -> CodeGeneratorManager.GenerateDerivedGueRuntimesAsync path exercised by
-// GumProjectCreationTests) and asserts on the two real generated files. A full offline recompile of
-// these files was evaluated but dropped: RectangleRuntime.Generated.cs's declared base type
-// (Gum.Wireframe.GraphicalUiElement) and StateInterpolationPlugin.TweenerManager only get their real,
-// complete member surface from a full game project's reference graph (MonoGameGum +
-// FlatRedBall.Forms.StateInterpolation's shared source + the full engine) - reproducing that in this
-// tool-side test process would mean loading a second, conflicting copy of MonoGame/the engine
-// alongside Glue's own tool-side assemblies. See this PR's description for the real `dotnet build`
-// verification against an actual generated game project instead.
+// An earlier version of this test drove NewGumProjectCreationLogic.CreateGumProjectInternal (a freshly
+// created, minimal Gum project) and inspected the resulting RectangleRuntime.Generated.cs. That did NOT
+// pin the fix: a freshly-created project's "Rectangle"/"Circle" StandardElementSave is deserialized from
+// GumPlugin's own embedded, static template resources (Embedded/EmptyProject/Standards/Rectangle.gutx,
+// Circle.gutx) - snapshots saved before Gum's v3 fill/stroke/gradient/dropshadow/blend family existed
+// (~24-28 <Variable> entries total, none of them from that family). Nothing in the fresh-project-creation
+// path reconciles a deserialized StandardElementSave against the canonical, always-current schema in
+// Gum.Managers.StandardElementsManager.Self.DefaultStates - that reconciliation
+// (StandardElementSave.Initialize(StandardElementsManager.Self.GetDefaultStateFor(name)), the same call
+// GumPluginCommands.AddStandardElement makes) only runs when a user explicitly adds a standard element
+// file to their project, not during fresh-project creation or project reload. So the old test's fixture
+// never carried the vulnerable variables at all, regardless of the skip lists - it stayed green even with
+// the fix's skip-list entries deleted entirely.
+//
+// This version builds the StandardElementSave fixture the same way GumPluginCommands.AddStandardElement
+// does - Initialize()'d from the canonical StandardElementsManager.Self.GetDefaultStateFor(name), which is
+// guaranteed to carry the full current variable family regardless of what any on-disk template contains -
+// and feeds it directly to StandardsCodeGenerator.Self.GenerateStandardElementSaveCodeFor (which itself
+// calls both the property pipeline and, via GenerateStates, the state pipeline - one generated-code string
+// covers both of the two skip lists described in the gum-codegen skill). This is closer to the actual
+// decision point than round-tripping through file creation/codegen/file-read, and isn't coupled to
+// NewGumProjectCreationLogic's specific (and, as above, stale) template contents.
+//
+// Side finding while building this fixture: the canonical v3 schema no longer has plain Red/Green/Blue/Alpha
+// on Rectangle/Circle at all (the old test's "legit color family" assertion only passed because it read the
+// same stale pre-v3 template - it has Red/Green/Blue/Alpha, not the v3 family). The one non-excluded,
+// still-generated color surface today is StandardsCodeGenerator's own "Color" convenience property
+// (variableNamesToAddForProperties) - that's what the sanity check below asserts on instead.
 [Collection(nameof(TaskManagerSequentialCollection))]
 public class RectangleCircleCodegenTests : IDisposable
 {
     private readonly FlatRedBall.Glue.VSHelpers.Projects.VisualStudioProject _originalMainProject;
     private readonly GlueProjectSave _originalGlueProject;
-    private readonly string _originalRelativeDirectory;
     private readonly bool _originalSynchronousMode;
-    private readonly IUiThreadMarshaller _originalMarshaller;
-    private readonly Gum.DataTypes.GumProjectSave? _originalGumProjectSave;
+    private readonly Gum.DataTypes.GumProjectSave _originalGumProjectSave;
     private readonly string _tempProjectDirectory;
 
     public RectangleCircleCodegenTests()
@@ -48,35 +65,37 @@ public class RectangleCircleCodegenTests : IDisposable
         GlueTestBootstrap.EnsureInitialized();
 
         _originalMainProject = GlueState.Self.CurrentMainProject;
-        _originalGlueProject = ObjectFinder.Self.GlueProject;
-        _originalRelativeDirectory = FlatRedBall.IO.FileManager.RelativeDirectory;
+        _originalGlueProject = FlatRedBall.Glue.Elements.ObjectFinder.Self.GlueProject;
         _originalSynchronousMode = TaskManager.SynchronousMode;
-        _originalMarshaller = TaskManager.UiThreadMarshaller;
         _originalGumProjectSave = Gum.Managers.ObjectFinder.Self.GumProjectSave;
 
-        var vsProject = TestVisualStudioProjectFactory.CreateInNewTempDirectory(out _tempProjectDirectory);
-
+        // GenerateGetter/AdjustStandardElementVariableGetIfNecessary reads
+        // GlueState.Self.CurrentMainProject.IsFrbSourceLinked() for Color-typed variables - a real Glue
+        // session always has a loaded VS project by the time codegen runs.
+        var vsProject = TestSupport.TestVisualStudioProjectFactory.CreateInNewTempDirectory(out _tempProjectDirectory);
         GlueState.Self.CurrentMainProject = vsProject;
-        ObjectFinder.Self.GlueProject = new GlueProjectSave();
-        FlatRedBall.IO.FileManager.RelativeDirectory = _tempProjectDirectory + "\\";
 
+        FlatRedBall.Glue.Elements.ObjectFinder.Self.GlueProject = new GlueProjectSave();
         TaskManager.SynchronousMode = true;
-        TaskManager.UiThreadMarshaller = new InlineUiThreadMarshaller();
-        Gum.Managers.ObjectFinder.Self.GumProjectSave = null;
+        // GenerateEverythingFor's animation-enumerable step reads AppState.Self.GumProjectSave.FullFileName
+        // (unconditionally, before any null-FullFileName check) - a real project always has this set by the
+        // time codegen runs, so give it a harmless, non-null stand-in rather than relaxing production code.
+        Gum.Managers.ObjectFinder.Self.GumProjectSave = new Gum.DataTypes.GumProjectSave
+        {
+            FullFileName = System.IO.Path.Combine(_tempProjectDirectory, "GumProject", "GumProject.gumx"),
+        };
     }
 
     public void Dispose()
     {
         GlueState.Self.CurrentMainProject = _originalMainProject;
-        ObjectFinder.Self.GlueProject = _originalGlueProject;
-        FlatRedBall.IO.FileManager.RelativeDirectory = _originalRelativeDirectory;
+        FlatRedBall.Glue.Elements.ObjectFinder.Self.GlueProject = _originalGlueProject;
         TaskManager.SynchronousMode = _originalSynchronousMode;
-        TaskManager.UiThreadMarshaller = _originalMarshaller;
         Gum.Managers.ObjectFinder.Self.GumProjectSave = _originalGumProjectSave;
 
         try
         {
-            Directory.Delete(_tempProjectDirectory, recursive: true);
+            System.IO.Directory.Delete(_tempProjectDirectory, recursive: true);
         }
         catch
         {
@@ -84,37 +103,41 @@ public class RectangleCircleCodegenTests : IDisposable
         }
     }
 
-    [Fact]
-    public async Task CreateGumProjectInternal_ShouldNotGenerateUnsupportedFillStrokeGradientPropertiesForRectangleAndCircle()
+    [Theory]
+    [InlineData("Rectangle")]
+    [InlineData("Circle")]
+    public void GenerateStandardElementSaveCodeFor_ShouldNotGenerateUnsupportedFillStrokeGradientProperties(string standardElementName)
     {
-        // Needed so standard-element runtime generation actually runs (and doesn't silently no-op):
-        // populates Gum.Managers.StandardElementsManager.Self.DefaultStates with the full variable
-        // list (including the fill/stroke/gradient/dropshadow family under test), and wires up
-        // StandardsCodeGenerator/StateCodeGenerator's per-type generators + skip lists the same way
-        // MainGumPlugin.StartUp/glux-load does - without it, GenerateStandardElementSaveCodeFor NREs
-        // internally, which CodeGeneratorManager.GenerateAllElements swallows, so no
-        // RectangleRuntime.Generated.cs/CircleRuntime.Generated.cs get written at all.
+        // Needed so GenerateStandardElementSaveCodeFor doesn't NRE (per-type generators wired up) and so
+        // the skip lists this test is pinning are populated for the current code (same calls
+        // MainGumPlugin.StartUp makes on glux load):
         GlueTestBootstrap.EnsureGumPluginCodeGeneratorsInitialized();
 
-        var creationLogic = new NewGumProjectCreationLogic(new GumxPropertiesManager());
+        // Build the fixture the same way GumPluginCommands.AddStandardElement builds a real one being
+        // added to a project - Initialize()'d from the canonical, always-current schema, not from any
+        // (possibly stale) on-disk/embedded template.
+        var standardElementSave = new StandardElementSave { Name = standardElementName };
+        standardElementSave.Initialize(Gum.Managers.StandardElementsManager.Self.GetDefaultStateFor(standardElementName));
 
-        await creationLogic.CreateGumProjectInternal(shouldAlsoAddForms: false, askToOverwrite: false);
+        // Sanity check on the fixture itself: if this ever fails, the fixture stopped carrying the
+        // vulnerable variables and this test would silently stop pinning anything (the same failure mode
+        // that made the old, file-creation-based version of this test worthless).
+        var fixtureVariableNames = standardElementSave.DefaultState.Variables.Select(v => v.GetRootName()).ToHashSet();
+        fixtureVariableNames.ShouldContain("GradientY1");
+        fixtureVariableNames.ShouldContain("StrokeWidth");
+        fixtureVariableNames.ShouldContain("HasDropshadow");
 
-        var rectangleRuntimePath = Directory
-            .GetFiles(_tempProjectDirectory, "RectangleRuntime.Generated.cs", SearchOption.AllDirectories)
-            .ShouldHaveSingleItem();
-        var circleRuntimePath = Directory
-            .GetFiles(_tempProjectDirectory, "CircleRuntime.Generated.cs", SearchOption.AllDirectories)
-            .ShouldHaveSingleItem();
+        var codeBlock = new CodeBlockBase();
+        var generated = StandardsCodeGenerator.Self.GenerateStandardElementSaveCodeFor(standardElementSave, codeBlock);
+        generated.ShouldBeTrue();
 
-        var rectangleSource = File.ReadAllText(rectangleRuntimePath);
-        var circleSource = File.ReadAllText(circleRuntimePath);
+        var generatedSource = codeBlock.ToString();
 
         // These are exactly the members LineRectangle/LineCircle can't back (no fill, no stroke, no
-        // gradient, no dropshadow, and a get-only BlendState). This is the real, unfaked pipeline
-        // output - if StandardsCodeGenerator's/StateCodeGenerator's Rectangle/Circle skip lists ever
-        // regress, one of these properties will start showing up again and CS1061/CS0200 comes right
-        // back in any real generated game project.
+        // gradient, no dropshadow, and a get-only BlendState). This drives the real, unfaked
+        // StandardsCodeGenerator/StateCodeGenerator pipelines - if the Rectangle/Circle skip-list entries
+        // ever regress, one of these properties (or a state-switch assignment referencing it) starts
+        // showing up again and CS1061/CS0103 comes right back in any real generated game project.
         foreach (var excludedMember in new[]
                  {
                      "StrokeWidth", "StrokeAlpha", "StrokeRed", "StrokeGreen", "StrokeBlue",
@@ -130,31 +153,26 @@ public class RectangleCircleCodegenTests : IDisposable
                      "Blend",
                  })
         {
-            rectangleSource.ShouldNotContain(excludedMember);
-            circleSource.ShouldNotContain(excludedMember);
+            generatedSource.ShouldNotContain(excludedMember);
         }
 
-        // Rectangle-only rounded-corner surface (v3's per-corner override of the legacy
-        // RoundedRectangle standard) must also be excluded - LineRectangle always renders hard corners.
-        rectangleSource.ShouldNotContain("CornerRadius");
-        rectangleSource.ShouldNotContain("CustomRadiusTopLeft");
+        if (standardElementName == "Rectangle")
+        {
+            // Rectangle-only rounded-corner surface (v3's per-corner override of the legacy
+            // RoundedRectangle standard) must also be excluded - LineRectangle always renders hard corners.
+            generatedSource.ShouldNotContain("CornerRadius");
+            generatedSource.ShouldNotContain("CustomRadiusTopLeft");
+        }
 
-        // Sanity: the single-color family Rectangle/Circle DO support (handled via
-        // TryHandleCustomGetter/TryHandleCustomSetter, not the excluded *2/Stroke*/Fill* family) must
-        // still be generated - proves this is a targeted exclusion, not an accidental blanket one.
-        rectangleSource.ShouldContain("public int Red");
-        rectangleSource.ShouldContain("public int Green");
-        rectangleSource.ShouldContain("public int Blue");
-        rectangleSource.ShouldContain("public int Alpha");
-        circleSource.ShouldContain("public int Red");
-    }
-
-    private class InlineUiThreadMarshaller : IUiThreadMarshaller
-    {
-        public void Invoke(Action action) => action();
-        public T Invoke<T>(Func<T> func) => func();
-        public Task Invoke(Func<Task> func) => func();
-        public Task<T> Invoke<T>(Func<Task<T>> func) => func();
-        public void BeginInvoke(Action action) => action();
+        // Sanity: properties Rectangle/Circle DO still support must keep being generated - proves this is
+        // a targeted exclusion, not an accidental blanket one that would trivially satisfy the ShouldNotContain
+        // assertions above by generating nothing at all.
+        // - "Color" is StandardsCodeGenerator's own convenience property (variableNamesToAddForProperties,
+        //   handled via TryHandleCustomGetter/TryHandleCustomSetter), unaffected by the fix's skip lists.
+        generatedSource.ShouldContain("public Microsoft.Xna.Framework.Color Color");
+        // - Ordinary GraphicalUiElement-level variables (not part of the excluded family) still flow through
+        //   the state pipeline.
+        generatedSource.ShouldContain("Width = ");
+        generatedSource.ShouldContain("Height = ");
     }
 }

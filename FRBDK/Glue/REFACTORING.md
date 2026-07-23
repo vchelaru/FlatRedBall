@@ -1004,6 +1004,43 @@ defined for OfficialPlugins' post-build step. Fixed 5 pre-existing `RightClickDe
 along the way — the mock `ITreeNode` never set up `Text`, so `IsRootLayerNode()`'s `Text.Equals(...)`
 threw; real nodes always have `Text`, so the fix was to configure the mock, not production.
 
+### 2026-07-23 — Fix `RectangleCircleCodegenTests` so it actually pins issue #1907's fix (PR #1908 follow-up)
+
+PR #1908 fixed a real CS1061 bug (Gum's v3 "Rectangle"/"Circle" standard elements gained a
+fill/stroke/gradient/dropshadow/blend variable family that `LineRectangle`/`LineCircle` can't back) and
+shipped `RectangleCircleCodegenTests` as a regression test. That test didn't actually pin the fix: it drove
+`NewGumProjectCreationLogic.CreateGumProjectInternal` (fresh project) and inspected the generated
+`RectangleRuntime.Generated.cs`, but a freshly-created project's "Rectangle"/"Circle" `StandardElementSave`
+is deserialized from GumPlugin's own embedded, static template resources
+(`Embedded/EmptyProject/Standards/Rectangle.gutx`, `Circle.gutx`) — snapshots saved before Gum's v3 family
+existed (confirmed: ~24-28 `<Variable>` entries, zero from that family, and still using the pre-v3 plain
+`Red`/`Green`/`Blue`/`Alpha` names). Nothing in fresh-project creation reconciles a deserialized
+`StandardElementSave` against the canonical, always-current schema in
+`Gum.Managers.StandardElementsManager.Self.DefaultStates` — that only happens via
+`StandardElementSave.Initialize(StandardElementsManager.Self.GetDefaultStateFor(name))`, the same call
+`GumPluginCommands.AddStandardElement` makes when a user explicitly adds a standard element file, not
+during fresh-project creation or project reload (`FileReferenceTracker.InitializeElements()` calls
+`item.Initialize(item.DefaultState)` — passing an element's own already-deserialized state back to itself,
+which backfills nothing new). So the old test's fixture never carried the vulnerable variables at all; it
+would have stayed green even with the fix's skip-list entries deleted entirely.
+
+Rewrote the test to build the fixture the same way `GumPluginCommands.AddStandardElement` does —
+`Initialize()`'d from the canonical `StandardElementsManager.Self.GetDefaultStateFor(name)` — and feed it
+directly to `StandardsCodeGenerator.Self.GenerateStandardElementSaveCodeFor` (which itself also drives
+`StateCodeGenerator` via `GenerateStates`, so one generated-code string covers both of the two skip-list
+pipelines described in the `gum-codegen` skill). Closer to the actual decision point than round-tripping
+through file creation/codegen/file-read, and not coupled to `NewGumProjectCreationLogic`'s template
+contents. Side finding: the canonical v3 schema no longer has plain `Red`/`Green`/`Blue`/`Alpha` on
+Rectangle/Circle at all (only `Red2`/`Green2`/etc. as gradient endpoints, part of the excluded family) — the
+old test's "legit color family survives" assertion only passed because it was reading the same stale
+template. The still-generated, non-excluded color surface today is `StandardsCodeGenerator`'s own `Color`
+convenience property (`variableNamesToAddForProperties`), which the rewritten test asserts on instead.
+
+Verified as a real tripwire: temporarily commented out the `"Rectangle"`/`"Circle"` entries in both
+`StandardsCodeGenerator._typedVariableNamesToSkipForProperties` and
+`StateCodeGenerator.typeSpecificVariableNamesToSkipForStates`, confirmed both test cases fail (`StrokeWidth`
+reappears in generated code), then restored the entries and confirmed green again.
+
 ### 2026-07-17 — Make `StartUpScreen` diffable so changing it doesn't force a full reload
 
 Setting the startup screen is a common Glue action, but `GluxCommands.SaveGlujFile()` never registers
