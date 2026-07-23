@@ -313,6 +313,89 @@ Traversal** (14) groups — 24 methods. Everything else stays on `ObjectFinder`.
 
 ## Completed Refactors
 
+### 2026-07-23 — Real Gum project-creation coverage, Gum Plugin only (issue #1894 follow-up)
+
+Part of #1894 (reopened) - same shape as PR #1901's Collision Plugin fix, applied to the Gum Plugin's
+project-creation step. `WizardProjectLogic.HandleAddGum` (~line 279/283) routes through
+`PluginManager.CallPluginMethodAsync("Gum Plugin", "CreateGumProjectWithForms"/"CreateGumProjectNoForms",
+false)`, which silently no-ops in a test host. Tiled and Entity Input Movement remain separate, still-open
+follow-ups - not touched here.
+
+**No production seam extraction needed for the "no forms" path.** `MainGumPlugin.CreateGumProjectWithForms`/
+`CreateGumProjectNoForms` are thin forwarders to the already-public
+`NewGumProjectCreationLogic.CreateGumProjectInternal(shouldAlsoAddForms, askToOverwrite)`, and
+`NewGumProjectCreationLogic` only depends on a `GumxPropertiesManager` (plain class, parameterless
+constructor, no UI dependency) - it does not need a live, `StartUp`'d `MainGumPlugin` instance at all.
+`GlueUnitTests.GumPluginTests.GumProjectCreationTests` constructs `NewGumProjectCreationLogic` directly and
+calls `CreateGumProjectInternal(shouldAlsoAddForms: false, askToOverwrite: false)` - the exact arguments
+`HandleAddGum`'s "no forms" branch passes - bypassing `MainGumPlugin`/`CallPluginMethodAsync` entirely.
+
+The test pins four real side effects, not just "didn't throw": the `.gumx` and its standard-element/
+font-cache siblings are written to disk (`EmbeddedResourceManager.SaveEmptyProject`); the `.gumx` is added
+to the Glue project as a real `ReferencedFileSave` with `AutoCreateGumScreens` set
+(`GumProjectManager.AddNewGumProject` / `SetGumxReferencedFileSaveDefaults`); the newly-saved `.gumx` is
+loaded back off disk into Gum's own `ObjectFinder.GumProjectSave`
+(`FileReferenceTracker.LoadGumxIfNecessaryFromDirectory`), proving the written file is well-formed and
+loadable, not just copied bytes; and `CodeGeneratorManager.GenerateDerivedGueRuntimesAsync(forceReload:
+true)` ran for real, writing `GumIdb.Generated.cs` to disk - proving Glue's actual Gum code-generation
+pipeline ran, not a stub.
+
+Getting this far needed:
+- **`GlueUnitTests.csproj` now references `GumPlugin.csproj`** (a `ProjectReference`, same as the
+  `OfficialPlugins.csproj` reference already there) - the Gum Plugin is an *external* plugin
+  (`GumPlugin/GumPlugin/`, not under `OfficialPlugins/`), so it wasn't reachable from the test project at
+  all before this.
+- **Namespace landmine**: the real Gum Plugin's root namespace is the bare `GumPlugin` (not nested under
+  `OfficialPlugins.*` like every other plugin this effort has touched). Naming the new test namespace
+  `GlueUnitTests.GumPlugin` shadowed that global namespace for every file under `GlueUnitTests.*` - C#
+  resolves an unqualified name against enclosing namespaces before usings, so any bare `GumPlugin.X`
+  reference elsewhere in the test project would have silently bound to the empty test namespace instead and
+  failed to compile with a confusing "does not exist" error pointing at the wrong namespace. Fixed by naming
+  the test namespace `GlueUnitTests.GumPluginTests` instead. Worth knowing before adding more Gum-Plugin test
+  files under this folder.
+- **Path assumption fixed by testing, not guessing**: `GumProjectManager.DefaultGumProjectDirectory` is
+  `GlueState.Self.ContentDirectory + "GumProject/"`, and `ContentDirectory` is empty for `ClassLibraryProject`
+  (no `ContentDirectory` override), so the `.gumx` lands directly under the project directory
+  (`<projectDir>/GumProject/GumProject.gumx`), not under a `Content/` subfolder as first assumed.
+
+**A live-dialog incident during this work, and the fix**: an early draft of the test called
+`CreateGumProjectInternal` a second time (to assert the "already exists" branch is a no-op). That branch's
+guard (`GumProjectManager.GetIsGumProjectAlreadyInGlueProject()`) routes to a real, unfaked
+`System.Windows.Forms.MessageBox.Show("A Gum project already exists")` - unlike `MainGlueWindow`/
+`PluginManager`, this dialog was never put behind an interface, so nothing in `GlueTestBootstrap` fakes it.
+Running that version of the test (twice, concurrently, from an accidental duplicate `dotnet test` invocation)
+popped real blocking WinForms dialogs on the developer's desktop. Fixed by removing the second call instead
+of chasing a dialog seam: the single-call coverage above already proves `CreateGumProjectNoForms`'s real
+behavior, and the guard itself is a one-line bool check not worth a live-dialog risk to cover. Flagging for
+future work: **any test driving Gum/FRB project-creation code should audit for unfaked `MessageBox.Show`
+calls before adding a second/repeated call to the same method**, the same way `IMainGlueWindow.Invoke` calls
+are audited today - this codebase has at least one more such call
+(`FormsControlAdder.AskToSaveIfOverwriting`, gated behind `askToOverwrite: true`, which the Wizard's own call
+sites always pass `false` for and this test never exercises).
+
+**Not covered, and why (real, out-of-scope blockers, not forced):**
+1. `CreateGumProjectInternal(shouldAlsoAddForms: true, ...)` - the `CreateGumProjectWithForms` call site -
+   unconditionally calls `MainGumPlugin.HandleBuildMissingFonts`, which spawns an external process at the
+   hardcoded relative path `"Plugins/GumPlugin/Tools/GumProjectFontGenerator/GumProjectFontGenerator.exe"`.
+   That path is only ever populated by `GumPlugin.csproj`'s `PostBuild` xcopy target into `Glue.exe`'s own
+   bin folder, not into `GlueUnitTests`'s output directory - `Process.Start` throws
+   `Win32Exception ("The system cannot find the file specified")` in a test host. Unlike every other blocker
+   found in this effort, this isn't a `PluginManager`/`MainGlueWindow` UI coupling - it's a real external-
+   tool/file-layout dependency. Fixing it would mean either copying the font generator into the test output
+   (a real build-layout change, not a test seam) or extracting a seam around the `Process.Start` call itself;
+   neither was attempted here as out of scope for a Gum-Plugin-project-creation-only pass.
+2. Getting there also needed one small production-adjacent addition that was reverted: adding a Forms
+   Component (`GumPluginCommands.AddComponent`) requires `Gum.Managers.StandardElementsManager.Self
+   .Initialize()` (called by `MainGumPlugin.StartUp`, same "plain no-UI-dependency init call, bypass
+   `StartUp` for tests" shape as `AvailableAssetTypes.Self.Initialize`) - this alone worked cleanly, but with
+   nothing left to assert once the font-generator blocker above was hit, the bootstrap seam for it was
+   removed rather than left as unexercised dead code. Re-add
+   `Gum.Managers.StandardElementsManager.Self.Initialize()` (plus
+   `GumPlugin.Managers.AssetTypeInfoManager.Self.AddCommonAtis()`) to `GlueTestBootstrap` if/when the
+   font-generator blocker above is solved and Forms-path coverage is picked back up.
+
+145/145 fast tests + 1/1 build-smoke green.
+
 ### 2026-07-23 — Real `FixNamedObjectCollisionType` coverage, Collision Plugin only (issue #1894 reopened)
 
 Issue #1894 was reopened: closing it after the `IMainGlueWindow` PR was premature because everything routed
