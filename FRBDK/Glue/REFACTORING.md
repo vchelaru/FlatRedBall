@@ -1286,3 +1286,35 @@ These methods have no static singleton dependencies — all they touch is `_glue
 **`SelectionLogic`**: `GlueState.Self.CurrentTreeNodes = ...` (the one singleton call remaining) replaced with an `Action<IReadOnlyList<ITreeNode>> reportSelection` callback injected via constructor. `MainTreeViewPlugin` passes `nodes => GlueState.Self.CurrentTreeNodes = nodes`. Tests pass a no-op spy lambda — `SelectionLogicTests` no longer needs any reference to `GlueState`.
 
 **Still static** (left for future steps): `ProjectManager.*`, `ObjectFinder.Self`, `FileManager.*` — these have no direct `IGlueState`/`IGlueCommands` equivalent and require more effort to wrap.
+
+### 2026-07-23 — Retry transient `.sln` file-lock failures during new-project creation
+
+Bug (found via manual testing, not filed as an issue): creating a new project intermittently failed
+with a real popup: "Failed to add project ...FlatRedBall.Forms.DesktopGlNet6.csproj. Errors: Unhandled
+exception: The process cannot access the file '...Platformer2.sln' because it is being used by another
+process." Root cause: `AddSourceManager.AddProject`/`AddSharedProject` loop over every FRB/Gum project
+reference, calling `VSSolution.AddExistingProjectWithDotNet` (shells out `dotnet.exe sln add`) or
+`VSSolution.AddExistingProject` (raw `File.ReadAllLines`/`WriteAllLines`) against the *same* `.sln`
+back-to-back with zero retry — a classic transient-lock race (previous subprocess's file handle not yet
+released, AV scan, IDE file watcher).
+
+Added `FlatRedBall.Glue.Utilities.RetryHelper.Retry<T>(Func<T> operation, Func<Exception, bool>
+isTransient, int maxAttempts = 3, TimeSpan? initialDelay = null)` — a small, pure, reusable
+retry-with-backoff helper (250ms initial delay, doubling each retry: 250ms, 500ms). Non-transient
+exceptions, and the final attempt's exception, propagate unchanged.
+
+Wired into `VSSolution.cs`:
+- `AddExistingProject` and `RemoveProjectReference` wrap their `File.ReadAllLines`/`ReadAllText`/
+  `WriteAllLines`/`WriteAllText` calls with `isTransient: ex => ex is IOException`.
+- `AddExistingProjectWithDotNet` reports failure via an `out string error` from a subprocess rather than
+  throwing, so a private `TransientFileLockException` is thrown internally when the stderr text looks
+  lock-shaped (`IsTransientFileLockMessage`: contains "being used by another process" or "cannot access
+  the file"), letting it reuse the same `RetryHelper.Retry`. A genuinely malformed project reference
+  (any other error text) still fails on the first attempt, unchanged from before.
+
+Tests: `Tests/GlueUnitTests/Utilities/RetryHelperTests.cs` pins the helper itself against a fake
+operation (succeeds first try; fails transiently then succeeds; exhausts retries and surfaces the real
+exception; does not retry a non-transient exception). `Tests/GlueUnitTests/VSHelpers/VSSolutionRetryTests.cs`
+drives a real OS-level file lock — a background thread holds an exclusive `FileStream` on a temp `.sln`
+for 300ms — and confirms `VSSolution.AddExistingProject` retries past it and succeeds instead of throwing;
+ran clean over multiple repeats (no flakiness observed).
