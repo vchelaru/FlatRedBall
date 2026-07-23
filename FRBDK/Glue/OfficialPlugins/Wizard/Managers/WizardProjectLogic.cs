@@ -33,24 +33,25 @@ namespace OfficialPlugins.Wizard.Managers
         }
         #endregion
 
-        // Apply() itself is still not covered by an end-to-end unit test - see GitHub issue #1894,
-        // REFACTORING.md's "Unblock WizardProjectLogic AddGameScreen testing" entry, and
-        // GlueUnitTests.Wizard.WizardProjectLogicTests / WizardProjectLogicAddGameScreenTests for what *is*
-        // covered and why.
+        // Apply() is covered end-to-end (with a WizardViewModel that only sets AddGameScreen = true) by
+        // GlueUnitTests.Wizard.WizardProjectLogicAddGameScreenTests.Apply_ShouldAddGameScreenGenerateCodeAndSaveProject_EndToEnd
+        // - see GitHub issue #1894 and REFACTORING.md's "Cover WizardProjectLogic.Apply() end-to-end" and
+        // "Unblock WizardProjectLogic AddGameScreen testing" entries for how it got there.
         //
         // #1894 added test seams for TaskManager's background thread and MainGlueWindow's
         // Invoke/BeginInvoke (TaskManager.SynchronousMode/UiThreadMarshaller). A follow-up unblocked the
         // "bare AddGameScreen" step specifically: HandleAddGameScreen is now internal and driven directly
         // in GlueUnitTests.Wizard.WizardProjectLogicAddGameScreenTests, against a real (not fake)
         // VisualStudioProject backed by a minimal non-SDK .csproj (GlueUnitTests.TestSupport) - no
-        // IVisualStudioProject seam needed after all.
+        // IVisualStudioProject seam needed after all. A second follow-up drove Apply() itself the same way:
+        // GenerateAllCode and the hard-coded 2.5s+ "Flush Files" delay needed no changes, and the one new
+        // blocker (MainGlueWindow.Self.HasErrorOccurred NREing in SaveProjectAndElementsImmediately) was
+        // fixed with a null-conditional read/write - see REFACTORING.md.
         //
-        // Apply() as a whole remains untested: even with only AddGameScreen set, it unconditionally also
-        // runs GenerateAllCode (walks every element in the project), a "Flush Files" step with a hard-coded
-        // 2.5s+ real delay, and SaveProjectAndElements - a meaningfully bigger surface than AddScreen alone.
-        // Most of the other Wizard steps (player entity, collisions, camera, levels, ...) are also
-        // untested; collisions specifically NRE on AvailableAssetTypes.CommonAtis, which is only populated
-        // by real PluginManager plugin loading - see REFACTORING.md for details.
+        // Most of the other Wizard steps (player entity, collisions, camera, levels, ...) remain untested;
+        // collisions specifically NRE on AvailableAssetTypes.CommonAtis, which is only populated by real
+        // PluginManager plugin loading - see REFACTORING.md for details. That's the one piece of #1894
+        // still open.
         public async Task Apply(WizardViewModel vm)
         {
             ///////////////////Early Out/////////////////////

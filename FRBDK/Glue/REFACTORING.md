@@ -356,17 +356,49 @@ that only sets `AddGameScreen = true`, pinning: the returned `ScreenSave`'s name
 get added to the project.
 
 **Still not covered:**
-- `WizardProjectLogic.Apply()` end-to-end. Even with only `AddGameScreen` set, `Apply()` unconditionally
-  also runs "Generate all code" (`GenerateAllCode`, walks every element in the project), a "Flush Files"
-  step with a hard-coded 2.5s+ real delay, and "Saving Project" - a meaningfully larger surface than
-  `AddScreen` alone, and more than issue #1894's stated fallback ("at minimum the AddGameScreen step")
-  required.
+- `WizardProjectLogic.Apply()` end-to-end was covered by a follow-up - see the entry directly above this
+  one in the file (most recent first).
 - `AddSolidCollision`/`AddCloudCollision` (and by extension most of the Wizard's other add-on steps):
   they route through `NamedObjectSaveCodeGenerator.GetDestroyForNamedObject`, which reads
   `AvailableAssetTypes.CommonAtis` - a catalog populated by scanning every plugin's registered
   `AssetTypeInfo`s during real `PluginManager` startup - and NREs when that catalog is empty.
   `GlueTestBootstrap` intentionally does not attempt to replicate plugin loading; that's a materially
-  bigger, separate blocker from the `VisualStudioProject` one this entry unblocks.
+  bigger, separate blocker from the `VisualStudioProject` one this entry unblocks. Still open (issue #1894).
+
+### 2026-07-23 — Cover `WizardProjectLogic.Apply()` end-to-end (issue #1894 follow-up)
+
+Follow-up to the "Unblock WizardProjectLogic AddGameScreen testing" entry directly below: that entry left
+`Apply()` itself untested because, beyond `HandleAddGameScreen`, it unconditionally also runs "Generate all
+code" (`GenerateAllCode`), a "Flush Files" step with a hard-coded 2.5s+ real delay, and "Saving Project"
+(`SaveProjectAndElements`).
+
+Driving `Apply()` with a `WizardViewModel { AddGameScreen = true }` (the same minimal config the
+`HandleAddGameScreen` test uses) against the existing `GlueTestBootstrap`/`TestVisualStudioProjectFactory`
+setup got through `GenerateAllCode` and the Flush Files delay with no changes needed, and hit exactly one
+new blocker: `GluxCommands.SaveProjectAndElementsImmediately` reads `MainGlueWindow.Self.HasErrorOccurred`
+directly - `MainGlueWindow.Self` is only ever set by constructing a real WinForms `MainGlueWindow`, which
+`GlueTestBootstrap` deliberately does not do, so it NREs in a plain xunit host.
+
+**Fix**: made the three `MainGlueWindow.Self.HasErrorOccurred` reads/writes in
+`SaveProjectAndElementsImmediately` null-conditional (`MainGlueWindow.Self?.HasErrorOccurred`). Zero
+behavior change in production - `MainGlueWindow.Self` is always set there; this only changes behavior when
+`Self` is null, which previously just crashed.
+
+No other blockers found: `GenerateAllCode` walking every element worked cleanly off the project state left
+by `HandleAddGameScreen`, and the Flush Files delay is exactly what it says - a real 2.5s+ `Task.Delay`,
+not a wait on a file-watcher event, so it slows the test but doesn't hang it.
+
+Added `Apply_ShouldAddGameScreenGenerateCodeAndSaveProject_EndToEnd` to
+`GlueUnitTests/Wizard/WizardProjectLogicAddGameScreenTests.cs`, reusing that class's existing
+bootstrap/teardown. It drives the real `WizardProjectLogic.Apply()` (not just `HandleAddGameScreen`) and
+pins: the GameScreen lands in the project and becomes `StartUpScreen`, both code files are part of the
+project, `GenerateAllCode` writes `GameScreen.Generated.cs` to disk, and `SaveProjectAndElements` writes
+the project file to disk (`.glux`, since a fresh `GlueProjectSave()` defaults to `FileVersion` 0 - `.gluj`
+requires `GluxVersions.GlueSavedToJson` or later).
+
+This closes the `Apply()`-end-to-end gap issue #1894 was tracking. The one remaining open item under that
+issue is the `AvailableAssetTypes.CommonAtis`/plugin-loading blocker on `AddSolidCollision`/
+`AddCloudCollision` and most other Wizard add-on steps - noted above and still out of scope.
 
 ### 2026-07-23 — Wizard apply-engine test seams (issue #1894)
 

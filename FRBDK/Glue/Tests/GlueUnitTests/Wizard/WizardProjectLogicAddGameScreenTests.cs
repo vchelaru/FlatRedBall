@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
@@ -27,11 +28,13 @@ namespace GlueUnitTests.Wizard;
 // seam PR #1895 added - see REFACTORING.md - plus a handful of one-time bootstrap calls
 // (GlueTestBootstrap) that mirror what Glue.exe's real startup does.
 //
-// WizardProjectLogic.Apply() itself is still not covered end-to-end: even with only AddGameScreen set,
-// Apply() unconditionally also runs "Generate all code" (GenerateAllCode, walks every element in the
-// project), a "Flush Files" step with a hard-coded 2.5s+ real delay, and "Saving Project" - a
-// meaningfully larger surface than AddScreen alone, and not needed to satisfy issue #1894's stated
-// fallback ("at minimum the AddGameScreen step"). HandleAddGameScreen is called directly here instead.
+// HandleAddGameScreen_ShouldAddGameScreenToProject_WithNoOptionalAddOns drives just that one sub-step
+// directly. Apply_ShouldAddGameScreenGenerateCodeAndSaveProject_EndToEnd (below) drives the real
+// WizardProjectLogic.Apply() with the same minimal WizardViewModel, covering the rest of Apply's
+// unconditional pipeline too: "Generate all code" (GenerateAllCode, walks every element in the project),
+// a "Flush Files" step with a hard-coded 2.5s+ real delay, and "Saving Project"
+// (SaveProjectAndElements) - see REFACTORING.md's "Cover WizardProjectLogic.Apply() end-to-end" entry
+// for the one new blocker that took (MainGlueWindow.Self.HasErrorOccurred NREing) and how it was fixed.
 [Collection(nameof(TaskManagerSequentialCollection))]
 public class WizardProjectLogicAddGameScreenTests : IDisposable
 {
@@ -100,6 +103,32 @@ public class WizardProjectLogicAddGameScreenTests : IDisposable
         var mainProject = GlueState.Self.CurrentMainProject;
         mainProject.CodeProject.IsFilePartOfProject(@"Screens\GameScreen.cs").ShouldBeTrue();
         mainProject.CodeProject.IsFilePartOfProject(@"Screens\GameScreen.Generated.cs").ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task Apply_ShouldAddGameScreenGenerateCodeAndSaveProject_EndToEnd()
+    {
+        var vm = new WizardViewModel { AddGameScreen = true };
+
+        await WizardProjectLogic.Self.Apply(vm);
+
+        var glueProject = ObjectFinder.Self.GlueProject;
+        var gameScreen = glueProject.Screens.FirstOrDefault(item => item.Name == @"Screens\GameScreen");
+        gameScreen.ShouldNotBeNull();
+        glueProject.StartUpScreen.ShouldBe(gameScreen.Name);
+
+        var mainProject = GlueState.Self.CurrentMainProject;
+        mainProject.CodeProject.IsFilePartOfProject(@"Screens\GameScreen.cs").ShouldBeTrue();
+        mainProject.CodeProject.IsFilePartOfProject(@"Screens\GameScreen.Generated.cs").ShouldBeTrue();
+
+        // "Regenerating All Code" should have written the generated code file to disk.
+        var generatedCodeFile = Path.Combine(_tempProjectDirectory, "Screens", "GameScreen.Generated.cs");
+        File.Exists(generatedCodeFile).ShouldBeTrue();
+
+        // "Saving Project" (SaveProjectAndElements) should have written the project file to disk.
+        // A fresh GlueProjectSave() defaults to FileVersion 0, so GlueProjectFileName resolves to
+        // .glux (not .gluj - that requires GluxVersions.GlueSavedToJson or later).
+        File.Exists(GlueState.Self.GlueProjectFileName.FullPath).ShouldBeTrue();
     }
 
     // AddSolidCollision/AddCloudCollision were deliberately NOT added as a follow-up test here: they
