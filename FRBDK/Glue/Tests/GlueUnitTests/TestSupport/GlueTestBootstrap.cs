@@ -7,6 +7,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using FlatRedBall.Glue.Services;
 using OfficialPlugins.CollisionPlugin;
+using Glue;
 
 namespace GlueUnitTests.TestSupport;
 
@@ -26,6 +27,13 @@ namespace GlueUnitTests.TestSupport;
 ///  - <see cref="AvailableAssetTypes"/>.Initialize populates <see cref="AvailableAssetTypes.CommonAtis"/>
 ///    (Camera/Text/Sprite/Polygon/etc.) from the same Content/ContentTypes.csv that MainGlueWindow reads -
 ///    this is CSV-driven and needs no plugins, unlike the per-plugin ATIs below.
+///  - <see cref="MainGlueWindow"/>.Self is given a <see cref="FakeMainGlueWindow"/> (only Program.cs ever
+///    constructs the real WinForms window, which this test host never does) so any code path reading
+///    MainGlueWindow.Self - PropertyGrid, HasErrorOccurred, Invoke/BeginInvoke, etc. - gets a harmless
+///    object instead of NRE-ing.
+///  - <see cref="GlueState.Find"/> is given a <see cref="FakeFindManager"/> (only ever set by
+///    MainTreeViewPlugin.StartUp, which this test host never runs) so tree-node-resolving setters like
+///    GlueState.CurrentNamedObjectSave don't NRE.
 ///
 /// Any test that drives production code through GlueCommands.Self/GlueState.Self (rather than calling a
 /// pure static method directly) needs this. Call <see cref="EnsureInitialized"/> once per test.
@@ -65,6 +73,9 @@ internal static class GlueTestBootstrap
             {
                 AvailableAssetTypes.Self.Initialize(FindGlueStartupPath());
             }
+
+            MainGlueWindow.Self ??= new FakeMainGlueWindow();
+            GlueState.Self.Find ??= new FakeFindManager();
         }
     }
 

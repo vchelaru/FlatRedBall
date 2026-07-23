@@ -790,7 +790,9 @@ public class MainGumPlugin : PluginBase
 
     public override bool ShutDown(FlatRedBall.Glue.Plugins.Interfaces.PluginShutDownReason shutDownReason)
     {
-        Glue.MainGlueWindow.Self.Invoke((MethodInvoker)RemoveAllMenuItems);
+        // Was (MethodInvoker) - changed to (Action) because IMainGlueWindow.Invoke only declares an Action
+        // overload. Same method, zero behavior change.
+        Glue.MainGlueWindow.Self.Invoke((Action)RemoveAllMenuItems);
 
         CodeGeneratorManager.Self.RemoveCodeGenerators();
 

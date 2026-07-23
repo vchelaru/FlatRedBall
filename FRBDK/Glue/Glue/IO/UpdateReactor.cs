@@ -133,7 +133,10 @@ namespace FlatRedBall.Glue.IO
 
             if (changedFile.Extension == "")
             {
-                MainGlueWindow.Self.Invoke((MethodInvoker)delegate
+                // Was (MethodInvoker) - changed to (Action) because IMainGlueWindow.Invoke only declares an
+                // Action overload (MainGlueWindow's own, not the untyped Control.Invoke(Delegate) this used
+                // to resolve to incidentally through the concrete type). Same delegate, zero behavior change.
+                MainGlueWindow.Self.Invoke((Action)delegate
                 {
                     try
                     {
