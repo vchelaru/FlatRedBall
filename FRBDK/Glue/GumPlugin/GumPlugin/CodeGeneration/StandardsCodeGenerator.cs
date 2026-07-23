@@ -127,6 +127,45 @@ namespace GumPlugin.CodeGeneration
 
             _nineSliceCodeGenerator.AddTypeSpecificVariableNamesToSkipForProperties(_typedVariableNamesToSkipForProperties);
 
+            // Gum's "Rectangle" and "Circle" standard elements (StandardElementsManager v3 standard
+            // surface - see Gum issues #2929/#2931/#3009/#3617) now define a fill/stroke/gradient/
+            // dropshadow/blend variable family on their default state. Glue maps both of these
+            // standard elements to plain outline-only RenderingLibrary.Math.Geometry types
+            // (LineRectangle/LineCircle - see mStandardElementToQualifiedTypes above), which have no
+            // fill/stroke/gradient/dropshadow support and an unsettable get-only BlendState, so none
+            // of these variables can back a generated property. Exclude them here rather than mapping
+            // to a Skia-backed runtime, since that's a much larger change than this fix warrants.
+            var fillStrokeGradientDropshadowBlendVariables = new List<string>
+            {
+                // stroke (AddFillAndStrokeVariables)
+                "StrokeWidth", "StrokeAlpha", "StrokeRed", "StrokeGreen", "StrokeBlue",
+                // fill (AddFillAndStrokeVariables)
+                "IsFilled", "FillAlpha", "FillRed", "FillGreen", "FillBlue",
+                // gradient (AddGradientVariables, includeStartColor: false for Circle/Rectangle)
+                "UseGradient", "GradientType",
+                "GradientX1", "GradientX1Units", "GradientY1", "GradientY1Units",
+                "GradientX2", "GradientX2Units", "GradientY2", "GradientY2Units",
+                "GradientInnerRadius", "GradientInnerRadiusUnits",
+                "GradientOuterRadius", "GradientOuterRadiusUnits",
+                "Alpha2", "Red2", "Green2", "Blue2",
+                // dropshadow (AddDropshadowVariables)
+                "HasDropshadow", "DropshadowOffsetX", "DropshadowOffsetY", "DropshadowBlur",
+                "DropshadowAlpha", "DropshadowRed", "DropshadowGreen", "DropshadowBlue",
+                // blend (AddBlendVariable) - LineRectangle/LineCircle's BlendState has no setter
+                "Blend",
+            };
+
+            _typedVariableNamesToSkipForProperties.Add("Circle", new List<string>(fillStrokeGradientDropshadowBlendVariables));
+
+            var rectangleVariablesToSkip = new List<string>(fillStrokeGradientDropshadowBlendVariables)
+            {
+                // Rounded-corner surface (Rectangle only - a Circle has no corners). LineRectangle
+                // always renders hard corners.
+                "CornerRadius",
+                "CustomRadiusTopLeft", "CustomRadiusTopRight", "CustomRadiusBottomLeft", "CustomRadiusBottomRight",
+            };
+            _typedVariableNamesToSkipForProperties.Add("Rectangle", rectangleVariablesToSkip);
+
 
 
             void ExcludeIfVersionLessThan(string propertyName, GluxVersions gluxVersion)

@@ -102,6 +102,7 @@ internal static class GlueTestBootstrap
     static bool _collisionPluginAssetTypesRegistered;
     static bool _collisionPluginRegisteredWithPluginManager;
     static bool _gumPluginStandardElementsInitialized;
+    static bool _gumPluginCodeGeneratorsInitialized;
 
     public static void EnsureInitialized()
     {
@@ -228,6 +229,51 @@ internal static class GlueTestBootstrap
             Gum.Managers.StandardElementsManager.Self.Initialize();
             GumPlugin.Managers.AssetTypeInfoManager.Self.AddCommonAtis();
         }
+    }
+
+    /// <summary>
+    /// Opt-in: wires up <see cref="GumPlugin.CodeGeneration.StandardsCodeGenerator"/> and
+    /// <see cref="GumPlugin.CodeGeneration.StateCodeGenerator"/> with their real per-type generators (the
+    /// same construction <see cref="MainGumPlugin.StartUp"/> performs), then runs the same
+    /// Refresh*SkipFor* calls <c>MainGumPlugin</c> runs on glux load. Without this,
+    /// <c>StandardsCodeGenerator.Self.GenerateStandardElementSaveCodeFor</c> NREs inside
+    /// <c>AddAdditionalInheritance</c> (its per-type generator fields are never assigned), which
+    /// <c>CodeGeneratorManager.GenerateAllElements</c> swallows into its own error list - so standard-element
+    /// runtimes (e.g. RectangleRuntime.Generated.cs) silently never get written instead of throwing. Needed
+    /// by any test that drives real standard-element (not just Forms-component) code generation, e.g. via
+    /// <c>CodeGeneratorManager.GenerateDerivedGueRuntimesAsync</c>.
+    /// </summary>
+    public static void EnsureGumPluginCodeGeneratorsInitialized()
+    {
+        EnsureGumPluginStandardElementsInitialized();
+
+        lock (_lock)
+        {
+            if (!_gumPluginCodeGeneratorsInitialized)
+            {
+                _gumPluginCodeGeneratorsInitialized = true;
+
+                var textCodeGenerator = new GumPlugin.CodeGeneration.TextCodeGenerator();
+                var containerCodeGenerator = new GumPlugin.CodeGeneration.ContainerCodeGenerator(GlueState.Self);
+                var nineSliceCodeGenerator = new GumPlugin.CodeGeneration.NineSliceCodeGenerator(GlueState.Self);
+                var spriteCodeGenerator = new GumPlugin.CodeGeneration.SpriteCodeGenerator(GlueState.Self);
+                var polygonCodeGenerator = new GumPlugin.CodeGeneration.PolygonCodeGenerator(GlueState.Self);
+
+                GumPlugin.CodeGeneration.StandardsCodeGenerator.Self.Initialize(
+                    spriteCodeGenerator,
+                    textCodeGenerator,
+                    containerCodeGenerator,
+                    nineSliceCodeGenerator,
+                    polygonCodeGenerator);
+                GumPlugin.CodeGeneration.StateCodeGenerator.Self.Initialize(textCodeGenerator, containerCodeGenerator);
+            }
+        }
+
+        // Version-dependent (reads GlueState.Self.CurrentGlueProject.FileVersion), and cheap - re-run every
+        // call rather than caching, since callers may set up a different CurrentGlueProject per test.
+        GumPlugin.CodeGeneration.StateCodeGenerator.Self.RefreshVariablesToSkipForStates();
+        GumPlugin.CodeGeneration.StateCodeGenerator.Self.RefreshVariableNamesToSkipBasedOnGlueVersion();
+        GumPlugin.CodeGeneration.StandardsCodeGenerator.Self.RefreshVariableNamesToSkipForProperties();
     }
 
     // Walks up from the test assembly to the repo's Glue/Content/ContentTypes.csv - the same file

@@ -109,7 +109,33 @@ public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
 
         _containerCodeGenerator.AddTypeSpecificVariableNamesToSkipForStates(typeSpecificVariableNamesToSkipForStates);
 
+        // Mirrors the property-pipeline exclusion in StandardsCodeGenerator.RefreshVariableNamesToSkipForProperties -
+        // Gum's "Rectangle"/"Circle" standard elements now define a fill/stroke/gradient/dropshadow/blend
+        // variable family that plain LineRectangle/LineCircle can't back. Both pipelines must agree or a
+        // state-switch assignment references a property that was never generated (CS0103).
+        var fillStrokeGradientDropshadowBlendVariables = new List<string>
+        {
+            "StrokeWidth", "StrokeAlpha", "StrokeRed", "StrokeGreen", "StrokeBlue",
+            "IsFilled", "FillAlpha", "FillRed", "FillGreen", "FillBlue",
+            "UseGradient", "GradientType",
+            "GradientX1", "GradientX1Units", "GradientY1", "GradientY1Units",
+            "GradientX2", "GradientX2Units", "GradientY2", "GradientY2Units",
+            "GradientInnerRadius", "GradientInnerRadiusUnits",
+            "GradientOuterRadius", "GradientOuterRadiusUnits",
+            "Alpha2", "Red2", "Green2", "Blue2",
+            "HasDropshadow", "DropshadowOffsetX", "DropshadowOffsetY", "DropshadowBlur",
+            "DropshadowAlpha", "DropshadowRed", "DropshadowGreen", "DropshadowBlue",
+            "Blend",
+        };
 
+        typeSpecificVariableNamesToSkipForStates.Add("Circle", new List<string>(fillStrokeGradientDropshadowBlendVariables));
+
+        var rectangleVariablesToSkip = new List<string>(fillStrokeGradientDropshadowBlendVariables)
+        {
+            "CornerRadius",
+            "CustomRadiusTopLeft", "CustomRadiusTopRight", "CustomRadiusBottomLeft", "CustomRadiusBottomRight",
+        };
+        typeSpecificVariableNamesToSkipForStates.Add("Rectangle", rectangleVariablesToSkip);
 
     }
 
