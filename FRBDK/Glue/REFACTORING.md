@@ -313,6 +313,90 @@ Traversal** (14) groups — 24 methods. Everything else stays on `ObjectFinder`.
 
 ## Completed Refactors
 
+### 2026-07-23 — `PluginManager.TabControlViewModel`/`RegisterPluginForTesting`, real `HandleAddPlayerInstance` coverage (issue #1894, likely final piece)
+
+Part of #1894. The one item every prior PR in this effort (#1901-#1904) left open: `PluginManager`'s two
+private/UI-only statics, `TabControlViewModel` and `mMenuStrip`, first flagged in #1901's investigation as
+blocking the real `WizardProjectLogic.HandleAddPlayerInstance` path (collision-relationship creation
+between the player entity and level geometry) from being driven end-to-end.
+
+**Investigation finding: the real minimal surface was much smaller than the `IMainGlueWindow`-style
+interface extraction the issue anticipated.** Neither static needed a full interface seam:
+
+- **`TabControlViewModel`** is a plain MVVM view model (`GlueFormsCore.ViewModels.TabControlViewModel`) -
+  `ObservableCollection`-backed tab containers, no live WPF `Dispatcher`/message loop needed to construct
+  one. `PluginManager.SetTabs` (the setter, already `internal`) was already reachable from `GlueUnitTests`
+  via the existing `InternalsVisibleTo`. Fix: `GlueTestBootstrap.EnsureInitialized` now calls
+  `PluginManager.SetTabs(new TabControlViewModel())` when unset - no production code change at all. Reading
+  it when empty (e.g. `DialogCommands.FocusTab` searching for a tab that was never added, since nothing
+  here runs the real WPF tab UI) is not an error case for that code; it just finds nothing.
+- **`mMenuStrip`** turned out to be *unreachable* by every currently-tested Wizard path, for a reason
+  distinct from the `TabControlViewModel` gap: `PluginManager`'s plugin-dispatch loops
+  (`CallMethodOnPlugin`/`CallMethodOnPluginAsync`) only ever touch it when a matching plugin is actually
+  registered, and no test in this effort had ever registered a real plugin with `PluginManager` - every
+  prior PR (correctly, per their own scope) called an extracted static method directly instead
+  (`RegisterAssetTypes`, `TryFixSourceClassType`, `TmxCreationManager.Self`, `MainController.Self`). Once
+  this PR registers a real plugin for the first time (see below), `mMenuStrip` *does* become reachable -
+  `PluginCommand`'s synchronous dispatch path (used by `PluginManager.CallPluginMethod`, e.g.
+  `FixNamedObjectCollisionType`) unconditionally read `mMenuStrip.IsDisposed`, NULL outside a live
+  `MainGlueWindow`. Fixed with a one-line null-guard (`mMenuStrip == null || mMenuStrip.IsDisposed || ...`),
+  same shape as the earlier `MainGlueWindow.Self.HasErrorOccurred` null-conditional fix - mMenuStrip is
+  never null in real production, so this is a zero-behavior-change addition for a case that could only ever
+  happen in this test host.
+
+**The real remaining blocker was `PluginManager.ReactToCreateCollisionRelationshipsBetween` needing a live
+plugin subscriber** - `MainCollisionPlugin` only wires its handler for this event inside its own `StartUp`,
+and no test in this effort had ever registered a real plugin instance with `PluginManager` (every prior PR
+deliberately avoided it, calling an already-extracted static method directly instead - see #1901's
+"option (a) rejected" writeup). Extracting yet another static method wasn't an option here: the handler is
+a `+=` event subscription set up inside `StartUp`, not a callable static. Added
+**`PluginManager.RegisterPluginForTesting(PluginBase plugin)`** - registers a real, already-constructed
+plugin instance into `PluginManager`'s dispatch tables the same way `StartupPlugin` does for a real,
+discovered plugin, just without `LoadPlugins`' reflection/directory-scan discovery step in front of it.
+Third-party plugin discovery is completely untouched; this is purely an alternate, direct way to populate
+the same dispatch table for one compiled-in official plugin at a time. Surfaces any `StartUp()` failure
+loudly (rethrows `PluginContainer.FailureException` instead of leaving the plugin silently
+disabled/undispatchable) - `StartupPlugin`'s own swallow-and-log-and-continue is correct for real plugin
+loading (one bad plugin shouldn't crash Glue.exe) but is exactly the kind of silent, hard-to-diagnose
+failure mode a *test* registration helper shouldn't have.
+`GlueTestBootstrap.EnsureCollisionPluginRegisteredWithPluginManager` constructs a real `MainCollisionPlugin`
+and calls this once per process (guarded, like the sibling `EnsureCollisionPluginAssetTypesRegistered`).
+
+Registering a real plugin's full `StartUp()` (not just its already-extracted `RegisterAssetTypes()`)
+surfaced three more real, previously-unreached production gaps, all fixed the same "give the test host the
+same one-time init call `MainGlueWindow.cs` makes" way already established throughout this effort:
+`ExposedVariableManager.Initialize()` (CustomVariableCodeGenerator NREd - a plain reflection pass over
+`typeof(PositionedObject)`, only reachable once a test drives real entity code generation, which no prior
+PR in this effort did), and the legacy `Container` needing real `NamedObjectSetVariableLogic` and
+`GlueErrorManager` instances (both plain classes, registered the same way `EntitySaveSetPropertyLogic`
+already was). Also made `MainCollisionPlugin.RegisterAssetTypes` idempotent (checks
+`AvailableAssetTypes.Self.AllAssetTypes.Contains(ati)` before adding) - needed because a test can now reach
+asset-type registration via two independent paths (`EnsureCollisionPluginAssetTypesRegistered`, and this
+PR's `EnsureCollisionPluginRegisteredWithPluginManager`, whose full `StartUp()` also calls
+`RegisterAssetTypes`), and `AssetTypeInfoManager.Self.CollisionRelationshipAti` is a cached singleton
+instance, so a same-reference containment check is a correct, cheap dedupe regardless of call order.
+
+With all of that in place, `GlueUnitTests.Wizard.WizardProjectLogicAddPlayerInstanceTests` drives the real,
+full `WizardProjectLogic.Apply(vm)` with `AddPlayerEntity`/`AddPlayerListToGameScreen`/solid+cloud collision
+all enabled - the exact `HandleAddPlayerInstance` path #1901 stopped at - and asserts real production side
+effects: both `PlayerListVsSolidCollision`/`PlayerListVsCloudCollision` relationship `NamedObjectSave`s
+exist, `FirstCollisionName`/`SecondCollisionName` wired to the real player list and collision objects, and
+`SourceClassType` recomputed by the real (now-dispatched, not silently no-op'd)
+`FixNamedObjectCollisionType` - not just "`Apply()` didn't throw." `PluginManager.HandleExceptions` is
+turned off for the duration of this test so any real exception in the dispatch path surfaces as a test
+failure instead of being caught-and-logged by `PluginCommand`, which exists precisely so one misbehaving
+plugin can't crash a live Glue.exe - the right behavior for production but a false-negative risk for a test
+asserting the real path ran without incident.
+
+154/154 fast tests (run twice for stability) + 1/1 build-smoke green.
+
+**This closes the last open item #1894 was tracking.** Every plugin-routed Wizard step (Collision, Gum,
+Tiled, Entity Input Movement) has real coverage, and the `PluginManager.TabControlViewModel`/`mMenuStrip`
+UI coupling flagged in #1901 is resolved to the extent any current test needs it. `mMenuStrip`'s null-guard
+only covers "no live menu strip" (treated as "no UI thread available", same as `!doOnUiThread`) - a genuine
+third-party plugin registered via the real `LoadPlugins` path still gets a real `mMenuStrip` from
+`ShareMenuStripReference` exactly as before; nothing about real plugin loading changed.
+
 ### 2026-07-23 — Real Entity Input Movement Plugin coverage (issue #1894 follow-up)
 
 Part of #1894 (reopened) - same shape as PR #1901 (Collision Plugin), #1902 (Gum Plugin), #1903 (Tiled

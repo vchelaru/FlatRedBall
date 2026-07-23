@@ -931,6 +931,44 @@ public class PluginManager : PluginManagerBase
         TabControlViewModel = tabControlViewModel;
     }
 
+    /// <summary>
+    /// Test-only seam (issue #1894 follow-up): registers an already-constructed plugin instance with
+    /// this process's global <see cref="PluginManager"/> the same way <see cref="StartupPlugin"/> does
+    /// for a real, discovered plugin - just without <see cref="LoadPlugins"/>'s reflection/directory-scan
+    /// discovery step in front of it. Once registered this way, every dispatch path plugins normally run
+    /// through - <see cref="CallMethodOnPlugin"/>, <see cref="CallMethodOnPluginAsync(Action{PluginBase}, Predicate{PluginBase}, string)"/>,
+    /// the various <c>ReactTo*</c>/event methods - finds and invokes the plugin for real, so a test can
+    /// exercise a compiled-in official plugin's real event-subscriber behavior (e.g.
+    /// <see cref="PluginBase.ReactToCreateCollisionRelationshipsBetween"/>, only ever wired by a plugin's
+    /// own <c>StartUp</c>) instead of silently no-oping because <c>PluginContainers</c> is empty.
+    /// Third-party plugin discovery via <see cref="LoadPlugins"/> is completely untouched - this is purely
+    /// an alternate, direct way to populate the same dispatch table for one plugin at a time.
+    /// </summary>
+    internal static void RegisterPluginForTesting(PluginBase plugin)
+    {
+        globalPluginsManager ??= new PluginManager(true);
+        var manager = (PluginManager)globalPluginsManager;
+
+        if (!mInstances.Contains(manager))
+        {
+            mInstances.Add(manager);
+        }
+
+        manager.StartupPlugin(plugin);
+
+        // StartupPlugin (see above) swallows any exception from plugin.StartUp() - correct for real plugin
+        // loading (one misbehaving plugin shouldn't take down Glue.exe), but a silently-disabled plugin in
+        // a test is a confusing, hard-to-diagnose false negative (the plugin just never gets dispatched to,
+        // with no obvious reason why). Surface it loudly instead.
+        var failure = manager.PluginContainers[plugin].FailureException;
+        if (failure != null)
+        {
+            throw new InvalidOperationException(
+                $"{plugin.GetType().Name}.StartUp() failed during PluginManager.RegisterPluginForTesting - the plugin is now registered but disabled, so it will never be dispatched to.",
+                failure);
+        }
+    }
+
     internal static void SetToolbarTray(ToolbarControl toolbar)
     {
         ToolBarTray = toolbar.ToolBarTray;
@@ -1950,8 +1988,12 @@ public class PluginManager : PluginManagerBase
             // Before today, PluginCommand
             // always ran on a UI thread (if
             // possible). However, some commands
-            // do not require UI thread, and they can 
-            if (mMenuStrip.IsDisposed || !doOnUiThread)
+            // do not require UI thread, and they can
+            // mMenuStrip is null outside a live MainGlueWindow (e.g. a test host that registers a plugin
+            // via PluginManager.RegisterPluginForTesting without ever calling ShareMenuStripReference) -
+            // treat that the same as "no UI thread available", same as the !doOnUiThread branch, rather
+            // than NRE-ing on a menu strip that will never exist in that host.
+            if (mMenuStrip == null || mMenuStrip.IsDisposed || !doOnUiThread)
             {
                 try
                 {

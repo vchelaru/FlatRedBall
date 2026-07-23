@@ -4,9 +4,11 @@ using EditorObjects.IoC;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using FlatRedBall.Glue.Services;
+using GlueFormsCore.ViewModels;
 using OfficialPlugins.CollisionPlugin;
 using Glue;
 
@@ -38,6 +40,14 @@ namespace GlueUnitTests.TestSupport;
 ///    ReferencedFileSave" call chain reaches. Guarding on the exact field this bootstrap needs to have set,
 ///    rather than a same-method side effect that can apparently already be true from elsewhere, is correct
 ///    regardless of that upstream cause.
+///  - <see cref="FlatRedBall.Glue.Reflection.ExposedVariableManager"/>.Initialize populates the reflected
+///    list of PositionedObject members (X/Y/Z/Velocity/etc.) that code generation uses to decide whether a
+///    CustomVariable is "exposing" an already-existing base member - a plain, UI-free reflection pass over
+///    <c>typeof(PositionedObject)</c>, the same call MainGlueWindow.cs makes. Without it,
+///    CustomVariableCodeGenerator NREs (ArgumentNullException on a null source list) the first time code
+///    generation runs for *any* entity - only reachable once something in a test drives real entity code
+///    generation (e.g. WizardProjectLogic.HandleAddPlayerEntity's AddEntityAsync), which is why this went
+///    unnoticed until the first end-to-end player-entity test.
 ///  - <see cref="MainGlueWindow"/>.Self is given a <see cref="FakeMainGlueWindow"/> (only Program.cs ever
 ///    constructs the real WinForms window, which this test host never does) so any code path reading
 ///    MainGlueWindow.Self - PropertyGrid, HasErrorOccurred, Invoke/BeginInvoke, etc. - gets a harmless
@@ -45,10 +55,29 @@ namespace GlueUnitTests.TestSupport;
 ///  - <see cref="GlueState.Find"/> is given a <see cref="FakeFindManager"/> (only ever set by
 ///    MainTreeViewPlugin.StartUp, which this test host never runs) so tree-node-resolving setters like
 ///    GlueState.CurrentNamedObjectSave don't NRE.
+///  - <see cref="PluginManager.TabControlViewModel"/> is given a real (not fake) <c>TabControlViewModel</c>
+///    - only ever set by MainPanelControl.xaml.cs's real WPF startup, which this test host never runs.
+///    It's a plain MVVM view model (ObservableCollection-backed tab containers, no live Dispatcher/message
+///    loop needed to construct), so any code path reading it - DialogCommands.FocusTab,
+///    GlueState.CurrentFocusedTabs, GlueCommands.RestoreTabs - gets a real, just permanently empty (no
+///    tabs ever added, since nothing here runs the real WPF tab UI) TabControlViewModel instead of NREing.
+///    Searching for a tab that was never added is not an error case for that code (e.g. FocusTab just
+///    finds nothing and returns).
 ///  - The legacy <see cref="Container"/> is also given a real <c>EntitySaveSetPropertyLogic</c> (only ever
 ///    set by MainGlueWindow.cs's real startup) so <c>ElementCommands.ReactToPropertyChanged</c> - the path
 ///    any "flip an Implements* flag on an EntitySave" call goes through, e.g. ImplementsICollidable - can
 ///    resolve it instead of throwing "container does not contain an entry".
+///  - The legacy <see cref="Container"/> is also given a real
+///    <see cref="FlatRedBall.Glue.SetVariable.NamedObjectSetVariableLogic"/> (only ever set by
+///    MainGlueWindow.cs's real startup) so any "a NamedObjectSave's ExposedInDerived/instance name/property
+///    changed" path - e.g. GluxCommands.AddNewNamedObjectToAsync's ExposedInDerived notification - can
+///    resolve it instead of throwing "container does not contain an entry". Its constructor only reads
+///    from the Builder DI container (already built above), no live UI needed.
+///  - The legacy <see cref="Container"/> is also given a real
+///    <see cref="FlatRedBall.Glue.Errors.GlueErrorManager"/> (only ever set by MainGlueWindow.cs's real
+///    startup) so <c>PluginBase.AddErrorReporter</c> - called from a real plugin's <c>StartUp</c>, e.g.
+///    <see cref="PluginManager.RegisterPluginForTesting"/> - can resolve it instead of throwing "container
+///    does not contain an entry". A plain in-memory list, no live UI needed.
 ///  - <see cref="TaskManager.SynchronousMode"/> is forced on, process-wide, for the lifetime of the test
 ///    run (set here, first, before anything else touches <see cref="TaskManager.Self"/>). Individual tests
 ///    still flip it in their own constructor/Dispose for documentation purposes, but if it were left at its
@@ -71,6 +100,7 @@ internal static class GlueTestBootstrap
     static readonly object _lock = new();
     static bool _initialized;
     static bool _collisionPluginAssetTypesRegistered;
+    static bool _collisionPluginRegisteredWithPluginManager;
 
     public static void EnsureInitialized()
     {
@@ -105,10 +135,22 @@ internal static class GlueTestBootstrap
                 AvailableAssetTypes.Self.Initialize(FindGlueStartupPath());
             }
 
+            if (FlatRedBall.Glue.Reflection.ExposedVariableManager.PositionedObjectMembers == null)
+            {
+                FlatRedBall.Glue.Reflection.ExposedVariableManager.Initialize();
+            }
+
             MainGlueWindow.Self ??= new FakeMainGlueWindow();
             GlueState.Self.Find ??= new FakeFindManager();
 
+            if (PluginManager.TabControlViewModel == null)
+            {
+                PluginManager.SetTabs(new TabControlViewModel());
+            }
+
             Container.Set(new FlatRedBall.Glue.SetVariable.EntitySaveSetPropertyLogic());
+            Container.Set(new FlatRedBall.Glue.SetVariable.NamedObjectSetVariableLogic());
+            Container.Set(new FlatRedBall.Glue.Errors.GlueErrorManager());
         }
     }
 
@@ -132,6 +174,34 @@ internal static class GlueTestBootstrap
             _collisionPluginAssetTypesRegistered = true;
 
             MainCollisionPlugin.RegisterAssetTypes();
+        }
+    }
+
+    /// <summary>
+    /// Opt-in, separate from <see cref="EnsureInitialized"/> and <see cref="EnsureCollisionPluginAssetTypesRegistered"/>:
+    /// constructs a real <see cref="MainCollisionPlugin"/> and registers it with
+    /// <see cref="PluginManager.RegisterPluginForTesting"/>, running its real <c>StartUp</c> (asset types,
+    /// code generators, view model, and - the piece this exists for - wiring
+    /// <see cref="FlatRedBall.Glue.Plugins.PluginBase.ReactToCreateCollisionRelationshipsBetween"/> to the
+    /// real <c>CollidableNamedObjectController.CreateCollisionRelationshipBetweenObjects</c> handler).
+    /// Call this (instead of <see cref="EnsureCollisionPluginAssetTypesRegistered"/> - StartUp already does
+    /// what that does, and MainCollisionPlugin.RegisterAssetTypes is idempotent if a test calls both) when
+    /// a test needs the Collision Plugin's real plugin-event behavior, not just its asset type registered -
+    /// e.g. driving WizardProjectLogic.HandleAddPlayerInstance end-to-end, which creates collision
+    /// relationships via PluginManager.ReactToCreateCollisionRelationshipsBetween, a static event that has
+    /// no subscriber (and silently no-ops) unless a real MainCollisionPlugin has run this.
+    /// </summary>
+    public static void EnsureCollisionPluginRegisteredWithPluginManager()
+    {
+        lock (_lock)
+        {
+            if (_collisionPluginRegisteredWithPluginManager)
+            {
+                return;
+            }
+            _collisionPluginRegisteredWithPluginManager = true;
+
+            PluginManager.RegisterPluginForTesting(new MainCollisionPlugin());
         }
     }
 
