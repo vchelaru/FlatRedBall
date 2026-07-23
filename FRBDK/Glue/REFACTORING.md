@@ -307,6 +307,41 @@ Traversal** (14) groups — 24 methods. Everything else stays on `ObjectFinder`.
 
 ## Completed Refactors
 
+### 2026-07-23 — Wizard apply-engine test seams (issue #1894)
+
+Follow-up to #1892: applied the same seam pattern to the Wizard's apply-engine (`WizardProjectLogic.Apply`),
+which was untestable because it runs through `TaskManager`'s real background thread and
+`MainGlueWindow`'s real WinForms `Invoke`/`BeginInvoke`.
+
+- **`TaskManager.SynchronousMode`** (static bool, default `false`) - when set, `Add`/`Add<T>`/
+  `Add(Func<Task>)` run the task inline on the calling thread (via a new `RunSynchronously` helper)
+  instead of enqueueing to the background STA thread; the constructor also skips spinning that thread
+  when the flag is already set. `AddAsync`/`AddOrRunIfTasked` needed no changes - they already delegate
+  to `Add` in the non-reentrant case. Zero behavior change when unset.
+- **`IUiThreadMarshaller`** (`Glue/Managers/IUiThreadMarshaller.cs`) - abstraction over
+  Invoke/BeginInvoke, injected via `TaskManager.UiThreadMarshaller` (static, defaults to
+  `WinFormsUiThreadMarshaller`, which forwards to `MainGlueWindow.Self.Invoke`/`BeginInvoke` exactly as
+  before). `TaskManager.OnUiThread`/`BeginOnUiThread`, and all four `GlueTask*.Do_Action_Internal()`
+  variants (`GlueTask`, `GlueTask<T>`, `GlueAsyncTask`, `GlueAsyncTask<T>`), now go through this instead of
+  referencing `MainGlueWindow.Self` directly - the latter four were a coupling #1894 hadn't
+  originally identified (only `TaskManager.OnUiThread`/`BeginOnUiThread` were flagged), found because any
+  `GlueTask` with `DoOnUiThread = true` would otherwise still NRE in a test host with no live window.
+
+Both seams are pinned directly in `GlueUnitTests/Tasks/TaskManagerSynchronousModeTests.cs`.
+
+**`WizardProjectLogic.Apply` itself is not covered end-to-end.** The issue's fallback plan was to start
+with a plugin-free step (bare `AddGameScreen`) if full coverage wasn't practical. That step turned out to
+be blocked by something deeper than plugins: `HandleAddGameScreen` -> `GluxCommands.ScreenCommands.AddScreen`
+-> `ProjectCommands.CreateAndAddCodeFile`, which throws `NullReferenceException("Main Project")` unless
+`GlueState.CurrentMainProject` is a real, MSBuild-backed `VisualStudioProject` - the same
+`VisualStudioProject` construction blocker already documented above under "Known Areas Needing
+Improvement". Building an `IVisualStudioProject` seam to unblock that is a separate, larger refactor.
+Instead, extracted and tested the one piece of `Apply` that's pure decision logic with no
+GlueState/TaskManager/plugin coupling: `WizardProjectLogic.GetDisplaySettingsFor` (the `CameraResolution`
+-> width/height/aspect-ratio mapping used by `ApplyMainCameraSettings`), pinned in
+`GlueUnitTests/Wizard/WizardProjectLogicTests.cs`. The scoping-out is documented directly above
+`WizardProjectLogic.Apply` in a code comment pointing back here.
+
 ### 2026-07-23 — Make new-project creation (NPC) testable (issue #1892)
 
 `ProjectCreationHelper` (the New Project Creator in `NpcWpfLib`) was untested despite being one of the

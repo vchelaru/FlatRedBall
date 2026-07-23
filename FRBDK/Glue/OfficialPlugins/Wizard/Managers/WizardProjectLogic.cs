@@ -33,6 +33,23 @@ namespace OfficialPlugins.Wizard.Managers
         }
         #endregion
 
+        // Not covered by an end-to-end unit test - see GitHub issue #1894 and GlueUnitTests.Wizard.WizardProjectLogicTests
+        // for what *is* covered and why.
+        //
+        // #1894 added test seams for the two couplings it identified (TaskManager's background thread and
+        // MainGlueWindow's Invoke/BeginInvoke - see TaskManager.SynchronousMode/UiThreadMarshaller). Those
+        // seams are real and tested directly. But driving Apply() itself - even for the plugin-free
+        // "bare AddGameScreen" step suggested as a fallback - turns out to be blocked by a *deeper*
+        // coupling than plugins: HandleAddGameScreen -> GluxCommands.ScreenCommands.AddScreen ->
+        // ProjectCommands.CreateAndAddCodeFile, which throws NullReferenceException("Main Project") unless
+        // GlueState.CurrentMainProject is a real, MSBuild-backed VisualStudioProject (abstract, no fake-able
+        // interface). That's the same blocker already called out in REFACTORING.md's "Known Areas Needing
+        // Improvement" section for ProjectCommands - out of scope here, since fully addressing it means
+        // building an IVisualStudioProject seam, a separate and much larger refactor.
+        //
+        // What's genuinely unit tested instead: the pure, side-effect-free decision logic inside each step
+        // that doesn't touch GlueState/TaskManager/plugins - e.g. GetDisplaySettingsFor (the
+        // CameraResolution -> width/height/aspect-ratio mapping used by ApplyMainCameraSettings).
         public async Task Apply(WizardViewModel vm)
         {
             ///////////////////Early Out/////////////////////
@@ -1035,20 +1052,25 @@ namespace OfficialPlugins.Wizard.Managers
             await ApplyMainCameraSettings(vm);
         }
 
-        private static async Task ApplyMainCameraSettings(WizardViewModel vm)
+        /// <summary>
+        /// Pure resolution -> display-settings mapping used by <see cref="ApplyMainCameraSettings"/>.
+        /// Extracted so this decision logic can be unit tested without the TaskManager/GlueState side
+        /// effects it's normally wrapped in - see GlueUnitTests.Wizard.WizardProjectLogicTests.
+        /// </summary>
+        internal static (int Width, int Height, decimal AspectRatioWidth, decimal AspectRatioHeight, int ScalePercent) GetDisplaySettingsFor(
+            CameraResolution resolution, int scalePercent)
         {
             int width = 800;
             int height = 600;
             decimal aspectRatioWidth = 4;
             decimal aspectRatioHeight = 3;
 
-            int scalePercent = vm.ScalePercent;
             if (scalePercent <= 0)
             {
                 scalePercent = 100;
             }
 
-            switch (vm.SelectedCameraResolution)
+            switch (resolution)
             {
                 case CameraResolution._256x224:
                     width = 256;
@@ -1095,17 +1117,24 @@ namespace OfficialPlugins.Wizard.Managers
 
             }
 
+            return (width, height, aspectRatioWidth, aspectRatioHeight, scalePercent);
+        }
+
+        private static async Task ApplyMainCameraSettings(WizardViewModel vm)
+        {
+            var settings = GetDisplaySettingsFor(vm.SelectedCameraResolution, vm.ScalePercent);
+
             await TaskManager.Self.AddAsync(() =>
             {
                 var displaySettings = GlueState.Self.CurrentGlueProject.DisplaySettings;
-                displaySettings.ResolutionWidth = width;
-                displaySettings.ResolutionHeight = height;
+                displaySettings.ResolutionWidth = settings.Width;
+                displaySettings.ResolutionHeight = settings.Height;
 
-                displaySettings.AspectRatioWidth = aspectRatioWidth;
-                displaySettings.AspectRatioHeight = aspectRatioHeight;
+                displaySettings.AspectRatioWidth = settings.AspectRatioWidth;
+                displaySettings.AspectRatioHeight = settings.AspectRatioHeight;
                 displaySettings.AspectRatioBehavior = AspectRatioBehavior.FixedAspectRatio;
 
-                displaySettings.Scale = scalePercent;
+                displaySettings.Scale = settings.ScalePercent;
 
             }, "Setting display settings");
         }
