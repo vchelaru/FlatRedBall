@@ -32,4 +32,20 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <!--
+    MainGumPlugin.HandleBuildMissingFonts (called from NewGumProjectCreationLogic.CreateGumProjectInternal
+    when shouldAlsoAddForms=true) spawns "Plugins/GumPlugin/Tools/GumProjectFontGenerator/GumProjectFontGenerator.exe"
+    - a path relative to the running process's working directory, matching where Glue.exe's own PostBuild
+    step deploys plugins (Plugins/<PluginName>/...). Mirror that exact layout under this test project's own
+    output directory so the real spawn succeeds in GumProjectCreationTests without any fake/seam - the tool
+    itself is a real, already-checked-in, headless console app (no XNA/window dependency per its own "About"
+    doc), so running it for real in a test is safe and legitimate, not a hack.
+  -->
+  <ItemGroup>
+    <None Include="..\..\GumPlugin\GumPlugin\Tools\GumProjectFontGenerator\**\*.*">
+      <Link>Plugins\GumPlugin\Tools\GumProjectFontGenerator\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

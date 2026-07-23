@@ -101,6 +101,7 @@ internal static class GlueTestBootstrap
     static bool _initialized;
     static bool _collisionPluginAssetTypesRegistered;
     static bool _collisionPluginRegisteredWithPluginManager;
+    static bool _gumPluginStandardElementsInitialized;
 
     public static void EnsureInitialized()
     {
@@ -202,6 +203,30 @@ internal static class GlueTestBootstrap
             _collisionPluginRegisteredWithPluginManager = true;
 
             PluginManager.RegisterPluginForTesting(new MainCollisionPlugin());
+        }
+    }
+
+    /// <summary>
+    /// Opt-in, separate from <see cref="EnsureInitialized"/>: registers the Gum Plugin's real
+    /// <see cref="Gum.Managers.StandardElementsManager"/> defaults and <see cref="GumPlugin.Managers.AssetTypeInfoManager"/>
+    /// common ATIs, the same two calls <see cref="MainGumPlugin.StartUp"/> makes. Needed by any test that adds
+    /// a Gum Forms component (<c>GumPluginCommands.AddComponent</c> - e.g. via
+    /// <c>NewGumProjectCreationLogic.CreateGumProjectInternal(shouldAlsoAddForms: true, ...)</c>) since
+    /// <c>StandardElementsManager.GetDefaultStateFor</c> throws "You must first call Initialize" without it.
+    /// Kept separate from the base bootstrap so tests that don't touch Gum Forms components don't pay for it.
+    /// </summary>
+    public static void EnsureGumPluginStandardElementsInitialized()
+    {
+        lock (_lock)
+        {
+            if (_gumPluginStandardElementsInitialized)
+            {
+                return;
+            }
+            _gumPluginStandardElementsInitialized = true;
+
+            Gum.Managers.StandardElementsManager.Self.Initialize();
+            GumPlugin.Managers.AssetTypeInfoManager.Self.AddCommonAtis();
         }
     }
 
