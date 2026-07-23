@@ -68,13 +68,25 @@ namespace OfficialPlugins.CollisionPlugin
             RegisterCodeGenerator(new CollisionCodeGenerator());
             RegisterCodeGenerator(new StackableCodeGenerator());
 
-            AvailableAssetTypes.Self.AddAssetType(
-                AssetTypeInfoManager.Self.CollisionRelationshipAti);
-
+            RegisterAssetTypes();
 
             AssignEvents();
 
             AddErrorReporter(new CollisionErrorReporter());
+        }
+
+        /// <summary>
+        /// Registers this plugin's AssetTypeInfos (currently just
+        /// <see cref="AssetTypeInfoManager.CollisionRelationshipAti"/>) with <see cref="AvailableAssetTypes"/>.
+        /// Split out of <see cref="StartUp"/> (which still calls this, unchanged) so it's directly callable
+        /// without going through PluginManager.LoadPlugins - e.g. by GlueUnitTests'
+        /// GlueTestBootstrap.EnsureCollisionPluginAssetTypesRegistered, without instantiating the rest of
+        /// this plugin (UI tabs, code generators, event subscriptions).
+        /// </summary>
+        public static void RegisterAssetTypes()
+        {
+            AvailableAssetTypes.Self.AddAssetType(
+                AssetTypeInfoManager.Self.CollisionRelationshipAti);
         }
 
         private void AssignEvents()

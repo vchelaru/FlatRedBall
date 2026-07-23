@@ -131,12 +131,15 @@ public class WizardProjectLogicAddGameScreenTests : IDisposable
         File.Exists(GlueState.Self.GlueProjectFileName.FullPath).ShouldBeTrue();
     }
 
-    // AddSolidCollision/AddCloudCollision were deliberately NOT added as a follow-up test here: they
-    // route through NamedObjectSaveCodeGenerator.GetDestroyForNamedObject, which reads
-    // AvailableAssetTypes.CommonAtis (a catalog populated by scanning every plugin's registered
-    // AssetTypeInfos at real app startup - PluginManager loading, not something GlueTestBootstrap
-    // reasonably replicates) and NREs when that catalog is empty. That's a materially bigger, separate
-    // blocker from the VisualStudioProject one this test class exists to unblock - out of scope here.
+    // AddSolidCollision/AddCloudCollision were deliberately NOT added as a follow-up test here. The
+    // AvailableAssetTypes.CommonAtis NRE this comment used to describe is now fixed - see
+    // GlueTestBootstrap.EnsureInitialized and REFACTORING.md's "AvailableAssetTypes.Self.Initialize /
+    // Collision Plugin asset-type test seam" entry - but driving AddSolidCollision/AddCloudCollision hits a
+    // different, unrelated NRE one level down: MainAddScreenPlugin.AddCollision goes through
+    // GluxCommands.AddNewNamedObjectToAsync, which always runs with updateUi:true (no way to opt out), and
+    // that path calls MainGlueWindow.Self.PropertyGrid.Refresh() - MainGlueWindow.Self is only ever set by a
+    // live WinForms MainGlueWindow. That's a generic AddNewNamedObjectToAsync UI coupling unrelated to
+    // collision types specifically - out of scope here.
 
     private class InlineUiThreadMarshaller : IUiThreadMarshaller
     {
