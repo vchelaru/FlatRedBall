@@ -82,11 +82,22 @@ namespace OfficialPlugins.CollisionPlugin
         /// without going through PluginManager.LoadPlugins - e.g. by GlueUnitTests'
         /// GlueTestBootstrap.EnsureCollisionPluginAssetTypesRegistered, without instantiating the rest of
         /// this plugin (UI tabs, code generators, event subscriptions).
+        /// Idempotent (checks before adding): production only ever calls this once (from StartUp, which
+        /// itself only runs once per process), but a test host can legitimately reach this from two
+        /// independent paths - GlueTestBootstrap.EnsureCollisionPluginAssetTypesRegistered (asset types
+        /// only) and GlueTestBootstrap.EnsureCollisionPluginRegisteredWithPluginManager (full StartUp, so
+        /// this runs again) - and AssetTypeInfoManager.Self.CollisionRelationshipAti is a cached singleton
+        /// instance, so a same-reference containment check is a correct, cheap dedupe.
         /// </summary>
         public static void RegisterAssetTypes()
         {
-            AvailableAssetTypes.Self.AddAssetType(
-                AssetTypeInfoManager.Self.CollisionRelationshipAti);
+            var ati = AssetTypeInfoManager.Self.CollisionRelationshipAti;
+            if (AvailableAssetTypes.Self.AllAssetTypes.Contains(ati))
+            {
+                return;
+            }
+
+            AvailableAssetTypes.Self.AddAssetType(ati);
         }
 
         private void AssignEvents()
