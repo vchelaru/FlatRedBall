@@ -129,16 +129,61 @@ public class GumProjectCreationTests : IDisposable
         // cost of a live MessageBox.
     }
 
-    // CreateGumProjectInternal(shouldAlsoAddForms: true, ...) - the CreateGumProjectWithForms call site -
-    // is NOT covered here. Driving it hits a genuine, out-of-scope blocker: it unconditionally calls
-    // MainGumPlugin.HandleBuildMissingFonts, which spawns an external process at the hardcoded relative
-    // path "Plugins/GumPlugin/Tools/GumProjectFontGenerator/GumProjectFontGenerator.exe" - only ever
-    // deployed there by GumPlugin.csproj's PostBuild xcopy target into Glue.exe's own bin folder, not into
-    // this test project's output directory. This isn't a PluginManager/MainGlueWindow coupling (the seam
-    // shape every other blocker in this effort has been) - it's a real external-tool/file-layout dependency
-    // with nothing to fake without either shipping a copy of the font generator into the test output or
-    // extracting a seam around Process.Start itself. See REFACTORING.md for the full writeup; left
-    // undone rather than forced.
+    [Fact]
+    public async Task CreateGumProjectInternal_ShouldAddFormsComponentsAndGenerateFonts_WhenFormsRequested()
+    {
+        // Mirrors WizardProjectLogic.HandleAddGum's "with forms" branch (CreateGumProjectWithForms):
+        // askToOverwrite is always false there too. shouldAlsoAddForms:true additionally routes through
+        // FormsControlAdder.SaveElements/SaveBehaviors and MainGumPlugin.HandleBuildMissingFonts - the
+        // real external GumProjectFontGenerator.exe spawn PR #1902 left uncovered. That tool is a real,
+        // already-checked-in, headless console app (its own "About" doc: no XNA/window dependency, built
+        // for exactly this "run it from another process" use case) - GlueUnitTests.csproj now mirrors
+        // Glue.exe's own "Plugins/<PluginName>/Tools/..." deployment layout under this test project's
+        // output directory (see the <None Include> item added alongside the GumPlugin ProjectReference),
+        // so the real spawn - not a fake - runs here.
+        GlueTestBootstrap.EnsureGumPluginStandardElementsInitialized();
+        var creationLogic = new NewGumProjectCreationLogic(new GumxPropertiesManager());
+
+        await creationLogic.CreateGumProjectInternal(shouldAlsoAddForms: true, askToOverwrite: false);
+
+        // Real side effect #1: the .gumx was written and marked to include Forms in its generated code,
+        // same as the "no forms" test's side effect #2, plus the two Forms-specific flags this branch sets.
+        var gumRfs = GumProjectManager.Self.GetRfsForGumProject();
+        gumRfs.ShouldNotBeNull();
+        gumRfs.Properties.GetValue<bool>(nameof(global::GumPlugin.ViewModels.GumViewModel.IncludeFormsInComponents)).ShouldBeTrue();
+        gumRfs.Properties.GetValue<bool>(nameof(global::GumPlugin.ViewModels.GumViewModel.IncludeComponentToFormsAssociation)).ShouldBeTrue();
+
+        // Real side effect #2: FormsControlAdder.SaveElements actually wrote the default FRB Forms
+        // .gucx components (Button, CheckBox, ComboBox, ...) to disk under the Gum project's Components
+        // folder - not just flags flipped on the RFS.
+        var componentsDirectory = Path.Combine(_tempProjectDirectory, "GumProject", "Components");
+        var buttonGucx = Directory.GetFiles(componentsDirectory, "Button.gucx", SearchOption.AllDirectories);
+        buttonGucx.ShouldNotBeEmpty();
+
+        // Real side effect #3: those components were also registered into the loaded GumProjectSave itself
+        // (GumPluginCommands.Self.AddComponent), not just written to disk unreferenced.
+        Gum.Managers.ObjectFinder.Self.GumProjectSave.ShouldNotBeNull();
+        Gum.Managers.ObjectFinder.Self.GumProjectSave!.ComponentReferences
+            .Any(reference => reference.Name.EndsWith("Button"))
+            .ShouldBeTrue();
+
+        // Real side effect #4: FormsControlAdder.SaveBehaviors wrote at least one real .behx behavior file
+        // (e.g. IButton) to disk under the Gum project's Behaviors folder.
+        var behaviorsDirectory = Path.Combine(_tempProjectDirectory, "GumProject", "Behaviors");
+        Directory.Exists(behaviorsDirectory).ShouldBeTrue();
+        Directory.GetFiles(behaviorsDirectory, "*.behx", SearchOption.AllDirectories).ShouldNotBeEmpty();
+
+        // Real side effect #5: MainGumPlugin.HandleBuildMissingFonts really spawned
+        // GumProjectFontGenerator.exe against the newly-created project, and it really generated the fonts
+        // the default Forms controls need (e.g. the Text standard element's default Arial fonts) - proven
+        // by real .fnt bitmap-font files landing in the project's FontCache folder. The embedded project
+        // template deliberately ships without any FontCache files (GumPlugin.csproj excludes
+        // "EmbeddedObjectGumProject\FontCache\**" from its embedded resources), so any .fnt file found here
+        // was generated by the real external tool, not copied from a template.
+        var fontCacheDirectory = Path.Combine(_tempProjectDirectory, "GumProject", "FontCache");
+        Directory.Exists(fontCacheDirectory).ShouldBeTrue();
+        Directory.GetFiles(fontCacheDirectory, "*.fnt", SearchOption.AllDirectories).ShouldNotBeEmpty();
+    }
 
     private class InlineUiThreadMarshaller : IUiThreadMarshaller
     {
