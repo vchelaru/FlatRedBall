@@ -445,6 +445,12 @@ public static class ProjectCreationHelper
         }
 
     }
+    // Renaming/GUID-replacing a new project touches the same .sln several times back-to-back
+    // (rename move, this content rewrite, EncodeSLNFiles' re-encode, then GuidLogic's GUID
+    // rewrite) with no external process in between - just Glue's own successive read/writes.
+    // A transient lock (AV scan, indexer, previous handle not yet released) on one of these
+    // touches would otherwise surface as a raw IOException popup, same shape as the .sln
+    // file-lock bug fixed in VSSolution.cs. Retry with the same policy here.
     private static void UpdateSolutionContents(string unpackDirectory, string stringToReplace, string stringToReplaceWith)
     {
         List<string> filesToFix = FileManager.GetAllFilesInDirectory(
@@ -453,11 +459,15 @@ public static class ProjectCreationHelper
 
         foreach (string fileName in filesToFix)
         {
-            string contents = FileManager.FromFileText(fileName);
+            string contents = RetryHelper.Retry(
+                () => FileManager.FromFileText(fileName),
+                isTransient: ex => ex is IOException);
 
             contents = contents.Replace(stringToReplace, stringToReplaceWith);
 
-            FileManager.SaveText(contents, fileName);
+            RetryHelper.Retry(
+                () => FileManager.SaveText(contents, fileName),
+                isTransient: ex => ex is IOException);
         }
         foreach (string fileName in filesToFix)
         {
@@ -495,13 +505,21 @@ public static class ProjectCreationHelper
     */
     static void EncodeSLNFiles(string FileName)
     {
-        string fileContents;
-        StreamReader streamRead = new StreamReader(FileName);
-        fileContents = streamRead.ReadToEnd();
-        streamRead.Close();
-        StreamWriter streamWrite = new StreamWriter(FileName, false, Encoding.UTF8);
-        streamWrite.Write(fileContents);
-        streamWrite.Close();
+        string fileContents = RetryHelper.Retry(
+            () =>
+            {
+                using StreamReader streamRead = new StreamReader(FileName);
+                return streamRead.ReadToEnd();
+            },
+            isTransient: ex => ex is IOException);
+
+        RetryHelper.Retry(
+            () =>
+            {
+                using StreamWriter streamWrite = new StreamWriter(FileName, false, Encoding.UTF8);
+                streamWrite.Write(fileContents);
+            },
+            isTransient: ex => ex is IOException);
     }
     private static void UpdateNamespaces(string unpackDirectory, string stringToReplace, string projectNamespace, string projectName)
     {

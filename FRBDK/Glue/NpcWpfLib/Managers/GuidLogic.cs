@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,6 +8,12 @@ using ToolsUtilities;
 
 namespace Npc.Managers
 {
+    // GuidLogic runs immediately after ProjectCreationHelper has already renamed and rewritten
+    // these same .csproj/.sln/AssemblyInfo.cs files (RenameFiles' move, UpdateSolutionContents,
+    // UpdateNamespaces), so every read/write here is a second-or-later touch of a file Glue's own
+    // prior step just released. A transient lock (AV scan, indexer) on that handoff would surface
+    // as a raw IOException, same shape as the .sln file-lock bug fixed in VSSolution.cs - retry
+    // with the same policy here.
     public static class GuidLogic
     {
         public static void ReplaceGuids(string unpackDirectory)
@@ -64,13 +71,17 @@ namespace Npc.Managers
         {
             var fileName = GetSingleFileByExtension(unpackDirectory, extension);
 
-            var contents = FileManager.FromFileText(fileName);
+            var contents = RetryHelper.Retry(
+                () => FileManager.FromFileText(fileName),
+                isTransient: ex => ex is IOException);
 
             // Just in case cases are mixed/inconsistent:
             contents = contents.Replace(oldGuid.ToLowerInvariant(), newGuid.ToLowerInvariant());
             contents = contents.Replace(oldGuid.ToUpperInvariant(), newGuid.ToUpperInvariant());
 
-            FileManager.SaveText(contents, fileName);
+            RetryHelper.Retry(
+                () => FileManager.SaveText(contents, fileName),
+                isTransient: ex => ex is IOException);
         }
 
         private static void ReplaceSlnGuids(string newGuid)
@@ -87,7 +98,9 @@ namespace Npc.Managers
             {
                 if (s.Contains("assemblyinfo.cs", StringComparison.OrdinalIgnoreCase))
                 {
-                    string contents = FileManager.FromFileText(s);
+                    string contents = RetryHelper.Retry(
+                        () => FileManager.FromFileText(s),
+                        isTransient: ex => ex is IOException);
 
 
                     string newLine = "[assembly: Guid(\"" + newGuid + "\")]";
@@ -95,7 +108,9 @@ namespace Npc.Managers
                     StringFunctions.ReplaceLine(
                         ref contents, "[assembly: Guid(", newLine);
 
-                    FileManager.SaveText(contents, s);
+                    RetryHelper.Retry(
+                        () => FileManager.SaveText(contents, s),
+                        isTransient: ex => ex is IOException);
                 }
 
             }
@@ -103,7 +118,9 @@ namespace Npc.Managers
 
         private static string GetGUID(string projectLocation)
         {
-            string projectContents = FileManager.FromFileText(projectLocation);
+            string projectContents = RetryHelper.Retry(
+                () => FileManager.FromFileText(projectLocation),
+                isTransient: ex => ex is IOException);
             int startIndex = projectContents.IndexOf("<ProjectGuid>{") + "<ProjectGuid>{".Length;
             int endIndex = projectContents.IndexOf("}</ProjectGuid>");
             if(startIndex == -1 || endIndex == -1)
