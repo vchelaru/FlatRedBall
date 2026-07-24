@@ -127,6 +127,8 @@ namespace GumPlugin.CodeGeneration
 
             _nineSliceCodeGenerator.AddTypeSpecificVariableNamesToSkipForProperties(_typedVariableNamesToSkipForProperties);
 
+            _spriteCodeGenerator.AddTypeSpecificVariableNamesToSkipForProperties(_typedVariableNamesToSkipForProperties);
+
             // Gum's "Rectangle" and "Circle" standard elements (StandardElementsManager v3 standard
             // surface - see Gum issues #2929/#2931/#3009/#3617) now define a fill/stroke/gradient/
             // dropshadow/blend variable family on their default state. Glue maps both of these

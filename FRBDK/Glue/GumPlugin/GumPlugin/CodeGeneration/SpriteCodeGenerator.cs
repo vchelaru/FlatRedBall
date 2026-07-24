@@ -74,6 +74,18 @@ public class SpriteCodeGenerator
 
     }
 
+    internal void AddTypeSpecificVariableNamesToSkipForProperties(Dictionary<string, List<string>> typedVariableNamesToSkipForProperties)
+    {
+        // RenderTargetTextureSource is entirely handled by GenerateIRenderTargetTextureReferencerProperties
+        // below (correctly typed as IRenderableIpso?, gated on GluxVersions.GumHasIRenderTargetTextureReferencer).
+        // The generic property-generation loop must never also generate it from the raw schema (Type
+        // "string") - left unskipped, it either mismatches the real backing type (CS0029, below the gate,
+        // where it's never generated at all) or duplicates SpriteCodeGenerator's own emission (CS0102, at/
+        // above the gate). Permanent, version-independent skip - SpriteCodeGenerator is always the sole
+        // source when this property exists.
+        typedVariableNamesToSkipForProperties.Add("Sprite", new List<string> { "RenderTargetTextureSource" });
+    }
+
     public void AddAdditionalInheritance(StandardElementSave standardElementSave, List<string> inheritanceList)
     {
         if (standardElementSave.Name != "Sprite")
