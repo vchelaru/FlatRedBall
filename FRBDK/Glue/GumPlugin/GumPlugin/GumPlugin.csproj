@@ -352,4 +352,10 @@
     <Exec Command="echo PostBuild to $(SolutionDir)Glue\bin\Debug\Plugins\GumPlugin\&#xD;&#xA;echo 1&#xD;&#xA;IF NOT EXIST  &quot;$(SolutionDir)Glue\bin\Debug\Plugins\GumPlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\Debug\Plugins\GumPlugin\&quot;&#xD;&#xA;echo 2&#xD;&#xA;copy &quot;$(TargetDir)GumPlugin.dll&quot; &quot;$(SolutionDir)Glue\bin\Debug\Plugins\GumPlugin\GumPlugin.dll&quot;&#xD;&#xA;copy &quot;$(TargetDir)GumPlugin.pdb&quot; &quot;$(SolutionDir)Glue\bin\Debug\Plugins\GumPlugin\GumPlugin.pdb&quot;&#xD;&#xA;&#xD;&#xA;IF NOT EXIST &quot;$(SolutionDir)Glue\bin\Debug\Plugins\GumPlugin\Tools&quot; MD &quot;$(SolutionDir)Glue\bin\Debug\Plugins\GumPlugin\Tools\&quot;&#xD;&#xA;xcopy /E /I /Y &quot;$(TargetDir)Tools\&quot; &quot;$(SolutionDir)Glue\bin\Debug\Plugins\GumPlugin\Tools\&quot;" />
   </Target>
 
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>GlueUnitTests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+
 </Project>
