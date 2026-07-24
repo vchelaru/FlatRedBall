@@ -1318,3 +1318,44 @@ exception; does not retry a non-transient exception). `Tests/GlueUnitTests/VSHel
 drives a real OS-level file lock — a background thread holds an exclusive `FileStream` on a temp `.sln`
 for 300ms — and confirms `VSSolution.AddExistingProject` retries past it and succeeds instead of throwing;
 ran clean over multiple repeats (no flakiness observed).
+
+### 2026-07-23 — Retry transient same-file locks in the rest of the NPC rename/GUID pipeline (issue #1894 follow-up)
+
+Audited the new-project-creation (NPC) pipeline (`ProjectCreationHelper.MakeNewProject` in `NpcWpfLib`
+and everything it calls) for the same bug shape as the `VSSolution.cs` `.sln` fix above: repeated raw
+file I/O against the *same* file with zero retry. Found it twice more, both in the rename/GUID pass that
+every new project goes through (`ProjectCreationHelper.RenameProject` → `GuidLogic.ReplaceGuids`):
+
+- `ProjectCreationHelper.UpdateSolutionContents` reads and rewrites every `.sln` (`FileManager.FromFileText`/
+  `SaveText`), then immediately re-reads and re-writes the same file again via `EncodeSLNFiles`
+  (`StreamReader`/`StreamWriter`) — two back-to-back raw-I/O touches on the same file, no external
+  process needed to race it.
+- `GuidLogic.ReplaceGuids` runs right after `RenameEverything` and re-reads/re-writes the very same
+  `.csproj`, `.sln`, and `AssemblyInfo.cs` files that `RenameFiles`/`UpdateSolutionContents`/
+  `UpdateNamespaces` just touched moments earlier in the same synchronous call chain — every
+  `FileManager.FromFileText`/`SaveText` call in `GetGUID`, `ReplaceGuidInFile`, and
+  `ReplaceAssemblyInfoGuids` is a second-or-later touch of a file Glue's own prior step just released.
+
+Wrapped all of the above with the same retry policy (`isTransient: ex => ex is IOException`, 3 attempts,
+250ms/500ms backoff). `NpcWpfLib` can't reference `FlatRedBall.Glue.Utilities.RetryHelper` directly —
+`Glue.csproj` depends on `NpcWpfLib.csproj`, so a reference the other way would be circular — so
+`Npc.Managers.RetryHelper` (`NpcWpfLib/Managers/RetryHelper.cs`) is a deliberate duplicate of the same
+class; keep the two in sync if the retry policy ever changes.
+
+Ruled out the rest of `UpdateNamespaces` (cs/xaml/csv/contentproj/glux/gluj/glej/glsj/razor/
+launchSettings.json regions): each of those file sets is touched exactly once across the whole pipeline
+with no preceding/following operation on the same file, so it's a one-shot write, not this bug shape —
+left alone per the task's own scope guidance rather than wrapping defensively.
+
+Tests: `Tests/GlueUnitTests/Projects/ProjectCreationHelperRetryTests.cs`, same technique as
+`VSSolutionRetryTests` — a background thread holds an exclusive lock on a temp `.sln`/`.csproj` for
+300ms while `ProjectCreationHelper.RenameProject`/`GuidLogic.ReplaceGuids` runs on the main thread —
+confirms both retry past the lock and succeed instead of throwing. Full fast suite (165 tests) green
+afterward.
+
+Most time went to figuring out *where* to put the retry helper once NpcWpfLib turned out unable to
+reference Glue's copy (the dependency runs the opposite direction) — traced the project-reference graph
+before settling on a same-policy duplicate rather than restructuring project layering for one class. The
+first version of the `GuidLogic` retry test also failed for an unrelated reason (forgot the `.sln` file
+`ReplaceGuids` also expects to find alongside the `.csproj`), fixed by mirroring the existing
+`ReplaceGuids_ShouldReplaceLegacyProjectGuid` test's fixture shape.
