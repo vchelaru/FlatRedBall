@@ -336,7 +336,19 @@ Swept every remaining standard element for "backing FRB runtime type can't suppo
 
 **External-process/file-race audit, beyond the `.sln` fix:** covered by the "Retry transient same-file locks in the rest of the NPC rename/GUID pipeline" entry further below (same date, landed in this batch).
 
-Total: 8 PRs landed in this batch (2 template build-smoke, 1 WizardViewModel, 1 combined-scenario, 3 Gum codegen sweep, 1 file-race follow-up), 2 explicit out-of-scope findings (Android, iOS), 3 real bugs found and queued for a coordinated fix (next entry).
+Total: 8 PRs landed in this batch (2 template build-smoke, 1 WizardViewModel, 1 combined-scenario, 3 Gum codegen sweep, 1 file-race follow-up), 2 explicit out-of-scope findings (Android, iOS), 3 real bugs found and fixed in one coordinated follow-up (next entry).
+
+### 2026-07-24 — Fix three more Gum codegen bugs found by the standard-element sweep (NineSlice `Animate`, Sprite `RenderTargetTextureSource`, Container `SourceShaderFile`)
+
+Follow-up to the sweep in the entry above. All three are the same bug class as #1907/#1908 (Rectangle/Circle): a Gum schema variable with no way to back it on the mapped Glue runtime type, or two codegen pipelines disagreeing about whether a variable exists. Fixed together in one PR since all three touch the same shared `StandardsCodeGenerator.cs`/`StateCodeGenerator.cs` files the parallel sweep agents were deliberately kept out of.
+
+- **NineSlice `Animate`** — the property pipeline (`NineSliceCodeGenerator.HasNineSliceAnimate`) already gated this below `GluxVersions.GumNineSliceHasAnimate`, but `StateCodeGenerator.RefreshVariableNamesToSkipBasedOnGlueVersion` had no matching gate, so the state-switch kept emitting `Animate = value;` against a property that was never generated (CS0103) on older projects. Fixed by adding the missing paired `Include`/`Skip("Animate")` block, gated on the same version value the property pipeline already used — same shape as the existing `IsTilingMiddleSections`/`StackSpacing` gates.
+- **Sprite `RenderTargetTextureSource`** — a plain schema variable (`Type="string"`), never skipped, so the generic property loop generated it as `string` against a real backing member that's actually `IRenderableIpso?`. Below `GluxVersions.GumHasIRenderTargetTextureReferencer` this was a type mismatch (CS0029); at/above it, it duplicated `SpriteCodeGenerator`'s own correctly-typed emission (CS0102). Fixed with a permanent (version-independent) skip in both pipelines — `SpriteCodeGenerator.GenerateIRenderTargetTextureReferencerProperties` is now the sole source whenever the property exists at all.
+- **Container `SourceShaderFile`** — never skipped, generated against Container's bare `IRenderableIpso` cast (Container has no backing runtime type at all — `mStandardElementToQualifiedTypes["Container"]` is `null`), which has no such member (CS1061). Fixed with a permanent skip in both pipelines.
+
+5 new regression tests added to `GumStandardElementCodegenSweepTests.cs` (below/at-gate pairs for the two version-gated bugs, one for Container's permanent skip). Each fix verified as a real tripwire by temporarily reverting it and confirming the matching test goes red, then restoring. Full fast suite: 214/214 green, no regressions in any sibling Gum standard-element test.
+
+This closes out the Gum standard-element sweep from #1894: every standard element (Rectangle, Circle, Polygon, Text, ColoredRectangle, SolidRectangle (n/a), NineSlice, Sprite, Container, Arc, ColoredCircle, LottieAnimation, RoundedRectangle, Svg, Canvas) has now been checked against this bug class, with every found instance either proven clean or fixed.
 
 ### 2026-07-23 — Real `CreateGumProjectWithForms` coverage, closes issue #1894
 
