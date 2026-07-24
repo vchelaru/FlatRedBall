@@ -99,6 +99,12 @@ public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
         mVariableNamesToSkipForStates.Add("ContainedType");
         mVariableNamesToSkipForStates.Add("IsXamarinFormsControl");
         mVariableNamesToSkipForStates.Add("IsOverrideInCodeGen");
+
+        // Mirrors the property-pipeline exclusion in SpriteCodeGenerator.AddTypeSpecificVariableNamesToSkipForProperties -
+        // Sprite's RenderTargetTextureSource is only ever a plain get/set pass-through to ContainedSprite
+        // (SpriteCodeGenerator.GenerateIRenderTargetTextureReferencerProperties), never state-switch driven.
+        // Permanent, version-independent skip - the name is unique to Sprite so a global skip is safe.
+        mVariableNamesToSkipForStates.Add("RenderTargetTextureSource");
         //mVariableNamesToSkipForStates.Add("IsBold");
 
         // Eventually we'll support this but first Gum needs to support
@@ -183,6 +189,18 @@ public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
         else
         {
             Skip("IsTilingMiddleSections");
+        }
+
+        // Mirrors the property-pipeline gate in NineSliceCodeGenerator.HasNineSliceAnimate. "Animate"
+        // only exists on NineSlice, so a global skip here is fine (same precedent as StackSpacing/
+        // IsTilingMiddleSections above) - older projects don't have a NineSlice with this variable.
+        if (version >= (int)GluxVersions.GumNineSliceHasAnimate)
+        {
+            Include("Animate");
+        }
+        else
+        {
+            Skip("Animate");
         }
 
         if (version >= (int)GluxVersions.GumTextHasIsBold)

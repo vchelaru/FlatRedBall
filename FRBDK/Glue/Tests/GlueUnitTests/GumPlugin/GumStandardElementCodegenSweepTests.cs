@@ -22,31 +22,33 @@ namespace GlueUnitTests.GumPluginTests;
 // canonical always-current schema - see that file's header comment for why this beats driving fresh
 // project creation (stale embedded templates never reconcile against the canonical schema).
 //
-// Sweep result: only Text and ColoredRectangle turned out clean. The other four are NOT covered here:
-//  - NineSlice: real bug. "Animate" is skipped in the property pipeline below GluxVersions.
-//    GumNineSliceHasAnimate (NineSliceCodeGenerator.HasNineSliceAnimate) but is NOT gated at all in
-//    StateCodeGenerator.RefreshVariableNamesToSkipBasedOnGlueVersion, so the state-switch still emits
-//    "Animate = value;" against a property that was never generated - CS0103 for any project below that
-//    version with a NineSlice standard element.
-//  - Sprite: real bug. "RenderTargetTextureSource" is a plain default-state variable (Type "string",
-//    never added to any skip list) so the generic property loop generates
-//    "public string RenderTargetTextureSource" backed by ContainedSprite.RenderTargetTextureSource,
-//    which is actually "IRenderableIpso?" (CS0029). At/above GluxVersions.
-//    GumHasIRenderTargetTextureReferencer, SpriteCodeGenerator additionally emits its own, correctly
-//    typed "RenderTargetTextureSource" property, so the two collide (CS0102 duplicate member).
-//  - Container: real bug. "SourceShaderFile" (Gum v3) is never added to any skip list, so it's
-//    generated against "((RenderingLibrary.Graphics.IRenderableIpso)this.RenderableComponent)"
-//    (Container's null-backing-type contained-object expression), and IRenderableIpso has no
-//    SourceShaderFile member - CS1061.
+// Sweep result: only Text and ColoredRectangle turned out clean on the first pass. Three real, live bugs
+// were found and are now fixed (and pinned below), plus one non-bug:
+//  - NineSlice: "Animate" was skipped in the property pipeline below GluxVersions.GumNineSliceHasAnimate
+//    (NineSliceCodeGenerator.HasNineSliceAnimate) but had no matching gate in StateCodeGenerator.
+//    RefreshVariableNamesToSkipBasedOnGlueVersion, so the state-switch still emitted "Animate = value;"
+//    against a property that was never generated - CS0103 for any project below that version with a
+//    NineSlice standard element. Fixed by adding the missing paired Include/Skip("Animate") block to
+//    RefreshVariableNamesToSkipBasedOnGlueVersion, gated on the same GumNineSliceHasAnimate value.
+//  - Sprite: "RenderTargetTextureSource" was a plain default-state variable (Type "string", never added
+//    to any skip list) so the generic property loop generated "public string RenderTargetTextureSource"
+//    backed by ContainedSprite.RenderTargetTextureSource, which is actually "IRenderableIpso?" (CS0029).
+//    At/above GluxVersions.GumHasIRenderTargetTextureReferencer, SpriteCodeGenerator additionally emits
+//    its own, correctly typed "RenderTargetTextureSource" property, so the two collided (CS0102 duplicate
+//    member) instead. Fixed with a permanent (version-independent) skip in both pipelines -
+//    SpriteCodeGenerator.GenerateIRenderTargetTextureReferencerProperties is the sole source whenever this
+//    property exists at all.
+//  - Container: "SourceShaderFile" (Gum v3) was never added to any skip list, so it was generated against
+//    "((RenderingLibrary.Graphics.IRenderableIpso)this.RenderableComponent)", and IRenderableIpso has no
+//    such member - CS1061. Container has no backing runtime type at all
+//    (StandardsCodeGenerator.mStandardElementToQualifiedTypes["Container"] is null), so this is a
+//    permanent skip in both pipelines, not version-gated.
 //  - SolidRectangle: not applicable, not a bug. "SolidRectangle" is not a registered standard element
 //    in Gum.Managers.StandardElementsManager at all - only "ColoredRectangle" (kept for legacy loading;
 //    Gum's v3 Rectangle absorbed its role). GetDefaultStateFor("SolidRectangle") throws
 //    InvalidOperationException, so no fixture can be built via this technique; see
 //    GenerateStandardElementSaveCodeFor_SolidRectangle_HasNoCanonicalDefaultState below, which pins that
 //    absence rather than a codegen behavior.
-//
-// Per the fix-coordination rule for this sweep, the four bugs above are reported to the orchestrator in
-// detail rather than fixed or pinned with a red test here.
 [Collection(nameof(TaskManagerSequentialCollection))]
 public class GumStandardElementCodegenSweepTests : IDisposable
 {
@@ -203,5 +205,135 @@ public class GumStandardElementCodegenSweepTests : IDisposable
         // not a bug.
         Should.Throw<Exception>(() =>
             Gum.Managers.StandardElementsManager.Self.GetDefaultStateFor("SolidRectangle"));
+    }
+
+    [Fact]
+    public void GenerateStandardElementSaveCodeFor_NineSlice_BelowAnimateGate_ShouldNotReferenceAnimateAtAll()
+    {
+        // Below GluxVersions.GumNineSliceHasAnimate, the property pipeline already skipped "Animate"
+        // (NineSliceCodeGenerator.HasNineSliceAnimate) before this fix - the bug was that the state
+        // pipeline didn't, so the state-switch alone still referenced it (CS0103). Pin the whole surface:
+        // neither pipeline should mention "Animate" at all below the gate.
+        FlatRedBall.Glue.Elements.ObjectFinder.Self.GlueProject.FileVersion = 0;
+        GlueTestBootstrap.EnsureGumPluginCodeGeneratorsInitialized();
+
+        var standardElementSave = new StandardElementSave { Name = "NineSlice" };
+        standardElementSave.Initialize(Gum.Managers.StandardElementsManager.Self.GetDefaultStateFor("NineSlice"));
+
+        // Sanity check on the fixture: if this ever fails, the fixture stopped carrying the vulnerable
+        // variable and this test would silently stop pinning anything.
+        var fixtureVariableNames = standardElementSave.DefaultState.Variables.Select(v => v.GetRootName()).ToHashSet();
+        fixtureVariableNames.ShouldContain("Animate");
+
+        var codeBlock = new CodeBlockBase();
+        var generated = StandardsCodeGenerator.Self.GenerateStandardElementSaveCodeFor(standardElementSave, codeBlock);
+        generated.ShouldBeTrue();
+
+        codeBlock.ToString().ShouldNotContain("Animate");
+    }
+
+    [Fact]
+    public void GenerateStandardElementSaveCodeFor_NineSlice_AtAnimateGate_ShouldGenerateAndAssignAnimate()
+    {
+        // At/above the gate, both pipelines must agree the property exists: a generated property
+        // declaration AND a state-switch assignment referencing it.
+        FlatRedBall.Glue.Elements.ObjectFinder.Self.GlueProject.FileVersion = (int)FlatRedBall.Glue.SaveClasses.GlueProjectSave.GluxVersions.GumNineSliceHasAnimate;
+        GlueTestBootstrap.EnsureGumPluginCodeGeneratorsInitialized();
+
+        var standardElementSave = new StandardElementSave { Name = "NineSlice" };
+        standardElementSave.Initialize(Gum.Managers.StandardElementsManager.Self.GetDefaultStateFor("NineSlice"));
+
+        var codeBlock = new CodeBlockBase();
+        var generated = StandardsCodeGenerator.Self.GenerateStandardElementSaveCodeFor(standardElementSave, codeBlock);
+        generated.ShouldBeTrue();
+
+        var generatedSource = codeBlock.ToString();
+
+        // Property declaration (generic property-generation loop, driven by the schema's own type for
+        // "Animate") and the state-switch assignment both need to be present - if either pipeline alone
+        // skipped/included it, this would be exactly one or the other, not both.
+        var animateMentions = System.Text.RegularExpressions.Regex.Matches(generatedSource, "Animate").Count;
+        animateMentions.ShouldBeGreaterThanOrEqualTo(2);
+        generatedSource.ShouldContain("Animate = ");
+    }
+
+    [Fact]
+    public void GenerateStandardElementSaveCodeFor_Sprite_BelowRenderTargetTextureSourceGate_ShouldNotGenerateIt()
+    {
+        // Below GluxVersions.GumHasIRenderTargetTextureReferencer, SpriteCodeGenerator itself generates
+        // nothing for "RenderTargetTextureSource" - before this fix, the generic property loop still
+        // generated "public string RenderTargetTextureSource" backed by ContainedSprite.
+        // RenderTargetTextureSource, which is actually IRenderableIpso? (CS0029).
+        FlatRedBall.Glue.Elements.ObjectFinder.Self.GlueProject.FileVersion = 0;
+        GlueTestBootstrap.EnsureGumPluginCodeGeneratorsInitialized();
+
+        var standardElementSave = new StandardElementSave { Name = "Sprite" };
+        standardElementSave.Initialize(Gum.Managers.StandardElementsManager.Self.GetDefaultStateFor("Sprite"));
+
+        // Sanity check on the fixture: if this ever fails, the fixture stopped carrying the vulnerable
+        // variable and this test would silently stop pinning anything.
+        var fixtureVariableNames = standardElementSave.DefaultState.Variables.Select(v => v.GetRootName()).ToHashSet();
+        fixtureVariableNames.ShouldContain("RenderTargetTextureSource");
+
+        var codeBlock = new CodeBlockBase();
+        var generated = StandardsCodeGenerator.Self.GenerateStandardElementSaveCodeFor(standardElementSave, codeBlock);
+        generated.ShouldBeTrue();
+
+        codeBlock.ToString().ShouldNotContain("RenderTargetTextureSource");
+    }
+
+    [Fact]
+    public void GenerateStandardElementSaveCodeFor_Sprite_AtRenderTargetTextureSourceGate_ShouldGenerateOnlyTypedVersionOnce()
+    {
+        // At/above the gate, SpriteCodeGenerator.GenerateIRenderTargetTextureReferencerProperties emits
+        // the correctly-typed IRenderableIpso? property (plus the explicit interface implementation).
+        // Before this fix, the generic property loop ALSO generated a plain-string version of the same
+        // name, producing a duplicate member (CS0102).
+        FlatRedBall.Glue.Elements.ObjectFinder.Self.GlueProject.FileVersion = (int)FlatRedBall.Glue.SaveClasses.GlueProjectSave.GluxVersions.GumHasIRenderTargetTextureReferencer;
+        GlueTestBootstrap.EnsureGumPluginCodeGeneratorsInitialized();
+
+        var standardElementSave = new StandardElementSave { Name = "Sprite" };
+        standardElementSave.Initialize(Gum.Managers.StandardElementsManager.Self.GetDefaultStateFor("Sprite"));
+
+        var codeBlock = new CodeBlockBase();
+        var generated = StandardsCodeGenerator.Self.GenerateStandardElementSaveCodeFor(standardElementSave, codeBlock);
+        generated.ShouldBeTrue();
+
+        var generatedSource = codeBlock.ToString();
+
+        // Only SpriteCodeGenerator's own correctly-typed property/explicit-interface-implementation pair
+        // should exist - never the generic loop's plain "string" version.
+        generatedSource.ShouldNotContain("public string RenderTargetTextureSource");
+        generatedSource.ShouldContain("public global::RenderingLibrary.Graphics.IRenderableIpso? RenderTargetTextureSource");
+        generatedSource.ShouldContain("global::RenderingLibrary.Graphics.IRenderTargetTextureReferencer.RenderTargetTextureSource");
+
+        // Never state-switch driven at any version (see the permanent skip in
+        // StateCodeGenerator.RefreshVariablesToSkipForStates) - it's a plain get/set pass-through.
+        generatedSource.ShouldNotContain("RenderTargetTextureSource = null");
+        generatedSource.ShouldNotContain("RenderTargetTextureSource = \"\"");
+    }
+
+    [Fact]
+    public void GenerateStandardElementSaveCodeFor_Container_ShouldNotGenerateSourceShaderFile()
+    {
+        // Container has no backing runtime type at all (mStandardElementToQualifiedTypes["Container"] is
+        // null) - before this fix, "SourceShaderFile" (Gum v3) was generated against a bare
+        // IRenderableIpso cast, which has no such member (CS1061). Permanent skip, not version-gated, so
+        // this uses the class's default LatestVersion fixture setup.
+        GlueTestBootstrap.EnsureGumPluginCodeGeneratorsInitialized();
+
+        var standardElementSave = new StandardElementSave { Name = "Container" };
+        standardElementSave.Initialize(Gum.Managers.StandardElementsManager.Self.GetDefaultStateFor("Container"));
+
+        // Sanity check on the fixture: if this ever fails, the fixture stopped carrying the vulnerable
+        // variable and this test would silently stop pinning anything.
+        var fixtureVariableNames = standardElementSave.DefaultState.Variables.Select(v => v.GetRootName()).ToHashSet();
+        fixtureVariableNames.ShouldContain("SourceShaderFile");
+
+        var codeBlock = new CodeBlockBase();
+        var generated = StandardsCodeGenerator.Self.GenerateStandardElementSaveCodeFor(standardElementSave, codeBlock);
+        generated.ShouldBeTrue();
+
+        codeBlock.ToString().ShouldNotContain("SourceShaderFile");
     }
 }
