@@ -37,7 +37,9 @@
 
   <ItemGroup>
     <PackageReference Include="AsepriteDotNet" Version="1.8.1" />
-    <PackageReference Include="MonoGame.Framework.Android" Version="3.8.2.1105" />
+    <PackageReference Include="MonoGame.Framework.Android" Version="3.8.4.1">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
 
   <Import Project="..\FlatRedBall\FlatRedBallShared.projitems" Label="Shared" />
