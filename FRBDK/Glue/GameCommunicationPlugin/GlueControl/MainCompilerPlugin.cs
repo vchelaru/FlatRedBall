@@ -769,6 +769,15 @@ namespace GameCommunicationPlugin.GlueControl
 
         private async Task ReactToPlayOrEditSet()
         {
+            // The game isn't running yet (e.g. IsEditChecked gets set before Compile/DoRun
+            // in StartRunInEditMode so the toolbar reflects edit mode while building) - sending
+            // now would always fail with "Not connected". Runner_GameStarted calls this again
+            // once the game is actually up, so it's safe to no-op here.
+            if (!CompilerViewModel.IsRunning)
+            {
+                return;
+            }
+
             var isInEditMode = CompilerViewModel.PlayOrEdit == PlayOrEdit.Edit;
             var dto = new Dtos.SetEditMode 
             { 
