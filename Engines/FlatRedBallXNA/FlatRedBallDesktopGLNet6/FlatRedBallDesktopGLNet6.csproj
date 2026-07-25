@@ -30,7 +30,12 @@
 
 	<ItemGroup>
 		<PackageReference Include="AsepriteDotNet" Version="1.9.1" />
-    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303">
+    <!-- net8 gets MonoGame 3.8.4.1 (OpenAL 1.24.3 -> device-follow shim / issue #9467).
+         net6 stays on 3.8.1.303: MonoGame 3.8.4.1 ships net8.0 only. -->
+    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.4.1" Condition="'$(TargetFramework)' == 'net8.0'">
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" Condition="'$(TargetFramework)' != 'net8.0'">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
 	</ItemGroup>

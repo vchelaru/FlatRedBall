@@ -678,6 +678,18 @@ namespace FlatRedBall
             mIsInitialized = true;
 
             GuiManager.Initialize(new Cursor(SpriteManager.Camera));
+
+#if DESKTOP_GL
+            // TEMPORARY WORKAROUND for MonoGame issue #9467 -- make OpenAL audio follow
+            // the Windows default output device when it's switched mid-game. Windows-only
+            // and self-disabling; see Audio/DefaultAudioDeviceFollower.cs. Delete this
+            // block (and that file) once MonoGame re-points the audio device itself.
+            FlatRedBall.Audio.DefaultAudioDeviceFollower.Start();
+            if (mGame != null)
+            {
+                mGame.Exiting += (_, _) => FlatRedBall.Audio.DefaultAudioDeviceFollower.Stop();
+            }
+#endif
         }
 
         public const string ShaderContentManager = "InternalShaderContentManager";
