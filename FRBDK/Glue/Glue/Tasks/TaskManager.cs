@@ -876,6 +876,18 @@ namespace FlatRedBall.Glue.Managers
             }
         }
 
+        public T OnUiThread<T>(Func<T> action)
+        {
+            if (IsOnUiThread)
+            {
+                return action();
+            }
+            else
+            {
+                return UiThreadMarshaller.Invoke(action);
+            }
+        }
+
         public void BeginOnUiThread(Action action)
         {
             if (IsOnUiThread)

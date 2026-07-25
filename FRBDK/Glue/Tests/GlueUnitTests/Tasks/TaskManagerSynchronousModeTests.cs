@@ -139,11 +139,26 @@ public class TaskManagerUiThreadMarshallerTests : System.IDisposable
 
         // The xunit test thread is never MainGlueWindow's UI thread, so IsOnUiThread is false here,
         // exercising the marshaller branch.
+        // Block-bodied lambda: see the identical note on GlueTask_WithDoOnUiThread below - an
+        // expression-bodied `() => ran = true` is ambiguous between the Action and Func<T> overloads
+        // now that OnUiThread<T> exists, and would otherwise resolve to OnUiThread<T> instead.
         TaskManager.Self.IsOnUiThread.ShouldBeFalse();
-        TaskManager.Self.OnUiThread(() => ran = true);
+        TaskManager.Self.OnUiThread(() => { ran = true; });
 
         ran.ShouldBeTrue();
         marshaller.InvokeActionCallCount.ShouldBe(1);
+    }
+
+    [Fact]
+    public void OnUiThread_Func_ShouldRouteThroughMarshallerAndReturnResult_WhenNotOnUiThread()
+    {
+        var marshaller = new RecordingInlineMarshaller();
+        TaskManager.UiThreadMarshaller = marshaller;
+
+        TaskManager.Self.IsOnUiThread.ShouldBeFalse();
+        var result = TaskManager.Self.OnUiThread(() => 42);
+
+        result.ShouldBe(42);
     }
 
     [Fact]

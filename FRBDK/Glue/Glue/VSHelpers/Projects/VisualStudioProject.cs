@@ -844,52 +844,31 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             }
         }
 
-        private void ResolveDuplicateProjectEntry(ProjectItem buildItem)
+        internal void ResolveDuplicateProjectEntry(ProjectItem buildItem)
         {
-            var mbmb = new MultiButtonMessageBoxWpf();
+            var resolution = DuplicateProjectEntryDialog.Show(buildItem.UnevaluatedInclude);
 
-            mbmb.MessageText = "The item " + buildItem.UnevaluatedInclude + " is part of " +
-                "the project twice.  Glue does not support double-entries in a project.  What would you like to do?";
-
-            mbmb.AddButton("Remove the duplicate entry and continue", System.Windows.Forms.DialogResult.OK);
-            mbmb.AddButton("Remove the duplicate, but show me a list of all contained objects before removal", System.Windows.Forms.DialogResult.No);
-            mbmb.AddButton("Cancel loading the project - this will throw an exception", System.Windows.Forms.DialogResult.Cancel);
-
-            DialogResult result = DialogResult.Cancel;
-
-            if (mbmb.ShowDialog() == true)
+            switch (resolution)
             {
-                result = (DialogResult)mbmb.ClickedResult;
-                switch (result)
-                {
-                    case DialogResult.OK:
-                        mProject.RemoveItem(buildItem);
-                        mProject.ReevaluateIfNecessary();
-                        break;
-                    case DialogResult.No:
-                        StringBuilder stringBuilder = new StringBuilder();
-                        foreach (var item in mProject.AllEvaluatedItems)
-                        {
-                            stringBuilder.AppendLine(item.ItemType + " " + item.UnevaluatedInclude);
-                        }
-                        string whereToSave = FileManager.UserApplicationDataForThisApplication + "ProjectFileOutput.txt";
-                        FileManager.SaveText(stringBuilder.ToString(), whereToSave);
-                        Process.Start(new ProcessStartInfo(whereToSave) { UseShellExecute = true });
+                case DuplicateProjectEntryResolution.RemoveDuplicate:
+                    mProject.RemoveItem(buildItem);
+                    mProject.ReevaluateIfNecessary();
+                    break;
+                case DuplicateProjectEntryResolution.RemoveDuplicateAndShowList:
+                    StringBuilder stringBuilder = new StringBuilder();
+                    foreach (var item in mProject.AllEvaluatedItems)
+                    {
+                        stringBuilder.AppendLine(item.ItemType + " " + item.UnevaluatedInclude);
+                    }
+                    string whereToSave = FileManager.UserApplicationDataForThisApplication + "ProjectFileOutput.txt";
+                    FileManager.SaveText(stringBuilder.ToString(), whereToSave);
+                    Process.Start(new ProcessStartInfo(whereToSave) { UseShellExecute = true });
 
-
-                        mProject.RemoveItem(buildItem);
-                        mProject.ReevaluateIfNecessary();
-                        break;
-                    case DialogResult.Cancel:
-                        throw new Exception("Duplicate entries found: " + buildItem.ItemType + " " + buildItem.UnevaluatedInclude);
-                }
-
-            }
-            else
-            {
-                //mProject.EvaluatedItems.RemoveItemAt(i);
-                mProject.RemoveItem(buildItem);
-                mProject.ReevaluateIfNecessary();
+                    mProject.RemoveItem(buildItem);
+                    mProject.ReevaluateIfNecessary();
+                    break;
+                case DuplicateProjectEntryResolution.CancelLoad:
+                    throw new Exception("Duplicate entries found: " + buildItem.ItemType + " " + buildItem.UnevaluatedInclude);
             }
         }
 
