@@ -512,25 +512,24 @@ namespace FlatRedBall.Glue.IO
             }
             catch (Exception e)
             {
-                var mbmb = new MultiButtonMessageBoxWpf();
-                mbmb.MessageText = "There was an error loading the .glux file.  What would you like to do?";
+                // DialogService.ShowChoice returns default(DialogResult) (None) if the dialog is closed
+                // without a button click (e.g. Escape), which matches the explicit None case below.
+                var choice = DialogService.ShowChoice("There was an error loading the .glux file.  What would you like to do?",
+                    ("Nothing - Glue will abort loading the project.", DialogResult.None),
+                    ("See the Exception", DialogResult.OK),
+                    ("Try loading again", DialogResult.Retry),
+                    ("Test for conflicts", DialogResult.Yes));
 
-                mbmb.AddButton("Nothing - Glue will abort loading the project.", DialogResult.None);
-                mbmb.AddButton("See the Exception", DialogResult.OK);
-                mbmb.AddButton("Try loading again", DialogResult.Retry);
-                mbmb.AddButton("Test for conflicts", DialogResult.Yes);
-
-                var result = mbmb.ShowDialog();
                 initializationWindow.Close();
 
-                switch (mbmb.ClickedResult)
+                switch (choice)
                 {
                     case DialogResult.None:
                         // Do nothing;
 
                         break;
                     case DialogResult.OK:
-                        MessageBox.Show(e.ToString());
+                        DialogService.ShowMessage(e.ToString());
                         break;
                     case DialogResult.Retry:
                         _=LoadProject(projectFileName);
@@ -540,12 +539,12 @@ namespace FlatRedBall.Glue.IO
 
                         if (text.Contains("<<<"))
                         {
-                            MessageBox.Show("There are conflicts in your GLUX file.  You will need to use a merging " +
+                            DialogService.ShowMessage("There are conflicts in your GLUX file.  You will need to use a merging " +
                                 "tool or text editor to resolve these conflicts.");
                         }
                         else
                         {
-                            MessageBox.Show("No Subversion conflicts found in your GLUX.");
+                            DialogService.ShowMessage("No Subversion conflicts found in your GLUX.");
                         }
                         break;
                 }
@@ -712,17 +711,16 @@ namespace FlatRedBall.Glue.IO
 
             if (!System.IO.File.Exists(fileToSearchFor))
             {
-                var mbmb = new MultiButtonMessageBoxWpf();
-                mbmb.MessageText = "The following file is missing\n\n" + fileToSearchFor + 
+                var message = "The following file is missing\n\n" + fileToSearchFor +
                     "\n\nwhich is used by\n\n" + element.ToString() + "\n\nWhat would you like to do?";
-                mbmb.AddButton("Re-create an empty custom code file", DialogResult.OK);
-                mbmb.AddButton("Ignore this problem", DialogResult.Cancel);
 
-                var result = mbmb.ShowDialog();
+                // Escape (no button click) returns default(DialogResult) (None), which isn't OK, so this
+                // falls through to "do nothing" - same as the original "Ignore this problem" behavior.
+                var choice = DialogService.ShowChoice(message,
+                    ("Re-create an empty custom code file", DialogResult.OK),
+                    ("Ignore this problem", DialogResult.Cancel));
 
-                var dialogResult = mbmb.ClickedResult;
-
-                if(dialogResult?.Equals(DialogResult.OK) == true)
+                if (choice == DialogResult.OK)
                 {
                     GlueCommands.Self.GenerateCodeCommands.GenerateElementCustomCode(element);
                 }
@@ -769,7 +767,7 @@ namespace FlatRedBall.Glue.IO
                         }
                         catch (Exception e)
                         {
-                            MessageBox.Show("Error syncing project:\n\n" + syncedProject.Name +
+                            DialogService.ShowMessage("Error syncing project:\n\n" + syncedProject.Name +
                                 "\n\nThe main project will still function properly - Glue just won't be able " +
                                 "to maintain the synced project.  Error details:\n\n" + e.ToString());
                         }
@@ -786,7 +784,7 @@ namespace FlatRedBall.Glue.IO
 
             if(!File.Exists(absoluteFileName))
             {
-                MessageBox.Show("Could not find the project" + absoluteFileName + ", removing project from synched project list.");
+                DialogService.ShowMessage("Could not find the project" + absoluteFileName + ", removing project from synched project list.");
             }
             else if (absoluteFileName == GlueState.Self.CurrentMainProject.FullFileName)
             {
@@ -798,7 +796,7 @@ namespace FlatRedBall.Glue.IO
                 // up Glue pretty badly.  We need
                 // to check for this and not allow
                 // it.
-                MessageBox.Show("A synced project is using the same file as the main project.  This is not allowed.  Glue will remove this synced project the synced project list.");
+                DialogService.ShowMessage("A synced project is using the same file as the main project.  This is not allowed.  Glue will remove this synced project the synced project list.");
             }
             else
             {
