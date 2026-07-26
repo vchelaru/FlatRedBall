@@ -5,10 +5,10 @@ using FlatRedBall.IO;
 using System.Diagnostics;
 using EditorObjects.Parsing;
 using System.IO;
-using System.Windows.Forms;
 using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
+using FlatRedBall.Glue.Controls;
 
 namespace EditorObjects.SaveClasses;
 
@@ -289,10 +289,10 @@ public class BuildToolAssociation
 
             if (numberOfWaitTimes > numberOfTimesToWait && doesUserWantToWait == false)
             {
-                DialogResult dialogResult = MessageBox.Show("The tool\n\n" + executable + "\n\nis taking a long time to build the file\n\n" +
-                    sourceFile + "\n\nWould you like to end this build process?", "End process?", MessageBoxButtons.YesNo);
+                var dialogResult = DialogService.ShowConfirm("The tool\n\n" + executable + "\n\nis taking a long time to build the file\n\n" +
+                    sourceFile + "\n\nWould you like to end this build process?");
 
-                if (dialogResult == DialogResult.Yes)
+                if (dialogResult == DialogButton.Yes)
                 {
 
                     if (!process.HasExited)

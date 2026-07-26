@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
+﻿using FlatRedBall.Glue.Controls;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.IO;
 using OfficialPlugins.GlueView;
 using System;
@@ -98,7 +99,7 @@ namespace FlatRedBall.Glue.GlueView
             }
             else
             {
-                MessageBox.Show("Could not find GlueView at the following location:\n\n" + glueViewLocation);
+                DialogService.ShowMessage("Could not find GlueView at the following location:\n\n" + glueViewLocation);
             }
         }
 

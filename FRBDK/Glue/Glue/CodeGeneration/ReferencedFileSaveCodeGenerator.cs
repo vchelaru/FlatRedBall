@@ -1362,7 +1362,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 if (keyType == null)
                 {
-                    System.Windows.Forms.MessageBox.Show("Could not find the key type for:\n\n" + referencedFile.Name + "\n\nYou need to mark one of the headers as required or not load this file as a dictionary.");
+                    DialogService.ShowMessage("Could not find the key type for:\n\n" + referencedFile.Name + "\n\nYou need to mark one of the headers as required or not load this file as a dictionary.");
                     keyType = "UNKNOWN_TYPE";
 
                 }

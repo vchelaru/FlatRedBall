@@ -15,6 +15,7 @@ using FlatRedBall.Glue.Parsing;
 using System.Reflection;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Controls;
 
 //using FlatRedBall.Glue.FormHelpers.StringConverters;
 //using FlatRedBall.Glue.FormHelpers;
@@ -157,7 +158,7 @@ namespace FlatRedBall.Glue.GuiDisplay
             if (textureScale != 0)
             {
                 string memberChanged = e.Member;
-                MessageBox.Show("Setting " + memberChanged + " when TextureScale is not 0 may result in the " + 
+                DialogService.ShowMessage("Setting " + memberChanged + " when TextureScale is not 0 may result in the " +
                     memberChanged + " value not applying");
             }
         }

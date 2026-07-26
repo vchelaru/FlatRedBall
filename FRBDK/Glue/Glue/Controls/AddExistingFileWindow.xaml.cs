@@ -96,13 +96,10 @@ namespace FlatRedBall.Glue.Controls
             var shouldDownload = true;
             if(destination.Exists())
             {
-                DialogResult result =
-                    System.Windows.Forms.MessageBox.Show("Do you want to download this file? It will overwrite:" + "\n" +
-                    destination.FullPath,
-                    L.Texts.DownloadAndOverwrite,
-                    MessageBoxButtons.YesNo);
+                var result = DialogService.ShowConfirm("Do you want to download this file? It will overwrite:" + "\n" +
+                    destination.FullPath);
 
-                shouldDownload = result == System.Windows.Forms.DialogResult.Yes;
+                shouldDownload = result == DialogButton.Yes;
             }
 
             var innerVm = new IndividualFileAddDownloadViewModel();

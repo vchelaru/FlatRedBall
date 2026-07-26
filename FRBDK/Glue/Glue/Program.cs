@@ -9,6 +9,7 @@ using System.Threading;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using GlueFormsCore.Controls;
+using FlatRedBall.Glue.Controls;
 
 namespace Glue;
 
@@ -43,7 +44,7 @@ static class Program
         {
             if (!MainPanelControl.IsExiting)
             {
-                MessageBox.Show(e.ToString());
+                DialogService.ShowMessage(e.ToString());
             }
         }
 
