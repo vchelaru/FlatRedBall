@@ -370,7 +370,11 @@ namespace FlatRedBall.Content.AnimationChain
                 case AnimationFrameColorOperation.Multiply:
                     return FlatRedBall.Graphics.ColorOperation.Modulate;
                 case AnimationFrameColorOperation.Add:
-                    return FlatRedBall.Graphics.ColorOperation.Add;
+                    // .achx only has a single "Add" concept, but the runtime Add path is undefined
+                    // behavior for negative Red/Green/Blue (unsigned byte packing). Always map to
+                    // AddSubtract, which bias/scale-encodes signed values safely. This is an
+                    // unconditional remap, not a sign-based heuristic.
+                    return FlatRedBall.Graphics.ColorOperation.AddSubtract;
                 default:
                     return null;
             }
@@ -383,6 +387,8 @@ namespace FlatRedBall.Content.AnimationChain
                 case FlatRedBall.Graphics.ColorOperation.Modulate:
                     return AnimationFrameColorOperation.Multiply;
                 case FlatRedBall.Graphics.ColorOperation.Add:
+                case FlatRedBall.Graphics.ColorOperation.AddSubtract:
+                    // achx has no equivalent split, so both runtime variants collapse to Add.
                     return AnimationFrameColorOperation.Add;
                 default:
                     return null;
