@@ -185,7 +185,7 @@ namespace FlatRedBall.Glue.Controls
         {
             if (!ProjectManager.SyncedProjects.Any(syncedProject => cboProjectType.Text == syncedProject.Name))
             {
-                MessageBox.Show(@"Must select a valid project type and not already have an entry.", @"Error");
+                DialogService.ShowMessage(@"Must select a valid project type and not already have an entry.");
                 return false;
             }
 

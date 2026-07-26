@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.Elements;
+﻿using FlatRedBall.Glue.Controls;
+using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins;
@@ -50,18 +51,18 @@ namespace FlatRedBall.Glue.CreatedClass
                     oldCustomClass = GetCustomClassSaveIncludingThis(currentReferencedFile.Name);
 
                     result =
-                        System.Windows.Forms.MessageBox.Show("Make the " + currentReferencedFile.Name + " file no longer use the " +
+                        DialogService.ShowChoice("Make the " + currentReferencedFile.Name + " file no longer use the " +
                         oldCustomClass.Name + " class?",
-                        "Remove Custom Class Association",
-                        MessageBoxButtons.YesNo);
+                        ("Yes", DialogResult.Yes),
+                        ("No", DialogResult.No));
 
                 }
 
-                if (result == System.Windows.Forms.DialogResult.Yes)
+                if (result == DialogResult.Yes)
                 {
                     if (currentReferencedFile == null)
                     {
-                        MessageBox.Show("You've just encountered a Glue error that someone needs to fix.  Error details: " +
+                        DialogService.ShowMessage("You've just encountered a Glue error that someone needs to fix.  Error details: " +
                             "Attempting to remove a ReferencedFileSave from a CustomClass, but the RFS doesn't actually exist");
                     }
                     else
@@ -119,10 +120,12 @@ namespace FlatRedBall.Glue.CreatedClass
                     }
                     else
                     {
-                        result = MessageBox.Show("The CSV\n\n" + currentReferencedFile.Name + "\n\nwas using the file\n\n" +
-                            file + "\n\nThis file is no associated with this CSV file.  Would you like to remove this file?", "Remove unused file?", MessageBoxButtons.YesNo);
+                        result = DialogService.ShowChoice("The CSV\n\n" + currentReferencedFile.Name + "\n\nwas using the file\n\n" +
+                            file + "\n\nThis file is no associated with this CSV file.  Would you like to remove this file?",
+                            ("Yes", DialogResult.Yes),
+                            ("No", DialogResult.No));
                     }
-                    if (result == System.Windows.Forms.DialogResult.Yes)
+                    if (result == DialogResult.Yes)
                     {
                         GlueState.Self.CurrentMainProject.RemoveItem(file);
                         try

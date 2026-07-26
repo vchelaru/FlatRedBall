@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Windows.Forms;
+using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Content.Instructions;
@@ -85,7 +85,7 @@ public class CustomVariableSaveSetPropertyLogic
                         !string.IsNullOrEmpty(variableInLoop.SourceObject) && currentVariable.SourceObject == variableInLoop.SourceObject &&
                         !string.IsNullOrEmpty(variableInLoop.SourceObjectProperty) && currentVariable.SourceObjectProperty == variableInLoop.SourceObjectProperty)
                     {
-                        MessageBox.Show("There is already a variable that is modifying " + currentVariable.SourceObjectProperty + " on " + currentVariable.SourceObject);
+                        DialogService.ShowMessage("There is already a variable that is modifying " + currentVariable.SourceObjectProperty + " on " + currentVariable.SourceObject);
 
                         currentVariable.SourceObjectProperty = (string)oldValue;
                     }
@@ -514,7 +514,7 @@ public class CustomVariableSaveSetPropertyLogic
 
             if (customVariable.IsShared && customVariable.GetIsCsv())
             {
-                MessageBox.Show("Shared CSV variables are not assigned until either an instance of this object is created, or until LoadStaticContent is called.  Until then, the variable will equal null");
+                DialogService.ShowMessage("Shared CSV variables are not assigned until either an instance of this object is created, or until LoadStaticContent is called.  Until then, the variable will equal null");
 
             }
         }
@@ -653,14 +653,14 @@ public class CustomVariableSaveSetPropertyLogic
 
                 if (characteristic == InterpolationCharacteristic.CantInterpolate)
                 {
-                    MessageBox.Show("The variable " + customVariable.SourceObjectProperty + " cannot be interpolated.");
+                    DialogService.ShowMessage("The variable " + customVariable.SourceObjectProperty + " cannot be interpolated.");
                     customVariable.HasAccompanyingVelocityProperty = false;
                 }
                 else if (characteristic == InterpolationCharacteristic.CanInterpolate)
                 {
                     string velocityMember =
                         FlatRedBall.Instructions.InstructionManager.GetVelocityForState(customVariable.SourceObjectProperty);
-                    MessageBox.Show("The variable " + customVariable.SourceObjectProperty + " already has a built-in " +
+                    DialogService.ShowMessage("The variable " + customVariable.SourceObjectProperty + " already has a built-in " +
                         "velocity member named " + velocityMember + "\n\nThere is no need to set an accompanying velocity property. " +
                         "Glue will undo this change now.");
 

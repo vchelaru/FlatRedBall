@@ -69,7 +69,7 @@ namespace FlatRedBall.Glue.Controls
         {
             if (dgvPlugins.CurrentRow == null)
             {
-                MessageBox.Show(@"Please select a plugin to install.");
+                DialogService.ShowMessage(@"Please select a plugin to install.");
                 return;
             }
 
@@ -80,7 +80,7 @@ namespace FlatRedBall.Glue.Controls
             databoundList.Remove(plugin);
             dgvPlugins.DataSource = null;
             dgvPlugins.DataSource = databoundList;
-            MessageBox.Show(@"Plugin " + plugin.Name + @" successfully uninstalled.");
+            DialogService.ShowMessage(@"Plugin " + plugin.Name + @" successfully uninstalled.");
         }
 
         private bool Uninstall(string plugin)
@@ -97,7 +97,7 @@ namespace FlatRedBall.Glue.Controls
                     w.WriteLine(plugin);
                 }
 
-                MessageBox.Show(@"Failed to uninstall plugin.  Plugin will be uninstalled on next Glue start.");
+                DialogService.ShowMessage(@"Failed to uninstall plugin.  Plugin will be uninstalled on next Glue start.");
 
                 return false;
             }

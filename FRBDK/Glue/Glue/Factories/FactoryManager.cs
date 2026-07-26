@@ -7,7 +7,7 @@ using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Content;
 using FlatRedBall.Content.Scene;
 using FlatRedBall.Content.SpriteFrame;
-using System.Windows.Forms;
+using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Utilities;
@@ -81,7 +81,7 @@ namespace FlatRedBall.Glue.Factories
                     message += "\n " + skipped.InstanceName;
                 }
 
-                MessageBox.Show(message);
+                DialogService.ShowMessage(message);
             }
             #endregion
 
@@ -115,12 +115,12 @@ namespace FlatRedBall.Glue.Factories
 
             if (areAnyVariablesBeingAdded)
             {
-                DialogResult result = MessageBox.Show("Glue will add some best-guess variables to be reset " +
+                var result = DialogService.ShowConfirm("Glue will add some best-guess variables to be reset " +
                     "to the objects in your Entity.  Existing variables will be preserved.  You may " +
                     "need to manually add additional variables depending on the logic contained in your Entity." +
-                    "\n\nAdd variables?", "Add Variables for " + entitySave.Name + "?", MessageBoxButtons.YesNo);
+                    "\n\nAdd variables?");
 
-                if (result == DialogResult.Yes)
+                if (result == DialogButton.Yes)
                 {
                     foreach (KeyValuePair<NamedObjectSave, List<string>> kvp in mResetVariablesToAdd)
                     {
@@ -152,11 +152,11 @@ namespace FlatRedBall.Glue.Factories
 
             if (hasNamedObjectEntities)
             {
-                DialogResult result = MessageBox.Show(
+                var result = DialogService.ShowConfirm(
                     "Would you like to set reset variables for all contained objects which reference Entities inside " + entitySave.Name + "?  This " +
-                    "action is recommended.", "Reset objects referencing Entities?", MessageBoxButtons.YesNo);
+                    "action is recommended.");
 
-                if (result == DialogResult.Yes)
+                if (result == DialogButton.Yes)
                 {
                     foreach (NamedObjectSave nos in entitySave.NamedObjects)
                     {
@@ -193,10 +193,9 @@ namespace FlatRedBall.Glue.Factories
                 message += "\nThis " +
                     "action is recommended.";
 
-                DialogResult result = MessageBox.Show(message,
-                    "Reset Entities inheriting from this?", MessageBoxButtons.YesNo);
+                var result = DialogService.ShowConfirm(message);
 
-                if (result == DialogResult.Yes)
+                if (result == DialogButton.Yes)
                 {
                     foreach (EntitySave inheritingEntity in inheritingEntities)
                     {

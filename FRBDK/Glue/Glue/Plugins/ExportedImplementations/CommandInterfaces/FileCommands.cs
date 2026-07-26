@@ -19,7 +19,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
+using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Services;
 using GeneralResponse = ToolsUtilities.GeneralResponse;
 
@@ -427,15 +427,15 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             if (oldFilePath.GetDirectoryContainingThis() != newFilePath.GetDirectoryContainingThis())
             {
-                MessageBox.Show("The old file was located in \n" + oldFilePath.GetDirectoryContainingThis() + "\n" +
+                DialogService.ShowMessage("The old file was located in \n" + oldFilePath.GetDirectoryContainingThis() + "\n" +
                     "The new file is located in \n" + newFilePath.GetDirectoryContainingThis() + "\n" +
-                    "Currently Glue does not support changing directories.", "Warning");
+                    "Currently Glue does not support changing directories.");
 
                 //rfs.SetNameNoCall(oldName);
             }
             else if (_nameVerifier.IsReferencedFileNameValid(instanceName, rfs.GetAssetTypeInfo(), rfs, container, out whyIsntValid) == false)
             {
-                MessageBox.Show(whyIsntValid);
+                DialogService.ShowMessage(whyIsntValid);
                 //rfs.SetNameNoCall(oldName);
             }
             else
@@ -606,7 +606,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 {
                     var message = "Error opening " + fileName + $"\nTry navigating to this file and opening it through explorer. More info: \n\n{exception}";
                     GlueCommands.Self.PrintError(message);
-                    System.Windows.Forms.MessageBox.Show(message);
+                    DialogService.ShowMessage(message);
 
 
                 }
@@ -627,7 +627,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 {
                     string error = "Could not find the application\n\n" + applicationSetInGlue;
 
-                    System.Windows.Forms.MessageBox.Show(error);
+                    DialogService.ShowMessage(error);
                 }
                 else
                 {
