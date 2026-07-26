@@ -76,6 +76,16 @@ float4 Subtract(float4 textureColor, float4 color)
     return textureColor;
 }
 
+float4 AddSubtract(float4 textureColor, float4 color)
+{
+    // color.rgb was bias/scale-encoded into [0,1] to survive UNORM vertex-color packing;
+    // decode back to a signed [-1,1] value here.
+    float3 signedColor = color.rgb * 2.0 - 1.0;
+    textureColor.rgb += signedColor;
+    textureColor *= color.a;
+    return textureColor;
+}
+
 float4 Modulate(float4 textureColor, float4 color)
 {
     textureColor.rgb *= color.rgb;
@@ -145,6 +155,14 @@ float4 SubtractPixelShader_Point(a2v IN) : COLOR
 {
     float4 color = SAMPLE(pointTextureSampler, IN);
     color = Subtract(color, IN.color);
+    clip(color.a - .001);
+    return color;
+}
+
+float4 AddSubtractPixelShader_Point(a2v IN) : COLOR
+{
+    float4 color = SAMPLE(pointTextureSampler, IN);
+    color = AddSubtract(color, IN.color);
     clip(color.a - .001);
     return color;
 }
@@ -226,6 +244,14 @@ float4 SubtractPixelShader_Point_CM(a2v IN) : COLOR
     return color;
 }
 
+float4 AddSubtractPixelShader_Point_CM(a2v IN) : COLOR
+{
+    float4 color = SAMPLE(pointTextureSampler, IN);
+    color = AddSubtract(color, ColorModifier);
+    clip(color.a - .001);
+    return color;
+}
+
 float4 ModulatePixelShader_Point_CM(a2v IN) : COLOR
 {
     float4 color = SAMPLE(pointTextureSampler, IN);
@@ -303,6 +329,14 @@ float4 SubtractPixelShader_Point_LN(a2v IN) : COLOR
     return color;
 }
 
+float4 AddSubtractPixelShader_Point_LN(a2v IN) : COLOR
+{
+    float4 color = SAMPLE_LINEARIZE(pointTextureSampler, IN);
+    color = AddSubtract(color, IN.color);
+    clip(color.a - .001);
+    return color;
+}
+
 float4 ModulatePixelShader_Point_LN(a2v IN) : COLOR
 {
     float4 color = SAMPLE_LINEARIZE(pointTextureSampler, IN);
@@ -370,6 +404,14 @@ float4 SubtractPixelShader_Point_LN_CM(a2v IN) : COLOR
 {
     float4 color = SAMPLE_LINEARIZE(pointTextureSampler, IN);
     color = Subtract(color, ColorModifier);
+    clip(color.a - .001);
+    return color;
+}
+
+float4 AddSubtractPixelShader_Point_LN_CM(a2v IN) : COLOR
+{
+    float4 color = SAMPLE_LINEARIZE(pointTextureSampler, IN);
+    color = AddSubtract(color, ColorModifier);
     clip(color.a - .001);
     return color;
 }
@@ -447,6 +489,14 @@ float4 SubtractPixelShader_Linear(a2v IN) : COLOR
     return color;
 }
 
+float4 AddSubtractPixelShader_Linear(a2v IN) : COLOR
+{
+    float4 color = SAMPLE(linearTextureSampler, IN);
+    color = AddSubtract(color, IN.color);
+    clip(color.a - .001);
+    return color;
+}
+
 float4 ModulatePixelShader_Linear(a2v IN) : COLOR
 {
     float4 color = SAMPLE(linearTextureSampler, IN);
@@ -514,6 +564,14 @@ float4 SubtractPixelShader_Linear_CM(a2v IN) : COLOR
 {
     float4 color = SAMPLE(linearTextureSampler, IN);
     color = Subtract(color, ColorModifier);
+    clip(color.a - .001);
+    return color;
+}
+
+float4 AddSubtractPixelShader_Linear_CM(a2v IN) : COLOR
+{
+    float4 color = SAMPLE(linearTextureSampler, IN);
+    color = AddSubtract(color, ColorModifier);
     clip(color.a - .001);
     return color;
 }
@@ -589,6 +647,14 @@ float4 SubtractPixelShader_Linear_LN(a2v IN) : COLOR
     return color;
 }
 
+float4 AddSubtractPixelShader_Linear_LN(a2v IN) : COLOR
+{
+    float4 color = SAMPLE_LINEARIZE(linearTextureSampler, IN);
+    color = AddSubtract(color, IN.color);
+    clip(color.a - .001);
+    return color;
+}
+
 float4 ModulatePixelShader_Linear_LN(a2v IN) : COLOR
 {
     float4 color = SAMPLE_LINEARIZE(linearTextureSampler, IN);
@@ -660,6 +726,14 @@ float4 SubtractPixelShader_Linear_LN_CM(a2v IN) : COLOR
     return color;
 }
 
+float4 AddSubtractPixelShader_Linear_LN_CM(a2v IN) : COLOR
+{
+    float4 color = SAMPLE_LINEARIZE(linearTextureSampler, IN);
+    color = AddSubtract(color, ColorModifier);
+    clip(color.a - .001);
+    return color;
+}
+
 float4 ModulatePixelShader_Linear_LN_CM(a2v IN) : COLOR
 {
     float4 color = SAMPLE_LINEARIZE(linearTextureSampler, IN);
@@ -713,6 +787,7 @@ float4 InterpolateColorPixelShader_Linear_LN_CM(a2v IN) : COLOR
 TECHNIQUE(Texture_Point, TexturePixelShader_Point);
 TECHNIQUE(Add_Point, AddPixelShader_Point);
 TECHNIQUE(Subtract_Point, SubtractPixelShader_Point);
+TECHNIQUE(AddSubtract_Point, AddSubtractPixelShader_Point);
 TECHNIQUE(Modulate_Point, ModulatePixelShader_Point);
 TECHNIQUE(Modulate2X_Point, Modulate2XPixelShader_Point);
 TECHNIQUE(Modulate4X_Point, Modulate4XPixelShader_Point);
@@ -725,6 +800,7 @@ TECHNIQUE(InterpolateColor_Point, InterpolateColorPixelShader_Point);
 TECHNIQUE(Texture_Point_CM, TexturePixelShader_Point_CM);
 TECHNIQUE(Add_Point_CM, AddPixelShader_Point_CM);
 TECHNIQUE(Subtract_Point_CM, SubtractPixelShader_Point_CM);
+TECHNIQUE(AddSubtract_Point_CM, AddSubtractPixelShader_Point_CM);
 TECHNIQUE(Modulate_Point_CM, ModulatePixelShader_Point_CM);
 TECHNIQUE(Modulate2X_Point_CM, Modulate2XPixelShader_Point_CM);
 TECHNIQUE(Modulate4X_Point_CM, Modulate4XPixelShader_Point_CM);
@@ -737,6 +813,7 @@ TECHNIQUE(InterpolateColor_Point_CM, InterpolateColorPixelShader_Point_CM);
 TECHNIQUE(Texture_Point_LN, TexturePixelShader_Point_LN);
 TECHNIQUE(Add_Point_LN, AddPixelShader_Point_LN);
 TECHNIQUE(Subtract_Point_LN, SubtractPixelShader_Point_LN);
+TECHNIQUE(AddSubtract_Point_LN, AddSubtractPixelShader_Point_LN);
 TECHNIQUE(Modulate_Point_LN, ModulatePixelShader_Point_LN);
 TECHNIQUE(Modulate2X_Point_LN, Modulate2XPixelShader_Point_LN);
 TECHNIQUE(Modulate4X_Point_LN, Modulate4XPixelShader_Point_LN);
@@ -749,6 +826,7 @@ TECHNIQUE(InterpolateColor_Point_LN, InterpolateColorPixelShader_Point_LN);
 TECHNIQUE(Texture_Point_LN_CM, TexturePixelShader_Point_LN_CM);
 TECHNIQUE(Add_Point_LN_CM, AddPixelShader_Point_LN_CM);
 TECHNIQUE(Subtract_Point_LN_CM, SubtractPixelShader_Point_LN_CM);
+TECHNIQUE(AddSubtract_Point_LN_CM, AddSubtractPixelShader_Point_LN_CM);
 TECHNIQUE(Modulate_Point_LN_CM, ModulatePixelShader_Point_LN_CM);
 TECHNIQUE(Modulate2X_Point_LN_CM, Modulate2XPixelShader_Point_LN_CM);
 TECHNIQUE(Modulate4X_Point_LN_CM, Modulate4XPixelShader_Point_LN_CM);
@@ -761,6 +839,7 @@ TECHNIQUE(InterpolateColor_Point_LN_CM, InterpolateColorPixelShader_Point_LN_CM)
 TECHNIQUE(Texture_Linear, TexturePixelShader_Linear);
 TECHNIQUE(Add_Linear, AddPixelShader_Linear);
 TECHNIQUE(Subtract_Linear, SubtractPixelShader_Linear);
+TECHNIQUE(AddSubtract_Linear, AddSubtractPixelShader_Linear);
 TECHNIQUE(Modulate_Linear, ModulatePixelShader_Linear);
 TECHNIQUE(Modulate2X_Linear, Modulate2XPixelShader_Linear);
 TECHNIQUE(Modulate4X_Linear, Modulate4XPixelShader_Linear);
@@ -773,6 +852,7 @@ TECHNIQUE(InterpolateColor_Linear, InterpolateColorPixelShader_Linear);
 TECHNIQUE(Texture_Linear_CM, TexturePixelShader_Linear_CM);
 TECHNIQUE(Add_Linear_CM, AddPixelShader_Linear_CM);
 TECHNIQUE(Subtract_Linear_CM, SubtractPixelShader_Linear_CM);
+TECHNIQUE(AddSubtract_Linear_CM, AddSubtractPixelShader_Linear_CM);
 TECHNIQUE(Modulate_Linear_CM, ModulatePixelShader_Linear_CM);
 TECHNIQUE(Modulate2X_Linear_CM, Modulate2XPixelShader_Linear_CM);
 TECHNIQUE(Modulate4X_Linear_CM, Modulate4XPixelShader_Linear_CM);
@@ -785,6 +865,7 @@ TECHNIQUE(InterpolateColor_Linear_CM, InterpolateColorPixelShader_Linear_CM);
 TECHNIQUE(Texture_Linear_LN, TexturePixelShader_Linear_LN);
 TECHNIQUE(Add_Linear_LN, AddPixelShader_Linear_LN);
 TECHNIQUE(Subtract_Linear_LN, SubtractPixelShader_Linear_LN);
+TECHNIQUE(AddSubtract_Linear_LN, AddSubtractPixelShader_Linear_LN);
 TECHNIQUE(Modulate_Linear_LN, ModulatePixelShader_Linear_LN);
 TECHNIQUE(Modulate2X_Linear_LN, Modulate2XPixelShader_Linear_LN);
 TECHNIQUE(Modulate4X_Linear_LN, Modulate4XPixelShader_Linear_LN);
@@ -797,6 +878,7 @@ TECHNIQUE(InterpolateColor_Linear_LN, InterpolateColorPixelShader_Linear_LN);
 TECHNIQUE(Texture_Linear_LN_CM, TexturePixelShader_Linear_LN_CM);
 TECHNIQUE(Add_Linear_LN_CM, AddPixelShader_Linear_LN_CM);
 TECHNIQUE(Subtract_Linear_LN_CM, SubtractPixelShader_Linear_LN_CM);
+TECHNIQUE(AddSubtract_Linear_LN_CM, AddSubtractPixelShader_Linear_LN_CM);
 TECHNIQUE(Modulate_Linear_LN_CM, ModulatePixelShader_Linear_LN_CM);
 TECHNIQUE(Modulate2X_Linear_LN_CM, Modulate2XPixelShader_Linear_LN_CM);
 TECHNIQUE(Modulate4X_Linear_LN_CM, Modulate4XPixelShader_Linear_LN_CM);

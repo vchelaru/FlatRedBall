@@ -77,6 +77,16 @@ float4 SubtractPixelShader_Point(a2v IN) : COLOR
 	return color;
 }
 
+float4 AddSubtractPixelShader_Point(a2v IN) : COLOR
+{
+    float4 color =  tex2D(pointTextureSampler, IN.texCoord.xy);
+    float3 signedColor = IN.color.rgb * 2.0 - 1.0;
+    color.rgb += signedColor;
+    color *= IN.color.a;
+    clip(color.a - .001);
+	return color;
+}
+
 float4 ModulatePixelShader_Point(a2v IN) : COLOR
 {
     float4 color =  tex2D(pointTextureSampler, IN.texCoord.xy);
@@ -171,6 +181,16 @@ float4 SubtractPixelShader_Linear(a2v IN) : COLOR
 	return color;
 }
 
+float4 AddSubtractPixelShader_Linear(a2v IN) : COLOR
+{
+    float4 color =  tex2D(linearTextureSampler, IN.texCoord.xy);
+    float3 signedColor = IN.color.rgb * 2.0 - 1.0;
+    color.rgb += signedColor;
+    color *= IN.color.a;
+    clip(color.a - .001);
+	return color;
+}
+
 float4 ModulatePixelShader_Linear(a2v IN) : COLOR
 {
     float4 color =  tex2D(linearTextureSampler, IN.texCoord.xy);
@@ -253,6 +273,15 @@ technique Subtract_Point
 	{
 		vertexshader = compile vs_1_1 vs();
 		pixelshader = compile ps_2_0 SubtractPixelShader_Point();
+	}
+}
+
+technique AddSubtract_Point
+{
+	pass p0
+	{
+		vertexshader = compile vs_1_1 vs();
+		pixelshader = compile ps_2_0 AddSubtractPixelShader_Point();
 	}
 }
 
@@ -347,6 +376,15 @@ technique Subtract_Linear
 	{
 		vertexshader = compile vs_1_1 vs();
 		pixelshader = compile ps_2_0 SubtractPixelShader_Linear();
+	}
+}
+
+technique AddSubtract_Linear
+{
+	pass p0
+	{
+		vertexshader = compile vs_1_1 vs();
+		pixelshader = compile ps_2_0 AddSubtractPixelShader_Linear();
 	}
 }
 
