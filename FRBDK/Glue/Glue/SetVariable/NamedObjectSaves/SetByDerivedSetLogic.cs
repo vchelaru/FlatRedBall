@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace GlueFormsCore.SetVariable.NamedObjectSaves
 {
@@ -85,34 +84,28 @@ namespace GlueFormsCore.SetVariable.NamedObjectSaves
 
                         message += "\nWhat would you like to do?";
 
-                        var mbmb = new MultiButtonMessageBoxWpf();
-
-                        mbmb.MessageText = message;
-
                         const string remove = "remove";
                         const string keep = "keep";
                         const string cancel = "cancel";
 
-                        mbmb.AddButton($"Remove {thisOrTheseObjects}", remove);
-                        mbmb.AddButton($"Keep {thisOrTheseObjects}, set \"defined by base\" to false", keep);
-                        mbmb.AddButton($"Cancel", cancel);
+                        var choice = DialogService.ShowChoice(message,
+                            ($"Remove {thisOrTheseObjects}", remove),
+                            ($"Keep {thisOrTheseObjects}, set \"defined by base\" to false", keep),
+                            ($"Cancel", cancel));
 
-                        var dialogResult = mbmb.ShowDialog();
-
-                        
-                        if(dialogResult == null || mbmb.ClickedResult as string == cancel)
+                        if(choice == null || choice == cancel)
                         {
                             didSet = false;
                             namedObjectSave.SetByDerived = true;
                         }
-                        else if(mbmb.ClickedResult as string == remove)
+                        else if(choice == remove)
                         {
                             foreach (var nos in orphanedNoses)
                             {
                                 GlueCommands.Self.GluxCommands.RemoveNamedObject(nos);
                             }
                         }
-                        else if(mbmb.ClickedResult as string == keep)
+                        else if(choice == keep)
                         {
                             foreach(var nos in orphanedNoses)
                             {

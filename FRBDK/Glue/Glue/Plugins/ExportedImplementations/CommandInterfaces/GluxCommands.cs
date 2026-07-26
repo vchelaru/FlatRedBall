@@ -344,37 +344,33 @@ public class GluxCommands : IGluxCommands
                         {
                             message += "\n\nAn error log has been saved here:\n" + errorLogLocation;
 
-                            var mbmb = new MultiButtonMessageBoxWpf();
-                            mbmb.MessageText = message;
-                            mbmb.AddButton("Open Error File", true);
-                            mbmb.AddButton("Do nothing (Glue probably needs to be restarted)", false);
+                            // Escape (no button click) returns default(bool) (false), which matches the
+                            // original "do nothing" fallback when ShowDialog() didn't return true.
+                            var clickedResult = DialogService.ShowChoice(message,
+                                ("Open Error File", true),
+                                ("Do nothing (Glue probably needs to be restarted)", false));
 
-                            if (mbmb.ShowDialog() == true)
+                            if (clickedResult)
                             {
-                                var clickedResult = (bool)mbmb.ClickedResult;
-
-                                if (clickedResult)
+                                try
+                                {
+                                    //System.Diagnostics.Process.Start(errorLogLocation);
+                                    var p = new System.Diagnostics.Process();
+                                    p.StartInfo = new System.Diagnostics.ProcessStartInfo(errorLogLocation)
+                                    {
+                                        UseShellExecute = true
+                                    };
+                                    p.Start();
+                                }
+                                catch
                                 {
                                     try
                                     {
-                                        //System.Diagnostics.Process.Start(errorLogLocation);
-                                        var p = new System.Diagnostics.Process();
-                                        p.StartInfo = new System.Diagnostics.ProcessStartInfo(errorLogLocation)
-                                        {
-                                            UseShellExecute = true
-                                        };
-                                        p.Start();
+                                        System.Diagnostics.Process.Start(FileManager.GetDirectory(errorLogLocation));
                                     }
                                     catch
                                     {
-                                        try
-                                        {
-                                            System.Diagnostics.Process.Start(FileManager.GetDirectory(errorLogLocation));
-                                        }
-                                        catch
-                                        {
-                                            // do nothing
-                                        }
+                                        // do nothing
                                     }
                                 }
                             }
@@ -1148,15 +1144,15 @@ public class GluxCommands : IGluxCommands
                             else
                             {
                                 // Ask the user what to do here - remove it?  Keep it and not compile?
-                                var mbmb = new MultiButtonMessageBoxWpf();
-                                mbmb.MessageText = "The object\n" + nos.ToString() + "\nreferences the file\n" + referencedFileToRemove.Name +
-                                    "\nWhat would you like to do?";
-                                mbmb.AddButton("Remove this object", DialogResult.Yes);
-                                mbmb.AddButton("Keep it (object will not be valid until changed)", DialogResult.No);
+                                // Escape (no button click) returns default(DialogResult) (None), which isn't
+                                // Yes, so this falls through to "keep it" - same as the original behavior.
+                                var dialogResult = DialogService.ShowChoice(
+                                    "The object\n" + nos.ToString() + "\nreferences the file\n" + referencedFileToRemove.Name +
+                                    "\nWhat would you like to do?",
+                                    ("Remove this object", DialogResult.Yes),
+                                    ("Keep it (object will not be valid until changed)", DialogResult.No));
 
-                                var result = mbmb.ShowDialog();
-
-                                if (result == true && mbmb.ClickedResult is DialogResult dialogResult && dialogResult == DialogResult.Yes)
+                                if (dialogResult == DialogResult.Yes)
                                 {
                                     container.NamedObjects.RemoveAt(i);
                                 }
@@ -4111,15 +4107,16 @@ public class GluxCommands : IGluxCommands
 
             if (CustomVariableHelper.IsStateMissingFor(variable, element))
             {
-                var mbmb = new MultiButtonMessageBoxWpf();
-                mbmb.MessageText = String.Format(
-                    "The variable {0} no longer has any states associated with it.  What would you like to do?",
-                    variable);
+                // Escape (no button click) returns default(DialogResult) (None), which isn't OK, so this
+                // falls through to "do nothing" - same as the original behavior.
+                var asDialogResult = DialogService.ShowChoice(
+                    String.Format(
+                        "The variable {0} no longer has any states associated with it.  What would you like to do?",
+                        variable),
+                    ("Remove the variable", DialogResult.OK),
+                    ("Nothing (project may not run until this is fixed)", DialogResult.Cancel));
 
-                mbmb.AddButton("Remove the variable", DialogResult.OK);
-                mbmb.AddButton("Nothing (project may not run until this is fixed)", DialogResult.Cancel);
-
-                if (mbmb.ShowDialog() == true && mbmb.ClickedResult is DialogResult asDialogResult && asDialogResult == DialogResult.OK)
+                if (asDialogResult == DialogResult.OK)
                 {
                     element.CustomVariables.RemoveAt(i);
                     i--;

@@ -9,7 +9,6 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Forms;
 using L = Localization;
-using MessageBox = System.Windows.Forms.MessageBox;
 using GlueFormsCore.Extensions;
 
 namespace FlatRedBall.Glue.Controls;
@@ -90,7 +89,7 @@ public partial class CreatePluginWindow
         //Validate plugin folder
         if (!Directory.Exists(PluginFolder))
         {
-            MessageBox.Show(L.Texts.PluginNeedsValidFolder);
+            DialogService.ShowMessage(L.Texts.PluginNeedsValidFolder);
             return;
         }
 

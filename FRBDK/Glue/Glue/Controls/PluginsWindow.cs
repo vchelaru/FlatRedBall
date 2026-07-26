@@ -169,17 +169,16 @@ namespace FlatRedBall.Glue.Controls
 
                 if (shouldBeEnabled && !container.IsEnabled)
                 {
-                    DialogResult result = System.Windows.Forms.DialogResult.Yes;
+                    DialogButton? result = DialogButton.Yes;
 
                     if (!string.IsNullOrEmpty(container.FailureDetails))
                     {
-                        result = MessageBox.Show("The plugin " + container.Name + " has crashed so " +
+                        result = DialogService.ShowConfirm("The plugin " + container.Name + " has crashed so " +
                             " it was disabled.  Are you sure you want to re-enable it?",
-                            "Re-enable crashed plugin?",
-                            MessageBoxButtons.YesNo);
+                            DialogButton.Yes, DialogButton.No);
                     }
 
-                    if (result == System.Windows.Forms.DialogResult.Yes)
+                    if (result == DialogButton.Yes)
                     {
                         container.IsEnabled = true;
                         try
@@ -487,7 +486,7 @@ namespace FlatRedBall.Glue.Controls
                 }
                 catch (Exception exc)
                 {
-                    MessageBox.Show($"{L.Texts.PluginDownloadFailed}: {exc.Message}");
+                    DialogService.ShowMessage($"{L.Texts.PluginDownloadFailed}: {exc.Message}");
                 }
             }
         }

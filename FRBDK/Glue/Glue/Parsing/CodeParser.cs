@@ -8,6 +8,7 @@ using System.Globalization;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using L = Localization;
+using FlatRedBall.Glue.Controls;
 
 namespace FlatRedBall.Glue.Parsing
 {
@@ -101,7 +102,7 @@ namespace FlatRedBall.Glue.Parsing
             }
             else
             {
-                System.Windows.Forms.MessageBox.Show("Looking for the Game class.  The file  " + fileName + " is part of the project but couldn't find it on disk.");
+                DialogService.ShowMessage("Looking for the Game class.  The file  " + fileName + " is part of the project but couldn't find it on disk.");
                 return false;
             }
         }

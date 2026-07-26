@@ -7,8 +7,8 @@ using FlatRedBall.IO.Csv;
 using FlatRedBall.IO;
 
 
-using System.Windows.Forms;
 using System.IO;
+using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Math.Geometry;
 using FlatRedBall.Graphics;
@@ -188,7 +188,7 @@ namespace FlatRedBall.Glue.Elements
                     }
                     catch(Exception e)
                     {
-                        MessageBox.Show("Failed to add additional asset types from file " + file + "\n\nError info:\n" + e);
+                        DialogService.ShowMessage("Failed to add additional asset types from file " + file + "\n\nError info:\n" + e);
                     }
                 }
             }
@@ -515,7 +515,7 @@ namespace FlatRedBall.Glue.Elements
             }
             if (File.Exists(desiredFullPath))
             {
-                MessageBox.Show("The CSV " + desiredFullPath + " already exists.");
+                DialogService.ShowMessage("The CSV " + desiredFullPath + " already exists.");
             }
             else
             {
@@ -525,11 +525,11 @@ namespace FlatRedBall.Glue.Elements
                 }
                 catch (UnauthorizedAccessException)
                 {
-                    MessageBox.Show("Unable to save the CSV file.  You need to run Glue as an administrator");
+                    DialogService.ShowMessage("Unable to save the CSV file.  You need to run Glue as an administrator");
                 }
                 catch (Exception e)
                 {
-                    MessageBox.Show("Unknown error attempting to create the CSV:\n\n" + e.ToString());
+                    DialogService.ShowMessage("Unknown error attempting to create the CSV:\n\n" + e.ToString());
                 }
             }
                 

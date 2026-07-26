@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Windows.Forms;
 
 using FlatRedBall.IO;
 
@@ -80,7 +79,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
                         if (!inheritsFromFrbType)
                         {
-                            System.Windows.Forms.MessageBox.Show("The Element\n\n" + namedObjectContainer.ToString() + "\n\nhas a base type\n\n" + namedObjectContainer.BaseObject +
+                            DialogService.ShowMessage("The Element\n\n" + namedObjectContainer.ToString() + "\n\nhas a base type\n\n" + namedObjectContainer.BaseObject +
                                 "\n\nbut this base type can't be found.  " +
                                 "It was probably removed from the project.  You will need to set the base object to NONE.");
                         }
@@ -156,7 +155,7 @@ namespace FlatRedBall.Glue.SaveClasses
                         {
 
 
-                            System.Windows.Forms.MessageBox.Show("The Element\n\n" + namedObjectContainer.ToString() + "\n\nhas a base type\n\n" + namedObjectContainer.BaseObject +
+                            DialogService.ShowMessage("The Element\n\n" + namedObjectContainer.ToString() + "\n\nhas a base type\n\n" + namedObjectContainer.BaseObject +
                                 "\n\nbut this base type can't be found.  " +
                                 "It was probably removed from the project.  You will need to set the base object to NONE.");
                         }

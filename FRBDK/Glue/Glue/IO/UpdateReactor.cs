@@ -624,7 +624,7 @@ namespace FlatRedBall.Glue.IO
                             // FINISH THIS!!!!
                             if (!namedObjects.Contains(objectToFind))
                             {
-                                System.Windows.Forms.MessageBox.Show(
+                                FlatRedBall.Glue.Controls.DialogService.ShowMessage(
                                     string.Format(
                                     "The object {0} references an object {1} in the file {2}.  This object no longer exists, so the object {0} will have its reference set to NONE.",
                                     namedObjectSave.FieldName, objectToFind, namedObjectSave.SourceFile));

@@ -203,7 +203,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
 
                 if (matchingReferencedFileSaves.Count == 0 && matchingRegularFiles.Count == 0)
                 {
-                    MessageBox.Show(String.Format(Localization.Texts.NoFilesReferencing, tiw.Result), Localization.Texts.NoFilesFound);
+                    DialogService.ShowMessage(String.Format(Localization.Texts.NoFilesReferencing, tiw.Result));
                 }
                 else
                 {
@@ -218,7 +218,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
                     {
                         message += rfs + "\n";
                     }
-                    MessageBox.Show(message, Localization.Texts.FoundFiles);
+                    DialogService.ShowMessage(message);
                 }
             }
         }
@@ -338,7 +338,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
             }
             else
             {
-                MessageBox.Show(String.Format(Localization.Texts.ErrorCouldNotOpen, whatToView));
+                DialogService.ShowMessage(String.Format(Localization.Texts.ErrorCouldNotOpen, whatToView));
             }
         }
 
@@ -346,7 +346,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
         {
             if (ProjectManager.GlueProjectSave == null)
             {
-                MessageBox.Show(Localization.Texts.NoLoadedGlueProject);
+                DialogService.ShowMessage(Localization.Texts.NoLoadedGlueProject);
             }
             else
             {
@@ -366,11 +366,11 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
 
                     if (string.IsNullOrEmpty(ProjectManager.GameClassFileName))
                     {
-                        MessageBox.Show(Localization.Texts.ErrorCouldntFindGameClass);
+                        DialogService.ShowMessage(Localization.Texts.ErrorCouldntFindGameClass);
                     }
                     else
                     {
-                        MessageBox.Show(String.Format(Localization.Texts.GameClassFound, ProjectManager.GameClassFileName));
+                        DialogService.ShowMessage(String.Format(Localization.Texts.GameClassFound, ProjectManager.GameClassFileName));
                     }
                 }
             }

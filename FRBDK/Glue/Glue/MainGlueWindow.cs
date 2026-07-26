@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 using FlatRedBall.Glue.AutomatedGlue;
+using FlatRedBall.Glue.Controls;
 using FlatRedBall.IO;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.FormHelpers;
@@ -100,7 +101,7 @@ public partial class MainGlueWindow : Form, IMainGlueWindow
             // Any further checks on .NET usage are not required.
             if (!System.IO.File.Exists(@"C:\Program Files\dotnet\dotnet.exe"))
             {
-                MessageBox.Show(Localization.Texts.ErrorDotNetIsNotInstalledOrEnvironmentVariables);
+                DialogService.ShowMessage(Localization.Texts.ErrorDotNetIsNotInstalledOrEnvironmentVariables);
                 return;
             }
 
@@ -139,7 +140,7 @@ public partial class MainGlueWindow : Form, IMainGlueWindow
 
             GlueCommands.Self.PrintOutput(message);
 
-            MessageBox.Show(message);
+            DialogService.ShowMessage(message);
             return;
         }
 
@@ -179,7 +180,7 @@ public partial class MainGlueWindow : Form, IMainGlueWindow
 
                 var message = String.Format(Localization.Texts.ErrorCouldNotFindNetSix, output);
                 GlueCommands.Self.PrintOutput(message);
-                MessageBox.Show(message);
+                DialogService.ShowMessage(message);
             }
             else
             {
@@ -191,7 +192,7 @@ public partial class MainGlueWindow : Form, IMainGlueWindow
         {
             var message = String.Format(Localization.Texts.ErrorCouldNotFindNetSix, output);
             GlueCommands.Self.PrintOutput(message);
-            MessageBox.Show(message);
+            DialogService.ShowMessage(message);
         }
     }
 
@@ -379,7 +380,7 @@ public partial class MainGlueWindow : Form, IMainGlueWindow
         {
             if (GlueGui.ShowGui)
             {
-                MessageBox.Show(exc.ToString());
+                DialogService.ShowMessage(exc.ToString());
 
                 FileManager.SaveText(exc.ToString(),
                     FileManager.UserApplicationDataForThisApplication + "InitError.txt");

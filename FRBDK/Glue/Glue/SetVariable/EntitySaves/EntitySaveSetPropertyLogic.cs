@@ -57,9 +57,9 @@ class EntitySaveSetPropertyLogic
                 // variables for all contained objects
                 string message = "Would you like to add reset variables for all contained objects (recommended)";
 
-                DialogResult result = MessageBox.Show(message, "Add reset variables?", MessageBoxButtons.YesNo);
+                var confirmResult = DialogService.ShowConfirm(message, DialogButton.Yes, DialogButton.No);
 
-                if (result == DialogResult.Yes)
+                if (confirmResult == DialogButton.Yes)
                 {
                     await FactoryManager.Self.SetResetVariablesForEntitySave(entitySave);
                 }
@@ -71,9 +71,9 @@ class EntitySaveSetPropertyLogic
                 {
                     string message = "Would you like to remove reset variables for all contained objects? Select 'Yes' if you added reset variables earlier for pooling";
 
-                    var dialogResult = MessageBox.Show(message, "Remove reset variables?", MessageBoxButtons.YesNo);
+                    var confirmResult = DialogService.ShowConfirm(message, DialogButton.Yes, DialogButton.No);
 
-                    if(dialogResult == DialogResult.Yes)
+                    if(confirmResult == DialogButton.Yes)
                     {
                         FactoryManager.Self.RemoveResetVariablesForEntitySave(entitySave);
                     }
@@ -98,10 +98,10 @@ class EntitySaveSetPropertyLogic
                 string message = "The Click Broadcast message will not be broadcasted unless this " +
                     "Entity is made IClickable.  Would you like to make it IClickable?";
 
-                DialogResult result =
-                    MessageBox.Show(message, "Make IClickable?", MessageBoxButtons.YesNo);
+                var confirmResult =
+                    DialogService.ShowConfirm(message, DialogButton.Yes, DialogButton.No);
 
-                if (result == DialogResult.Yes)
+                if (confirmResult == DialogButton.Yes)
                 {
                     entitySave.ImplementsIClickable = true;
 
@@ -116,7 +116,7 @@ class EntitySaveSetPropertyLogic
         {
             if (entitySave.ImplementsIWindow && !entitySave.ImplementsIVisible)
             {
-                MessageBox.Show("IWindows must also be IVisible.  Automatically setting Implements IVisible to true");
+                DialogService.ShowMessage("IWindows must also be IVisible.  Automatically setting Implements IVisible to true");
 
                 entitySave.ImplementsIVisible = true;
             }
@@ -154,7 +154,7 @@ class EntitySaveSetPropertyLogic
             {
                 if (!itemTypeEntity.CreatedByOtherEntities)
                 {
-                    MessageBox.Show("The Entity " + entitySave.ItemType + " must be \"Created By Other Entities\" to be used as an Item Type");
+                    DialogService.ShowMessage("The Entity " + entitySave.ItemType + " must be \"Created By Other Entities\" to be used as an Item Type");
                     entitySave.ItemType = null;
                 }
             }
@@ -202,14 +202,14 @@ class EntitySaveSetPropertyLogic
             {
                 List<string> throwawayList = new List<string>();
 
-                var mbmb = new MultiButtonMessageBoxWpf();
-                mbmb.MessageText = "This entity has a \"Visible\" variable exposed.  This variable is no longer valid.  What would you like to do?";
-                mbmb.AddButton("Remove this variable", DialogResult.Yes);
-                mbmb.AddButton("Keep this as a non-functional Variable (it will no longer control the object's visibility)", DialogResult.No);
+                // Escape/close without a button click returns default(DialogResult) == None here, which
+                // is neither Yes nor matched below, so it falls into "do nothing" - same as the original.
+                var dialogResult = DialogService.ShowChoice<DialogResult>(
+                    "This entity has a \"Visible\" variable exposed.  This variable is no longer valid.  What would you like to do?",
+                    ("Remove this variable", DialogResult.Yes),
+                    ("Keep this as a non-functional Variable (it will no longer control the object's visibility)", DialogResult.No));
 
-                var result = mbmb.ShowDialog();
-
-                if (mbmb.ClickedResult is DialogResult.Yes)
+                if (dialogResult == DialogResult.Yes)
                 {
                     GlueCommands.Self.GluxCommands.RemoveCustomVariable(variableToRemove, throwawayList);
                 }
@@ -243,25 +243,20 @@ class EntitySaveSetPropertyLogic
 
                     if (nosEntitySave != null && nosEntitySave.ImplementsIVisible == false)
                     {
-                        var mbmb = new MultiButtonMessageBoxWpf();
-                        mbmb.MessageText = entitySave + " implements IVisible, but its object " + nos + " does not.  Would would you like to do?";
+                        // Escape/close without a button click returns default(DialogResult) == None here,
+                        // which isn't Yes, so nothing happens below - same as the original.
+                        var dialogResult = DialogService.ShowChoice<DialogResult>(
+                            entitySave + " implements IVisible, but its object " + nos + " does not.  Would would you like to do?",
+                            ("Make " + nosEntitySave + " implement IVisible", DialogResult.Yes),
+                            ("Ignore " + nos + " when setting Visible on " + entitySave, DialogResult.No),
+                            ("Do nothing - this will likely cause compile errors so this must be fixed manually", DialogResult.Cancel));
 
-                        mbmb.AddButton("Make " + nosEntitySave + " implement IVisible", DialogResult.Yes);
-                        mbmb.AddButton("Ignore " + nos + " when setting Visible on " + entitySave, DialogResult.No);
-                        mbmb.AddButton("Do nothing - this will likely cause compile errors so this must be fixed manually", DialogResult.Cancel);
-
-                        var result = mbmb.ShowDialog();
-
-                        if(result != null && mbmb.ClickedResult != null)
+                        if (dialogResult == DialogResult.Yes)
                         {
-                            var dialogResult = (DialogResult)mbmb.ClickedResult;
-                            if (dialogResult == DialogResult.Yes)
-                            {
-                                nosEntitySave.ImplementsIVisible = true;
+                            nosEntitySave.ImplementsIVisible = true;
 
-                                GlueCommands.Self.GenerateCodeCommands
-                                    .GenerateElementAndReferencedObjectCode(nosEntitySave);
-                            }
+                            GlueCommands.Self.GenerateCodeCommands
+                                .GenerateElementAndReferencedObjectCode(nosEntitySave);
                         }
                     }
                 }
@@ -277,7 +272,7 @@ class EntitySaveSetPropertyLogic
 
             if (itemTypeAsEntity != null && itemTypeAsEntity.ImplementsIVisible == false)
             {
-                MessageBox.Show("The item type " + itemTypeAsEntity.ToString() + " must also implement IVisible.  Glue will do this now");
+                DialogService.ShowMessage("The item type " + itemTypeAsEntity.ToString() + " must also implement IVisible.  Glue will do this now");
 
                 itemTypeAsEntity.ImplementsIVisible = true;
 

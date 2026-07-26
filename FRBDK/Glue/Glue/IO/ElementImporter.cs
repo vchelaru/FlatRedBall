@@ -382,9 +382,11 @@ public class ElementImporter
 
             if (File.Exists(destinationFolder + fileToCopy))
             {
-                dialogResult = MessageBox.Show("The following file already exists:\n\n" +
-                                               destinationFolder + fileToCopy + "\n\nOverwrite this file?", "Overwrite file?",
-                    MessageBoxButtons.YesNo);
+                // If closed without a click (e.g. Escape), ShowConfirm returns null, which - same as the
+                // original code - doesn't match DialogResult.Yes, so the file is skipped (not overwritten).
+                var confirmResult = DialogService.ShowConfirm("The following file already exists:\n\n" +
+                                               destinationFolder + fileToCopy + "\n\nOverwrite this file?");
+                dialogResult = confirmResult == DialogButton.Yes ? DialogResult.Yes : DialogResult.No;
             }
 
             if (dialogResult == DialogResult.Yes)
@@ -515,23 +517,21 @@ public class ElementImporter
 
                     if (candidates.Count == 0)
                     {
-                        MessageBox.Show(newElement.ToString() + " has an object named " + nos.InstanceName + " which references an Entity " + nos.SourceClassType + "\n\n" +
+                        DialogService.ShowMessage(newElement.ToString() + " has an object named " + nos.InstanceName + " which references an Entity " + nos.SourceClassType + "\n\n" +
                                         "Could not find a matching Entity.  Your project may not run properly until this issue is resolved.");
                     }
                     else
                     {
-                        var mbmb = new MultiButtonMessageBoxWpf();
-                        mbmb.MessageText = "FRB found possible matches for the object " + nos.InstanceName + " which expects the type " + nos.SourceClassType;
+                        var message = "FRB found possible matches for the object " + nos.InstanceName + " which expects the type " + nos.SourceClassType;
 
-                        foreach(var candidate in candidates)
-                        {
-                            mbmb.AddButton("Use " + candidate.ToString(), candidate);
-                        }
-                        mbmb.AddButton("Don't do anything", DialogResult.Cancel);
+                        var options = candidates
+                            .Select(candidate => ($"Use {candidate}", (object)candidate))
+                            .Append(("Don't do anything", (object)DialogResult.Cancel))
+                            .ToArray();
 
-                        var result = mbmb.ShowDialog();
-
-                        var clickedResult = mbmb.ClickedResult;
+                        // If closed without a click (e.g. Escape), ShowChoice returns default(object) (null),
+                        // which - same as the original code - isn't a GlueElement, so nothing happens.
+                        var clickedResult = DialogService.ShowChoice(message, options);
 
                         if (clickedResult is GlueElement referenceToSet)
                         {
@@ -590,11 +590,12 @@ public class ElementImporter
 
                     if (unqualifiedName == newElementUnqualifiedName)
                     {
-                        // This new element may fulfill the requirements.  Let's ask the user if we should do that
-                        DialogResult change = MessageBox.Show(nos.ToString() + " has a missing reference.  Use the new Entity " + newElement.ToString() + "?",
-                            "Update reference?", MessageBoxButtons.YesNo);
+                        // This new element may fulfill the requirements.  Let's ask the user if we should do that.
+                        // If closed without a click (e.g. Escape), ShowConfirm returns null, which - same as the
+                        // original code - doesn't match Yes, so no change is made.
+                        var change = DialogService.ShowConfirm(nos.ToString() + " has a missing reference.  Use the new Entity " + newElement.ToString() + "?");
 
-                        if (change == DialogResult.Yes)
+                        if (change == DialogButton.Yes)
                         {
                             nos.SourceClassType = newElement.Name;
                             nos.UpdateCustomProperties();
@@ -604,7 +605,7 @@ public class ElementImporter
                 }
                 else if (fulfillingIElement == newElement)
                 {
-                    MessageBox.Show("The new element will now fulfill the previously-broken reference for " + nos.ToString());
+                    DialogService.ShowMessage("The new element will now fulfill the previously-broken reference for " + nos.ToString());
 
                     // Setting the value to itself will cause the properties to be refreshed
                     nos.SourceClassType = newElement.Name;

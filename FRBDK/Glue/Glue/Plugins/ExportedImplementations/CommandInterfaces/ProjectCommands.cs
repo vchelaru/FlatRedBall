@@ -3,7 +3,7 @@ using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using System;
-using System.Windows.Forms;
+using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.FormHelpers;
 using System.IO;
 using FlatRedBall.Glue.VSHelpers.Projects;
@@ -80,7 +80,7 @@ class ProjectCommands : IProjectCommands
                 }
                 catch (UnauthorizedAccessException)
                 {
-                    MessageBox.Show("Could not save the file because the file is in use");
+                    DialogService.ShowMessage("Could not save the file because the file is in use");
                     succeeded = false;
                 }
 
@@ -430,7 +430,7 @@ class ProjectCommands : IProjectCommands
                         "in a FRBDK tool and didn't select the \"Copy to relative\" option.\n\nYou should probably shut " +
                         "down Glue, fix this problem, then re-open your project.";
 
-                    System.Windows.Forms.MessageBox.Show(message);
+                    DialogService.ShowMessage(message);
                 }
                 else
                 {

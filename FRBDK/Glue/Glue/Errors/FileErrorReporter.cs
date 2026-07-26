@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using FlatRedBall.Glue.Controls;
 
 namespace FlatRedBall.Glue.Errors
 {
@@ -35,8 +36,8 @@ namespace FlatRedBall.Glue.Errors
                 {
                     string first = mErrorMessageAndFiles[0].Item1;
                     string second = mErrorMessageAndFiles[0].Item2;
-                    mErrorMessageAndFiles.RemoveAt(0); 
-                    MessageBox.Show(first, second);
+                    mErrorMessageAndFiles.RemoveAt(0);
+                    DialogService.ShowMessage(first);
                     Plugins.PluginManager.ReceiveError(first);
 
                 }

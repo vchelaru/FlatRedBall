@@ -5,7 +5,7 @@ using System.Text;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using FlatRedBall.Glue.Parsing;
-using System.Windows.Forms;
+using FlatRedBall.Glue.Controls;
 
 namespace FlatRedBall.Glue.Events
 {
@@ -66,11 +66,11 @@ namespace FlatRedBall.Glue.Events
                 // See if there is already a method here
                 if (parsedClassToUse.GetMethod(methodName) == null)
                 {
-                    DialogResult result =
-                        MessageBox.Show("The method\n\n" + methodName + "\n\ndoes not exist.  Create this " +
-                            "method in your .Event.cs code file?", "Create method?", MessageBoxButtons.YesNo);
+                    var result =
+                        DialogService.ShowConfirm("The method\n\n" + methodName + "\n\ndoes not exist.  Create this " +
+                            "method in your .Event.cs code file?");
 
-                    if (result == DialogResult.Yes)
+                    if (result == DialogButton.Yes)
                     {
                         int indexToInsertAt = EventManager.GetLastLocationInClass(fullFileContents, startOfLine:true, out bool hasBracketNamespace);
 

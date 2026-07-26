@@ -9,13 +9,13 @@ using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.VSHelpers.Projects;
 using FlatRedBall.IO;
 using System.IO;
-using System.Windows.Forms;
 using Glue;
 using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using Microsoft.Build.Evaluation;
 using FlatRedBall.Glue.Services;
+using FlatRedBall.Glue.Controls;
 
 namespace FlatRedBall.Glue.ContentPipeline
 {
@@ -171,7 +171,7 @@ namespace FlatRedBall.Glue.ContentPipeline
             if (rfs.GetAssetTypeInfo() != null && rfs.GetAssetTypeInfo().MustBeAddedToContentPipeline && rfs.UseContentPipeline == false)
             {
                 rfs.UseContentPipeline = true;
-                MessageBox.Show("The file " + rfs.Name + " must use the content pipeline");
+                DialogService.ShowMessage("The file " + rfs.Name + " must use the content pipeline");
 
             }
             else

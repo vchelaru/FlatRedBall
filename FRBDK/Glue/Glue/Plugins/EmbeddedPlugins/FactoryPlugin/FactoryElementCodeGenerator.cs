@@ -13,6 +13,7 @@ using FlatRedBall.Glue.IO;
 using FlatRedBall.IO;
 using FlatRedBall.Glue.Elements;
 using System.Windows.Shapes;
+using FlatRedBall.Glue.Controls;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin
 {
@@ -368,7 +369,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin
             }
             catch
             {
-                System.Windows.Forms.MessageBox.Show("Error trying to remove the Factory " + mEntireClassGenerator.ClassName);
+                DialogService.ShowMessage("Error trying to remove the Factory " + mEntireClassGenerator.ClassName);
 
             }
         }

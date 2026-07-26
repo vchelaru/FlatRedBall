@@ -390,10 +390,9 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
             }
             
             message += "\n\nOverwrite?";
-            var result = MessageBox.Show(message, "Overwrite",
-                MessageBoxButtons.YesNo);
+            var result = DialogService.ShowConfirm(message);
 
-            response.Succeeded = result == DialogResult.Yes;
+            response.Succeeded = result == DialogButton.Yes;
         }
 
 
@@ -523,7 +522,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
             {
                 if (!suppressAlreadyExistingFileMessage)
                 {
-                    MessageBox.Show("There is already a file named\n\n" + fullNonGeneratedFileName + "\n\nThis file will be used instead of creating a new one just in case you have code that you want to keep there.");
+                    DialogService.ShowMessage("There is already a file named\n\n" + fullNonGeneratedFileName + "\n\nThis file will be used instead of creating a new one just in case you have code that you want to keep there.");
                 }
             }
             
@@ -1072,7 +1071,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
         {
             if (!suppressAlreadyExistingFileMessage)
             {
-                MessageBox.Show("There is already a file named\n\n" + customCodeFilePath + "\n\nThis file will be used instead of creating a new one just in case you have code that you want to keep there.");
+                DialogService.ShowMessage("There is already a file named\n\n" + customCodeFilePath + "\n\nThis file will be used instead of creating a new one just in case you have code that you want to keep there.");
             }
         }
 
@@ -1514,9 +1513,13 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
                 switch (unknownTypeHandle)
                 {
                     case PromptHandleEnum.Prompt:
-                        dialogResult = MessageBox.Show("The extension " + extension + " is not recognized by Glue.  " +
+                        // If closed without a click (Escape), ShowChoice returns default(DialogResult) (None),
+                        // matching the original behavior where None != No, so the file is still added.
+                        dialogResult = DialogService.ShowChoice("The extension " + extension + " is not recognized by Glue.  " +
                                                        "Glue will not be able to generate code for this file, but will add it to your game project.\n\nDo you " +
-                                                       "want to add this file?", "Add unknown type?", MessageBoxButtons.YesNo);
+                                                       "want to add this file?",
+                                                       ("Yes", DialogResult.Yes),
+                                                       ("No", DialogResult.No));
                         break;
                     case PromptHandleEnum.DoYes:
                         dialogResult = DialogResult.Yes;

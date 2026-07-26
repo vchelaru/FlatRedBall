@@ -187,7 +187,7 @@ namespace FlatRedBall.Glue.Controls
                 }
                 else
                 {
-                    MessageBox.Show("The directory for externally built content does not exist:\n" + absoluteDirectory);
+                    DialogService.ShowMessage("The directory for externally built content does not exist:\n" + absoluteDirectory);
                 }
             }
         }

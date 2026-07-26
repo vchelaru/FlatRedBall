@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -105,7 +105,7 @@ namespace FlatRedBall.Glue.Controls
 			{
 				tbResWidth.Text = ProjectManager.GlueProjectSave.ResolutionWidth.ToString();
 				desiredWidth = ProjectManager.GlueProjectSave.ResolutionWidth;
-				System.Windows.Forms.MessageBox.Show("Invalid width");
+				DialogService.ShowMessage("Invalid width");
 			}
 
 			try
@@ -116,7 +116,7 @@ namespace FlatRedBall.Glue.Controls
 			{
 				tbResHeight.Text = ProjectManager.GlueProjectSave.ResolutionHeight.ToString();
 				desiredHeight = ProjectManager.GlueProjectSave.ResolutionHeight;
-				System.Windows.Forms.MessageBox.Show("Invalid height");
+				DialogService.ShowMessage("Invalid height");
 			}
 
 			ProjectManager.GlueProjectSave.ResolutionWidth = desiredWidth;
@@ -137,7 +137,7 @@ namespace FlatRedBall.Glue.Controls
                 {
                     tbOrthWidth.Text = ProjectManager.GlueProjectSave.OrthogonalWidth.ToString();
                     desiredOrthWidth = ProjectManager.GlueProjectSave.OrthogonalWidth;
-                    System.Windows.Forms.MessageBox.Show("Invalid Orthogonal width");
+                    DialogService.ShowMessage("Invalid Orthogonal width");
                 }
 
                 try
@@ -148,7 +148,7 @@ namespace FlatRedBall.Glue.Controls
                 {
                     tbOrthHeight.Text = ProjectManager.GlueProjectSave.OrthogonalHeight.ToString();
                     desiredOrthHeight = ProjectManager.GlueProjectSave.OrthogonalHeight;
-                    System.Windows.Forms.MessageBox.Show("Invalid Orthogonal height");
+                    DialogService.ShowMessage("Invalid Orthogonal height");
                 }
 
                 ProjectManager.GlueProjectSave.OrthogonalWidth = desiredOrthWidth;
@@ -199,7 +199,7 @@ namespace FlatRedBall.Glue.Controls
 
                 if (!string.IsNullOrEmpty(whyIsntValid))
                 {
-                    MessageBox.Show(whyIsntValid);
+                    DialogService.ShowMessage(whyIsntValid);
                 }
                 else
                 {
@@ -338,7 +338,7 @@ namespace FlatRedBall.Glue.Controls
 
             if(project == null)
             {
-                MessageBox.Show("No project loaded");
+                DialogService.ShowMessage("No project loaded");
             }
             else
             {

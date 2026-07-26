@@ -614,7 +614,7 @@ class DialogCommands : IDialogCommands
         //////////////Early Out////////////
         if (ProjectManager.GlueProjectSave == null)
         {
-            System.Windows.Forms.MessageBox.Show(L.Texts.ErrorNewProjectFirst);
+            DialogService.ShowMessage(L.Texts.ErrorNewProjectFirst);
             return;
         }
         if (ProjectManager.StatusCheck() != ProjectManager.CheckResult.Passed)
@@ -622,7 +622,7 @@ class DialogCommands : IDialogCommands
             return;
         }
         ////////////End Early Out
-        
+
         viewModel = viewModel ?? CreateAddNewEntityViewModel();
 
         AddEntityWindow window = new();
@@ -643,7 +643,7 @@ class DialogCommands : IDialogCommands
 
             if (!_nameVerifier.IsEntityNameValid(entityName, null, out whyIsntValid))
             {
-                MessageBox.Show(whyIsntValid);
+                DialogService.ShowMessage(whyIsntValid);
             }
             else
             {
@@ -798,7 +798,7 @@ class DialogCommands : IDialogCommands
 
         if (didFailureOccur)
         {
-            MessageBox.Show(failureMessage);
+            DialogService.ShowMessage(failureMessage);
         }
         else
         {
@@ -818,7 +818,7 @@ class DialogCommands : IDialogCommands
                     }
                     else
                     {
-                        MessageBox.Show(String.Format(L.Texts.VariableInBaseAlreadyExists, resultName));
+                        DialogService.ShowMessage(String.Format(L.Texts.VariableInBaseAlreadyExists, resultName));
                         canCreate = false;
                     }
                 }
@@ -954,7 +954,7 @@ class DialogCommands : IDialogCommands
         //////////////Early Out////////////
         if (ProjectManager.GlueProjectSave == null)
         {
-            System.Windows.Forms.MessageBox.Show(L.Texts.ErrorNewProjectFirst);
+            DialogService.ShowMessage(L.Texts.ErrorNewProjectFirst);
             return;
         }
         if (ProjectManager.StatusCheck() != ProjectManager.CheckResult.Passed)
@@ -986,7 +986,7 @@ class DialogCommands : IDialogCommands
 
             if (!_nameVerifier.IsScreenNameValid(addScreenWindow.Result, null, out whyItIsntValid))
             {
-                MessageBox.Show(whyItIsntValid);
+                DialogService.ShowMessage(whyItIsntValid);
             }
             else
             {
@@ -1155,19 +1155,25 @@ class DialogCommands : IDialogCommands
 
         if (GlueGui.ShowGui)
         {
+            // DialogService.ShowConfirm already marshals to the UI thread, but this stays wrapped in
+            // DoOnUiThread since `result` is captured by the caller synchronously below via DoOnUiThread's
+            // blocking behavior.
             GlueCommands.Self.DoOnUiThread(() =>
            {
-               //var result = MessageBox.Show(message, caption, MessageBoxButtons.YesNo);
-               result = System.Windows.MessageBox.Show(message, caption, System.Windows.MessageBoxButton.YesNo);
+               var confirmResult = DialogService.ShowConfirm(message, DialogButton.Yes, DialogButton.No);
 
-               if (result == System.Windows.MessageBoxResult.Yes)
+               if (confirmResult == DialogButton.Yes)
                {
+                   result = System.Windows.MessageBoxResult.Yes;
                    yesAction?.Invoke();
                }
-               else if (result == System.Windows.MessageBoxResult.No)
+               else if (confirmResult == DialogButton.No)
                {
+                   result = System.Windows.MessageBoxResult.No;
                    noAction?.Invoke();
                }
+               // Escape/close without a button click: confirmResult is null, result stays MessageBoxResult.None,
+               // matching the original WPF MessageBox.Show(...) escape behavior.
            });
 
         }

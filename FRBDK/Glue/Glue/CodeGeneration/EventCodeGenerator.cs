@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
-using System.Windows.Forms;
 using FlatRedBall.Glue.AutomatedGlue;
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Glue.Events;
@@ -16,6 +15,7 @@ using FlatRedBall.Utilities;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Controls;
 using FlatRedBall.Instructions.Pause;
 
 namespace FlatRedBall.Glue.CodeGeneration
@@ -454,7 +454,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                         }
                         catch(Exception e)
                         {
-                            MessageBox.Show("Failed to generate custom code stubs for event " + ers.EventName + "\n\n" + e);
+                            DialogService.ShowMessage("Failed to generate custom code stubs for event " + ers.EventName + "\n\n" + e);
 
                         }
                     }

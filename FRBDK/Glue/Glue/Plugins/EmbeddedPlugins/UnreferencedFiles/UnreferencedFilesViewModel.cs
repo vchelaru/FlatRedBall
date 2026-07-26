@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Windows;
+using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.VSHelpers.Projects;
@@ -169,9 +170,9 @@ namespace FlatRedBall.Glue.UnreferencedFiles
             }
             else
             {
-                var result = MessageBox.Show($"Would like to move {SelectedFileName} to the recycle bin?", "Delete file?", MessageBoxButton.YesNo);
-                
-                if(result == MessageBoxResult.Yes)
+                var result = DialogService.ShowConfirm($"Would like to move {SelectedFileName} to the recycle bin?", DialogButton.Yes, DialogButton.No);
+
+                if(result == DialogButton.Yes)
                 {
                     FileHelper.MoveToRecycleBin(SelectedAbsoluteFile);
 
@@ -222,9 +223,9 @@ namespace FlatRedBall.Glue.UnreferencedFiles
             }
             else
             {
-                var result = MessageBox.Show($"Would like to move all selected files to the recycle bin?", "Delete file?", MessageBoxButton.YesNo);
+                var result = DialogService.ShowConfirm($"Would like to move all selected files to the recycle bin?", DialogButton.Yes, DialogButton.No);
 
-                if (result == MessageBoxResult.Yes)
+                if (result == DialogButton.Yes)
                 {
                     var contentFolder = GlueState.Self.ContentDirectory;
 

@@ -6,8 +6,8 @@ using FlatRedBall.Glue.Elements;
 using FlatRedBall.IO;
 using System.IO;
 using EditorObjects.SaveClasses;
-using System.Windows.Forms;
 using EditorObjects.Parsing;
+using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Errors;
 using FlatRedBall.Content;
 using FlatRedBall.Glue.Plugins;
@@ -146,7 +146,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
             if (!doesFileExist)
             {
-                MessageBox.Show("Could not find the following source file:\n\n" +
+                DialogService.ShowMessage("Could not find the following source file:\n\n" +
                     absoluteSourceName);
 
             }
@@ -173,7 +173,7 @@ namespace FlatRedBall.Glue.SaveClasses
                         error += "\n\"" + bta.SourceFileType + "\" -> " +  bta.BuildToolProcessed + " -> \"" + bta.DestinationFileType + "\"";
                     }
 
-                    System.Windows.Forms.MessageBox.Show(error);
+                    DialogService.ShowMessage(error);
                 }
 
                 #endregion
@@ -195,11 +195,11 @@ namespace FlatRedBall.Glue.SaveClasses
                     }
                     catch (FileNotFoundException fnfe)
                     {
-                        System.Windows.Forms.MessageBox.Show("Can't find the file:\n" + fnfe.FileName);
+                        DialogService.ShowMessage("Can't find the file:\n" + fnfe.FileName);
                     }
                     catch (Exception e)
                     {
-                        System.Windows.Forms.MessageBox.Show("There was an error building the file\n" + absoluteSourceName + "\n\n" +
+                        DialogService.ShowMessage("There was an error building the file\n" + absoluteSourceName + "\n\n" +
                             e.Message);
                     }
                     #endregion

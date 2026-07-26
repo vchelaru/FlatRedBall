@@ -8,7 +8,6 @@ using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
-using System.Windows.Forms;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Utilities;
@@ -70,8 +69,8 @@ namespace FlatRedBall.Glue.SetVariable
                     PluginManager.ReceiveOutput("Saved " + ers);
                     GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
 
-                    DialogResult result = MessageBox.Show("Would you like to delete the old method On" + oldName + "?", "Delete old function?", MessageBoxButtons.YesNo);
-                    if (result == DialogResult.Yes)
+                    var result = DialogService.ShowConfirm("Would you like to delete the old method On" + oldName + "?");
+                    if (result == DialogButton.Yes)
                     {
                         int startIndex;
                         int endIndex;

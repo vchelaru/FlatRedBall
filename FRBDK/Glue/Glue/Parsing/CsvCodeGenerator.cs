@@ -10,7 +10,6 @@ using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Utilities;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.SaveClasses;
-using System.Windows.Forms;
 using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.AutomatedGlue;
 using FlatRedBall.Glue.Elements;
@@ -57,7 +56,7 @@ namespace FlatRedBall.Glue
                     }
                     catch(Exception e)
                     {
-                        MessageBox.Show("Error generating the file\n\n" + rfs.Name + "\n\nError details:\n\n" +
+                        DialogService.ShowMessage("Error generating the file\n\n" + rfs.Name + "\n\nError details:\n\n" +
                             e.ToString());
                     }
                 }
@@ -439,7 +438,7 @@ namespace FlatRedBall.Glue
                         }
                         catch (Exception e)
                         {
-                            MessageBox.Show("Error trying to parse CSV:\n" + e.ToString());
+                            DialogService.ShowMessage("Error trying to parse CSV:\n" + e.ToString());
                         }
 
                         if (runtimeToAdd != null)

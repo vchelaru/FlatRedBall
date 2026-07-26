@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using EditorObjects.SaveClasses;
+using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.IO;
@@ -95,8 +96,8 @@ namespace EditorObjects.SaveClasses
             if (string.IsNullOrEmpty(buildToolErrors) == false)
             {
                 buildToolErrors = "The following build tools could not be located:\n" + buildToolErrors + "\nYou will not be able to build the associated assets until this issue is resolved.";
-                System.Windows.Forms.MessageBox.Show(buildToolErrors);
-            
+                DialogService.ShowMessage(buildToolErrors);
+
             }
         }
 

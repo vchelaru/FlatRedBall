@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.Managers;
+﻿using FlatRedBall.Glue.Controls;
+using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using System;
@@ -116,8 +117,8 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AboutPlugin
 
         internal async void DoInstallUpdate()
         {
-            var result = MessageBox.Show("This will download the latest version of FlatRedBall and install it.  This will overwrite any existing FRBDK.  Are you sure you want to do this?", "Install FRBDK", MessageBoxButton.YesNo);
-            if(result == MessageBoxResult.Yes)
+            var result = DialogService.ShowConfirm("This will download the latest version of FlatRedBall and install it.  This will overwrite any existing FRBDK.  Are you sure you want to do this?");
+            if(result == DialogButton.Yes)
             {
                 IsDownloading = true;
                 var location = "https://files.flatredball.com/content/FrbXnaTemplates/DailyBuild/FRBDK.zip";
