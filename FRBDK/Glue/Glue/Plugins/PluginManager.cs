@@ -361,7 +361,7 @@ public class PluginManager : PluginManagerBase
         bool succeeded = true;
         if (!File.Exists(localPlugFile))
         {
-            MessageBox.Show(@"Please select a valid *.plug file to install.");
+            DialogService.ShowMessage(@"Please select a valid *.plug file to install.");
             succeeded = false;
         }
         
@@ -387,7 +387,7 @@ public class PluginManager : PluginManagerBase
                 case InstallationType.ForCurrentProject:
                     if (glueState.CurrentGlueProject == null)
                     {
-                        MessageBox.Show(@"Can not select For Current Project because no project is currently open.");
+                        DialogService.ShowMessage(@"Can not select For Current Project because no project is currently open.");
                         succeeded = false;
                     }
 
@@ -399,7 +399,7 @@ public class PluginManager : PluginManagerBase
                     }
                     break;
                 default:
-                    MessageBox.Show(@"Unknown install type.  Please select a valid install type.");
+                    DialogService.ShowMessage(@"Unknown install type.  Please select a valid install type.");
                     succeeded = false;
                     break;
             }
@@ -421,7 +421,7 @@ public class PluginManager : PluginManagerBase
                 //Only allow one folder in zip
                 if (String.IsNullOrEmpty(rootDirectory))
                 {
-                    MessageBox.Show(@"Unexpected *.plug format (No root directory found in plugin archive)");
+                    DialogService.ShowMessage(@"Unexpected *.plug format (No root directory found in plugin archive)");
                     succeeded = false;
                 }
 
@@ -432,9 +432,11 @@ public class PluginManager : PluginManagerBase
                     if (Directory.Exists(installPath + rootDirectory))
                     {
                         Plugins.PluginManager.ReceiveOutput("Plugin file already exists: " + installPath + @"\" + rootDirectory);
-                        DialogResult result = MessageBox.Show(@"Existing plugin already exists!  Do you want to replace it?", @"Confirm delete", MessageBoxButtons.YesNo);
+                        // Escape/close without a button click falls into the else branch below, same as clicking "No" -
+                        // matches the original MessageBoxButtons.YesNo behavior where Escape acts as "No".
+                        var confirmResult = DialogService.ShowConfirm(@"Existing plugin already exists!  Do you want to replace it?", DialogButton.Yes, DialogButton.No);
 
-                        if (result == DialogResult.Yes)
+                        if (confirmResult == DialogButton.Yes)
                         {
                             try
                             {
@@ -442,7 +444,7 @@ public class PluginManager : PluginManagerBase
                             }
                             catch (Exception exc)
                             {
-                                MessageBox.Show("Error trying to delete " + installPath + @"\" + rootDirectory + "\n\n" + exc.ToString());
+                                DialogService.ShowMessage("Error trying to delete " + installPath + @"\" + rootDirectory + "\n\n" + exc.ToString());
                                 succeeded = false;
                             }
                         }
@@ -503,11 +505,11 @@ public class PluginManager : PluginManagerBase
                         {
                             message += $"\n\nNote that Glue also has a plugin installed at \n{firstMatching.FullPath}";
                         }
-                        MessageBox.Show(message);
+                        DialogService.ShowMessage(message);
                     }
                     else
                     {
-                        MessageBox.Show("Failed to install plugin.");
+                        DialogService.ShowMessage("Failed to install plugin.");
 
                     }
                 }
@@ -1706,7 +1708,7 @@ public class PluginManager : PluginManagerBase
                         }
                         catch
                         {
-                            MessageBox.Show("Plugin " + kvp.Key.FriendlyName + " failed to shut down properly");
+                            DialogService.ShowMessage("Plugin " + kvp.Key.FriendlyName + " failed to shut down properly");
                             // Doesn't matter, we're shutting down
                         }
                     }else
@@ -2296,7 +2298,7 @@ public class PluginManager : PluginManagerBase
                 if (WasExceptionCausedByPlugin(exception, plugin))
                 {
                     // We're going to blame this plugin for the error
-                    MessageBox.Show($"A plugin has had an error.\n" +
+                    DialogService.ShowMessage($"A plugin has had an error.\n" +
                         $"Shutting down the plugin {plugin.Name} version {plugin.Plugin.Version} at file location\n{plugin.AssemblyLocation}\n\n" +
                         $"Additional information:\n\n" + 
                         exception.ToString());

@@ -139,12 +139,12 @@ namespace FlatRedBall.Glue.SetVariable
                 {
                     if (namedObject.SourceType == SourceType.File && namedObject.SourceFile == rfs.Name && namedObject.AddToManagers == false)
                     {
-                        DialogResult result = MessageBox.Show("The object " + namedObject.InstanceName + " references this file.  " +
+                        var confirmResult = DialogService.ShowConfirm("The object " + namedObject.InstanceName + " references this file.  " +
                             "Shared files are not added to the engine, but since the object has its AddToManagers also set to false " +
                             "the content in this file will not be added to managers.  Would you like to set the object's AddToManagers to " +
-                            "true?", "Add to managers?", MessageBoxButtons.YesNo);
+                            "true?", DialogButton.Yes, DialogButton.No);
 
-                        if (result == DialogResult.Yes)
+                        if (confirmResult == DialogButton.Yes)
                         {
                             namedObject.AddToManagers = true;
                         }
@@ -187,8 +187,8 @@ namespace FlatRedBall.Glue.SetVariable
 
                 if (oldProjectLocalization != newProjectLocalization)
                 {
-                    MessageBox.Show("Because of the change to the \"Is Database For Localizing\" the generated code for the entire project is likely out of date." +
-                        "We recommend closing and re-opening the project in Glue to cause a full regeneration.", "Generated code is out of date");
+                    DialogService.ShowMessage("Because of the change to the \"Is Database For Localizing\" the generated code for the entire project is likely out of date." +
+                        "We recommend closing and re-opening the project in Glue to cause a full regeneration.");
                 }
             }
 
@@ -380,15 +380,15 @@ namespace FlatRedBall.Glue.SetVariable
             string whyIsntValid;
             if (oldDirectory != newDirectory)
             {
-                MessageBox.Show("The old file was located in \n" + oldDirectory + "\n" +
+                DialogService.ShowMessage("The old file was located in \n" + oldDirectory + "\n" +
                     "The new file is located in \n" + newDirectory + "\n" +
-                    "Currently Glue does not support changing directories.", "Warning");
+                    "Currently Glue does not support changing directories.");
 
                 rfs.SetNameNoCall(oldName);
             }
             else if (_nameVerifier.IsReferencedFileNameValid(instanceName, rfs.GetAssetTypeInfo(), rfs, container, out whyIsntValid) == false)
             {
-                MessageBox.Show(whyIsntValid);
+                DialogService.ShowMessage(whyIsntValid);
                 rfs.SetNameNoCall(oldName);
 
             }
@@ -680,15 +680,14 @@ namespace FlatRedBall.Glue.SetVariable
             {
                 string message = "The new file name already exists.  What would you like to do?";
 
-                var mbmb = new MultiButtonMessageBoxWpf();
-
-                mbmb.MessageText = message;
-
-                mbmb.AddButton("Use existing file", DialogResult.Yes);
-                mbmb.AddButton("Cancel the rename", DialogResult.Cancel);
-
-                mbmb.ShowDialog();
-                var result = (DialogResult)mbmb.ClickedResult;
+                // Escape/close without a button click returns default(DialogResult) == None here, which is
+                // neither Cancel nor Yes, so it falls through and the rename proceeds with a move (same as
+                // clicking neither button would have fallen through to below in the pre-migration code, minus
+                // the NullReferenceException that direct (DialogResult)mbmb.ClickedResult casting used to throw
+                // on Escape).
+                var result = DialogService.ShowChoice<DialogResult>(message,
+                    ("Use existing file", DialogResult.Yes),
+                    ("Cancel the rename", DialogResult.Cancel));
 
                 if (result == DialogResult.Cancel)
                 {
