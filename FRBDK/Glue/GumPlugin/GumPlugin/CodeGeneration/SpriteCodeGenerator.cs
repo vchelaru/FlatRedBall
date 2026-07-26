@@ -94,13 +94,18 @@ public class SpriteCodeGenerator
         }
         var hasIRenderTargetTextureReferencer = _glueState.CurrentGlueProject.FileVersion >= (int)GluxVersions.GumHasIRenderTargetTextureReferencer;
 
-        if (!hasIRenderTargetTextureReferencer)
+        if (hasIRenderTargetTextureReferencer)
         {
-            return;
+            inheritanceList.Add("global::RenderingLibrary.Graphics.IRenderTargetTextureReferencer");
         }
 
-        inheritanceList.Add("global::RenderingLibrary.Graphics.IRenderTargetTextureReferencer");
+        var hasFrbRuntimeInterfaces = _glueState.CurrentGlueProject.FileVersion >= (int)GluxVersions.GumHasFrbRuntimeInterfaces ||
+            _glueState.CurrentMainProject.IsFrbSourceLinked();
 
+        if (hasFrbRuntimeInterfaces)
+        {
+            inheritanceList.Add("global::Gum.Wireframe.ISpriteRuntime");
+        }
     }
 
     public void GenerateAdditionalMethods(StandardElementSave standardElementSave, ICodeBlock classBodyBlock)

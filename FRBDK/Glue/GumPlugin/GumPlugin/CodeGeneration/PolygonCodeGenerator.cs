@@ -14,9 +14,23 @@ public class PolygonCodeGenerator
 {
     private readonly GlueState _glueState;
 
+    bool HasFrbRuntimeInterfaces =>
+        _glueState.CurrentGlueProject?.FileVersion >= (int)GluxVersions.GumHasFrbRuntimeInterfaces ||
+        _glueState.CurrentMainProject?.IsFrbSourceLinked() == true;
+
     public PolygonCodeGenerator(GlueState glueState)
     {
         _glueState = glueState;
+    }
+
+    public void AddAdditionalInheritance(StandardElementSave standardElementSave, List<string> inheritanceList)
+    {
+        if (standardElementSave.Name != "Polygon" || !HasFrbRuntimeInterfaces)
+        {
+            return;
+        }
+
+        inheritanceList.Add("global::Gum.Wireframe.IPolygonRuntime");
     }
 
     public void GenerateAdditionalMethods(StandardElementSave standardElementSave, ICodeBlock classBodyBlock)

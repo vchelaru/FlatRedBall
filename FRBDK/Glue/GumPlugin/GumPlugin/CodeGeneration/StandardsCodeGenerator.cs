@@ -333,6 +333,9 @@ namespace GumPlugin.CodeGeneration
         private void AddAdditionalInheritance(StandardElementSave standardElementSave, List<string> inheritanceList)
         {
             _spriteCodeGenerator.AddAdditionalInheritance(standardElementSave, inheritanceList);
+            _nineSliceCodeGenerator.AddAdditionalInheritance(standardElementSave, inheritanceList);
+            _containerCodeGenerator.AddAdditionalInheritance(standardElementSave, inheritanceList);
+            _polygonCodeGenerator.AddAdditionalInheritance(standardElementSave, inheritanceList);
         }
 
         private void GenerateAdditionalMethods(StandardElementSave standardElementSave, ICodeBlock classBodyBlock)

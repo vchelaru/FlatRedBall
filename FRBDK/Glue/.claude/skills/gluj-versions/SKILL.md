@@ -10,8 +10,7 @@ Glue projects (`.gluj`/`.glux`) are versioned so that the editor and runtime can
 
 `FRBDK/Glue/GlueCommon/SaveClasses/GlueProjectSave.cs`
 
-For background on what each version means and the historical context, see the official docs:
-https://docs.flatredball.com/flatredball/glue-reference/glujglux
+For background on what each version means and the historical context, see the official docs, published from `https://docs.flatredball.com/flatredball/glue-reference/glujglux`. That docs site is a GitBook synced from a **separate sibling repo checked out locally**, `C:\Users\vchel\Documents\GitHub\FlatRedBallDocs` (relative to this repo, same convention as the Gum sibling repo) — plain markdown, matching the site's URL structure. The glujglux page is `glue-reference/glujglux.md` in that repo. Edit the file directly rather than treating the docs as remote-only/unreachable.
 
 ## When adding a new version
 
@@ -20,7 +19,7 @@ Adding a new entry to `GluxVersions` requires updating several places in lockste
 1. Add the new enum entry at the bottom of `GluxVersions` with a dated comment describing what it represents.
 2. Update `LatestVersion` to point at the new entry.
 3. Update the `SyntaxVersionAttribute` on `FlatRedBallServices` so the runtime advertises the matching version.
-4. Update the docs at the URL above.
+4. Update the docs (the local `FlatRedBallDocs` repo file above), adding a new `### Version N - <title>` section matching the existing entries' style.
 
 Multiple enum entries can share the same integer value when several features land together — this is intentional and already common in the enum.
 

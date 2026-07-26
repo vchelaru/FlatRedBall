@@ -201,6 +201,12 @@ namespace FlatRedBall.Glue.SaveClasses
             // March 15, 2026
             NineSliceHasTilingMiddleSections = 67,
 
+            // July 26, 2026 - Gum's CustomSetPropertyOnRenderable.cs declares FRB-only
+            // ISpriteRuntime/INineSliceRuntime/IContainerRuntime/IPolygonRuntime interfaces
+            // (#3731) that Glue's generated Sprite/NineSlice/Container/Polygon runtimes can
+            // now implement.
+            GumHasFrbRuntimeInterfaces = 68,
+
             // Stop! If adding an entry here, modify SyntaxVersionAttribute on FlatRedBallServices
             // and LatestVersion down below
             // and update the docs
@@ -210,7 +216,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.NineSliceHasTilingMiddleSections;
+        public const int LatestVersion = (int)GluxVersions.GumHasFrbRuntimeInterfaces;
 
         public int FileVersion { get; set; }
 

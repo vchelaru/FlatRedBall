@@ -18,9 +18,25 @@ public class ContainerCodeGenerator
         _glueState.CurrentGlueProject?.FileVersion >= (int)GluxVersions.GumVisualHasRenderTarget ||
         _glueState.CurrentMainProject?.IsFrbSourceLinked() == true;
 
+    bool HasFrbRuntimeInterfaces =>
+        _glueState.CurrentGlueProject?.FileVersion >= (int)GluxVersions.GumHasFrbRuntimeInterfaces ||
+        _glueState.CurrentMainProject?.IsFrbSourceLinked() == true;
+
     public ContainerCodeGenerator(GlueState glueState)
     {
         _glueState = glueState;
+    }
+
+    public void AddAdditionalInheritance(StandardElementSave standardElementSave, List<string> inheritanceList)
+    {
+        // IContainerRuntime mirrors the Alpha/IsRenderTarget properties generated below, which only
+        // exist once HasIsRenderTarget is true - same gate applies here.
+        if (standardElementSave.Name != "Container" || !HasIsRenderTarget || !HasFrbRuntimeInterfaces)
+        {
+            return;
+        }
+
+        inheritanceList.Add("global::Gum.Wireframe.IContainerRuntime");
     }
 
     public void GenerateAdditionalMethods(StandardElementSave standardElementSave, ICodeBlock classBodyBlock)
