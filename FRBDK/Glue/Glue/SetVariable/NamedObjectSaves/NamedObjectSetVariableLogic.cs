@@ -162,7 +162,7 @@ namespace FlatRedBall.Glue.SetVariable
                 if (namedObjectSave.SetByDerived && namedObjectSave.ExposedInDerived)
                 {
                     // See comment in ExposedByDerived block on why this occurs
-                    MessageBox.Show("You have set ExposedInDerived to true, but SetByDerived is also true.  Both cannot be true at the same time " +
+                    DialogService.ShowMessage("You have set ExposedInDerived to true, but SetByDerived is also true.  Both cannot be true at the same time " +
                         "so Glue will set SetByDerived to false.");
                     namedObjectSave.SetByDerived = false;
                 }
@@ -246,7 +246,7 @@ namespace FlatRedBall.Glue.SetVariable
                     if (rfs != null && !rfs.IsSharedStatic)
                     {
 
-                        System.Windows.Forms.MessageBox.Show("This object comes from a file.  Files which are part of Screens " +
+                        DialogService.ShowMessage("This object comes from a file.  Files which are part of Screens " +
                             "are automatically added to the engine managers.  " +
                             "Adding this object would result in double-membership in the engine which may cause unexpected results.  " +
                             "\n\nGlue will now set this value back to false.");
@@ -264,23 +264,19 @@ namespace FlatRedBall.Glue.SetVariable
             {
                 if (namedObjectSave.IsList)
                 {
-                    DialogResult result = DialogResult.No;
+                    DialogButton? result;
                     if (string.IsNullOrEmpty(namedObjectSave.LayerOn))
                     {
-                        result = MessageBox.Show("Do you want to remove every object in the List " + namedObjectSave.InstanceName +
-                            " from its Layer?",
-                            "Remove all from Layer?",
-                            MessageBoxButtons.YesNo);
+                        result = DialogService.ShowConfirm("Do you want to remove every object in the List " + namedObjectSave.InstanceName +
+                            " from its Layer?", DialogButton.Yes, DialogButton.No);
                     }
                     else
                     {
-                        result = MessageBox.Show("Do you want to add every object contained in the List " + namedObjectSave.InstanceName +
-                            " to the Layer " + namedObjectSave.LayerOn + "?",
-                            "Add all to Layer?",
-                            MessageBoxButtons.YesNo);
+                        result = DialogService.ShowConfirm("Do you want to add every object contained in the List " + namedObjectSave.InstanceName +
+                            " to the Layer " + namedObjectSave.LayerOn + "?", DialogButton.Yes, DialogButton.No);
                     }
 
-                    if (result == DialogResult.Yes)
+                    if (result == DialogButton.Yes)
                     {
                         namedObjectSave.SetLayerRecursively(namedObjectSave.LayerOn);
                     }
@@ -306,22 +302,20 @@ namespace FlatRedBall.Glue.SetVariable
             {
                 if (namedObjectSave.IsList)
                 {
-                    DialogResult result = DialogResult.No;
+                    DialogButton? result;
 
                     if (namedObjectSave.AttachToCamera)
                     {
-                        result = MessageBox.Show("Do you want to attach every object contained in the list " + namedObjectSave.InstanceName +
-                            " to the Camera?", "Attach all to Camera?",
-                            MessageBoxButtons.YesNo);
+                        result = DialogService.ShowConfirm("Do you want to attach every object contained in the list " + namedObjectSave.InstanceName +
+                            " to the Camera?", DialogButton.Yes, DialogButton.No);
                     }
                     else
                     {
-                        result = MessageBox.Show("Do you want to detach every object contained in the list " + namedObjectSave.InstanceName +
-                            " from the Camera?", "Detach all from the Camera?",
-                            MessageBoxButtons.YesNo);
+                        result = DialogService.ShowConfirm("Do you want to detach every object contained in the list " + namedObjectSave.InstanceName +
+                            " from the Camera?", DialogButton.Yes, DialogButton.No);
                     }
 
-                    if (result == DialogResult.Yes)
+                    if (result == DialogButton.Yes)
                     {
                         namedObjectSave.SetAttachToCameraRecursively(namedObjectSave.AttachToCamera);
                     }
@@ -339,7 +333,7 @@ namespace FlatRedBall.Glue.SetVariable
                 // or else text will draw incorrectly
                 if (namedObjectSave.DestinationRectangle.HasValue && namedObjectSave.DestinationRectangle.Value.Y % 2 == 1)
                 {
-                    MessageBox.Show("Setting an odd value to the DestinationRectangle's Y may cause text to render improperly.  An " +
+                    DialogService.ShowMessage("Setting an odd value to the DestinationRectangle's Y may cause text to render improperly.  An " +
                         "even value is recommended");
 
                 }
@@ -362,7 +356,7 @@ namespace FlatRedBall.Glue.SetVariable
                         // Is this CreatedByOtherEntities?
                         if (!entitySave.CreatedByOtherEntities)
                         {
-                            MessageBox.Show("The Entity " + entitySave + " should have its CreatedByOtherEntities set to true to enable " +
+                            DialogService.ShowMessage("The Entity " + entitySave + " should have its CreatedByOtherEntities set to true to enable " +
                                 "visibility-based removal to work properly");
                         }
                     }
@@ -490,7 +484,7 @@ namespace FlatRedBall.Glue.SetVariable
                 {
                     succeeded = false;
 
-                    MessageBox.Show("The object " + existingContainer + " is already marked as IsContainer. " +
+                    DialogService.ShowMessage("The object " + existingContainer + " is already marked as IsContainer. " +
                         "Two objects in the same element cannot be marked as Iscontainer");
 
                 }
@@ -509,30 +503,26 @@ namespace FlatRedBall.Glue.SetVariable
 
                     if (!doesBaseMatch)
                     {
-                        var mbmb = new MultiButtonMessageBoxWpf();
-
                         string containerType = element.BaseElement;
                         if (string.IsNullOrEmpty(containerType))
                         {
                             containerType = "<NONE>";
                         }
 
+                        // Closed without a choice (e.g. Escape) returns default(DialogResult) == None, which
+                        // matches neither branch below - same as the original cancel behavior (do nothing).
+                        var selectedOption = DialogService.ShowChoice<DialogResult>(
+                            "The object is of type " + nosType + " but the container is of type " + containerType + "\n\n" +
+                            "What would you like to do?",
+                            ("Set the container's type to " + nosType, DialogResult.Yes),
+                            ("Nothing - game may not compile until this has been fixed", DialogResult.No),
+                            ("Set 'IsContainer' back to false", DialogResult.Cancel));
 
-                        mbmb.MessageText = "The object is of type " + nosType + " but the container is of type " + containerType + "\n\n" +
-                            "What would you like to do?";
-
-                        mbmb.AddButton("Set the container's type to " + nosType, DialogResult.Yes);
-                        mbmb.AddButton("Nothing - game may not compile until this has been fixed", DialogResult.No);
-                        mbmb.AddButton("Set 'IsContainer' back to false", DialogResult.Cancel);
-
-                        var dialogResult = mbmb.ShowDialog();
-                        var selectedOption = mbmb.ClickedResult;
-
-                        if (selectedOption is DialogResult.Yes)
+                        if (selectedOption == DialogResult.Yes)
                         {
                             element.BaseObject = nosType;
                         }
-                        else if (selectedOption is DialogResult.Cancel)
+                        else if (selectedOption == DialogResult.Cancel)
                         {
                             succeeded = false;
                         }
@@ -578,19 +568,12 @@ namespace FlatRedBall.Glue.SetVariable
                             string message = "This object has type of " + namedObjectSave.InstanceType +
                                 " but the base object in " + baseElement.ToString() + " is untyped.  What would you like to do?";
 
-                            var mbmb = new MultiButtonMessageBoxWpf();
-                            mbmb.MessageText = message;
+                            var selectedOption = DialogService.ShowChoice<DialogResult>(message,
+                                ("Change " + namedObjectInBase.InstanceName + " to " +
+                                    namedObjectSave.InstanceType + " in " + baseElement.ToString(), DialogResult.Yes),
+                                ("Do nothing (your project will likely not compile so you will need to fix this manually)", DialogResult.No));
 
-                            mbmb.AddButton("Change " + namedObjectInBase.InstanceName + " to " +
-                                namedObjectSave.InstanceType + " in " + baseElement.ToString(), DialogResult.Yes);
-
-                            mbmb.AddButton("Do nothing (your project will likely not compile so you will need to fix this manually)", DialogResult.No);
-
-                            var result = mbmb.ShowDialog();
-
-                            var selectedOption = mbmb.ClickedResult;
-
-                            if (selectedOption is DialogResult.Yes)
+                            if (selectedOption == DialogResult.Yes)
                             {
                                 switch (namedObjectInBase.SourceType)
                                 {
@@ -620,7 +603,7 @@ namespace FlatRedBall.Glue.SetVariable
                             string message = "This object is of type " + namedObjectSave.InstanceType + " but the base " +
                                 "object is of type " + namedObjectInBase.InstanceType + "";
 
-                            MessageBox.Show(message);
+                            DialogService.ShowMessage(message);
 
                             namedObjectSave.SourceName = oldValue;
 
@@ -863,9 +846,9 @@ namespace FlatRedBall.Glue.SetVariable
                 {
                     message += "\nDo you want to change to " + namedObjectSave.SourceClassType + " anyway?";
 
-                    DialogResult result = MessageBox.Show(message, "Change anyway?", MessageBoxButtons.YesNo);
+                    var result = DialogService.ShowConfirm(message, DialogButton.Yes, DialogButton.No);
 
-                    if (result == DialogResult.No)
+                    if (result == DialogButton.No)
                     {
                         namedObjectSave.SourceClassType = (string)oldValue;
                         namedObjectSave.UpdateCustomProperties();
@@ -946,14 +929,13 @@ namespace FlatRedBall.Glue.SetVariable
                             {
                                 whatIsWrong += "\nWhat would you like to do?";
 
-                                var mbmb = new MultiButtonMessageBoxWpf();
-                                mbmb.MessageText = whatIsWrong;
-                                mbmb.AddButton("Undo the change", DialogResult.Cancel);
-                                mbmb.AddButton("Keep the change (May cause runtime crashes)", DialogResult.Yes);
+                                // Closed without a choice (e.g. Escape) returns default(DialogResult) == None, which is not
+                                // Cancel, so the change is kept - same as the original behavior.
+                                var result = DialogService.ShowChoice<DialogResult>(whatIsWrong,
+                                    ("Undo the change", DialogResult.Cancel),
+                                    ("Keep the change (May cause runtime crashes)", DialogResult.Yes));
 
-                                var result = mbmb.ShowDialog();
-
-                                if(mbmb.ClickedResult is DialogResult.Cancel)
+                                if (result == DialogResult.Cancel)
                                 {
                                     addressModeVariable.Value = oldValue;
                                 }

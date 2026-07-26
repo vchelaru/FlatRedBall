@@ -77,7 +77,7 @@ public class DragDropManager : Singleton<DragDropManager>
             }
             else
             {
-                MessageBox.Show("Invalid movement");
+                DialogService.ShowMessage("Invalid movement");
             }
 
 
@@ -122,7 +122,7 @@ public class DragDropManager : Singleton<DragDropManager>
 
         if (string.IsNullOrEmpty(targetClassType) && targetNos.SourceType != SourceType.Entity)
         {
-            MessageBox.Show("The target Object does not have a defined type.  This operation is not valid");
+            DialogService.ShowMessage("The target Object does not have a defined type.  This operation is not valid");
         }
 
         #endregion
@@ -164,7 +164,7 @@ public class DragDropManager : Singleton<DragDropManager>
 
             if (!response.Succeeded)
             {
-                MessageBox.Show($"Could not drop {movingNos} on {targetNos}");
+                DialogService.ShowMessage($"Could not drop {movingNos} on {targetNos}");
 
             }
 
@@ -240,29 +240,24 @@ public class DragDropManager : Singleton<DragDropManager>
         {
             string message = "Move to list or create collision relationship?";
 
-            var mbmb = new MultiButtonMessageBoxWpf();
-            mbmb.MessageText = message;
-            mbmb.AddButton("Move to List", DialogResult.Yes);
-            mbmb.AddButton("Create Collision Relationship", DialogResult.No);
+            var result = DialogService.ShowChoice<DialogResult>(message,
+                ("Move to List", DialogResult.Yes),
+                ("Create Collision Relationship", DialogResult.No));
 
-            var dialogResult = mbmb.ShowDialog();
-
-            if(dialogResult == true)
+            if (result == DialogResult.Yes)
             {
-                var result = (DialogResult)mbmb.ClickedResult;
-                if ( result == DialogResult.Yes)
-                {
-                    canBeMovedInList = true;
-                    canBeCollidable = false;
-                }
-                else if (result == DialogResult.No)
-                {
-                    canBeCollidable = true;
-                    canBeMovedInList = false;
-                }
+                canBeMovedInList = true;
+                canBeCollidable = false;
+            }
+            else if (result == DialogResult.No)
+            {
+                canBeCollidable = true;
+                canBeMovedInList = false;
             }
             else
             {
+                // Closed without a choice (e.g. Escape) returns default(DialogResult) == None here,
+                // which matches neither branch above - same as the original cancel behavior.
                 canBeCollidable = false;
                 canBeMovedInList = false;
             }
@@ -273,7 +268,7 @@ public class DragDropManager : Singleton<DragDropManager>
             var response = HandleDropOnList(treeNodeMoving, targetNode, targetNos, movingNos);
             if (!response.Succeeded)
             {
-                MessageBox.Show(response.Message);
+                DialogService.ShowMessage(response.Message);
             }
             succeeded = response.Succeeded;
         }
@@ -283,7 +278,7 @@ public class DragDropManager : Singleton<DragDropManager>
 
             if (!response.Succeeded && !string.IsNullOrEmpty(response.Message))
             {
-                MessageBox.Show(response.Message);
+                DialogService.ShowMessage(response.Message);
             }
 
             succeeded = response.Succeeded;
@@ -794,7 +789,7 @@ public class DragDropManager : Singleton<DragDropManager>
 
         if (!targetNamedObjectSave.IsList && !targetNamedObjectSave.IsLayer)
         {
-            MessageBox.Show("The target is not a List or Layer so we can't add an Object to it.", "Target not valid");
+            DialogService.ShowMessage("The target is not a List or Layer so we can't add an Object to it.");
         }
         else if (targetNamedObjectSave.IsLayer)
         {
@@ -815,11 +810,11 @@ public class DragDropManager : Singleton<DragDropManager>
 
             if (isOfTypeOrInherits == false)
             {
-                MessageBox.Show("The target list type is of type\n\n" +
+                DialogService.ShowMessage("The target list type is of type\n\n" +
                     listType +
                     "\n\nBut the Entity is of type\n\n" +
                     entity.Name +
-                    "\n\nCould not add an instance to the list", "Could not add instance");
+                    "\n\nCould not add an instance to the list");
             }
             else
             {
@@ -952,22 +947,14 @@ public class DragDropManager : Singleton<DragDropManager>
 
         if (elementToCreateIn is EntitySave entityToCreateIn && entityToCreateIn.ImplementsIVisible && !blueprintEntity.ImplementsIVisible)
         {
-            var mbmb = new MultiButtonMessageBoxWpf();
-            mbmb.MessageText = "The Entity\n\n" + blueprintEntity +
+            // Closed without a choice (e.g. Escape) returns default(DialogResult) == None here, which is
+            // treated the same as Cancel below (only DialogResult.OK is special-cased) - matches original behavior.
+            var result = DialogService.ShowChoice<DialogResult>(
+                "The Entity\n\n" + blueprintEntity +
                 "\n\nDoes not Implement IVisible, but the Entity it is being dropped in does.  " +
-                "What would you like to do?";
-
-            mbmb.AddButton("Make " + blueprintEntity.Name + " implement IVisible", DialogResult.OK);
-            mbmb.AddButton("Nothing (your code will not compile until this problem is resolved manually)", DialogResult.Cancel);
-
-            var dialogResult = mbmb.ShowDialog();
-
-            DialogResult result = DialogResult.Cancel;
-
-            if (mbmb.ClickedResult != null && dialogResult == true)
-            {
-                result = (DialogResult)mbmb.ClickedResult;
-            }
+                "What would you like to do?",
+                ("Make " + blueprintEntity.Name + " implement IVisible", DialogResult.OK),
+                ("Nothing (your code will not compile until this problem is resolved manually)", DialogResult.Cancel));
 
             if (result == DialogResult.OK)
             {
@@ -1037,9 +1024,9 @@ public class DragDropManager : Singleton<DragDropManager>
     {
         string message = "Add all contained files in " + element + " to Global Content Files?  Files will still be referenced by " + element;
 
-        DialogResult dialogResult = MessageBox.Show(message, "Add to Global Content?", MessageBoxButtons.YesNo);
+        var dialogResult = DialogService.ShowConfirm(message, DialogButton.Yes, DialogButton.No);
 
-        if (dialogResult == DialogResult.Yes)
+        if (dialogResult == DialogButton.Yes)
         {
 
             if (!element.UseGlobalContent)
@@ -1051,11 +1038,11 @@ public class DragDropManager : Singleton<DragDropManager>
                     screenOrEntity = "Entity";
                 }
 
-                DialogResult result = MessageBox.Show("The " + screenOrEntity + " " + element +
+                var result = DialogService.ShowConfirm("The " + screenOrEntity + " " + element +
                     "does not UseGlobalContent.  Would you like " +
-                    " to set UseGlobalContent to true?", "Set UseGlobalContent to true?", MessageBoxButtons.YesNo);
+                    " to set UseGlobalContent to true?", DialogButton.Yes, DialogButton.No);
 
-                if (result == DialogResult.Yes)
+                if (result == DialogButton.Yes)
                 {
                     element.UseGlobalContent = true;
                 }
@@ -1271,7 +1258,7 @@ public class DragDropManager : Singleton<DragDropManager>
 
                         if (!String.IsNullOrEmpty(errorMessage))
                         {
-                            MessageBox.Show(errorMessage);
+                            DialogService.ShowMessage(errorMessage);
                         }
                         else if (newlyCreatedFile != null)
                         {
@@ -1311,7 +1298,7 @@ public class DragDropManager : Singleton<DragDropManager>
 
         if (!string.IsNullOrEmpty(response.Message))
         {
-            MessageBox.Show(response.Message);
+            DialogService.ShowMessage(response.Message);
         }
     }
 
@@ -1340,7 +1327,7 @@ public class DragDropManager : Singleton<DragDropManager>
             if (isAlreadyPartOfReferencedFiles)
             {
 
-                MessageBox.Show("The file\n\n" + referencedFileSave.Name + "\n\nis already a Global Content File");
+                DialogService.ShowMessage("The file\n\n" + referencedFileSave.Name + "\n\nis already a Global Content File");
             }
             else
             {
@@ -1363,11 +1350,11 @@ public class DragDropManager : Singleton<DragDropManager>
                         screenOrEntity = "Entity";
                     }
 
-                    DialogResult result = MessageBox.Show("The " + screenOrEntity + " " + container.ToString() +
+                    var result = DialogService.ShowConfirm("The " + screenOrEntity + " " + container.ToString() +
                         "does not UseGlobalContent.  Would you like " +
-                        " to set UseGlobalContent to true?", "Set UseGlobalContent to true?", MessageBoxButtons.YesNo);
+                        " to set UseGlobalContent to true?", DialogButton.Yes, DialogButton.No);
 
-                    if (result == DialogResult.Yes)
+                    if (result == DialogButton.Yes)
                     {
                         container.UseGlobalContent = true;
                     }
@@ -1615,12 +1602,11 @@ public class DragDropManager : Singleton<DragDropManager>
         }
         //////////////End Early Out///////////////////////
 
-        var dialogResult = MessageBox.Show(
+        var dialogResult = DialogService.ShowConfirm(
                             $"Would you like to set the object {namedObject.InstanceName} to be created from the file {referencedFileSave.Name}?",
-                            $"Set {namedObject.InstanceName} to be from file?",
-                            MessageBoxButtons.YesNo);
+                            DialogButton.Yes, DialogButton.No);
 
-        if (dialogResult == DialogResult.Yes)
+        if (dialogResult == DialogButton.Yes)
         {
             namedObject.SourceType = SourceType.File;
             namedObject.SourceFile = referencedFileSave.Name;
@@ -1635,11 +1621,9 @@ public class DragDropManager : Singleton<DragDropManager>
                 string message = $"The object {namedObject.InstanceName} has its 'Instantiate' variable set to 'false'. " +
                     $"This needs to be set to 'true' for the object to be created from the file. Set it to true?";
 
-                var setToTrueResponse = MessageBox.Show(message,
-                    "Set Instantiate to true?",
-                    MessageBoxButtons.YesNo);
+                var setToTrueResponse = DialogService.ShowConfirm(message, DialogButton.Yes, DialogButton.No);
 
-                if (setToTrueResponse == DialogResult.Yes)
+                if (setToTrueResponse == DialogButton.Yes)
                 {
                     namedObject.Instantiate = true;
                 }
@@ -1809,7 +1793,7 @@ public class DragDropManager : Singleton<DragDropManager>
 #if !DEBUG
         catch (Exception exception)
         {
-            System.Windows.Forms.MessageBox.Show("Error moving object: " + exception.ToString());
+            DialogService.ShowMessage("Error moving object: " + exception.ToString());
         }
 #endif
     }
