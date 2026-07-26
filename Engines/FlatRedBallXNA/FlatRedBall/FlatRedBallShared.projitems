@@ -138,6 +138,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Text.PreRendered.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\TextManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\TextureCoordinateFlipper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\VertexColorPacker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Texture\RenderTargetRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Texture\RenderTargetSprite.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Gui\Controls\IButton.cs" />

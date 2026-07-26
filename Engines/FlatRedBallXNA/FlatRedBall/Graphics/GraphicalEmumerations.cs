@@ -24,7 +24,13 @@ namespace FlatRedBall.Graphics
         ColorTextureAlpha,
         Modulate2X,
         Modulate4X,
-        InterpolateColor
+        InterpolateColor,
+        /// <summary>
+        /// Like <see cref="Add"/>, but negative channel values genuinely subtract instead of
+        /// clamping to 0. Signed [-1, 1] values are bias/scale-encoded into the unsigned vertex
+        /// color byte and decoded back to signed in the pixel shader.
+        /// </summary>
+        AddSubtract
     }
 
 

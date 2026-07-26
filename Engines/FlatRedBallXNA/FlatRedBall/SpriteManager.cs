@@ -2143,29 +2143,11 @@ namespace FlatRedBall
             else
     #endif
             {
-                verticesForDrawing[0].Color.PackedValue =
-                    ((uint)(255 * vertices[0].Color.X)) +
-                    (((uint)(255 * vertices[0].Color.Y)) << 8) +
-                    (((uint)(255 * vertices[0].Color.Z)) << 16) +
-                    (((uint)(255 * vertices[0].Color.W)) << 24);
-
-                verticesForDrawing[1].Color.PackedValue =
-                    ((uint)(255 * vertices[1].Color.X)) +
-                    (((uint)(255 * vertices[1].Color.Y)) << 8) +
-                    (((uint)(255 * vertices[1].Color.Z)) << 16) +
-                    (((uint)(255 * vertices[1].Color.W)) << 24);
-
-                verticesForDrawing[2].Color.PackedValue =
-                    ((uint)(255 * vertices[2].Color.X)) +
-                    (((uint)(255 * vertices[2].Color.Y)) << 8) +
-                    (((uint)(255 * vertices[2].Color.Z)) << 16) +
-                    (((uint)(255 * vertices[2].Color.W)) << 24);
-
-                verticesForDrawing[3].Color.PackedValue =
-                    ((uint)(255 * vertices[3].Color.X)) +
-                    (((uint)(255 * vertices[3].Color.Y)) << 8) +
-                    (((uint)(255 * vertices[3].Color.Z)) << 16) +
-                    (((uint)(255 * vertices[3].Color.W)) << 24);
+                var colorOperation = spriteToUpdate.ColorOperation;
+                verticesForDrawing[0].Color.PackedValue = FlatRedBall.Graphics.VertexColorPacker.Pack(vertices[0].Color, colorOperation);
+                verticesForDrawing[1].Color.PackedValue = FlatRedBall.Graphics.VertexColorPacker.Pack(vertices[1].Color, colorOperation);
+                verticesForDrawing[2].Color.PackedValue = FlatRedBall.Graphics.VertexColorPacker.Pack(vertices[2].Color, colorOperation);
+                verticesForDrawing[3].Color.PackedValue = FlatRedBall.Graphics.VertexColorPacker.Pack(vertices[3].Color, colorOperation);
             }
 
             if (!spriteToUpdate.FlipHorizontal && !spriteToUpdate.FlipVertical)

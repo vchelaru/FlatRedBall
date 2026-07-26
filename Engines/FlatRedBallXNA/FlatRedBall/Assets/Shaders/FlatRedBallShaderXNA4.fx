@@ -67,6 +67,19 @@ float4 SubtractPixelShader(a2v IN ) : COLOR
 	return color;
 }
 
+float4 AddSubtractPixelShader(a2v IN ) : COLOR
+{
+    // RGB were bias/scale-encoded into [0,1] on the CPU (VertexColorPacker) to survive the
+    // unsigned-normalized vertex color format; decode back to a signed [-1,1] value here.
+    float4 fromTexture =  tex2D(textureSampler, IN.texCoord).rgba;
+    float3 signedColor = IN.color.rgb * 2.0 - 1.0;
+    fromTexture[0] = (fromTexture[0] + signedColor[0] * fromTexture[3]) * IN.color[3];
+    fromTexture[1] = (fromTexture[1] + signedColor[1] * fromTexture[3]) * IN.color[3];
+    fromTexture[2] = (fromTexture[2] + signedColor[2] * fromTexture[3]) * IN.color[3];
+    fromTexture[3] = fromTexture[3] * IN.color[3];
+	return fromTexture;
+}
+
 float4 ModulatePixelShader(a2v IN ) : COLOR
 {
     float4 color =  tex2D(textureSampler, IN.texCoord).rgba;
@@ -160,6 +173,15 @@ technique Subtract
 	{
 		vertexshader = compile vs_1_1 vs();
 		pixelshader = compile ps_2_0 SubtractPixelShader();
+	}
+}
+
+technique AddSubtract
+{
+	pass p0
+	{
+		vertexshader = compile vs_1_1 vs();
+		pixelshader = compile ps_2_0 AddSubtractPixelShader();
 	}
 }
 

@@ -411,7 +411,7 @@ namespace FlatRedBall
                     Debugging.CrossPlatform.ShouldApplyRestrictionsFor(Debugging.Platform.Android) ||
                     Debugging.CrossPlatform.ShouldApplyRestrictionsFor(Debugging.Platform.WindowsRt))
                 {
-                    if(value == Graphics.ColorOperation.Add || value == Graphics.ColorOperation.Subtract ||
+                    if(value == Graphics.ColorOperation.Add || value == Graphics.ColorOperation.AddSubtract || value == Graphics.ColorOperation.Subtract ||
                         value == Graphics.ColorOperation.InterpolateColor || value == Graphics.ColorOperation.InverseTexture ||
                         value == Graphics.ColorOperation.Modulate2X || value == Graphics.ColorOperation.Modulate4X)
                     {
