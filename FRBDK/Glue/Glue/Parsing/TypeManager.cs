@@ -7,6 +7,7 @@ using System.Collections;
 using System.IO;
 using System.Collections.ObjectModel;
 using FlatRedBall.Math;
+using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Graphics;
 using System.Security.Policy;
@@ -128,7 +129,7 @@ namespace FlatRedBall.Glue.Parsing
                     }
                     catch(Exception exception)
                     {
-                        System.Windows.Forms.MessageBox.Show("Error making a generic type out of " + baseType.Name + "<" + genericType.Name + ">" +
+                        DialogService.ShowMessage("Error making a generic type out of " + baseType.Name + "<" + genericType.Name + ">" +
                             "\n This is probably because your game hasn't been rebuilt since you've made a critical change");
                         return null;
                     }
@@ -465,7 +466,7 @@ namespace FlatRedBall.Glue.Parsing
             }
             catch (ReflectionTypeLoadException)
             {
-                System.Windows.Forms.MessageBox.Show("Encountered exception while trying to load " + assembly.FullName +
+                DialogService.ShowMessage("Encountered exception while trying to load " + assembly.FullName +
                     "\nThis is likely because the assembly is using a different version of the .NET framework.");
             }
             catch (TypeLoadException)

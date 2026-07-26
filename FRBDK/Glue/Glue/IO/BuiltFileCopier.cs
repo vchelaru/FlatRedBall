@@ -7,7 +7,7 @@ using FlatRedBall.IO;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins;
 using FlatRedBall.Glue.VSHelpers.Projects;
 using FlatRedBall.Glue.SaveClasses;
-using System.Windows.Forms;
+using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Plugins;
@@ -83,7 +83,7 @@ namespace FlatRedBall.Glue.IO
 
                 if (!System.IO.File.Exists(outputFile))
                 {
-                    MessageBox.Show("The XNB doesn't exist.  Did you build the file?");
+                    DialogService.ShowMessage("The XNB doesn't exist.  Did you build the file?");
                 }
                 else
                 {
@@ -180,7 +180,7 @@ namespace FlatRedBall.Glue.IO
                     {
                         if (errorReportingStyle == ErrorReportingStyle.MessageBox)
                         {
-                            System.Windows.Forms.MessageBox.Show("Error copying built file:\n\n" + e.ToString());
+                            DialogService.ShowMessage("Error copying built file:\n\n" + e.ToString());
                         }
                         else
                         {

@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.Controls.ProjectSync;
+﻿using FlatRedBall.Glue.Controls;
+using FlatRedBall.Glue.Controls.ProjectSync;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.VSHelpers;
 using FlatRedBall.Glue.VSHelpers.Projects;
@@ -41,7 +42,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
             }
             catch(FileNotFoundException fnfe)
             {
-                MessageBox.Show(fnfe.Message);
+                DialogService.ShowMessage(fnfe.Message);
             }
 
             string fileToOpen = null;
@@ -77,7 +78,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
 
                     if(openedWithGlue)
                     {
-                        MessageBox.Show(String.Format(L.Texts.GlueFileAssociation, fileToOpen));
+                        DialogService.ShowMessage(String.Format(L.Texts.GlueFileAssociation, fileToOpen));
                     }
                 }
                 catch(InvalidOperationException)

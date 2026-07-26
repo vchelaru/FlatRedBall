@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
+﻿using FlatRedBall.Glue.Controls;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using Glue;
 using System;
 using System.Windows.Forms;
@@ -55,10 +56,8 @@ namespace FlatRedBall.Glue.AutomatedGlue
         {
             if (ShowGui)
             {
-                GlueCommands.Self.DoOnUiThread(() =>
-                {
-                    MessageBox.Show(MainGlueWindow.Self, text, caption);
-                });
+                // DialogService.ShowMessage has no caption parameter, so the caption is dropped here.
+                DialogService.ShowMessage(text);
             }
         }
 
@@ -66,10 +65,7 @@ namespace FlatRedBall.Glue.AutomatedGlue
         {
             if (ShowGui)
             {
-                GlueCommands.Self.DoOnUiThread(() =>
-                {
-                    MessageBox.Show(MainGlueWindow.Self, text);
-                });
+                DialogService.ShowMessage(text);
             }
         }
 
@@ -77,11 +73,8 @@ namespace FlatRedBall.Glue.AutomatedGlue
         {
             if (ShowGui)
             {
-                GlueCommands.Self.DoOnUiThread(() =>
-                {
-                    // We want to show the exception here so we can diagnose it better.
-                    MessageBox.Show(MainGlueWindow.Self, text + "\n\n\nDetails:\n\n" + ex, caption);
-                });
+                // We want to show the exception here so we can diagnose it better.
+                DialogService.ShowMessage(text + "\n\n\nDetails:\n\n" + ex);
             }
             else
             {

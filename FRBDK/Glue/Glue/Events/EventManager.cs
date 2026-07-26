@@ -6,7 +6,7 @@ using FlatRedBall.IO.Csv;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using FlatRedBall.Glue.Parsing;
-using System.Windows.Forms;
+using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.IO;
 
@@ -40,7 +40,7 @@ namespace FlatRedBall.Glue.Events
             
             if(fileToLoad.Exists() == false)
             {
-                System.Windows.Forms.MessageBox.Show("Could not find the file: " + fileToLoad);
+                DialogService.ShowMessage("Could not find the file: " + fileToLoad);
             }
             else
             {
@@ -50,7 +50,7 @@ namespace FlatRedBall.Glue.Events
                 }
                 catch (Exception e)
                 {
-                    System.Windows.Forms.MessageBox.Show("Could not initialize event manager.  Check to make sure " +
+                    DialogService.ShowMessage("Could not initialize event manager.  Check to make sure " +
                         "the following file exists and is not corrupt: " + fileToLoad + "\n\n" + e.ToString());
                 }
             }

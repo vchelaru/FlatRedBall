@@ -88,7 +88,7 @@ namespace FlatRedBall.Glue.Controls
 
                 if(response.OperationResult == Plugins.ExportedInterfaces.CommandInterfaces.OperationResult.Failure)
                 {
-                    MessageBox.Show(response.Message);
+                    DialogService.ShowMessage(response.Message);
                 }
                 else
                 {
@@ -173,12 +173,11 @@ namespace FlatRedBall.Glue.Controls
                     if (node.Parent == null)
                     {
                         // This thing is a class
-                        DialogResult result = 
-                            System.Windows.Forms.MessageBox.Show("Are you sure you want to remove the " + node.Text + " class?  All CSV types will return to their default types.",
-                            "Remove Class?",
-                            MessageBoxButtons.YesNo);
+                        var result = DialogService.ShowConfirm(
+                            "Are you sure you want to remove the " + node.Text + " class?  All CSV types will return to their default types.",
+                            DialogButton.Yes, DialogButton.No);
 
-                        if (result == System.Windows.Forms.DialogResult.Yes)
+                        if (result == DialogButton.Yes)
                         {
                             ProjectManager.GlueProjectSave.CustomClasses.Remove(CurrentCustomClassSave);
                             GluxCommands.Self.SaveProjectAndElements();

@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using FlatRedBall.Utilities;
 using System.IO;
 using FlatRedBall.Glue.AutomatedGlue;
+using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
@@ -156,9 +157,9 @@ namespace FlatRedBall.Glue.IO
                 string message = string.Format(L.Texts.QuestionFilesOutsideContent, screenOrEntity);
 
 
-                var result = MessageBox.Show(message, L.Texts.QuestionExport, MessageBoxButtons.YesNo);
+                var result = DialogService.ShowConfirm(message, DialogButton.Yes, DialogButton.No);
 
-                shouldContinue = result == DialogResult.Yes;
+                shouldContinue = result == DialogButton.Yes;
 
                 copyExternalFiles = true;
             }
@@ -206,13 +207,13 @@ namespace FlatRedBall.Glue.IO
 
             string absoluteXml = directory + FileManager.RemovePath(element.Name) + "." + extension;
             string absoluteZip = directory + FileManager.RemovePath(element.Name) + "." + zipExtension;
-            DialogResult dialogResult = DialogResult.Yes;
+            DialogButton? dialogResult = DialogButton.Yes;
 
             if (automaticOverwrite == false && FileManager.FileExists(absoluteZip))
             {
-                dialogResult = MessageBox.Show(
+                dialogResult = DialogService.ShowConfirm(
                     String.Format(L.Texts.FileXExistsOverwrite, absoluteXml),
-                    L.Texts.QuestionOverwrite, MessageBoxButtons.YesNo);
+                    DialogButton.Yes, DialogButton.No);
 
             }
 
@@ -221,9 +222,9 @@ namespace FlatRedBall.Glue.IO
 
             if (!string.IsNullOrEmpty(reasonWhyElementCantBeExported))
             {
-                MessageBox.Show($"{L.Texts.ExportCant}\n\n{reasonWhyElementCantBeExported}");
+                DialogService.ShowMessage($"{L.Texts.ExportCant}\n\n{reasonWhyElementCantBeExported}");
             }
-            else if (dialogResult == DialogResult.Yes)
+            else if (dialogResult == DialogButton.Yes)
             {
                 PerformExport(element, glueProjectSave, openDirectory, absoluteXml, absoluteZip, copyExternalFiles);
                 exportedFile = absoluteZip;
