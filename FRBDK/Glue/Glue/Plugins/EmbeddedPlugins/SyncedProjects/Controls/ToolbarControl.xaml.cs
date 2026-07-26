@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
+﻿using FlatRedBall.Glue.Controls;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using System.Windows;
 using System.Windows.Controls;
 using L = Localization;
@@ -24,7 +25,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects.Controls
             }
             else
             {
-                MessageBox.Show("There is no loaded Glue project");
+                DialogService.ShowMessage("There is no loaded Glue project");
             }
         }
 

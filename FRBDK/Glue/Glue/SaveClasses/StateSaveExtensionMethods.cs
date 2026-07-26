@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Windows.Forms;
 using FlatRedBall.Content.Instructions;
+using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Parsing;
 
@@ -32,10 +32,10 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 string withoutSpace = variableName.Substring(0, variableName.IndexOf(' '));
 
-                DialogResult result = 
-                    MessageBox.Show("The variable " + withoutSpace + " is set in other categories that do not share states.  Are you sure you want to set it?", "Set variable?", MessageBoxButtons.YesNo);
+                var result =
+                    DialogService.ShowConfirm("The variable " + withoutSpace + " is set in other categories that do not share states.  Are you sure you want to set it?");
 
-                if (result == DialogResult.Yes)
+                if (result == DialogButton.Yes)
                 {
                     variableName = withoutSpace;
                 }

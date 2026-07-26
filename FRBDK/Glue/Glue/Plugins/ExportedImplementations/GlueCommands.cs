@@ -405,7 +405,7 @@ public class GlueCommands : IGlueCommands
             {
                 var errorLoadingSettings = global::Localization.Texts.ErrorLoadingSettings;
                 var errorDetails = global::Localization.Texts.ErrorDetails;
-                System.Windows.MessageBox.Show($"{errorLoadingSettings}\n\n{settingsFileLocation}\n\n{errorDetails}\n\n{e}");
+                FlatRedBall.Glue.Controls.DialogService.ShowMessage($"{errorLoadingSettings}\n\n{settingsFileLocation}\n\n{errorDetails}\n\n{e}");
                 didErrorOccur = true;
             }
 

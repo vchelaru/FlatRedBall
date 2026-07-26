@@ -7,8 +7,8 @@ using System.IO;
 using FlatRedBall.Glue;
 using FlatRedBall.IO;
 using FlatRedBall.Glue.Plugins;
-using System.Windows.Forms;
 using System.ComponentModel.Composition;
+using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.SaveClasses;
@@ -272,7 +272,7 @@ namespace FlatRedBall.Glue.VSHelpers
             {
                 succeeded = false;
 
-                MessageBox.Show("Could not copy the file " + resourceName + "\n\n" + e.ToString());
+                DialogService.ShowMessage("Could not copy the file " + resourceName + "\n\n" + e.ToString());
             }
             return succeeded;
         }

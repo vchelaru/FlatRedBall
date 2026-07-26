@@ -375,22 +375,19 @@ Additional Info:
 
                 if(toReturn == null)
                 {
-                    var mbmb = new MultiButtonMessageBoxWpf();
+                    var options = loadCalls
+                        .Select(loadCall => (loadCall.Preprocessor, loadCall.Func))
+                        .ToList();
 
-                    mbmb.MessageText = "FlatRedBall could not determine the project type. Would you like to manually set the project type?";
+                    options.Add(("No, do not manually set the type", (Func<ProjectBase>)null));
 
-                    foreach(var loadCall in loadCalls)
+                    var chosenFunc = DialogService.ShowChoice(
+                        "FlatRedBall could not determine the project type. Would you like to manually set the project type?",
+                        options.ToArray());
+
+                    if(chosenFunc != null)
                     {
-                        mbmb.AddButton(loadCall.Preprocessor, loadCall.Func);
-                    }
-
-                    mbmb.AddButton("No, do not manually set the type", null);
-
-                    var showResult = mbmb.ShowDialog();
-
-                    if(mbmb.ClickedResult is Func<ProjectBase> asFunc)
-                    {
-                        toReturn = asFunc();
+                        toReturn = chosenFunc();
                     }
                 }
             }

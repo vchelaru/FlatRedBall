@@ -8,6 +8,7 @@ using FlatRedBall.Glue.SaveClasses;
 using System.IO;
 using FlatRedBall.Glue.FormHelpers;
 using System.Windows.Forms;
+using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.AutomatedGlue;
@@ -276,13 +277,12 @@ namespace FlatRedBall.Glue.Managers
             {
                 if (!projectSpecificFile.File.Exists()) continue;
 
-                DialogResult result =
-                    System.Windows.Forms.MessageBox.Show(
-                        "The following file is no longer referenced by the project\n\n" +
-                        projectSpecificFile +
-                        "\n\nRemove and delete this file?", "Remove unreferenced file?", MessageBoxButtons.YesNo);
+                var result = DialogService.ShowConfirm(
+                    "The following file is no longer referenced by the project\n\n" +
+                    projectSpecificFile +
+                    "\n\nRemove and delete this file?");
 
-                if (result != DialogResult.Yes) continue;
+                if (result != DialogButton.Yes) continue;
 
                 ProjectManager.GetProjectByName(projectSpecificFile.ProjectName).ContentProject.RemoveItem(
                     projectSpecificFile.File.FullPath);
