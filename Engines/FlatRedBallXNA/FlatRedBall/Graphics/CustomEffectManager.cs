@@ -33,6 +33,7 @@ namespace FlatRedBall.Graphics
 
         EffectTechnique? _techniqueTexture;
         EffectTechnique? _techniqueAdd;
+        EffectTechnique? _techniqueAddSubtract;
         EffectTechnique? _techniqueSubtract;
         EffectTechnique? _techniqueModulate;
         EffectTechnique? _techniqueModulate2X;
@@ -44,6 +45,7 @@ namespace FlatRedBall.Graphics
 
         EffectTechnique? _techniqueTexture_CM;
         EffectTechnique? _techniqueAdd_CM;
+        EffectTechnique? _techniqueAddSubtract_CM;
         EffectTechnique? _techniqueSubtract_CM;
         EffectTechnique? _techniqueModulate_CM;
         EffectTechnique? _techniqueModulate2X_CM;
@@ -55,6 +57,7 @@ namespace FlatRedBall.Graphics
 
         EffectTechnique? _techniqueTexture_LN;
         EffectTechnique? _techniqueAdd_LN;
+        EffectTechnique? _techniqueAddSubtract_LN;
         EffectTechnique? _techniqueSubtract_LN;
         EffectTechnique? _techniqueModulate_LN;
         EffectTechnique? _techniqueModulate2X_LN;
@@ -66,6 +69,7 @@ namespace FlatRedBall.Graphics
 
         EffectTechnique? _techniqueTexture_LN_CM;
         EffectTechnique? _techniqueAdd_LN_CM;
+        EffectTechnique? _techniqueAddSubtract_LN_CM;
         EffectTechnique? _techniqueSubtract_LN_CM;
         EffectTechnique? _techniqueModulate_LN_CM;
         EffectTechnique? _techniqueModulate2X_LN_CM;
@@ -77,6 +81,7 @@ namespace FlatRedBall.Graphics
 
         EffectTechnique? _techniqueTexture_Linear;
         EffectTechnique? _techniqueAdd_Linear;
+        EffectTechnique? _techniqueAddSubtract_Linear;
         EffectTechnique? _techniqueSubtract_Linear;
         EffectTechnique? _techniqueModulate_Linear;
         EffectTechnique? _techniqueModulate2X_Linear;
@@ -88,6 +93,7 @@ namespace FlatRedBall.Graphics
 
         EffectTechnique? _techniqueTexture_Linear_CM;
         EffectTechnique? _techniqueAdd_Linear_CM;
+        EffectTechnique? _techniqueAddSubtract_Linear_CM;
         EffectTechnique? _techniqueSubtract_Linear_CM;
         EffectTechnique? _techniqueModulate_Linear_CM;
         EffectTechnique? _techniqueModulate2X_Linear_CM;
@@ -99,6 +105,7 @@ namespace FlatRedBall.Graphics
 
         EffectTechnique? _techniqueTexture_Linear_LN;
         EffectTechnique? _techniqueAdd_Linear_LN;
+        EffectTechnique? _techniqueAddSubtract_Linear_LN;
         EffectTechnique? _techniqueSubtract_Linear_LN;
         EffectTechnique? _techniqueModulate_Linear_LN;
         EffectTechnique? _techniqueModulate2X_Linear_LN;
@@ -110,6 +117,7 @@ namespace FlatRedBall.Graphics
 
         EffectTechnique? _techniqueTexture_Linear_LN_CM;
         EffectTechnique? _techniqueAdd_Linear_LN_CM;
+        EffectTechnique? _techniqueAddSubtract_Linear_LN_CM;
         EffectTechnique? _techniqueSubtract_Linear_LN_CM;
         EffectTechnique? _techniqueModulate_Linear_LN_CM;
         EffectTechnique? _techniqueModulate2X_Linear_LN_CM;
@@ -155,6 +163,7 @@ namespace FlatRedBall.Graphics
 
                     //_techniqueTexture = GetTechniqueSafe("Texture_Point"); // This has been already cached
                     _techniqueAdd = GetTechniqueSafe("Add_Point");
+                    _techniqueAddSubtract = GetTechniqueSafe("AddSubtract_Point");
                     _techniqueSubtract = GetTechniqueSafe("Subtract_Point");
                     _techniqueModulate = GetTechniqueSafe("Modulate_Point");
                     _techniqueModulate2X = GetTechniqueSafe("Modulate2X_Point");
@@ -166,6 +175,7 @@ namespace FlatRedBall.Graphics
 
                     _techniqueTexture_CM = GetTechniqueSafe("Texture_Point_CM");
                     _techniqueAdd_CM = GetTechniqueSafe("Add_Point_CM");
+                    _techniqueAddSubtract_CM = GetTechniqueSafe("AddSubtract_Point_CM");
                     _techniqueSubtract_CM = GetTechniqueSafe("Subtract_Point_CM");
                     _techniqueModulate_CM = GetTechniqueSafe("Modulate_Point_CM");
                     _techniqueModulate2X_CM = GetTechniqueSafe("Modulate2X_Point_CM");
@@ -177,6 +187,7 @@ namespace FlatRedBall.Graphics
 
                     _techniqueTexture_LN = GetTechniqueSafe("Texture_Point_LN");
                     _techniqueAdd_LN = GetTechniqueSafe("Add_Point_LN");
+                    _techniqueAddSubtract_LN = GetTechniqueSafe("AddSubtract_Point_LN");
                     _techniqueSubtract_LN = GetTechniqueSafe("Subtract_Point_LN");
                     _techniqueModulate_LN = GetTechniqueSafe("Modulate_Point_LN");
                     _techniqueModulate2X_LN = GetTechniqueSafe("Modulate2X_Point_LN");
@@ -188,6 +199,7 @@ namespace FlatRedBall.Graphics
 
                     _techniqueTexture_LN_CM = GetTechniqueSafe("Texture_Point_LN_CM");
                     _techniqueAdd_LN_CM = GetTechniqueSafe("Add_Point_LN_CM");
+                    _techniqueAddSubtract_LN_CM = GetTechniqueSafe("AddSubtract_Point_LN_CM");
                     _techniqueSubtract_LN_CM = GetTechniqueSafe("Subtract_Point_LN_CM");
                     _techniqueModulate_LN_CM = GetTechniqueSafe("Modulate_Point_LN_CM");
                     _techniqueModulate2X_LN_CM = GetTechniqueSafe("Modulate2X_Point_LN_CM");
@@ -199,6 +211,7 @@ namespace FlatRedBall.Graphics
 
                     _techniqueTexture_Linear = GetTechniqueSafe("Texture_Linear");
                     _techniqueAdd_Linear = GetTechniqueSafe("Add_Linear");
+                    _techniqueAddSubtract_Linear = GetTechniqueSafe("AddSubtract_Linear");
                     _techniqueSubtract_Linear = GetTechniqueSafe("Subtract_Linear");
                     _techniqueModulate_Linear = GetTechniqueSafe("Modulate_Linear");
                     _techniqueModulate2X_Linear = GetTechniqueSafe("Modulate2X_Linear");
@@ -210,6 +223,7 @@ namespace FlatRedBall.Graphics
 
                     _techniqueTexture_Linear_CM = GetTechniqueSafe("Texture_Linear_CM");
                     _techniqueAdd_Linear_CM = GetTechniqueSafe("Add_Linear_CM");
+                    _techniqueAddSubtract_Linear_CM = GetTechniqueSafe("AddSubtract_Linear_CM");
                     _techniqueSubtract_Linear_CM = GetTechniqueSafe("Subtract_Linear_CM");
                     _techniqueModulate_Linear_CM = GetTechniqueSafe("Modulate_Linear_CM");
                     _techniqueModulate2X_Linear_CM = GetTechniqueSafe("Modulate2X_Linear_CM");
@@ -221,6 +235,7 @@ namespace FlatRedBall.Graphics
 
                     _techniqueTexture_Linear_LN = GetTechniqueSafe("Texture_Linear_LN");
                     _techniqueAdd_Linear_LN = GetTechniqueSafe("Add_Linear_LN");
+                    _techniqueAddSubtract_Linear_LN = GetTechniqueSafe("AddSubtract_Linear_LN");
                     _techniqueSubtract_Linear_LN = GetTechniqueSafe("Subtract_Linear_LN");
                     _techniqueModulate_Linear_LN = GetTechniqueSafe("Modulate_Linear_LN");
                     _techniqueModulate2X_Linear_LN = GetTechniqueSafe("Modulate2X_Linear_LN");
@@ -232,6 +247,7 @@ namespace FlatRedBall.Graphics
 
                     _techniqueTexture_Linear_LN_CM = GetTechniqueSafe("Texture_Linear_LN_CM");
                     _techniqueAdd_Linear_LN_CM = GetTechniqueSafe("Add_Linear_LN_CM");
+                    _techniqueAddSubtract_Linear_LN_CM = GetTechniqueSafe("AddSubtract_Linear_LN_CM");
                     _techniqueSubtract_Linear_LN_CM = GetTechniqueSafe("Subtract_Linear_LN_CM");
                     _techniqueModulate_Linear_LN_CM = GetTechniqueSafe("Modulate_Linear_LN_CM");
                     _techniqueModulate2X_Linear_LN_CM = GetTechniqueSafe("Modulate2X_Linear_LN_CM");
@@ -247,6 +263,7 @@ namespace FlatRedBall.Graphics
 
                     _techniqueTexture = GetTechniqueSafe("Texture");
                     _techniqueAdd = GetTechniqueSafe("Add");
+                    _techniqueAddSubtract = GetTechniqueSafe("AddSubtract");
                     _techniqueSubtract = GetTechniqueSafe("Subtract");
                     _techniqueModulate = GetTechniqueSafe("Modulate");
                     _techniqueModulate2X = GetTechniqueSafe("Modulate2X");
@@ -336,6 +353,10 @@ namespace FlatRedBall.Graphics
                     technique = GetTechniqueVariant(
                     useDefaultOrPointFilterInternal, _techniqueAdd, _techniqueAdd_LN, _techniqueAdd_Linear, _techniqueAdd_Linear_LN); break;
 
+                case ColorOperation.AddSubtract:
+                    technique = GetTechniqueVariant(
+                    useDefaultOrPointFilterInternal, _techniqueAddSubtract, _techniqueAddSubtract_LN, _techniqueAddSubtract_Linear, _techniqueAddSubtract_Linear_LN); break;
+
                 case ColorOperation.Subtract:
                     technique = GetTechniqueVariant(
                     useDefaultOrPointFilterInternal, _techniqueSubtract, _techniqueSubtract_LN, _techniqueSubtract_Linear, _techniqueSubtract_Linear_LN); break;
@@ -413,6 +434,10 @@ namespace FlatRedBall.Graphics
                 case ColorOperation.Add:
                     technique = GetTechniqueVariant(
                     useDefaultOrPointFilterInternal, _techniqueAdd_CM, _techniqueAdd_LN_CM, _techniqueAdd_Linear_CM, _techniqueAdd_Linear_LN_CM); break;
+
+                case ColorOperation.AddSubtract:
+                    technique = GetTechniqueVariant(
+                    useDefaultOrPointFilterInternal, _techniqueAddSubtract_CM, _techniqueAddSubtract_LN_CM, _techniqueAddSubtract_Linear_CM, _techniqueAddSubtract_Linear_LN_CM); break;
 
                 case ColorOperation.Subtract:
                     technique = GetTechniqueVariant(
