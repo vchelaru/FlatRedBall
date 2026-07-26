@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Windows.Forms;
+using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Reflection;
@@ -43,7 +43,7 @@ namespace FlatRedBall.Glue.Managers
 
                         if (layerNos == null || layerNos.IsLayer == false)
                         {
-                            MessageBox.Show("The object " + nos + " references the layer " + nos.LayerOn + ", but this Layer doesn't exist.");
+                            DialogService.ShowMessage("The object " + nos + " references the layer " + nos.LayerOn + ", but this Layer doesn't exist.");
                             errorFound = true;
                         }
                     }
@@ -60,7 +60,7 @@ namespace FlatRedBall.Glue.Managers
 
                         if (layerNos == null || layerNos.IsLayer == false)
                         {
-                            MessageBox.Show("The object " + nos + " references the layer " + nos.LayerOn + ", but this Layer doesn't exist.");
+                            DialogService.ShowMessage("The object " + nos + " references the layer " + nos.LayerOn + ", but this Layer doesn't exist.");
                             errorFound = true;
                         }
                     }
@@ -89,7 +89,7 @@ namespace FlatRedBall.Glue.Managers
 
             if (!errorFound)
             {
-                MessageBox.Show("No errors found.");
+                DialogService.ShowMessage("No errors found.");
             }
         }
 
@@ -166,7 +166,7 @@ namespace FlatRedBall.Glue.Managers
 
                     errorFound = true;
                     // If we got here, then that means that the .Generated.cs file really isn't referenced, so let's show a error
-                    System.Windows.Forms.MessageBox.Show(error);
+                    DialogService.ShowMessage(error);
                 }
             }
             #endregion
@@ -187,7 +187,7 @@ namespace FlatRedBall.Glue.Managers
                     {
                         errorFound = true;
 
-                        MessageBox.Show("The variable " + variable.Name + " references " + variable.SourceObject + " but " +
+                        DialogService.ShowMessage("The variable " + variable.Name + " references " + variable.SourceObject + " but " +
                             "this object doesn't exist.");
                     }
                     else
@@ -197,7 +197,7 @@ namespace FlatRedBall.Glue.Managers
                         if (!availableMembers.Contains(variable.SourceObjectProperty))
                         {
                             errorFound = true;
-                            MessageBox.Show("The variable " + variable.Name + " references the property " + variable.SourceObjectProperty +
+                            DialogService.ShowMessage("The variable " + variable.Name + " references the property " + variable.SourceObjectProperty +
                                 "in " + asIElement.ToString() + " which does not exist.");
                         }
                     }

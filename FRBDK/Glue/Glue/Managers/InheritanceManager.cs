@@ -9,8 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Windows;
-using System.Windows.Forms;
 using CheckResult = FlatRedBall.Glue.ProjectManager.CheckResult;
 
 namespace GlueFormsCore.Managers;
@@ -235,14 +233,14 @@ public class InheritanceManager
             {
                 if (baseNamedObjects.Contains(derivedNamedObjects[i]))
                 {
-                    System.Windows.MessageBox.Show("There is a duplicate named object:\n\n" + derivedNamedObjects[i] + "\n\nThe base class cannot be set");
+                    DialogService.ShowMessage("There is a duplicate named object:\n\n" + derivedNamedObjects[i] + "\n\nThe base class cannot be set");
                     isValidBase = false;
                     break;
                 }
 
                 if (baseReferencedFiles.Contains(derivedNamedObjects[i]))
                 {
-                    System.Windows.MessageBox.Show("There is a file and object both named:\n\n" + derivedNamedObjects[i] + "\n\nThe base class cannot be set");
+                    DialogService.ShowMessage("There is a file and object both named:\n\n" + derivedNamedObjects[i] + "\n\nThe base class cannot be set");
                     isValidBase = false;
                     break;
                 }
@@ -252,14 +250,14 @@ public class InheritanceManager
             {
                 if (baseNamedObjectsIncludingSetByDerived.Contains(derivedReferencedFiles[i]))
                 {
-                    System.Windows.MessageBox.Show("There is a file and object both named:\n\n" + derivedReferencedFiles[i] + "\n\nThe base class cannot be set");
+                    DialogService.ShowMessage("There is a file and object both named:\n\n" + derivedReferencedFiles[i] + "\n\nThe base class cannot be set");
                     isValidBase = false;
                     break;
                 }
 
                 if (baseReferencedFiles.Contains(derivedReferencedFiles[i]))
                 {
-                    System.Windows.MessageBox.Show("There are two files named:\n\n" + derivedReferencedFiles[i] + "\n\nThe base class cannot be set");
+                    DialogService.ShowMessage("There are two files named:\n\n" + derivedReferencedFiles[i] + "\n\nThe base class cannot be set");
                     isValidBase = false;
                     break;
                 }
@@ -281,19 +279,14 @@ public class InheritanceManager
         {
             if (entitySave.GetCustomVariableRecursively(oldVariable.Name) == null)
             {
-                var mbmb = new MultiButtonMessageBoxWpf();
                 string message = "The variable\n\n" + oldVariable.ToString() + "\n\nIs no longer part of the Entity.  What do you want to do?";
 
-                mbmb.MessageText = message;
+                // If closed without a click (e.g. Escape), ShowConfirm returns null, which - same as the
+                // original code (which didn't check ShowDialog()'s return value either) - falls through to
+                // "do nothing, the variable will go away".
+                var selectedOption = DialogService.ShowConfirm(message, DialogButton.Yes, DialogButton.No);
 
-                mbmb.AddButton("Add a new variable with the same name and type to " + entitySave.Name, DialogResult.Yes);
-                mbmb.AddButton("Nothing - the variable will go away", DialogResult.No);
-
-                var result = mbmb.ShowDialog();
-
-                var selectedOption = mbmb.ClickedResult;
-
-                if (selectedOption is DialogResult.Yes)
+                if (selectedOption == DialogButton.Yes)
                 {
                     var newVariable = new CustomVariable();
                     newVariable.Type = oldVariable.Type;
@@ -346,7 +339,7 @@ public class InheritanceManager
 
             if (InheritanceVerificationHelper(ref node, ref resultString) == CheckResult.Failed)
             {
-                System.Windows.Forms.MessageBox.Show("This assignment has created an inheritence cycle containing the following classes:\n\n" +
+                DialogService.ShowMessage("This assignment has created an inheritence cycle containing the following classes:\n\n" +
                                 resultString +
                                 "\nThe assignment will be undone.");
                 node.BaseObject = null;
@@ -533,16 +526,12 @@ public class InheritanceManager
 
             message += "\nWhat would you like to do?";
 
-            var mbmb = new MultiButtonMessageBoxWpf();
+            // If closed without a click (e.g. Escape), ShowConfirm returns null, which matches neither the
+            // "remove" nor "keep, set defined-by-base false" branches below - same as the original code's
+            // (dialogResult == true && ...) guard on the first branch.
+            var confirmResult = DialogService.ShowConfirm(message, DialogButton.Yes, DialogButton.No);
 
-            mbmb.MessageText = message;
-
-            mbmb.AddButton($"Remove {thisOrTheseObjects}", DialogResult.Yes);
-            mbmb.AddButton($"Keep {thisOrTheseObjects}, set \"defined by base\" to false", DialogResult.No);
-
-            var dialogResult = mbmb.ShowDialog();
-
-            if (dialogResult == true && (DialogResult)mbmb.ClickedResult == DialogResult.Yes)
+            if (confirmResult == DialogButton.Yes)
             {
                 foreach (var nos in derivedNosesToAskAbout)
                 {
@@ -560,7 +549,7 @@ public class InheritanceManager
                     referencedObjectsBeforeUpdate.Remove(nos);
                 }
             }
-            else if (mbmb.ClickedResult is DialogResult clickedDialogResult && clickedDialogResult == DialogResult.No)
+            else if (confirmResult == DialogButton.No)
             {
                 foreach (var nos in derivedNosesToAskAbout)
                 {
