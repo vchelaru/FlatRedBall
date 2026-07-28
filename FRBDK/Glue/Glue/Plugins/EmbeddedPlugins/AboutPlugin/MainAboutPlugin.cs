@@ -80,6 +80,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AboutPlugin
                 aboutViewModel.Version = Version.Parse(Application.ProductVersion);
             }
             aboutViewModel.RefreshVersionInfo();
+            aboutViewModel.RefreshDailyBuildInfo();
 
             if (glueProject == null)
             {

@@ -146,8 +146,6 @@
     <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Content\IContentLoader.cs" Link="Embedded\LibraryFiles\RenderingLibrary\IContentLoader.cs" />
     <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Content\LoaderManager.cs" Link="Embedded\LibraryFiles\RenderingLibrary\LoaderManager.cs" />
     <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Graphics\AnimationFrame.cs" Link="Embedded\LibraryFiles\RenderingLibrary\AnimationFrame.cs" />
-    <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Graphics\Atlas.cs" Link="Embedded\LibraryFiles\RenderingLibrary\Atlas.cs" />
-    <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Graphics\AtlasedTexture.cs" Link="Embedded\LibraryFiles\RenderingLibrary\AtlasedTexture.cs" />
     <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Graphics\BitmapCharacterInfo.cs" Link="Embedded\LibraryFiles\RenderingLibrary\BitmapCharacterInfo.cs" />
     <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Graphics\Fonts\BitmapFont.cs" Link="Embedded\LibraryFiles\RenderingLibrary\BitmapFont.cs" />
     <EmbeddedResource Include="..\..\..\..\..\Gum\RenderingLibrary\Graphics\Fonts\BmfcSave.cs" Link="Embedded\LibraryFiles\RenderingLibrary\BmfcSave.cs" />

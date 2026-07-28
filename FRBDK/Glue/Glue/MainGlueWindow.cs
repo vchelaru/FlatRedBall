@@ -210,6 +210,8 @@ public partial class MainGlueWindow : Form, IMainGlueWindow
         UiThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
         InitializeComponent();
 
+        MinimumSize = new System.Drawing.Size(150, 150);
+
         CreateMenuStrip();
 
         this.FormClosing += this.MainGlueWindow_FormClosing;
@@ -283,9 +285,24 @@ public partial class MainGlueWindow : Form, IMainGlueWindow
                 Top = lastWindow.Top;
                 Width = lastWindow.Width;
                 Height = lastWindow.Height;
+                EnsureWindowIsOnVisibleScreen();
                 WindowState = lastWindow.IsMaximized ? FormWindowState.Maximized : FormWindowState.Normal;
             }
         };
+
+        void EnsureWindowIsOnVisibleScreen()
+        {
+            var bounds = new System.Drawing.Rectangle(Left, Top, Width, Height);
+            var isOnAnyScreen = Screen.AllScreens.Any(screen => screen.WorkingArea.IntersectsWith(bounds));
+            if (!isOnAnyScreen)
+            {
+                var workingArea = Screen.PrimaryScreen.WorkingArea;
+                Width = Math.Min(Width, workingArea.Width);
+                Height = Math.Min(Height, workingArea.Height);
+                Left = workingArea.Left + (workingArea.Width - Width) / 2;
+                Top = workingArea.Top + (workingArea.Height - Height) / 2;
+            }
+        }
 
         // Initialize GlueGui before using it:
         GlueGui.Initialize(mMenu);

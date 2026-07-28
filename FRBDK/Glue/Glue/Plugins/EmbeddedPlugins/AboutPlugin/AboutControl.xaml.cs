@@ -19,5 +19,10 @@ namespace GlueFormsCore.Controls
         {
             ViewModel.DoInstallUpdate();
         }
+
+        private void InstallDailyBuild_Click(object sender, RoutedEventArgs e)
+        {
+            ViewModel.DoInstallDailyBuild();
+        }
     }
 }

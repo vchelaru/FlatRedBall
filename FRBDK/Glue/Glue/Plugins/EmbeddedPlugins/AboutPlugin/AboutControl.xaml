@@ -25,6 +25,7 @@
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
             </Grid.RowDefinitions>
 
             <Label Content="FlatRedBall Editor Version" />
@@ -37,18 +38,25 @@
                 <Label Content="{Binding DownloadStatusText}"></Label>
             </StackPanel>
 
-            <Label Grid.Row="2"  Content="Copyright" />
-            <Label Grid.Row="2" Grid.Column="1" Content="{Binding CopyrightText}" />
+            <Label Grid.Row="2" HorizontalAlignment="Right" Content="Latest Daily Build" />
+            <StackPanel Orientation="Vertical" Grid.Row="2" Grid.Column="1">
+                <Label Content="{Binding LatestDailyBuildText}"></Label>
+                <Button Visibility="{Binding DailyBuildDownloadButtonVisibility}" Click="InstallDailyBuild_Click" Content="Install Daily Build" />
+                <Label Content="{Binding DailyBuildDownloadStatusText}"></Label>
+            </StackPanel>
 
-            <Label Grid.Row="3" Content="Main Project Type" />
-            <Label Grid.Row="3" Grid.Column="1" Content="{Binding MainProjectTypeText}" />
+            <Label Grid.Row="3"  Content="Copyright" />
+            <Label Grid.Row="3" Grid.Column="1" Content="{Binding CopyrightText}" />
 
-            <Label Grid.Row="4" Content="FlatRedBall Project Version" />
-            <Label Grid.Row="4" Grid.Column="1" Content="{Binding GluxVersionText}" />
-            
-            <Label Grid.Row="5" Content="DLL version" />
-            <Label Grid.Row="5" Grid.Column="1" Content="{Binding DllSyntaxVersionToShow}" />
-            
+            <Label Grid.Row="4" Content="Main Project Type" />
+            <Label Grid.Row="4" Grid.Column="1" Content="{Binding MainProjectTypeText}" />
+
+            <Label Grid.Row="5" Content="FlatRedBall Project Version" />
+            <Label Grid.Row="5" Grid.Column="1" Content="{Binding GluxVersionText}" />
+
+            <Label Grid.Row="6" Content="DLL version" />
+            <Label Grid.Row="6" Grid.Column="1" Content="{Binding DllSyntaxVersionToShow}" />
+
 
 
         </Grid>
