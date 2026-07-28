@@ -107,22 +107,6 @@ namespace FlatRedBall.Graphics.Texture
             return null;
         }
 
-        public static AtlasedTexture LoadAtlasedTextureByFileName(string fileName)
-        {
-            var fileNameToAtlasName = ConvertFileNameToAtlasName(fileName);
-
-            return LoadAtlasedTexture(fileNameToAtlasName, ignoreCase:true);
-        }
-
-        private static string ConvertFileNameToAtlasName(string fileName)
-        {
-            var directoryToBeRelativeTo = FileManager.DefaultRelativeDirectory + @"Content/";
-
-            var relativeToContent = FileManager.MakeRelative(fileName, directoryToBeRelativeTo).ToLowerInvariant() ;
-
-            return relativeToContent;
-        }
-
         private static void ClearDisposedAtlases()
         {
             for(int i = loadedAtlases.Count - 1; i > -1; i--)

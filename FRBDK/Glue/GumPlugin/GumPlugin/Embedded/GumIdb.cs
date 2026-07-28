@@ -276,9 +276,6 @@ namespace FlatRedBall.Gum
                 {
                     item.Initialize(item.DefaultState);
                 }
-                //for atlased colored rectangles
-                if (item.Name == "ColoredRectangle")
-                    RenderingLibrary.Graphics.SolidRectangle.AtlasedTextureName = "..\\Graphics\\Misc\\ColoredRectangle.png";
             }
 
             StandardElementsManager.Self.Initialize();
