@@ -1,7 +1,7 @@
 ---
 name: glue-unit-test-bootstrap
 description: Bootstrapping GlueUnitTests that touch GlueState.Self/GlueCommands.Self/ProjectManager. Triggers: NullReferenceException in tests from ProjectManager.CodeProjectHelper, FileWatchManager, EditorObjects.IoC.Container, or MainGlueWindow.Self.Invoke.
-version: 1.0.0
+version: 1.1.0
 ---
 
 # Glue Unit Test Bootstrap
@@ -43,6 +43,16 @@ rather than inventing a new one.
 `IMainGlueWindow`/`IUiThreadMarshaller` only cover calls that were already routed through `MainGlueWindow.Self`/`TaskManager`. A plugin method you're calling directly for the first time (bypassing `PluginManager.CallPluginMethod`'s silent no-op to get real coverage — see `REFACTORING.md`'s Collision/Gum entries) may still contain its own unseamed `MessageBox.Show(...)` on some branch (e.g. an "already exists, overwrite?" check). That call blocks the test thread on a real, visible modal dialog on the *developer's actual desktop* — not something `GlueTestBootstrap` catches, and not obvious from reading the test in isolation.
 
 Before exercising a plugin method's real logic for the first time: skim it (and what it calls) for `MessageBox.Show`/similar dialog calls, and design the test to never take that branch (fresh unique temp directory per test, `askToOverwrite`/equivalent flags set to avoid the prompt, call the method at most once per test run rather than twice to probe an idempotency branch). If you ever see an unexpected pause or the user reports a popup, stop immediately, confirm no process is still blocked waiting on it, and fix the test to avoid the branch rather than building a dialog seam just to unblock one test.
+
+## Landmine — `dotnet test` on the bare csproj fails with `MSB3073`/`*Undefined*` paths
+
+Running `dotnet test FRBDK/Glue/Tests/GlueUnitTests/GlueUnitTests.csproj` directly fails building `OfficialPlugins.csproj`'s `PostBuild` target: it copies its output using `$(SolutionDir)Glue\bin\Debug\Plugins\...`, and `SolutionDir` is a solution-scoped MSBuild property that's simply undefined when you build/test a project file directly (no `.sln` in the invocation) — same failure would hit any of the plugin projects with a similar post-build copy step, not just OfficialPlugins.
+
+Fix: pass `SolutionDir` explicitly, pointed at `FRBDK/Glue/` (the directory containing `Glue with All.sln`, since the copy path is `$(SolutionDir)Glue\...`), with a trailing backslash:
+
+```
+dotnet test FRBDK/Glue/Tests/GlueUnitTests/GlueUnitTests.csproj -p:SolutionDir="<repo>\FRBDK\Glue\\"
+```
 
 ## Deep dive
 
