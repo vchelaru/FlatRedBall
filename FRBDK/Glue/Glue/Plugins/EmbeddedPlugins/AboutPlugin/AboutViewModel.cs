@@ -95,9 +95,26 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AboutPlugin
         }
 
         [DependsOn(nameof(LatestDailyBuildOnline))]
+        [DependsOn(nameof(Version))]
         [DependsOn(nameof(IsDownloadingDailyBuild))]
-        public Visibility DailyBuildDownloadButtonVisibility =>
-            !IsDownloadingDailyBuild && LatestDailyBuildOnline != null ? Visibility.Visible : Visibility.Collapsed;
+        public Visibility DailyBuildDownloadButtonVisibility
+        {
+            get
+            {
+                if (IsDownloadingDailyBuild)
+                {
+                    return Visibility.Collapsed;
+                }
+                else if (LatestDailyBuildOnline is { } latest && Version.TryParse(latest.ToString("yyyy.M.d"), out var latestDailyVersion))
+                {
+                    return latestDailyVersion > Version ? Visibility.Visible : Visibility.Collapsed;
+                }
+                else
+                {
+                    return Visibility.Collapsed;
+                }
+            }
+        }
 
         public string GluxVersionText
         {
