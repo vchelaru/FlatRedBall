@@ -119,6 +119,19 @@ public class GumProjectCreationTests : IDisposable
         Directory.GetFiles(_tempProjectDirectory, "GumIdb.Generated.cs", SearchOption.AllDirectories)
             .ShouldNotBeEmpty();
 
+        // Real side effect #5: the new project does NOT seed the deprecated ColoredRectangle standard
+        // element. Gum deprecated ColoredRectangle in favor of the plain Rectangle standard element
+        // (upstream Gum #2965 phase 2, #2968, #2771) - StandardElementsManager.SeedableStandardTypes no
+        // longer includes it there, but Glue's embedded new-project template was never updated to match
+        // (GitHub issue #1931). Assert both that the loaded project doesn't reference it and that its
+        // backing .gutx file was never written to disk, so this covers both the .gumx template and the
+        // Embedded/EmptyProject/Standards file list in EmbeddedResourceManager.SaveEmptyProject.
+        Gum.Managers.ObjectFinder.Self.GumProjectSave.StandardElementReferences
+            .Any(reference => reference.Name == "ColoredRectangle")
+            .ShouldBeFalse();
+        Directory.GetFiles(_tempProjectDirectory, "ColoredRectangle.gutx", SearchOption.AllDirectories)
+            .ShouldBeEmpty();
+
         // Deliberately NOT calling CreateGumProjectInternal a second time here to check the "already
         // exists" no-op branch: GumProjectManager.GetIsGumProjectAlreadyInGlueProject()==true routes to a
         // real, unfaked System.Windows.Forms.MessageBox.Show("A Gum project already exists") with no
