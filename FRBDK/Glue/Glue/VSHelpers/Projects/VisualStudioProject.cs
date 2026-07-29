@@ -964,9 +964,15 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 LinkedDictionary[newName] = item;
             }
 
-            if (newName.Contains(".generated.cs"))
+            if (newName.EndsWith(".Generated.cs", StringComparison.OrdinalIgnoreCase))
             {
-                MakeBuildItemNested(item, FileManager.RemovePath(FileManager.RemoveExtension(newName)).Replace(".generated", "") + ".cs");
+                string parentFileName = FileManager.RemovePath(newName)
+                    .Replace(".Generated.cs", ".cs", StringComparison.OrdinalIgnoreCase);
+
+                // Unlike MakeBuildItemNested (which only sets DependentUpon if it's missing - the
+                // add-a-new-item case), a rename must always overwrite the existing value so it
+                // tracks the renamed parent .cs file (#1771).
+                item.SetMetadataValue("DependentUpon", parentFileName);
             }
 
         }
