@@ -1,24 +1,20 @@
+using OfficialPlugins.TreeViewPlugin.ViewModels;
 using Shouldly;
 
 namespace GlueUnitTests.TreeViewPlugin;
 
 /// <summary>
-/// Tests for the element rename name-building logic in NodeViewModel.
-/// The fix changed IndexOf("\\") to LastIndexOf("\\") so that renaming an entity
-/// stored in a subfolder preserves the full subfolder path instead of collapsing
-/// to the root folder.
+/// Tests for NodeViewModel.BuildRenamedElementFullName, the production method the F2-rename flow
+/// (NodeViewModel.HandleRenameThroughEdit) calls to compute the new full element name. Regression
+/// coverage for #1871/#1872 (plain rename) and #1772 (duplicate-then-rename), both of which moved
+/// the renamed entity out of its subfolder.
 /// </summary>
 public class NodeViewModelRenameTests
 {
-    // Mirrors the fixed logic in NodeViewModel: preserve everything up to and
-    // including the last backslash, then append the new leaf name.
-    static string BuildNewName(string oldName, string newText) =>
-        oldName.Substring(0, oldName.LastIndexOf("\\") + 1) + newText;
-
     [Fact]
     public void Rename_EntityInSubfolder_PreservesSubfolder()
     {
-        var result = BuildNewName("Entities\\Weapons\\Sword", "Shield");
+        var result = NodeViewModel.BuildRenamedElementFullName("Entities\\Weapons\\Sword", "Shield");
 
         result.ShouldBe("Entities\\Weapons\\Shield");
     }
@@ -26,7 +22,7 @@ public class NodeViewModelRenameTests
     [Fact]
     public void Rename_EntityInRootFolder_PreservesRootFolder()
     {
-        var result = BuildNewName("Entities\\Player", "Hero");
+        var result = NodeViewModel.BuildRenamedElementFullName("Entities\\Player", "Hero");
 
         result.ShouldBe("Entities\\Hero");
     }
@@ -34,7 +30,7 @@ public class NodeViewModelRenameTests
     [Fact]
     public void Rename_EntityInDeeplyNestedSubfolder_PreservesFullPath()
     {
-        var result = BuildNewName("Entities\\Weapons\\Melee\\Sword", "Axe");
+        var result = NodeViewModel.BuildRenamedElementFullName("Entities\\Weapons\\Melee\\Sword", "Axe");
 
         result.ShouldBe("Entities\\Weapons\\Melee\\Axe");
     }
@@ -42,7 +38,7 @@ public class NodeViewModelRenameTests
     [Fact]
     public void Rename_Screen_PreservesScreensFolder()
     {
-        var result = BuildNewName("Screens\\GameScreen", "MainMenu");
+        var result = NodeViewModel.BuildRenamedElementFullName("Screens\\GameScreen", "MainMenu");
 
         result.ShouldBe("Screens\\MainMenu");
     }
@@ -50,8 +46,18 @@ public class NodeViewModelRenameTests
     [Fact]
     public void Rename_ScreenInSubfolder_PreservesSubfolder()
     {
-        var result = BuildNewName("Screens\\Levels\\Level1", "Level2");
+        var result = NodeViewModel.BuildRenamedElementFullName("Screens\\Levels\\Level1", "Level2");
 
         result.ShouldBe("Screens\\Levels\\Level2");
+    }
+
+    // #1772's exact repro: duplicate "Larva" in Entities\Enemies (producing "...\\LarvaCopy" per
+    // GluxCommands.CopyGlueElement, which just appends "Copy" to the full name), then F2-rename it.
+    [Fact]
+    public void Rename_DuplicatedEntityInSubfolder_PreservesSubfolder()
+    {
+        var result = NodeViewModel.BuildRenamedElementFullName("Entities\\Enemies\\LarvaCopy", "DeepOne_Panel");
+
+        result.ShouldBe("Entities\\Enemies\\DeepOne_Panel");
     }
 }

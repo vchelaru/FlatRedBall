@@ -535,6 +535,13 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         #endregion
 
 
+        /// <summary>
+        /// Builds the full element name (e.g. "Entities\\Weapons\\Sword") after a tree-view rename,
+        /// preserving every folder segment of <paramref name="oldFullName"/> and swapping only the leaf.
+        /// </summary>
+        internal static string BuildRenamedElementFullName(string oldFullName, string newLeafName) =>
+            oldFullName.Substring(0, oldFullName.LastIndexOf("\\") + 1) + newLeafName;
+
         private async void HandleRenameThroughEdit()
         {
             if(this.Text == textBeforeEditing)
@@ -543,8 +550,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             }
             if(Tag is GlueElement element)
             {
-                var oldName = element.Name;
-                var newName = oldName.Substring(0, oldName.LastIndexOf("\\") + 1) + Text;
+                var newName = BuildRenamedElementFullName(element.Name, Text);
 
                 await GlueCommands.Self.GluxCommands.ElementCommands.RenameElement(element, newName);
 
