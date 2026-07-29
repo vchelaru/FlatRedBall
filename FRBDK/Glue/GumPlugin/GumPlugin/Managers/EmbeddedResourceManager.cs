@@ -28,7 +28,6 @@ namespace GumPlugin.Managers
 
             SaveGumFile("GumProject.gumx");
             SaveGumFile("Standards/Circle.gutx");
-            SaveGumFile("Standards/ColoredRectangle.gutx");
             SaveGumFile("Standards/Component.gutx");
             SaveGumFile("Standards/Container.gutx");
             SaveGumFile("Standards/NineSlice.gutx");

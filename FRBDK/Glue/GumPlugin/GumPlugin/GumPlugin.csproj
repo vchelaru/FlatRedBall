@@ -84,7 +84,6 @@
     <None Remove="Embedded\EmptyProject\FontCache\Font18Arial_0.png" />
     <None Remove="Embedded\EmptyProject\GumProject.gumx" />
     <None Remove="Embedded\EmptyProject\Standards\Circle.gutx" />
-    <None Remove="Embedded\EmptyProject\Standards\ColoredRectangle.gutx" />
     <None Remove="Embedded\EmptyProject\Standards\Component.gutx" />
     <None Remove="Embedded\EmptyProject\Standards\Container.gutx" />
     <None Remove="Embedded\EmptyProject\Standards\NineSlice.gutx" />
@@ -233,7 +232,6 @@
     <EmbeddedResource Include="Embedded\EmptyProject\FontCache\Font18Arial_0.png" />
     <EmbeddedResource Include="Embedded\EmptyProject\GumProject.gumx" />
     <EmbeddedResource Include="Embedded\EmptyProject\Standards\Circle.gutx" />
-    <EmbeddedResource Include="Embedded\EmptyProject\Standards\ColoredRectangle.gutx" />
     <EmbeddedResource Include="Embedded\EmptyProject\Standards\Component.gutx" />
     <EmbeddedResource Include="Embedded\EmptyProject\Standards\Container.gutx" />
     <EmbeddedResource Include="Embedded\EmptyProject\Standards\NineSlice.gutx" />
