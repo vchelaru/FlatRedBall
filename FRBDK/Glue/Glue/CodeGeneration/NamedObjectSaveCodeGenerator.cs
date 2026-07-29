@@ -207,7 +207,8 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             #region Perform instantiation
 
-            var shouldInstantiate = !namedObject.InstantiatedByBase;
+            var shouldInstantiate = !namedObject.InstantiatedByBase ||
+                ShouldReinstantiateDespiteInstantiatedByBase(namedObject, saveObject);
 
             if (shouldInstantiate)
             {
@@ -1149,6 +1150,26 @@ namespace FlatRedBall.Glue.CodeGeneration
                                                  copyRelativeToAbsolute));
                 }
             }
+        }
+
+        // An ExposedInDerived, InstantiatedByBase object is normally only instantiated once, by the base
+        // class - the derived class just reads the field the base already assigned, and skips its own
+        // instantiation code entirely. That's fine for properties that can still be changed post-construction,
+        // but SourceFile is only ever read at instantiation time, so a derived class that points a
+        // file-sourced object (e.g. a LayeredTileMap) at its own file would otherwise have that override
+        // silently ignored (see #1770). Re-instantiate in the derived in that one case so its file is
+        // actually the one that gets loaded.
+        internal static bool ShouldReinstantiateDespiteInstantiatedByBase(NamedObjectSave namedObject, IElement saveObject)
+        {
+            if (namedObject.SourceType != SourceType.File)
+            {
+                return false;
+            }
+
+            var baseNamedObject = ObjectFinder.Self.GetBaseElement(saveObject)?
+                .NamedObjects.FirstOrDefault(item => item.InstanceName == namedObject.InstanceName);
+
+            return baseNamedObject != null && baseNamedObject.SourceFile != namedObject.SourceFile;
         }
 
         private static bool GetIfCanAttach(NamedObjectSave namedObject, AssetTypeInfo ati, GlueElement container)
