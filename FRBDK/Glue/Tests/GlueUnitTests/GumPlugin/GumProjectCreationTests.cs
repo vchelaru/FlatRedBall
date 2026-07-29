@@ -155,6 +155,15 @@ public class GumProjectCreationTests : IDisposable
         // output directory (see the <None Include> item added alongside the GumPlugin ProjectReference),
         // so the real spawn - not a fake - runs here.
         GlueTestBootstrap.EnsureGumPluginStandardElementsInitialized();
+
+        // Real projects get FileVersion = LatestVersion (ProjectLoader.cs sets this for every new/loaded
+        // project), which routes FormsControlAdder.EmbeddedProjectRoot to "FormsGumProject" (sourced from
+        // Gum's Templates/FormsTemplate, not FRB's own legacy EmbeddedObjectGumProject). Without this, the
+        // constructor's default `new GlueProjectSave()` leaves FileVersion at 0, silently exercising the
+        // legacy fallback path instead of the one every real new project actually takes - which is exactly
+        // how issue #1933 (new Forms-enabled projects missing Button/CheckBox/ComboBox behaviors) slipped
+        // through this test.
+        ObjectFinder.Self.GlueProject.FileVersion = GlueProjectSave.LatestVersion;
         var creationLogic = new NewGumProjectCreationLogic(new GumxPropertiesManager());
 
         await creationLogic.CreateGumProjectInternal(shouldAlsoAddForms: true, askToOverwrite: false);
@@ -167,24 +176,41 @@ public class GumProjectCreationTests : IDisposable
         gumRfs.Properties.GetValue<bool>(nameof(global::GumPlugin.ViewModels.GumViewModel.IncludeComponentToFormsAssociation)).ShouldBeTrue();
 
         // Real side effect #2: FormsControlAdder.SaveElements actually wrote the default FRB Forms
-        // .gucx components (Button, CheckBox, ComboBox, ...) to disk under the Gum project's Components
-        // folder - not just flags flipped on the RFS.
+        // .gucx components to disk under the Gum project's Components folder - not just flags flipped on
+        // the RFS. The current FormsTemplate offers several Button variants (ButtonStandard, ButtonIcon,
+        // ButtonTab, ...) rather than a single plain "Button.gucx" - assert the one FormsControlInfo
+        // actually wires up as the default Button control.
         var componentsDirectory = Path.Combine(_tempProjectDirectory, "GumProject", "Components");
-        var buttonGucx = Directory.GetFiles(componentsDirectory, "Button.gucx", SearchOption.AllDirectories);
+        var buttonGucx = Directory.GetFiles(componentsDirectory, "ButtonStandard.gucx", SearchOption.AllDirectories);
         buttonGucx.ShouldNotBeEmpty();
 
         // Real side effect #3: those components were also registered into the loaded GumProjectSave itself
         // (GumPluginCommands.Self.AddComponent), not just written to disk unreferenced.
         Gum.Managers.ObjectFinder.Self.GumProjectSave.ShouldNotBeNull();
         Gum.Managers.ObjectFinder.Self.GumProjectSave!.ComponentReferences
-            .Any(reference => reference.Name.EndsWith("Button"))
+            .Any(reference => reference.Name.EndsWith("ButtonStandard"))
             .ShouldBeTrue();
 
-        // Real side effect #4: FormsControlAdder.SaveBehaviors wrote at least one real .behx behavior file
-        // (e.g. IButton) to disk under the Gum project's Behaviors folder.
+        // Real side effect #4 (regression pin for #1933): FormsControlAdder.SaveBehaviors wrote every core
+        // Forms behavior to disk under the Gum project's Behaviors folder - not just "some .behx file".
+        // Upstream Gum commit dc8a204a3 (#4076) moved these 25 shared behaviors from
+        // Templates/FormsTemplate/Behaviors into a new Templates/FormsBehaviors folder; GumPlugin.csproj's
+        // embedded-resource globs weren't updated to also include the new location, so every new
+        // Forms-enabled Gum project silently lost Button/CheckBox/ComboBox/etc. This asserts the specific
+        // behaviors a real user found missing, not just "at least one .behx exists" (which the legacy
+        // Standard-only behaviors satisfy on their own and would mask this exact regression).
         var behaviorsDirectory = Path.Combine(_tempProjectDirectory, "GumProject", "Behaviors");
         Directory.Exists(behaviorsDirectory).ShouldBeTrue();
-        Directory.GetFiles(behaviorsDirectory, "*.behx", SearchOption.AllDirectories).ShouldNotBeEmpty();
+        var coreBehaviorNames = new[]
+        {
+            "ButtonBehavior", "CheckBoxBehavior", "ComboBoxBehavior", "ListBoxBehavior",
+            "RadioButtonBehavior", "ScrollViewerBehavior", "SliderBehavior", "TextBoxBehavior",
+        };
+        foreach (var behaviorName in coreBehaviorNames)
+        {
+            Directory.GetFiles(behaviorsDirectory, $"{behaviorName}.behx", SearchOption.AllDirectories)
+                .ShouldNotBeEmpty($"{behaviorName}.behx should have been seeded into a new Forms-enabled project");
+        }
 
         // Real side effect #5: MainGumPlugin.HandleBuildMissingFonts really spawned
         // GumProjectFontGenerator.exe against the newly-created project, and it really generated the fonts
