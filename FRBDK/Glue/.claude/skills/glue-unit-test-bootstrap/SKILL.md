@@ -37,11 +37,11 @@ Also process-wide static state a test may need to control alongside the bootstra
 - **`ObjectFinder.Self.GlueProject`** — assign a `GlueProjectSave` for anything reaching `ObjectFinder`
   lookups (`GetEntitySaveUnqualified`, `GetAllReferencedFiles`).
 
-Every one of these is process-wide, so a test class that assigns one must join
-`TaskManagerSequentialCollection` (`GlueUnitTests/Tasks/TaskManagerSynchronousModeTests.cs`) — reuse that
-one collection rather than adding another. xunit parallelizes by collection, so two *separate* sequential
-collections still race each other; only the shared one actually serializes. The failure mode is a test
-that passes under `--filter` in isolation and fails in the full run.
+Every one of these is process-wide, which is why the whole assembly runs non-parallel — see
+`GlueUnitTests/AssemblyInfo.cs`. So cross-class interleaving isn't a hazard, but leakage still is: a test
+which assigns one of these must restore it (`IDisposable`/`try-finally`), or it silently changes the
+setup of whatever runs next. The failure mode is a test that passes under `--filter` and fails in the
+full run.
 
 ## Landmine — calling a real plugin method for the first time can pop a real dialog on the developer's desktop
 
