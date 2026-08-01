@@ -8,6 +8,9 @@ namespace GlueUnitTests.Tasks;
 // TaskManager is a process-wide singleton (see Singleton<T>) and TaskManager.SynchronousMode /
 // UiThreadMarshaller are process-wide static state. Both test classes in this file mutate that state,
 // so they share a non-parallel xunit collection to avoid interleaving with each other.
+// It's also the collection for any other test class which mutates process-wide state (for example
+// ObjectFinder.Self.GlueProject) - one shared collection is what actually keeps them apart, since two
+// separate sequential collections still run in parallel with each other.
 [CollectionDefinition(nameof(TaskManagerSequentialCollection), DisableParallelization = true)]
 public class TaskManagerSequentialCollection { }
 

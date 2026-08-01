@@ -34,9 +34,14 @@ Also process-wide static state a test may need to control alongside the bootstra
   builds a real (not fake) `VisualStudioProject` from a minimal non-SDK `.csproj`, for tests that need
   `GlueState.CurrentMainProject` to be non-null.
 
-Both `TaskManager` statics mutate process-wide state, so test classes that touch them share a
-non-parallel xunit collection — see `TaskManagerSequentialCollection` in the file above and reuse it
-rather than inventing a new one.
+- **`ObjectFinder.Self.GlueProject`** — assign a `GlueProjectSave` for anything reaching `ObjectFinder`
+  lookups (`GetEntitySaveUnqualified`, `GetAllReferencedFiles`).
+
+Every one of these is process-wide, so a test class that assigns one must join
+`TaskManagerSequentialCollection` (`GlueUnitTests/Tasks/TaskManagerSynchronousModeTests.cs`) — reuse that
+one collection rather than adding another. xunit parallelizes by collection, so two *separate* sequential
+collections still race each other; only the shared one actually serializes. The failure mode is a test
+that passes under `--filter` in isolation and fails in the full run.
 
 ## Landmine — calling a real plugin method for the first time can pop a real dialog on the developer's desktop
 

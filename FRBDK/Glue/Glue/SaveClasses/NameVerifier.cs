@@ -231,6 +231,11 @@ public class NameVerifier
 
         if (string.IsNullOrEmpty(whyItIsntValid))
         {
+            CheckForNameHidingContainerMember(name, container, ref whyItIsntValid);
+        }
+
+        if (string.IsNullOrEmpty(whyItIsntValid))
+        {
             CheckForExistingEntity(name, ref whyItIsntValid);
         }
 
@@ -272,6 +277,41 @@ public class NameVerifier
 
         bool returnValue = string.IsNullOrEmpty(whyItIsntValid);
         return returnValue;
+    }
+
+    /// <summary>
+    /// Reports a file name which matches a variable the containing Entity already inherits. Files are
+    /// generated as fields named after the file, so a file named "X" hides PositionedObject.X, and
+    /// generated code which assigns that variable (such as a state's "X = value.X;") no longer compiles.
+    /// </summary>
+    private void CheckForNameHidingContainerMember(string name, GlueElement container, ref string whyItIsntValid)
+    {
+        // Screens don't inherit from PositionedObject, so a file in a Screen has no member to hide.
+        if (container is EntitySave == false)
+        {
+            return;
+        }
+
+        if (ExposedVariableManager.PositionedObjectMembers == null)
+        {
+            // ExposedVariableManager hasn't been initialized, so there's nothing to compare against.
+            return;
+        }
+
+        var strippedName = FileManager.RemoveExtension(FileManager.RemovePath(name));
+
+        // Both lists are needed - together they cover every public member of PositionedObject, whether
+        // or not Glue lets that member be exposed as a variable.
+        var hidesMember =
+            ExposedVariableManager.IsMemberDefinedByPositionedObject(strippedName) ||
+            ExposedVariableManager.IsReservedPositionedPositionedObjectMember(strippedName);
+
+        if (hidesMember)
+        {
+            whyItIsntValid = $"The name {strippedName} matches a member which this Entity already has. Files are " +
+                "added to an Entity as fields using the file's name, so this file would hide that member and " +
+                "produce generated code which doesn't compile. Please rename the file.";
+        }
     }
 
     private void CheckForRfsWithMatchingFileName(GlueElement container, string name, ReferencedFileSave rfsToSkip, ref string whyItIsntValid)

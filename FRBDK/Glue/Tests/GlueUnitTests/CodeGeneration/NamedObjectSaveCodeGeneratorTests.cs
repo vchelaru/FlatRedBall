@@ -1,6 +1,7 @@
 using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.SaveClasses;
+using GlueUnitTests.Tasks;
 using GlueUnitTests.TestSupport;
 using Shouldly;
 
@@ -11,6 +12,8 @@ namespace GlueUnitTests.CodeGeneration;
 // override was silently ignored - the derived class never re-ran its instantiation code, so only the
 // base's own file was ever loaded. See ShouldReinstantiateDespiteInstantiatedByBase's doc comment in
 // NamedObjectSaveCodeGenerator.cs for the fix.
+// Assigns ObjectFinder.Self.GlueProject, which is process-wide, so it runs in the sequential collection.
+[Collection(nameof(TaskManagerSequentialCollection))]
 public class NamedObjectSaveCodeGeneratorTests
 {
     public NamedObjectSaveCodeGeneratorTests()
