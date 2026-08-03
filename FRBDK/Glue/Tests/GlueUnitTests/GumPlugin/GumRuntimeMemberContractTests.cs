@@ -158,24 +158,7 @@ public class GumRuntimeMemberContractTests : IDisposable
 
             sweptElements.Add(elementName);
 
-            var containedPropertyName = "Contained" + elementName;
-            var referencedMembers = Regex
-                .Matches(codeBlock.ToString(), Regex.Escape(containedPropertyName) + @"\.(\w+)")
-                .Cast<Match>()
-                .Select(match => match.Groups[1].Value)
-                .Distinct(StringComparer.Ordinal)
-                .OrderBy(name => name, StringComparer.Ordinal);
-
-            foreach (var memberName in referencedMembers)
-            {
-                if (!HasPublicMember(runtimeType, memberName))
-                {
-                    problems.Add(
-                        $"{elementName}Runtime.Generated.cs references {containedPropertyName}.{memberName}, " +
-                        $"but {qualifiedTypeName} has no public member by that name. " +
-                        "Any project using this element will fail to compile with CS1061.");
-                }
-            }
+            problems.AddRange(FindUnbackedMembers(elementName, codeBlock.ToString(), runtimeType, qualifiedTypeName));
         }
 
         var coverageReport =
@@ -196,6 +179,63 @@ public class GumRuntimeMemberContractTests : IDisposable
             string.Join(Environment.NewLine, missingRuntimeTypes) + Environment.NewLine + coverageReport);
     }
 
+    // Proves the sweep above is general rather than a restatement of the six members that happened to
+    // break Text. Nothing in this file names DropshadowBlur/LocalizeText/etc. - the fixture is built from
+    // Gum's canonical schema, so any variable Gum adds later flows in on its own. This test pins that
+    // property by injecting a variable Gum has never defined and asserting the sweep reports it. If a
+    // future refactor accidentally narrows the sweep to a fixed list, or stops picking up newly-added
+    // schema variables, this goes red while the sweep above would stay green.
+    [Fact]
+    public void Sweep_ShouldCatchAVariableAddedToTheSchemaLater()
+    {
+        GlueTestBootstrap.EnsureGumPluginStandardElementsInitialized();
+        GlueTestBootstrap.EnsureGumPluginCodeGeneratorsInitialized();
+        EnsureSkiaStandardElementsRegistered();
+
+        var runtimeTypes = BuildAndLoadEngineRuntimeTypes(FindRepoRoot());
+        runtimeTypes.TryGetValue("RenderingLibrary.Graphics.Text", out var textRuntimeType).ShouldBeTrue();
+
+        const string injectedName = "SomeVariableGumHasNotInventedYet";
+        textRuntimeType.GetProperty(injectedName).ShouldBeNull("the injected name must not really exist");
+
+        var defaultState = Gum.Managers.StandardElementsManager.Self
+            .TryGetDefaultStateFor("Text", throwExceptionOnMissing: false);
+        defaultState.ShouldNotBeNull();
+
+        var injected = new Gum.DataTypes.Variables.VariableSave
+        {
+            SetsValue = true,
+            Type = "float",
+            Value = 0f,
+            Name = injectedName,
+            Category = "Text",
+        };
+
+        // StandardElementsManager.Self.DefaultStates is process-wide state - always restore it, or every
+        // test that runs after this one sweeps a schema with a bogus variable in it.
+        defaultState.Variables.Add(injected);
+        try
+        {
+            var standardElementSave = new StandardElementSave { Name = "Text" };
+            standardElementSave.Initialize(defaultState);
+
+            var codeBlock = new CodeBlockBase();
+            StandardsCodeGenerator.Self.GenerateStandardElementSaveCodeFor(standardElementSave, codeBlock)
+                .ShouldBeTrue();
+
+            var unbacked = FindUnbackedMembers("Text", codeBlock.ToString(), textRuntimeType, "RenderingLibrary.Graphics.Text");
+
+            unbacked.ShouldContain(
+                problem => problem.Contains(injectedName, StringComparison.Ordinal),
+                "The sweep did not flag a newly-added schema variable, which means it is no longer general. " +
+                "Reported: " + string.Join(" | ", unbacked));
+        }
+        finally
+        {
+            defaultState.Variables.Remove(injected);
+        }
+    }
+
     // AddSkiaStandards() isn't idempotent (Dictionary.Add throws on a second call in the same process),
     // so guard it the same way GumSkiaRenderableCodegenSweepTests does.
     private static void EnsureSkiaStandardElementsRegistered()
@@ -204,6 +244,28 @@ public class GumRuntimeMemberContractTests : IDisposable
         {
             GumPlugin.Managers.SkiaStandardElementsManager.AddSkiaStandards();
         }
+    }
+
+    // Every member the generated runtime touches on its contained runtime object, checked against the
+    // real type. Deliberately driven off whatever the generator emitted rather than any list of known
+    // variable names - that's what makes this cover variables Gum adds in the future.
+    private static List<string> FindUnbackedMembers(
+        string elementName, string generatedSource, Type runtimeType, string qualifiedTypeName)
+    {
+        var containedPropertyName = "Contained" + elementName;
+
+        return Regex
+            .Matches(generatedSource, Regex.Escape(containedPropertyName) + @"\.(\w+)")
+            .Cast<Match>()
+            .Select(match => match.Groups[1].Value)
+            .Distinct(StringComparer.Ordinal)
+            .OrderBy(name => name, StringComparer.Ordinal)
+            .Where(memberName => !HasPublicMember(runtimeType, memberName))
+            .Select(memberName =>
+                $"{elementName}Runtime.Generated.cs references {containedPropertyName}.{memberName}, " +
+                $"but {qualifiedTypeName} has no public member by that name. " +
+                "Any project using this element will fail to compile with CS1061.")
+            .ToList();
     }
 
     private static bool HasPublicMember(Type type, string memberName)
