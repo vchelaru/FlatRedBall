@@ -110,7 +110,7 @@ namespace FlatRedBall.Forms.Clipboard
 
 
 
-        public static string GetText()
+        public static string GetText(Action callback = null)
         {
             if (!IsClipboardFormatAvailable(CF_UNICODETEXT))
                 return null;

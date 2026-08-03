@@ -19,7 +19,7 @@ namespace FlatRedBall.Forms.Clipboard
             // not implemented
         }
 
-        internal static string GetText()
+        internal static string GetText(Action? callback = null)
         {
             return null;
         }

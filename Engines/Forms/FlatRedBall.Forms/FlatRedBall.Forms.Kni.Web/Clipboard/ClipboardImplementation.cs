@@ -9,9 +9,12 @@ namespace FlatRedBall.Forms.Clipboard
 {
     internal class ClipboardImplementation
     {
-        internal static string GetText()
+        // The callback is accepted but unused, matching the DesktopGL implementation. Gum's shared
+        // Forms source calls GetText(HandlePaste) unconditionally under #if FRB, so every platform
+        // has to accept the parameter even where the clipboard read is synchronous.
+        internal static string GetText(Action? callback = null)
         {
-            return ClipboardService.GetText(); 
+            return ClipboardService.GetText();
         }
 
         internal static void PushStringToClipboard(string text)

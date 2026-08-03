@@ -9,9 +9,9 @@ namespace FlatRedBall.Forms.Clipboard
 {
     internal class ClipboardImplementation
     {
-        internal static string GetText()
+        internal static string GetText(Action? callback = null)
         {
-            return ClipboardService.GetText(); 
+            return ClipboardService.GetText();
         }
 
         internal static void PushStringToClipboard(string text)
