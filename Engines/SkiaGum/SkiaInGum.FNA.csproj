@@ -20,7 +20,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\..\FlatRedBall\Engines\FlatRedBallXNA\3rd Party Libraries\FNA\FNA.Core.csproj" />
 		<ProjectReference Include="..\..\..\FlatRedBall\Engines\FlatRedBallXNA\FlatRedBall.FNA\FlatRedBall.FNA.csproj" />
-		<ProjectReference Include="..\..\GumCore\GumCoreXnaPc\GumCore.FNA\GumCore.FNA.csproj" />
+		<ProjectReference Include="..\..\..\Gum\GumCore\GumCoreXnaPc\GumCore.FNA\GumCore.FNA.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
