@@ -134,6 +134,78 @@ public class EnginePackagingTests
         }
     }
 
+    // Template folder -> the package ids its .csproj must reference. A template that references an
+    // engine assembly any other way is the bug this whole change exists to remove.
+    private static readonly Dictionary<string, string[]> TemplatePackages = new()
+    {
+        ["FlatRedBallDesktopGlNet6Template"] = new[]
+        {
+            "FlatRedBallDesktopGLNet6", "FlatRedBall.Forms.DesktopGlNet6", "FlatRedBall.GumCore.DesktopGlNet6",
+            "FlatRedBall.SkiaInGum", "FlatRedBall.StateInterpolation.DesktopNet6",
+        },
+        ["FlatRedBallDesktopGlMonoGameTemplate"] = new[]
+        {
+            "FlatRedBallDesktopGLNet6", "FlatRedBall.Forms.DesktopGlNet6", "FlatRedBall.GumCore.DesktopGlNet6",
+            "FlatRedBall.SkiaInGum", "FlatRedBall.StateInterpolation.DesktopNet6",
+        },
+        ["FlatRedBallWebTemplate"] = new[]
+        {
+            "FlatRedBallKniWeb", "FlatRedBall.Forms.Kni.Web", "FlatRedBall.GumCore.Kni.Web",
+            "FlatRedBall.StateInterpolation.Kni.Web",
+        },
+    };
+
+    [Fact]
+    public void ConvertedTemplates_ShouldTakeEveryEngineAssemblyFromNuGet()
+    {
+        foreach (var (templateName, expectedPackages) in TemplatePackages)
+        {
+            var templateDirectory = Path.Combine(FindFrbRoot(), "Templates", templateName, templateName);
+            var csproj = XDocument.Load(Path.Combine(templateDirectory, templateName + ".csproj"));
+
+            var referencedPackages = csproj.Descendants("PackageReference")
+                .Select(reference => (string)reference.Attribute("Include"))
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var package in expectedPackages)
+            {
+                referencedPackages.ShouldContain(package,
+                    $"{templateName} does not reference {package}, so a project created from it would " +
+                    "be missing part of the engine or resolve it some other way.");
+            }
+
+            // A HintPath into Libraries is exactly how the engine used to arrive half-versioned.
+            csproj.Descendants("HintPath")
+                .Select(hintPath => hintPath.Value)
+                .Any(hintPath => hintPath.Contains("Libraries", StringComparison.OrdinalIgnoreCase))
+                .ShouldBeFalse($"{templateName} still references an assembly out of a Libraries folder.");
+
+            Directory.Exists(Path.Combine(templateDirectory, "Libraries")).ShouldBeFalse(
+                $"{templateName} still ships a Libraries folder, which will go stale against its packages.");
+        }
+    }
+
+    [Fact]
+    public void ConvertedTemplates_ShouldPinOneVersionAcrossTheWholeEngine()
+    {
+        foreach (var (templateName, expectedPackages) in TemplatePackages)
+        {
+            var csprojPath = Path.Combine(FindFrbRoot(), "Templates", templateName, templateName, templateName + ".csproj");
+            var csproj = XDocument.Load(csprojPath);
+
+            // Mixed versions here would reintroduce the original bug through the front door.
+            var engineVersions = csproj.Descendants("PackageReference")
+                .Where(reference => expectedPackages.Contains((string)reference.Attribute("Include"), StringComparer.OrdinalIgnoreCase))
+                .Select(reference => (string)reference.Attribute("Version"))
+                .Distinct(StringComparer.Ordinal)
+                .ToList();
+
+            engineVersions.Count.ShouldBe(1,
+                $"{templateName} pins more than one engine version: {string.Join(", ", engineVersions)}. " +
+                "Every engine package a project restores has to be the same build.");
+        }
+    }
+
     private static XDocument LoadCsproj(string relativePath)
     {
         var fullPath = Path.Combine(FindCheckoutRoot(), relativePath);

@@ -54,6 +54,7 @@ namespace BuildServerUploaderConsole.Data
                 engine.Packages.Add(Package("FlatRedBallAndroid",
                     @"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBallAndroid\FlatRedBallAndroid.csproj"));
 
+                engine.TemplateUsesLibrariesFolder = true;
                 engine.RelativeToLibrariesDebugFolder = @"Android\Debug";
                 engine.RelativeToLibrariesReleaseFolder = @"Android\Release";
                 engine.TemplateCsProjFolder = @"FlatRedBallAndroidMonoGameTemplate\FlatRedBallAndroidMonoGameTemplate\";
@@ -103,6 +104,7 @@ namespace BuildServerUploaderConsole.Data
                 engine.Packages.Add(Package("FlatRedBalliOS",
                     @"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBalliOS\FlatRedBalliOS.csproj"));
 
+                engine.TemplateUsesLibrariesFolder = true;
                 engine.RelativeToLibrariesDebugFolder = @"iOS\Debug";
                 engine.RelativeToLibrariesReleaseFolder = @"iOS\Release";
                 engine.TemplateCsProjFolder = @"FlatRedBalliOSMonoGameTemplate\FlatRedBalliOSMonoGameTemplate\";
@@ -265,6 +267,11 @@ namespace BuildServerUploaderConsole.Data
                     @"Gum\GumCore\GumCoreXnaPc\GumCore.FNA\GumCore.FNA.csproj"));
                 engine.Packages.Add(Package("FlatRedBall.Forms.FNA",
                     @"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.FNA\FlatRedBall.Forms.FNA.csproj"));
+
+                // The only template still on a Libraries folder. It cannot move to NuGet until
+                // FlatRedBall.FNA carries FNA3D.dll (a native, checked into the template and built
+                // by nothing here) and FNA.dll.config under runtimes/.
+                engine.TemplateUsesLibrariesFolder = true;
 
                 engine.RelativeToLibrariesDebugFolder = @"FNA\Debug";
                 engine.RelativeToLibrariesReleaseFolder = @"FNA\Release";

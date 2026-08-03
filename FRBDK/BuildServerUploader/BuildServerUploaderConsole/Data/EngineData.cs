@@ -26,6 +26,17 @@ namespace BuildServerUploaderConsole.Data
         public string TemplateCsProjFolder { get; set; }
 
         /// <summary>
+        /// Whether this engine's template still references loose DLLs out of its own Libraries
+        /// folder rather than taking everything from NuGet. Only that case needs copytotemplates.
+        /// <para>
+        /// DebugFiles/ReleaseFiles stay populated either way: they also feed the release folder's
+        /// SingleDlls upload, which is what the editor's "Update Libraries" command downloads, and
+        /// projects created before the NuGet switch still rely on it.
+        /// </para>
+        /// </summary>
+        public bool TemplateUsesLibrariesFolder { get; set; }
+
+        /// <summary>
         /// Every NuGet package this engine ships. All of them are versioned together at release
         /// time and pushed in one step, so a project restores a matched set instead of pairing a
         /// current engine package with whatever Gum happened to be in its Libraries folder.

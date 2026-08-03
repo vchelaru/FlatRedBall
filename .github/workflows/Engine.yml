@@ -216,6 +216,8 @@ jobs:
           dotnet nuget push $file.FullName --api-key "${{ secrets.NUGET_APIKEY }}" --source https://api.nuget.org/v3/index.json
         }
 
+    # Only the FNA template still keeps engine DLLs in a Libraries folder; DesktopGL and Web take
+    # everything from the packages pushed above. See EngineData.TemplateUsesLibrariesFolder.
     - name: Copy dlls to templates
       if: ${{ github.event.inputs.IsBeta == 'false' }}
       run: .\FlatRedBall\FRBDK\BuildServerUploader\BuildServerUploaderConsole\bin\x86\Debug\BuildServerUploaderConsole.exe copytotemplates
