@@ -23,7 +23,7 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "GumCoreShared.FlatRedBall",
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "StateInterpolationShared", "..\..\FRBDK\Glue\StateInterpolationPlugin\StateInterpolationPlugin\StateInterpolationShared.shproj", "{D00D287D-385B-42FB-BF5F-04401E7D37D0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SkiaInGum", "..\..\..\Gum\SvgPlugin\SkiaInGumShared\SkiaInGum.csproj", "{65086525-A5DB-45F3-A855-409CD0F12E8D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SkiaInGum", "..\..\Engines\SkiaGum\SkiaInGum.csproj", "{65086525-A5DB-45F3-A855-409CD0F12E8D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Engine", "Engine", "{4CC888EE-9CE8-48FD-B955-7BDBA68D1A61}"
 EndProject

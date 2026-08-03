@@ -61,9 +61,20 @@ $githubRoot = Split-Path -Parent $repoRoot
 # cannot restore at all. The game itself consumes NarfoxGameTools as a checked-in DLL and builds
 # fine. We want to know whether the game still compiles against FRB, not whether an unrelated
 # sibling repo has drifted.
+#
+# A target may pin its own Config when the default configuration wouldn't exercise it. The Forms
+# projects only reference SkiaGum under DebugAutoBuild/ReleaseAutoBuild -- the configurations Glue
+# uses to rebuild the engine during live edit -- so plain Debug silently skips that reference and
+# a broken path there stays invisible.
+#
+# Samples/ is deliberately absent. *.Generated.cs is gitignored repo-wide with BeefballKni as the
+# only exception, so every other sample needs Glue to regenerate before it will compile. They pass
+# or fail based on whether stale generated files happen to be on the current disk, which is exactly
+# the kind of machine-dependent green a release gate must not report.
 $targets = @(
     @{ Name = 'EngineUnitTests'; Project = 'FlatRedBall/Tests/EngineUnitTests/EngineUnitTests.sln';                      Test = $true;  Note = 'Engine unit tests (no workflow runs these yet)' }
     @{ Name = 'TestProject';     Project = 'FlatRedBall/Tests/TestProjectDesktopNet6/TestProjectDesktopNet6.sln';        Test = $false; Note = 'The "Automated Test Project" from the checklist' }
+    @{ Name = 'FormsAutoBuild';  Project = 'FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.DesktopGLNet6.sln'; Test = $false; Config = 'DebugAutoBuild'; Note = 'The config Glue live-edit builds; only here does Forms reference SkiaGum' }
     @{ Name = 'KidDefense';      Project = 'KidDefense/GameProject/KidDefense.sln';                                      Test = $false; Note = 'net9.0 / MonoGame 3.8.5' }
     @{ Name = 'CrankyChibi';     Project = 'Kimuzukash-chibi-kuto-urufu/CrankyChibiCthulu.sln';                          Test = $false; Note = 'net8.0 / MonoGame 3.8.4.1' }
     @{ Name = 'BattleCrypt';     Project = 'BattleCryptBombers/BattleCryptBombers/BattleCryptBombers.csproj';            Test = $false; Note = 'net6.0 / MonoGame 3.8.1.303 -- oldest target, widest drift' }
@@ -165,7 +176,8 @@ foreach ($target in $targets) {
 
     # WarningLevel=0 keeps third-party game code from burying real errors in noise. Errors are
     # unaffected.
-    $common = @('-c', $Configuration, '/p:WarningLevel=0')
+    $targetConfig = if ($target.ContainsKey('Config')) { $target.Config } else { $Configuration }
+    $common = @('-c', $targetConfig, '/p:WarningLevel=0')
 
     # Each entry is one `dotnet` invocation; they run in order and the first failure stops the
     # target. Only -Clean on a test target needs more than one, because `dotnet test` rejects

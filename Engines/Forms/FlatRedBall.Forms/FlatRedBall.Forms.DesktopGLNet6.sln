@@ -19,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StateInterpolation.DesktopN
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlatRedBall.Forms.DesktopGlNet6", "FlatRedBall.Forms.DesktopGlNet6\FlatRedBall.Forms.DesktopGlNet6.csproj", "{346E0CC5-D25F-4E9F-970F-678F4D019C9F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SkiaInGum", "..\..\..\..\Gum\SvgPlugin\SkiaInGumShared\SkiaInGum.csproj", "{7AE61851-BDC2-4B77-B159-BFF52550C423}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SkiaInGum", "..\..\SkiaGum\SkiaInGum.csproj", "{7AE61851-BDC2-4B77-B159-BFF52550C423}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "FlatRedBallShared", "..\..\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.shproj", "{0BB8CBE3-8503-46C1-9272-D98E153A230E}"
 EndProject
