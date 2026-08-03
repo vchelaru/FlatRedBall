@@ -51,19 +51,19 @@ Engine/FRBDK versions are **date+time based, not semver**: `yyyy.M.d` + `.` + mi
 
 ## Build matrix (landmine)
 
-Engine.yml builds 5 platforms, each Debug *and* Release — but **only Debug is published to NuGet today**; Release is built and uploaded as a workflow artifact only (the YAML comment literally says "we don't (yet?) publish any release nuget packages"). Don't expect a Release NuGet to show up.
+Engine.yml builds each enabled platform Debug *and* Release — but **only Debug is published to NuGet today**; Release is built and uploaded as a workflow artifact only (the YAML comment literally says "we don't (yet?) publish any release nuget packages"). Don't expect a Release NuGet to show up.
 
 | Platform | Framework |
 |---|---|
 | Web (Kni) | net8.0 |
-| iOS | net8.0 |
-| Android | net8.0 |
 | FNA | net7.0 |
 | DesktopGL | net6.0 |
+| iOS | net8.0 — **can't build**, see below |
+| Android | net8.0 — **can't build**, see below |
+
+The mobile targets are `net8.0-ios`/`net8.0-android`, whose workloads are past end of life and are **no longer on the GitHub runner image**. `setup-dotnet` installs SDKs, not workloads, so the build fails with `NETSDK1140` — *"1.0 is not a valid TargetPlatformVersion for ios. Valid versions include: None."* Suppressing the EOL check (`CheckEolWorkloads=false`) only surfaces that underlying error; there is no workload to build against either way. Retargeting the mobile projects off net8 is the only real fix. Read Engine.yml itself for which platforms are currently wired up — the disabled steps are commented in place with restore instructions rather than deleted.
 
 All five NuGet pushes happen in a single step after every platform has compiled, so the matrix is all-or-nothing — a build failure on any platform means nothing reaches nuget.org. Don't reintroduce per-platform publishing; `dotnet nuget push` can't be undone, and interleaving it is what makes a mid-matrix failure leave a half-shipped release.
-
-The mobile builds pass `/p:CheckEolWorkloads=false`. `net8.0-ios`/`net8.0-android` are past their support window, and the runner image carries a newer SDK than `setup-dotnet` installs — SDK resolution picks that one and turns the end-of-life notice into a hard `NETSDK1202` **error**. Retargeting the mobile projects is the real fix; until then this suppression is load-bearing.
 
 glue.yml's build matrix only runs `Debug` (Release is commented out).
 

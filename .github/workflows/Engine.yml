@@ -73,43 +73,48 @@ jobs:
         path: FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Kni.Web\bin\Release\net8.0-ios\
 
     ## -----------------------------------------------------------------------------------------------------
-    # CheckEolWorkloads=false on the mobile builds: net8.0-ios and net8.0-android are past their
-    # support window, and the runner image now carries a newer SDK than setup-dotnet installs, so
-    # SDK resolution picks that one and turns the end-of-life notice into a hard NETSDK1202 error.
-    # Suppressing it keeps shipping the net8 mobile targets; retargeting them is the actual fix.
-    - name: Build FlatRedBall iOS .NET 8 Debug
-      run: dotnet build -c Debug 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.iOS.Net8.sln' /p:CheckEolWorkloads=false
-    - name: Package FlatRedBall iOS .NET 8
-      uses: actions/upload-artifact@v4
-      with:
-        name: iOSMonoGameNet8Debug
-        path: FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.iOSMonoGame\bin\Debug\net8.0-ios\
-    - name: Build FlatRedBall iOS .NET 8 Release
-      run: dotnet build -c Release 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.iOS.Net8.sln' /p:CheckEolWorkloads=false
-      ## We don't (yet?) publish any release nuget packages, but we do this in preparation for this in the future
-    - name: Package FlatRedBall iOS .NET 8
-      uses: actions/upload-artifact@v4
-      with:
-        name: iOSMonoGameNet8Release
-        path: FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.iOSMonoGame\bin\Release\net8.0-ios\
-        
-    ## -----------------------------------------------------------------------------------------------------
-    - name: Build FlatRedBall Android .NET 8 Debug
-      run: dotnet build -c Debug 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Android.Net8.sln' /p:CheckEolWorkloads=false
-    - name: Package FlatRedBall Android .NET 8
-      uses: actions/upload-artifact@v4
-      with:
-        name: AndroidMonoGameNet8Debug
-        path: FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.AndroidMonoGame\bin\Debug\net8.0-android\
-    - name: Build FlatRedBall Android .NET 8 Release
-      run: dotnet build -c Release 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Android.Net8.sln' /p:CheckEolWorkloads=false
-      ## We don't (yet?) publish any release nuget packages, but we do this in preparation for this in the future
-    - name: Package FlatRedBall Android .NET 8
-      uses: actions/upload-artifact@v4
-      with:
-        name: AndroidMonoGameNet8Release
-        path: FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.AndroidMonoGame\bin\Release\net8.0-android\
-    
+    ## iOS and Android are disabled, not deleted.
+    ##
+    ## Both target net8.0-ios / net8.0-android. Those workloads are past end of life and are no longer
+    ## present on the GitHub runner image -- setup-dotnet installs SDKs, not workloads, so the build
+    ## fails with NETSDK1140 "1.0 is not a valid TargetPlatformVersion for ios. Valid versions include:
+    ## None". Suppressing the end-of-life check (CheckEolWorkloads=false) only surfaces that underlying
+    ## error; there is no workload to build against either way.
+    ##
+    ## Because the publish step below is all-or-nothing, leaving these in blocks every other platform
+    ## from shipping. They stay commented until the mobile projects are retargeted off net8, at which
+    ## point restoring these steps and their entries in the publish list re-enables them.
+    ##
+    # - name: Build FlatRedBall iOS .NET 8 Debug
+    #   run: dotnet build -c Debug 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.iOS.Net8.sln'
+    # - name: Package FlatRedBall iOS .NET 8
+    #   uses: actions/upload-artifact@v4
+    #   with:
+    #     name: iOSMonoGameNet8Debug
+    #     path: FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.iOSMonoGame\bin\Debug\net8.0-ios\
+    # - name: Build FlatRedBall iOS .NET 8 Release
+    #   run: dotnet build -c Release 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.iOS.Net8.sln'
+    # - name: Package FlatRedBall iOS .NET 8
+    #   uses: actions/upload-artifact@v4
+    #   with:
+    #     name: iOSMonoGameNet8Release
+    #     path: FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.iOSMonoGame\bin\Release\net8.0-ios\
+    #
+    # - name: Build FlatRedBall Android .NET 8 Debug
+    #   run: dotnet build -c Debug 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Android.Net8.sln'
+    # - name: Package FlatRedBall Android .NET 8
+    #   uses: actions/upload-artifact@v4
+    #   with:
+    #     name: AndroidMonoGameNet8Debug
+    #     path: FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.AndroidMonoGame\bin\Debug\net8.0-android\
+    # - name: Build FlatRedBall Android .NET 8 Release
+    #   run: dotnet build -c Release 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Android.Net8.sln'
+    # - name: Package FlatRedBall Android .NET 8
+    #   uses: actions/upload-artifact@v4
+    #   with:
+    #     name: AndroidMonoGameNet8Release
+    #     path: FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.AndroidMonoGame\bin\Release\net8.0-android\
+
 
 
     ## -----------------------------------------------------------------------------------------------------
@@ -170,10 +175,12 @@ jobs:
     ## all-or-nothing: nothing reaches nuget.org unless everything built.
     - name: Publish NuGet packages
       run: |
+        # iOS and Android are absent on purpose -- see the disabled build steps above. Restore these
+        # two entries at the same time as those steps.
+        #   'FlatRedBall\Engines\FlatRedBallXNA\FlatRedBalliOS\bin\Debug',
+        #   'FlatRedBall\Engines\FlatRedBallXNA\FlatRedBallAndroid\bin\Debug',
         $packageDirs = @(
           'FlatRedBall\Engines\FlatRedBallXNA\KniWeb\bin\Debug',
-          'FlatRedBall\Engines\FlatRedBallXNA\FlatRedBalliOS\bin\Debug',
-          'FlatRedBall\Engines\FlatRedBallXNA\FlatRedBallAndroid\bin\Debug',
           'FlatRedBall\Engines\FlatRedBallXNA\FlatRedBall.FNA\bin\Debug',
           'FlatRedBall\Engines\FlatRedBallXNA\FlatRedBallDesktopGLNet6\bin\Debug'
         )
