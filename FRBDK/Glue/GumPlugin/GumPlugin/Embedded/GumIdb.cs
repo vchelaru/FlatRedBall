@@ -129,6 +129,61 @@ namespace FlatRedBall.Gum
             this.element.AssignReferences();
         }
 
+        /// <summary>
+        /// Builds the exception text for a Gum project that loaded with missing element files.
+        /// </summary>
+        /// <remarks>
+        /// Separated from StaticInitialize so it can be tested directly, and because the message needs to
+        /// distinguish two very different situations that the old "Missing files starting with X" text
+        /// blurred together.
+        ///
+        /// A missing file whose name is *empty* (".gusx" with nothing in front of it) does not mean a file
+        /// was deleted. It means the reference in the .gumx deserialized with a blank Name, which happens
+        /// when the .gumx is in a newer format than this build of GumCore can read - Gum's compact/v2
+        /// format stores Name as an XML attribute, and a GumCore that predates it falls back to a
+        /// serializer expecting a child element, silently producing blank names for every reference.
+        /// Reporting that as a missing file sends people looking for a file that was never absent.
+        /// </remarks>
+        public static string GetMissingFilesMessage(IList<string> missingFiles, string projectFileName)
+        {
+            if (missingFiles == null || missingFiles.Count == 0)
+            {
+                return null;
+            }
+
+            var hasEmptyName = missingFiles.Any(item =>
+                string.IsNullOrEmpty(System.IO.Path.GetFileNameWithoutExtension(item ?? string.Empty)));
+
+            var builder = new StringBuilder();
+
+            if (hasEmptyName)
+            {
+                builder.AppendLine(
+                    "The Gum project " + projectFileName + " loaded, but its element references came back " +
+                    "with empty names, so no screens or components could be found.");
+                builder.AppendLine();
+                builder.AppendLine(
+                    "This almost always means the .gumx was saved in a newer format than this build of the " +
+                    "engine can read - not that any file is actually missing. Update the FlatRedBall / Gum " +
+                    "libraries this project references (Libraries\\ folder and NuGet packages) to match the " +
+                    "version of the FRB Editor that saved the project.");
+            }
+            else
+            {
+                builder.AppendLine(
+                    "The Gum project " + projectFileName + " references " + missingFiles.Count +
+                    " file(s) that could not be found:");
+            }
+
+            builder.AppendLine();
+            foreach (var missingFile in missingFiles)
+            {
+                builder.AppendLine("  " + missingFile);
+            }
+
+            return builder.ToString().TrimEnd();
+        }
+
         public static void StaticInitialize(string projectFileName)
         {
             ///////////////////Early Out///////////////////////////
@@ -239,9 +294,11 @@ namespace FlatRedBall.Gum
 
             if (result.MissingFiles.Count != 0)
             {
-                throw new Exception("Missing files starting with " + result.MissingFiles[0]);
+                throw new Exception(GetMissingFilesMessage(result.MissingFiles, mProjectFileName));
             }
 #endif
+
+            // (see GetMissingFilesMessage for why an empty name in that list is worth calling out)
 
             // Now we can set the directory to Gum's root:
             ToolsUtilities.FileManager.RelativeDirectory = ToolsUtilities.FileManager.GetDirectory(mProjectFileName);
