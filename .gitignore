@@ -39,3 +39,6 @@ CLAUDE.local.md
 
 /temp/*
 !/temp/.gitkeep
+
+# Build logs from scripts/Test-DownstreamBuilds.ps1
+/artifacts/

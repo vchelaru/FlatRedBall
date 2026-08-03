@@ -597,7 +597,7 @@
     <PackageReference Include="Newtonsoft.Json">
       <Version>13.0.3</Version>
     </PackageReference>
-    <PackageReference Include="SkiaSharp" Version="2.88.6" />
+    <PackageReference Include="SkiaSharp" Version="3.116.1" />
   </ItemGroup>
   <ItemGroup>
     <None Update="Content\Shader.fx">
@@ -617,7 +617,7 @@
     <ProjectReference Include="../../../../Gum/GumCore/GumCoreXnaPc/GumCore.DesktopGlNet6/GumCore.DesktopGlNet6.csproj">
       <Name>GumCore.DesktopGlNet6</Name>
     </ProjectReference>
-    <ProjectReference Include="../../../../Gum/SvgPlugin/SkiaInGumShared/SkiaInGum.csproj">
+    <ProjectReference Include="../../../Engines/SkiaGum/SkiaInGum.csproj">
       <Name>SkiaInGum</Name>
     </ProjectReference>
     <ProjectReference Include="../../../Engines/FlatRedBallXNA/FlatRedBallDesktopGLNet6/FlatRedBallDesktopGLNet6.csproj">

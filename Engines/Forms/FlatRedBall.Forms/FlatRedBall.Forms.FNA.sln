@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlatRedBall.Forms.FNA", "Fl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GumCore.FNA", "..\..\..\..\Gum\GumCore\GumCoreXnaPc\GumCore.FNA\GumCore.FNA.csproj", "{CD9EBE44-31F1-4264-B063-E7382B276D37}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SkiaInGum.FNA", "..\..\..\..\Gum\SvgPlugin\SkiaInGumShared\SkiaInGum.FNA.csproj", "{840D15B2-071F-473F-A8E5-F4011BB48A01}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SkiaInGum.FNA", "..\..\SkiaGum\SkiaInGum.FNA.csproj", "{840D15B2-071F-473F-A8E5-F4011BB48A01}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StateInterpolation.FNA", "StateInterpolation\StateInterpolation.FNA\StateInterpolation.FNA.csproj", "{83AF3578-8DD1-42D7-A1EE-00BAD580F1C9}"
 EndProject
