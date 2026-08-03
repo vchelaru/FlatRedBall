@@ -385,6 +385,22 @@ internal class AddSourceManager
                 RemoveNugetReference(vsProject, "FlatRedBallKniWeb");
                 RemoveNugetReference(vsProject, "FlatRedBall.FNA");
 
+                // Forms, GumCore, SkiaInGum and StateInterpolation used to arrive as DLLs in the
+                // project's Libraries folder, which the loop above strips. They are NuGet packages
+                // now, so linking to source has to remove them here instead.
+                RemoveNugetReference(vsProject, "FlatRedBall.Forms.DesktopGlNet6");
+                RemoveNugetReference(vsProject, "FlatRedBall.GumCore.DesktopGlNet6");
+                RemoveNugetReference(vsProject, "FlatRedBall.SkiaInGum");
+                RemoveNugetReference(vsProject, "FlatRedBall.StateInterpolation.DesktopNet6");
+
+                RemoveNugetReference(vsProject, "FlatRedBall.Forms.Kni.Web");
+                RemoveNugetReference(vsProject, "FlatRedBall.GumCore.Kni.Web");
+                RemoveNugetReference(vsProject, "FlatRedBall.StateInterpolation.Kni.Web");
+
+                RemoveNugetReference(vsProject, "FlatRedBall.Forms.FNA");
+                RemoveNugetReference(vsProject, "FlatRedBall.GumCore.FNA");
+                RemoveNugetReference(vsProject, "FlatRedBall.StateInterpolation.FNA");
+
                 vsProject.Save(vsProject.FullFileName.FullPath);
             }
         }

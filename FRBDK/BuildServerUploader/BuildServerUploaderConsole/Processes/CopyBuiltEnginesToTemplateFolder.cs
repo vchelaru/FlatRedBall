@@ -1,5 +1,6 @@
 ﻿using BuildServerUploaderConsole.Data;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BuildServerUploaderConsole.Processes
 {
@@ -24,7 +25,9 @@ namespace BuildServerUploaderConsole.Processes
                 if (mCopyInformation.Count == 0)
                 {
                     string targetDirectory;
-                    foreach(var engine in AllData.Engines)
+                    // Templates that take their engine from NuGet have no Libraries folder to fill,
+                    // so there is nothing to copy for them. Only FNA is still in that shape.
+                    foreach(var engine in AllData.Engines.Where(engine => engine.TemplateUsesLibrariesFolder))
                     {
                         targetDirectory = engine.TemplateCsProjFolder + @"Libraries\" + engine.RelativeToLibrariesDebugFolder;
 

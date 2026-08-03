@@ -29,7 +29,13 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="FlatRedBallKniWeb" Version="2024.7.23.772" />
+    <!-- The whole engine comes from NuGet, so it moves as one matched set on restore. These four
+         used to be split: the engine from NuGet and the rest as loose DLLs in a Libraries folder,
+         which let a project pair a current engine with a months-old GumCore. -->
+    <PackageReference Include="FlatRedBallKniWeb" Version="2026.8.3.1114" />
+    <PackageReference Include="FlatRedBall.Forms.Kni.Web" Version="2026.8.3.1114" />
+    <PackageReference Include="FlatRedBall.GumCore.Kni.Web" Version="2026.8.3.1114" />
+    <PackageReference Include="FlatRedBall.StateInterpolation.Kni.Web" Version="2026.8.3.1114" />
     <PackageReference Include="nkast.Xna.Framework" Version="4.0.9001" />
     <PackageReference Include="nkast.Xna.Framework.Content" Version="4.0.9001" />
     <PackageReference Include="nkast.Xna.Framework.Devices" Version="4.0.9001" />
@@ -55,23 +61,6 @@
 
   <ItemGroup>
     <KniContentReference Include="Content\FlatRedBallWebTemplateContent.mgcb" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Libraries\Web\Debug\" />
-    <Folder Include="Libraries\Web\Release\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="FlatRedBall.Forms.Kni.Web">
-      <HintPath>Libraries\Web\Debug\FlatRedBall.Forms.Kni.Web.dll</HintPath>
-    </Reference>
-    <Reference Include="GumCore.Kni.Web">
-      <HintPath>Libraries\Web\Debug\GumCore.Kni.Web.dll</HintPath>
-    </Reference>
-    <Reference Include="StateInterpolation.Kni.Web">
-      <HintPath>Libraries\Web\Debug\StateInterpolation.Kni.Web.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
   <ItemGroup>
