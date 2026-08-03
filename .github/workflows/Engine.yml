@@ -63,13 +63,6 @@ jobs:
       with:
         name: WebKniNet8Debug
         path: FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Kni.Web\bin\Debug\net8.0\
-    - name: Publish NuGet package Web .NET 8
-      run: |
-        $files = Get-ChildItem -Path 'FlatRedBall\Engines\FlatRedBallXNA\KniWeb\bin\Debug\*.nupkg'
-        foreach ($file in $files) {
-          dotnet nuget push $file.FullName --api-key "${{ secrets.NUGET_APIKEY }}" --source https://api.nuget.org/v3/index.json
-        }
-
     - name: Build FlatRedBall Web Release
       run: dotnet build -c Release 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Kni.Web.sln'
       ## We don't (yet?) publish any release nuget packages, but we do this in preparation for this in the future
@@ -80,22 +73,19 @@ jobs:
         path: FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Kni.Web\bin\Release\net8.0-ios\
 
     ## -----------------------------------------------------------------------------------------------------
+    # CheckEolWorkloads=false on the mobile builds: net8.0-ios and net8.0-android are past their
+    # support window, and the runner image now carries a newer SDK than setup-dotnet installs, so
+    # SDK resolution picks that one and turns the end-of-life notice into a hard NETSDK1202 error.
+    # Suppressing it keeps shipping the net8 mobile targets; retargeting them is the actual fix.
     - name: Build FlatRedBall iOS .NET 8 Debug
-      run: dotnet build -c Debug 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.iOS.Net8.sln'
+      run: dotnet build -c Debug 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.iOS.Net8.sln' /p:CheckEolWorkloads=false
     - name: Package FlatRedBall iOS .NET 8
       uses: actions/upload-artifact@v4
       with:
         name: iOSMonoGameNet8Debug
         path: FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.iOSMonoGame\bin\Debug\net8.0-ios\
-    - name: Publish NuGet package iOS .NET 8
-      run: |
-        $files = Get-ChildItem -Path 'FlatRedBall\Engines\FlatRedBallXNA\FlatRedBalliOS\bin\Debug\*.nupkg'
-        foreach ($file in $files) {
-          dotnet nuget push $file.FullName --api-key "${{ secrets.NUGET_APIKEY }}" --source https://api.nuget.org/v3/index.json
-        }
-
     - name: Build FlatRedBall iOS .NET 8 Release
-      run: dotnet build -c Release 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.iOS.Net8.sln'
+      run: dotnet build -c Release 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.iOS.Net8.sln' /p:CheckEolWorkloads=false
       ## We don't (yet?) publish any release nuget packages, but we do this in preparation for this in the future
     - name: Package FlatRedBall iOS .NET 8
       uses: actions/upload-artifact@v4
@@ -105,21 +95,14 @@ jobs:
         
     ## -----------------------------------------------------------------------------------------------------
     - name: Build FlatRedBall Android .NET 8 Debug
-      run: dotnet build -c Debug 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Android.Net8.sln'
+      run: dotnet build -c Debug 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Android.Net8.sln' /p:CheckEolWorkloads=false
     - name: Package FlatRedBall Android .NET 8
       uses: actions/upload-artifact@v4
       with:
         name: AndroidMonoGameNet8Debug
         path: FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.AndroidMonoGame\bin\Debug\net8.0-android\
-    - name: Publish NuGet package Android .NET 8
-      run: |
-        $files = Get-ChildItem -Path 'FlatRedBall\Engines\FlatRedBallXNA\FlatRedBallAndroid\bin\Debug\*.nupkg'
-        foreach ($file in $files) {
-          dotnet nuget push $file.FullName --api-key "${{ secrets.NUGET_APIKEY }}" --source https://api.nuget.org/v3/index.json
-        }        
-
     - name: Build FlatRedBall Android .NET 8 Release
-      run: dotnet build -c Release 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Android.Net8.sln'
+      run: dotnet build -c Release 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Android.Net8.sln' /p:CheckEolWorkloads=false
       ## We don't (yet?) publish any release nuget packages, but we do this in preparation for this in the future
     - name: Package FlatRedBall Android .NET 8
       uses: actions/upload-artifact@v4
@@ -137,13 +120,6 @@ jobs:
       with:
         name: DesktopGlFnaNet7Debug
         path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.FNA/bin/Debug/net7.0/
-    - name: Publish NuGet package FRB FNA .NET 7
-      run: |
-        $files = Get-ChildItem -Path 'FlatRedBall\Engines\FlatRedBallXNA\FlatRedBall.FNA\bin\Debug\*.nupkg'
-        foreach ($file in $files) {
-          dotnet nuget push $file.FullName --api-key "${{ secrets.NUGET_APIKEY }}" --source https://api.nuget.org/v3/index.json
-        }        
-
     - name: Build FlatRedBall FNA .NET 7 Release
       run: dotnet build -c Release 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.FNA.sln'
       ## We don't (yet?) publish any release nuget packages, but we do this in preparation for this in the future
@@ -161,13 +137,6 @@ jobs:
       with:
         name: DesktopGlNet6Debug
         path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.DesktopGlNet6/bin/Debug/net6.0/
-    - name: Publish NuGet package DesktopGL .NET 6
-      run: |
-        $files = Get-ChildItem -Path 'FlatRedBall\Engines\FlatRedBallXNA\FlatRedBallDesktopGLNet6\bin\Debug\*.nupkg'
-        foreach ($file in $files) {
-          dotnet nuget push $file.FullName --api-key "${{ secrets.NUGET_APIKEY }}" --source https://api.nuget.org/v3/index.json
-        }
-
     - name: Build FlatRedBall DesktopGL .NET 6 Release
       run: dotnet build -c Release 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGLNet6.sln'
       ## We don't (yet?) publish any release nuget packages, but we do this in preparation for this in the future
@@ -191,6 +160,37 @@ jobs:
     #     } else {
     #         Write-Host "Directory does not exist at $FolderPath"
     #     }
+
+    ## -----------------------------------------------------------------------------------------------------
+    ## Publishing is deliberately last, after every platform above has compiled.
+    ##
+    ## `dotnet nuget push` cannot be undone. While publishing was interleaved with the builds, a failure
+    ## on platform N left platforms 1..N-1 already public -- a half-shipped release with no way back, and
+    ## on a non-beta run that is a genuinely bad state. Keeping all five pushes here makes the matrix
+    ## all-or-nothing: nothing reaches nuget.org unless everything built.
+    - name: Publish NuGet packages
+      run: |
+        $packageDirs = @(
+          'FlatRedBall\Engines\FlatRedBallXNA\KniWeb\bin\Debug',
+          'FlatRedBall\Engines\FlatRedBallXNA\FlatRedBalliOS\bin\Debug',
+          'FlatRedBall\Engines\FlatRedBallXNA\FlatRedBallAndroid\bin\Debug',
+          'FlatRedBall\Engines\FlatRedBallXNA\FlatRedBall.FNA\bin\Debug',
+          'FlatRedBall\Engines\FlatRedBallXNA\FlatRedBallDesktopGLNet6\bin\Debug'
+        )
+        # Collect and verify before pushing anything, so a platform that built but produced no package
+        # fails the run instead of silently shipping an incomplete set.
+        $toPush = @()
+        foreach ($dir in $packageDirs) {
+          $files = @(Get-ChildItem -Path "$dir\*.nupkg" -ErrorAction SilentlyContinue)
+          if ($files.Count -eq 0) {
+            Write-Host "::error::No .nupkg produced in $dir"
+            exit 1
+          }
+          $toPush += $files
+        }
+        foreach ($file in $toPush) {
+          dotnet nuget push $file.FullName --api-key "${{ secrets.NUGET_APIKEY }}" --source https://api.nuget.org/v3/index.json
+        }
 
     - name: Copy dlls to templates
       if: ${{ github.event.inputs.IsBeta == 'false' }}
