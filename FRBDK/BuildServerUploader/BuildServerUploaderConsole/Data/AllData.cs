@@ -52,7 +52,13 @@ namespace BuildServerUploaderConsole.Data
                 engine.ReleaseFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.AndroidMonoGame\bin\Release\net8.0-android\GumCoreAndroid.pdb");
 
 
-                Engines.Add(engine);
+                // Not registered: Engine.yml no longer builds Android, because the net8.0-android
+                // workload is end-of-life and absent from the build agents. Every file listed above
+                // would therefore be missing, and each process that walks AllData.Engines -- copying
+                // to the release folder, copying to templates, zipping templates -- would fail on it.
+                // Re-enable together with the Android steps in Engine.yml once the project is
+                // retargeted off net8.
+                // Engines.Add(engine);
             }
 
 
@@ -95,7 +101,9 @@ namespace BuildServerUploaderConsole.Data
                 engine.ReleaseFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.iOSMonoGame\bin\Release\net8.0-ios\GumCoreiOS.pdb");
 
 
-                Engines.Add(engine);
+                // Not registered -- same reason as Android above: the net8.0-ios workload is
+                // end-of-life and absent from the build agents, so none of these files get built.
+                // Engines.Add(engine);
             }
 
 
