@@ -71,6 +71,11 @@ $githubRoot = Split-Path -Parent $repoRoot
 # only exception, so every other sample needs Glue to regenerate before it will compile. They pass
 # or fail based on whether stale generated files happen to be on the current disk, which is exactly
 # the kind of machine-dependent green a release gate must not report.
+#
+# TestProjectDesktopNet6 has the same gitignored-codegen property (440 untracked *.Generated.cs),
+# which is why it lives here and not in pr-tests.yml -- a clean CI checkout cannot build it. It is
+# still worth running locally, since a developer's checkout does have the generated code and the
+# release checklist names it explicitly.
 $targets = @(
     @{ Name = 'EngineUnitTests'; Project = 'FlatRedBall/Tests/EngineUnitTests/EngineUnitTests.sln';                      Test = $true;  Note = 'Engine unit tests (no workflow runs these yet)' }
     @{ Name = 'TestProject';     Project = 'FlatRedBall/Tests/TestProjectDesktopNet6/TestProjectDesktopNet6.sln';        Test = $false; Note = 'The "Automated Test Project" from the checklist' }

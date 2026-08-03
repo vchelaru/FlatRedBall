@@ -47,3 +47,19 @@ jobs:
     # (installed above) and network for the first NuGet restore.
     - name: Run new-project build smoke test
       run: dotnet test 'FlatRedBall\FRBDK\Glue\Glue with All.sln' -c Debug --filter "Category=BuildSmoke"
+
+    # Everything above this line covers the Glue editor only. The steps below cover the engine,
+    # which otherwise gets compiled just once per release by Engine.yml -- long after the commit
+    # that broke it.
+    - name: Run engine unit tests
+      run: dotnet test 'FlatRedBall\Tests\EngineUnitTests\EngineUnitTests.sln' -c Debug
+
+    # TestProjectDesktopNet6 deliberately does not appear here. Its 440 *.Generated.cs files are
+    # gitignored, so it only compiles where Glue has already regenerated it -- a clean checkout
+    # cannot build it. scripts/Test-DownstreamBuilds.ps1 covers it locally instead.
+
+    # DebugAutoBuild is the configuration Glue uses to rebuild the engine during live edit, and the
+    # only one where FlatRedBall.Forms references SkiaGum at all. Plain Debug does not evaluate that
+    # reference, so a broken one survives every other check in this file.
+    - name: Build Forms under the Glue live-edit configuration
+      run: dotnet build 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGLNet6.sln' -c DebugAutoBuild
