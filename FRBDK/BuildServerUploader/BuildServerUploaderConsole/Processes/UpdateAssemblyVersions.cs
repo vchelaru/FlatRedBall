@@ -68,13 +68,12 @@ namespace BuildServerUploaderConsole.Processes
                         }
                     }
 
-                    var enginesWithCSProjLocation = AllData.Engines
-                        .Where(item => !string.IsNullOrEmpty(item.EngineCSProjLocation))
-                        .ToArray();
-                    // If we list a csproj, then update that:
-                    foreach (var engine in enginesWithCSProjLocation)
+                    // Every published package is stamped with the same version, including the ones
+                    // built out of the sibling Gum checkout. That is the point of the whole set
+                    // shipping through NuGet: a project resolves a matched set or none of it.
+                    foreach (var package in AllData.AllPackages)
                     {
-                        var csProjAbsolute = DirectoryHelper.CheckoutDirectory + engine.EngineCSProjLocation;
+                        var csProjAbsolute = DirectoryHelper.CheckoutDirectory + package.CsProjLocation;
                         ModifyCsprojAssemblyInfoVersion(csProjAbsolute, GetVersionString(IsBeta));
                         Results.WriteMessage("Modified " + csProjAbsolute + " to " + GetVersionString(IsBeta));
                     }
@@ -122,19 +121,16 @@ namespace BuildServerUploaderConsole.Processes
                     templateName = templateName.Substring(0, templateName.Length - 1);
                 }
 
-                var strippedEngineName = FileManager.RemoveExtension( FileManager.RemovePath(engine.EngineCSProjLocation));
+                var templateLocation = engine.TemplateCsProjFolder + templateName + ".csproj";
+                var fullTemplateCsprojLocation = DirectoryHelper.TemplateDirectory + templateLocation;
 
-                UpdateTemplateNuget(strippedEngineName, templateName, engine);
+                // A template only references the packages it actually needs, so a package the
+                // template doesn't list simply doesn't match and is left alone.
+                foreach (var package in engine.Packages)
+                {
+                    ModifyNugetVersionInAssembly(fullTemplateCsprojLocation, package.PackageId, GetVersionString(IsBeta));
+                }
             }
-        }
-
-        private void UpdateTemplateNuget(string engineName, string templateName, EngineData engine)
-        {
-            var templateLocation = engine.TemplateCsProjFolder + templateName + ".csproj";
-
-            var fullTemplateCsprojLocation = DirectoryHelper.TemplateDirectory + templateLocation;
-
-            ModifyNugetVersionInAssembly(fullTemplateCsprojLocation, engineName, GetVersionString(IsBeta));
         }
 
         private static void ModifyAssemblyInfoVersion(string assemblyInfoLocation, string versionString)
@@ -176,14 +172,21 @@ namespace BuildServerUploaderConsole.Processes
 
             string csprojText = FileManager.FromFileText(templateCsprojLocation);
 
-            csprojText = System.Text.RegularExpressions.Regex.Replace(csprojText,
-                        $"<PackageReference Include=\"{packageName}\" Version=\"[0-9]*.[0-9]*.[0-9]*.[0-9]*\" />",
+            var escapedPackageName = System.Text.RegularExpressions.Regex.Escape(packageName);
+
+            var updatedText = System.Text.RegularExpressions.Regex.Replace(csprojText,
+                        $"<PackageReference Include=\"{escapedPackageName}\" Version=\"[^\"]*\" />",
                         $"<PackageReference Include=\"{packageName}\" Version=\"{versionString}\" />");
 
-            Results.WriteMessage("Modified " + templateCsprojLocation + $" to have FlatRedBall Nuget package {versionString}");
+            if (updatedText == csprojText)
+            {
+                // Not every template references every package for its engine, so this is normal.
+                return;
+            }
 
+            Results.WriteMessage("Modified " + templateCsprojLocation + $" to reference {packageName} {versionString}");
 
-            FileManager.SaveText(csprojText, templateCsprojLocation);
+            FileManager.SaveText(updatedText, templateCsprojLocation);
         }
 
     }

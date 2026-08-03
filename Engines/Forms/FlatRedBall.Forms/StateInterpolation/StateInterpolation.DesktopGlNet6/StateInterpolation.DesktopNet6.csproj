@@ -4,6 +4,13 @@
 	  <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>1591</NoWarn>
     <Nullable>enable</Nullable>
+    <PackageId>FlatRedBall.StateInterpolation.DesktopNet6</PackageId>
+    <Title>FlatRedBall State Interpolation (.NET Desktop GL)</Title>
+    <Authors>FlatRedBall</Authors>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Description>Tweening and state interpolation for FlatRedBall</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Version>1.0.0</Version>
 
   </PropertyGroup>
 

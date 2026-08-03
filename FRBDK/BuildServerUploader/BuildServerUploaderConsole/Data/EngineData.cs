@@ -25,7 +25,12 @@ namespace BuildServerUploaderConsole.Data
         public string RelativeToLibrariesReleaseFolder { get; set; }
         public string TemplateCsProjFolder { get; set; }
 
-        public string EngineCSProjLocation { get; set; }
+        /// <summary>
+        /// Every NuGet package this engine ships. All of them are versioned together at release
+        /// time and pushed in one step, so a project restores a matched set instead of pairing a
+        /// current engine package with whatever Gum happened to be in its Libraries folder.
+        /// </summary>
+        public List<PackageData> Packages { get; set; } = new List<PackageData>();
 
         public string TemplateName
         {
