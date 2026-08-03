@@ -4,6 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <DefineConstants>TRACE;MONOGAME; DESKTOP_GL;MONOGAME_381;KNI;WEB;BLAZORGL</DefineConstants>
     <Title>FlatRedBall (Web)</Title>
+    <Authors>FlatRedBall</Authors>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Description>FlatRedBall Game Engine</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

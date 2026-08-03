@@ -2,9 +2,14 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <DefineConstants>FNA;DESKTOP_GL;WINDOWS;FRB</DefineConstants>
-    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>1591</NoWarn>
+    <Title>FlatRedBall.Forms (FNA)</Title>
+    <Authors>FlatRedBall</Authors>
+    <Description>UI controls for FlatRedBall built on Gum</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Version>1.0.0</Version>
 
   </PropertyGroup>
   <ItemGroup>
@@ -13,7 +18,10 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Gum\GumCore\GumCoreXnaPc\GumCore.FNA\GumCore.FNA.csproj" />
     <ProjectReference Include="..\..\..\SkiaGum\SkiaInGum.FNA.csproj" Condition="'$(Configuration)' == 'DebugAutoBuild' Or '$(Configuration)' == 'ReleaseAutoBuild'" />
-    <ProjectReference Include="..\..\..\FlatRedBallXNA\3rd Party Libraries\FNA\FNA.Core.csproj" />
+    <!-- FNA is not published on nuget.org, so this must not become a package dependency.
+         FNA.dll reaches consumers embedded in the FlatRedBall.FNA package, picked up
+         transitively through GumCore.FNA -> StateInterpolation.FNA. -->
+    <ProjectReference Include="..\..\..\FlatRedBallXNA\3rd Party Libraries\FNA\FNA.Core.csproj" PrivateAssets="all" />
   </ItemGroup>
   <Import Project="..\FlatRedBall.Forms.Shared\FlatRedBall.Forms.Shared.projitems" Label="Shared" />
 </Project>

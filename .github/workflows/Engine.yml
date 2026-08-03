@@ -175,14 +175,31 @@ jobs:
     ## all-or-nothing: nothing reaches nuget.org unless everything built.
     - name: Publish NuGet packages
       run: |
+        # Every assembly a template-created project references ships as its own package, so this
+        # list covers Forms, GumCore, StateInterpolation and SkiaInGum as well as the engine.
+        # GumCore is built out of the sibling Gum checkout but published by FlatRedBall.
+        # GlueUnitTests' EnginePackagingTests asserts this list covers every published project.
+        #
         # iOS and Android are absent on purpose -- see the disabled build steps above. Restore these
         # two entries at the same time as those steps.
         #   'FlatRedBall\Engines\FlatRedBallXNA\FlatRedBalliOS\bin\Debug',
         #   'FlatRedBall\Engines\FlatRedBallXNA\FlatRedBallAndroid\bin\Debug',
         $packageDirs = @(
           'FlatRedBall\Engines\FlatRedBallXNA\KniWeb\bin\Debug',
+          'FlatRedBall\Engines\Forms\FlatRedBall.Forms\StateInterpolation\StateInterpolation.Kni.Web\bin\Debug',
+          'Gum\GumCore\GumCoreXnaPc\GumCore.Kni.Web\bin\Debug',
+          'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Kni.Web\bin\Debug',
+
           'FlatRedBall\Engines\FlatRedBallXNA\FlatRedBall.FNA\bin\Debug',
-          'FlatRedBall\Engines\FlatRedBallXNA\FlatRedBallDesktopGLNet6\bin\Debug'
+          'FlatRedBall\Engines\Forms\FlatRedBall.Forms\StateInterpolation\StateInterpolation.FNA\bin\Debug',
+          'Gum\GumCore\GumCoreXnaPc\GumCore.FNA\bin\Debug',
+          'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.FNA\bin\Debug',
+
+          'FlatRedBall\Engines\FlatRedBallXNA\FlatRedBallDesktopGLNet6\bin\Debug',
+          'FlatRedBall\Engines\Forms\FlatRedBall.Forms\StateInterpolation\StateInterpolation.DesktopGlNet6\bin\Debug',
+          'Gum\GumCore\GumCoreXnaPc\GumCore.DesktopGlNet6\bin\Debug',
+          'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGlNet6\bin\Debug',
+          'FlatRedBall\Engines\SkiaGum\bin\Debug'
         )
         # Collect and verify before pushing anything, so a platform that built but produced no package
         # fails the run instead of silently shipping an incomplete set.

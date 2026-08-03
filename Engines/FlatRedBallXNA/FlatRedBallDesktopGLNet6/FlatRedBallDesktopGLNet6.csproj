@@ -6,6 +6,7 @@
     
 		<DefineConstants>TRACE;MONOGAME; DESKTOP_GL; MONOGAME_381</DefineConstants>
 		<Title>FlatRedBall (.NET Desktop GL)</Title>
+		<Authors>FlatRedBall</Authors>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Description>FlatRedBall Game Engine</Description>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>

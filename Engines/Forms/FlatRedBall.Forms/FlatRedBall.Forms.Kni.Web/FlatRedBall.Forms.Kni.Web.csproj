@@ -4,6 +4,12 @@
 		<DefineConstants>DESKTOP_GL;KNI;WEB;BLAZORGL; FRB</DefineConstants>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>1591</NoWarn>
+    <Title>FlatRedBall.Forms (Web)</Title>
+    <Authors>FlatRedBall</Authors>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Description>UI controls for FlatRedBall built on Gum</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Version>1.0.0</Version>
 
   </PropertyGroup>
 	<ItemGroup>

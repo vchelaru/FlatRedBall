@@ -4,10 +4,19 @@
     <DefineConstants>FNA;XNA4</DefineConstants>
 	  <GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<NoWarn>1591</NoWarn>
+    <PackageId>FlatRedBall.StateInterpolation.FNA</PackageId>
+    <Title>FlatRedBall State Interpolation (FNA)</Title>
+    <Authors>FlatRedBall</Authors>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Description>Tweening and state interpolation for FlatRedBall</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Version>1.0.0</Version>
 
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\FlatRedBallXNA\3rd Party Libraries\FNA\FNA.Core.csproj" />
+    <!-- FNA is not published on nuget.org, so this must not become a package dependency.
+         FNA.dll reaches consumers embedded in the FlatRedBall.FNA package below. -->
+    <ProjectReference Include="..\..\..\..\FlatRedBallXNA\3rd Party Libraries\FNA\FNA.Core.csproj" PrivateAssets="all" />
     <ProjectReference Include="..\..\..\..\FlatRedBallXNA\FlatRedBall.FNA\FlatRedBall.FNA.csproj" />
   </ItemGroup>
   <Import Project="..\..\..\..\..\FRBDK\Glue\StateInterpolationPlugin\StateInterpolationPlugin\StateInterpolationShared.projitems" Label="Shared" />

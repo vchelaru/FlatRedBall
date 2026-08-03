@@ -12,6 +12,38 @@ namespace BuildServerUploaderConsole.Data
 
         public static List<EngineData> Engines { get; private set; } = new List<EngineData>();
 
+        /// <summary>
+        /// Every package published by a release, deduplicated. The DesktopGL entries below share a
+        /// package set across two templates, so the same csproj is listed more than once in
+        /// <see cref="Engines"/>.
+        /// </summary>
+        public static IEnumerable<PackageData> AllPackages =>
+            Engines.SelectMany(engine => engine.Packages)
+                   .GroupBy(package => package.PackageId)
+                   .Select(group => group.First());
+
+        static PackageData Package(string packageId, string csProjLocation) => new PackageData
+        {
+            PackageId = packageId,
+            CsProjLocation = csProjLocation,
+        };
+
+        // Both DesktopGL templates (.NET 6 and .NET 9) build against the same multi-targeted
+        // projects, so they ship the same packages.
+        static void AddDesktopGlPackages(EngineData engine)
+        {
+            engine.Packages.Add(Package("FlatRedBallDesktopGLNet6",
+                @"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBallDesktopGLNet6\FlatRedBallDesktopGLNet6.csproj"));
+            engine.Packages.Add(Package("FlatRedBall.StateInterpolation.DesktopNet6",
+                @"FlatRedBall\Engines\Forms\FlatRedBall.Forms\StateInterpolation\StateInterpolation.DesktopGlNet6\StateInterpolation.DesktopNet6.csproj"));
+            engine.Packages.Add(Package("FlatRedBall.GumCore.DesktopGlNet6",
+                @"Gum\GumCore\GumCoreXnaPc\GumCore.DesktopGlNet6\GumCore.DesktopGlNet6.csproj"));
+            engine.Packages.Add(Package("FlatRedBall.Forms.DesktopGlNet6",
+                @"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGlNet6\FlatRedBall.Forms.DesktopGlNet6.csproj"));
+            engine.Packages.Add(Package("FlatRedBall.SkiaInGum",
+                @"FlatRedBall\Engines\SkiaGum\SkiaInGum.csproj"));
+        }
+
         static AllData()
         {
             // Android (.NET 8)
@@ -19,7 +51,8 @@ namespace BuildServerUploaderConsole.Data
                 var engine = new EngineData();
                 engine.Name = "Android .NET 8.0";
 
-                engine.EngineCSProjLocation = @"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBallAndroid\FlatRedBallAndroid.csproj";
+                engine.Packages.Add(Package("FlatRedBallAndroid",
+                    @"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBallAndroid\FlatRedBallAndroid.csproj"));
 
                 engine.RelativeToLibrariesDebugFolder = @"Android\Debug";
                 engine.RelativeToLibrariesReleaseFolder = @"Android\Release";
@@ -67,7 +100,8 @@ namespace BuildServerUploaderConsole.Data
                 var engine = new EngineData();
                 engine.Name = "iOS .NET 8.0";
 
-                engine.EngineCSProjLocation = @"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBalliOS\FlatRedBalliOS.csproj";
+                engine.Packages.Add(Package("FlatRedBalliOS",
+                    @"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBalliOS\FlatRedBalliOS.csproj"));
 
                 engine.RelativeToLibrariesDebugFolder = @"iOS\Debug";
                 engine.RelativeToLibrariesReleaseFolder = @"iOS\Release";
@@ -112,12 +146,12 @@ namespace BuildServerUploaderConsole.Data
                 var engine = new EngineData();
                 engine.Name = "MonoGame DesktopGL .NET 6.0";
 
-                engine.EngineCSProjLocation = @"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBallDesktopGLNet6\FlatRedBallDesktopGLNet6.csproj";
+                AddDesktopGlPackages(engine);
 
                 engine.RelativeToLibrariesDebugFolder = @"DesktopGl\Debug";
                 engine.RelativeToLibrariesReleaseFolder = @"DesktopGl\Release";
                 engine.TemplateCsProjFolder = @"FlatRedBallDesktopGlNet6Template\FlatRedBallDesktopGlNet6Template\";
-                                       
+
                 // This is the built folder when building FlatRedBall.Forms sln
                 // All files below (DebugFiles and ReleaseFiles) should be contained
                 // in that output folder because the project should reference those files
@@ -168,7 +202,9 @@ namespace BuildServerUploaderConsole.Data
                 var engine = new EngineData();
                 engine.Name = "MonoGame DesktopGL .NET 9.0+";
 
-                engine.EngineCSProjLocation = @"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBallDesktopGLNet6\FlatRedBallDesktopGLNet6.csproj";
+                // Same projects and therefore the same packages as the .NET 6 template above -- the
+                // DesktopGL projects multi-target net6.0 and net8.0, so one package serves both.
+                AddDesktopGlPackages(engine);
 
                 engine.RelativeToLibrariesDebugFolder = @"DesktopGl\Debug";
                 engine.RelativeToLibrariesReleaseFolder = @"DesktopGl\Release";
@@ -221,7 +257,14 @@ namespace BuildServerUploaderConsole.Data
                 var engine = new EngineData();
                 engine.Name = "FNA DesktopGL .NET 7.0";
 
-                engine.EngineCSProjLocation = @"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBall.FNA\FlatRedBall.FNA.csproj";
+                engine.Packages.Add(Package("FlatRedBall.FNA",
+                    @"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBall.FNA\FlatRedBall.FNA.csproj"));
+                engine.Packages.Add(Package("FlatRedBall.StateInterpolation.FNA",
+                    @"FlatRedBall\Engines\Forms\FlatRedBall.Forms\StateInterpolation\StateInterpolation.FNA\StateInterpolation.FNA.csproj"));
+                engine.Packages.Add(Package("FlatRedBall.GumCore.FNA",
+                    @"Gum\GumCore\GumCoreXnaPc\GumCore.FNA\GumCore.FNA.csproj"));
+                engine.Packages.Add(Package("FlatRedBall.Forms.FNA",
+                    @"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.FNA\FlatRedBall.Forms.FNA.csproj"));
 
                 engine.RelativeToLibrariesDebugFolder = @"FNA\Debug";
                 engine.RelativeToLibrariesReleaseFolder = @"FNA\Release";
@@ -274,7 +317,14 @@ namespace BuildServerUploaderConsole.Data
                 var engine = new EngineData();
                 engine.Name = "Web";
 
-                engine.EngineCSProjLocation = @"FlatRedBall\Engines\FlatRedBallXNA\KniWeb\FlatRedBallKniWeb.csproj";
+                engine.Packages.Add(Package("FlatRedBallKniWeb",
+                    @"FlatRedBall\Engines\FlatRedBallXNA\KniWeb\FlatRedBallKniWeb.csproj"));
+                engine.Packages.Add(Package("FlatRedBall.StateInterpolation.Kni.Web",
+                    @"FlatRedBall\Engines\Forms\FlatRedBall.Forms\StateInterpolation\StateInterpolation.Kni.Web\StateInterpolation.Kni.Web.csproj"));
+                engine.Packages.Add(Package("FlatRedBall.GumCore.Kni.Web",
+                    @"Gum\GumCore\GumCoreXnaPc\GumCore.Kni.Web\GumCore.Kni.Web.csproj"));
+                engine.Packages.Add(Package("FlatRedBall.Forms.Kni.Web",
+                    @"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Kni.Web\FlatRedBall.Forms.Kni.Web.csproj"));
 
                 engine.RelativeToLibrariesDebugFolder = @"Web\Debug";
                 engine.RelativeToLibrariesReleaseFolder = @"Web\Release";
