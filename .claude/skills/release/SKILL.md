@@ -26,6 +26,7 @@ Both workflows are `workflow_dispatch`-only, run against whatever is currently o
 
 1. `git status`, `git fetch`, confirm local `NetStandard` == `origin/NetStandard`. If this release needs a new Gum tool version, publish it first via Gum's own release process (`gum-release`/`gum-monthly-release` skills in the Gum repo) — see Gum dependency below.
    Then run `scripts/Test-DownstreamBuilds.ps1`, which compiles the games and in-repo projects the checklist names against the working tree, and dry-run the template steps (see below). The GitBook puts this smoke test *before* any workflow dispatch, which is the safer order — nuget.org publishes can't be revoked.
+   Also run the slow gate the fast unit run skips, since it covers what a user's first five minutes actually exercise: `dotnet test "FRBDK/Glue/Glue with All.sln" -c Debug --filter "Category=BuildSmoke"` (new-project creation + build, and the Gum runtime contract sweep).
 2. **CHECKPOINT — publishes `-beta` NuGet packages, not revocable.**
    `gh workflow run Engine.yml -f IsBeta=true`
 3. `gh run list --workflow=Engine.yml --limit 1` → grab the run id → `gh run watch <id> --exit-status`.
@@ -36,11 +37,23 @@ Both workflows are `workflow_dispatch`-only, run against whatever is currently o
 7. **CHECKPOINT — FTP push of FRBDK.zip to prod download.**
    `gh workflow run glue.yml`
 8. `gh run list --workflow="FlatRedBall Editor" --limit 1` → `gh run watch <id> --exit-status`.
-9. *(Manual, human-only, per GitBook)* Download latest FRBDK, run Glue, confirm version; create a new platformer project and check its `.csproj` version. Then *run* the smoke-test games — `Test-DownstreamBuilds.ps1` only proves they compile, never that they play.
+9. *(Manual, human-only, per GitBook)* Download latest FRBDK into a **fresh** folder, run Glue, confirm version. Then create a new project **with Gum and Forms enabled** — that combination is what exercises Gum codegen against the shipped runtime, and it is the path that has broken most often. Check its `.csproj` picked up the new engine version, and build it. Then *run* the smoke-test games — `Test-DownstreamBuilds.ps1` only proves they compile, never that they play.
+   The wizard's platform list lives in `FRBDK/Glue/NpcWpfLib/Data/EmptyTemplates.cs` and does **not** match the internal template folder names: pick "Desktop GL .NET 9 (Windows, Mac, Linux) - MonoGame", which is `FlatRedBallDesktopGlNet6Template`'s successor entry. There is no ".NET 6" option in the wizard despite the `Net6` names throughout the build pipeline.
 10. Draft release notes — invoke [[release-notes]].
 11. **CHECKPOINT — before making the release public.**
     `gh release create <tag> --draft --notes-file <path> --title "<Month DD, YYYY>"`, review, then `gh release edit <tag> --draft=false`.
 12. *(Manual, human-only)* Post to Discord and share on Twitter/X, per GitBook.
+
+## Which workflow ships which fix (landmine)
+
+The two workflows ship disjoint artifacts, so a hotfix usually needs only one of them:
+
+| Fix touches | Re-run | Leaves alone |
+|---|---|---|
+| `Engines/**` (runtime) | `Engine.yml` | FRBDK |
+| `FRBDK/Glue/**`, incl. all Gum codegen | `glue.yml` | engine NuGet packages |
+
+A codegen bug reaches users through `FRBDK.zip`, not through the engine packages — re-running `Engine.yml` for one is pure churn, and it mints a *new* version string that supersedes the one you just announced. Relatedly, a failed `IsBeta=false` run that got as far as the NuGet push leaves those packages published; the re-run publishes a second, higher version rather than replacing them. The stranded set is harmless (identical content, and NuGet resolves to newest), so unlisting it is optional tidiness, not a correctness fix.
 
 ## Version scheme (landmine)
 
