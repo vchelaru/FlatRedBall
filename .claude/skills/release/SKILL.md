@@ -61,6 +61,10 @@ Engine.yml builds 5 platforms, each Debug *and* Release — but **only Debug is 
 | FNA | net7.0 |
 | DesktopGL | net6.0 |
 
+All five NuGet pushes happen in a single step after every platform has compiled, so the matrix is all-or-nothing — a build failure on any platform means nothing reaches nuget.org. Don't reintroduce per-platform publishing; `dotnet nuget push` can't be undone, and interleaving it is what makes a mid-matrix failure leave a half-shipped release.
+
+The mobile builds pass `/p:CheckEolWorkloads=false`. `net8.0-ios`/`net8.0-android` are past their support window, and the runner image carries a newer SDK than `setup-dotnet` installs — SDK resolution picks that one and turns the end-of-life notice into a hard `NETSDK1202` **error**. Retargeting the mobile projects is the real fix; until then this suppression is load-bearing.
+
 glue.yml's build matrix only runs `Debug` (Release is commented out).
 
 `Program.cs` also has a `zipanduploadgum` command wired into the manual/debug code path, but **no workflow in this repo calls it** — it uploads Gum to FRB's FTP, a path that's no longer used (see Gum dependency below).
