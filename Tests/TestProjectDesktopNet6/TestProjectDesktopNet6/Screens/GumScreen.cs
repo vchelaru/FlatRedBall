@@ -194,8 +194,8 @@ public partial class GumScreen
 
         inlineVariables.Count.ShouldBe(2);
 
-        var styledSubstring0 = textRenderable.GetStyledSubstrings(0, textRenderable.WrappedText[0], System.Drawing.Color.White);
-        var styledSubstring1 = textRenderable.GetStyledSubstrings(textRenderable.WrappedText[0].Length, textRenderable.WrappedText[1], System.Drawing.Color.White);
+        var styledSubstring0 = textRenderable.GetStyledSubstrings(0, textRenderable.WrappedText[0]);
+        var styledSubstring1 = textRenderable.GetStyledSubstrings(textRenderable.WrappedText[0].Length, textRenderable.WrappedText[1]);
 
         styledSubstring0[1].Substring.ShouldBe("1");
         styledSubstring1[1].Substring.ShouldBe("1");
