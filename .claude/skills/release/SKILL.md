@@ -25,7 +25,7 @@ Both workflows are `workflow_dispatch`-only, run against whatever is currently o
 ## Release sequence
 
 1. `git status`, `git fetch`, confirm local `NetStandard` == `origin/NetStandard`. If this release needs a new Gum tool version, publish it first via Gum's own release process (`gum-release`/`gum-monthly-release` skills in the Gum repo) — see Gum dependency below.
-   Then run `scripts/Test-DownstreamBuilds.ps1`, which compiles the games and in-repo projects the checklist names against the working tree. The GitBook puts this smoke test *before* any workflow dispatch, which is the safer order — nuget.org publishes can't be revoked.
+   Then run `scripts/Test-DownstreamBuilds.ps1`, which compiles the games and in-repo projects the checklist names against the working tree, and dry-run the template steps (see below). The GitBook puts this smoke test *before* any workflow dispatch, which is the safer order — nuget.org publishes can't be revoked.
 2. **CHECKPOINT — publishes `-beta` NuGet packages, not revocable.**
    `gh workflow run Engine.yml -f IsBeta=true`
 3. `gh run list --workflow=Engine.yml --limit 1` → grab the run id → `gh run watch <id> --exit-status`.
@@ -80,6 +80,21 @@ glue.yml's build matrix only runs `Debug` (Release is commented out).
 The split this forces: `pr-tests.yml` gates what a clean checkout can build (Glue, `Tests/EngineUnitTests`, Forms under `DebugAutoBuild`); `scripts/Test-DownstreamBuilds.ps1` covers what needs a developer's machine (codegen-dependent projects plus the sibling game checkouts).
 
 `DebugAutoBuild`/`ReleaseAutoBuild` are worth knowing separately: they're the configurations Glue uses to rebuild the engine during live edit, and the **only** ones where `FlatRedBall.Forms` references SkiaGum. Plain Debug/Release — all `Engine.yml` builds — never evaluate that reference, so breakage there is invisible to the release pipeline.
+
+## Dry-running the template steps (landmine)
+
+`copytotemplates` and `zipanduploadtemplates` run **only when `IsBeta=false`**, and they run *after* the NuGet push — so a beta run cannot exercise them and a failure there lands with packages already public. Dry-run them locally instead. From the directory *containing* the `FlatRedBall` and `Gum` checkouts (the file paths in `AllData.cs` are relative to that parent, not to the repo root):
+
+```
+dotnet build -c Debug   Engines/Forms/FlatRedBall.Forms/<Web|FNA|DesktopGLNet6>.sln   # and -c Release
+dotnet build -c Debug   FRBDK/BuildServerUploader/BuildServerUploader.sln
+./FlatRedBall/FRBDK/.../BuildServerUploaderConsole.exe copytotemplates
+./FlatRedBall/FRBDK/.../BuildServerUploaderConsole.exe zipanduploadtemplates BAD_USER BAD_PASSWORD
+```
+
+Dummy credentials are the point: everything local (copy-to-release-folder, zip) executes for real and only the final SFTP fails with `SshAuthenticationException`, which is the pass condition. Afterwards `git checkout -- Templates/ && rm -f Templates/*.zip` — the template DLLs are tracked, so a dry run dirties ~90 files.
+
+`AllData.cs`'s per-engine file lists are hand-maintained literal paths with no build-time validation, which is what makes this dry run worth doing: a project that moves on disk breaks the release and nothing else notices. SkiaInGum is the standing example — FRB forked it into `Engines/SkiaGum/`, and it is pulled from that project's own `bin` rather than the Forms output folder because Forms only references it under the AutoBuild configurations.
 
 ## Gum dependency (landmine)
 
