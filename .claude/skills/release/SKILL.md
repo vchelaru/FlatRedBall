@@ -18,11 +18,14 @@ Releasing FRB1 (engine + Glue/FRBDK) is semi-automated: `gh` CLI triggers and wa
 | `Processes/CopyFrbdkAndPluginsToReleaseFolder.cs` (`DownloadGum`) | Pulls Gum's **latest GitHub release** `Gum.zip` asset and bundles it into FRBDK — see Gum dependency below |
 | [docs.flatredball.com/flatredball/contributing/builds](https://docs.flatredball.com/flatredball/contributing/builds) | The narrative doc — kept current, cross-check before deviating from this skill |
 
-Both workflows are `workflow_dispatch`-only, run against whatever is currently on the default branch (not a tag/push trigger) — confirm local `main` matches `origin/main` before dispatching.
+Both workflows are `workflow_dispatch`-only, run against whatever is currently on the default branch (not a tag/push trigger) — confirm local `NetStandard` matches `origin/NetStandard` before dispatching. **The default branch is `NetStandard`, not `main`.**
+
+`glue.yml` runs the Glue unit tests *and* the `Category=BuildSmoke` new-project builds before the FTP upload, so a red test fails the release rather than shipping — expect it to take longer than a pure build, and read a failure as a real gate.
 
 ## Release sequence
 
-1. `git status`, `git fetch`, confirm local `main` == `origin/main`. If this release needs a new Gum tool version, publish it first via Gum's own release process (`gum-release`/`gum-monthly-release` skills in the Gum repo) — see Gum dependency below.
+1. `git status`, `git fetch`, confirm local `NetStandard` == `origin/NetStandard`. If this release needs a new Gum tool version, publish it first via Gum's own release process (`gum-release`/`gum-monthly-release` skills in the Gum repo) — see Gum dependency below.
+   Then run `scripts/Test-DownstreamBuilds.ps1`, which compiles the games and in-repo projects the checklist names against the working tree. The GitBook puts this smoke test *before* any workflow dispatch, which is the safer order — nuget.org publishes can't be revoked.
 2. **CHECKPOINT — publishes `-beta` NuGet packages, not revocable.**
    `gh workflow run Engine.yml -f IsBeta=true`
 3. `gh run list --workflow=Engine.yml --limit 1` → grab the run id → `gh run watch <id> --exit-status`.
@@ -33,7 +36,7 @@ Both workflows are `workflow_dispatch`-only, run against whatever is currently o
 7. **CHECKPOINT — FTP push of FRBDK.zip to prod download.**
    `gh workflow run glue.yml`
 8. `gh run list --workflow="FlatRedBall Editor" --limit 1` → `gh run watch <id> --exit-status`.
-9. *(Manual, human-only, per GitBook)* Download latest FRBDK, run Glue, confirm version; create a new platformer project and check its `.csproj` version. Also smoke-test against Kid Defense, Cranky Chibi Cthulhu, Battlecrypt Bombers, and the Automated Test Project.
+9. *(Manual, human-only, per GitBook)* Download latest FRBDK, run Glue, confirm version; create a new platformer project and check its `.csproj` version. Then *run* the smoke-test games — `Test-DownstreamBuilds.ps1` only proves they compile, never that they play.
 10. Draft release notes — invoke [[release-notes]].
 11. **CHECKPOINT — before making the release public.**
     `gh release create <tag> --draft --notes-file <path> --title "<Month DD, YYYY>"`, review, then `gh release edit <tag> --draft=false`.
@@ -65,6 +68,14 @@ glue.yml's build matrix only runs `Debug` (Release is commented out).
 ## Building Glue for local testing (landmine)
 
 `Glue.csproj` is just the core editor lib/exe (`GlueFormsCore.exe`) — it does **not** reference plugin projects like `GumPlugin.csproj`. Plugins are separate projects built independently and copied into `Glue/Glue/bin/<Config>/Plugins/<PluginName>/<PluginName>.dll`, which is where Glue actually loads them from at runtime. **`dotnet build FRBDK/Glue/Glue/Glue.csproj` silently leaves that Plugins folder untouched** — no error, no warning, just a stale plugin DLL sitting next to a freshly-built exe. If you're testing a plugin change (e.g. anything in `GumPlugin`), you must build either the whole solution (`dotnet build "FRBDK/Glue/Glue with All.sln"`) or that plugin's `.csproj` explicitly — building `Glue.csproj` alone is not enough and will make it look like your fix "didn't work."
+
+## What can be CI-gated (landmine)
+
+`*.Generated.cs` is gitignored repo-wide, with `Samples/BeefballKni` the only `!`-exception. Any project that depends on Glue codegen therefore **cannot build from a clean checkout** — including `Tests/TestProjectDesktopNet6` (the checklist's "Automated Test Project") and every sample but BeefballKni. Locally they build fine off untracked generated files already on disk, so adding one to a workflow produces a green local run and a red CI run.
+
+The split this forces: `pr-tests.yml` gates what a clean checkout can build (Glue, `Tests/EngineUnitTests`, Forms under `DebugAutoBuild`); `scripts/Test-DownstreamBuilds.ps1` covers what needs a developer's machine (codegen-dependent projects plus the sibling game checkouts).
+
+`DebugAutoBuild`/`ReleaseAutoBuild` are worth knowing separately: they're the configurations Glue uses to rebuild the engine during live edit, and the **only** ones where `FlatRedBall.Forms` references SkiaGum. Plain Debug/Release — all `Engine.yml` builds — never evaluate that reference, so breakage there is invisible to the release pipeline.
 
 ## Gum dependency (landmine)
 
