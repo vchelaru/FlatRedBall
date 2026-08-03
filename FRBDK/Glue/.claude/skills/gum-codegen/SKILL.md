@@ -25,6 +25,16 @@ The two pipelines are:
 
 When you add a version gate, **always update both**. Searching for an existing skipped variable name (e.g. `"IgnoredByParentSize"`, `"StackSpacing"`) is the fastest way to spot every place that needs a parallel change — they typically appear in both `StandardsCodeGenerator.RefreshVariableNamesToSkipForProperties` and `StateCodeGenerator.RefreshVariableNamesToSkipBasedOnGlueVersion`.
 
+## The compiler can never catch a runtime mismatch (landmine)
+
+Glue has **no compile-time knowledge of the runtime types it generates against**. `mStandardElementToQualifiedTypes` holds fully-qualified type names as plain *strings*; `RenderingLibrary.Graphics.Text` is not a referenced assembly in any Glue project, and it is not among GumPlugin's embedded `LibraryFiles` resources either (`LineRectangle.cs` is embedded, `Text.cs` is not). So emitting `ContainedText.DropshadowBlur` for a member that doesn't exist compiles Glue perfectly and only fails in the *user's* game project, as CS1061.
+
+This is why the bug class recurs: Rectangle/Circle's fill/stroke family (#1907), the Arc/ColoredCircle gradient CS0266, and Text's dropshadow-channel + `LocalizeText` family were each found by a user's build breaking, not by CI.
+
+`GlueUnitTests/GumPlugin/GumRuntimeMemberContractTests.cs` is the guard: it builds the engine's Forms solution, reflects over the real `GumCore`/`SkiaInGum` assemblies, and asserts every `ContainedXxx.Member` the generator emits exists on the mapped runtime type. It's driven off `StandardsCodeGenerator.StandardElementToQualifiedTypes`, so a standard element added to that map is covered automatically. When Gum extends a standard element's schema, that test — not the compiler — is what tells you whether FRB's runtime can back it.
+
+Note the fix is per-member, not per-type: `Text` legitimately backs `HasDropshadow`/`DropshadowOffsetX`/`DropshadowOffsetY` (it has a single `DropshadowColor`) while having no per-channel color, no blur, and no `LocalizeText`. Skip only what's actually unbacked.
+
 ## Where it lives
 
 Property pipeline:

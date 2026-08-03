@@ -143,6 +143,16 @@ public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
         };
         typeSpecificVariableNamesToSkipForStates.Add("Rectangle", rectangleVariablesToSkip);
 
+        // Mirrors the Text entry in StandardsCodeGenerator - RenderingLibrary.Graphics.Text backs
+        // HasDropshadow/DropshadowOffsetX/DropshadowOffsetY but not the per-channel color, the blur, or
+        // LocalizeText. Both pipelines must agree here or the state switch assigns a property the
+        // property pipeline never generated (CS0103).
+        typeSpecificVariableNamesToSkipForStates.Add("Text", new List<string>
+        {
+            "DropshadowAlpha", "DropshadowRed", "DropshadowGreen", "DropshadowBlue",
+            "DropshadowBlur",
+            "LocalizeText",
+        });
     }
 
     public void RefreshVariableNamesToSkipBasedOnGlueVersion()
