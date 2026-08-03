@@ -23,6 +23,15 @@ namespace GumPlugin.CodeGeneration
 
         Dictionary<string, string> mStandardElementToQualifiedTypes = new Dictionary<string, string>();
 
+        /// <summary>
+        /// Every standard element this generator can emit a runtime for, mapped to the fully-qualified
+        /// runtime type that backs it (null for Container, which can be any type). Exposed so tests can
+        /// check the generated members against the real runtime type without reaching into private state -
+        /// see GumRuntimeMemberContractTests, which exists because Glue has no compile-time reference to
+        /// these types and so the compiler can never catch a mismatch here.
+        /// </summary>
+        public IReadOnlyDictionary<string, string> StandardElementToQualifiedTypes => mStandardElementToQualifiedTypes;
+
         Dictionary<string, string> mStandardVariableNameAliases = new Dictionary<string, string>();
 
         List<string> variablesToCallLayoutAfter = new List<string>();
@@ -167,6 +176,19 @@ namespace GumPlugin.CodeGeneration
                 "CustomRadiusTopLeft", "CustomRadiusTopRight", "CustomRadiusBottomLeft", "CustomRadiusBottomRight",
             };
             _typedVariableNamesToSkipForProperties.Add("Rectangle", rectangleVariablesToSkip);
+
+            // Text is a partial case rather than an all-or-nothing one. RenderingLibrary.Graphics.Text
+            // does have HasDropshadow/DropshadowOffsetX/DropshadowOffsetY (and a single DropshadowColor),
+            // so those keep generating - but it has no per-channel color, no blur, and no LocalizeText,
+            // all of which Gum's schema defines (StandardElementsManager's Text state calls
+            // AddDropshadowVariables, and adds LocalizeText separately). Generating these produced CS1061
+            // in every project containing a Text, which is essentially every project.
+            _typedVariableNamesToSkipForProperties.Add("Text", new List<string>
+            {
+                "DropshadowAlpha", "DropshadowRed", "DropshadowGreen", "DropshadowBlue",
+                "DropshadowBlur",
+                "LocalizeText",
+            });
 
 
 
