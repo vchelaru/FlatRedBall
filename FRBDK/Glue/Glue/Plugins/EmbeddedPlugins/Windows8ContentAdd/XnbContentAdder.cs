@@ -47,11 +47,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.Windows8ContentAdd
 
         bool NeedsXnbs(ProjectBase project)
         {
-            return project is IosMonogameProject or IosMonoGameNet8Project
-                or Windows8MonoGameProject 
-                or AndroidProject or AndroidMonoGameNet8Project
-                or UwpProject 
-                ;
+            return project is IosMonoGameNet8Project or AndroidMonoGameNet8Project;
 
         }
 
@@ -97,7 +93,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.Windows8ContentAdd
         public bool ShouldAssociatedXnbBeCopied(string fileName, ProjectBase project)
         {
             // On Android we (currently) only copy WAV's. MP3s work fine without XNB:
-            if (project is AndroidProject or AndroidMonoGameNet8Project)
+            if (project is AndroidMonoGameNet8Project)
             {
                 return FileManager.GetExtension(fileName) == "wav";
 
@@ -131,8 +127,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.Windows8ContentAdd
 
             string extension = FileManager.GetExtension(buildItem.UnevaluatedInclude);
 
-            bool isIos = project is IosMonogameProject or IosMonoGameNet8Project;
-            bool isAndroid = project is AndroidProject or AndroidMonoGameNet8Project;
+            bool isIos = project is IosMonoGameNet8Project;
+            bool isAndroid = project is AndroidMonoGameNet8Project;
             
             string whatToAddToProject = null;
 
@@ -178,12 +174,6 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.Windows8ContentAdd
                     linkToSet = "Content\\" + FileManager.RemoveExtension(buildItem.UnevaluatedInclude) + ".xnb";
                 }
 
-                // not needed for .NET 8 (not sure why...)
-                if(project is AndroidProject)
-                {
-                    linkToSet = "Assets\\" + linkToSet;
-                }
-                
                 item.SetMetadataValue("Link", linkToSet);
 
 

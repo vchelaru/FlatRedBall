@@ -200,9 +200,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
 
         bool GetIfSupportsOrientation(ProjectBase projectBase)
         {
-            return projectBase is IosMonogameProject or IosMonoGameNet8Project
-                or AndroidProject or AndroidMonoGameNet8Project
-                or UwpProject;
+            return projectBase is IosMonoGameNet8Project or AndroidMonoGameNet8Project;
         }
     }
 }

@@ -131,13 +131,13 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
             }
 
             // this depends on the type of project:
-            if(targetProject is AndroidProject or AndroidMonoGameNet8Project)
+            if(targetProject is AndroidMonoGameNet8Project)
             {
                 return extension == "wav" ||
                     extension == "fbx" ||
                     (extension == "png" && rfs != null && rfs.UseContentPipeline);
             }
-            else if(targetProject is DesktopGlLinuxProject || targetProject is MonoGameDesktopGlBaseProject)
+            else if(targetProject is MonoGameDesktopGlBaseProject)
             {
                 // DesktopGL can support other audio engines like NAudio. I don't know if other
                 // platforms will get this, but we may want to expand this at some point in the future...
@@ -147,21 +147,13 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
                     (extension == "wav" || extension == "mp3" || extension == "png") && 
                     rfs?.UseContentPipeline == true;
             }
-            else if(targetProject is IosMonogameProject or IosMonoGameNet8Project)
+            else if(targetProject is IosMonoGameNet8Project)
             {
                 // Turns out we don't want to ignore MP3s on iOS.
                 // We just need to make an additional XNB which is
                 // going to be handled by a plugin
                 //this.ExtensionsToIgnore.Add("mp3");
                 return extension == "fbx" || extension == "wav";
-            }
-            else if(targetProject is UwpProject)
-            {
-                return extension == "fbx" || extension == "wav" || extension == "mp3";
-            }
-            else if(targetProject is Windows8MonoGameProject)
-            {
-                return extension == "fbx" || extension == "wav" || extension == "mp3";
             }
             else
             {

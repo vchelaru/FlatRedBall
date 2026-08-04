@@ -106,17 +106,6 @@ namespace GumPlugin.Controls
                 response.Succeeded = false;
                 response.Message = "You must load a project before adding Gum";
             }
-            else if (project is IosMonogameProject)
-            {
-                response.Succeeded = false;
-                response.Message = "FlatRedBall.Forms is not yet supported on iOS. Complain in chat!";
-            }
-            else if (project is Xna4Project)
-            {
-                // Just tell the user:
-                response.Succeeded = true;
-                response.Message = "Forms is being added, but you may need to manually add .dlls to your project.";
-            }
             return response;
         }
 

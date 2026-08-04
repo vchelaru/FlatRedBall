@@ -100,10 +100,8 @@ namespace FlatRedBall.Glue.IO
 
         bool NeedsCopiedXnbs(ProjectBase project)
         {
-            return project is IosMonogameProject or IosMonoGameNet8Project
-                or Windows8MonoGameProject 
-                or AndroidProject or AndroidMonoGameNet8Project
-                or UwpProject 
+            return project is IosMonoGameNet8Project
+                or AndroidMonoGameNet8Project
                 or MonoGameDesktopGlBaseProject;
 
         }

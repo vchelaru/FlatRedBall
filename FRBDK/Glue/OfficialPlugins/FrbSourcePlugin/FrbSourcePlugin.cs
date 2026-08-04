@@ -106,10 +106,9 @@ namespace PluginTestbed.GlobalContentManagerPlugins
         private void HandleGluxLoaded()
         {
             var mainProject = GlueState.Self.CurrentMainProject;
-            if (mainProject is MonoGameDesktopGlBaseProject 
+            if (mainProject is MonoGameDesktopGlBaseProject
                 or FnaDesktopProject
-                or Xna4Project
-                or AndroidMonoGameNet8Project 
+                or AndroidMonoGameNet8Project
                 or IosMonoGameNet8Project
                 or KniWebProject)
             {

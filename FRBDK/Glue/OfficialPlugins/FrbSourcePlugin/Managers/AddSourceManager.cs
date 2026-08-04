@@ -30,7 +30,7 @@ internal class AddSourceManager
     public string DefaultGumFilePath =>
         System.IO.Path.Combine(GithubFilePath, "Gum");
 
-    #region DesktopGlNetFramework Projects
+    #region Shared Projects
 
     public List<ProjectReference> SharedShprojReferences = new List<ProjectReference>
     {
@@ -74,15 +74,6 @@ internal class AddSourceManager
             ProjectId = Guid.Parse("d00d287d-385b-42fb-bf5f-04401e7d37d0"),
             ProjectRootType = FrbOrGum.Frb
         },
-
-    };
-
-    public List<ProjectReference> DesktopGlNetFramework = new List<ProjectReference>
-    {
-        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\StateInterpolation\\StateInterpolation.DesktopGL.csproj", ProjectRootType = FrbOrGum.Frb},
-        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\FlatRedBallXNA\\FlatRedBall\\FlatRedBallDesktopGL.csproj", ProjectRootType = FrbOrGum.Frb},
-        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\FlatRedBall.Forms\\FlatRedBall.Forms.DesktopGL.csproj", ProjectRootType = FrbOrGum.Frb},
-        new ProjectReference(){ RelativeProjectFilePath = $"GumCore\\GumCoreXnaPc\\GumCoreDesktopGL.csproj", ProjectRootType = FrbOrGum.Gum},
 
     };
 
@@ -142,13 +133,6 @@ internal class AddSourceManager
     #endregion
 
     #region Android Projects
-    public List<ProjectReference> AndroidXamarin = new List<ProjectReference>
-    {
-        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\StateInterpolation\\StateInterpolation.Android.csproj", ProjectRootType = FrbOrGum.Frb},
-        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\FlatRedBallXNA\\FlatRedBall\\FlatRedBallAndroidv2.csproj", ProjectRootType = FrbOrGum.Frb},
-        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\FlatRedBall.Forms\\FlatRedBall.Forms.Android.csproj", ProjectRootType = FrbOrGum.Frb},
-        new ProjectReference(){ RelativeProjectFilePath = $"GumCore\\GumCoreXnaPc\\GumCoreAndroid.csproj", ProjectRootType = FrbOrGum.Gum},
-    };
 
     public List<ProjectReference> AndroidNet8 = new List<ProjectReference>
     {
@@ -174,14 +158,6 @@ internal class AddSourceManager
 
     #region iOS
 
-    public List<ProjectReference> IosXamarin = new List<ProjectReference>
-    {
-        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\StateInterpolation\\StateInterpolation.iOS.csproj", ProjectRootType = FrbOrGum.Frb},
-        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\FlatRedBallXNA\\FlatRedBall\\FlatRedBalliOS.csproj", ProjectRootType = FrbOrGum.Frb},
-        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\FlatRedBall.Forms.iOS\\FlatRedBall.Forms.iOS.csproj", ProjectRootType = FrbOrGum.Frb},
-        new ProjectReference(){ RelativeProjectFilePath = $"GumCore\\GumCoreXnaPc\\GumCoreiOS.csproj", ProjectRootType = FrbOrGum.Gum},
-    };
-
     public List<ProjectReference> IosNet8 = new List<ProjectReference>
     {
         new ProjectReference(){ RelativeProjectFilePath =
@@ -201,18 +177,6 @@ internal class AddSourceManager
             ProjectRootType = FrbOrGum.Gum},
     };
 
-
-    #endregion
-
-    #region XnaNet4 (old)
-
-    public List<ProjectReference> XnaNet4 = new List<ProjectReference>
-    {
-        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\StateInterpolation\\StateInterpolation.csproj", ProjectRootType = FrbOrGum.Frb},
-        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\FlatRedBallXNA\\FlatRedBall\\FlatRedBallXna4.csproj", ProjectRootType = FrbOrGum.Frb},
-        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\FlatRedBall.Forms\\FlatRedBall.Forms.csproj", ProjectRootType = FrbOrGum.Frb},
-        new ProjectReference(){ RelativeProjectFilePath = $"GumCore\\GumCoreXnaPc\\GumCoreXnaPc.csproj", ProjectRootType = FrbOrGum.Gum},
-    };
 
     #endregion
 
@@ -266,6 +230,15 @@ internal class AddSourceManager
         var slnFilePath = GlueState.Self.SlnFileForProject(vsProject);
 
         var projectReferences = GetNecessaryProjectReferencesForProject(vsProject);
+
+        if (projectReferences == null)
+        {
+            return GeneralResponse.UnsuccessfulWith(
+                $"Linking to FlatRedBall source is not supported for {vsProject.ProjectId} projects " +
+                $"({FileManager.RemovePath(vsProject.FullFileName.FullPath)}). Supported project types are " +
+                $"DesktopGL (.NET 6+), FNA, Web (KNI), Android (.NET 8) and iOS (.NET 8).");
+        }
+
         var necessaryReferencesStripped = projectReferences.Select(item => FileManager.RemovePath(item.RelativeProjectFilePath)).ToArray();
 
         string innerError;
@@ -429,21 +402,12 @@ internal class AddSourceManager
                 ? DesktopFNA.Concat(SharedShprojReferences).ToList()
                 : DesktopGlNet6.Concat(SharedShprojReferences).ToList();
         }
-        else if (vsProject is AndroidProject)
-        {
-            return AndroidXamarin.Concat(SharedShprojReferences).ToList();
-        }
-        else if (vsProject is IosMonogameProject)
-        {
-            return IosXamarin.Concat(SharedShprojReferences).ToList();
-        }
-        else if (vsProject is Xna4Project)
-        {
-            return XnaNet4.Concat(SharedShprojReferences).ToList();
-        }
         else
         {
-            return DesktopGlNetFramework.Concat(SharedShprojReferences).ToList();
+            // Linking to source is only supported for the platforms above. Anything else is a
+            // retired platform (Xamarin Android/iOS, XNA 4, UWP, .NET Framework DesktopGL), so
+            // report it instead of silently linking against source that no longer exists.
+            return null;
         }
     }
 
