@@ -124,9 +124,6 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         public Version DotNetVersion { get; private set; }
 
-        public Version XamarinVersion { get; private set; }
-
-
         public decimal? DotNetVersionNumber { get; private set; }
 
         public string ExecutableName { get; private set; }
@@ -165,30 +162,13 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
                 try
                 {
-                    // Only needed for Xamarin - .NET 8 is a normal .NET project
-                    if(this is AndroidProject or IosMonogameProject)
-                    {
-                        // this doesn't have a dotnet version, so gotta use xamarin:
-                        XamarinVersion = new Version(afterV);
-                    }
-                    else
-                    {
-                        DotNetVersionNumber = Decimal.Parse(afterV);
-                    }
+                    DotNetVersionNumber = Decimal.Parse(afterV);
                 }
                 catch { }
 
                 try
                 {
-                    // This doesn't have a dotnet version, not needed for .NET 8:
-                    if (this is AndroidProject or IosMonogameProject)
-                    {
-                        DotNetVersion = new Version(0,0);
-                    }
-                    else
-                    {
-                        DotNetVersion = new Version(afterV);
-                    }
+                    DotNetVersion = new Version(afterV);
                 }
                 catch { }
             }
@@ -723,7 +703,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 if(item.ItemType == "ProjectReference")
                 {
                     var filename = Path.GetFileName(item.EvaluatedInclude);
-                    if((filename == "FlatRedBallDesktopGL.csproj") || (filename == "FlatRedBallDesktopGLNet6.csproj"))
+                    if(filename == "FlatRedBallDesktopGLNet6.csproj")
                     {
                         return true;
                     }

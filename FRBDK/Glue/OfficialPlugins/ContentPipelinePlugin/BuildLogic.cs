@@ -110,10 +110,8 @@ namespace OfficialPlugins.MonoGameContent
 
         public static bool GetIfNeedsMonoGameFilesBuilt(ProjectBase project)
         {
-            return project is MonoGameDesktopGlBaseProject 
-                or AndroidProject 
-                or UwpProject 
-                or AndroidMonoGameNet8Project 
+            return project is MonoGameDesktopGlBaseProject
+                or AndroidMonoGameNet8Project
                 or IosMonoGameNet8Project
                 or KniWebProject
                 ;
@@ -334,17 +332,13 @@ namespace OfficialPlugins.MonoGameContent
             {
                 platform = "DesktopGL";
             }
-            else if (project is AndroidProject or AndroidMonoGameNet8Project)
+            else if (project is AndroidMonoGameNet8Project)
             {
                 platform = "Android";
             }
             else if (project is IosMonoGameNet8Project)
             {
                 platform = "iOS";
-            }
-            else if (project is UwpProject)
-            {
-                platform = "WindowsStoreApp";
             }
             else if(project is KniWebProject)
             {
@@ -791,12 +785,6 @@ namespace OfficialPlugins.MonoGameContent
             if(item != null)
             {
                 link = "Content\\" + link;
-
-                // This is not needed for .NET 8 projects, only Xamarin Android:
-                if (project is AndroidProject)
-                {
-                    link = "Assets\\" + link;
-                }
                 link = project.ProcessLink(link).Replace("/", "\\");
                 var didChange = item.TrySetLink(link);
 

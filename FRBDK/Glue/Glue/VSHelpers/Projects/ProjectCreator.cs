@@ -23,21 +23,6 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
     {
 
 
-        public static ProjectBase LoadXnaProjectFor(ProjectBase masterProject, string fileName)
-        {
-            ProjectBase project = CreateProject(fileName).Project;
-
-            project.Load(fileName);
-
-            project.MasterProjectBase = masterProject;
-
-            project.IsContentProject = true;
-
-            return project;
-
-        }
-
-
         public static CreateProjectResult CreateProject(string fileName)
         {
             //Project coreVisualStudioProject = new Project(fileName);
@@ -205,18 +190,7 @@ Additional Info:
 
         public static ProjectBase CreatePlatformSpecificProject(Project coreVisualStudioProject, string fileName)
         {
-            ProjectBase toReturn = null;
-            if (FileManager.GetExtension(fileName) == "contentproj")
-            {
-                toReturn = new XnaContentProject(coreVisualStudioProject);
-            }
-
-            string errorMessage = null;
-
-            if (toReturn == null)
-            {
-                toReturn = TryGetProjectTypeFromDefineConstants(coreVisualStudioProject, out errorMessage);
-            }
+            ProjectBase toReturn = TryGetProjectTypeFromDefineConstants(coreVisualStudioProject, out string errorMessage);
 
 
             if (toReturn == null)
@@ -311,19 +285,10 @@ Additional Info:
                 List<PreprocessorAndFunc> loadCalls = new List<PreprocessorAndFunc>();
 
                 loadCalls.Add(new PreprocessorAndFunc("ANDROID", new Version(8,0), () => new AndroidMonoGameNet8Project(coreVisualStudioProject)));
-                loadCalls.Add(new PreprocessorAndFunc("ANDROID", () => new AndroidProject(coreVisualStudioProject)));
                 loadCalls.Add(new PreprocessorAndFunc("IOS", new Version(8, 0), () => new IosMonoGameNet8Project(coreVisualStudioProject)));
-                loadCalls.Add(new PreprocessorAndFunc("IOS", () => new IosMonogameProject(coreVisualStudioProject)));
-                loadCalls.Add(new PreprocessorAndFunc("UWP", () => new UwpProject(coreVisualStudioProject)));
                 loadCalls.Add(new PreprocessorAndFunc("DESKTOP_GL", new Version(6,0), () => new MonoGameDesktopGlNetCoreProject(coreVisualStudioProject)));
-                loadCalls.Add(new PreprocessorAndFunc("DESKTOP_GL", () => new MonoGameDesktopGlNetFrameworkProject(coreVisualStudioProject)));
                 loadCalls.Add(new PreprocessorAndFunc("FNA", () => new FnaDesktopProject(coreVisualStudioProject)));
                 loadCalls.Add(new PreprocessorAndFunc("BLAZORGL", () => new KniWebProject(coreVisualStudioProject)));
-                // Do XNA_4 last, since every 
-                // other project type has this 
-                // preprocessor type, so every project
-                // type would return true here
-                loadCalls.Add(new PreprocessorAndFunc("XNA4", () => new Xna4Project(coreVisualStudioProject)));
                 // handled above, because it requires 2 projects to construct:
                 //loadCalls.Add(new PreprocessorAndFunc("Standard", () => new VisualStudioDotNetStandardProject(coreVisualStudioProject)));
 
