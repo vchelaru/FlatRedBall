@@ -105,6 +105,12 @@ public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
         // (SpriteCodeGenerator.GenerateIRenderTargetTextureReferencerProperties), never state-switch driven.
         // Permanent, version-independent skip - the name is unique to Sprite so a global skip is safe.
         mVariableNamesToSkipForStates.Add("RenderTargetTextureSource");
+
+        // Mirrors the global property-pipeline skip in
+        // StandardsCodeGenerator.RefreshVariableNamesToSkipForProperties - see there for why nothing backs a
+        // singular "DropshadowBlur". Both pipelines must agree or the state switch assigns a property that
+        // was never generated (CS0103).
+        mVariableNamesToSkipForStates.Add("DropshadowBlur");
         //mVariableNamesToSkipForStates.Add("IsBold");
 
         // Eventually we'll support this but first Gum needs to support
@@ -129,7 +135,7 @@ public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
             "GradientInnerRadius", "GradientInnerRadiusUnits",
             "GradientOuterRadius", "GradientOuterRadiusUnits",
             "Alpha2", "Red2", "Green2", "Blue2",
-            "HasDropshadow", "DropshadowOffsetX", "DropshadowOffsetY", "DropshadowBlur",
+            "HasDropshadow", "DropshadowOffsetX", "DropshadowOffsetY",
             "DropshadowAlpha", "DropshadowRed", "DropshadowGreen", "DropshadowBlue",
             "Blend",
         };
@@ -150,7 +156,6 @@ public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
         typeSpecificVariableNamesToSkipForStates.Add("Text", new List<string>
         {
             "DropshadowAlpha", "DropshadowRed", "DropshadowGreen", "DropshadowBlue",
-            "DropshadowBlur",
             "LocalizeText",
         });
     }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Managers;
@@ -119,7 +120,11 @@ public class GumSkiaRenderableCodegenSweepTests : IDisposable
         }
     }
 
-    private static (bool Generated, string Source, HashSet<string> FixtureVariableNames) GenerateFor(string standardElementName)
+    private static (bool Generated, string Source, HashSet<string> FixtureVariableNames) GenerateFor(string standardElementName) =>
+        GenerateFor(standardElementName, extraVariables: null);
+
+    private static (bool Generated, string Source, HashSet<string> FixtureVariableNames) GenerateFor(
+        string standardElementName, IEnumerable<Gum.DataTypes.Variables.VariableSave> extraVariables)
     {
         GlueTestBootstrap.EnsureGumPluginCodeGeneratorsInitialized();
         EnsureSkiaStandardElementsRegistered();
@@ -129,6 +134,14 @@ public class GumSkiaRenderableCodegenSweepTests : IDisposable
         // stale) on-disk/embedded template. See RectangleCircleCodegenTests.cs's header for why this matters.
         var standardElementSave = new StandardElementSave { Name = standardElementName };
         standardElementSave.Initialize(Gum.Managers.StandardElementsManager.Self.GetDefaultStateFor(standardElementName));
+
+        // A .gutx on disk carries whatever variables the Gum Editor that last saved it wrote, which is not
+        // necessarily what SkiaStandardElementsManager would have produced - see
+        // GenerateStandardElementSaveCodeFor_SkiaElement_SkipsGumEditorsSingularDropshadowBlur below.
+        if (extraVariables != null)
+        {
+            standardElementSave.DefaultState.Variables.AddRange(extraVariables);
+        }
 
         var fixtureVariableNames = standardElementSave.DefaultState.Variables.Select(v => v.GetRootName()).ToHashSet();
 
@@ -296,5 +309,68 @@ public class GumSkiaRenderableCodegenSweepTests : IDisposable
         // (proves this isn't an accidental blanket exclusion that would trivially pass the above).
         source.ShouldContain("Width = ");
         source.ShouldContain("Height = ");
+    }
+
+    // Matches the singular "DropshadowBlur" without also matching DropshadowBlurX/DropshadowBlurY, which
+    // are real, backed members and must keep generating.
+    private static readonly Regex SingularDropshadowBlur = new(@"DropshadowBlur(?![XY])\w*", RegexOptions.Compiled);
+
+    private static Gum.DataTypes.Variables.VariableSave SingularDropshadowBlurVariable() =>
+        new()
+        {
+            SetsValue = true,
+            Type = "float",
+            Value = 0f,
+            Name = "DropshadowBlur",
+            Category = "Dropshadow",
+        };
+
+    // Reported against GumEditor 2026.08.03: a project that had been opened in that editor failed to build
+    // with CS1061 on 'RenderableArc'/'RenderableCircle'/'RenderableRoundedRectangle' having no
+    // 'DropshadowBlur'. Same bug class as Text's dropshadow channels (#1948) and Rectangle/Circle's
+    // fill/stroke family (#1907), but arriving by a different route, which is why the sweep in
+    // GumRuntimeMemberContractTests could not catch it: that sweep builds its fixture from FRB's own
+    // SkiaStandardElementsManager schema, which uses the two-channel DropshadowBlurX/DropshadowBlurY that
+    // RenderableSkiaObject actually backs. Codegen, however, emits from the variables in the project's
+    // .gutx - whatever the Gum Editor that last saved it wrote there. A Gum Editor that collapses the two
+    // blur channels into one "DropshadowBlur" therefore feeds codegen a variable name no FRB runtime type
+    // has ever had, and nothing in FRB's own schema would ever reveal it.
+    //
+    // Injecting the variable (rather than asserting against the current schema) is the point: the fixture
+    // stands in for the .gutx, not for what FRB would have generated.
+    [Theory]
+    [InlineData("Arc")]
+    [InlineData("ColoredCircle")]
+    [InlineData("LottieAnimation")]
+    [InlineData("RoundedRectangle")]
+    [InlineData("Svg")]
+    [InlineData("Canvas")]
+    public void GenerateStandardElementSaveCodeFor_SkiaElement_SkipsGumEditorsSingularDropshadowBlur(string standardElementName)
+    {
+        var (generated, source, fixtureVariableNames) =
+            GenerateFor(standardElementName, new[] { SingularDropshadowBlurVariable() });
+        generated.ShouldBeTrue();
+
+        // Fixture sanity - if the injection stopped landing, the assertion below would pass vacuously.
+        fixtureVariableNames.ShouldContain("DropshadowBlur");
+
+        var offenders = SingularDropshadowBlur.Matches(source).Select(m => m.Value).Distinct().ToList();
+        offenders.ShouldBeEmpty(
+            $"No FRB runtime type backs a singular 'DropshadowBlur' (RenderableSkiaObject has " +
+            $"DropshadowBlurX/DropshadowBlurY), so generating it produces CS1061 in the user's game. " +
+            $"Emitted: {string.Join(", ", offenders)}");
+    }
+
+    [Fact]
+    public void GenerateStandardElementSaveCodeFor_ColoredCircle_KeepsBackedBlurChannelsWhenSingularBlurIsSkipped()
+    {
+        var (generated, source, _) = GenerateFor("ColoredCircle", new[] { SingularDropshadowBlurVariable() });
+        generated.ShouldBeTrue();
+
+        // Proves the skip is per-member rather than a blanket "drop anything named Dropshadow*" - the two
+        // channels RenderableSkiaObject really has must survive alongside the skipped singular name.
+        source.ShouldContain("ContainedColoredCircle.DropshadowBlurX");
+        source.ShouldContain("ContainedColoredCircle.DropshadowBlurY");
+        source.ShouldContain("ContainedColoredCircle.HasDropshadow");
     }
 }

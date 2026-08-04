@@ -159,8 +159,8 @@ namespace GumPlugin.CodeGeneration
                 "GradientInnerRadius", "GradientInnerRadiusUnits",
                 "GradientOuterRadius", "GradientOuterRadiusUnits",
                 "Alpha2", "Red2", "Green2", "Blue2",
-                // dropshadow (AddDropshadowVariables)
-                "HasDropshadow", "DropshadowOffsetX", "DropshadowOffsetY", "DropshadowBlur",
+                // dropshadow (AddDropshadowVariables) - "DropshadowBlur" is skipped globally below
+                "HasDropshadow", "DropshadowOffsetX", "DropshadowOffsetY",
                 "DropshadowAlpha", "DropshadowRed", "DropshadowGreen", "DropshadowBlue",
                 // blend (AddBlendVariable) - LineRectangle/LineCircle's BlendState has no setter
                 "Blend",
@@ -186,7 +186,6 @@ namespace GumPlugin.CodeGeneration
             _typedVariableNamesToSkipForProperties.Add("Text", new List<string>
             {
                 "DropshadowAlpha", "DropshadowRed", "DropshadowGreen", "DropshadowBlue",
-                "DropshadowBlur",
                 "LocalizeText",
             });
 
@@ -206,6 +205,16 @@ namespace GumPlugin.CodeGeneration
             // want to support them.
             // If a variable is to be excluded only for certain types, see
             // GetIfShouldGenerateProperty
+            // No FRB runtime type backs a singular "DropshadowBlur" - the Skia renderables split it into
+            // DropshadowBlurX/DropshadowBlurY (RenderableSkiaObject), RenderingLibrary.Graphics.Text has no
+            // blur at all, and LineRectangle/LineCircle have no dropshadow surface whatsoever. A Gum Editor
+            // that writes the singular name into a .gutx therefore feeds codegen a variable nothing can back,
+            // producing CS1061 in the user's game - and because codegen emits from the project's variables
+            // rather than from FRB's own schema, no amount of keeping SkiaStandardElementsManager correct
+            // prevents it. Global (rather than per-type) so an element Gum adds dropshadow to later is
+            // covered on arrival; see GumSkiaRenderableCodegenSweepTests.
+            mVariableNamesToSkipForProperties.Add("DropshadowBlur");
+
             mVariableNamesToSkipForProperties.Add("Custom Texture Coordinates"); // replaced by texture address mode
             mVariableNamesToSkipForProperties.Add("CustomTextureCoordinates"); // replaced by texture address mode
             mVariableNamesToSkipForProperties.Add("Height Units");
