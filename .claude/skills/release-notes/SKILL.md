@@ -33,7 +33,7 @@ git log --no-merges <prev-tag>..origin/NetStandard --format="%H|%an|%s"
 
 For the ~15-20% of subjects ending in `(#N)`, that's a real PR — `gh pr view N --repo vchelaru/FlatRedBall --json title,body,author,files` gets richer context if the subject alone is too sparse. For the rest, there is no PR to look up; read the commit itself (`git show <hash>`) for diff context when the subject line alone doesn't say enough.
 
-**No proven noise-filter list exists for FRB1 yet** (unlike Gum's `GITBOOK-`/`FRB fixes` exclusions, which came from repeated real drafts). Don't invent exclusion patterns — if a commit looks like repo housekeeping (version bumps, merge artifacts, CI-only), flag it in Open Questions rather than silently dropping it or silently keeping it.
+**Chores are always omitted, no confirmation needed.** A commit with no end-user-visible effect — repo hygiene/dead-code deletion, CI-only changes, test-only additions, doc/process-only edits (including changes to this repo's own skills/CLAUDE.md) — never appears in the public notes and never goes in Open Questions. Judgment calls about *what counts as user-facing* (ambiguous scope, disputed categorization, a commit that's arguably both) still go in Open Questions — this only covers the clear-chore case.
 
 ## Step 3: Fan out per-commit-batch expansion to parallel subagents
 
@@ -41,7 +41,7 @@ Same structural fix as Gum's skill, adapted to commits: the main agent never rea
 
 **The FRB1-specific judgment call, different from Gum's PRs-only case:** since commits (not PRs) are the unit, a run of several small sequential commits often builds *one* feature incrementally (e.g. "First pass at collision fixes" → "Improved camera controlling entity to properly use padding..." → "Handle passing back and forth now works"). The subagent should **consolidate** adjacent same-theme commits into one bullet when they clearly form a single unit of work, and keep them **separate** when they're genuinely distinct changes that happen to be adjacent in history. This cuts both ways versus Gum's rule (which only ever expands a roll-up PR into more bullets, never consolidates) — judge each batch on its own merits.
 
-**Subagent prompt should cover:** the batch's commit hashes+subjects+authors, instruction to run `git show <hash>` for any commit whose subject doesn't already say what changed, the consolidate-vs-separate judgment above, and the same user-impact-first clarity bar as Step 5 below. Return one JSON object per resulting bullet: `{ "commits": ["<hash>", ...], "author": "name", "section": "...", "bullet": "...", "confidence": "high"|"medium"|"low", "note": "..." }`.
+**Subagent prompt should cover:** the batch's commit hashes+subjects+authors, instruction to run `git show <hash>` for any commit whose subject doesn't already say what changed, the consolidate-vs-separate judgment above, and the same user-impact-first clarity bar as Step 5 below. Tell the subagent to mark clear chores (see Step 2) with an empty `bullet` — those get dropped silently, not routed to Open Questions. Return one JSON object per resulting bullet: `{ "commits": ["<hash>", ...], "author": "name", "section": "...", "bullet": "...", "confidence": "high"|"medium"|"low", "note": "..." }`.
 
 ## Step 4: Categorize
 
