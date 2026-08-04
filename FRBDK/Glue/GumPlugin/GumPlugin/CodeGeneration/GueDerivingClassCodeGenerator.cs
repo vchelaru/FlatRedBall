@@ -160,6 +160,18 @@ public class GueDerivingClassCodeGenerator : Singleton<GueDerivingClassCodeGener
             {
                 return false;
             }
+
+            // Gum can supply a standard element's schema (e.g. "Line", via
+            // StandardElementsManager.GetLineState) that FRB has no backing runtime type for -
+            // StandardsCodeGenerator.StandardElementToQualifiedTypes is the source of truth for what
+            // FRB can actually generate a runtime for. Without this check, callers of this method
+            // (GueRuntimeTypeAssociationGenerator in particular) still emit a reference to a runtime
+            // class that GenerateStandardElementSaveCodeFor never generates - CS0234 in the user's
+            // project. See #1958.
+            if (!StandardsCodeGenerator.Self.StandardElementToQualifiedTypes.ContainsKey(elementSave.Name))
+            {
+                return false;
+            }
         }
 
         return true;
