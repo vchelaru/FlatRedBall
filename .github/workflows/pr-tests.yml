@@ -1,7 +1,9 @@
 name: Glue Tests (PR)
 
-# Runs on pull requests so tests actually gate merges. The existing glue.yml / Engine.yml are
-# workflow_dispatch-only publish pipelines (they FTP-upload with secrets) and must not run per-PR.
+# Runs on pull requests to surface breakage. Advisory only: no check here blocks a merge unless it's
+# explicitly marked required in branch protection, which nothing currently is. The existing glue.yml /
+# Engine.yml are workflow_dispatch-only publish pipelines (they FTP-upload with secrets) and must not
+# run per-PR.
 on:
   # Every pull request, whatever its base. No branches: filter, because that filters on the PR's *base*
   # branch, so a PR stacked on another feature branch got no CI at all.
