@@ -134,14 +134,19 @@ public class GumGeneratedCodeCompilesTests : IDisposable
                 var standardElementSave = new StandardElementSave { Name = elementName };
                 standardElementSave.Initialize(defaultState);
 
-                var codeBlock = new CodeBlockBase();
-                if (!StandardsCodeGenerator.Self.GenerateStandardElementSaveCodeFor(standardElementSave, codeBlock))
+                // The production entry point CodeGeneratorManager uses, so the file this test compiles is
+                // byte-for-byte what Glue writes into a user's GumRuntimes folder - including the
+                // `using System.Linq;` and namespace wrapper that GenerateStandardElementSaveCodeFor alone
+                // doesn't emit. Reconstructing that wrapper by hand here would be a second thing to keep in
+                // sync with production, which is the mistake this whole test exists to stop making.
+                var source = GueDerivingClassCodeGenerator.Self.GenerateCodeFor(standardElementSave);
+                if (string.IsNullOrWhiteSpace(source))
                 {
-                    skipped.Add(elementName + " (GenerateStandardElementSaveCodeFor returned false)");
+                    skipped.Add(elementName + " (GenerateCodeFor produced nothing)");
                     continue;
                 }
 
-                generated[elementName] = codeBlock.ToString();
+                generated[elementName] = source;
             }
         }
 
@@ -298,18 +303,9 @@ public class GumGeneratedCodeCompilesTests : IDisposable
 
         File.WriteAllText(Path.Combine(scratchDirectory, "GumCodegenCompileScratch.csproj"), csproj);
 
-        // StandardsCodeGenerator emits the class body only; CodeGeneratorManager's saving path is what puts
-        // it inside a namespace in a real project. The generated code refers to its siblings by fully
-        // qualified name (global::<ProjectNamespace>.GumRuntimes.XxxRuntime), so without the same wrapper
-        // every cross-reference fails with CS0400 and drowns out the errors this test is looking for.
-        var runtimeNamespace = GueDerivingClassCodeGenerator.GueRuntimeNamespace;
-
         foreach (var pair in generated)
         {
-            var wrapped = $"namespace {runtimeNamespace}{Environment.NewLine}{{{Environment.NewLine}" +
-                          pair.Value + Environment.NewLine + "}" + Environment.NewLine;
-
-            File.WriteAllText(Path.Combine(scratchDirectory, pair.Key + "Runtime.Generated.cs"), wrapped);
+            File.WriteAllText(Path.Combine(scratchDirectory, pair.Key + "Runtime.Generated.cs"), pair.Value);
         }
     }
 
