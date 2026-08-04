@@ -1,7 +1,7 @@
 ---
 name: glue-unit-test-bootstrap
 description: Bootstrapping GlueUnitTests that touch GlueState.Self/GlueCommands.Self/ProjectManager. Triggers: NullReferenceException in tests from ProjectManager.CodeProjectHelper, FileWatchManager, EditorObjects.IoC.Container, or MainGlueWindow.Self.Invoke.
-version: 1.1.0
+version: 1.2.0
 ---
 
 # Glue Unit Test Bootstrap
@@ -70,6 +70,25 @@ Get-Process testhost,vstest.console,MSBuild -ErrorAction SilentlyContinue | Stop
 ```
 
 Then re-run with `--no-build` when nothing was recompiled since the last successful build — it skips the copy step the lock blocks, and the full non-BuildSmoke suite finishes in seconds.
+
+## Landmine — a broad `FullyQualifiedName~` filter silently sweeps in `Category=BuildSmoke` tests and thrashes the machine
+
+`GumRuntimeMemberContractTests`, `GumGeneratedCodeCompilesTests`, and the `*CreationSmokeTests` classes are
+tagged `[Trait("Category", "BuildSmoke")]` because they shell out to real `dotnet build`/`dotnet test`
+child processes (building the whole engine or a scaffolded project) instead of just exercising codegen
+in-memory. `pr-tests.yml`/`glue.yml` deliberately run them as a separate `Category=BuildSmoke` step, and
+run everything else with `--filter "Category!=BuildSmoke"`.
+
+A filter like `--filter "FullyQualifiedName~GumPlugin"` does not know about that split — it matches
+BuildSmoke tests in the same namespace right along with the fast ones. Run several of those together and
+each spawns its own nested `dotnet`/`testhost`/`VBCSCompiler` tree; a handful of them running serially is
+enough to make the machine crawl and a run that should take seconds look hung for many minutes.
+
+Always AND in `Category!=BuildSmoke` unless you specifically intend to run the slow build-smoke suite:
+
+```
+dotnet test FRBDK/Glue/Tests/GlueUnitTests/GlueUnitTests.csproj -p:SolutionDir="<repo>\FRBDK\Glue\\" --filter "FullyQualifiedName~GumPlugin&Category!=BuildSmoke"
+```
 
 ## Deep dive
 
