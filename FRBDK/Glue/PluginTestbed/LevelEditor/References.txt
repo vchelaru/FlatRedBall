@@ -1,3 +1,0 @@
-﻿Plugins/LevelEditor/SelectionInterface.dll
-Plugins/LevelEditor/InteractiveInterface.dll
-Plugins/LevelEditor/RemotingHelper.dll
