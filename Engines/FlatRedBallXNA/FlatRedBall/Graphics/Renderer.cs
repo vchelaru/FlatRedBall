@@ -2581,11 +2581,7 @@ public static class Renderer
                     ((i + 1 < firstText + numToDraw) ||
                      verticesLeftToRender != 0))
                 {
-#if MONODROID
-                    vertexBufferList[vertexBufferNum].SetData<VertexPositionColorTexture>(mVertexArray);
-#else
                     vertexBufferList[vertexBufferNum].SetData<VertexPositionColorTexture>(_vertexArray, 0, vertNum, SetDataOptions.Discard);
-#endif
                     vertexBufferNum++;
                     vertNum = 0;
                 }
@@ -2616,11 +2612,7 @@ public static class Renderer
                         ((i + 1 < firstText + numToDraw) ||
                          verticesLeftToRender != 0))
                     {
-#if MONODROID
-                        vertexBufferList[vertexBufferNum].SetData<VertexPositionColorTexture>(mVertexArray);
-#else
                         vertexBufferList[vertexBufferNum].SetData<VertexPositionColorTexture>(_vertexArray, 0, vertNum, SetDataOptions.Discard);
-#endif
                         vertexBufferNum++;
                         vertNum = 0;
                         verticesLeftOnThisText -= 6000;
@@ -2637,11 +2629,7 @@ public static class Renderer
 
         GraphicsDevice.SetVertexBuffer(null);
 
-#if MONODROID
-        vertexBufferList[vertexBufferNum].SetData<VertexPositionColorTexture>(mVertexArray);
-#else
         vertexBufferList[vertexBufferNum].SetData<VertexPositionColorTexture>(_vertexArray, 0, vertNum, SetDataOptions.Discard);
-#endif
 
         return vertNum / 3 + vertexBufferNum * 2000;
     }

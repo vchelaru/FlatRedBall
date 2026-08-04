@@ -43,14 +43,12 @@ namespace FlatRedBall.Content.SpriteGrid
     {
         #region Fields
 
-#if !MONODROID
         [ExternalInstance]
         [XmlIgnore]
         public Texture2D mTextureInstance;
         [ExternalInstanceList]
         [XmlIgnore]
         public Texture2D[][] mTextureGridInstance;
-#endif
         #endregion
 
         #region Properties
@@ -253,7 +251,6 @@ namespace FlatRedBall.Content.SpriteGrid
 
             int yOn = 0;
 
-#if !MONODROID
             #region Set the base texture instance
 
             if (this.mTextureInstance != null)
@@ -281,7 +278,6 @@ namespace FlatRedBall.Content.SpriteGrid
                 }
             }
             else
-#endif
             {
 
                 foreach (string[] sa in this.GridTexturesArray)

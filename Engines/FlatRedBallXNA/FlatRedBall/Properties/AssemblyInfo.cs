@@ -13,16 +13,10 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
-#if !XBOX360
 // x86: Setting ComVisible to false makes the types in this assembly not visible 
 //     to COM components.  If you need to access a type in this assembly from 
 //     COM, set the ComVisible attribute to true on that type.
 [assembly: ComVisible(false)]
-#else
-// Xbox360: Setting ComVisible to false makes the types in this assembly not visible
-//     to COM components. Xbox 360 assemblies do not support COM.
-[assembly: ComVisible(false)]
-#endif
 
 // x86: The following GUID is for the ID of the typelib if this project is exposed to COM
 // Xbox360: If this assembly is the startup assembly, the following Guid is used to

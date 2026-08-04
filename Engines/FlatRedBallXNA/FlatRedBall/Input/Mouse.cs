@@ -162,11 +162,7 @@ namespace FlatRedBall.Input
         {
             get 
             {
-#if MONODROID
-                return InputManager.TouchScreen.PinchRatioChange;
-#else
                 return (mMouseState.ScrollWheelValue - mLastWheel)/120.0f; 
-#endif
             
             }
         }
@@ -429,7 +425,6 @@ namespace FlatRedBall.Input
             }
         }
 
-#if !XBOX360
 
 
         /// <summary>
@@ -453,7 +448,6 @@ namespace FlatRedBall.Input
         {
             return mActive && !InputManager.CurrentFrameInputSuspended && mDoublePush[(int)button];
         }
-#endif
         #endregion
 
         /// <summary>

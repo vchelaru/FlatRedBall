@@ -47,11 +47,11 @@ namespace ICSharpCode.SharpZipLib
 	/// </summary>
 	/// <remarks>NOTE: Not all exceptions thrown will be derived from this class.
 	/// A variety of other exceptions are possible for example <see cref="ArgumentNullException"></see></remarks>
-#if !NETCF_1_0 && !NETCF_2_0 && !XBOX360 && !MONOGAME
+#if !NETCF_1_0 && !NETCF_2_0 && !MONOGAME
 	[Serializable]
 #endif
 	public class SharpZipBaseException : 
-#if XBOX360 || MONOGAME
+#if MONOGAME
         Exception
 #else
         ApplicationException

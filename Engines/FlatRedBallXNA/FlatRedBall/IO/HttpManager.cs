@@ -32,11 +32,7 @@ namespace FlatRedBall.IO
 
             mNextRequestId++;
 
-#if WINDOWS_PHONE
-            var request = WebRequest.CreateHttp(uri);
-#else
             var request = (HttpWebRequest)WebRequest.Create(uri);
-#endif
             request.UserAgent = UserAgent;
 
             request.BeginGetResponse(i =>

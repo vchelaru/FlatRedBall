@@ -91,29 +91,6 @@ namespace BuildServerUploaderConsole.Processes
             return toReturn;
         }
 
-        public static CopyInformation CreateAddOnCopy(string fileLocation, string targetDirectory, string Namespace)
-        {
-            var toReturn = new CopyInformation();
-            string addOnsDirectory = DirectoryHelper.AddOnsDirectory;
-
-            fileLocation = addOnsDirectory + fileLocation;
-            toReturn.SourceFile = fileLocation;
-
-            string targetLocation = DirectoryHelper.TemplateDirectory + targetDirectory + @"\";
-
-            if (!System.IO.Directory.Exists(targetLocation))
-            {
-                System.IO.Directory.CreateDirectory(targetLocation);
-            }
-
-            string fileName = FileManager.RemovePath(fileLocation);
-
-            toReturn.DestinationFile = targetLocation + fileName;
-            toReturn.Namespace = Namespace;
-            return toReturn;
-        }
-
-
         public void PerformCopy(IResults results, string message)
         {
             var succeeded = false;

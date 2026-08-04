@@ -77,12 +77,10 @@ namespace PerformanceMeasuring.GameDebugTools
         /// </summary>
         public TimeRuler TimeRuler { get; private set; }
 
-#if !WINDOWS_PHONE
         /// <summary>
         /// Gets the RemoteDebugCommand for the system.
         /// </summary>
         public RemoteDebugCommand RemoteDebugCommand { get; private set; }
-#endif
 
         /// <summary>
         /// Initializes the DebugSystem and adds all components to the game's Components collection.
@@ -112,10 +110,8 @@ namespace PerformanceMeasuring.GameDebugTools
             singletonInstance.TimeRuler = new TimeRuler(game);
             game.Components.Add(singletonInstance.TimeRuler);
 
-#if !WINDOWS_PHONE
             singletonInstance.RemoteDebugCommand = new RemoteDebugCommand(game);
             game.Components.Add(singletonInstance.RemoteDebugCommand);
-#endif
 
             return singletonInstance;
         }

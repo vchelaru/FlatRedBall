@@ -13,9 +13,7 @@ using System.Threading;
 using FlatRedBall.IO;
 
 using System.Net;
-#if !WINDOWS_PHONE
 //using System.Windows.Forms;
-#endif
 
 /*Kevin Simpson : Currently to upload files without the directorly already needing to be made the
  * program has to recive a request from the server to determine if a directorly already exist. When
@@ -44,7 +42,6 @@ namespace FlatRedBall.IO.Remote
 
     }
 
-#if !SILVERLIGHT && !WINDOWS_PHONE
     public class FtpState
     {
         private ManualResetEvent wait;
@@ -95,7 +92,6 @@ namespace FlatRedBall.IO.Remote
 
 
     }
-#endif
 
 
     #endregion
@@ -141,10 +137,6 @@ namespace FlatRedBall.IO.Remote
 
         static NetworkCredential mNetworkCredentials = new NetworkCredential();
 
-#if SILVERLIGHT || WINDOWS_PHONE
-        // Maybe we want to use this 
-        static long mNextRequest = 0;
-#endif
 
         static List<long> mLiveRequests = new List<long>();
 
@@ -152,13 +144,6 @@ namespace FlatRedBall.IO.Remote
 
         #region Properties
 
-#if SILVERLIGHT || WINDOWS_PHONE
-        public static bool CacheReads
-        {
-            get;
-            set;
-        }
-#endif
 
         #endregion
 
@@ -166,102 +151,6 @@ namespace FlatRedBall.IO.Remote
 
         #region Public Methods
 
-#if SILVERLIGHT || WINDOWS_PHONE
-
-        public static void CancelAllRequests()
-        {
-            lock (mLiveRequests)
-            {
-                mLiveRequests.Clear();
-            }
-        }
-
-        static long GetReadStreamAsync(string ashxFile, string url, string userName, string password, GetStreamCompleteDelegate delegateToUse, object callback)
-        {
-            long requestID = mNextRequest;
-
-            lock (mLiveRequests)
-            {
-                mNextRequest++;
-                mLiveRequests.Add(requestID);
-            }
-            string datastring = "";
-
-            string serviceUrl = ashxFile;
-            
-
-            UriBuilder ub = new UriBuilder(serviceUrl);
-
-            WebClient c = new WebClient();
-            
-            string filenameQuery = 
-                "uri=" + url;
-
-            string usernameQuery =
-                "username=" + userName;
-
-            string passwordQuery = "password=" + password;
-
-            if (CacheReads)
-            {
-                ub.Query = string.Format("{0}&{1}&{2}", filenameQuery, usernameQuery, passwordQuery);
-            }
-            else
-            {
-                ub.Query = string.Format("{0}&{1}&{2}", filenameQuery, usernameQuery, passwordQuery) + "&nocache=" + Environment.TickCount;
-            }
-
-            c.OpenReadCompleted += (sender, e) =>
-            {
-                try
-                {
-                    if(mLiveRequests.Contains(requestID))
-                    {
-                        delegateToUse(e.Result, callback);
-                    }
-
-                }
-                catch (Exception exc)
-                {
-                    delegateToUse(null, callback);
-                }
-                finally
-                {
-                    lock (mLiveRequests)
-                    {
-                        mLiveRequests.Remove(requestID);
-                    }
-                }
-            };
-
-            c.OpenReadAsync(ub.Uri);
-            c.AllowReadStreamBuffering = true;
-
-            return requestID;
-        }
-
-        static void GetFileListAsync(Stream stream, object callback)
-        {
-
-            using (StreamReader streamReader = new StreamReader(stream, Encoding.UTF8))
-            {
-
-                string datastring = streamReader.ReadToEnd();
-
-                stream.Close();
-                streamReader.Close();
-
-                ((FileListCompleteDelegate)callback)(GetFileStructFromDataString(datastring));
-                //mFileListCompleteDelegate(GetFileStructFromDataString(datastring));
-            }
-        }
-
-        //static FileListCompleteDelegate mFileListCompleteDelegate;
-        public static long GetListAsync(string url, string userName, string password, FileListCompleteDelegate completeDelegate)
-        {
-            return GetReadStreamAsync("http://avillagelife.com/services/ftpgetfilelist.ashx", url, userName, password, new GetStreamCompleteDelegate( GetFileListAsync), completeDelegate);
-        }
-#else
         public static FileStruct[] GetList(string url, string userName, string password)
         {
             // url might be something like "ftp://ftp.flatredball.com/flatredball.com/";
@@ -277,7 +166,6 @@ namespace FlatRedBall.IO.Remote
             return GetFileStructFromDataString(datastring);
 
         }
-#endif
 
         private static FileStruct[] GetFileStructFromDataString(string datastring)
         {
@@ -344,56 +232,6 @@ namespace FlatRedBall.IO.Remote
         {
             ThrowExceptionIfFtpUrlIsBad(url);
 
-#if SILVERLIGHT || WINDOWS_PHONE
-
-            string serviceUrl = "http://66.116.162.50/Handler.ashx";
-            
-
-            UriBuilder ub = new UriBuilder(serviceUrl);
-
-            WebClient c = new WebClient();
-            
-            string filenameQuery = 
-                "filename=" + url;
-
-            string usernameQuery =
-                "username=" + username;
-
-            string passwordQuery = "password=" + password;
-
-
-            ub.Query = string.Format("{0}&{1}&{2}", filenameQuery, usernameQuery, passwordQuery);
-
-            c.OpenWriteCompleted += (sender, e) =>
-            {
-                try
-                {
-                    Stream stream = e.Result;
-
-                    byte[] bytes = System.Text.UTF8Encoding.UTF8.GetBytes(stringToSave);
-
-                    stream.Write(bytes, 0, bytes.Length);
-                    stream.Close();
-                    if (resultEventHandler != null)
-                    {
-                        resultEventHandler(null, new FtpSaveEventArgs(true));
-                    }
-                    
-                }
-                catch (Exception exc)
-                {
-                    int m = 3;
-
-                    if (resultEventHandler != null)
-                    {
-                        resultEventHandler(null, new FtpSaveEventArgs(false));
-                    }
-                }
-            };
-
-            c.OpenWriteAsync(ub.Uri);
-
-#else
 
             FtpWebRequest request = GetFtpWebRequest(url, username, password, WebRequestMethods.Ftp.UploadFile, false);
 
@@ -404,9 +242,7 @@ namespace FlatRedBall.IO.Remote
             requestStream.Write(byteArray, 0, byteArray.Length);
 
             requestStream.Close();
-#endif
         }
-#if !SILVERLIGHT && !WINDOWS_PHONE
         public static FtpWebResponse DeleteRemoteFile(string url, string username, string password)
         {
             ThrowExceptionIfFtpUrlIsBad(url);
@@ -423,7 +259,6 @@ namespace FlatRedBall.IO.Remote
 
 
         }
-#endif
         private static void ThrowExceptionIfFtpUrlIsBad(string url)
         {
             if (!url.StartsWith("ftp://"))
@@ -438,31 +273,7 @@ namespace FlatRedBall.IO.Remote
 
 
 
-#if SILVERLIGHT || WINDOWS_PHONE
-        //static ObjectReturnCallback mTemporaryObjectReturnCallback;
-        public static long XmlDeserialize<T>(string url, string userName, string password, ObjectReturnCallback callback)
-        {
-        //    mTemporaryObjectReturnCallback = callback;
-            return GetReadStreamAsync("http://avillagelife.com/services/ftpgetfile.ashx", url, userName, password, GetObjectAsync<T>, callback);
 
-        }
-
-        static void GetObjectAsync<T>(Stream stream, object callback)
-        {
-
-            T objectToReturn = FileManager.XmlDeserialize<T>(stream);
-            if (stream != null)
-            {
-                stream.Close();
-                stream.Dispose();
-            }
-
-            ((ObjectReturnCallback)callback)(objectToReturn);
-            //mTemporaryObjectReturnCallback(objectToReturn);
-        }
-#endif
-
-#if !SILVERLIGHT && !WINDOWS_PHONE
         public static T XmlDeserialize<T>(string url, string userName, string password)
         {
             ThrowExceptionIfFtpUrlIsBad(url);
@@ -533,64 +344,7 @@ namespace FlatRedBall.IO.Remote
             ftpStream.Close();
             response.Close();
         }
-#else
 
-
-
-        public static void UploadFile(string localFileToUpload, string targetUrl, string userName, string password)
-        {
-
-            if (!targetUrl.StartsWith("ftp://"))
-            {
-                throw new ArgumentException("The URL \n" + targetUrl + "\ndoes not begin with \n\"ftp://\"  \nThis is a requirement");
-            }
-
-
-            string serviceUrl = "http://66.116.162.50/Handler.ashx";
-
-
-            UriBuilder ub = new UriBuilder(serviceUrl);
-
-            WebClient c = new WebClient();
-            
-            string filenameQuery =
-                "filename=" + targetUrl;
-
-            string usernameQuery =
-                "username=" + userName;
-
-            string passwordQuery = "password=" + password;
-
-
-            ub.Query = string.Format("{0}&{1}&{2}", filenameQuery, usernameQuery, passwordQuery);
-
-            c.OpenWriteCompleted += (sender, e) =>
-            {
-                try
-                {
-                    Stream stream = e.Result;
-
-                    Stream fileStream = FileManager.GetStreamForFile("$ISOLATEDSTORAGE\\" + localFileToUpload);
-
-                    byte[] buffer = new byte[fileStream.Length];
-
-                    stream.Write(buffer, 0, buffer.Length);
-                    stream.Close();
-                    
-                }
-                catch (Exception exc)
-                {
-                    int m = 3;
-                }
-            };
-
-            c.OpenWriteAsync(ub.Uri);
-            
-        }
-
-#endif
-
-#if !SILVERLIGHT && !WINDOWS_PHONE
 
         public static void UploadFile(string localFileToUpload, string targetUrl, string userName, string password, bool keepAlive)
         {
@@ -745,7 +499,6 @@ namespace FlatRedBall.IO.Remote
             }
             return urlToReturn;
         }
-#endif
 
         #endregion
 
@@ -759,7 +512,6 @@ namespace FlatRedBall.IO.Remote
             return retString;
         }
 
-#if !SILVERLIGHT && !WINDOWS_PHONE
         private static FtpWebRequest GetFtpWebRequest(string url, string userName, string password, string method, bool keepAlive)
         {
             return GetFtpWebRequest(url, userName, password, method, keepAlive, false);
@@ -800,7 +552,6 @@ namespace FlatRedBall.IO.Remote
 
             return ftpclientRequest;
         }
-#endif
 
 
         private static FileListStyle GuessFileListStyle(string[] recordList)
@@ -889,7 +640,6 @@ namespace FlatRedBall.IO.Remote
             return f;
         }
 
-#if !SILVERLIGHT && !WINDOWS_PHONE
         private static void EndGetStreamCallback(IAsyncResult result)
         {
             FtpState state = (FtpState)result.AsyncState;
@@ -956,7 +706,6 @@ namespace FlatRedBall.IO.Remote
 
             state.OperationComplete.Set();
         }
-#endif
 
 
         #endregion

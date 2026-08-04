@@ -1306,17 +1306,10 @@ namespace FlatRedBall.IO
                     }
                     else
                     {
-#if MONODROID
-
-                        FileNotFoundException fnfe = new FileNotFoundException("Could not find the " +
-                            "file " + fileName + " but found the directory " + directory +
-                            "  Did you type in the name of the file wrong?");
-#else
 
                         FileNotFoundException fnfe = new FileNotFoundException("Could not find the " +
                             "file " + fileName + " but found the directory " + directory +
                             "  Did you type in the name of the file wrong?", fileName);
-#endif
                         throw fnfe;
                     }
                 }
@@ -1497,10 +1490,6 @@ namespace FlatRedBall.IO
                 Close(writer);
             }
 
-#if MONODROID
-            isfs.Close();
-            isfs.Dispose();
-#endif
         }
 
 

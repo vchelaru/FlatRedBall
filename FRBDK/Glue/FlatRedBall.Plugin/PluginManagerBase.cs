@@ -98,7 +98,6 @@ namespace FlatRedBall.Glue.Plugins
             AddIfExists(executablePath + "FlatRedBall.dll");
             AddIfExists(executablePath + "FlatRedBall.Plugin.dll");
 
-            AddIfExists(executablePath + "GlueSaveClasses.dll");
             AddIfExists(executablePath + "Glue.exe");
             AddIfExists(executablePath + "GlueView.exe");
             AddIfExists(executablePath + "GluxViewManager.dll");
