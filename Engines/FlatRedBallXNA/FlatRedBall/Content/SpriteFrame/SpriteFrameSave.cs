@@ -41,20 +41,16 @@ namespace FlatRedBall.Content.SpriteFrame
         {
             Texture2D textureToUse = null;
 
-#if !MONODROID
             if (ParentSprite.mTextureInstance != null)
             {
                 textureToUse = ParentSprite.mTextureInstance;
             }
             else
             {
-#endif
                 textureToUse =
                     FlatRedBallServices.Load<Texture2D>(ParentSprite.Texture, contentManagerName);
 
-#if !MONODROID
             }
-#endif
 
                 FlatRedBall.ManagedSpriteGroups.SpriteFrame spriteFrame =
                 new FlatRedBall.ManagedSpriteGroups.SpriteFrame(
@@ -90,11 +86,7 @@ namespace FlatRedBall.Content.SpriteFrame
             SpriteSave.SetRuntimeAnimationChain(
                 contentManagerName, 
                 spriteFrame, 
-#if !MONODROID
                 ParentSprite.mAnimationChainListInstance,
-#else
-                null,
-#endif
                 ParentSprite.CurrentChain, ParentSprite.AnimationChains, ParentSprite.AnimationChainsFile);
 
 

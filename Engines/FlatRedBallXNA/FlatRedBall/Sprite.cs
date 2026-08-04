@@ -1383,28 +1383,6 @@ namespace FlatRedBall
 
             TimeCreated = TimeManager.CurrentTime;
 
-#if MONODROID
-            mVertices[0].Color.X = 1;
-            mVertices[1].Color.X = 1;
-            mVertices[2].Color.X = 1;
-            mVertices[3].Color.X = 1;
-
-            mVertices[0].Color.Y = 1;
-            mVertices[1].Color.Y = 1;
-            mVertices[2].Color.Y = 1;
-            mVertices[3].Color.Y = 1;
-
-            mVertices[0].Color.Z = 1;
-            mVertices[1].Color.Z = 1;
-            mVertices[2].Color.Z = 1;
-            mVertices[3].Color.Z = 1;
-
-            mVertices[0].Color.W = 1;
-            mVertices[1].Color.W = 1;
-            mVertices[2].Color.W = 1;
-            mVertices[3].Color.W = 1;
-
-#endif
             Alpha = GraphicalEnumerations.MaxColorComponentValue;
 
             ColorOperation = ColorOperation.Texture;

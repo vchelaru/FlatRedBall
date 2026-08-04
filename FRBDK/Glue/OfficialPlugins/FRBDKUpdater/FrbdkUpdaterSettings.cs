@@ -203,12 +203,6 @@ namespace OfficialPlugins.FrbdkUpdater
         {
             T objectToReturn = default(T);
 
-#if  MONODROID
-            if (fileName.Contains(FileManager.IsolatedStoragePrefix) && mHasUserFolderBeenInitialized == false)
-            {
-                throw new InvalidOperationException("The user folder hasn't been initialized.  Call FileManager.InitializeUserFolder first");
-            }
-#endif
 
             //if (FileManager.IsRelative(fileName))
             //    fileName = FileManager.RelativeDirectory + fileName;
@@ -219,18 +213,8 @@ namespace OfficialPlugins.FrbdkUpdater
 //#endif
 
 
-#if MONODROID
-            // Android doesn't like ./ at the start of the file name, but that's what we use to identify an absolute path
-            if (fileName.Length > 1 && fileName[0] == '.' && fileName[1] == '/')
-                fileName = fileName.Substring(2);
 
-#endif
-
-#if  MONODROID
-            using (Stream stream = GetStreamForFile(fileName))
-#else
             using (FileStream stream = System.IO.File.OpenRead(fileName))
-#endif
             {
                 objectToReturn = XmlDeserialize<T>(stream);
             }
@@ -308,12 +292,6 @@ namespace OfficialPlugins.FrbdkUpdater
             {
                 if (fs != null) fs.Close();
 
-#if MONODROID
-                if (isfs != null)
-                {
-                    isfs.Close();
-                }
-#endif
             }
         }
 

@@ -5,12 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-#if !WINDOWS_8 && !UWP
 using System.IO.IsolatedStorage;
-#else
-using Windows.Storage;
-using Windows.Foundation;
-#endif
 using System.IO;
 using System.Threading;
 
@@ -19,52 +14,13 @@ namespace FlatRedBall.IO
 {
 	public static partial class FileManager
 	{
-#if !WINDOWS_8 && !UWP
         static IsolatedStorageFile mIsolatedStorageFile;
-#endif
 
         const string IsolatedStoragePrefix = "$ISOLATEDSTORAGE";
 
         static string mLastUserName;
 
 
-#if WINDOWS_8 || UWP
-        // All FRB calls are expected to be synchronous.  File IO that is to be done async is usually
-        // handled in LoadStaticContents or between Screens.  So we have this:
-        public static TResult Await<TResult>(this IAsyncOperation<TResult> operation)
-        {
-            return operation.AsTask().Result;
-
-            //try
-            //{
-            //    return operation.GetResults();
-            //}
-            //finally
-            //{
-            //    operation.Close();
-            //}
-        }
-
-        public static void Await(this IAsyncAction operation)
-        {
-            ManualResetEvent mre = new ManualResetEvent(false);
-
-            operation.Completed = (IAsyncAction asyncInfo, AsyncStatus asyncStatus) =>
-                {
-                    mre.Set();
-                };
-
-            if (operation.Status == AsyncStatus.Completed)
-            {
-                return;
-            }
-            else
-            {
-                mre.WaitOne();
-            }
-            //operation.AsTask().RunSynchronously();
-        }
-#endif
 
 
 
@@ -77,13 +33,6 @@ namespace FlatRedBall.IO
             }
             fileName = FileManager.GetIsolatedStorageFileName(fileName);
 
-#if WINDOWS_8 || UWP
-
-            // Why did we do the original name?  We're in iso storage so we should use the modified name:
-            //var storageFile = ApplicationData.Current.LocalFolder.GetFileAsync(original).Await();
-            var storageFile = ApplicationData.Current.LocalFolder.GetFileAsync(fileName).Await();
-            storageFile.DeleteAsync().Await();
-#else
             IsolatedStorageFile storage = IsolatedStorageFile.GetUserStoreForApplication();
             storage.DeleteFile(fileName);
 
@@ -93,7 +42,6 @@ namespace FlatRedBall.IO
             //    fileName, FileMode.Create, mIsolatedStorageFile);
 
             //writer = new StreamWriter(isfs);
-#endif
         }
 
         public static bool IsInIsolatedStorage(string fileName)
@@ -106,19 +54,6 @@ namespace FlatRedBall.IO
         {
             string original = fileName;
 
-            #if XBOX360
-            if (!mHasUserFolderBeenInitialized)
-            {
-                throw new InvalidOperationException("The user folder has not been initialized yet");
-            }
-
-            fileName = GetIsolatedStorageFileName(fileName);
-
-            var sc = GetStorageContainer();
-            bool returnValue = sc.FileExists(fileName);
-            DisposeLastStorageContainer();
-            return returnValue;
-#else
             if (!mHasUserFolderBeenInitialized)
             {
                 throw new InvalidOperationException("The user folder has not been initialized yet");
@@ -128,70 +63,14 @@ namespace FlatRedBall.IO
 
 
 
-#if WINDOWS_8 || UWP
-
-	        try
-	        {
-                var items = ApplicationData.Current.LocalFolder.GetFilesAsync().Await();
-                bool found = false;
-                foreach (var entry in items)
-                {
-                    if (entry.Name.ToLowerInvariant() == fileName.ToLowerInvariant())
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-
-                return found;
-                // I don't think we need to do a GetFileAsync because we can just loop through the files above
-                // Also, this seems to fail while the for loop above doesn't.
-                //var file = ApplicationData.Current.LocalFolder.GetFileAsync( original ).Await();
-	        }
-	        catch( Exception )
-	        {
-		        return false;
-	        }
-
-	        return true;
-            //var folder = ApplicationData.Current.LocalFolder;
-            //var items = folder.CreateItemQuery().GetItemsAsync().Await();
-            //foreach (var item in items)
-            //{
-                
-            //    if (item.Name == fileName)
-            //    {
-            //        return true;
-            //    }
-            //}
-            //return false;
-#else
             return mIsolatedStorageFile.FileExists(fileName);
 
-#endif
-#endif
         }
 
         static List<string> GetAllFilesInDirectoryIsolatedStorage(string directory)
         {
             if (directory.Contains(IsolatedStoragePrefix))
             {
-#if WINDOWS_8 || UWP
-                List<string> toReturn = new List<string>();
-
-                StorageFolder localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
-
-                var query = localFolder.CreateItemQuery();
-
-                var result = query.GetItemsAsync().Await();
-
-                foreach (var item in result)
-                {
-                    toReturn.Add(item.Name);
-                }
-
-                return toReturn;
-#else
                 // This is in isolated storage
                 string[] files = mIsolatedStorageFile.GetFileNames();
 
@@ -201,7 +80,6 @@ namespace FlatRedBall.IO
                 }
 
                 return new List<string>(files);
-#endif
             }
             else
             {
@@ -217,10 +95,6 @@ namespace FlatRedBall.IO
                 throw new ArgumentException("You must use isolated storage.  Use FileManager.GetUserFolder.");
             }
 
-#if WINDOWS_8 || UWP
-            throw new NotImplementedException();
-
-#else
             BinaryWriter writer = null;
             fileName = FileManager.GetIsolatedStorageFileName(fileName);
 
@@ -232,7 +106,6 @@ namespace FlatRedBall.IO
                 writer.Write(garbageBytes);
                 Close(writer);
             }
-#endif
 
         }
 
@@ -284,81 +157,5 @@ namespace FlatRedBall.IO
             return fileName.StartsWith(IsolatedStoragePrefix);
         }
 
-#if WINDOWS_8 || UWP
-        private static void XmlSerializeWindows8(Type type, object objectToSerialize, string fileName)
-        {
-            string asString;
-            FileManager.XmlSerialize(type, objectToSerialize, out asString);
-
-            // Now we save this to disk:
-            var folder = ApplicationData.Current.LocalFolder;
-            var storageFile = folder.CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting).Await();
-            FileIO.WriteTextAsync(storageFile, asString).Await();
-
-            var items = folder.GetFilesAsync().Await();
-
-            foreach (var entry in items)
-            {
-                int m = 3;
-            }
-
-        }
-
-        public static async void XmlSerializeAsync(object objectToSerialize, string fileName)
-        {
-            string asString;
-            Type type = objectToSerialize.GetType();
-            FileManager.XmlSerialize(type, objectToSerialize, out asString);
-
-            // Now we save this to disk:
-            var folder = ApplicationData.Current.LocalFolder;
-            var storageFile = await folder.CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting);
-            await FileIO.WriteTextAsync(storageFile, asString);
-        }
-
-        private static bool XmlDeserializeWindows8IfIsolatedStorage<T>(string fileName, out T objectToReturn)
-        {
-            bool handled = false;
-
-            if (fileName.Length > 1 && fileName[0] == '.' && fileName[1] == '/')
-            {
-                fileName = fileName.Substring(2);
-            }
-
-            objectToReturn = default(T);
-
-            if (fileName.Contains(IsolatedStoragePrefix))
-            {
-                fileName = GetIsolatedStorageFileName(fileName);
-                handled = true;
-
-                var storageFile = GetStorageFile( fileName );
-
-               
-                string asString = FileIO.ReadTextAsync(storageFile).Await();
-
-                objectToReturn = FileManager.XmlDeserializeFromString<T>(asString);
-            }
-            
-            return handled;
-        }
-
-        private static StorageFile GetStorageFile(string fileName)
-        {
-            // Not sure why but GetFileAsync fails, while looping doesn't:
-            //var result = ApplicationData.Current.LocalFolder.GetFileAsync(filename).Await();
-            StorageFile result = null;
-            foreach (var file in ApplicationData.Current.LocalFolder.GetFilesAsync().Await())
-            {
-                if (file.Name.ToLowerInvariant() == fileName.ToLowerInvariant())
-                {
-                    result = file;
-                    break;
-                }
-            }
-
-            return result;
-        }
-#endif
 	}
 }

@@ -7,11 +7,6 @@
 //-----------------------------------------------------------------------------
 #endregion
 
-// Remote debugging doesn't work on Windows Phone because it relies on
-// Microsoft.Xna.Framework.Net. We therefore can't compile this class
-// for the Windows Phone platform.
-#if !WINDOWS_PHONE
-
 #region Using Statements
 
 using System;
@@ -407,5 +402,3 @@ namespace PerformanceMeasuring.GameDebugTools
         #endregion
     }
 }
-
-#endif

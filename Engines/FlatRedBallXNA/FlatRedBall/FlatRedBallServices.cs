@@ -792,44 +792,6 @@ namespace FlatRedBall
 
         #region Public Methods
 
-#if MONODROID
-        internal static string Normalize(string FileName)
-        {
-            FileName = FileName.Replace('\\', Path.DirectorySeparatorChar);
-            int index = FileName.LastIndexOf(Path.DirectorySeparatorChar);
-            string path = string.Empty;
-            string file = FileName;
-            if (index >= 0)
-            {
-                file = FileName.Substring(index + 1, FileName.Length - index - 1);
-                path = FileName.Substring(0, index);
-            }
-            string[] files = Game.Activity.Assets.List(path);
-
-            if (Contains(file, files))
-                return FileName;
-
-            // Check the file extension
-            if (!string.IsNullOrEmpty(Path.GetExtension(FileName)))
-            {
-                return null;
-            }
-
-            return Path.Combine(path, TryFindAnyCased(file, files, ".xnb", ".jpg", ".bmp", ".jpeg", ".png", ".gif"));
-        }
-
-        private static bool Contains(string search, string[] arr)
-        {
-            return arr.Any(s => s == search);
-        }
-
-        private static string TryFindAnyCased(string search, string[] arr, params string[] extensions)
-        {
-            return arr.FirstOrDefault(s => extensions.Any(ext => s.Equals(search + ext, StringComparison.OrdinalIgnoreCase)));
-        }
-
-
-#endif
 
         public static void AddManager(IManager managerToAdd)
         {

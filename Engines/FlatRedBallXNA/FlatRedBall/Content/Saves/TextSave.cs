@@ -18,10 +18,8 @@ namespace FlatRedBall.Content.Saves
     {
         #region Fields
 
-#if !MONODROID
         [ExternalInstance]
         internal Texture2D mFontTextureInstance;
-#endif
 
         internal string FontPatternText;
 
@@ -141,7 +139,6 @@ namespace FlatRedBall.Content.Saves
             text.CursorSelectable = CursorSelectable;
 
 
-#if !MONODROID
             if (this.mFontTextureInstance != null)
             {
                 BitmapFont bitmapFont = new BitmapFont(
@@ -150,7 +147,6 @@ namespace FlatRedBall.Content.Saves
                 text.Font = bitmapFont;
             }
             else
-#endif
 
             if (!string.IsNullOrEmpty(FontFile))
             {
@@ -187,12 +183,6 @@ namespace FlatRedBall.Content.Saves
 
             var colorOperation = ColorOperation;
 
-#if MONODROID
-            if (colorOperation == "SelectArg2")
-            {
-                colorOperation = "Modulate";
-            }
-#endif
 
             GraphicalEnumerations.SetColors(text, Red, Green, Blue, colorOperation);
 

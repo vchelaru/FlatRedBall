@@ -295,22 +295,8 @@ namespace FlatRedBall.Graphics
             
             mUseMultiSampling = false;
 
-#if MONODROID
-            if (graphics != null)
-            {
-                if(graphics.IsFullScreen)
-                {
-                    this.windowedFullscreenMode = WindowedFullscreenMode.Fullscreen;
-                }
-                else
-                {
-                    this.windowedFullscreenMode = WindowedFullscreenMode.Windowed;
-                }
-            }
-#endif
             
 
-#if !MONODROID
             #region Get Resolution
 
             SuspendDeviceReset();
@@ -339,7 +325,6 @@ namespace FlatRedBall.Graphics
             ResumeDeviceReset();
 
             #endregion
-#endif
 
         }
 
@@ -680,7 +665,6 @@ namespace FlatRedBall.Graphics
                 // Reset the device
                 if (FlatRedBallServices.mGraphics != null)
                 {
-    #if !MONODROID
                     while (FlatRedBallServices.mGraphics.GraphicsDevice.GraphicsDeviceStatus == GraphicsDeviceStatus.Lost ||
                         FlatRedBallServices.mGraphics.GraphicsDevice.GraphicsDeviceStatus == GraphicsDeviceStatus.NotReset)
                     {
@@ -688,7 +672,6 @@ namespace FlatRedBall.Graphics
                         m += 32;
                         m /= 32;
                     }
-    #endif
                 }
 
     #if MONOGAME

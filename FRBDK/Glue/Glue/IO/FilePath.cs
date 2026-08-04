@@ -210,7 +210,6 @@ namespace FlatRedBall.Glue.IO
                 //#endif
             }
 
-#if !XBOX360
             fileNameToFix = FileManager.RemoveDotDotSlash(fileNameToFix);
 
             if (fileNameToFix.StartsWith(".."))
@@ -218,7 +217,6 @@ namespace FlatRedBall.Glue.IO
                 throw new InvalidOperationException("Tried to remove all ../ but ended up with this: " + fileNameToFix);
             }
 
-#endif
             // It's possible that there will be double forward slashes.
             fileNameToFix = fileNameToFix.Replace("//", "/");
 

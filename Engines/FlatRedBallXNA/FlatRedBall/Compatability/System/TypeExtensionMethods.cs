@@ -4,7 +4,6 @@ namespace System
 {
     public static class TypeExtensionMethods
     {
-#if !UWP
         public static PropertyInfo GetProperty(this Type type, string name)
         {
             return type.GetRuntimeProperty(name);
@@ -22,7 +21,6 @@ namespace System
             return type.GetRuntimeFields();
 
         }
-#endif
 
         public static bool IsPrimitive(this Type type)
         {
@@ -41,7 +39,6 @@ namespace System
 
 
 
-#if !UWP
         public static ConstructorInfo GetConstructor(this Type type, Type[] types)
         {
             foreach(var constructor in type.GetTypeInfo().DeclaredConstructors)
@@ -97,6 +94,5 @@ namespace System
             //throw new NotImplementedException();
 
         }
-#endif
     }
 }

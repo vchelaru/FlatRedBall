@@ -48,7 +48,7 @@ namespace ICSharpCode.SharpZipLib.Zip
 	/// <summary>
 	/// Represents exception conditions specific to Zip archive handling
 	/// </summary>
-#if !NETCF_1_0 && !NETCF_2_0 && !XBOX360
+#if !NETCF_1_0 && !NETCF_2_0
 	[Serializable]
 #endif
 	public class ZipException : SharpZipBaseException
