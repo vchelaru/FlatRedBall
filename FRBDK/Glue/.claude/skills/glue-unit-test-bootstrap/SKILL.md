@@ -59,6 +59,18 @@ Fix: pass `SolutionDir` explicitly, pointed at `FRBDK/Glue/` (the directory cont
 dotnet test FRBDK/Glue/Tests/GlueUnitTests/GlueUnitTests.csproj -p:SolutionDir="<repo>\FRBDK\Glue\\"
 ```
 
+## Landmine — an orphaned `testhost` locks the output DLLs, and the next run looks like a hang
+
+A cancelled or timed-out `dotnet test` can leave `testhost.exe` alive holding `GlueUnitTests/bin/.../*.dll` open. The next run then can't copy dependencies into `bin`, and fails with `MSB3021`/`MSB3027` naming the holder (`The file is locked by: "testhost (PID)"`). The trap is that the *build* stalls through its 10 retries × 1s per file while producing no test output — piped through a `grep`, that buffers to nothing and reads as a hung test suite rather than a locked file.
+
+Before diagnosing a slow or silent run as a test problem, clear the holders:
+
+```powershell
+Get-Process testhost,vstest.console,MSBuild -ErrorAction SilentlyContinue | Stop-Process -Force
+```
+
+Then re-run with `--no-build` when nothing was recompiled since the last successful build — it skips the copy step the lock blocks, and the full non-BuildSmoke suite finishes in seconds.
+
 ## Deep dive
 
 For the full story of why each seam was needed and what's still NRE-prone (e.g. `AvailableAssetTypes.CommonAtis`
