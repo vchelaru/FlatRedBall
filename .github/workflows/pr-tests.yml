@@ -3,14 +3,9 @@ name: Glue Tests (PR)
 # Runs on pull requests so tests actually gate merges. The existing glue.yml / Engine.yml are
 # workflow_dispatch-only publish pipelines (they FTP-upload with secrets) and must not run per-PR.
 on:
-  # No branches: filter - that filters on the PR's *base*, so a PR stacked on another feature branch
-  # got no CI at all.
+  # Every pull request, whatever its base. No branches: filter, because that filters on the PR's *base*
+  # branch, so a PR stacked on another feature branch got no CI at all.
   pull_request:
-  # Post-merge signal. Deliberately not every branch: a feature branch with a PR open would then run
-  # this whole suite twice per push, for identical results.
-  push:
-    branches:
-      - NetStandard
   workflow_dispatch:
 
 jobs:
