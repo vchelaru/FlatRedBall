@@ -42,13 +42,17 @@ jobs:
       run: dotnet build -c Debug 'FlatRedBall\FRBDK\Glue\Glue with All.sln'
 
     # Run via the .sln so $(SolutionDir) is defined (OfficialPlugins has a post-build step that needs it).
+    #
+    # --blame-hang-timeout is a backstop, not an expectation: these suites run in well under a minute each
+    # (see issue #1969), so a test sitting for 10 minutes is wedged and should fail the job rather than sit
+    # there until the runner's own limit kills it with no attribution. It also names the test that hung.
     - name: Run unit tests
-      run: dotnet test 'FlatRedBall\FRBDK\Glue\Glue with All.sln' -c Debug --filter "Category!=BuildSmoke"
+      run: dotnet test 'FlatRedBall\FRBDK\Glue\Glue with All.sln' -c Debug --filter "Category!=BuildSmoke" --blame-hang-timeout 10m
 
     # Slower: creates a project from each template and runs `dotnet build` on it. Needs the net9 SDK
     # (installed above) and network for the first NuGet restore.
     - name: Run new-project build smoke test
-      run: dotnet test 'FlatRedBall\FRBDK\Glue\Glue with All.sln' -c Debug --filter "Category=BuildSmoke"
+      run: dotnet test 'FlatRedBall\FRBDK\Glue\Glue with All.sln' -c Debug --filter "Category=BuildSmoke" --blame-hang-timeout 15m
 
     # Everything above this line covers the Glue editor only. The steps below cover the engine,
     # which otherwise gets compiled just once per release by Engine.yml -- long after the commit

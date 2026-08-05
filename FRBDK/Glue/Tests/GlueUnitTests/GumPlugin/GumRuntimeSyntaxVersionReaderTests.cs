@@ -1,6 +1,6 @@
-using System;
-using System.Diagnostics;
+﻿using System;
 using System.IO;
+using GlueUnitTests.TestSupport;
 using GumPlugin.Managers;
 using Shouldly;
 using Xunit;
@@ -107,19 +107,6 @@ public class GumRuntimeSyntaxVersionReaderTests
         throw new DirectoryNotFoundException("Could not locate the FlatRedBall repo root above " + AppContext.BaseDirectory);
     }
 
-    private static (int exitCode, string output) RunDotnetBuild(string projectPath)
-    {
-        var startInfo = new ProcessStartInfo("dotnet", $"build \"{projectPath}\" -c Debug -f net6.0")
-        {
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            UseShellExecute = false,
-            CreateNoWindow = true,
-        };
-
-        using var process = Process.Start(startInfo)!;
-        var output = process.StandardOutput.ReadToEnd() + process.StandardError.ReadToEnd();
-        process.WaitForExit();
-        return (process.ExitCode, output);
-    }
+    private static (int exitCode, string output) RunDotnetBuild(string projectPath) =>
+        NestedDotnetCli.Run($"build \"{projectPath}\" -c Debug -f net6.0");
 }

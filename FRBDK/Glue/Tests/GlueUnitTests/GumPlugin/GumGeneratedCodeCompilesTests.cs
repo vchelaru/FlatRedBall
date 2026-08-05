@@ -1,6 +1,5 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
@@ -316,21 +315,8 @@ public class GumGeneratedCodeCompilesTests : IDisposable
         output.ShouldContain("OK");
     }
 
-    private static (int exitCode, string output) RunDotnetRun(string projectDirectory)
-    {
-        var startInfo = new ProcessStartInfo("dotnet", "run --project \"" + projectDirectory + "\" -c Debug")
-        {
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            UseShellExecute = false,
-            CreateNoWindow = true,
-        };
-
-        using var process = Process.Start(startInfo)!;
-        var output = process.StandardOutput.ReadToEnd() + process.StandardError.ReadToEnd();
-        process.WaitForExit();
-        return (process.ExitCode, output);
-    }
+    private static (int exitCode, string output) RunDotnetRun(string projectDirectory) =>
+        NestedDotnetCli.Run($"run --project \"{projectDirectory}\" -c Debug");
 
     // The standard elements Glue generates runtimes for, read straight off the generator's own map so an
     // element added there is covered the day it is added.
@@ -479,21 +465,8 @@ public class GumGeneratedCodeCompilesTests : IDisposable
         return match.Groups[1].Value;
     }
 
-    private static (int exitCode, string output) RunDotnetBuild(string projectPath)
-    {
-        var startInfo = new ProcessStartInfo("dotnet", $"build \"{projectPath}\" -c Debug")
-        {
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            UseShellExecute = false,
-            CreateNoWindow = true,
-        };
-
-        using var process = Process.Start(startInfo)!;
-        var output = process.StandardOutput.ReadToEnd() + process.StandardError.ReadToEnd();
-        process.WaitForExit();
-        return (process.ExitCode, output);
-    }
+    private static (int exitCode, string output) RunDotnetBuild(string projectPath) =>
+        NestedDotnetCli.Run($"build \"{projectPath}\" -c Debug");
 
     private static string FindRepoRoot()
     {
