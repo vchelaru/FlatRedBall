@@ -3,16 +3,23 @@
   <Name>Rectangle</Name>
   <State>
     <Name>Default</Name>
-    <Variable Type="int" Name="Alpha" Category="Rendering" SetsValue="true">
-      <Value xsi:type="xsd:int">255</Value>
-    </Variable>
-    <Variable Type="int" Name="Blue" Category="Rendering" SetsValue="true">
-      <Value xsi:type="xsd:int">255</Value>
-    </Variable>
     <Variable Type="bool" Name="ExposeChildrenEvents" Category="Behavior" SetsValue="true">
       <Value xsi:type="xsd:boolean">false</Value>
     </Variable>
-    <Variable Type="int" Name="Green" Category="Rendering" SetsValue="true">
+    <!-- Fill/Stroke family (Gum v3 ShapeVariableExpansion, issue #1967) - replaces the legacy plain
+         Red/Green/Blue/Alpha, which routed to the outline color. FilledStrokedRectangle has no
+         backing Color member, only FillColor/StrokeColor, so those legacy names cannot coexist with
+         this family on a v3 project (see StandardsCodeGenerator's Rectangle Fill/Stroke handling). -->
+    <Variable Type="int" Name="FillAlpha" Category="Rendering" SetsValue="true">
+      <Value xsi:type="xsd:int">255</Value>
+    </Variable>
+    <Variable Type="int" Name="FillBlue" Category="Rendering" SetsValue="true">
+      <Value xsi:type="xsd:int">255</Value>
+    </Variable>
+    <Variable Type="int" Name="FillGreen" Category="Rendering" SetsValue="true">
+      <Value xsi:type="xsd:int">255</Value>
+    </Variable>
+    <Variable Type="int" Name="FillRed" Category="Rendering" SetsValue="true">
       <Value xsi:type="xsd:int">255</Value>
     </Variable>
     <Variable Type="string" Name="Guide" Category="Position" SetsValue="true" />
@@ -28,6 +35,9 @@
     <Variable Type="bool" Name="IgnoredByParentSize" Category="Parent" SetsValue="true">
       <Value xsi:type="xsd:boolean">false</Value>
     </Variable>
+    <Variable Type="bool" Name="IsFilled" Category="Rendering" SetsValue="true">
+      <Value xsi:type="xsd:boolean">false</Value>
+    </Variable>
     <Variable Type="bool" Name="IsXamarinFormsControl" SetsValue="true">
       <Value xsi:type="xsd:boolean">false</Value>
     </Variable>
@@ -36,14 +46,26 @@
     <Variable Type="float?" Name="MinHeight" Category="Dimensions" SetsValue="true" />
     <Variable Type="float?" Name="MinWidth" Category="Dimensions" SetsValue="true" />
     <Variable Type="string" Name="Parent" Category="Parent" SetsValue="true" />
-    <Variable Type="int" Name="Red" Category="Rendering" SetsValue="true">
-      <Value xsi:type="xsd:int">255</Value>
-    </Variable>
     <Variable Type="float" Name="Rotation" Category="Flip and Rotation" SetsValue="false">
       <Value xsi:type="xsd:float">0</Value>
     </Variable>
     <Variable Type="State" Name="State" Category="States and Visibility" SetsValue="false">
       <Value xsi:type="xsd:string">Default</Value>
+    </Variable>
+    <Variable Type="int" Name="StrokeAlpha" Category="Rendering" SetsValue="true">
+      <Value xsi:type="xsd:int">255</Value>
+    </Variable>
+    <Variable Type="int" Name="StrokeBlue" Category="Rendering" SetsValue="true">
+      <Value xsi:type="xsd:int">255</Value>
+    </Variable>
+    <Variable Type="int" Name="StrokeGreen" Category="Rendering" SetsValue="true">
+      <Value xsi:type="xsd:int">255</Value>
+    </Variable>
+    <Variable Type="int" Name="StrokeRed" Category="Rendering" SetsValue="true">
+      <Value xsi:type="xsd:int">255</Value>
+    </Variable>
+    <Variable Type="float" Name="StrokeWidth" Category="Rendering" SetsValue="true">
+      <Value xsi:type="xsd:float">2</Value>
     </Variable>
     <Variable Type="bool" Name="Visible" Category="States and Visibility" SetsValue="true">
       <Value xsi:type="xsd:boolean">true</Value>

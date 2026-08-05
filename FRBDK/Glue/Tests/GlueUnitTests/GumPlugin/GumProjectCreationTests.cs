@@ -143,6 +143,36 @@ public class GumProjectCreationTests : IDisposable
     }
 
     [Fact]
+    public async Task CreateGumProjectInternal_SeedsGumxAtShapeVariableExpansionVersion_WithRectangleFillStrokeVariables()
+    {
+        // Issue #1967 - Glue's embedded new-project template was stamped at gumx Version 2
+        // (AttributeVersion), one below the ShapeVariableExpansion (3) version that unlocks Gum's
+        // Rectangle fill/stroke variable family. That meant every Glue-generated .gumx opened in the
+        // standalone Gum Editor showed zero color variables for a Rectangle - Gum's canonical v3 schema
+        // no longer defines legacy Red/Green/Blue/Alpha on Rectangle, and the version gate hid the
+        // replacement Fill*/Stroke* family. This pins the fix: new projects seed at v3+, and the
+        // Rectangle standard element's own .gutx carries the new variables so the Gum Editor's Variable
+        // panel (which merges saved values with the canonical schema) has real data to show, not just an
+        // unlocked but empty category.
+        var creationLogic = new NewGumProjectCreationLogic(new GumxPropertiesManager());
+
+        await creationLogic.CreateGumProjectInternal(shouldAlsoAddForms: false, askToOverwrite: false);
+
+        Gum.Managers.ObjectFinder.Self.GumProjectSave.ShouldNotBeNull();
+        Gum.Managers.ObjectFinder.Self.GumProjectSave!.Version
+            .ShouldBeGreaterThanOrEqualTo((int)Gum.DataTypes.GumProjectSave.GumxVersions.ShapeVariableExpansion);
+
+        var rectangleGutxPath = Directory.GetFiles(_tempProjectDirectory, "Rectangle.gutx", SearchOption.AllDirectories)
+            .ShouldHaveSingleItem();
+        var rectangleGutxContent = File.ReadAllText(rectangleGutxPath);
+
+        foreach (var variableName in GumPlugin.CodeGeneration.StandardsCodeGenerator.RectangleFillStrokeVariableNames)
+        {
+            rectangleGutxContent.ShouldContain($"Name=\"{variableName}\"");
+        }
+    }
+
+    [Fact]
     public async Task CreateGumProjectInternal_ShouldAddFormsComponentsAndGenerateFonts_WhenFormsRequested()
     {
         // Mirrors WizardProjectLogic.HandleAddGum's "with forms" branch (CreateGumProjectWithForms):

@@ -571,6 +571,34 @@ public class GueDerivingClassCodeGenerator : Singleton<GueDerivingClassCodeGener
             constructor.Line($"this.ExposeChildrenEvents = {exposeChildrenEvents.ToString().ToLowerInvariant()};");
         }
 
+        // Issue #1967 - Gum's FallbackRenderableFactory.TryHandleAsBaseType hardcodes "Rectangle" to
+        // always construct a LineRectangle for FRB builds (no gumx-version awareness - see that class's
+        // own "do not extend this switch" doc comment in the sibling Gum repo). That fallback only runs
+        // when SetGraphicalUiElement finds RenderableComponent still null after construction ("This could
+        // have already been created by the type that is instantiated, so don't do this to double-create" -
+        // ElementSaveExtensions.GumRuntime.cs). So a v3 Rectangle must construct its RenderableComponent
+        // explicitly, here - otherwise it silently stays a LineRectangle, ContainedRectangle's "as
+        // FilledStrokedRectangle" cast returns null, and SetInitialState's state-switch NREs on
+        // ContainedRectangle.FillColor/StrokeColor.
+        //
+        // Deliberately OUTSIDE the `if (fullInstantiation)` block below, unlike the rest of this
+        // constructor: a Rectangle placed as a named instance inside a screen/component - the common case
+        // - is constructed via GumRuntime.ElementSaveExtensions.CreateGueForElement, whose
+        // fullInstantiation parameter defaults to false (InstanceSaveExtensionMethods.ToGraphicalUiElement
+        // never passes it). SetGraphicalUiElement is then called on it EXTERNALLY, by that same caller,
+        // after construction - so gating this on fullInstantiation (as an earlier version of this fix did)
+        // left it unset for every screen-placed Rectangle, silently falling through to the LineRectangle
+        // fallback and NREing in SetInitialState. Running unconditionally, before fullInstantiation is
+        // even checked, guarantees RenderableComponent is already correct by the time ANY caller -
+        // this constructor's own fullInstantiation:true branch, or an external SetGraphicalUiElement call
+        // - reaches that null check.
+        if(elementSave.Name == "Rectangle" && GumPlugin.CodeGeneration.StandardsCodeGenerator.IsRectangleFillStrokeSupported)
+        {
+            // RenderableComponent is get-only (backed by mContainedObjectAsIpso) - SetContainedObject
+            // is GraphicalUiElement's real API for assigning it.
+            constructor.Line("this.SetContainedObject(new RenderingLibrary.Math.Geometry.FilledStrokedRectangle());");
+        }
+
         var ifStatement = constructor.If("fullInstantiation");
 
         string componentScreenOrStandard = null;

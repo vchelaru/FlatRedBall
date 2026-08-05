@@ -177,6 +177,161 @@ public class GumGeneratedCodeCompilesTests : IDisposable
             string.Join(Environment.NewLine, errors) + Environment.NewLine + Environment.NewLine + coverage);
     }
 
+    // Issue #1967 bug (round 2) - the sweep above never exercises the v3 (IsRectangleFillStrokeSupported)
+    // Rectangle path: it never sets Gum.Managers.ObjectFinder.Self.GumProjectSave.Version, which defaults
+    // to AttributeVersion (2, GumProjectSave's own documented GOTCHA), so it always generates the v2
+    // LineRectangle branch. That's exactly how `this.RenderableComponent = new FilledStrokedRectangle();`
+    // (CS0200 - RenderableComponent is get-only) shipped past both this test and the string-matching unit
+    // tests in RectangleFillStrokeCodegenTests: nothing actually compiled the v3 branch's constructor
+    // against the real GraphicalUiElement API. This targets that path directly, the same way
+    // GumRuntimeMemberContractTests.V3RectangleFillStrokeMembers_ShouldExistOnFilledStrokedRectangle
+    // targets it for member-existence rather than full compilation.
+    [Fact]
+    public void V3RectangleConstructor_ShouldCompileAgainstTheRealGraphicalUiElementApi()
+    {
+        GlueTestBootstrap.EnsureGumPluginStandardElementsInitialized();
+        GlueTestBootstrap.EnsureGumPluginCodeGeneratorsInitialized();
+
+        Gum.Managers.ObjectFinder.Self.GumProjectSave.Version = (int)GumProjectSave.GumxVersions.ShapeVariableExpansion;
+
+        var defaultState = GetGumsDefaultStateFor("Rectangle");
+        defaultState.ShouldNotBeNull();
+
+        var standardElementSave = new StandardElementSave { Name = "Rectangle" };
+        standardElementSave.Initialize(defaultState);
+
+        var source = GueDerivingClassCodeGenerator.Self.GenerateCodeFor(standardElementSave);
+        source.ShouldNotBeNullOrWhiteSpace();
+        // Fixture sanity: if this fixture ever stops actually reaching the v3 branch, the compile below
+        // would trivially pass on the (already-covered) v2 path and this test would stop pinning anything.
+        source.ShouldContain("FilledStrokedRectangle");
+
+        var scratchDirectory = Path.Combine(_tempProjectDirectory, "V3RectangleCompileScratch");
+        WriteScratchProject(scratchDirectory, FindRepoRoot(), new Dictionary<string, string> { ["Rectangle"] = source });
+
+        var (exitCode, output) = RunDotnetBuild(Path.Combine(scratchDirectory, "GumCodegenCompileScratch.csproj"));
+
+        var errors = output
+            .Split('\n')
+            .Where(line => line.Contains(": error ", StringComparison.Ordinal))
+            .Select(line => line.Trim())
+            .Distinct(StringComparer.Ordinal)
+            .ToList();
+
+        exitCode.ShouldBe(0,
+            "The v3 Rectangle runtime does not compile against the real GraphicalUiElement API:" +
+            Environment.NewLine + string.Join(Environment.NewLine, errors));
+    }
+
+    // Issue #1967 bug (round 3) - the compile-only test above proves the v3 Rectangle runtime is valid
+    // C#, but a compile can never catch a construction-time NRE. The real bug: a Rectangle placed as a
+    // named INSTANCE inside a screen/component - the common case - is constructed via
+    // GumRuntime.ElementSaveExtensions.CreateGueForElement, whose fullInstantiation parameter DEFAULTS TO
+    // FALSE (see InstanceSaveExtensionMethods.ToGraphicalUiElement -> ElementSaveExtensions.
+    // ToGraphicalUiElement in the sibling Gum repo, which never passes it). The v3 constructor fix only
+    // ran inside `if (fullInstantiation)`, so for every screen-placed Rectangle it never ran at all - the
+    // contained object stayed unset, SetGraphicalUiElement's own fallback then created a plain
+    // LineRectangle (Gum's FallbackRenderableFactory, no v3 awareness), and SetInitialState's state-switch
+    // NREs on ContainedRectangle.FillColor. This test reproduces that exact path for real: builds an
+    // executable scratch project, constructs the generated RectangleRuntime with fullInstantiation:false
+    // and then calls SetGraphicalUiElement externally - precisely what CreateGueForElement's default does
+    // - and asserts the process actually runs to completion instead of throwing.
+    [Fact]
+    public void V3RectangleRuntime_ConstructedAsScreenInstance_ShouldNotThrowDuringSetInitialState()
+    {
+        GlueTestBootstrap.EnsureGumPluginStandardElementsInitialized();
+        GlueTestBootstrap.EnsureGumPluginCodeGeneratorsInitialized();
+
+        Gum.Managers.ObjectFinder.Self.GumProjectSave.Version = (int)GumProjectSave.GumxVersions.ShapeVariableExpansion;
+
+        var defaultState = GetGumsDefaultStateFor("Rectangle");
+        defaultState.ShouldNotBeNull();
+
+        var standardElementSave = new StandardElementSave { Name = "Rectangle" };
+        standardElementSave.Initialize(defaultState);
+
+        var source = GueDerivingClassCodeGenerator.Self.GenerateCodeFor(standardElementSave);
+        source.ShouldNotBeNullOrWhiteSpace();
+        source.ShouldContain("FilledStrokedRectangle");
+
+        var scratchDirectory = Path.Combine(_tempProjectDirectory, "V3RectangleRuntimeScratch");
+        var repoRoot = FindRepoRoot();
+        WriteScratchProject(scratchDirectory, repoRoot, new Dictionary<string, string> { ["Rectangle"] = source });
+
+        // WriteScratchProject writes a class-library csproj with no entry point - flip it to an
+        // executable and add one that reproduces the real screen-instance construction path.
+        var csprojPath = Path.Combine(scratchDirectory, "GumCodegenCompileScratch.csproj");
+        var csprojContent = File.ReadAllText(csprojPath)
+            .Replace("<Nullable>disable</Nullable>", "<Nullable>disable</Nullable>\n    <OutputType>Exe</OutputType>");
+        File.WriteAllText(csprojPath, csprojContent);
+
+        File.WriteAllText(Path.Combine(scratchDirectory, "Program.cs"), """
+            using System;
+            using Gum.DataTypes;
+            using Gum.Managers;
+            using GumRuntime;
+            using TestProject.GumRuntimes;
+
+            StandardElementsManager.Self.Initialize();
+
+            // Real games wire this in generated Game1 code (GumGame1CodeGenerator's GetRenderable ->
+            // Gum.Wireframe.RuntimeObjectCreator.TryHandleAsBaseType) - without it, SetGraphicalUiElement's
+            // fallback throws before ever reaching the actual bug, masking it behind a different exception.
+            ElementSaveExtensions.CustomCreateGraphicalComponentFunc =
+                (name, managers) => Gum.Wireframe.FallbackRenderableFactory.TryHandleAsBaseType(name, managers);
+
+            var elementSave = new StandardElementSave { Name = "Rectangle" };
+            elementSave.Initialize(StandardElementsManager.Self.GetDefaultStateFor("Rectangle"));
+
+            ObjectFinder.Self.GumProjectSave = new GumProjectSave
+            {
+                Version = 3,
+                FullFileName = "C:\\FakeGumProject\\GumProject.gumx",
+            };
+            ObjectFinder.Self.GumProjectSave.StandardElements.Add(elementSave);
+
+            try
+            {
+                // Mirrors ElementSaveExtensions.ToGraphicalUiElement's real call shape: construct with the
+                // default fullInstantiation:false (as CreateGueForElement does for every screen/component
+                // instance), then call SetGraphicalUiElement externally - the caller's responsibility in
+                // that path, per that method's own "could have already been created" contract.
+                var instance = new RectangleRuntime(fullInstantiation: false, tryCreateFormsObject: false);
+                elementSave.SetGraphicalUiElement(instance, null);
+                Console.WriteLine("OK");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("FAIL: " + ex);
+                Environment.Exit(1);
+            }
+            """);
+
+        var (exitCode, output) = RunDotnetRun(scratchDirectory);
+
+        exitCode.ShouldBe(0,
+            "Constructing the v3 Rectangle runtime the way a screen/component instance really is " +
+            "(fullInstantiation:false, then an external SetGraphicalUiElement call) threw:" +
+            Environment.NewLine + output);
+        output.ShouldContain("OK");
+    }
+
+    private static (int exitCode, string output) RunDotnetRun(string projectDirectory)
+    {
+        var startInfo = new ProcessStartInfo("dotnet", "run --project \"" + projectDirectory + "\" -c Debug")
+        {
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+            CreateNoWindow = true,
+        };
+
+        using var process = Process.Start(startInfo)!;
+        var output = process.StandardOutput.ReadToEnd() + process.StandardError.ReadToEnd();
+        process.WaitForExit();
+        return (process.ExitCode, output);
+    }
+
     // The standard elements Glue generates runtimes for, read straight off the generator's own map so an
     // element added there is covered the day it is added.
     private static List<string> GetElementNamesFromGumsOwnSchema()
