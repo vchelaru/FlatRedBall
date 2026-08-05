@@ -144,16 +144,17 @@ public class RectangleFillStrokeCodegenTests : IDisposable
         var generatedSource = codeBlock.ToString();
 
         var assignIndex = generatedSource.IndexOf(
-            "this.RenderableComponent = new RenderingLibrary.Math.Geometry.FilledStrokedRectangle();",
+            "this.SetContainedObject(new RenderingLibrary.Math.Geometry.FilledStrokedRectangle());",
             StringComparison.Ordinal);
         var setGraphicalUiElementIndex = generatedSource.IndexOf("SetGraphicalUiElement(", StringComparison.Ordinal);
 
         assignIndex.ShouldBeGreaterThanOrEqualTo(0, "Constructor must explicitly construct the v3 " +
-            "RenderableComponent - relying on Gum's fallback factory silently keeps it a LineRectangle. " +
+            "RenderableComponent via SetContainedObject (RenderableComponent itself is get-only) - " +
+            "relying on Gum's fallback factory silently keeps it a LineRectangle. " +
             "Generated source:" + Environment.NewLine + generatedSource);
         setGraphicalUiElementIndex.ShouldBeGreaterThanOrEqualTo(0);
         assignIndex.ShouldBeLessThan(setGraphicalUiElementIndex,
-            "RenderableComponent must be assigned before SetGraphicalUiElement runs, per that method's own " +
+            "The contained object must be set before SetGraphicalUiElement runs, per that method's own " +
             "\"could have already been created by the type that is instantiated\" contract (Gum's " +
             "ElementSaveExtensions.GumRuntime.cs).");
     }
@@ -173,7 +174,7 @@ public class RectangleFillStrokeCodegenTests : IDisposable
 
         var generatedSource = codeBlock.ToString();
 
-        generatedSource.ShouldNotContain("this.RenderableComponent = new RenderingLibrary.Math.Geometry.FilledStrokedRectangle();");
+        generatedSource.ShouldNotContain("this.SetContainedObject(new RenderingLibrary.Math.Geometry.FilledStrokedRectangle());");
     }
 
     [Fact]

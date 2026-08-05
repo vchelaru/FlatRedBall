@@ -177,6 +177,52 @@ public class GumGeneratedCodeCompilesTests : IDisposable
             string.Join(Environment.NewLine, errors) + Environment.NewLine + Environment.NewLine + coverage);
     }
 
+    // Issue #1967 bug (round 2) - the sweep above never exercises the v3 (IsRectangleFillStrokeSupported)
+    // Rectangle path: it never sets Gum.Managers.ObjectFinder.Self.GumProjectSave.Version, which defaults
+    // to AttributeVersion (2, GumProjectSave's own documented GOTCHA), so it always generates the v2
+    // LineRectangle branch. That's exactly how `this.RenderableComponent = new FilledStrokedRectangle();`
+    // (CS0200 - RenderableComponent is get-only) shipped past both this test and the string-matching unit
+    // tests in RectangleFillStrokeCodegenTests: nothing actually compiled the v3 branch's constructor
+    // against the real GraphicalUiElement API. This targets that path directly, the same way
+    // GumRuntimeMemberContractTests.V3RectangleFillStrokeMembers_ShouldExistOnFilledStrokedRectangle
+    // targets it for member-existence rather than full compilation.
+    [Fact]
+    public void V3RectangleConstructor_ShouldCompileAgainstTheRealGraphicalUiElementApi()
+    {
+        GlueTestBootstrap.EnsureGumPluginStandardElementsInitialized();
+        GlueTestBootstrap.EnsureGumPluginCodeGeneratorsInitialized();
+
+        Gum.Managers.ObjectFinder.Self.GumProjectSave.Version = (int)GumProjectSave.GumxVersions.ShapeVariableExpansion;
+
+        var defaultState = GetGumsDefaultStateFor("Rectangle");
+        defaultState.ShouldNotBeNull();
+
+        var standardElementSave = new StandardElementSave { Name = "Rectangle" };
+        standardElementSave.Initialize(defaultState);
+
+        var source = GueDerivingClassCodeGenerator.Self.GenerateCodeFor(standardElementSave);
+        source.ShouldNotBeNullOrWhiteSpace();
+        // Fixture sanity: if this fixture ever stops actually reaching the v3 branch, the compile below
+        // would trivially pass on the (already-covered) v2 path and this test would stop pinning anything.
+        source.ShouldContain("FilledStrokedRectangle");
+
+        var scratchDirectory = Path.Combine(_tempProjectDirectory, "V3RectangleCompileScratch");
+        WriteScratchProject(scratchDirectory, FindRepoRoot(), new Dictionary<string, string> { ["Rectangle"] = source });
+
+        var (exitCode, output) = RunDotnetBuild(Path.Combine(scratchDirectory, "GumCodegenCompileScratch.csproj"));
+
+        var errors = output
+            .Split('\n')
+            .Where(line => line.Contains(": error ", StringComparison.Ordinal))
+            .Select(line => line.Trim())
+            .Distinct(StringComparer.Ordinal)
+            .ToList();
+
+        exitCode.ShouldBe(0,
+            "The v3 Rectangle runtime does not compile against the real GraphicalUiElement API:" +
+            Environment.NewLine + string.Join(Environment.NewLine, errors));
+    }
+
     // The standard elements Glue generates runtimes for, read straight off the generator's own map so an
     // element added there is covered the day it is added.
     private static List<string> GetElementNamesFromGumsOwnSchema()

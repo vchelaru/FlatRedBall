@@ -606,7 +606,10 @@ public class GueDerivingClassCodeGenerator : Singleton<GueDerivingClassCodeGener
         // SetInitialState's state-switch NREs on ContainedRectangle.FillColor/StrokeColor.
         if(elementSave.Name == "Rectangle" && GumPlugin.CodeGeneration.StandardsCodeGenerator.IsRectangleFillStrokeSupported)
         {
-            ifStatement.Line("this.RenderableComponent = new RenderingLibrary.Math.Geometry.FilledStrokedRectangle();");
+            // RenderableComponent is get-only (backed by mContainedObjectAsIpso) - SetContainedObject
+            // is GraphicalUiElement's real API for assigning it (the same method the fallback path
+            // ultimately relies on RenderableComponent already being populated instead of).
+            ifStatement.Line("this.SetContainedObject(new RenderingLibrary.Math.Geometry.FilledStrokedRectangle());");
         }
 
         ifStatement.Line("GumRuntime.ElementSaveExtensions.SetGraphicalUiElement(elementSave, this, RenderingLibrary.SystemManagers.Default);");
