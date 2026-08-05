@@ -21,7 +21,18 @@ namespace GumPlugin.ErrorReporting
 
             FillWithReferencedFilesNotInGumx(errors);
 
+            FillWithRectangleFillStrokeRuntimeVersionError(errors);
+
             return errors.ToArray();
+        }
+
+        private void FillWithRectangleFillStrokeRuntimeVersionError(List<ErrorViewModel> errors)
+        {
+            if (!RectangleFillStrokeRuntimeVersionCheck.GetIfCurrentlyFixed())
+            {
+                var detectedVersion = RectangleFillStrokeRuntimeVersionCheck.DetectedRuntimeSyntaxVersion();
+                errors.Add(new RectangleFillStrokeRuntimeVersionError(detectedVersion));
+            }
         }
 
         private void FillWithReferencedFilesNotInGumx(List<ErrorViewModel> errors)

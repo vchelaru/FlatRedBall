@@ -595,6 +595,20 @@ public class GueDerivingClassCodeGenerator : Singleton<GueDerivingClassCodeGener
 
         ifStatement.Line("FlatRedBall.IO.FileManager.RelativeDirectory = FlatRedBall.IO.FileManager.GetDirectory(Gum.Managers.ObjectFinder.Self.GumProjectSave.FullFileName);");
 
+        // Issue #1967 - Gum's FallbackRenderableFactory.TryHandleAsBaseType hardcodes "Rectangle" to
+        // always construct a LineRectangle for FRB builds (no gumx-version awareness - see that class's
+        // own "do not extend this switch" doc comment in the sibling Gum repo). That fallback only runs
+        // when SetGraphicalUiElement below finds RenderableComponent still null after construction
+        // ("This could have already been created by the type that is instantiated, so don't do this to
+        // double-create" - ElementSaveExtensions.GumRuntime.cs). So a v3 Rectangle must construct its
+        // RenderableComponent explicitly, here, before that call - otherwise it silently stays a
+        // LineRectangle, ContainedRectangle's "as FilledStrokedRectangle" cast returns null, and
+        // SetInitialState's state-switch NREs on ContainedRectangle.FillColor/StrokeColor.
+        if(elementSave.Name == "Rectangle" && GumPlugin.CodeGeneration.StandardsCodeGenerator.IsRectangleFillStrokeSupported)
+        {
+            ifStatement.Line("this.RenderableComponent = new RenderingLibrary.Math.Geometry.FilledStrokedRectangle();");
+        }
+
         ifStatement.Line("GumRuntime.ElementSaveExtensions.SetGraphicalUiElement(elementSave, this, RenderingLibrary.SystemManagers.Default);");
 
         ifStatement.Line("FlatRedBall.IO.FileManager.RelativeDirectory = oldDirectory;");

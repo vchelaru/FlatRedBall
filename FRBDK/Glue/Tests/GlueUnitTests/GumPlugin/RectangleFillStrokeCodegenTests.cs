@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
@@ -120,6 +121,59 @@ public class RectangleFillStrokeCodegenTests : IDisposable
 
         generatedSource.ShouldContain("RenderingLibrary.Math.Geometry.FilledStrokedRectangle mContainedRectangle");
         generatedSource.ShouldNotContain("RenderingLibrary.Math.Geometry.LineRectangle mContainedRectangle");
+    }
+
+    [Fact]
+    public void V3Project_RectangleCodegen_ConstructorExplicitlyAssignsRenderableComponent_BeforeSetGraphicalUiElement()
+    {
+        // Real-manual-test regression: Gum's FallbackRenderableFactory.TryHandleAsBaseType hardcodes
+        // case "Rectangle" to always construct a LineRectangle for FRB builds (no gumx-version awareness -
+        // see the class's own "do not extend this switch" doc comment, sibling Gum repo). That factory only
+        // runs when SetGraphicalUiElement finds RenderableComponent still null after construction - so
+        // without an explicit assignment here, a v3 Rectangle's RenderableComponent is actually a
+        // LineRectangle, ContainedRectangle's "as FilledStrokedRectangle" cast silently returns null, and
+        // SetInitialState's state-switch NREs on ContainedRectangle.FillColor (set_FillAlpha etc.).
+        SetGumProjectVersion((int)GumProjectSave.GumxVersions.ShapeVariableExpansion);
+        GlueTestBootstrap.EnsureGumPluginCodeGeneratorsInitialized();
+
+        var standardElementSave = BuildRectangleFixture();
+
+        var codeBlock = new FlatRedBall.Glue.CodeGeneration.CodeBuilder.CodeBlockBase();
+        StandardsCodeGenerator.Self.GenerateStandardElementSaveCodeFor(standardElementSave, codeBlock);
+
+        var generatedSource = codeBlock.ToString();
+
+        var assignIndex = generatedSource.IndexOf(
+            "this.RenderableComponent = new RenderingLibrary.Math.Geometry.FilledStrokedRectangle();",
+            StringComparison.Ordinal);
+        var setGraphicalUiElementIndex = generatedSource.IndexOf("SetGraphicalUiElement(", StringComparison.Ordinal);
+
+        assignIndex.ShouldBeGreaterThanOrEqualTo(0, "Constructor must explicitly construct the v3 " +
+            "RenderableComponent - relying on Gum's fallback factory silently keeps it a LineRectangle. " +
+            "Generated source:" + Environment.NewLine + generatedSource);
+        setGraphicalUiElementIndex.ShouldBeGreaterThanOrEqualTo(0);
+        assignIndex.ShouldBeLessThan(setGraphicalUiElementIndex,
+            "RenderableComponent must be assigned before SetGraphicalUiElement runs, per that method's own " +
+            "\"could have already been created by the type that is instantiated\" contract (Gum's " +
+            "ElementSaveExtensions.GumRuntime.cs).");
+    }
+
+    [Fact]
+    public void V2Project_RectangleCodegen_ConstructorDoesNotAssignRenderableComponent()
+    {
+        // v2 keeps relying on Gum's fallback factory (which correctly returns LineRectangle for "Rectangle"
+        // today) - no explicit assignment needed or wanted here.
+        SetGumProjectVersion((int)GumProjectSave.GumxVersions.AttributeVersion);
+        GlueTestBootstrap.EnsureGumPluginCodeGeneratorsInitialized();
+
+        var standardElementSave = BuildRectangleFixture();
+
+        var codeBlock = new FlatRedBall.Glue.CodeGeneration.CodeBuilder.CodeBlockBase();
+        StandardsCodeGenerator.Self.GenerateStandardElementSaveCodeFor(standardElementSave, codeBlock);
+
+        var generatedSource = codeBlock.ToString();
+
+        generatedSource.ShouldNotContain("this.RenderableComponent = new RenderingLibrary.Math.Geometry.FilledStrokedRectangle();");
     }
 
     [Fact]
