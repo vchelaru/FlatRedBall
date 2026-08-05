@@ -101,6 +101,14 @@ public class NewGumProjectCreationLogic
             }
             GlueCommands.Self.GluxCommands.SaveProjectAndElements();
 
+            // Issue #1972: CameraSetupCodeGenerator only emits CameraSetup.ResetGumResolutionValues()
+            // when a Gum project exists (GetIfHasGumProject()), but CameraSetup.Generated.cs is only
+            // regenerated on glux load / display-setting changes (CameraMainPlugin.cs) - not here. Without
+            // this call, CameraSetup.Generated.cs stays stale from before the Gum project existed, while
+            // CameraLogic.Generated.cs's "#if HasGum" branch (computed fresh every codegen pass) starts
+            // calling a method that was never generated - CS0117 the next time the user builds.
+            GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
+
             // until we get performance fixed, print this out to see what's going on:
             await CodeGeneratorManager.Self.GenerateDerivedGueRuntimesAsync(forceReload: true, CodeGeneratorManager.DefaultVerbosity);
 
