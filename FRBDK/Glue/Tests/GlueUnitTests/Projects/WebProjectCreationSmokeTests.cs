@@ -1,8 +1,8 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
+using GlueUnitTests.TestSupport;
 using Npc;
 using Npc.ViewModels;
 using Shouldly;
@@ -76,21 +76,8 @@ public class WebProjectCreationSmokeTests
         }
     }
 
-    private static (int exitCode, string output) RunDotnetBuild(string solutionPath)
-    {
-        var startInfo = new ProcessStartInfo("dotnet", $"build \"{solutionPath}\" -c Debug")
-        {
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            UseShellExecute = false,
-            CreateNoWindow = true,
-        };
-
-        using var process = Process.Start(startInfo)!;
-        var output = process.StandardOutput.ReadToEnd() + process.StandardError.ReadToEnd();
-        process.WaitForExit();
-        return (process.ExitCode, output);
-    }
+    private static (int exitCode, string output) RunDotnetBuild(string solutionPath) =>
+        NestedDotnetCli.Run($"build \"{solutionPath}\" -c Debug");
 
     // Walks up from the test assembly to the repo's Templates folder.
     private static string FindTemplatesRoot()

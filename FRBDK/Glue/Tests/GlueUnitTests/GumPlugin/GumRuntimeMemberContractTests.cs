@@ -1,6 +1,5 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -352,21 +351,8 @@ public class GumRuntimeMemberContractTests : IDisposable
         return types;
     }
 
-    private static (int exitCode, string output) RunDotnetBuild(string solutionPath)
-    {
-        var startInfo = new ProcessStartInfo("dotnet", $"build \"{solutionPath}\" -c Debug")
-        {
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            UseShellExecute = false,
-            CreateNoWindow = true,
-        };
-
-        using var process = Process.Start(startInfo)!;
-        var output = process.StandardOutput.ReadToEnd() + process.StandardError.ReadToEnd();
-        process.WaitForExit();
-        return (process.ExitCode, output);
-    }
+    private static (int exitCode, string output) RunDotnetBuild(string solutionPath) =>
+        NestedDotnetCli.Run($"build \"{solutionPath}\" -c Debug");
 
     private static string FindRepoRoot()
     {

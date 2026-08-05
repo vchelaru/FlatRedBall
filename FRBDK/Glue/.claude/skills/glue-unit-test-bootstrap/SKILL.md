@@ -59,12 +59,39 @@ Fix: pass `SolutionDir` explicitly, pointed at `FRBDK/Glue/` (the directory cont
 dotnet test FRBDK/Glue/Tests/GlueUnitTests/GlueUnitTests.csproj -p:SolutionDir="<repo>\FRBDK\Glue\\"
 ```
 
-## Standing rule — clear stragglers before AND after every run, don't wait for a hang
+## What a healthy run costs — anything far past this is a hang, not slowness
 
-Don't treat the landmine below as something to diagnose only when a run already looks stuck. Every
-`dotnet test`/`dotnet build` invocation in this workflow — BuildSmoke included — spawns a process tree
-(`dotnet`, an MSBuild build server, `VBCSCompiler`, `testhost` per assembly) that does not self-clean on
-interruption. Run this **before starting** and **after finishing** every test/build round, unconditionally:
+Rough orders of magnitude on a warm dev machine, so "is it stuck or just slow?" is answerable without
+guessing. All with `--no-build` after a successful build:
+
+| Run | Roughly |
+| --- | --- |
+| Warm incremental build of `GlueUnitTests.csproj` | ~40s (a real build is most of a full run's wall clock) |
+| `--filter "Category!=BuildSmoke"` (~280 tests) | ~25s |
+| `--filter "Category=BuildSmoke"` (~10 tests) | ~60s |
+
+A BuildSmoke run sitting at 5+ minutes is not a slow build. Check whether the child `dotnet build` has
+already exited while `testhost` is still alive — that is the signature of the pipe hang below, not of work
+in progress.
+
+## Landmine — every nested `dotnet` call must go through `NestedDotnetCli`
+
+BuildSmoke tests shell out to real `dotnet build`/`dotnet run`. The obvious way to write that — redirect
+both streams, `StandardOutput.ReadToEnd()`, `WaitForExit()` — hangs for 10–15 minutes instead of failing,
+because `dotnet build` starts MSBuild worker nodes with `/nodeReuse:true` that outlive it while holding the
+inherited stdout pipe open, so `ReadToEnd()` never sees EOF. It is intermittent by nature: only the run that
+*starts* the nodes inherits the handles, so the same test hangs once and passes on an immediate retry.
+
+`GlueUnitTests/TestSupport/NestedDotnetCli.cs` is the only sanctioned way to spawn one — it disables the
+persistent build servers, pumps both streams concurrently, and kills the entire child tree on timeout.
+`NestedDotnetCliTests` fails the build if a redirected `Process.Start` reappears anywhere in the assembly.
+See GitHub issue #1969.
+
+## Standing rule — clear stragglers after an *interrupted* run
+
+A `dotnet test`/`dotnet build` that is cancelled or killed mid-flight leaves its tree (`dotnet`, MSBuild
+nodes, `VBCSCompiler`, `testhost`) behind; a run that completes normally now cleans up after itself. So
+this is a response to an interruption, not a ritual before every command:
 
 ```powershell
 Get-Process testhost,vstest.console,MSBuild,VBCSCompiler -ErrorAction SilentlyContinue | Stop-Process -Force
@@ -72,8 +99,7 @@ Get-Process testhost,vstest.console,MSBuild,VBCSCompiler -ErrorAction SilentlyCo
 
 Never end a turn (report status, stop) while a `dotnet test`/`dotnet build` is still running detached in
 the background — wait for it synchronously, or explicitly confirm it finished/kill it first. A background
-run left alive across a stop/resume cycle is exactly how the count climbs into the dozens over a long
-session: each new round piles on top of the last instead of reusing a clean slate.
+run left alive across a stop/resume cycle is how the count climbs into the dozens over a long session.
 
 ## Landmine — an orphaned `testhost` locks the output DLLs, and the next run looks like a hang
 

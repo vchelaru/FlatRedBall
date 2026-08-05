@@ -21,7 +21,14 @@ namespace GlueUnitTests.Projects;
 public class RepoHygieneTests
 {
     // Folders whose contents are build output, tooling state, or third-party submodule source.
-    private static readonly string[] IgnoredFolders = { "bin", "obj", ".git", ".vs", "packages", "node_modules" };
+    //
+    // .claude holds agent tooling state, and in particular .claude/worktrees, where a directory symlink to
+    // another checkout is normal. Directory.EnumerateFiles follows those, so without this the sweep walks
+    // out of this repo and reports every cross-repo relative ProjectReference in the linked checkout as
+    // broken -- they only resolve from that checkout's real location, not through the link. Locally-red
+    // hygiene tests that nobody can fix are worse than no hygiene tests, so the whole folder is out.
+    private static readonly string[] IgnoredFolders =
+        { "bin", "obj", ".git", ".vs", ".claude", "packages", "node_modules" };
 
     [Fact]
     public void NoProjectShouldTargetBelowNet6()
