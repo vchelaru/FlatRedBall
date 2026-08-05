@@ -1,6 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Windows.Forms;
 using EditorObjects.IoC;
+using FlatRedBall.Glue.AutomatedGlue;
+using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Managers;
@@ -8,8 +13,12 @@ using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using FlatRedBall.Glue.Services;
+using FlatRedBall.Glue.Plugins.EmbeddedPlugins;
 using GlueFormsCore.ViewModels;
+using GumPlugin;
 using OfficialPlugins.CollisionPlugin;
+using OfficialPlugins.MonoGameContent;
+using TileGraphicsPlugin;
 using Glue;
 
 namespace GlueUnitTests.TestSupport;
@@ -103,6 +112,17 @@ internal static class GlueTestBootstrap
     static bool _collisionPluginRegisteredWithPluginManager;
     static bool _gumPluginStandardElementsInitialized;
     static bool _gumPluginCodeGeneratorsInitialized;
+    static bool _headlessProjectLoadReady;
+    static bool _gumPluginRegisteredWithPluginManager;
+    static bool _tiledPluginRegisteredWithPluginManager;
+
+    /// <summary>
+    /// Every message production code sent through <see cref="DialogService"/> since
+    /// <see cref="EnsureHeadlessProjectLoadReady"/> ran. A real project load should produce none - anything
+    /// here is Glue reporting a problem it would have shown the user a dialog about, so tests assert this is
+    /// empty rather than letting the load "succeed" with a swallowed error.
+    /// </summary>
+    public static List<string> RecordedDialogMessages { get; } = new();
 
     public static void EnsureInitialized()
     {
@@ -142,6 +162,16 @@ internal static class GlueTestBootstrap
                 FlatRedBall.Glue.Reflection.ExposedVariableManager.Initialize();
             }
 
+            // Populates the built-in CustomVariable type converters ("Minutes:Seconds", etc.), the same call
+            // MainGlueWindow.cs makes at startup. Only reachable once a real project containing a variable
+            // with a TypeConverter is generated: CustomVariableCodeGenerator NREs in TypeConverterHelper.Convert
+            // on the null converter table. Worth knowing how that failure presents - CodeWriter.GenerateCode is
+            // an async Task that GenerateAllCodeSync calls without awaiting, so the exception is captured into
+            // a discarded Task and lost. The symptom is an empty .Generated.cs (the placeholder from
+            // CreateGeneratedFileIfNecessary) for that one element, no error output anywhere, and every later
+            // step for it (e.g. its factory) silently skipped.
+            FlatRedBall.Glue.TypeConversions.TypeConverterHelper.InitializeClasses();
+
             MainGlueWindow.Self ??= new FakeMainGlueWindow();
             GlueState.Self.Find ??= new FakeFindManager();
 
@@ -153,6 +183,215 @@ internal static class GlueTestBootstrap
             Container.Set(new FlatRedBall.Glue.SetVariable.EntitySaveSetPropertyLogic());
             Container.Set(new FlatRedBall.Glue.SetVariable.NamedObjectSetVariableLogic());
             Container.Set(new FlatRedBall.Glue.Errors.GlueErrorManager());
+        }
+    }
+
+    /// <summary>
+    /// Opt-in, on top of <see cref="EnsureInitialized"/>: everything a headless host needs before
+    /// <see cref="FlatRedBall.Glue.IO.ProjectLoader"/>.<c>LoadProject</c> can run a real, checked-in game
+    /// project end to end (deserialize the .gluj, dispatch ReactToLoadedGlux to registered plugins, then
+    /// GenerateAllCode). Nothing here is a fake - it is the same set-up Glue.exe's own startup performs:
+    ///  - <see cref="GlueGui.ShowGui"/> off, so <c>ProjectLoader.PrepareInitializationWindow</c> skips
+    ///    constructing <c>InitializationWindowWpf</c> (constructing a WPF Window, not just showing it, needs
+    ///    a live WPF app) and every <c>GlueGui.ShowMessageBox</c>/<c>TryShowDialog</c> becomes a no-op rather
+    ///    than a modal dialog on the developer's actual desktop.
+    ///  - <see cref="DialogService.ShowMessageImpl"/> pointed at <see cref="RecordedDialogMessages"/>. That
+    ///    seam is *not* covered by ShowGui - several production paths call DialogService directly - so
+    ///    without it a load that hits an error path pops a real modal and wedges the run.
+    ///  - <see cref="MainGlueWindow"/>.<c>SetMsBuildEnvironmentVariable</c>, Glue's real SDK discovery. It
+    ///    points MSBUILD_EXE_PATH at a pre-7 SDK; without it <c>Microsoft.Build.Evaluation.Project</c> cannot
+    ///    resolve the SDK imports of any SDK-style .csproj ("The SDK
+    ///    'Microsoft.NET.SDK.WorkloadAutoImportPropsLocator' specified could not be found"), which is what
+    ///    previously forced <see cref="TestVisualStudioProjectFactory"/> to use a bare non-SDK-style project.
+    ///  - A real WinForms <see cref="MenuStrip"/> handed to <see cref="GlueGui"/> and to
+    ///    <see cref="PluginManager"/>, then the embedded <c>MainMenuStripPlugin</c> registered to populate it
+    ///    with the top-level items (File/Edit/Project/Content/...) that other plugins hang their menu items
+    ///    off of. <c>PluginBase.AddMenuItemTo</c> reads <c>GlueGui.MenuStrip.Items</c> directly, so a plugin
+    ///    whose StartUp adds a menu item (e.g. MainGumPlugin's "New Gum Project") NREs without this.
+    ///    Constructing a MenuStrip needs no message loop, same as FakeMainGlueWindow's real PropertyGrid.
+    ///  - <c>ProjectLoader.Self.Initialize</c>, normally called from MainGlueWindow's IoC set-up.
+    ///
+    /// <b>Must be called from an STA thread</b> - use <c>[StaFact]</c>, not <c>[Fact]</c>. Plugin StartUp
+    /// methods build real WPF toolbars (MainTiledPluginClass.CreateToolbar and friends), which throw
+    /// "The calling thread must be STA" otherwise.
+    /// </summary>
+    public static void EnsureHeadlessProjectLoadReady()
+    {
+        EnsureInitialized();
+
+        lock (_lock)
+        {
+            if (_headlessProjectLoadReady)
+            {
+                return;
+            }
+            _headlessProjectLoadReady = true;
+
+            GlueGui.ShowGui = false;
+            DialogService.ShowMessageImpl = message => RecordedDialogMessages.Add(message);
+
+            MainGlueWindow.SetMsBuildEnvironmentVariable();
+
+            // A plugin's ReactToLoadedGlux handler is often `async void` (MainGumPlugin.HandleGluxLoad is),
+            // and an exception in one of those does not reach PluginManager's try/catch - it gets posted to
+            // the synchronization context, where WinForms turns it into a modal "Unhandled exception" dialog
+            // on the developer's actual desktop and the plugin container still reports no failure. Recording
+            // these makes that class of failure visible to the test instead of a popup nobody expects.
+            // Attaching a handler is enough: WinForms only falls back to its own dialog when there is none.
+            // (SetUnhandledExceptionMode is not an option - EnsureInitialized has already constructed
+            // FakeMainGlueWindow's PropertyGrid on this thread, and the mode is fixed once a control exists.)
+            Application.ThreadException += (_, e) =>
+                RecordedDialogMessages.Add("Unhandled exception on the UI thread: " + e.Exception);
+
+            var menuStrip = new MenuStrip();
+            GlueGui.Initialize(menuStrip);
+            PluginManager.ShareMenuStripReference(menuStrip, PluginCategories.All);
+
+            // Same idea as the MenuStrip: PluginBase.AddToToolBar dereferences PluginManager.ToolBarTray
+            // directly, and only MainPanelControl's real WPF startup ever sets it. Several plugins add a
+            // toolbar from their glux-load handler (MainGumPlugin does, on its very first line), so without
+            // this the whole handler dies before doing any of its code generation.
+            PluginManager.SetToolbarTray(new ToolbarControl());
+
+            // Registered before the rest so it captures anything they print while starting up.
+            PluginManager.RegisterPluginForTesting(new ErrorRecordingPlugin());
+
+            RegisterEmbeddedPlugins();
+
+            FlatRedBall.Glue.IO.ProjectLoader.Self.Initialize(GlueCommands.Self.ProjectCommands);
+        }
+    }
+
+    /// <summary>
+    /// Registers every <see cref="EmbeddedPlugin"/> in the Glue assembly, in <c>DesiredOrder</c>, the same
+    /// set and order <c>PluginManager.LoadPlugins</c> gives them in Glue.exe.
+    ///
+    /// These are not optional extras: big pieces of what looks like "core" code generation are embedded
+    /// plugins. <c>ICollidablePlugins</c> is what makes an entity's generated class implement
+    /// <c>ICollidable</c>, and <c>FactoryPlugin</c> is what writes the <c>*Factory.Generated.cs</c> files.
+    /// Skip them and a project regenerates almost completely, then fails to compile in ways that read like
+    /// engine or sample bugs (CS0311 on a collision relationship, a missing factory file) rather than like
+    /// missing plugins.
+    ///
+    /// Reflecting over the assembly is not the directory scan this test infrastructure deliberately avoids
+    /// (see <see cref="EnsureGameProjectPluginsRegistered"/>). These are compile-time-known types in an
+    /// assembly this test project already references; MEF finds exactly the same set. What is avoided is
+    /// discovering *external* plugin DLLs off disk.
+    /// </summary>
+    static void RegisterEmbeddedPlugins()
+    {
+        var embeddedPlugins = typeof(EmbeddedPlugin).Assembly
+            .GetTypes()
+            .Where(type => typeof(EmbeddedPlugin).IsAssignableFrom(type)
+                && !type.IsAbstract
+                && type.GetConstructor(Type.EmptyTypes) != null)
+            .Select(type => (EmbeddedPlugin)Activator.CreateInstance(type)!)
+            .OrderBy(plugin => plugin.DesiredOrder)
+            .ToList();
+
+        var failures = new List<string>();
+
+        foreach (var plugin in embeddedPlugins)
+        {
+            if (SkippedEmbeddedPlugins.Contains(plugin.GetType().FullName))
+            {
+                continue;
+            }
+
+            try
+            {
+                PluginManager.RegisterPluginForTesting(plugin);
+            }
+            catch (Exception e)
+            {
+                failures.Add($"{plugin.GetType().FullName}: {e.InnerException?.Message ?? e.Message}");
+            }
+        }
+
+        if (failures.Count > 0)
+        {
+            throw new InvalidOperationException(
+                "Embedded plugins failed to start in the test host. Either seam whatever they need (the way " +
+                "this bootstrap already does for the menu strip and toolbar tray) or add them to " +
+                nameof(SkippedEmbeddedPlugins) + " with a reason:" +
+                Environment.NewLine + string.Join(Environment.NewLine, failures));
+        }
+    }
+
+    /// <summary>
+    /// Embedded plugins deliberately not started in the test host, each with the reason. Keep this as short
+    /// as possible - anything skipped is codegen or behavior a gold project silently does not get.
+    /// </summary>
+    static readonly HashSet<string> SkippedEmbeddedPlugins = new()
+    {
+        // Its StartUp builds a WPF control whose XAML cannot resolve its resources without a real WPF
+        // application context ("Provide value on TypeConverterMarkupExtension threw an exception"). It only
+        // manages synced (multi-platform) projects, which a single-project gold project does not have, so
+        // nothing it would contribute to code generation is lost.
+        "FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects.MainPlugin",
+    };
+
+    /// <summary>
+    /// Opt-in: constructs a real <see cref="MainGumPlugin"/> and registers it with
+    /// <see cref="PluginManager.RegisterPluginForTesting"/>, running its real <c>StartUp</c>. This is what
+    /// makes <c>PluginManager.CallPluginMethod("Gum Plugin", "HasGum")</c> return an actual bool instead of
+    /// null - the null is what silently compiles out every <c>#if HasGum</c> branch of the GlueControl
+    /// embedded code, so a compile-based test would pass with the bug present (GitHub issue #1973).
+    ///
+    /// Requires <see cref="EnsureHeadlessProjectLoadReady"/> first: MainGumPlugin's StartUp adds a menu item
+    /// and builds a WPF toolbar, so it needs both the populated MenuStrip and an STA thread.
+    /// </summary>
+    public static void EnsureGumPluginRegisteredWithPluginManager()
+    {
+        EnsureHeadlessProjectLoadReady();
+
+        lock (_lock)
+        {
+            if (_gumPluginRegisteredWithPluginManager)
+            {
+                return;
+            }
+            _gumPluginRegisteredWithPluginManager = true;
+
+            PluginManager.RegisterPluginForTesting(new MainGumPlugin());
+        }
+    }
+
+    /// <summary>
+    /// Opt-in: the plugins a real game project needs for a full regeneration, registered by an explicit
+    /// list rather than <see cref="PluginManagerBase.LoadPlugins"/>'s reflection/directory scan. The scan is
+    /// the wrong tool here: <c>StartupPlugin</c> swallows a failing <c>StartUp</c> into a disabled plugin, so
+    /// a plugin that cannot come up headless would leave the harness looking loaded while silently
+    /// generating nothing. An explicit list fails loudly, one plugin at a time (GitHub issue #1973).
+    ///
+    /// Grow this list as gold projects need it. Each addition is a real StartUp running in the test host, so
+    /// expect to have to feed it whatever UI seam it dereferences, the way
+    /// <see cref="EnsureHeadlessProjectLoadReady"/> already does for the menu strip and toolbar tray.
+    ///
+    /// <b>The Gum plugin is deliberately not here yet</b>, and adding it needs a fix first.
+    /// <c>MainGumPlugin.StartUp</c> calls <c>Gum.Managers.StandardElementsManager.Self.Initialize()</c>, and
+    /// so does <see cref="EnsureGumPluginStandardElementsInitialized"/>, which several Gum codegen tests use.
+    /// Both are process-wide one-time set-up with no defined order between them, so whichever runs second
+    /// initializes an already-initialized StandardElementsManager and throws "An item with the same key has
+    /// already been added. Key: Texture". Neither can guard the other. Gold projects with no .gumx (Beefball)
+    /// do not need the plugin, so this is only blocking once a Gum gold project lands - which is separately
+    /// blocked on the font-build deadlock noted on GitHub issue #1973.
+    /// </summary>
+    public static void EnsureGameProjectPluginsRegistered()
+    {
+        EnsureHeadlessProjectLoadReady();
+        EnsureCollisionPluginRegisteredWithPluginManager();
+
+        lock (_lock)
+        {
+            if (_tiledPluginRegisteredWithPluginManager)
+            {
+                return;
+            }
+            _tiledPluginRegisteredWithPluginManager = true;
+
+            PluginManager.RegisterPluginForTesting(new MainTiledPluginClass());
+            PluginManager.RegisterPluginForTesting(new MainContentPipelinePlugin());
         }
     }
 

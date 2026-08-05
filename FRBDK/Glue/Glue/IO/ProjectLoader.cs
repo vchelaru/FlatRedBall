@@ -480,17 +480,16 @@ namespace FlatRedBall.Glue.IO
         {
             bool closeInitWindow = false;
 
-            if (initializationWindow == null)
+            // Constructing the window (not just showing it) needs an STA thread and live WPF services, so
+            // the ShowGui check has to cover the constructor too - otherwise a headless host (tests) throws
+            // "The calling thread must be STA" before load even starts. SetInitWindowText is already
+            // null-safe, so leaving this null just means no progress text.
+            if (initializationWindow == null && GlueGui.ShowGui)
             {
                 closeInitWindow = true;
 
-                    initializationWindow = new InitializationWindowWpf();
-
-                    if (GlueGui.ShowGui)
-                    {
-                        initializationWindow.Show();
-                    
-                    }
+                initializationWindow = new InitializationWindowWpf();
+                initializationWindow.Show();
             }
             return closeInitWindow;
         }
