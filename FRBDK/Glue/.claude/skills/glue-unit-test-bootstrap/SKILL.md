@@ -59,6 +59,22 @@ Fix: pass `SolutionDir` explicitly, pointed at `FRBDK/Glue/` (the directory cont
 dotnet test FRBDK/Glue/Tests/GlueUnitTests/GlueUnitTests.csproj -p:SolutionDir="<repo>\FRBDK\Glue\\"
 ```
 
+## Standing rule — clear stragglers before AND after every run, don't wait for a hang
+
+Don't treat the landmine below as something to diagnose only when a run already looks stuck. Every
+`dotnet test`/`dotnet build` invocation in this workflow — BuildSmoke included — spawns a process tree
+(`dotnet`, an MSBuild build server, `VBCSCompiler`, `testhost` per assembly) that does not self-clean on
+interruption. Run this **before starting** and **after finishing** every test/build round, unconditionally:
+
+```powershell
+Get-Process testhost,vstest.console,MSBuild,VBCSCompiler -ErrorAction SilentlyContinue | Stop-Process -Force
+```
+
+Never end a turn (report status, stop) while a `dotnet test`/`dotnet build` is still running detached in
+the background — wait for it synchronously, or explicitly confirm it finished/kill it first. A background
+run left alive across a stop/resume cycle is exactly how the count climbs into the dozens over a long
+session: each new round piles on top of the last instead of reusing a clean slate.
+
 ## Landmine — an orphaned `testhost` locks the output DLLs, and the next run looks like a hang
 
 A cancelled or timed-out `dotnet test` can leave `testhost.exe` alive holding `GlueUnitTests/bin/.../*.dll` open. The next run then can't copy dependencies into `bin`, and fails with `MSB3021`/`MSB3027` naming the holder (`The file is locked by: "testhost (PID)"`). The trap is that the *build* stalls through its 10 retries × 1s per file while producing no test output — piped through a `grep`, that buffers to nothing and reads as a hung test suite rather than a locked file.

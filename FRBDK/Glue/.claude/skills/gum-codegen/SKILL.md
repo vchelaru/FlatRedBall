@@ -92,6 +92,10 @@ Two things to note in that pattern:
 - `IsFrbSourceLinked()` plays the same role as `REFERENCES_FRB_SOURCE` in embedded code files: if the user references FRB as source, treat the feature as available regardless of `FileVersion`. Always include this arm for type-specific gates.
 - The list is registered in the dictionary unconditionally (with the type name as key). Only the *contents* are conditional. This is so `GetIfShouldGenerateProperty` can do a single dictionary lookup per type.
 
+## Live GumxVersions gating — a different axis than the GluxVersions skip-lists above
+
+Everything above gates on `GluxVersions` (Glue's own file format) at skip-list-refresh time. A standard element's variable family — and even which qualified runtime *type* it maps to — can instead need gating on Gum's own project version (`GumxVersions`, e.g. `ShapeVariableExpansion`), read live off `Gum.Managers.ObjectFinder.Self.GumProjectSave.Version` at generation time rather than cached in a skip-list refresh. This matters when one generator instance/process must serve whatever gumx version happens to be loaded (old and new projects both use the same Glue build), so the decision can't be baked in once. See `StandardsCodeGenerator.IsRectangleFillStrokeSupported`/`GetQualifiedTypeFor` for the pattern: a live bool checked both when choosing the contained type (`mStandardElementToQualifiedTypes` lookup vs. an override) and when deciding per-property generation, instead of a static skip list.
+
 ## State-pipeline gate
 
 `StateCodeGenerator.RefreshVariableNamesToSkipBasedOnGlueVersion` uses a paired `Include` / `Skip` helper pattern. To gate a new variable, add a block alongside the existing ones:

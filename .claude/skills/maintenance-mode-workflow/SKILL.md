@@ -12,8 +12,7 @@ Work through these gates in order before writing a fix:
 1. **Scan for skills.** Search `.claude/skills/` (repo-wide) and `FRBDK/Glue/.claude/skills/` for anything covering this area. Nothing found? Stop and propose a research task to produce a new skill file — written damped, per [skills-writer](../skills-writer/SKILL.md), not a full write-up.
 2. **Read the skill, discuss.** Once one exists (or was just written), read it and raise open questions with the user before touching code.
 3. **Testability gate — two sub-checks, in order.** (a) Can the fix be pinned with a real unit test as the code stands? (b) If not, that's expected — this codebase is missing DI/interfaces in places — so propose and land a scoped refactor task *before* touching the bug, then re-check (a). See [REFACTORING.md](../../../FRBDK/Glue/REFACTORING.md) for the incremental-refactor philosophy and the transitional-injection pattern (`Xyz.Self` defaulting field with an internal setter) used to unstick static-singleton coupling. Do not write the bug fix itself until both sub-checks pass.
-4. **Red.** Write a failing test for the fix.
-5. **Green.** Implement the fix.
-6. **Manual-test call-out.** If the tests don't cover the full user-facing path, say explicitly how to verify manually. If they do, say "no manual testing needed."
+4. **Red/Green, heavy TDD — not one big pinning test plus one big implementation.** Decompose the fix into its smallest behaviors/branches; each gets its own small failing test before the code that satisfies it, refactoring between cycles. Repeat until the fix is fully covered.
+5. **Manual-test call-out.** If the tests don't cover the full user-facing path, say explicitly how to verify manually. If they do, say "no manual testing needed."
 
 This process is still being refined.
