@@ -142,8 +142,22 @@ public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
 
         typeSpecificVariableNamesToSkipForStates.Add("Circle", new List<string>(fillStrokeGradientDropshadowBlendVariables));
 
-        var rectangleVariablesToSkip = new List<string>(fillStrokeGradientDropshadowBlendVariables)
+        // Issue #1967 - mirrors StandardsCodeGenerator.RefreshVariableNamesToSkipForProperties: unlike
+        // Circle, a v3 Rectangle's fill/stroke family IS backed (FilledStrokedRectangle), decided live
+        // per-generation in GetIfShouldGenerateVariableInStateSetter below rather than baked into this
+        // skip list, since one singleton generator serves whatever gumx version is currently loaded.
+        // Gradient/dropshadow/blend/corner-radius remain unconditionally excluded here.
+        var rectangleVariablesToSkip = new List<string>
         {
+            "UseGradient", "GradientType",
+            "GradientX1", "GradientX1Units", "GradientY1", "GradientY1Units",
+            "GradientX2", "GradientX2Units", "GradientY2", "GradientY2Units",
+            "GradientInnerRadius", "GradientInnerRadiusUnits",
+            "GradientOuterRadius", "GradientOuterRadiusUnits",
+            "Alpha2", "Red2", "Green2", "Blue2",
+            "HasDropshadow", "DropshadowOffsetX", "DropshadowOffsetY",
+            "DropshadowAlpha", "DropshadowRed", "DropshadowGreen", "DropshadowBlue",
+            "Blend",
             "CornerRadius",
             "CustomRadiusTopLeft", "CustomRadiusTopRight", "CustomRadiusBottomLeft", "CustomRadiusBottomRight",
         };
@@ -566,6 +580,14 @@ public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
         if (toReturn && mVariableNamesToSkipForStates.Contains(variableRootName))
         {
             toReturn = false;
+        }
+
+        // Issue #1967 - mirrors StandardsCodeGenerator.GetIfShouldGenerateProperty's live check;
+        // see the comment on rectangleVariablesToSkip above for why this isn't a static skip entry.
+        if (toReturn && container.Name == "Rectangle" &&
+            GumPlugin.CodeGeneration.StandardsCodeGenerator.RectangleFillStrokeVariableNames.Contains(variableRootName))
+        {
+            toReturn = GumPlugin.CodeGeneration.StandardsCodeGenerator.IsRectangleFillStrokeSupported;
         }
 
 

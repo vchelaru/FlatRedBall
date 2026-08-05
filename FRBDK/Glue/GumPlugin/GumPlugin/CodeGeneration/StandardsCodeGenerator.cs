@@ -168,8 +168,24 @@ namespace GumPlugin.CodeGeneration
 
             _typedVariableNamesToSkipForProperties.Add("Circle", new List<string>(fillStrokeGradientDropshadowBlendVariables));
 
-            var rectangleVariablesToSkip = new List<string>(fillStrokeGradientDropshadowBlendVariables)
+            // Issue #1967 - unlike Circle, a v3 (ShapeVariableExpansion) Rectangle CAN back its
+            // fill/stroke family - see FillStrokeVariableNames/IsRectangleFillStrokeSupported below,
+            // which decide this live (per-generation, not per skip-list-refresh) since the same
+            // singleton generator serves every Gum project version Glue might have loaded. So the
+            // fill/stroke names are deliberately left OUT of Rectangle's unconditional skip list here;
+            // gradient/dropshadow/blend/corner-radius remain unconditionally excluded - those need the
+            // optional Skia/Apos shape package FRB has no integration with, regardless of gumx version.
+            var rectangleVariablesToSkip = new List<string>
             {
+                "UseGradient", "GradientType",
+                "GradientX1", "GradientX1Units", "GradientY1", "GradientY1Units",
+                "GradientX2", "GradientX2Units", "GradientY2", "GradientY2Units",
+                "GradientInnerRadius", "GradientInnerRadiusUnits",
+                "GradientOuterRadius", "GradientOuterRadiusUnits",
+                "Alpha2", "Red2", "Green2", "Blue2",
+                "HasDropshadow", "DropshadowOffsetX", "DropshadowOffsetY",
+                "DropshadowAlpha", "DropshadowRed", "DropshadowGreen", "DropshadowBlue",
+                "Blend",
                 // Rounded-corner surface (Rectangle only - a Circle has no corners). LineRectangle
                 // always renders hard corners.
                 "CornerRadius",
@@ -496,14 +512,38 @@ namespace GumPlugin.CodeGeneration
             // Sprites handle this in GenerateAdditionalMethods
         }
 
-        private string CreateContainedObjectMembers(ICodeBlock currentBlock, ElementSave standardElementSave)
+        // Issue #1967 - a v3 (ShapeVariableExpansion) Rectangle backs its Fill/Stroke variable
+        // family with RenderingLibrary.Math.Geometry.FilledStrokedRectangle (Gum #4342) instead of
+        // the outline-only LineRectangle used on v2 projects. Gated on Gum's own project version
+        // (GumxVersions), not Glue's GluxVersions - this is about which variable surface the
+        // project's Rectangle.gutx was authored against, not about the Glue file format.
+        internal static bool IsRectangleFillStrokeSupported =>
+            Gum.Managers.ObjectFinder.Self.GumProjectSave?.Version >= (int)GumProjectSave.GumxVersions.ShapeVariableExpansion;
+
+        internal static readonly HashSet<string> RectangleFillStrokeVariableNames = new()
         {
+            "IsFilled", "FillAlpha", "FillRed", "FillGreen", "FillBlue",
+            "StrokeWidth", "StrokeAlpha", "StrokeRed", "StrokeGreen", "StrokeBlue",
+        };
+
+        private string GetQualifiedTypeFor(ElementSave standardElementSave)
+        {
+            if(standardElementSave.Name == "Rectangle" && IsRectangleFillStrokeSupported)
+            {
+                return "RenderingLibrary.Math.Geometry.FilledStrokedRectangle";
+            }
+
             if(mStandardElementToQualifiedTypes.ContainsKey(standardElementSave.Name) == false)
             {
                 throw new InvalidOperationException($"The {nameof(mStandardElementToQualifiedTypes)} " +
                     $"does not contain the key {standardElementSave.Name}. Look at the StandardsCodeGenerator constructor and add an entry there.");
             }
-            string qualifiedBaseType = mStandardElementToQualifiedTypes[standardElementSave.Name];
+            return mStandardElementToQualifiedTypes[standardElementSave.Name];
+        }
+
+        private string CreateContainedObjectMembers(ICodeBlock currentBlock, ElementSave standardElementSave)
+        {
+            string qualifiedBaseType = GetQualifiedTypeFor(standardElementSave);
 
             if(!string.IsNullOrEmpty(qualifiedBaseType))
             {
@@ -551,6 +591,14 @@ namespace GumPlugin.CodeGeneration
                 {
                     return false;
                 }
+            }
+
+            // Issue #1967 - Rectangle's fill/stroke family is intentionally NOT in the static skip
+            // list above (see the comment on rectangleVariablesToSkip); it's decided live here so one
+            // process serving both v2 and v3 Gum projects generates the right thing for each.
+            if(standardElementSave.Name == "Rectangle" && RectangleFillStrokeVariableNames.Contains(variableName))
+            {
+                return IsRectangleFillStrokeSupported;
             }
 
             // Core Gum objets don't have states, so if it's a state then don't create a property for it - it'll be handled
@@ -704,7 +752,52 @@ namespace GumPlugin.CodeGeneration
                 return true;
             }
 
-            if (elementSave.Name == "Circle" || 
+            // Issue #1967 - v3 Rectangle's Fill*/Stroke* channels compose FilledStrokedRectangle's
+            // composite FillColor/StrokeColor (System.Drawing.Color, immutable - unlike the legacy
+            // Red/Green/Blue/Alpha block below, which mutates a field on XNA's Color). Mirrors the
+            // "GumUsesSystemTypes" branch of that block, since this is new code with no pre-System-types
+            // project to stay compatible with.
+            if(elementSave.Name == "Rectangle" && IsRectangleFillStrokeSupported)
+            {
+                // The synthetic "Color" convenience property (variableNamesToAddForProperties) is added
+                // for every Rectangle regardless of gumx version, and normally passes straight through to
+                // ContainedRectangle.Color - which doesn't exist on FilledStrokedRectangle (only
+                // FillColor/StrokeColor). Route it to StrokeColor instead, matching Gum's own legacy-
+                // Color-routes-to-Stroke convention (#2938) - the same convention the byte-channel Alpha/
+                // Red/Green/Blue block below already follows for v2 Rectangles. Caught by
+                // GumRuntimeMemberContractTests.V3RectangleFillStrokeMembers_ShouldExistOnFilledStrokedRectangle
+                // (CS1061 in any real project using a v3 Rectangle before this fix).
+                if(variable.Name == "Color")
+                {
+                    var rightSide = AdjustStandardElementVariableSetIfNecessary(variable, "value");
+                    setter.Line($"ContainedRectangle.StrokeColor = {rightSide};");
+                    return true;
+                }
+
+                string rectangleColorProperty = null;
+                string rectangleColorComponent = null;
+
+                var rootName = variable.GetRootName();
+                if(rootName.StartsWith("Fill"))
+                {
+                    rectangleColorProperty = "FillColor";
+                    rectangleColorComponent = rootName.Substring("Fill".Length);
+                }
+                else if(rootName.StartsWith("Stroke") && rootName != "StrokeWidth")
+                {
+                    rectangleColorProperty = "StrokeColor";
+                    rectangleColorComponent = rootName.Substring("Stroke".Length);
+                }
+
+                if(rectangleColorProperty != null)
+                {
+                    setter.Line($"var color = ToolsUtilitiesStandard.Helpers.ColorExtensions.With{rectangleColorComponent}(ContainedRectangle.{rectangleColorProperty}, (byte)value);");
+                    setter.Line($"ContainedRectangle.{rectangleColorProperty} = color;");
+                    return true;
+                }
+            }
+
+            if (elementSave.Name == "Circle" ||
                 elementSave.Name == "Rectangle" ||
                 elementSave.Name == "Polygon")
             {
@@ -801,6 +894,40 @@ namespace GumPlugin.CodeGeneration
                 return true;
             }
             // handle colors:
+
+            // Issue #1967 - mirrors the setter block above; see its comment for why this is a
+            // separate block rather than folding into the generic Circle/Rectangle/Polygon Color
+            // handling right below.
+            if(elementSave.Name == "Rectangle" && IsRectangleFillStrokeSupported)
+            {
+                if(variable.Name == "Color")
+                {
+                    var whatToReturn = AdjustStandardElementVariableGetIfNecessary(variable, "ContainedRectangle.StrokeColor");
+                    getter.Line($"return {whatToReturn};");
+                    return true;
+                }
+
+                var rootName = variable.GetRootName();
+                string rectangleColorProperty = null;
+                string rectangleColorComponent = null;
+
+                if(rootName.StartsWith("Fill"))
+                {
+                    rectangleColorProperty = "FillColor";
+                    rectangleColorComponent = rootName.Substring("Fill".Length);
+                }
+                else if(rootName.StartsWith("Stroke") && rootName != "StrokeWidth")
+                {
+                    rectangleColorProperty = "StrokeColor";
+                    rectangleColorComponent = rootName.Substring("Stroke".Length);
+                }
+
+                if(rectangleColorProperty != null)
+                {
+                    getter.Line($"return ContainedRectangle.{rectangleColorProperty}.{rectangleColorComponent[0]};");
+                    return true;
+                }
+            }
 
             if (elementSave.Name == "Circle" || elementSave.Name == "Rectangle"  ||
                 elementSave.Name == "Polygon")

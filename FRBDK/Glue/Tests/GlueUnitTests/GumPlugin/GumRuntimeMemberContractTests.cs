@@ -236,6 +236,44 @@ public class GumRuntimeMemberContractTests : IDisposable
         }
     }
 
+    // Issue #1967 - the sweep above is driven off StandardElementToQualifiedTypes, the STATIC map, which
+    // still points "Rectangle" at LineRectangle. It therefore never exercises the v3
+    // (IsRectangleFillStrokeSupported) path that backs Fill*/Stroke*/IsFilled/StrokeWidth with
+    // RenderingLibrary.Math.Geometry.FilledStrokedRectangle instead - exactly the kind of gap the class
+    // header warns about ("Glue has NO compile-time knowledge of the runtime types it generates
+    // against"). This targets that path directly against the real built engine assembly.
+    [Fact]
+    public void V3RectangleFillStrokeMembers_ShouldExistOnFilledStrokedRectangle()
+    {
+        GlueTestBootstrap.EnsureGumPluginStandardElementsInitialized();
+        GlueTestBootstrap.EnsureGumPluginCodeGeneratorsInitialized();
+
+        Gum.Managers.ObjectFinder.Self.GumProjectSave!.Version =
+            (int)GumProjectSave.GumxVersions.ShapeVariableExpansion;
+
+        var runtimeTypes = BuildAndLoadEngineRuntimeTypes(FindRepoRoot());
+        runtimeTypes.TryGetValue("RenderingLibrary.Math.Geometry.FilledStrokedRectangle", out var runtimeType)
+            .ShouldBeTrue("Expected FilledStrokedRectangle to be part of the built GumCore assembly - " +
+                "see the gum-shared-source skill if this is missing (a new Gum source file needs adding " +
+                "to a FRB-consumed .csproj/.projitems, not just existing in the sibling Gum repo).");
+
+        var defaultState = Gum.Managers.StandardElementsManager.Self
+            .TryGetDefaultStateFor("Rectangle", throwExceptionOnMissing: false);
+        defaultState.ShouldNotBeNull();
+
+        var standardElementSave = new StandardElementSave { Name = "Rectangle" };
+        standardElementSave.Initialize(defaultState);
+
+        var codeBlock = new CodeBlockBase();
+        StandardsCodeGenerator.Self.GenerateStandardElementSaveCodeFor(standardElementSave, codeBlock)
+            .ShouldBeTrue();
+
+        var problems = FindUnbackedMembers(
+            "Rectangle", codeBlock.ToString(), runtimeType, "RenderingLibrary.Math.Geometry.FilledStrokedRectangle");
+
+        problems.ShouldBeEmpty(string.Join(Environment.NewLine, problems));
+    }
+
     // AddSkiaStandards() isn't idempotent (Dictionary.Add throws on a second call in the same process),
     // so guard it the same way GumSkiaRenderableCodegenSweepTests does.
     private static void EnsureSkiaStandardElementsRegistered()
