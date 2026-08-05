@@ -142,16 +142,38 @@ foreach ($state in @((Get-RepoState -Path $repoRoot -Label 'FlatRedBall'), (Get-
 
 # Gum is FRB's one hard external dependency, and shipping FRB against an unreleased Gum is a
 # silent failure mode: it compiles locally and then bundles a different Gum at release time.
+#
+# Gum's release workflow tags a version-bump commit ("[create-pull-request] automated change", or
+# "Bump version to ..." on older tags) that never merges back, so a Gum release tag is *never* an
+# ancestor of Gum's main. Testing the tag itself for ancestry therefore fires on every run, which
+# trains you to ignore it. The commit a release was actually cut from is that tag's parent, so
+# that is what gets compared. A tag sitting directly on main is handled too, in case the release
+# workflow ever stops making the bump commit.
 if (Test-Path $gumPath) {
+    # Local tags go stale silently, and comparing against a release that is no longer the newest
+    # is the same wrong-and-quiet answer this check exists to catch. Best effort only: an offline
+    # run falls through to whatever tags are already local.
+    git -C $gumPath fetch --tags --quiet origin 2>$null | Out-Null
+
     $latestGumTag = git -C $gumPath tag --list 'Release_*' --sort=-creatordate | Select-Object -First 1
     if ($latestGumTag) {
         git -C $gumPath merge-base --is-ancestor $latestGumTag HEAD 2>$null
+        $releaseCommit = if ($LASTEXITCODE -eq 0) { $latestGumTag } else { "$latestGumTag^" }
+
+        git -C $gumPath merge-base --is-ancestor $releaseCommit HEAD 2>$null
         if ($LASTEXITCODE -ne 0) {
             Write-Host ''
-            Write-Host "  WARNING: Gum HEAD does not contain its latest release tag ($latestGumTag)." -ForegroundColor Yellow
-            Write-Host "           These builds test FRB against unreleased Gum source, but glue.yml" -ForegroundColor Yellow
-            Write-Host "           bundles Gum's latest GitHub release. A pass here does not prove the" -ForegroundColor Yellow
-            Write-Host "           shipped combination works." -ForegroundColor Yellow
+            Write-Host "  WARNING: Gum HEAD is missing commits that are in its latest release ($latestGumTag)." -ForegroundColor Yellow
+            Write-Host "           glue.yml bundles that release, so this run tests FRB against older Gum" -ForegroundColor Yellow
+            Write-Host "           source than actually ships." -ForegroundColor Yellow
+        }
+        else {
+            $ahead = git -C $gumPath rev-list --count "$releaseCommit..HEAD" 2>$null
+            if ($ahead -and [int]$ahead -gt 0) {
+                Write-Host ''
+                Write-Host ("  Note: Gum is {0} commit(s) ahead of its latest release ({1}). glue.yml bundles" -f $ahead, $latestGumTag) -ForegroundColor DarkGray
+                Write-Host "        the release, so unreleased Gum changes are not covered by this run." -ForegroundColor DarkGray
+            }
         }
     }
 }
