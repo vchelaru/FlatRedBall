@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using Gum.DataTypes;
 using GumPlugin.Managers;
 
