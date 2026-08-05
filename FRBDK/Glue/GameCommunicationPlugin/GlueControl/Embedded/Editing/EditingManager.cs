@@ -514,7 +514,15 @@ namespace GlueControl.Editing
 
                 UpdateMarkers(didChangeItemOver);
 
-                UpdateMeasurementMarker();
+                // The measurement marker responds to right-drags, but unlike the left-button logic above
+                // it isn't inside the IsGameOrGlueActive block, and it doesn't check focus itself. Edit mode
+                // sets Cursor.RequiresGameWindowInFocus = false (the game window is reparented into Glue so it
+                // never gets normal focus), so without this check a right-drag anywhere on screen would draw
+                // the measurement overlay even with Glue behind another window.
+                if (IsGameOrGlueActive && (mouse.IsInGameWindow() || wasPushedInWindow))
+                {
+                    UpdateMeasurementMarker();
+                }
             }
             else
             {
