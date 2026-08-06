@@ -68,13 +68,11 @@ public class GoldProjectCompileTests
     // issue - GlueControlCodeGenerator asking the Gum plugin "HasGum" at generation time, which returned
     // null and silently compiled out every #if HasGum branch.
     //
-    // No dotnet build step yet, unlike Beefball: regenerating any project containing a Gum NineSlice
-    // currently produces a NineSliceRuntime that declares Gum.Wireframe.INineSliceRuntime but does not
-    // implement BorderScale (which appears nowhere in Glue's Gum code generation) or
-    // IsTilingMiddleSections, so the build fails with CS0535 for reasons unrelated to any change under
-    // test. Add the build assertion once that contract is closed - see GitHub issue #1973.
+    // The build step was blocked until issue #1979: this project's NineSlice.gutx predates BorderScale and
+    // IsTilingMiddleSections, and Glue never back-fills a loaded project's standard elements, so the
+    // generated NineSliceRuntime declared Gum.Wireframe.INineSliceRuntime without implementing it (CS0535).
     [StaFact]
-    public async Task FormsSampleProject_LoadInGlue_ShouldRunGumCodeGeneration()
+    public async Task FormsSampleProject_LoadInGlue_ThenBuild_ShouldSucceed()
     {
         GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
 
@@ -99,5 +97,8 @@ public class GoldProjectCompileTests
         generated.ShouldContain("FormsSampleProject/GumRuntimes/TextRuntime.Generated.cs");
         generated.ShouldContain("FormsSampleProject/Forms/Screens/MainMenuGumForms.Generated.cs");
         generated.ShouldContain("FormsSampleProject/Screens/MainMenu.Generated.cs");
+
+        var (exitCode, output) = NestedDotnetCli.Run($"build \"{csproj}\" -c Debug");
+        exitCode.ShouldBe(0, $"dotnet build failed for the regenerated gold project:\n{output}");
     }
 }

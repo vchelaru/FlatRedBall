@@ -315,6 +315,117 @@ public class GumGeneratedCodeCompilesTests : IDisposable
         output.ShouldContain("OK");
     }
 
+    // Issue #1979. The sweep at the top of this file builds its fixtures from Gum's *canonical* schema,
+    // which is a current Gum Editor's output - so it never sees the case that actually breaks users. Glue
+    // does not back-fill a loaded project's standard elements (it calls GumProjectSave.Load and never
+    // GumProjectSave.Initialize), so codegen emits from whatever an older Gum Editor last wrote into the
+    // .gutx, forever. Meanwhile ProjectLoader.LoadProject bumps the .gluj's FileVersion to LatestVersion on
+    // load, which switches on every version-gated decision - including declaring the
+    // Gum.Wireframe.I*Runtime interfaces. A stale .gutx plus a current FileVersion is the combination that
+    // produced CS0535: a runtime declaring an interface whose members its .gutx never mentioned.
+    //
+    // So this loads a real checked-in project's .gumx through the same GumProjectSave.Load call Glue makes
+    // and compiles what the generator produces for its standard elements. That covers the whole interface
+    // family (NineSlice/Sprite/Container/Polygon) with no list of member names anywhere - which matters
+    // because those interfaces are a migration surface in the sibling Gum repo (TrySetPropertyOnNineSlice
+    // moving from the renderable to the runtime), so they gain members over time. Every one of those
+    // additions lands here as a compile error instead of in a user's game.
+    [Fact]
+    public void LegacyGutxStandardElementRuntimes_ShouldCompileAgainstTheRealEngine()
+    {
+        GlueTestBootstrap.EnsureGumPluginStandardElementsInitialized();
+        GlueTestBootstrap.EnsureGumPluginCodeGeneratorsInitialized();
+
+        var repoRoot = FindRepoRoot();
+
+        var gumxPath = Path.Combine(repoRoot, "Samples", "FormsSampleProject", "FormsSampleProject",
+            "Content", "GumProject", "GumProject.gumx");
+        File.Exists(gumxPath).ShouldBeTrue($"Expected the FormsSampleProject Gum project at {gumxPath}");
+
+        var gumProject = Gum.DataTypes.GumProjectSave.Load(gumxPath, out var loadResult);
+        gumProject.ShouldNotBeNull($"Could not load {gumxPath}: {loadResult?.ErrorMessage}");
+
+        // The real call path: codegen reads the loaded project for version-gated decisions
+        // (StandardsCodeGenerator.IsRectangleFillStrokeSupported), so it has to be the sample's own
+        // project rather than the empty stand-in this class's constructor installs.
+        Gum.Managers.ObjectFinder.Self.GumProjectSave = gumProject;
+
+        // Exactly what GumPlugin.Managers.FileReferenceTracker.InitializeElements does after Load, and the
+        // reason this whole bug exists. Note what it passes: the element's OWN default state, not
+        // StandardElementsManager's canonical one - so it resolves variable types (a .gutx stores enum
+        // values as plain ints, and without this the state setter emits "Blend.0") while reconciling
+        // against nothing. Glue's own comment there calls it "only a subset of initialization ... for
+        // performance reasons". Skipping this step here generated code no version of Glue would produce;
+        // skipping the canonical reconciliation is what leaves a real project's NineSlice.gutx permanently
+        // without BorderScale.
+        foreach (var standardElement in gumProject.StandardElements)
+        {
+            standardElement.Initialize(standardElement.DefaultState);
+        }
+
+        var nineSlice = gumProject.StandardElements
+            .FirstOrDefault(element => element.Name == "NineSlice");
+        nineSlice.ShouldNotBeNull("FormsSampleProject has no NineSlice standard element to check.");
+
+        // Fixture sanity, and the whole reason this test is distinct from the canonical-schema sweep
+        // above. If the sample is ever re-saved by a current Gum Editor these variables appear, the .gutx
+        // stops being "legacy", and this test silently degenerates into a duplicate of that sweep. Failing
+        // here is the correct outcome - point it at a project that is still old, or retire the test.
+        var nineSliceVariables = nineSlice.DefaultState.Variables
+            .Select(variable => variable.GetRootName())
+            .ToHashSet(StringComparer.Ordinal);
+        nineSliceVariables.ShouldNotContain("BorderScale",
+            "FormsSampleProject's NineSlice.gutx has been regenerated, so it no longer reproduces the " +
+            "stale-.gutx case this test exists for.");
+        nineSliceVariables.ShouldNotContain("IsTilingMiddleSections",
+            "FormsSampleProject's NineSlice.gutx has been regenerated, so it no longer reproduces the " +
+            "stale-.gutx case this test exists for.");
+
+        var generated = new Dictionary<string, string>(StringComparer.Ordinal);
+        var skipped = new List<string>();
+
+        foreach (var standardElement in gumProject.StandardElements.OrderBy(element => element.Name, StringComparer.Ordinal))
+        {
+            var source = GueDerivingClassCodeGenerator.Self.GenerateCodeFor(standardElement);
+            if (string.IsNullOrWhiteSpace(source))
+            {
+                skipped.Add(standardElement.Name + " (GenerateCodeFor produced nothing)");
+                continue;
+            }
+
+            generated[standardElement.Name] = source;
+        }
+
+        generated.ShouldNotBeEmpty();
+
+        // Fixture sanity: without the interface declaration there is no contract for the compile to check,
+        // and this test would pass against a runtime that promises nothing.
+        generated["NineSlice"].ShouldContain("global::Gum.Wireframe.INineSliceRuntime");
+
+        var scratchDirectory = Path.Combine(_tempProjectDirectory, "LegacyGutxCompileScratch");
+        WriteScratchProject(scratchDirectory, repoRoot, generated);
+
+        var (exitCode, output) = RunDotnetBuild(Path.Combine(scratchDirectory, "GumCodegenCompileScratch.csproj"));
+
+        var errors = output
+            .Split('\n')
+            .Where(line => line.Contains(": error ", StringComparison.Ordinal))
+            .Select(line => line.Trim())
+            .Distinct(StringComparer.Ordinal)
+            .ToList();
+
+        var coverage =
+            "Compiled: " + string.Join(", ", generated.Keys.OrderBy(name => name, StringComparer.Ordinal)) +
+            Environment.NewLine +
+            "Not generated: " + (skipped.Count == 0 ? "(none)" : string.Join(", ", skipped));
+
+        exitCode.ShouldBe(0,
+            "The Gum standard element runtimes generated from a real project's own (older) .gutx do not " +
+            "compile against the real engine. A CS0535 here means Glue declared a Gum.Wireframe.I*Runtime " +
+            "interface it did not generate the members for:" + Environment.NewLine +
+            string.Join(Environment.NewLine, errors) + Environment.NewLine + Environment.NewLine + coverage);
+    }
+
     private static (int exitCode, string output) RunDotnetRun(string projectDirectory) =>
         NestedDotnetCli.Run($"run --project \"{projectDirectory}\" -c Debug");
 
