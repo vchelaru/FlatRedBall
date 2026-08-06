@@ -515,9 +515,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 {
                     if(!shouldSkipPositioning)
                     {
-                        var firstPositionedObject = newObjectList.FirstOrDefault(item =>
-                            item.SourceType == SourceType.Entity ||
-                            item.GetAssetTypeInfo()?.IsPositionedObject == true);
+                        var firstPositionedObject = newObjectList.FirstOrDefault(ShouldPositionNewObjectAtCamera);
 
                         if (firstPositionedObject != null)
                         {
@@ -557,6 +555,29 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 ContainerName = nosList?.InstanceName
             });
             return addObjectDto;
+        }
+
+        /// <summary>
+        /// Returns whether a newly-added object should be moved to the camera's position so that it
+        /// shows up on screen.
+        /// </summary>
+        /// <remarks>
+        /// Cameras are excluded even though their AssetTypeInfo reports IsPositionedObject. A Camera
+        /// NamedObjectSave is a handle on the main camera (NamedObjectSaveCodeGenerator generates
+        /// "= FlatRedBall.SpriteManager.Camera" for it), so positioning it would move the camera the
+        /// user is looking through instead of bringing a new object into view.
+        /// </remarks>
+        public static bool ShouldPositionNewObjectAtCamera(NamedObjectSave namedObject)
+        {
+            if (namedObject.SourceType == SourceType.Entity)
+            {
+                return true;
+            }
+
+            var assetTypeInfo = namedObject.GetAssetTypeInfo();
+
+            return assetTypeInfo?.IsPositionedObject == true &&
+                assetTypeInfo != AvailableAssetTypes.CommonAtis?.Camera;
         }
 
         private async Task AdjustNewObjectToCameraPosition(NamedObjectSave newNamedObject, Vector2? forcedNextObjectPosition)

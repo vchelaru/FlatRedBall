@@ -37,6 +37,21 @@ namespace GlueControl
         public List<IDestroyable> DestroyablesAddedAtRuntime = new List<IDestroyable>();
 
         /// <summary>
+        /// Cameras for Camera NamedObjectSaves added at runtime. This usually holds the main camera
+        /// (a Camera object refers to it unless IsNewCamera is set), so removal has to check before
+        /// taking anything out of SpriteManager.Cameras.
+        /// </summary>
+        public List<Camera> CamerasAddedAtRuntime = new List<Camera>();
+
+        /// <summary>
+        /// Returns a Camera added at runtime by its NamedObjectSave instance name, or null if there
+        /// is no such camera. Cameras live in SpriteManager.Cameras rather than in any of the managers
+        /// searched when resolving an object name, so they have to be looked up separately.
+        /// </summary>
+        public Camera GetCameraByName(string objectName) =>
+            CamerasAddedAtRuntime.FirstOrDefault(item => item.Name == objectName);
+
+        /// <summary>
         /// Dictionary of state categories added at runtime, where the key is the ElementGameType name.
         /// </summary>
         public Dictionary<string, List<StateSaveCategory>> StatesAddedAtRuntime = new Dictionary<string, List<StateSaveCategory>>();
@@ -201,6 +216,34 @@ namespace GlueControl
                                 asCollidable.Collision.Add(circle);
                             }
                             newPositionedObject = circle;
+                        }
+                        break;
+                    case "FlatRedBall.Camera":
+                    case "Camera":
+                        {
+                            // A Camera object normally refers to the main camera rather than creating
+                            // a new one - see NamedObjectSaveCodeGenerator, which generates
+                            // "= FlatRedBall.SpriteManager.Camera" unless IsNewCamera is set.
+                            // Assigning newObject rather than newPositionedObject keeps the camera out
+                            // of the attachment logic below, which must not run on the main camera.
+                            Camera camera;
+
+                            if (deserialized.IsNewCamera)
+                            {
+                                camera = new Camera(FlatRedBallServices.GlobalContentManager);
+                                SpriteManager.Cameras.Add(camera);
+                            }
+                            else
+                            {
+                                camera = Camera.Main;
+                            }
+
+                            // Cameras are in SpriteManager.Cameras rather than in any of the managers
+                            // searched when looking an object up by name, so they have to be tracked
+                            // here for the editor to find them - see GetCameraByName. The name itself
+                            // is assigned below by AssignVariablesOnNewlyCreatedObject.
+                            CamerasAddedAtRuntime.Add(camera);
+                            newObject = camera;
                         }
                         break;
                     case "FlatRedBall.Graphics.Layer":
@@ -1030,6 +1073,22 @@ namespace GlueControl
                 DestroyablesAddedAtRuntime[i].Destroy();
             }
 
+            for (int i = CamerasAddedAtRuntime.Count - 1; i > -1; i--)
+            {
+                var camera = CamerasAddedAtRuntime[i];
+
+                if (camera == Camera.Main)
+                {
+                    // The main camera outlives objects added at runtime - only the name given to it
+                    // when the Camera object was added belongs to us.
+                    camera.Name = null;
+                }
+                else
+                {
+                    SpriteManager.Cameras.Remove(camera);
+                }
+            }
+
             foreach (var list in ListsAddedAtRuntime)
             {
                 for (int i = list.Count - 1; i > -1; i--)
@@ -1056,6 +1115,7 @@ namespace GlueControl
             ShapesAddedAtRuntime.Clear();
             SpritesAddedAtRuntime.Clear();
             DestroyablesAddedAtRuntime.Clear();
+            CamerasAddedAtRuntime.Clear();
             ListsAddedAtRuntime.Clear();
             TextsAddedAtRuntime.Clear();
         }

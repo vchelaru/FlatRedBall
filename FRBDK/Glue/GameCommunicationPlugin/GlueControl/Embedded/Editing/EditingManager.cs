@@ -1240,6 +1240,11 @@ namespace GlueControl.Editing
                 }
                 if (foundObject == null)
                 {
+                    foundObject = InstanceLogic.Self.GetCameraByName(objectName);
+                }
+
+                if (foundObject == null)
+                {
                     var screen = ScreenManager.CurrentScreen;
                     var instance = screen.GetInstance($"{objectName}", screen);
 

@@ -149,7 +149,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                         var exception = response?.Data.FirstOrDefault(item => !string.IsNullOrEmpty(item.Exception)).Exception;
                         if(exception != null)
                         {
-                            GlueCommands.Self.PrintError("Error returned frm game when sending variable:\n" + exception);
+                            GlueCommands.Self.PrintError("Error returned from game when sending variable:\n" + exception);
                             Output.Print(exception);
                         }
 
