@@ -1533,7 +1533,30 @@ namespace GlueControl.Editing
                         // assume FRB horizontal alignment. At some point we may have to differentiate:
                         convertedValue = ToEnum<FlatRedBall.Graphics.VerticalAlignment>(variableValue);
                         break;
+                    default:
+                        // Generic fallback for any enum type not special-cased above - covers Gum's own
+                        // enums (RenderingLibrary.Graphics.HorizontalAlignment, Gum.Converters.GeneralUnitType)
+                        // on Gum objects added directly as Glue Objects, without needing a hardcoded case per
+                        // type. Type.GetType only resolves types in mscorlib or this assembly, so RenderingLibrary/
+                        // Gum.Converters (loaded into the running game process, but not referenced by this
+                        // assembly) need an AppDomain scan instead.
+                        var enumType = Type.GetType(type) ??
+                            AppDomain.CurrentDomain.GetAssemblies()
+                                .Select(assembly => assembly.GetType(type))
+                                .FirstOrDefault(candidate => candidate != null);
 
+                        if (enumType?.IsEnum == true)
+                        {
+                            if (int.TryParse(variableValue, out int enumAsInt))
+                            {
+                                convertedValue = Enum.ToObject(enumType, enumAsInt);
+                            }
+                            else if (!string.IsNullOrWhiteSpace(variableValue))
+                            {
+                                convertedValue = Enum.Parse(enumType, variableValue);
+                            }
+                        }
+                        break;
                 }
                 T ToEnum<T>(string asString)
                 {
