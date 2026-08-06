@@ -58,7 +58,10 @@ to cover generators that ask *another* plugin something at generation time. Need
 - **Delete `*.Generated.cs` first.** Glue doesn't rewrite a file whose content is unchanged, so otherwise
   "codegen produced this" and "codegen never ran" are indistinguishable.
 - **`*.Generated.cs` is gitignored repo-wide**, and the samples are checked in without it. A clean
-  `git diff` after regenerating proves nothing, and no sample builds until Glue regenerates it.
+  `git diff` after regenerating proves nothing, and no sample builds until Glue regenerates it. Assert
+  nothing about these files *existing beforehand* — your working copy has them from earlier runs and a
+  fresh CI clone does not. Before pushing, `find Samples -name "*.Generated.cs" -delete` and re-run, or
+  CI is the first thing to see the real starting state.
 
 ## Landmine — a WinForms sync context plus SynchronousMode deadlocks the run with no timeout
 
