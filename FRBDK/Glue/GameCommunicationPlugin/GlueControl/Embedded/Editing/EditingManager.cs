@@ -136,6 +136,12 @@ namespace GlueControl.Editing
             set => Guides.GridSpacing = value;
         }
 
+        /// <summary>
+        /// Whether to draw a rectangle showing how much of the game the player would see. When editing an
+        /// entity this is centered on the entity, and when editing a screen it follows the edit mode camera.
+        /// </summary>
+        public bool ShowScreenBounds { get; set; }
+
         float snapSize = 8;
         public float SnapSize
         {
@@ -523,6 +529,8 @@ namespace GlueControl.Editing
                 {
                     UpdateMeasurementMarker();
                 }
+
+                DrawScreenBounds();
             }
             else
             {
@@ -544,6 +552,31 @@ namespace GlueControl.Editing
             wasGameActive = FlatRedBallServices.Game.IsActive;
 
 #endif
+        }
+
+        private void DrawScreenBounds()
+        {
+            if (!ShowScreenBounds)
+            {
+                return;
+            }
+
+            // When editing an entity the entity is the only thing on screen, so the bounds are centered on it
+            // to show how much of the game the player would see around it. When editing a screen there's no
+            // equivalent anchor - the runtime camera position comes from custom code - so the bounds follow
+            // the edit mode camera instead.
+            var center = Vector3.Zero;
+
+            if (ElementEditingMode == ElementEditingMode.EditingScreen)
+            {
+                center = new Vector3(Camera.Main.X, Camera.Main.Y, 0);
+            }
+            else if ((ScreenManager.CurrentScreen as Screens.EntityViewingScreen)?.CurrentEntity is PositionedObject mainEntity)
+            {
+                center = new Vector3(mainEntity.X, mainEntity.Y, 0);
+            }
+
+            EditorVisuals.Rectangle(CameraSetup.Data.ResolutionWidth, CameraSetup.Data.ResolutionHeight, center);
         }
 
         private void UpdateMeasurementMarker()

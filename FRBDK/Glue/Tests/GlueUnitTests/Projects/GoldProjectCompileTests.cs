@@ -1,5 +1,9 @@
 using System.IO;
 using System.Threading.Tasks;
+using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using GameCommunicationPlugin.GlueControl.CodeGeneration;
+using GameCommunicationPlugin.GlueControl.CodeGeneration.GlueCalls;
 using GlueUnitTests.TestSupport;
 using Shouldly;
 using Xunit;
@@ -97,6 +101,58 @@ public class GoldProjectCompileTests
         generated.ShouldContain("FormsSampleProject/GumRuntimes/TextRuntime.Generated.cs");
         generated.ShouldContain("FormsSampleProject/Forms/Screens/MainMenuGumForms.Generated.cs");
         generated.ShouldContain("FormsSampleProject/Screens/MainMenu.Generated.cs");
+
+        var (exitCode, output) = NestedDotnetCli.Run($"build \"{csproj}\" -c Debug");
+        exitCode.ShouldBe(0, $"dotnet build failed for the regenerated gold project:\n{output}");
+    }
+
+    // Live edit's runtime half - the ~40 files EmbeddedCodeManager copies into a game project's GlueControl
+    // folder - is <Compile Remove>d from GameCommunicationPlugin.csproj because it only compiles against a
+    // game project. No checked-in sample has live edit turned on, so building any of them as-is skips that
+    // closure entirely and a typo in Embedded\**\*.cs reaches every live-edit user before anything fails.
+    //
+    // EmbedAll is called directly rather than by turning live edit on in the copied CompilerSettings.json,
+    // because the plugin that would react to that setting (MainCompilerPlugin) builds real WPF tabs and
+    // opens sockets on registration and isn't seamed for the test host. What's at risk here is whether the
+    // embedded closure compiles, not whether the plugin decides to embed it.
+    [StaFact]
+    public async Task Beefball_WithLiveEditCode_LoadInGlue_ThenBuild_ShouldSucceed()
+    {
+        GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
+
+        using var project = GoldProject.CopyOutOfRepo("Samples/Beefball");
+        var csproj = Path.Combine(project.Root, "Beefball", "Beefball.csproj");
+
+        GoldProject.DeleteGeneratedCode(project.Root);
+
+        await GoldProject.LoadInGlueAsync(csproj);
+
+        GlueTestBootstrap.RecordedDialogMessages.ShouldBeEmpty();
+        ErrorRecordingPlugin.Errors.ShouldBeEmpty();
+
+        // Both together, in this order, is what MainCompilerPlugin.HandleGluxLoaded does in production.
+        var wasSynchronous = TaskManager.SynchronousMode;
+        TaskManager.SynchronousMode = true;
+        try
+        {
+            EmbeddedCodeManager.EmbedAll(fullyGenerate: true);
+            GlueCallsCodeGenerator.GenerateAll();
+        }
+        finally
+        {
+            TaskManager.SynchronousMode = wasSynchronous;
+        }
+
+        // Beefball sets EnableDefaultCompileItems to false, so the embedded files only reach the compiler
+        // through the Compile items EmbedAll added to the in-memory project.
+        GlueCommands.Self.ProjectCommands.SaveProjects();
+
+        // Without these the build below would pass by compiling a project that simply has no live edit code
+        // in it, which is indistinguishable from the embedding never having happened.
+        var generated = GoldProject.GeneratedFiles(project.Root);
+        generated.ShouldContain("Beefball/GlueControl/Editing/EditingManager.Generated.cs");
+        generated.ShouldContain("Beefball/GlueControl/Screens/EntityViewingScreen.Generated.cs");
+        generated.ShouldContain("Beefball/GlueControl/CommandReceiver.Generated.cs");
 
         var (exitCode, output) = NestedDotnetCli.Run($"build \"{csproj}\" -c Debug");
         exitCode.ShouldBe(0, $"dotnet build failed for the regenerated gold project:\n{output}");

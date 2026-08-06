@@ -67,7 +67,7 @@ namespace GameCommunicationPlugin.GlueControl.Views
             this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.ShowGrid), Localization.Texts.GridAndMarkings);
             this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.GridAlpha), Localization.Texts.GridAndMarkings);
             this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.GridSize), Localization.Texts.GridAndMarkings);
-            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.ShowScreenBoundsWhenViewingEntities), Localization.Texts.GridAndMarkings);
+            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.ShowScreenBounds), Localization.Texts.GridAndMarkings);
             this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.SetBackgroundColor), Localization.Texts.GridAndMarkings);
 
             this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.EnableSnapping), Localization.Texts.Snapping);

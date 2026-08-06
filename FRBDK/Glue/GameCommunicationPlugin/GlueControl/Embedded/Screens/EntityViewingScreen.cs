@@ -18,8 +18,6 @@ namespace GlueControl.Screens
         public static string GameElementTypeToCreate { get; set; }
         public static NamedObjectSave InstanceToSelect { get; set; }
 
-        public static bool ShowScreenBounds { get; set; }
-
         bool isViewingAbstractEntity;
 
         System.Collections.Generic.List<System.Collections.IList> FactoryLists = new System.Collections.Generic.List<System.Collections.IList>();
@@ -109,13 +107,6 @@ namespace GlueControl.Screens
                 Editing.EditorVisuals.Text(
                     $"Error in edit mode for entity {CurrentEntity?.GetType().Name}\n{e}\n{e.InnerException}",
                     new Vector3(camera.X, camera.Y, 0));
-            }
-
-            if (ShowScreenBounds)
-            {
-                var width = CameraSetup.Data.ResolutionWidth;
-                var height = CameraSetup.Data.ResolutionHeight;
-                Editing.EditorVisuals.Rectangle(width, height, Vector3.Zero);
             }
         }
 

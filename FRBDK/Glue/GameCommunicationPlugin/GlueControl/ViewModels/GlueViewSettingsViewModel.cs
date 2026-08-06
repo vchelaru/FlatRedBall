@@ -31,7 +31,7 @@ namespace GameCommunicationPlugin.GlueControl.ViewModels
             set => Set(value);
         }
 
-        public bool ShowScreenBoundsWhenViewingEntities
+        public bool ShowScreenBounds
         {
             get => Get<bool>();
             set => Set(value);
@@ -122,7 +122,7 @@ namespace GameCommunicationPlugin.GlueControl.ViewModels
         {
             this.PortNumber = model.PortNumber;
             this.RestartOnFailedCommands = model.RestartOnFailedCommands;
-            this.ShowScreenBoundsWhenViewingEntities = model.ShowScreenBoundsWhenViewingEntities;
+            this.ShowScreenBounds = model.ShowScreenBounds;
 
             this.ShowGrid = model.ShowGrid;
             this.GridAlpha = model.GridAlpha;
@@ -144,7 +144,7 @@ namespace GameCommunicationPlugin.GlueControl.ViewModels
         {
             compilerSettings.PortNumber = this.PortNumber;
             compilerSettings.RestartOnFailedCommands = this.RestartOnFailedCommands;
-            compilerSettings.ShowScreenBoundsWhenViewingEntities = this.ShowScreenBoundsWhenViewingEntities;
+            compilerSettings.ShowScreenBounds = this.ShowScreenBounds;
 
             compilerSettings.ShowGrid = this.ShowGrid;
             compilerSettings.GridAlpha = this.GridAlpha;

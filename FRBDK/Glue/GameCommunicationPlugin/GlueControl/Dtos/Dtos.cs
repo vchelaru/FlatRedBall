@@ -467,7 +467,7 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
     #region GlueViewSettingsDto
     public class GlueViewSettingsDto
     {
-        public bool ShowScreenBoundsWhenViewingEntities { get; set; }
+        public bool ShowScreenBounds { get; set; }
 
         public bool ShowGrid { get; set; }
         public decimal GridAlpha { get; set; }

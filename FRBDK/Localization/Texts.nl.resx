@@ -1482,8 +1482,8 @@
   <data name="PortNumber" xml:space="preserve">
     <value>Poortnummer</value>
   </data>
-  <data name="ShowScreenBoundsWhenViewingEntities" xml:space="preserve">
-    <value>Toon schermgrenzen bij het bekijken van entiteiten</value>
+  <data name="ShowScreenBounds" xml:space="preserve">
+    <value>Toon schermgrenzen</value>
   </data>
   <data name="SetBackgroundColor" xml:space="preserve">
     <value>Achtergrondkleur</value>
