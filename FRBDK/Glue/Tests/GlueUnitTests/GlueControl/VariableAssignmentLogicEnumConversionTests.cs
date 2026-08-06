@@ -228,6 +228,8 @@ public class VariableAssignmentLogicEnumConversionTests : IDisposable
                     public System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<GlueControl.Models.CustomVariable>> CustomVariablesAddedAtRuntime { get; } = new();
                     public System.Collections.Generic.List<object> ListsAddedAtRuntime { get; } = new();
                     public System.Collections.Generic.List<FlatRedBall.Math.Geometry.ShapeCollection> ShapeCollectionsAddedAtRuntime { get; } = new();
+                    public System.Collections.Generic.List<FlatRedBall.Camera> CamerasAddedAtRuntime { get; } = new();
+                    public FlatRedBall.Camera GetCameraByName(string objectName) => null;
                     public System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<GlueControl.Models.StateSaveCategory>> StatesAddedAtRuntime { get; } = new();
                 }
 

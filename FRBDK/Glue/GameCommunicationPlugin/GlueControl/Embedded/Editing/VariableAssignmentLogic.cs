@@ -518,7 +518,23 @@ namespace GlueControl.Editing
 
                 if (targetInstance == null)
                 {
-                    response.WasVariableAssigned = screen.ApplyVariable(variableName, variableValue);
+                    // If instanceName and variableName are the same then the variable was for the
+                    // element itself (such as "this.SomeScreenVariable"), so the screen is the
+                    // correct target. Otherwise the variable was for an object in the element
+                    // (such as "this.SomeInstance.X") which could not be found - assigning to the
+                    // screen would report a missing "X" rather than the missing instance.
+                    var wasVariableForInstance = !string.IsNullOrEmpty(instanceName) && instanceName != variableName;
+
+                    if (wasVariableForInstance)
+                    {
+                        response.WasVariableAssigned = false;
+                        response.Exception =
+                            $"Could not find an object named {instanceName} in {screen.GetType().Name}, so its {variableName} could not be assigned.";
+                    }
+                    else
+                    {
+                        response.WasVariableAssigned = screen.ApplyVariable(variableName, variableValue);
+                    }
                 }
                 else
                 {
@@ -727,6 +743,11 @@ namespace GlueControl.Editing
             {
                 targetInstance = InstanceLogic.Self.ShapeCollectionsAddedAtRuntime.FirstOrDefault(item =>
                     item.Name == objectName);
+            }
+
+            if (targetInstance == null)
+            {
+                targetInstance = InstanceLogic.Self.GetCameraByName(objectName);
             }
 
             // This was originally how we got instances, but this adds a ton of overhead when dealing with screens

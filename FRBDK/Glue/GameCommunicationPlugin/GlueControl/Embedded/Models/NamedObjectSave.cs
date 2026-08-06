@@ -206,6 +206,17 @@ namespace GlueControl.Models
             set;
         }
 
+        /// <summary>
+        /// Whether a Camera object should be a new Camera rather than the main camera. This matches
+        /// the codegen in NamedObjectSaveCodeGenerator - a Camera is assigned SpriteManager.Camera
+        /// unless this is set.
+        /// </summary>
+        public bool IsNewCamera
+        {
+            get;
+            set;
+        }
+
         public string SourceFile
         {
             get;
