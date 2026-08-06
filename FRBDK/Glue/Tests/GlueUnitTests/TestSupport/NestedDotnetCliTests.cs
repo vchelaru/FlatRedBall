@@ -26,6 +26,25 @@ public class NestedDotnetCliTests
     }
 
     [Fact]
+    public void Run_ShouldStopWaitingOnTheStartupGate_WhenTheProcessExitsWithoutOpeningIt()
+    {
+        // A command that fails before it reaches whatever the gate is watching for has to return at its own
+        // pace. If the gate held the run for its whole budget instead, every such failure would cost the
+        // budget - and the budget is sized for the worst cold start, not for the common case.
+        var neverOpens = new NestedDotnetCli.StartupGate(() => false, TimeSpan.FromMinutes(10));
+
+        var stopwatch = Stopwatch.StartNew();
+        var (exitCode, _) = NestedDotnetCli.Run(
+            "--definitely-not-a-real-dotnet-command", TimeSpan.FromMinutes(1), neverOpens);
+        stopwatch.Stop();
+
+        exitCode.ShouldNotBe(0);
+        exitCode.ShouldNotBe(NestedDotnetCli.TimedOutExitCode, "This should have failed fast, not timed out.");
+        stopwatch.Elapsed.ShouldBeLessThan(TimeSpan.FromMinutes(1),
+            "The gate outlived the process it was gating.");
+    }
+
+    [Fact]
     public void EveryNestedDotnetInvocation_ShouldGoThroughNestedDotnetCli()
     {
         // The bug was copy-pasted into seven files before anyone noticed, and running the tests cannot
@@ -56,22 +75,56 @@ public class NestedDotnetCliTests
         // orphan accumulation this helper exists to prevent - so the grandchild is what gets asserted on.
         using var project = new TempProjectThatRunsForever();
 
-        var timeout = TimeSpan.FromSeconds(20);
+        // The startup is deliberately not part of the timeout. Cold, a runner can spend tens of seconds in
+        // the CLI, MSBuild evaluation and PowerShell before the grandchild exists, and a timeout that fired
+        // inside that window would kill an empty tree and then report the miss as if the kill had leaked one.
+        // So the gate waits the startup out untimed, and the timeout only has to cover the kill (issue #1992).
+        var startupBudget = TimeSpan.FromMinutes(3);
+        var timeout = TimeSpan.FromSeconds(10);
+        var untilGrandchildStarts = new NestedDotnetCli.StartupGate(
+            () => project.GrandchildProcessId != null, startupBudget);
+
         var stopwatch = Stopwatch.StartNew();
-        var (exitCode, output) = NestedDotnetCli.Run($"build \"{project.CsprojPath}\"", timeout);
+        var (exitCode, output) = NestedDotnetCli.Run($"build \"{project.CsprojPath}\"", timeout, untilGrandchildStarts);
+        stopwatch.Stop();
+
+        var grandchild = project.GrandchildProcessId;
+        grandchild.ShouldNotBeNull(
+            $"The grandchild never started within {startupBudget.TotalMinutes:0.#} minutes, which means the " +
+            "nested build is broken rather than merely slow. Output:" + Environment.NewLine + output);
+
+        exitCode.ShouldBe(NestedDotnetCli.TimedOutExitCode,
+            "Expected a timeout, got:" + Environment.NewLine + output);
+        stopwatch.Elapsed.ShouldBeLessThan(startupBudget + timeout + TimeSpan.FromMinutes(1),
+            "The timeout did not actually bound the wait.");
+        IsAlive(grandchild.Value).ShouldBeFalse(
+            "The grandchild outlived the kill, so the child tree is being orphaned rather than reaped.");
+    }
+
+    // The test above only proves the gate deferred the clock on a runner slow enough to need it, so it would
+    // pass on a fast machine with the gate removed entirely. This one holds the gate shut for longer than the
+    // whole timeout, which no undeferred clock can survive.
+    [Trait("Category", "BuildSmoke")]
+    [Fact]
+    public void Run_ShouldNotStartTheTimeoutClock_UntilTheStartupGateOpens()
+    {
+        using var project = new TempProjectThatRunsForever();
+
+        var gateHold = TimeSpan.FromSeconds(8);
+        var timeout = TimeSpan.FromSeconds(3);
+        var held = Stopwatch.StartNew();
+        var opensLate = new NestedDotnetCli.StartupGate(
+            () => held.Elapsed >= gateHold, gateHold + TimeSpan.FromMinutes(1));
+
+        var stopwatch = Stopwatch.StartNew();
+        var (exitCode, output) = NestedDotnetCli.Run($"build \"{project.CsprojPath}\"", timeout, opensLate);
         stopwatch.Stop();
 
         exitCode.ShouldBe(NestedDotnetCli.TimedOutExitCode,
             "Expected a timeout, got:" + Environment.NewLine + output);
-        stopwatch.Elapsed.ShouldBeLessThan(timeout + TimeSpan.FromMinutes(1),
-            "The timeout did not actually bound the wait.");
-
-        var grandchild = project.GrandchildProcessId;
-        grandchild.ShouldNotBeNull(
-            "The grandchild never started, so this run proves nothing about killing it. Output:" +
-            Environment.NewLine + output);
-        IsAlive(grandchild.Value).ShouldBeFalse(
-            "The grandchild outlived the kill, so the child tree is being orphaned rather than reaped.");
+        stopwatch.Elapsed.ShouldBeGreaterThan(gateHold,
+            "The timeout fired while the gate was still shut, so its clock started at process start rather " +
+            "than at the gate - which is what made this test flaky on a cold runner (issue #1992).");
     }
 
     private static bool IsAlive(int processId)
@@ -132,8 +185,25 @@ public class NestedDotnetCliTests
         /// <summary>
         /// The pid the Exec grandchild wrote before going to sleep, or null if it never got that far.
         /// </summary>
-        public int? GrandchildProcessId =>
-            File.Exists(_pidFile) && int.TryParse(File.ReadAllText(_pidFile).Trim(), out var pid) ? pid : null;
+        public int? GrandchildProcessId
+        {
+            get
+            {
+                try
+                {
+                    return int.TryParse(File.ReadAllText(_pidFile).Trim(), out var pid) ? pid : null;
+                }
+                catch (IOException)
+                {
+                    // Missing, or caught mid-write by the polling gate below - both mean "not yet", not "never".
+                    return null;
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    return null;
+                }
+            }
+        }
 
         public void Dispose()
         {

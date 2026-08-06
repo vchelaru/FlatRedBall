@@ -42,7 +42,17 @@ internal static class NestedDotnetCli
     // pipes rather than waiting on the child.
     private static readonly TimeSpan StreamFlushTimeout = TimeSpan.FromSeconds(15);
 
-    public static (int exitCode, string output) Run(string arguments, TimeSpan? timeout = null)
+    /// <summary>
+    /// Keeps a nested build's warm-up off the timeout clock. A cold <c>dotnet build</c> on a CI runner can
+    /// spend tens of seconds on CLI startup and project evaluation before it reaches the part a caller wants
+    /// bounded, so <see cref="Run"/> waits - untimed - until <see cref="IsReady"/> returns true and only then
+    /// starts counting. <see cref="Budget"/> caps that wait so a command that never gets there still returns.
+    /// </summary>
+    public sealed record StartupGate(Func<bool> IsReady, TimeSpan Budget);
+
+    private static readonly TimeSpan StartupGatePollInterval = TimeSpan.FromMilliseconds(100);
+
+    public static (int exitCode, string output) Run(string arguments, TimeSpan? timeout = null, StartupGate? startupGate = null)
     {
         var startInfo = new ProcessStartInfo("dotnet", arguments)
         {
@@ -83,6 +93,11 @@ internal static class NestedDotnetCli
         process.BeginErrorReadLine();
         process.StandardInput.Close();
 
+        if (startupGate != null)
+        {
+            WaitForStartupGate(process, startupGate);
+        }
+
         var limit = timeout ?? DefaultTimeout;
         if (!process.WaitForExit((int)limit.TotalMilliseconds))
         {
@@ -93,7 +108,7 @@ internal static class NestedDotnetCli
             try { process.WaitForExit((int)StreamFlushTimeout.TotalMilliseconds); } catch { }
 
             return (TimedOutExitCode,
-                $"`dotnet {arguments}` did not finish within {limit.TotalMinutes:0.#} minutes and was killed." +
+                $"`dotnet {arguments}` did not finish within {limit.TotalSeconds:0.#} seconds and was killed." +
                 Environment.NewLine + Snapshot(output));
         }
 
@@ -119,6 +134,18 @@ internal static class NestedDotnetCli
         // ...and for the SDK's own persistent MSBuild server process.
         ["DOTNET_CLI_USE_MSBUILD_SERVER"] = "0",
     };
+
+    private static void WaitForStartupGate(Process process, StartupGate gate)
+    {
+        var waited = Stopwatch.StartNew();
+
+        // Giving up on process exit matters as much as the budget does: a command that fails before it can
+        // open the gate has to return at its own pace rather than sitting out a budget sized for a cold start.
+        while (waited.Elapsed < gate.Budget && !process.HasExited && !gate.IsReady())
+        {
+            Thread.Sleep(StartupGatePollInterval);
+        }
+    }
 
     private static void Collect(DataReceivedEventArgs e, StringBuilder output, ManualResetEventSlim closed)
     {
