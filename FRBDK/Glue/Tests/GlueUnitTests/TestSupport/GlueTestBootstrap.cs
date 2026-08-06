@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -17,7 +17,9 @@ using FlatRedBall.Glue.Services;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins;
 using GlueFormsCore.ViewModels;
 using GumPlugin;
+using EntityInputMovementPlugin;
 using OfficialPlugins.CollisionPlugin;
+using OfficialPlugins.ScreenPlugin;
 using OfficialPlugins.MonoGameContent;
 using TileGraphicsPlugin;
 using Glue;
@@ -116,6 +118,8 @@ internal static class GlueTestBootstrap
     static bool _headlessProjectLoadReady;
     static bool _gumPluginRegisteredWithPluginManager;
     static bool _tiledPluginRegisteredWithPluginManager;
+    static bool _screenPluginRegisteredWithPluginManager;
+    static bool _entityInputMovementPluginRegisteredWithPluginManager;
 
     /// <summary>
     /// Every message production code sent through <see cref="DialogService"/> since
@@ -407,6 +411,8 @@ internal static class GlueTestBootstrap
     {
         EnsureGumPluginRegisteredWithPluginManager();
         EnsureCollisionPluginRegisteredWithPluginManager();
+        EnsureScreenPluginRegisteredWithPluginManager();
+        EnsureEntityInputMovementPluginRegisteredWithPluginManager();
 
         lock (_lock)
         {
@@ -418,6 +424,53 @@ internal static class GlueTestBootstrap
 
             PluginManager.RegisterPluginForTesting(new MainTiledPluginClass());
             PluginManager.RegisterPluginForTesting(new MainContentPipelinePlugin());
+        }
+    }
+
+    /// <summary>
+    /// Opt-in: constructs a real <see cref="MainScreenPlugin"/> and registers it with
+    /// <see cref="PluginManager.RegisterPluginForTesting"/>, running its real <c>StartUp</c>.
+    ///
+    /// Its whole StartUp is one <c>VariableDefinition</c> added to the Screen ATI, which is easy to read as
+    /// editor-only polish and is not: <c>DefaultLayer</c> is declared <c>UsesCustomCodeGeneration</c>, and
+    /// that flag is what stops <c>CustomVariableCodeGenerator</c> from emitting a <c>public string
+    /// DefaultLayer;</c> field shadowing the base <c>Screen.DefaultLayer</c> (a <c>Layer</c>). Without this
+    /// plugin, any screen that sets DefaultLayer and holds a factory-created entity list regenerates into
+    /// code that cannot compile - CS0029 on <c>Factories.XFactory.DefaultLayer = this.DefaultLayer;</c>.
+    /// GitHub issue #1988.
+    /// </summary>
+    public static void EnsureScreenPluginRegisteredWithPluginManager()
+    {
+        lock (_lock)
+        {
+            if (_screenPluginRegisteredWithPluginManager)
+            {
+                return;
+            }
+            _screenPluginRegisteredWithPluginManager = true;
+
+            PluginManager.RegisterPluginForTesting(new MainScreenPlugin());
+        }
+    }
+
+    /// <summary>
+    /// Opt-in: constructs a real <see cref="MainEntityInputMovementPlugin"/> and registers it with
+    /// <see cref="PluginManager.RegisterPluginForTesting"/>, running its real <c>StartUp</c>. This is what
+    /// writes a platformer/top-down project's <c>Platformer/*.Generated.cs</c> and <c>TopDown/*.Generated.cs</c>
+    /// files - which the .csproj still lists, so a project regenerated without it fails to build with
+    /// CS2001 on the missing sources rather than with anything naming a plugin.
+    /// </summary>
+    public static void EnsureEntityInputMovementPluginRegisteredWithPluginManager()
+    {
+        lock (_lock)
+        {
+            if (_entityInputMovementPluginRegisteredWithPluginManager)
+            {
+                return;
+            }
+            _entityInputMovementPluginRegisteredWithPluginManager = true;
+
+            PluginManager.RegisterPluginForTesting(new MainEntityInputMovementPlugin());
         }
     }
 

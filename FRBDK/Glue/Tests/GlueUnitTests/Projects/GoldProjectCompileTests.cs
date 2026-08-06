@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
@@ -101,6 +101,47 @@ public class GoldProjectCompileTests
         generated.ShouldContain("FormsSampleProject/GumRuntimes/TextRuntime.Generated.cs");
         generated.ShouldContain("FormsSampleProject/Forms/Screens/MainMenuGumForms.Generated.cs");
         generated.ShouldContain("FormsSampleProject/Screens/MainMenu.Generated.cs");
+
+        var (exitCode, output) = NestedDotnetCli.Run($"build \"{csproj}\" -c Debug");
+        exitCode.ShouldBe(0, $"dotnet build failed for the regenerated gold project:\n{output}");
+    }
+
+    // Covers the shape #1988 was filed against, which neither project above has: a Screen that both sets
+    // DefaultLayer and holds lists of factory-created entities, at a FileVersion past ScreensHaveDefaultLayer.
+    // That combination is what turns a missing Screen Plugin into a compile error rather than a harmless
+    // shadowing field - InitializeFactoriesAndSorting emits `Factories.DoorFactory.DefaultLayer =
+    // this.DefaultLayer;`, which is CS0029 the moment `this.DefaultLayer` resolves to a generated string
+    // field instead of the base Screen's Layer.
+    //
+    // Unlike the two above, this project references the engine through the FlatRedBallDesktopGLNet6 NuGet
+    // package rather than engine source, so it also covers "today's generated code against a released
+    // engine" - a shipped-package mismatch fails here and nowhere else.
+    [StaFact]
+    public async Task DoorsDemoProject_LoadInGlue_ThenBuild_ShouldSucceed()
+    {
+        GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
+
+        using var project = GoldProject.CopyOutOfRepo("Samples/Platformer/DoorsDemo");
+        var csproj = Path.Combine(project.Root, "DoorsDemo", "DoorsDemo.csproj");
+
+        GoldProject.DeleteGeneratedCode(project.Root);
+
+        await GoldProject.LoadInGlueAsync(csproj);
+
+        GlueTestBootstrap.RecordedDialogMessages.ShouldBeEmpty();
+        ErrorRecordingPlugin.Errors.ShouldBeEmpty();
+
+        var generated = GoldProject.GeneratedFiles(project.Root);
+        generated.ShouldContain("DoorsDemo/Screens/GameScreen.Generated.cs");
+        generated.ShouldContain("DoorsDemo/Factories/DoorFactory.Generated.cs");
+        generated.ShouldContain("DoorsDemo/Factories/PlayerFactory.Generated.cs");
+
+        // Pins the fixture, not the fix: if DoorsDemo ever loses its Screen DefaultLayer variable or its
+        // entity factories, the build below keeps passing while covering nothing.
+        var gameScreen = File.ReadAllText(Path.Combine(project.Root, "DoorsDemo", "Screens", "GameScreen.Generated.cs"));
+        gameScreen.ShouldContain("Factories.DoorFactory.DefaultLayer = this.DefaultLayer;");
+        gameScreen.Contains("public string DefaultLayer").ShouldBeFalse(
+            "The Screen Plugin's VariableDefinition is not suppressing the field - see #1988.");
 
         var (exitCode, output) = NestedDotnetCli.Run($"build \"{csproj}\" -c Debug");
         exitCode.ShouldBe(0, $"dotnet build failed for the regenerated gold project:\n{output}");
