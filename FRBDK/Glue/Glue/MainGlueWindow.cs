@@ -65,7 +65,10 @@ public partial class MainGlueWindow : Form, IMainGlueWindow
 
     #endregion
     
-    private static void SetMsBuildEnvironmentVariable()
+    // internal (not private) so a headless test host can run the same real SDK-discovery Glue.exe runs -
+    // without MSBUILD_EXE_PATH pointed at a pre-7 SDK, Microsoft.Build.Evaluation.Project can't resolve
+    // the SDK imports in any SDK-style .csproj, so no real game project can be loaded.
+    internal static void SetMsBuildEnvironmentVariable()
     {
         // August 21, 2023
         // At some point in 

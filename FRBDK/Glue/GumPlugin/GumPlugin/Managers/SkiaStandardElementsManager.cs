@@ -15,6 +15,16 @@ namespace GumPlugin.Managers
     {
         public static void AddSkiaStandards()
         {
+            // Every block below does DefaultStates.Add, so a second call threw "An item with the same key
+            // has already been added". That used to be reachable only from MainGumPlugin.StartUp, which runs
+            // once per Glue.exe session; now that tests can register a real Gum plugin alongside tests that
+            // call this directly, the order between them is undefined and either one could be second.
+            // Adding the same standards twice is a no-op by intent, so return instead of throwing.
+            if (Gum.Managers.StandardElementsManager.Self.DefaultStates.ContainsKey("Svg"))
+            {
+                return;
+            }
+
             {
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 //                                                        SVG                                                         //

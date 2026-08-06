@@ -71,7 +71,12 @@ public class GlueCommands : IGlueCommands
     public void CloseGlueProject(bool shouldSave = true, bool isExiting = false, GlueFormsCore.Controls.InitializationWindowWpf initWindow = null)
     {
         GlueState.Self.CurrentTreeNode = null;
-        GlueFormsCore.Controls.MainPanelControl.Self.ReactToCloseProject(shouldSave, isExiting, initWindow);
+        // MainPanelControl.Self is only ever assigned by the real WPF startup, so it is null in a headless
+        // host (tests loading a project through ProjectLoader). Same shape as PluginManager's mMenuStrip
+        // guard: never null in production, so this changes nothing there. Closing is also the only thing
+        // that sets ProjectManager.WantsToCloseProject, which GenerateAllCodeSync early-outs on - so
+        // skipping it here is safer for a test host than half-running it would be.
+        GlueFormsCore.Controls.MainPanelControl.Self?.ReactToCloseProject(shouldSave, isExiting, initWindow);
     }
 
     public void CloseGlue()

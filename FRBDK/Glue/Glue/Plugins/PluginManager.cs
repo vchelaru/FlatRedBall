@@ -956,6 +956,18 @@ public class PluginManager : PluginManagerBase
             mInstances.Add(manager);
         }
 
+        // MEF populates ImportedPlugins during the real LoadPlugins discovery pass, and StartupPlugin only
+        // fills mPluginContainers. The two lists back different dispatch paths: CallMethodOnPlugin (and so
+        // CallPluginMethod) walks the containers, but every ReactTo* event - ReactToLoadedGluxEarly,
+        // ReactToLoadedGlux, ReactToStateRemoved, and ~20 others - enumerates ImportedPlugins. Registering
+        // into the containers alone therefore produced a plugin that answered direct method calls but was
+        // never notified of anything, which reads as "the plugin ran and chose to do nothing" rather than as
+        // a wiring bug. Add it here so a test-registered plugin sees the same events a discovered one does.
+        if (!manager.importedPlugins.Contains(plugin))
+        {
+            manager.importedPlugins.Add(plugin);
+        }
+
         manager.StartupPlugin(plugin);
 
         // StartupPlugin (see above) swallows any exception from plugin.StartUp() - correct for real plugin

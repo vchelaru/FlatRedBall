@@ -22,6 +22,11 @@ None of this is faked — `GlueTestBootstrap` runs the same production init call
 outside a live WinForms app. See its doc comment at
 `FRBDK/Glue/Tests/GlueUnitTests/TestSupport/GlueTestBootstrap.cs` for exactly what it registers.
 
+`RegisterPluginForTesting` adds a plugin to both `mPluginContainers` *and* `ImportedPlugins`. Those back
+different dispatch paths: `CallPluginMethod` walks the containers, but every `ReactTo*` event enumerates
+`ImportedPlugins`. A plugin in only the first answers direct calls and is never notified of anything —
+which reads as "the plugin ran and chose to do nothing," not as a wiring bug.
+
 ## Sibling seams
 
 Also process-wide static state a test may need to control alongside the bootstrap:
@@ -42,6 +47,54 @@ Every one of these is process-wide, which is why the whole assembly runs non-par
 which assigns one of these must restore it (`IDisposable`/`try-finally`), or it silently changes the
 setup of whatever runs next. The failure mode is a test that passes under `--filter` and fails in the
 full run.
+
+## Loading a whole real project (gold projects)
+
+`GoldProject`/`GoldProjectCompileTests` (`GlueUnitTests/TestSupport`, `GlueUnitTests/Projects`) drive a
+checked-in sample through the real `ProjectLoader.LoadProject`, regenerate, and build. That is the only way
+to cover generators that ask *another* plugin something at generation time. Needs
+`GlueTestBootstrap.EnsureGameProjectPluginsRegistered()` and `[StaFact]`. Two non-obvious requirements:
+
+- **Delete `*.Generated.cs` first.** Glue doesn't rewrite a file whose content is unchanged, so otherwise
+  "codegen produced this" and "codegen never ran" are indistinguishable.
+- **`*.Generated.cs` is gitignored repo-wide**, and the samples are checked in without it. A clean
+  `git diff` after regenerating proves nothing, and no sample builds until Glue regenerates it.
+
+## Landmine — a WinForms sync context plus SynchronousMode deadlocks the run with no timeout
+
+WinForms installs a `WindowsFormsSynchronizationContext` on a thread the moment the first control is created
+there — `FakeMainGlueWindow`'s `PropertyGrid`, a `MenuStrip`, a plugin toolbar. Continuations then post back
+to it and only run while a message loop pumps, which no test host does. Combined with
+`TaskManager.SynchronousMode` (whose `RunSynchronously` blocks the caller on the awaited task), the first
+plugin that awaits during a load hangs forever: one blocked thread, no child process, nothing executing, and
+no timeout anywhere. `GlueTestBootstrap` sets `WindowsFormsSynchronizationContext.AutoInstall = false`; don't
+undo it, and don't diagnose this shape as a slow build. A stack dump (`dotnet-stack report -p <pid>`, real
+Windows PID) showing exactly one blocked thread and nothing else running is the signature.
+
+## Landmine — do NOT give `PluginManager` a `MenuStrip`
+
+`GlueGui.Initialize(menuStrip)` is needed (`PluginBase.AddMenuItemTo` reads `GlueGui.MenuStrip.Items`).
+`PluginManager.ShareMenuStripReference` is the opposite: `PluginCommand` marshals every plugin call through
+`mMenuStrip.Invoke` whenever `mMenuStrip` is non-null, so with no message loop the calls silently never run
+and `CallPluginMethod` returns null. Leaving PluginManager's null keeps its "no live menu strip means run
+inline" guard doing the right thing.
+
+## Landmine — code generation swallows its own exceptions
+
+`GenerateAllCodeSync` calls the `async Task CodeWriter.GenerateCode` **without awaiting it**, so an exception
+during one element's generation is captured into a discarded Task and lost. The symptom is an empty
+`.Generated.cs` (the placeholder from `CreateGeneratedFileIfNecessary`) for that one element, no error
+anywhere, and every later step for it — its factory, its project entry — silently skipped. To see the real
+exception, `await CodeWriter.GenerateCode(element)` directly. `ErrorRecordingPlugin` subscribes to Glue's
+error *and* output channels so a partial regeneration fails a test rather than passing quietly.
+
+## Landmine — `MSBUILD_EXE_PATH` must be set before the *first* MSBuild evaluation in the process
+
+`Microsoft.Build` caches its toolset on first use, so setting the variable later has no effect. A test that
+evaluates a bare non-SDK project first (`TestVisualStudioProjectFactory`) fixes the toolset for the whole
+run, and a later real-project load then fails with `The SDK 'Microsoft.NET.SDK.WorkloadAutoImportPropsLocator'
+specified could not be found` — while passing when run alone. Call
+`GlueTestBootstrap.EnsureMsBuildEnvironmentVariable()` before anything touches MSBuild.
 
 ## Landmine — calling a real plugin method for the first time can pop a real dialog on the developer's desktop
 

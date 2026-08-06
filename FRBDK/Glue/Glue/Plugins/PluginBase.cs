@@ -765,6 +765,17 @@ namespace FlatRedBall.Glue.Plugins
         {
             var tray = PluginManager.ToolBarTray;
 
+            // Only MainPanelControl's real WPF startup assigns the tray, so it is null in a headless host
+            // (tests driving a real project load). Same shape as PluginManager's mMenuStrip guard: never
+            // null in production, so this changes nothing there. Without it, the first plugin to add a
+            // toolbar from its glux-load handler NREs - and because those handlers are async void, the
+            // exception does not reach PluginManager's try/catch, so it surfaces as a modal "unhandled
+            // exception" dialog and a plugin that silently did none of its code generation.
+            if (tray == null)
+            {
+                return;
+            }
+
             var toAddTo = tray.ToolBars.FirstOrDefault(item => item.Name == toolbarName);
 
             if (toAddTo == null)

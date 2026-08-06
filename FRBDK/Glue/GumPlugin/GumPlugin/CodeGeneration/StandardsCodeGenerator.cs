@@ -70,6 +70,17 @@ namespace GumPlugin.CodeGeneration
             _nineSliceCodeGenerator = nineSliceCodeGenerator;
             _polygonCodeGenerator = polygonCodeGenerator;
 
+            // This is a singleton, and everything below adds to these dictionaries rather than assigning
+            // them, so a second Initialize threw "An item with the same key has already been added". Fully
+            // repopulating is what this method is for, so clear first and let it be safely re-runnable.
+            mStandardGetterReplacements.Clear();
+            mStandardSetterReplacements.Clear();
+            mStandardVariableNameAliases.Clear();
+            mStandardElementToQualifiedTypes.Clear();
+            // Missing this one produced a duplicate "Color" property (CS0102) rather than a throw, since it
+            // is a list rather than a dictionary. Anything else added below must be cleared here too.
+            variableNamesToAddForProperties.Clear();
+
             _spriteCodeGenerator.AddStandardGetterSetterReplacements(mStandardGetterReplacements, mStandardSetterReplacements);
             _textCodeGenerator.AddStandardGetterSetterReplacements(mStandardGetterReplacements, mStandardSetterReplacements);
 
