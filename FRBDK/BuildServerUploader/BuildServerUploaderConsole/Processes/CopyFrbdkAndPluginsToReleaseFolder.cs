@@ -32,17 +32,6 @@ namespace BuildServerUploaderConsole.Processes
             }
         }
 
-
-        // I'd like to have all the tools sit in their own directories, but
-        // this is a big change so I'm going to do it incrementally by moving
-        // them 
-        List<string> mXna4_0ToolsInOwnDirectories = new List<string>
-        {
-            @"AnimationEditor\PreviewProject\bin\Debug",
-            // This is removed because FRB XNA is dying.
-            //@"SplineEditor\SplineEditor\bin\x86\Debug",
-        };
-
         #endregion
 
         public CopyFrbdkAndPluginsToReleaseFolder(IResults results)
@@ -95,12 +84,9 @@ namespace BuildServerUploaderConsole.Processes
 
             _destDirectory = xna4ToolsDirectory;
 
-            foreach (var xna4_0tool in mXna4_0ToolsInOwnDirectories)
-            {
-                string subdirectory = xna4_0tool.Substring(0, xna4_0tool.IndexOf("\\")) + "\\";
-
-                CopyDirectory(DirectoryHelper.FrbdkDirectory + xna4_0tool, "Copied " + xna4_0tool, subdirectory);
-            }
+            // The XNA 4 AnimationEditor is retired; this pulls FlatRedBall2's Avalonia
+            // replacement from its latest GitHub release instead, same as DownloadGum() below.
+            await DownloadAnimationEditor();
 
             if(!System.IO.Directory.Exists(DirectoryHelper.GluePublishDestinationFolder))
             {
@@ -120,10 +106,26 @@ namespace BuildServerUploaderConsole.Processes
             // This pulls the Gum.zip asset from Gum's latest GitHub release.
             string url = "https://github.com/vchelaru/Gum/releases/latest/download/Gum.zip";
             string targetDirectory = Path.Combine(_destDirectory, "Gum");
-            string zipFilePath = Path.Combine(targetDirectory, "Gum.zip");
-            string unzipDirectory = targetDirectory;
 
-            Results.WriteMessage($"Downloading Gum from {url}");
+            await DownloadAndExtractZip(url, targetDirectory, "Gum");
+        }
+
+        async Task DownloadAnimationEditor()
+        {
+            // The XNA 4 AnimationEditor is retired. FlatRedBall2's Avalonia AnimationEditor is
+            // its replacement; it's only released on GitHub, so pull the win-x64 asset from its
+            // latest release the same way DownloadGum() does for Gum.
+            string url = "https://github.com/vchelaru/FlatRedBall2/releases/latest/download/AnimationEditor-win-x64.zip";
+            string targetDirectory = Path.Combine(_destDirectory, "AnimationEditor");
+
+            await DownloadAndExtractZip(url, targetDirectory, "AnimationEditor");
+        }
+
+        async Task DownloadAndExtractZip(string url, string targetDirectory, string displayName)
+        {
+            string zipFilePath = Path.Combine(targetDirectory, displayName + ".zip");
+
+            Results.WriteMessage($"Downloading {displayName} from {url}");
 
             if(!System.IO.Directory.Exists(targetDirectory))
             {
@@ -144,15 +146,15 @@ namespace BuildServerUploaderConsole.Processes
                     }
                 }
 
-                Results.WriteMessage($"Unzipping Gum from {zipFilePath}");
+                Results.WriteMessage($"Unzipping {displayName} from {zipFilePath}");
 
                 // Unzip the file
-                System.IO.Compression.ZipFile.ExtractToDirectory(zipFilePath, unzipDirectory);
+                System.IO.Compression.ZipFile.ExtractToDirectory(zipFilePath, targetDirectory);
 
                 // delete the zip - we don't need it anymore and it bloats the ultimate file:
                 System.IO.File.Delete(zipFilePath);
 
-                Results.WriteMessage($"Gum unzipped to {unzipDirectory}");
+                Results.WriteMessage($"{displayName} unzipped to {targetDirectory}");
             }
         }
 
