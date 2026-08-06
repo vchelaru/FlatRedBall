@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
+using GlueUnitTests.TestSupport;
 using Shouldly;
 
 namespace GlueUnitTests.Projects;
@@ -28,7 +29,8 @@ public class EnginePackagingTests
     // point of the test is to catch a project quietly joining or leaving that set.
     private static readonly Dictionary<string, string> PublishedPackages = new()
     {
-        // DesktopGL (serves both the .NET 6 and .NET 9 templates -- the projects multi-target)
+        // DesktopGL. The ids keep their Net6 spelling because renaming a published package id strands
+        // every existing project on the old one; the projects themselves multi-target net6.0/net8.0.
         ["FlatRedBallDesktopGLNet6"] = @"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBallDesktopGLNet6\FlatRedBallDesktopGLNet6.csproj",
         ["FlatRedBall.StateInterpolation.DesktopNet6"] = @"FlatRedBall\Engines\Forms\FlatRedBall.Forms\StateInterpolation\StateInterpolation.DesktopGlNet6\StateInterpolation.DesktopNet6.csproj",
         ["FlatRedBall.GumCore.DesktopGlNet6"] = @"Gum\GumCore\GumCoreXnaPc\GumCore.DesktopGlNet6\GumCore.DesktopGlNet6.csproj",
@@ -138,11 +140,6 @@ public class EnginePackagingTests
     // engine assembly any other way is the bug this whole change exists to remove.
     private static readonly Dictionary<string, string[]> TemplatePackages = new()
     {
-        ["FlatRedBallDesktopGlNet6Template"] = new[]
-        {
-            "FlatRedBallDesktopGLNet6", "FlatRedBall.Forms.DesktopGlNet6", "FlatRedBall.GumCore.DesktopGlNet6",
-            "FlatRedBall.SkiaInGum", "FlatRedBall.StateInterpolation.DesktopNet6",
-        },
         ["FlatRedBallDesktopGlMonoGameTemplate"] = new[]
         {
             "FlatRedBallDesktopGLNet6", "FlatRedBall.Forms.DesktopGlNet6", "FlatRedBall.GumCore.DesktopGlNet6",
@@ -216,29 +213,9 @@ public class EnginePackagingTests
     private static string GetProperty(XDocument csproj, string name) =>
         csproj.Descendants(name).FirstOrDefault(element => element.Parent?.Name == "PropertyGroup")?.Value;
 
-    // The folder holding both the FlatRedBall and Gum checkouts. Every path above is relative to it,
-    // matching how BuildServerUploaderConsole's AllData addresses the same files.
-    private static string FindCheckoutRoot()
-    {
-        var checkoutRoot = Directory.GetParent(FindFrbRoot())!.FullName;
-        Directory.Exists(Path.Combine(checkoutRoot, "Gum")).ShouldBeTrue(
-            $"Expected a sibling Gum checkout at {Path.Combine(checkoutRoot, "Gum")}. " +
-            "GumCore is built from Gum's source but published by FlatRedBall.");
-        return checkoutRoot;
-    }
+    // Every relative path above is addressed from the folder holding both checkouts, matching how
+    // BuildServerUploaderConsole's AllData addresses the same files.
+    private static string FindCheckoutRoot() => RepoPaths.CheckoutRoot;
 
-    private static string FindFrbRoot()
-    {
-        var directory = new DirectoryInfo(AppContext.BaseDirectory);
-        while (directory != null)
-        {
-            if (Directory.Exists(Path.Combine(directory.FullName, "Templates")) &&
-                File.Exists(Path.Combine(directory.FullName, ".github", "workflows", "Engine.yml")))
-            {
-                return directory.FullName;
-            }
-            directory = directory.Parent;
-        }
-        throw new DirectoryNotFoundException("Could not locate the FlatRedBall repo root above " + AppContext.BaseDirectory);
-    }
+    private static string FindFrbRoot() => RepoPaths.FrbRoot;
 }
