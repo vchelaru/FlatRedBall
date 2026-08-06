@@ -36,10 +36,12 @@ public class GoldProjectCompileTests
         using var project = GoldProject.CopyOutOfRepo("Samples/Beefball");
         var csproj = Path.Combine(project.Root, "Beefball", "Beefball.csproj");
 
-        // Mandatory, and the single easiest thing to get wrong here: Beefball commits its generated code,
-        // and Glue does not rewrite a generated file whose content is unchanged. Left in place, "codegen
-        // produced this" and "codegen never ran" are indistinguishable and the build passes either way.
-        GoldProject.DeleteGeneratedCode(project.Root).ShouldBeGreaterThan(0);
+        // Deletes nothing on a fresh clone - *.Generated.cs is gitignored repo-wide - but a developer's
+        // working copy has them from previous runs, and Glue does not rewrite a generated file whose
+        // content is unchanged. Left in place, "codegen produced this" and "codegen never ran" are
+        // indistinguishable locally and the build passes either way. Deliberately not asserting a count:
+        // zero is the correct answer in CI.
+        GoldProject.DeleteGeneratedCode(project.Root);
 
         await GoldProject.LoadInGlueAsync(csproj);
 

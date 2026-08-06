@@ -70,10 +70,13 @@ internal static class GoldProject
     /// Deletes every *.Generated.cs under <paramref name="directory"/>, and returns how many were removed.
     ///
     /// Mandatory before loading, and the single easiest thing to get wrong about this test. Glue does not
-    /// rewrite a generated file whose content is unchanged, so with the checked-in files left in place
+    /// rewrite a generated file whose content is unchanged, so with an earlier run's files left in place
     /// "codegen produced this" and "codegen never ran and the old file is still sitting there" look
     /// identical - the build passes either way and the test proves nothing. Deleting first turns any
     /// generator that fails to run into a compile error naming the missing file.
+    ///
+    /// Expect zero on a fresh clone: *.Generated.cs is gitignored repo-wide, so the count only reflects
+    /// what a previous run or a real Glue session happened to leave behind. Don't assert on it.
     /// </summary>
     public static int DeleteGeneratedCode(string directory)
     {
