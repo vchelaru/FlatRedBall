@@ -117,7 +117,7 @@ public class VariableAssignmentLogicEnumConversionTests : IDisposable
                 <LangVersion>latest</LangVersion>
                 <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
                 <EnableDefaultCompileItems>true</EnableDefaultCompileItems>
-                <!-- Real desktop-GL game projects (FlatRedBallDesktopGlNet6Template) define MONOGAME_381 -
+                <!-- Real desktop-GL game projects (FlatRedBallDesktopGlMonoGameTemplate) define MONOGAME_381 -
                      ToEnum<T>'s Enum.TryParse branch in VariableAssignmentLogic.cs is gated behind it, so
                      without this define the existing FRB HorizontalAlignment fast path silently returns
                      default(T) instead of parsing, which is a fidelity gap in this scratch project, not a

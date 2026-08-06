@@ -13,9 +13,8 @@ namespace BuildServerUploaderConsole.Data
         public static List<EngineData> Engines { get; private set; } = new List<EngineData>();
 
         /// <summary>
-        /// Every package published by a release, deduplicated. The DesktopGL entries below share a
-        /// package set across two templates, so the same csproj is listed more than once in
-        /// <see cref="Engines"/>.
+        /// Every package published by a release, deduplicated -- one entry per package id however
+        /// many engines list it.
         /// </summary>
         public static IEnumerable<PackageData> AllPackages =>
             Engines.SelectMany(engine => engine.Packages)
@@ -27,22 +26,6 @@ namespace BuildServerUploaderConsole.Data
             PackageId = packageId,
             CsProjLocation = csProjLocation,
         };
-
-        // Both DesktopGL templates (.NET 6 and .NET 9) build against the same multi-targeted
-        // projects, so they ship the same packages.
-        static void AddDesktopGlPackages(EngineData engine)
-        {
-            engine.Packages.Add(Package("FlatRedBallDesktopGLNet6",
-                @"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBallDesktopGLNet6\FlatRedBallDesktopGLNet6.csproj"));
-            engine.Packages.Add(Package("FlatRedBall.StateInterpolation.DesktopNet6",
-                @"FlatRedBall\Engines\Forms\FlatRedBall.Forms\StateInterpolation\StateInterpolation.DesktopGlNet6\StateInterpolation.DesktopNet6.csproj"));
-            engine.Packages.Add(Package("FlatRedBall.GumCore.DesktopGlNet6",
-                @"Gum\GumCore\GumCoreXnaPc\GumCore.DesktopGlNet6\GumCore.DesktopGlNet6.csproj"));
-            engine.Packages.Add(Package("FlatRedBall.Forms.DesktopGlNet6",
-                @"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGlNet6\FlatRedBall.Forms.DesktopGlNet6.csproj"));
-            engine.Packages.Add(Package("FlatRedBall.SkiaInGum",
-                @"FlatRedBall\Engines\SkiaGum\SkiaInGum.csproj"));
-        }
 
         static AllData()
         {
@@ -143,70 +126,23 @@ namespace BuildServerUploaderConsole.Data
             }
 
 
-            // Desktop GL Net 6
-            {
-                var engine = new EngineData();
-                engine.Name = "MonoGame DesktopGL .NET 6.0";
-
-                AddDesktopGlPackages(engine);
-
-                engine.RelativeToLibrariesDebugFolder = @"DesktopGl\Debug";
-                engine.RelativeToLibrariesReleaseFolder = @"DesktopGl\Release";
-                engine.TemplateCsProjFolder = @"FlatRedBallDesktopGlNet6Template\FlatRedBallDesktopGlNet6Template\";
-
-                // This is the built folder when building FlatRedBall.Forms sln
-                // All files below (DebugFiles and ReleaseFiles) should be contained
-                // in that output folder because the project should reference those files
-                var debugBinFolder = @"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGlNet6\bin\Debug\net6.0\";
-                var releaseBinFolder = @"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGlNet6\bin\Release\net6.0\";
-
-
-                engine.DebugFiles.Add($"{debugBinFolder}FlatRedBallDesktopGLNet6.dll");
-                engine.DebugFiles.Add($"{debugBinFolder}FlatRedBallDesktopGLNet6.pdb");
-
-                engine.DebugFiles.Add($"{debugBinFolder}StateInterpolation.DesktopNet6.dll");
-                engine.DebugFiles.Add($"{debugBinFolder}StateInterpolation.DesktopNet6.pdb");
-
-                engine.DebugFiles.Add($"{debugBinFolder}FlatRedBall.Forms.DesktopGlNet6.dll");
-                engine.DebugFiles.Add($"{debugBinFolder}FlatRedBall.Forms.DesktopGlNet6.pdb");
-
-                engine.DebugFiles.Add($"{debugBinFolder}GumCore.DesktopGlNet6.dll");
-                engine.DebugFiles.Add($"{debugBinFolder}GumCore.DesktopGlNet6.pdb");
-
-                // SkiaInGum lives in FRB's own fork of SkiaGum, not in Gum, and it is not copied
-                // into the Forms output folder because Forms only references it under the
-                // AutoBuild configurations. Pull it from the fork's own bin folder instead.
-                engine.DebugFiles.Add($@"FlatRedBall\Engines\SkiaGum\bin\Debug\net6.0\SkiaInGum.dll");
-                engine.DebugFiles.Add($@"FlatRedBall\Engines\SkiaGum\bin\Debug\net6.0\SkiaInGum.pdb");
-
-
-                engine.ReleaseFiles.Add($"{releaseBinFolder}FlatRedBallDesktopGLNet6.dll");
-                engine.ReleaseFiles.Add($"{releaseBinFolder}FlatRedBallDesktopGLNet6.pdb");
-
-                engine.ReleaseFiles.Add($"{releaseBinFolder}StateInterpolation.DesktopNet6.dll");
-                engine.ReleaseFiles.Add($"{releaseBinFolder}StateInterpolation.DesktopNet6.pdb");
-
-                engine.ReleaseFiles.Add($"{releaseBinFolder}FlatRedBall.Forms.DesktopGlNet6.dll");
-                engine.ReleaseFiles.Add($"{releaseBinFolder}FlatRedBall.Forms.DesktopGlNet6.pdb");
-
-                engine.ReleaseFiles.Add($"{releaseBinFolder}GumCore.DesktopGlNet6.dll");
-                engine.ReleaseFiles.Add($"{releaseBinFolder}GumCore.DesktopGlNet6.pdb");
-
-                engine.ReleaseFiles.Add($@"FlatRedBall\Engines\SkiaGum\bin\Release\net6.0\SkiaInGum.dll");
-                engine.ReleaseFiles.Add($@"FlatRedBall\Engines\SkiaGum\bin\Release\net6.0\SkiaInGum.pdb");
-
-
-                Engines.Add(engine);
-
-            }
             // Desktop GL Net 9
             {
                 var engine = new EngineData();
                 engine.Name = "MonoGame DesktopGL .NET 9.0+";
 
-                // Same projects and therefore the same packages as the .NET 6 template above -- the
-                // DesktopGL projects multi-target net6.0 and net8.0, so one package serves both.
-                AddDesktopGlPackages(engine);
+                // The DesktopGL projects multi-target net6.0 and net8.0; the template targets net9.0
+                // and restores the net8.0 assets out of these packages.
+                engine.Packages.Add(Package("FlatRedBallDesktopGLNet6",
+                    @"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBallDesktopGLNet6\FlatRedBallDesktopGLNet6.csproj"));
+                engine.Packages.Add(Package("FlatRedBall.StateInterpolation.DesktopNet6",
+                    @"FlatRedBall\Engines\Forms\FlatRedBall.Forms\StateInterpolation\StateInterpolation.DesktopGlNet6\StateInterpolation.DesktopNet6.csproj"));
+                engine.Packages.Add(Package("FlatRedBall.GumCore.DesktopGlNet6",
+                    @"Gum\GumCore\GumCoreXnaPc\GumCore.DesktopGlNet6\GumCore.DesktopGlNet6.csproj"));
+                engine.Packages.Add(Package("FlatRedBall.Forms.DesktopGlNet6",
+                    @"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGlNet6\FlatRedBall.Forms.DesktopGlNet6.csproj"));
+                engine.Packages.Add(Package("FlatRedBall.SkiaInGum",
+                    @"FlatRedBall\Engines\SkiaGum\SkiaInGum.csproj"));
 
                 engine.RelativeToLibrariesDebugFolder = @"DesktopGl\Debug";
                 engine.RelativeToLibrariesReleaseFolder = @"DesktopGl\Release";
@@ -231,6 +167,9 @@ namespace BuildServerUploaderConsole.Data
                 engine.DebugFiles.Add($"{debugBinFolder}GumCore.DesktopGlNet6.dll");
                 engine.DebugFiles.Add($"{debugBinFolder}GumCore.DesktopGlNet6.pdb");
 
+                // SkiaInGum lives in FRB's own fork of SkiaGum, not in Gum, and it is not copied
+                // into the Forms output folder because Forms only references it under the
+                // AutoBuild configurations. Pull it from the fork's own bin folder instead.
                 engine.DebugFiles.Add($@"FlatRedBall\Engines\SkiaGum\bin\Debug\net8.0\SkiaInGum.dll");
                 engine.DebugFiles.Add($@"FlatRedBall\Engines\SkiaGum\bin\Debug\net8.0\SkiaInGum.pdb");
 
