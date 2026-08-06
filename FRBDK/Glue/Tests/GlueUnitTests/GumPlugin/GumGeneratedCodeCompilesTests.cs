@@ -315,6 +315,103 @@ public class GumGeneratedCodeCompilesTests : IDisposable
         output.ShouldContain("OK");
     }
 
+    // Issue #1987 - the field failure both Rectangle tests above miss, because both generate the standard
+    // element alone. A Rectangle *instance* inside a component goes through StateCodeGenerator with the
+    // component as its container, so the fill/stroke version gate (keyed on the element the variable
+    // targets) has to resolve through the instance's base type to fire at all. When it didn't, a v2
+    // project whose Rectangle.gutx carries the v3 variable family - what a user gets by opening an older
+    // Glue project in a current Gum Editor - generated ~500 CS1061s in the game build, all of the form
+    // "'RectangleRuntime' does not contain a definition for 'StrokeBlue'", and none of them in
+    // RectangleRuntime.Generated.cs itself.
+    //
+    // Compiling both files together is the point: either one alone compiles fine. The bug only exists in
+    // the disagreement between them.
+    [Fact]
+    public void V2ComponentWithRectangleInstance_ShouldCompileAgainstItsOwnV2RectangleRuntime()
+    {
+        GlueTestBootstrap.EnsureGumPluginStandardElementsInitialized();
+        GlueTestBootstrap.EnsureGumPluginCodeGeneratorsInitialized();
+
+        var gumProject = Gum.Managers.ObjectFinder.Self.GumProjectSave;
+        gumProject.Version = (int)GumProjectSave.GumxVersions.AttributeVersion;
+
+        // Gum's canonical (v3-shaped) Rectangle schema sitting in a v2 project - the contaminated
+        // combination, not something either version produces on its own.
+        var rectangleDefaultState = GetGumsDefaultStateFor("Rectangle");
+        rectangleDefaultState.ShouldNotBeNull();
+
+        var rectangle = new StandardElementSave { Name = "Rectangle" };
+        rectangle.Initialize(rectangleDefaultState);
+        gumProject.StandardElements.Add(rectangle);
+
+        // The component's own base type, so StylesRuntime has a ContainerRuntime to derive from.
+        var containerDefaultState = GetGumsDefaultStateFor("Container");
+        containerDefaultState.ShouldNotBeNull();
+
+        var container = new StandardElementSave { Name = "Container" };
+        container.Initialize(containerDefaultState);
+        gumProject.StandardElements.Add(container);
+
+        var component = new ComponentSave { Name = "Styles", BaseType = "Container" };
+        component.Instances.Add(new InstanceSave { Name = "HighlightRectangle", BaseType = "Rectangle" });
+
+        var componentDefaultState = new Gum.DataTypes.Variables.StateSave { Name = "Default" };
+        component.States.Add(componentDefaultState);
+        foreach (var (variableName, type, value) in new (string, string, object)[]
+                 {
+                     ("StrokeRed", "int", 0), ("StrokeGreen", "int", 128), ("StrokeBlue", "int", 0),
+                     ("IsFilled", "bool", true),
+                     ("FillRed", "int", 0), ("FillGreen", "int", 0), ("FillBlue", "int", 0),
+                     ("StrokeWidth", "float", 0f),
+                 })
+        {
+            componentDefaultState.Variables.Add(new Gum.DataTypes.Variables.VariableSave
+            {
+                SetsValue = true,
+                Name = $"HighlightRectangle.{variableName}",
+                Type = type,
+                Value = value
+            });
+        }
+
+        component.Initialize(componentDefaultState);
+        gumProject.Components.Add(component);
+
+        var generated = new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            ["Container"] = GueDerivingClassCodeGenerator.Self.GenerateCodeFor(container),
+            ["Rectangle"] = GueDerivingClassCodeGenerator.Self.GenerateCodeFor(rectangle),
+            ["Styles"] = GueDerivingClassCodeGenerator.Self.GenerateCodeFor(component),
+        };
+
+        foreach (var pair in generated)
+        {
+            pair.Value.ShouldNotBeNullOrWhiteSpace($"Nothing was generated for {pair.Key}.");
+        }
+
+        // Fixture sanity: if the v2 Rectangle ever starts generating the fill/stroke properties, this test
+        // compiles trivially and stops pinning the disagreement it exists for.
+        generated["Rectangle"].ShouldContain("LineRectangle mContainedRectangle");
+        generated["Rectangle"].ShouldNotContain("public int StrokeBlue");
+
+        var scratchDirectory = Path.Combine(_tempProjectDirectory, "V2ComponentRectangleInstanceScratch");
+        WriteScratchProject(scratchDirectory, FindRepoRoot(), generated);
+
+        var (exitCode, output) = RunDotnetBuild(Path.Combine(scratchDirectory, "GumCodegenCompileScratch.csproj"));
+
+        var errors = output
+            .Split('\n')
+            .Where(line => line.Contains(": error ", StringComparison.Ordinal))
+            .Select(line => line.Trim())
+            .Distinct(StringComparer.Ordinal)
+            .ToList();
+
+        exitCode.ShouldBe(0,
+            "A component holding a Rectangle instance does not compile against the v2 RectangleRuntime " +
+            "generated from the same project:" + Environment.NewLine +
+            string.Join(Environment.NewLine, errors));
+    }
+
     // Issue #1979. The sweep at the top of this file builds its fixtures from Gum's *canonical* schema,
     // which is a current Gum Editor's output - so it never sees the case that actually breaks users. Glue
     // does not back-fill a loaded project's standard elements (it calls GumProjectSave.Load and never

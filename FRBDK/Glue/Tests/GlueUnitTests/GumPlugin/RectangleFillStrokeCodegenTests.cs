@@ -80,6 +80,100 @@ public class RectangleFillStrokeCodegenTests : IDisposable
         };
     }
 
+    /// <summary>
+    /// A component holding a single Rectangle instance whose Default state sets the v3 fill/stroke
+    /// variables on it - i.e. the shape a real .gucx has, as opposed to the standard element's own
+    /// .gutx that every other test in this file generates. Registers both elements on the loaded
+    /// GumProjectSave so ObjectFinder can resolve the instance's base type during generation.
+    /// </summary>
+    private static Gum.DataTypes.ComponentSave BuildComponentWithRectangleInstanceFixture(
+        string instanceName = "HighlightRectangle")
+    {
+        var rectangle = BuildRectangleFixture();
+
+        var component = new Gum.DataTypes.ComponentSave { Name = "Styles", BaseType = "Container" };
+        component.Instances.Add(new Gum.DataTypes.InstanceSave
+        {
+            Name = instanceName,
+            BaseType = "Rectangle"
+        });
+
+        var defaultState = new Gum.DataTypes.Variables.StateSave { Name = "Default" };
+        component.States.Add(defaultState);
+
+        // Types are Gum's own type names as they appear in a real .gucx ("int", not "Int32") - the
+        // generator prefixes unrecognized type names onto the value, so a CLR name here silently
+        // produces "= Int32.128" instead of "= 128".
+        foreach (var (variableName, type, value) in new (string, string, object)[]
+                 {
+                     ("StrokeRed", "int", 0), ("StrokeGreen", "int", 128), ("StrokeBlue", "int", 0),
+                     ("IsFilled", "bool", true),
+                     ("FillRed", "int", 0), ("FillGreen", "int", 0), ("FillBlue", "int", 0),
+                     ("StrokeWidth", "float", 0f),
+                     // A variable that is valid on any gumx version, so a test asserting the fill/stroke
+                     // family is gone can still tell "gated correctly" apart from "generated nothing".
+                     ("Visible", "bool", false),
+                 })
+        {
+            defaultState.Variables.Add(new Gum.DataTypes.Variables.VariableSave
+            {
+                SetsValue = true,
+                Name = $"{instanceName}.{variableName}",
+                Type = type,
+                Value = value
+            });
+        }
+
+        component.Initialize(defaultState);
+
+        var gumProject = Gum.Managers.ObjectFinder.Self.GumProjectSave;
+        gumProject.StandardElements.Add(rectangle);
+        gumProject.Components.Add(component);
+
+        return component;
+    }
+
+    [Fact]
+    public void V2Project_ComponentWithRectangleInstance_DoesNotAssignFillStrokeVariables()
+    {
+        // Issue #1987 - the property pipeline correctly omits Fill*/Stroke* from a v2 RectangleRuntime,
+        // so a component's state switch must not assign them on a Rectangle instance either (CS1061:
+        // 'RectangleRuntime' does not contain a definition for 'StrokeBlue'). The gate used to key on
+        // container.Name == "Rectangle", which is only ever true for RectangleRuntime's own file.
+        SetGumProjectVersion((int)GumProjectSave.GumxVersions.AttributeVersion);
+        GlueTestBootstrap.EnsureGumPluginCodeGeneratorsInitialized();
+
+        var component = BuildComponentWithRectangleInstanceFixture();
+
+        var generatedSource = GueDerivingClassCodeGenerator.Self.GenerateCodeFor(component);
+
+        // Fixture sanity: generation actually ran and reached this instance's variables.
+        generatedSource.ShouldContain("HighlightRectangle.Visible");
+
+        foreach (var excludedMember in StandardsCodeGenerator.RectangleFillStrokeVariableNames)
+        {
+            generatedSource.Contains($"HighlightRectangle.{excludedMember}").ShouldBeFalse(
+                $"A v2 RectangleRuntime has no {excludedMember} property, so assigning it here is a CS1061 " +
+                "in the user's game build.");
+        }
+    }
+
+    [Fact]
+    public void V3Project_ComponentWithRectangleInstance_AssignsFillStrokeVariables()
+    {
+        // The other side of the same gate: on v3 the properties do exist (backed by
+        // FilledStrokedRectangle), so the component must keep setting the values the user authored.
+        SetGumProjectVersion((int)GumProjectSave.GumxVersions.ShapeVariableExpansion);
+        GlueTestBootstrap.EnsureGumPluginCodeGeneratorsInitialized();
+
+        var component = BuildComponentWithRectangleInstanceFixture();
+
+        var generatedSource = GueDerivingClassCodeGenerator.Self.GenerateCodeFor(component);
+
+        generatedSource.ShouldContain("HighlightRectangle.StrokeGreen = 128");
+        generatedSource.ShouldContain("HighlightRectangle.IsFilled = True");
+    }
+
     [Fact]
     public void V2Project_RectangleCodegen_StillMapsToLineRectangle_NoFillStrokeProperties()
     {
