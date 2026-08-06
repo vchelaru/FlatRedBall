@@ -95,7 +95,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
             {
                 ExcludeMember("ItemType");
             }
-            IncludeMember("Name", typeof(string), SetClassName, GetClassName, null, this.CategoryAttribute("\tEnitity"));
+            IncludeMember("Name", typeof(string), SetClassName, GetClassName, null, this.CategoryAttribute("\tEntity"));
 
 
         }
