@@ -556,6 +556,21 @@ public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
 
     #endregion
 
+    /// <summary>
+    /// The name of the element a state variable actually sets a value on: the container itself for an
+    /// unqualified variable, or the instance's base type for a "SomeInstance.SomeVariable" variable.
+    /// Returns null when the instance can't be resolved, which the callers treat as "not a match".
+    /// </summary>
+    private static string GetVariableTargetElementName(Gum.DataTypes.Variables.VariableSave variable, ElementSave container)
+    {
+        if (string.IsNullOrEmpty(variable.SourceObject))
+        {
+            return container.Name;
+        }
+
+        return container.GetInstance(variable.SourceObject)?.BaseType;
+    }
+
     private bool GetIfShouldGenerateVariableInStateSetter(Gum.DataTypes.Variables.VariableSave variable, ElementSave container)
     {
         bool toReturn = true;
@@ -582,10 +597,14 @@ public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
             toReturn = false;
         }
 
-        // Issue #1967 - mirrors StandardsCodeGenerator.GetIfShouldGenerateProperty's live check;
+        // Issue #1967 / #1987 - mirrors StandardsCodeGenerator.GetIfShouldGenerateProperty's live check;
         // see the comment on rectangleVariablesToSkip above for why this isn't a static skip entry.
-        if (toReturn && container.Name == "Rectangle" &&
-            GumPlugin.CodeGeneration.StandardsCodeGenerator.RectangleFillStrokeVariableNames.Contains(variableRootName))
+        // Keyed on the element the variable actually targets, not on the container: a Rectangle
+        // *instance* inside a component ("HighlightRectangle.StrokeBlue") is the common case, and
+        // gating on container.Name alone only ever covered RectangleRuntime's own generated file.
+        if (toReturn &&
+            GumPlugin.CodeGeneration.StandardsCodeGenerator.RectangleFillStrokeVariableNames.Contains(variableRootName) &&
+            GetVariableTargetElementName(variable, container) == "Rectangle")
         {
             toReturn = GumPlugin.CodeGeneration.StandardsCodeGenerator.IsRectangleFillStrokeSupported;
         }
