@@ -160,6 +160,26 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         }
         
         /// <summary>
+        /// Reports a failure from <see cref="CodeWriter.GenerateCode"/> instead of letting it disappear.
+        ///
+        /// GenerateCode is an <c>async Task</c> and the loops below cannot await it - they run on
+        /// TaskManager's own thread, which Nito.AsyncEx's <c>AsyncContext.Run</c> gives a synchronization
+        /// context, so blocking on the returned task would deadlock a real project load. Discarding the task
+        /// is what used to happen, and it meant an exception mid-generation was captured into that task and
+        /// silently lost: the element's .Generated.cs was left as the empty placeholder
+        /// <c>CreateGeneratedFileIfNecessary</c> wrote, every later step for it (its factory, its project
+        /// entry) was skipped, and nothing was reported anywhere. Observing the fault keeps the scheduling
+        /// exactly as it was while making that failure visible in Glue's error output.
+        /// </summary>
+        static void ReportIfGenerationFails(Task generation, GlueElement element)
+        {
+            generation?.ContinueWith(
+                task => PluginManager.ReceiveError(
+                    $"Error generating code for {element}: {task.Exception}"),
+                TaskContinuationOptions.OnlyOnFaulted);
+        }
+
+        /// <summary>
         /// Generates all code for the entire project synchronously.
         /// </summary>
         static void GenerateAllCodeSync  ()
@@ -184,7 +204,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 #endregion
 
-                CodeWriter.GenerateCode(screen);
+                ReportIfGenerationFails(CodeWriter.GenerateCode(screen), screen);
             }
 
 
@@ -214,7 +234,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 #endregion
 
-                CodeWriter.GenerateCode(entity);
+                ReportIfGenerationFails(CodeWriter.GenerateCode(entity), entity);
             }
 
             #region Check for exiting the function becuase Glue is closing
