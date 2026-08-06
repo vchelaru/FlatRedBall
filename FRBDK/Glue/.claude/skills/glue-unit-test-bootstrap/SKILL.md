@@ -1,7 +1,7 @@
 ---
 name: glue-unit-test-bootstrap
 description: Bootstrapping GlueUnitTests that touch GlueState.Self/GlueCommands.Self/ProjectManager. Triggers: NullReferenceException in tests from ProjectManager.CodeProjectHelper, FileWatchManager, EditorObjects.IoC.Container, or MainGlueWindow.Self.Invoke.
-version: 1.2.0
+version: 1.3.0
 ---
 
 # Glue Unit Test Bootstrap
@@ -142,6 +142,13 @@ inherited stdout pipe open, so `ReadToEnd()` never sees EOF. It is intermittent 
 persistent build servers, pumps both streams concurrently, and kills the entire child tree on timeout.
 `NestedDotnetCliTests` fails the build if a redirected `Process.Start` reappears anywhere in the assembly.
 See GitHub issue #1969.
+
+A timeout passed to `Run` covers cold start too — the CLI, MSBuild evaluation and any process the build
+itself spawns can eat tens of seconds on a CI runner before the command does the thing being measured. A
+budget sized against a warm dev machine is therefore mostly startup on a cold one, and expires before the
+test's premise is even true. When the budget is meant to bound something *after* that warm-up, pass a
+`StartupGate` (see `NestedDotnetCli.Run`): it waits untimed until the gate opens and only then starts the
+clock. See GitHub issue #1992.
 
 ## Standing rule — clear stragglers after an *interrupted* run
 
