@@ -59,6 +59,7 @@ internal static class GoldProject
     /// </summary>
     public static async Task LoadInGlueAsync(string csprojPath)
     {
+        GlueTestBootstrap.EnsureMsBuildEnvironmentVariable();
         GlueTestBootstrap.RecordedDialogMessages.Clear();
         ErrorRecordingPlugin.Errors.Clear();
         ErrorRecordingPlugin.Output.Clear();

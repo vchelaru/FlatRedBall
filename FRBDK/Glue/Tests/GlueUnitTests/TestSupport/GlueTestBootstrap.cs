@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
 using EditorObjects.IoC;
 using FlatRedBall.Glue.AutomatedGlue;
@@ -137,6 +138,18 @@ internal static class GlueTestBootstrap
             // Must run before any other line here (or in any test): see the SynchronousMode bullet above.
             TaskManager.SynchronousMode = true;
 
+            // Must also run before anything constructs a WinForms control. WinForms installs a
+            // WindowsFormsSynchronizationContext on a thread the first time a control is created there -
+            // FakeMainGlueWindow's PropertyGrid below, the MenuStrip and plugin toolbars in
+            // EnsureHeadlessProjectLoadReady. Once it exists, async continuations post back to it, and it
+            // only runs them while a message loop pumps. No test host runs one. Combined with
+            // SynchronousMode - whose RunSynchronously blocks the calling thread on the awaited task - the
+            // first plugin that awaits during a real project load deadlocks the entire run: one blocked
+            // thread, no child process, nothing else executing, and no timeout anywhere. Sending
+            // continuations to the thread pool instead is what every non-STA test already gets.
+            WindowsFormsSynchronizationContext.AutoInstall = false;
+            SynchronizationContext.SetSynchronizationContext(null);
+
             if (Builder.App == null)
             {
                 new Builder().Build();
@@ -227,10 +240,14 @@ internal static class GlueTestBootstrap
             }
             _headlessProjectLoadReady = true;
 
+            // EnsureInitialized turns AutoInstall off, but it only runs once and this method may be the
+            // first thing a different (STA) test thread calls, so clear this thread's context too.
+            SynchronizationContext.SetSynchronizationContext(null);
+
             GlueGui.ShowGui = false;
             DialogService.ShowMessageImpl = message => RecordedDialogMessages.Add(message);
 
-            MainGlueWindow.SetMsBuildEnvironmentVariable();
+            EnsureMsBuildEnvironmentVariable();
 
             // A plugin's ReactToLoadedGlux handler is often `async void` (MainGumPlugin.HandleGluxLoad is),
             // and an exception in one of those does not reach PluginManager's try/catch - it gets posted to
@@ -243,15 +260,13 @@ internal static class GlueTestBootstrap
             Application.ThreadException += (_, e) =>
                 RecordedDialogMessages.Add("Unhandled exception on the UI thread: " + e.Exception);
 
-            var menuStrip = new MenuStrip();
-            GlueGui.Initialize(menuStrip);
-            PluginManager.ShareMenuStripReference(menuStrip, PluginCategories.All);
-
-            // Same idea as the MenuStrip: PluginBase.AddToToolBar dereferences PluginManager.ToolBarTray
-            // directly, and only MainPanelControl's real WPF startup ever sets it. Several plugins add a
-            // toolbar from their glux-load handler (MainGumPlugin does, on its very first line), so without
-            // this the whole handler dies before doing any of its code generation.
-            PluginManager.SetToolbarTray(new ToolbarControl());
+            // Only GlueGui gets the menu strip. PluginManager must NOT: its PluginCommand dispatch reads
+            // its own mMenuStrip and, when that is non-null, marshals every plugin call through
+            // mMenuStrip.Invoke - which needs a created window handle and a running message loop, so calls
+            // silently never execute and CallPluginMethod returns null (exactly the "HasGum returns null"
+            // symptom this issue is about). Leaving PluginManager's null keeps its existing
+            // "no live menu strip means run inline" guard doing the right thing.
+            GlueGui.Initialize(new MenuStrip());
 
             // Registered before the rest so it captures anything they print while starting up.
             PluginManager.RegisterPluginForTesting(new ErrorRecordingPlugin());
@@ -332,6 +347,26 @@ internal static class GlueTestBootstrap
     };
 
     /// <summary>
+    /// Points MSBUILD_EXE_PATH at a pre-7 SDK by running Glue.exe's own discovery, unless it is already set.
+    ///
+    /// Called before every gold-project load rather than once per process on purpose: production clears this
+    /// variable around its own nested dotnet invocations (CompilerPlugin's Compiler.cs, SyncedProjects'
+    /// ProjectListEntry.xaml.cs), so another test in the same run can leave it unset. Without it,
+    /// Microsoft.Build.Evaluation cannot resolve the SDK imports of any SDK-style .csproj and the load fails
+    /// with "The SDK 'Microsoft.NET.SDK.WorkloadAutoImportPropsLocator' specified could not be found".
+    /// </summary>
+    public static void EnsureMsBuildEnvironmentVariable()
+    {
+        if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("MSBUILD_EXE_PATH")))
+        {
+            // SetMsBuildEnvironmentVariable reports through GlueCommands.Self, whose type initializer needs
+            // the DI container, so the base bootstrap has to have run first.
+            EnsureInitialized();
+            MainGlueWindow.SetMsBuildEnvironmentVariable();
+        }
+    }
+
+    /// <summary>
     /// Opt-in: constructs a real <see cref="MainGumPlugin"/> and registers it with
     /// <see cref="PluginManager.RegisterPluginForTesting"/>, running its real <c>StartUp</c>. This is what
     /// makes <c>PluginManager.CallPluginMethod("Gum Plugin", "HasGum")</c> return an actual bool instead of
@@ -367,19 +402,10 @@ internal static class GlueTestBootstrap
     /// Grow this list as gold projects need it. Each addition is a real StartUp running in the test host, so
     /// expect to have to feed it whatever UI seam it dereferences, the way
     /// <see cref="EnsureHeadlessProjectLoadReady"/> already does for the menu strip and toolbar tray.
-    ///
-    /// <b>The Gum plugin is deliberately not here yet</b>, and adding it needs a fix first.
-    /// <c>MainGumPlugin.StartUp</c> calls <c>Gum.Managers.StandardElementsManager.Self.Initialize()</c>, and
-    /// so does <see cref="EnsureGumPluginStandardElementsInitialized"/>, which several Gum codegen tests use.
-    /// Both are process-wide one-time set-up with no defined order between them, so whichever runs second
-    /// initializes an already-initialized StandardElementsManager and throws "An item with the same key has
-    /// already been added. Key: Texture". Neither can guard the other. Gold projects with no .gumx (Beefball)
-    /// do not need the plugin, so this is only blocking once a Gum gold project lands - which is separately
-    /// blocked on the font-build deadlock noted on GitHub issue #1973.
     /// </summary>
     public static void EnsureGameProjectPluginsRegistered()
     {
-        EnsureHeadlessProjectLoadReady();
+        EnsureGumPluginRegisteredWithPluginManager();
         EnsureCollisionPluginRegisteredWithPluginManager();
 
         lock (_lock)

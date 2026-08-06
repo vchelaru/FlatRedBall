@@ -47,6 +47,14 @@ Project(""{{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}}"") = ""{projectName}"", ""{pr
 EndProject
 ");
 
+        // Microsoft.Build resolves and caches its toolset on the first project evaluation in the process.
+        // This bare non-SDK-style project evaluates fine without MSBUILD_EXE_PATH, but if it is the first
+        // evaluation, it fixes the toolset for the whole run - and a later gold-project load (which needs a
+        // pre-7 SDK to resolve SDK-style imports) then fails with "The SDK
+        // 'Microsoft.NET.SDK.WorkloadAutoImportPropsLocator' specified could not be found" while passing
+        // when run on its own. Setting the variable here means whichever test evaluates first, it is set.
+        GlueTestBootstrap.EnsureMsBuildEnvironmentVariable();
+
         var project = new Project(csprojPath, null, null, new ProjectCollection());
         return new ClassLibraryProject(project);
     }

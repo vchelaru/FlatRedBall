@@ -61,4 +61,41 @@ public class GoldProjectCompileTests
         var (exitCode, output) = NestedDotnetCli.Run($"build \"{csproj}\" -c Debug");
         exitCode.ShouldBe(0, $"dotnet build failed for the regenerated gold project:\n{output}");
     }
+
+    // The project this exercise exists for: it has a .gumx, so it crosses the cross-plugin seam in the
+    // issue - GlueControlCodeGenerator asking the Gum plugin "HasGum" at generation time, which returned
+    // null and silently compiled out every #if HasGum branch.
+    //
+    // No dotnet build step yet, unlike Beefball: regenerating any project containing a Gum NineSlice
+    // currently produces a NineSliceRuntime that declares Gum.Wireframe.INineSliceRuntime but does not
+    // implement BorderScale (which appears nowhere in Glue's Gum code generation) or
+    // IsTilingMiddleSections, so the build fails with CS0535 for reasons unrelated to any change under
+    // test. Add the build assertion once that contract is closed - see GitHub issue #1973.
+    [StaFact]
+    public async Task FormsSampleProject_LoadInGlue_ShouldRunGumCodeGeneration()
+    {
+        GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
+
+        using var project = GoldProject.CopyOutOfRepo("Samples/FormsSampleProject");
+        var csproj = Path.Combine(project.Root, "FormsSampleProject", "FormsSampleProject.csproj");
+
+        GoldProject.DeleteGeneratedCode(project.Root);
+
+        await GoldProject.LoadInGlueAsync(csproj);
+
+        GlueTestBootstrap.RecordedDialogMessages.ShouldBeEmpty();
+        ErrorRecordingPlugin.Errors.ShouldBeEmpty();
+
+        // With the Gum plugin actually dispatched to, HasGum answers for real instead of returning null.
+        FlatRedBall.Glue.Plugins.PluginManager.CallPluginMethod("Gum Plugin", "HasGum").ShouldBe(true);
+
+        // The Gum plugin's own generators ran, not just Glue's core ones: the Gum runtime wrappers, a Forms
+        // component, and a standard element. None of these appear if the plugin is loaded but never
+        // dispatched to, which is the failure mode behind this issue.
+        var generated = GoldProject.GeneratedFiles(project.Root);
+        generated.ShouldContain("FormsSampleProject/GumRuntimes/GumIdb.Generated.cs");
+        generated.ShouldContain("FormsSampleProject/GumRuntimes/TextRuntime.Generated.cs");
+        generated.ShouldContain("FormsSampleProject/Forms/Screens/MainMenuGumForms.Generated.cs");
+        generated.ShouldContain("FormsSampleProject/Screens/MainMenu.Generated.cs");
+    }
 }
