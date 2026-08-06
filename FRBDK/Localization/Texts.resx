@@ -1483,8 +1483,8 @@ for {1}?</value>
   <data name="PortNumber" xml:space="preserve">
     <value>Port number</value>
   </data>
-  <data name="ShowScreenBoundsWhenViewingEntities" xml:space="preserve">
-    <value>Show screen bounds when viewing entities</value>
+  <data name="ShowScreenBounds" xml:space="preserve">
+    <value>Show screen bounds</value>
   </data>
   <data name="SetBackgroundColor" xml:space="preserve">
     <value>Set background color</value>

@@ -1482,8 +1482,8 @@
   <data name="PortNumber" xml:space="preserve">
     <value>Port-Nummer</value>
   </data>
-  <data name="ShowScreenBoundsWhenViewingEntities" xml:space="preserve">
-    <value>Beim Anzeigen von Entitäten Bildschirmgrenzen anzeigen</value>
+  <data name="ShowScreenBounds" xml:space="preserve">
+    <value>Bildschirmgrenzen anzeigen</value>
   </data>
   <data name="SetBackgroundColor" xml:space="preserve">
     <value>Hintergrundfarbe festlegen</value>

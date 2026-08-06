@@ -429,6 +429,14 @@ namespace GameCommunicationPlugin.GlueControl
                 {
                     var text = System.IO.File.ReadAllText(filePath.FullPath);
                     compilerSettings = JsonConvert.DeserializeObject<CompilerSettingsModel>(text);
+
+                    // ShowScreenBounds used to only apply to entities, and was named accordingly. Carry the
+                    // old value forward so projects saved before the rename don't silently lose the setting.
+                    if (compilerSettings?.ShowScreenBounds == false)
+                    {
+                        var legacyValue = JObject.Parse(text)["ShowScreenBoundsWhenViewingEntities"];
+                        compilerSettings.ShowScreenBounds = legacyValue?.Value<bool>() == true;
+                    }
                 }
                 catch
                 {
@@ -690,7 +698,7 @@ namespace GameCommunicationPlugin.GlueControl
                 case nameof(ViewModels.GlueViewSettingsViewModel.SnapSize):
                 case nameof(ViewModels.GlueViewSettingsViewModel.EnableSnapping):
                 case nameof(ViewModels.GlueViewSettingsViewModel.PolygonPointSnapSize):
-                case nameof(ViewModels.GlueViewSettingsViewModel.ShowScreenBoundsWhenViewingEntities):
+                case nameof(ViewModels.GlueViewSettingsViewModel.ShowScreenBounds):
                     await SendGlueViewSettingsToGame();
                     break;
             }
@@ -707,7 +715,7 @@ namespace GameCommunicationPlugin.GlueControl
                 ShowGrid = GlueViewSettingsViewModel.ShowGrid,
                 GridAlpha = GlueViewSettingsViewModel.GridAlpha,
                 GridSize = GlueViewSettingsViewModel.GridSize,
-                ShowScreenBoundsWhenViewingEntities = GlueViewSettingsViewModel.ShowScreenBoundsWhenViewingEntities,
+                ShowScreenBounds = GlueViewSettingsViewModel.ShowScreenBounds,
                 SetBackgroundColor = GlueViewSettingsViewModel.SetBackgroundColor,
                 BackgroundRed = GlueViewSettingsViewModel.BackgroundRed,
                 BackgroundGreen = GlueViewSettingsViewModel.BackgroundGreen,

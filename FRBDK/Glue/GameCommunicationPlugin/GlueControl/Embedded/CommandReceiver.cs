@@ -1535,7 +1535,7 @@ namespace GlueControl
             EditingManager.Self.ShowGrid = dto.ShowGrid;
             EditingManager.Self.GridAlpha = dto.GridAlpha;
             EditingManager.Self.GuidesGridSpacing = (float)dto.GridSize;
-            Screens.EntityViewingScreen.ShowScreenBounds = dto.ShowScreenBoundsWhenViewingEntities;
+            EditingManager.Self.ShowScreenBounds = dto.ShowScreenBounds;
 
             if (dto.SetBackgroundColor)
             {

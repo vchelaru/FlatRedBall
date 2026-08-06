@@ -5111,11 +5111,11 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Show screen bounds when viewing entities.
+        ///   Looks up a localized string similar to Show screen bounds.
         /// </summary>
-        public static string ShowScreenBoundsWhenViewingEntities {
+        public static string ShowScreenBounds {
             get {
-                return ResourceManager.GetString("ShowScreenBoundsWhenViewingEntities", resourceCulture);
+                return ResourceManager.GetString("ShowScreenBounds", resourceCulture);
             }
         }
         

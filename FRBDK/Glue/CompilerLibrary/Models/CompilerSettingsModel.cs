@@ -21,7 +21,7 @@ namespace CompilerLibrary.Models
 
         public bool RestartScreenOnLevelContentChange { get; set; }
         public int PortNumber { get; set; } = 8021;
-        public bool ShowScreenBoundsWhenViewingEntities { get; set; }
+        public bool ShowScreenBounds { get; set; }
 
         public bool RestartOnFailedCommands { get; set; }
 
@@ -42,7 +42,7 @@ namespace CompilerLibrary.Models
         public void SetDefaults()
         {
             EmbedGameInGameTab = true;
-            ShowScreenBoundsWhenViewingEntities = true;
+            ShowScreenBounds = true;
             RestartScreenOnLevelContentChange = true;
 
             EnableSnapping = true;
