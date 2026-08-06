@@ -41,6 +41,11 @@ namespace GumPlugin.CodeGeneration
 
         // These are new variables that don't appear in the base definitioin of the standard element, but we support in code for convenience
         List<VariableSave> variableNamesToAddForProperties = new List<VariableSave>();
+
+        // Same idea as variableNamesToAddForProperties, but keyed by standard element name - the mirror of
+        // _typedVariableNamesToSkipForProperties. Unlike that list this one is version-dependent, so it is
+        // rebuilt in RefreshVariableNamesToSkipForProperties rather than populated once in Initialize.
+        Dictionary<string, List<VariableSave>> _typedVariablesToAddForProperties = new Dictionary<string, List<VariableSave>>();
         private SpriteCodeGenerator _spriteCodeGenerator;
         private TextCodeGenerator _textCodeGenerator;
         private ContainerCodeGenerator _containerCodeGenerator;
@@ -139,6 +144,9 @@ namespace GumPlugin.CodeGeneration
         {
             mVariableNamesToSkipForProperties.Clear();
             _typedVariableNamesToSkipForProperties.Clear();
+            _typedVariablesToAddForProperties.Clear();
+
+            _nineSliceCodeGenerator.AddTypeSpecificVariablesToAddForProperties(_typedVariablesToAddForProperties);
 
             _textCodeGenerator.AddVariableNamesToSkipForProperties(mVariableNamesToSkipForProperties);
 
@@ -518,9 +526,51 @@ namespace GumPlugin.CodeGeneration
                 }
             }
 
+            GenerateTypeSpecificVariablesToAdd(standardElementSave, currentBlock, containedGraphicalObjectName);
+
             _textCodeGenerator.GenerateVariableProperties(standardElementSave, currentBlock, containedGraphicalObjectName);
 
             // Sprites handle this in GenerateAdditionalMethods
+        }
+
+        // Issue #1979. Variables a per-type generator requires regardless of what the project's own .gutx
+        // contains. Glue never reconciles a loaded project's standard elements against Gum's canonical
+        // schema: FileReferenceTracker.InitializeElements calls ElementSave.Initialize with the element's
+        // OWN default state ("only a subset of initialization ... for performance reasons"), which fixes
+        // up variable types but back-fills nothing, and GumProjectSave.Initialize - the call that would
+        // reconcile - is never made. So the loop above sees a .gutx exactly as the Gum Editor last wrote
+        // it, which for an older project predates whatever Gum has added since.
+        //
+        // That is fine for an ordinary variable (the user simply doesn't get a property they never
+        // authored), but not for a member of an interface the class also declares: the result is a class
+        // that doesn't implement its own interface, CS0535 in the user's game.
+        private void GenerateTypeSpecificVariablesToAdd(
+            StandardElementSave standardElementSave, ICodeBlock currentBlock, string containedGraphicalObjectName)
+        {
+            if (!_typedVariablesToAddForProperties.TryGetValue(standardElementSave.Name, out var variablesToAdd))
+            {
+                return;
+            }
+
+            // The project's own .gutx wins wherever it already defines the variable - generating it from
+            // both sources is a duplicate member (CS0102).
+            var alreadyGenerated = standardElementSave.DefaultState?.Variables
+                .Select(variable => variable.GetRootName())
+                .ToHashSet(StringComparer.Ordinal)
+                ?? new HashSet<string>(StringComparer.Ordinal);
+
+            foreach (var variable in variablesToAdd)
+            {
+                if (alreadyGenerated.Contains(variable.GetRootName()))
+                {
+                    continue;
+                }
+
+                if (GetIfShouldGenerateProperty(variable, standardElementSave))
+                {
+                    GenerateVariable(currentBlock, containedGraphicalObjectName, variable, standardElementSave);
+                }
+            }
         }
 
         // Issue #1967 - a v3 (ShapeVariableExpansion) Rectangle backs its Fill/Stroke variable
