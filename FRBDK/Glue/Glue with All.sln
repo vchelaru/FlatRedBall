@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
 VisualStudioVersion = 18.0.11201.2
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Glue", "Glue\Glue.csproj", "{C953AF0B-B890-40CE-888D-8F60579CD03E}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlatRedBall.PropertyGrid", "FlatRedBall.PropertyGrid\FlatRedBall.PropertyGrid.csproj", "{5FE94178-9907-4878-AFAC-8F347CA86B50}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GumProjects", "GumProjects", "{3DDD0995-4B47-47A2-82A4-F0A6367C9FF2}"
@@ -16,8 +18,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tiled Plugin", "Tiled Plugin", "{DABAF6E1-1075-4CD2-959A-78FFB46B868D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GlueCommon", "GlueCommon\GlueCommon.csproj", "{9403B27A-6E3A-4083-8A42-0EB62B699246}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Glue", "Glue\Glue.csproj", "{C953AF0B-B890-40CE-888D-8F60579CD03E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TopDownPlugin", "TopDownPlugin\TopDownPlugin.csproj", "{D784E25F-320D-47F5-9397-63E33B81A64F}"
 EndProject
