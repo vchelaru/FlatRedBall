@@ -664,9 +664,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
             if (String.Equals(textExtension, "achx", StringComparison.OrdinalIgnoreCase))
             {
-                absoluteExe = GlueState.Self.GlueExeDirectory + "../../../../AnimationEditor/PreviewProject/bin/Debug/AnimationEditor.exe";
-                var foundAnimationEditor = absoluteExe?.Exists() == true;
-                if (!foundAnimationEditor)
+                // The XNA 4 AnimationEditor is retired; FlatRedBall2's Avalonia AnimationEditor
+                // replaces it. When running Glue from source with FlatRedBall2 checked out as a
+                // sibling repo, prefer its locally-built copy:
+                absoluteExe = GlueState.Self.GlueExeDirectory + "../../../../../../FlatRedBall2/tools/AnimationEditorAvalonia/src/AnimationEditor.App/bin/Debug/net10.0/AnimationEditor.exe";
+
+                if (absoluteExe?.Exists() == false)
                 {
                     // check if it's in the default built location if the user is running from prebuilt:
                     absoluteExe = GlueState.Self.GlueExeDirectory + "AnimationEditor/AnimationEditor.exe";

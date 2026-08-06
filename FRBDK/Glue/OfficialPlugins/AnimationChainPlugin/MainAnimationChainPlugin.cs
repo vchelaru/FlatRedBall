@@ -190,20 +190,8 @@ public class MainAnimationChainPlugin : PluginBase
 
     private bool TryHandleDoubleClick(ITreeNode tree)
     {
-        if (tree.Tag is ReferencedFileSave asRfs)
-        {
-            var extension = FileManager.GetExtension(asRfs.Name);
-
-            var filePath = GlueCommands.Self.GetAbsoluteFilePath(asRfs);
-
-            switch (extension)
-            {
-                case "achx":
-                    // Nah, let's open AnimationEditor for now
-                    return false;
-            }
-        }
-
+        // Double-clicking an .achx falls through to Glue's default file-open handling,
+        // which launches the external AnimationEditor via FileCommands.
         return false;
     }
 
