@@ -10,20 +10,30 @@ Glue does **not** rely on Gum's own runtime code generation for the standard ele
 
 This skill is about the omission side: how Glue decides which Gum variables to skip when generating a standard runtime, and how to gate that decision on a `GluxVersions` value. For the version-numbering rules themselves, see the `gluj-versions` skill.
 
-## There are TWO skip pipelines, not one
+## There are THREE independent decisions, not one
 
-Generating a standard runtime like `NineSliceRuntime.Generated.cs` involves two independent code paths, each with its own skip lists. **Both must agree on whether a variable exists in a given version.** If they disagree, you get build errors like:
-
-> CS0103: The name 'IsTilingMiddleSections' does not exist in the current context
-
-— because one pipeline emitted a state-init assignment for a property the other pipeline didn't generate (or vice versa).
-
-The two pipelines are:
+Generating a standard runtime like `NineSliceRuntime.Generated.cs` involves three independent code paths. **All three must agree on whether a member exists in a given version**, and each disagreement has its own compiler error:
 
 1. **Property generation** — emits the `public T Foo { get; set; }` (or backing-field) property on the runtime class. Driven by `StandardsCodeGenerator` and per-type generators (`NineSliceCodeGenerator`, etc.).
 2. **State generation** — emits the `case VariableState.Default: Foo = …;` assignments inside the state-switch. Driven by `StateCodeGenerator`.
+3. **Inheritance** — emits the `: global::Gum.Wireframe.IFooRuntime` on the class declaration, via each per-type generator's `AddAdditionalInheritance` (wired up in `StandardsCodeGenerator.GenerateStandardElementSaveCodeFor`).
 
-When you add a version gate, **always update both**. Searching for an existing skipped variable name (e.g. `"IgnoredByParentSize"`, `"StackSpacing"`) is the fastest way to spot every place that needs a parallel change — they typically appear in both `StandardsCodeGenerator.RefreshVariableNamesToSkipForProperties` and `StateCodeGenerator.RefreshVariableNamesToSkipBasedOnGlueVersion`.
+Property vs. state disagreement is `CS0103: The name 'IsTilingMiddleSections' does not exist in the current context` — a state-init assignment for a property nobody generated. Inheritance vs. property disagreement is `CS0535: does not implement interface member` (issue #1979).
+
+Pipelines 1 and 2 are driven by the project's variables; pipeline 3 is driven by `GluxVersions` alone, so it is the one that most easily drifts. The `Gum.Wireframe.I*Runtime` interfaces it names are hand-written in the sibling Gum repo under `#if FRB` (`Gum/Wireframe/CustomSetPropertyOnRenderable.cs`) and mirror what Glue generates; they grow as Gum routes more of its property dispatch through the runtime instead of the renderable. Glue holds no reference to GumCore, so nothing in Glue can read one — `NineSliceCodeGenerator.InterfaceMemberNames` restates the contract by hand, and `GumGeneratedCodeCompilesTests` is what detects drift. `ContainerCodeGenerator`/`PolygonCodeGenerator` avoid the problem differently, by emitting their interface members from `GenerateAdditionalMethods` rather than relying on the project's variables at all.
+
+When you add a version gate, **update every pipeline that touches the member**. Searching for an existing skipped variable name (e.g. `"IgnoredByParentSize"`, `"StackSpacing"`) is the fastest way to spot every place that needs a parallel change — they typically appear in both `StandardsCodeGenerator.RefreshVariableNamesToSkipForProperties` and `StateCodeGenerator.RefreshVariableNamesToSkipBasedOnGlueVersion`.
+
+## Glue never back-fills a loaded project's standard elements (landmine)
+
+Codegen emits from the variables in the project's own `.gutx`, and **Glue never reconciles that against Gum's canonical schema**. Gum's tool does (`GumProjectSaveExtensionMethods.Initialize` back-fills each standard element from `StandardElementsManager`, gated by `VariableSave.MinimumGumxVersion`); Glue calls `GumProjectSave.Load` and never that. What it *does* call — `FileReferenceTracker.InitializeElements` — passes each element its **own** default state, which resolves variable types but back-fills nothing.
+
+Consequences worth knowing before debugging "why isn't this variable generated":
+
+- A `.gutx` written before Gum added a variable never gains it, at any Glue version. Every checked-in sample is in this state.
+- Bumping `GluxVersions` alone will not make a variable appear — if the project's `.gutx` lacks it, no gate change helps.
+- A fixture built from `StandardElementsManager.Self.GetDefaultStateFor(name)` is a *current* editor's output, so it cannot reproduce this. Load a real sample's `.gumx` and call `Initialize(element.DefaultState)` per element to match production — see `GumGeneratedCodeCompilesTests.LegacyGutxStandardElementRuntimes_ShouldCompileAgainstTheRealEngine`.
+- `ProjectLoader.LoadProject` bumps the `.gluj`'s `FileVersion` to `LatestVersion` on load. So the live combination is always **current `GluxVersions` + whatever the `.gutx` happens to contain**, which is exactly what produced #1979.
 
 ## The compiler can never catch a runtime mismatch (landmine)
 
@@ -119,9 +129,10 @@ There's also a per-type variant analogous to the property pipeline (`AddTypeSpec
 
 1. Decide if the variable is global or type-specific.
 2. Add a `GluxVersions` entry per the `gluj-versions` skill (including `LatestVersion`, `SyntaxVersionAttribute`, docs).
-3. Update **both** pipelines:
+3. Update **every** pipeline that touches it:
    - Property pipeline: `ExcludeIfVersionLessThan(...)` in `StandardsCodeGenerator.RefreshVariableNamesToSkipForProperties` (global) or the `NineSliceCodeGenerator`-style `HasFeature` bool + conditional `Add` (type-specific).
    - State pipeline: an `if/else` `Include` / `Skip` block in `StateCodeGenerator.RefreshVariableNamesToSkipBasedOnGlueVersion`.
+   - Inheritance: only if the member belongs to a `Gum.Wireframe.I*Runtime` interface — gate the members on the *same* bool as `AddAdditionalInheritance`, never a separate one.
 4. The gate's polarity is **"skip when below version"**, i.e. older projects don't see the new variable. The new variable becomes visible at and above the gating version.
 
 A pre-flight check that's saved time more than once: pick one already-gated variable (`IgnoredByParentSize` is a good one) and grep for it. Every place it appears is a place your new variable probably also needs to appear.
