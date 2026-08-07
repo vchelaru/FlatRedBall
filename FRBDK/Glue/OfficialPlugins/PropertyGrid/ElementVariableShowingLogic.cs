@@ -208,6 +208,8 @@ namespace OfficialPlugins.VariableDisplay
                     variableDefinition.MinValue.Value;
             }
 
+            VariableDefinitionDisplayerHelper.ApplyAsymmetricMinMax(variableDefinition, instanceMember.PreferredDisplayer, instanceMember.PropertiesToSetOnDisplayer);
+
             if(variableDefinition?.UiCreated != null)
             {
                 instanceMember.UiCreated += (view) => variableDefinition.UiCreated(view);
