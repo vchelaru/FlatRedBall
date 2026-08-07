@@ -25,6 +25,7 @@ namespace GlueUnitTests.Projects;
 /// plugins are loaded.
 /// </summary>
 [Trait("Category", "BuildSmoke")]
+[TestCaseOrderer(LiveEditEmbedLastOrderer.TypeName, LiveEditEmbedLastOrderer.AssemblyName)]
 public class GoldProjectCompileTests
 {
     // StaFact, not Fact: plugin StartUp methods construct real WPF toolbars, which need an STA thread.
