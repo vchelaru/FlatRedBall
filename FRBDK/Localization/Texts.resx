@@ -1486,6 +1486,9 @@ for {1}?</value>
   <data name="ShowScreenBounds" xml:space="preserve">
     <value>Show screen bounds</value>
   </data>
+  <data name="LockScreenBoundsToWorldSpace" xml:space="preserve">
+    <value>Lock screen bounds to world space</value>
+  </data>
   <data name="SetBackgroundColor" xml:space="preserve">
     <value>Set background color</value>
   </data>

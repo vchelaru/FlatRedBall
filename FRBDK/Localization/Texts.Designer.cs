@@ -5118,6 +5118,15 @@ namespace Localization {
                 return ResourceManager.GetString("ShowScreenBounds", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Lock screen bounds to world space.
+        /// </summary>
+        public static string LockScreenBoundsToWorldSpace {
+            get {
+                return ResourceManager.GetString("LockScreenBoundsToWorldSpace", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Show State Categories.

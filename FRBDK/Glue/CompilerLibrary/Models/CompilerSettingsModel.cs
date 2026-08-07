@@ -22,6 +22,7 @@ namespace CompilerLibrary.Models
         public bool RestartScreenOnLevelContentChange { get; set; }
         public int PortNumber { get; set; } = 8021;
         public bool ShowScreenBounds { get; set; }
+        public bool LockScreenBoundsToWorldSpace { get; set; }
 
         public bool RestartOnFailedCommands { get; set; }
 

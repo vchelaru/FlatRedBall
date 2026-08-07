@@ -1485,6 +1485,9 @@
   <data name="ShowScreenBounds" xml:space="preserve">
     <value>Bildschirmgrenzen anzeigen</value>
   </data>
+  <data name="LockScreenBoundsToWorldSpace" xml:space="preserve">
+    <value>Bildschirmgrenzen an Weltraum sperren</value>
+  </data>
   <data name="SetBackgroundColor" xml:space="preserve">
     <value>Hintergrundfarbe festlegen</value>
   </data>

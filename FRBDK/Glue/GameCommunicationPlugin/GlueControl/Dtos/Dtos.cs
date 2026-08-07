@@ -468,6 +468,7 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
     public class GlueViewSettingsDto
     {
         public bool ShowScreenBounds { get; set; }
+        public bool LockScreenBoundsToWorldSpace { get; set; }
 
         public bool ShowGrid { get; set; }
         public decimal GridAlpha { get; set; }
