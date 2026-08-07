@@ -10,6 +10,7 @@ using GameCommunicationPlugin.GlueControl.ViewModels;
 using OfficialPlugins.GameHost.Views;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ToolsUtilities;
@@ -182,27 +183,62 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             }
             else
             {
-                var currentScreen = GlueState.Self.CurrentScreenSave;
-                var currentEntity = GlueState.Self.CurrentEntitySave;
-
-                if (currentScreen != null && !currentScreen.IsAbstract)
-                {
-                    args =
-                       GlueState.Self.ProjectNamespace + "." + currentScreen.Name.Replace("\\", ".").Replace("/", ".");
-                }
-                else if (currentEntity != null)
-                {
-                    args = "GlueControl.Screens.EntityViewingScreen";
-                }
-                else if(!string.IsNullOrEmpty( GlueState.Self.CurrentGlueProject.StartUpScreen))
-                {
-                    args =
-                       GlueState.Self.ProjectNamespace + "." + GlueState.Self.CurrentGlueProject.StartUpScreen.Replace("\\", ".").Replace("/", ".");
-                }
+                args = GetScreenNameForLaunchArgs();
             }
 
 
 
+            return AppendLaunchArgFlags(args, isInEditMode);
+        }
+
+        // Internal (rather than private) and static so tests can pin the abstract-StartUpScreen fallback
+        // against a real loaded project without needing a GameHostController instance - see
+        // GoldProjectCompileTests.DoorsDemoProject_WithAbstractStartUpScreen_LaunchArgsFallBackToConcreteDerivedScreen.
+        internal static string GetScreenNameForLaunchArgs()
+        {
+            string args = null;
+
+            var currentScreen = GlueState.Self.CurrentScreenSave;
+            var currentEntity = GlueState.Self.CurrentEntitySave;
+
+            if (currentScreen != null && !currentScreen.IsAbstract)
+            {
+                args =
+                   GlueState.Self.ProjectNamespace + "." + currentScreen.Name.Replace("\\", ".").Replace("/", ".");
+            }
+            else if (currentEntity != null)
+            {
+                args = "GlueControl.Screens.EntityViewingScreen";
+            }
+            else if (!string.IsNullOrEmpty(GlueState.Self.CurrentGlueProject.StartUpScreen))
+            {
+                var startupScreen = ObjectFinder.Self.GetScreenSave(GlueState.Self.CurrentGlueProject.StartUpScreen);
+
+                // The StartUpScreen itself can be abstract (e.g. a base GameScreen meant to be
+                // derived from). Rather than pass an abstract type name as the launch arg - which
+                // the game can't instantiate, leaving no screen loaded at all - fall back to the
+                // first concrete screen derived from it, the same way selecting an abstract screen
+                // in the tree falls back (see RefreshManager.PushGlueSelectionToGame).
+                if (startupScreen != null && startupScreen.IsAbstract)
+                {
+                    startupScreen = ObjectFinder.Self.GetAllDerivedElementsRecursive(startupScreen)
+                        .Where(item => !item.IsAbstract)
+                        .OrderBy(item => item.Name)
+                        .FirstOrDefault() as FlatRedBall.Glue.SaveClasses.ScreenSave;
+                }
+
+                if (startupScreen != null)
+                {
+                    args =
+                       GlueState.Self.ProjectNamespace + "." + startupScreen.Name.Replace("\\", ".").Replace("/", ".");
+                }
+            }
+
+            return args;
+        }
+
+        private string AppendLaunchArgFlags(string args, bool isInEditMode)
+        {
             // This prevents the game from stretching to the game tab in .NET 6, so don't do this in .net 6:
             var is6OrGreater = GlueState.Self.CurrentMainProject.DotNetVersion.Major >= 6;
             if (!is6OrGreater)
