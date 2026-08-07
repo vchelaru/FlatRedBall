@@ -124,6 +124,7 @@ namespace GameCommunicationPlugin.GlueControl.Views
 
             var lockScreenBoundsProperties = properties.GetOrCreateImdp(nameof(ViewModel.LockScreenBoundsToWorldSpace));
             lockScreenBoundsProperties.Category = Localization.Texts.GridAndMarkings;
+            lockScreenBoundsProperties.DisplayName = Localization.Texts.LockScreenBoundsToWorldSpace;
             lockScreenBoundsProperties.IsHiddenDelegate = (notused) => ViewModel.ShowScreenBounds == false;
 
             DataUiGrid.Apply(properties);
