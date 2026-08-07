@@ -42,7 +42,7 @@ Both workflows are `workflow_dispatch`-only, run against whatever is currently o
 10. Draft release notes — invoke [[release-notes]].
 11. **CHECKPOINT — before making the release public.**
     `gh release create <tag> --draft --notes-file <path> --title "<Month DD, YYYY>"`, review, then `gh release edit <tag> --draft=false`.
-12. *(Manual, human-only)* Post to Discord and share on Twitter/X, per GitBook.
+The release ends at step 11. The GitBook's checklist continues into announcements (Discord, Twitter/X) — those are the maintainer's own call, so don't run them and don't close out by prompting for them.
 
 ## Which workflow ships which fix (landmine)
 
