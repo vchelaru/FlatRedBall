@@ -37,6 +37,12 @@ namespace GameCommunicationPlugin.GlueControl.ViewModels
             set => Set(value);
         }
 
+        public bool LockScreenBoundsToWorldSpace
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public bool SetBackgroundColor
         {
             get => Get<bool>();
@@ -123,6 +129,7 @@ namespace GameCommunicationPlugin.GlueControl.ViewModels
             this.PortNumber = model.PortNumber;
             this.RestartOnFailedCommands = model.RestartOnFailedCommands;
             this.ShowScreenBounds = model.ShowScreenBounds;
+            this.LockScreenBoundsToWorldSpace = model.LockScreenBoundsToWorldSpace;
 
             this.ShowGrid = model.ShowGrid;
             this.GridAlpha = model.GridAlpha;
@@ -145,6 +152,7 @@ namespace GameCommunicationPlugin.GlueControl.ViewModels
             compilerSettings.PortNumber = this.PortNumber;
             compilerSettings.RestartOnFailedCommands = this.RestartOnFailedCommands;
             compilerSettings.ShowScreenBounds = this.ShowScreenBounds;
+            compilerSettings.LockScreenBoundsToWorldSpace = this.LockScreenBoundsToWorldSpace;
 
             compilerSettings.ShowGrid = this.ShowGrid;
             compilerSettings.GridAlpha = this.GridAlpha;

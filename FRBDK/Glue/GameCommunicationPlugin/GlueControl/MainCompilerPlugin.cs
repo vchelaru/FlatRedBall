@@ -699,6 +699,7 @@ namespace GameCommunicationPlugin.GlueControl
                 case nameof(ViewModels.GlueViewSettingsViewModel.EnableSnapping):
                 case nameof(ViewModels.GlueViewSettingsViewModel.PolygonPointSnapSize):
                 case nameof(ViewModels.GlueViewSettingsViewModel.ShowScreenBounds):
+                case nameof(ViewModels.GlueViewSettingsViewModel.LockScreenBoundsToWorldSpace):
                     await SendGlueViewSettingsToGame();
                     break;
             }
@@ -716,6 +717,7 @@ namespace GameCommunicationPlugin.GlueControl
                 GridAlpha = GlueViewSettingsViewModel.GridAlpha,
                 GridSize = GlueViewSettingsViewModel.GridSize,
                 ShowScreenBounds = GlueViewSettingsViewModel.ShowScreenBounds,
+                LockScreenBoundsToWorldSpace = GlueViewSettingsViewModel.LockScreenBoundsToWorldSpace,
                 SetBackgroundColor = GlueViewSettingsViewModel.SetBackgroundColor,
                 BackgroundRed = GlueViewSettingsViewModel.BackgroundRed,
                 BackgroundGreen = GlueViewSettingsViewModel.BackgroundGreen,

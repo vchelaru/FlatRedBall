@@ -1561,6 +1561,7 @@ namespace GlueControl
             EditingManager.Self.GridAlpha = dto.GridAlpha;
             EditingManager.Self.GuidesGridSpacing = (float)dto.GridSize;
             EditingManager.Self.ShowScreenBounds = dto.ShowScreenBounds;
+            EditingManager.Self.LockScreenBoundsToWorldSpace = dto.LockScreenBoundsToWorldSpace;
 
             if (dto.SetBackgroundColor)
             {

@@ -68,6 +68,7 @@ namespace GameCommunicationPlugin.GlueControl.Views
             this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.GridAlpha), Localization.Texts.GridAndMarkings);
             this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.GridSize), Localization.Texts.GridAndMarkings);
             this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.ShowScreenBounds), Localization.Texts.GridAndMarkings);
+            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.LockScreenBoundsToWorldSpace), Localization.Texts.GridAndMarkings);
             this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.SetBackgroundColor), Localization.Texts.GridAndMarkings);
 
             this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.EnableSnapping), Localization.Texts.Snapping);
@@ -91,6 +92,10 @@ namespace GameCommunicationPlugin.GlueControl.Views
                 colorProperties.IsHiddenDelegate = (notused) => ViewModel.SetBackgroundColor == false;
 
             }
+
+            var lockScreenBoundsProperties = properties.GetOrCreateImdp(nameof(ViewModel.LockScreenBoundsToWorldSpace));
+            lockScreenBoundsProperties.Category = Localization.Texts.GridAndMarkings;
+            lockScreenBoundsProperties.IsHiddenDelegate = (notused) => ViewModel.ShowScreenBounds == false;
 
             DataUiGrid.Apply(properties);
             DataUiGrid.Refresh();

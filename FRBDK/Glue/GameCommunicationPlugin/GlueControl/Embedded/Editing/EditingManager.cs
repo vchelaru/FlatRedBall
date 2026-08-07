@@ -141,6 +141,7 @@ namespace GlueControl.Editing
         /// entity this is centered on the entity, and when editing a screen it follows the edit mode camera.
         /// </summary>
         public bool ShowScreenBounds { get; set; }
+        public bool LockScreenBoundsToWorldSpace { get; set; }
 
         float snapSize = 8;
         public float SnapSize
@@ -569,7 +570,9 @@ namespace GlueControl.Editing
 
             if (ElementEditingMode == ElementEditingMode.EditingScreen)
             {
-                center = new Vector3(Camera.Main.X, Camera.Main.Y, 0);
+                center = LockScreenBoundsToWorldSpace
+                    ? Vector3.Zero
+                    : new Vector3(Camera.Main.X, Camera.Main.Y, 0);
             }
             else if ((ScreenManager.CurrentScreen as Screens.EntityViewingScreen)?.CurrentEntity is PositionedObject mainEntity)
             {
