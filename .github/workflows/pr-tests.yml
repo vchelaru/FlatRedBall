@@ -47,12 +47,17 @@ jobs:
     # (see issue #1969), so a test sitting for 10 minutes is wedged and should fail the job rather than sit
     # there until the runner's own limit kills it with no attribution. It also names the test that hung.
     - name: Run unit tests
-      run: dotnet test 'FlatRedBall\FRBDK\Glue\Glue with All.sln' -c Debug --filter "Category!=BuildSmoke" --blame-hang-timeout 10m
+      run: dotnet test 'FlatRedBall\FRBDK\Glue\Glue with All.sln' -c Debug --filter "Category!=BuildSmoke&Category!=LiveGame" --blame-hang-timeout 10m
 
     # Slower: creates a project from each template and runs `dotnet build` on it. Needs the net9 SDK
     # (installed above) and network for the first NuGet restore.
     - name: Run new-project build smoke test
       run: dotnet test 'FlatRedBall\FRBDK\Glue\Glue with All.sln' -c Debug --filter "Category=BuildSmoke" --blame-hang-timeout 15m
+
+    # Category=LiveGame launches a real MonoGame DesktopGL window (LiveGameProcess drives an actual built
+    # game process over the real socket protocol - see LiveGameProcess.cs). GitHub-hosted Windows runners
+    # aren't guaranteed a display/GPU context for that, so this category is developer-machine-only for now
+    # and deliberately excluded from both filters above.
 
     # Everything above this line covers the Glue editor only. The steps below cover the engine,
     # which otherwise gets compiled just once per release by Engine.yml -- long after the commit

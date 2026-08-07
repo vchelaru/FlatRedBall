@@ -511,7 +511,17 @@ namespace GlueControl
                     }
                     ScreenManager.ScreenLoaded += AfterInitializeLogic;
 
-                    ScreenManager.CurrentScreen.MoveToScreen(ownerType);
+                    // See the entity branch below for why this can't unconditionally call
+                    // ScreenManager.CurrentScreen.MoveToScreen: there may be no current screen to move from
+                    // (e.g. an abstract StartUpScreen with no concrete derived screen - #2002).
+                    if (ScreenManager.CurrentScreen == null)
+                    {
+                        ScreenManager.Start(ownerType);
+                    }
+                    else
+                    {
+                        ScreenManager.CurrentScreen.MoveToScreen(ownerType);
+                    }
                     EditorVisuals.DestroyContainedObjects();
 
                     isOwnerScreen = true;
@@ -567,7 +577,22 @@ namespace GlueControl
 
                         Screens.EntityViewingScreen.GameElementTypeToCreate = GlueToGameElementName(elementNameGlue);
                         Screens.EntityViewingScreen.InstanceToSelect = GetSelectedNamedObjects(selectObjectDto).FirstOrDefault();
-                        ScreenManager.CurrentScreen.MoveToScreen(typeof(Screens.EntityViewingScreen));
+
+                        // EntityViewingScreen is self-contained - it never touches whatever Screen the user
+                        // is editing - so selecting an entity shouldn't depend on one being loaded. But
+                        // MoveToScreen is an instance method that transitions FROM the current screen, and
+                        // throws when there isn't one (see ScreenManager.MoveToScreen's static overload:
+                        // "There is no current screen to move from. Call Start to create the first
+                        // screen."). This happens whenever the project's StartUpScreen can't be launched at
+                        // all - e.g. it's abstract with no concrete derived screen to fall back to.
+                        if (ScreenManager.CurrentScreen == null)
+                        {
+                            ScreenManager.Start(typeof(Screens.EntityViewingScreen));
+                        }
+                        else
+                        {
+                            ScreenManager.CurrentScreen.MoveToScreen(typeof(Screens.EntityViewingScreen));
+                        }
 #endif
                     }
                     else
