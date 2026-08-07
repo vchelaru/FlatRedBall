@@ -34,7 +34,36 @@ namespace GameCommunicationPlugin.GlueControl.Views
 
         private void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
         {
+            if (e.PropertyName == nameof(GlueViewSettingsViewModel.ShowScreenBounds))
+            {
+                // DataUiGrid re-adds a member to the end of its category when a hidden delegate flips it
+                // back to visible, instead of preserving its original position, so put it back underneath
+                // ShowScreenBounds instead of letting it drift to the end of the category (after the
+                // background-color fields).
+                MoveLockScreenBoundsMemberUnderShowScreenBounds();
+            }
+
             this.DataUiGrid.Refresh();
+        }
+
+        private void MoveLockScreenBoundsMemberUnderShowScreenBounds()
+        {
+            var showScreenBoundsMember = GetMember(nameof(ViewModel.ShowScreenBounds));
+            var lockToWorldSpaceMember = GetMember(nameof(ViewModel.LockScreenBoundsToWorldSpace));
+
+            if (showScreenBoundsMember != null && lockToWorldSpaceMember != null)
+            {
+                var members = lockToWorldSpaceMember.Category.Members;
+                var currentIndex = members.IndexOf(lockToWorldSpaceMember);
+
+                if (currentIndex >= 0)
+                {
+                    members.RemoveAt(currentIndex);
+                    var showScreenBoundsIndex = members.IndexOf(showScreenBoundsMember);
+                    var insertIndex = showScreenBoundsIndex >= 0 ? showScreenBoundsIndex + 1 : members.Count;
+                    members.Insert(System.Math.Min(insertIndex, members.Count), lockToWorldSpaceMember);
+                }
+            }
         }
 
         public GlueViewSettings()
