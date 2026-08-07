@@ -64,3 +64,23 @@ to be one bug plus one piece of local noise.
   cold-node hang. Most likely the same bug seen through `--blame`'s eyes (a wedged host being torn down),
   but that is unconfirmed — if it reappears **with the fix in**, it is a genuinely separate defect and this
   entry should not be trusted to cover it.
+
+## 2026-08-07 — `LiveGameProcessTests` (`Category=LiveGame`) hangs the full suite, passes standalone (issue #2005 follow-up)
+
+Found while running the fast suite for an unrelated PropertyGrid fix (#2003) — not caused by that change.
+
+- Symptom: `dotnet test --filter "Category!=BuildSmoke" --no-build` hangs indefinitely. `LiveGameProcessTests`
+  (new in #2005, "add a live-game test harness") is tagged `[Trait("Category", "LiveGame")]`, **not**
+  `BuildSmoke`, so the standard fast-suite filter (which only excludes `BuildSmoke`) does not skip it.
+- Confirmed genuine hang, not slow: `dotnet-stack report -p <testhost pid>` sampled 20s apart showed
+  `TotalProcessorTime` byte-identical (5.203125s both times) — zero CPU progress, not just a long-running
+  computation. Both samples show the STA thread inside `Xunit.StaFact.UISynchronizationContext.PumpMessages`
+  → `TryOneWorkItem` → `Monitor.Wait`, i.e. pumping but waiting on a continuation that never arrives.
+- **Run in isolation, `LiveGameProcessTests` passes**: `--filter "FullyQualifiedName~LiveGameProcessTests"`
+  → 2/2 green in 22s. The hang only reproduces as part of the full suite, so it's an interaction/ordering
+  issue (shared static state, a leftover process/port from an earlier test, or similar) — not a bug in the
+  test's own logic in isolation.
+- **Workaround for running the fast suite until this is fixed:** add `&Category!=LiveGame` to the filter:
+  `--filter "Category!=BuildSmoke&Category!=LiveGame"` → 304/304 green in 27s, normal timing.
+- Not root-caused — filed as its own issue (#2008) rather than folded into #2003's PR, since it predates
+  and is unrelated to that fix.

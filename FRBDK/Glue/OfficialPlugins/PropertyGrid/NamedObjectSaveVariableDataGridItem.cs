@@ -197,6 +197,8 @@ namespace OfficialPlugins.PropertyGrid
                 PropertiesToSetOnDisplayer[nameof(AngleSelectorDisplay.SnappingInterval)] =
                 15m;
             }
+
+            VariableDefinitionDisplayerHelper.ApplyAsymmetricMinMax(variableDefinition, PreferredDisplayer, PropertiesToSetOnDisplayer);
             if (variableDefinition?.UiCreated != null)
             {
                 UiCreated += (view) => variableDefinition.UiCreated(view);
