@@ -190,6 +190,32 @@ internal sealed class LiveGameProcess : IDisposable
         return await CommandSender.Self.Send(dto);
     }
 
+    /// <summary>
+    /// Sends the same SelectObjectDto Glue sends when the user clicks a Screen in the tree - see
+    /// SelectEntity's doc comment for why this builds the DTO by hand instead of going through
+    /// GlueState.Self.CurrentScreenSave / PushGlueSelectionToGame.
+    ///
+    /// Deliberately does NOT set BackupElementNameGlue - a real click on an abstract Screen with a
+    /// concrete derived Screen would carry the derived Screen's name there (see
+    /// RefreshManager.PushGlueSelectionToGame), but this is for driving the "no concrete derived Screen
+    /// exists" case (#2006) where production code now leaves it null too.
+    /// </summary>
+    public async Task<GeneralResponse<string>> SelectScreen(string screenNameGlue)
+    {
+        var screen = ObjectFinder.Self.GetScreenSave(screenNameGlue);
+        if (screen == null)
+        {
+            throw new InvalidOperationException($"No screen named \"{screenNameGlue}\" found in the loaded project.");
+        }
+
+        var dto = new SelectObjectDto
+        {
+            ElementNameGlue = screenNameGlue,
+            ScreenSave = screen,
+        };
+        return await CommandSender.Self.Send(dto);
+    }
+
     static string PatchGlueControlPort(string game1GeneratedContents, string game1GeneratedPath, int port)
     {
         // Exactly two literal call sites bake in the checked-in port (8846) - see CompilerSettings.json's

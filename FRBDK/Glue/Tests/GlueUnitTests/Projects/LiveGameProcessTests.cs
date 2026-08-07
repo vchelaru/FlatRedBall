@@ -64,4 +64,29 @@ public class LiveGameProcessTests
 
         (await game.GetCurrentScreenName()).ShouldBe("GlueControl.Screens.EntityViewingScreen");
     }
+
+    // Pins #2006: selecting an abstract Screen with no concrete derived Screen (EditorTest1's GameScreen -
+    // see the first test) previously had nothing to show - ScreenManager.LoadScreen can't instantiate an
+    // abstract type, and RefreshManager.PushGlueSelectionToGame refused to even send the selection when it
+    // found no concrete derived Screen to fall back to. The fix synthesizes a throwaway concrete subclass
+    // at runtime (AbstractScreenPlaceholderFactory) purely so the abstract Screen's own Initialize/
+    // AddToManagers can run - its SetByDerived fields are just default(T), same as any newly-created real
+    // derived Screen would show.
+    [StaFact]
+    public async Task EditorTest1_SelectingAbstractScreenWithNoDerivedScreen_LoadsPlaceholder()
+    {
+        GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
+
+        using var game = await LiveGameProcess.StartAsync(
+            "Samples/EditorTest1",
+            csprojRelativeToProjectRoot: "EditorTest1/EditorTest1.csproj",
+            exeRelativeToProjectRoot: "EditorTest1/bin/Debug/net9.0/EditorTest1.exe");
+
+        (await game.GetCurrentScreenName()).ShouldBe("", "the game should boot with no screen - see the first test");
+
+        var selectResponse = await game.SelectScreen("Screens\\GameScreen");
+        selectResponse.Succeeded.ShouldBeTrue(selectResponse.Message);
+
+        (await game.GetCurrentScreenName()).ShouldBe("EditorTest1.Screens.GameScreen_EditorPlaceholder");
+    }
 }

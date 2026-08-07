@@ -77,6 +77,7 @@
     <Compile Remove="GlueControl\Embedded\Models\StateSave.cs" />
     <Compile Remove="GlueControl\Embedded\Models\StateSaveCategory.cs" />
     <Compile Remove="GlueControl\Embedded\Runtime\DynamicEntity.cs" />
+    <Compile Remove="GlueControl\Embedded\Screens\AbstractScreenPlaceholderFactory.cs" />
     <Compile Remove="GlueControl\Embedded\Screens\EntityViewingScreen.cs" />
   </ItemGroup>
 
@@ -202,6 +203,7 @@
     <EmbeddedResource Include="GlueControl\Embedded\Models\StateSave.cs" />
     <EmbeddedResource Include="GlueControl\Embedded\Models\StateSaveCategory.cs" />
     <EmbeddedResource Include="GlueControl\Embedded\Runtime\DynamicEntity.cs" />
+    <EmbeddedResource Include="GlueControl\Embedded\Screens\AbstractScreenPlaceholderFactory.cs" />
     <EmbeddedResource Include="GlueControl\Embedded\Screens\EntityViewingScreen.cs" />
   </ItemGroup>
 

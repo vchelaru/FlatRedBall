@@ -78,7 +78,8 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration
             "Models.StateSaveCategory.cs",
             
             "Runtime.DynamicEntity.cs",
-            
+
+            "Screens.AbstractScreenPlaceholderFactory.cs",
             "Screens.EntityViewingScreen.cs"
         };
 
