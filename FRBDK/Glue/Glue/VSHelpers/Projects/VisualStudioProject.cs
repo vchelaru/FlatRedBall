@@ -50,10 +50,17 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         {
             get
             {
-                // This makes it thread safe:
-                var clone = new List<ProjectItem>();
-                clone.AddRange(mProject.AllEvaluatedItems);
-                return clone;
+                // Cloning alone isn't enough to make this thread safe: mProject.AllEvaluatedItems is a
+                // live, non-thread-safe collection, and List.AddRange reads its Count then CopyTo's from
+                // it as two separate operations, so a mutation landing between them (e.g. a concurrent
+                // AddCodeBuildItem/RemoveItem/AddNugetPackage call, all of which take lock(this)) can
+                // still throw. Taking the same lock here is what actually makes it thread safe.
+                lock (this)
+                {
+                    var clone = new List<ProjectItem>();
+                    clone.AddRange(mProject.AllEvaluatedItems);
+                    return clone;
+                }
             }
         }
 
@@ -698,7 +705,10 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         public override bool IsFrbSourceLinked()
         {
-            foreach(var item in mProject.AllEvaluatedItems)
+            // Use EvaluatedItems (a cloned snapshot), not mProject.AllEvaluatedItems directly - the
+            // latter can be mutated by a concurrent reevaluation on another thread (e.g. TaskManager's
+            // background codegen) while this enumerates it, throwing "Collection was modified".
+            foreach(var item in EvaluatedItems)
             {
                 if(item.ItemType == "ProjectReference")
                 {
@@ -1173,7 +1183,9 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 csprojName += ".csproj";
             }
 
-            return mProject.AllEvaluatedItems
+            // EvaluatedItems (a cloned snapshot), not mProject.AllEvaluatedItems directly - see
+            // IsFrbSourceLinked for why.
+            return EvaluatedItems
                 .Where(x => x.ItemType == "ProjectReference")
                 .Where(x => x.EvaluatedInclude.Contains(csprojName, StringComparison.OrdinalIgnoreCase))
                 .Any();
