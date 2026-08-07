@@ -423,6 +423,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             {
                 // for now we'll use the main project, but eventually we may want to include synced projects too:
                 var project = GlueState.Self.CurrentMainProject;
+                if (project == null)
+                {
+                    return null;
+                }
                 var referenceItems = project.EvaluatedItems.Where(item =>
                 {
                     return item.ItemType == "PackageReference" && item.EvaluatedInclude.StartsWith("FlatRedBall");
