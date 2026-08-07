@@ -1,9 +1,14 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using FlatRedBall.IO;
+using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using GameCommunicationPlugin.GlueControl.CodeGeneration;
+using GameCommunicationPlugin.GlueControl.CodeGeneration.GlueCalls;
 
 namespace GlueUnitTests.TestSupport;
 
@@ -65,6 +70,61 @@ internal static class GoldProject
         ErrorRecordingPlugin.Output.Clear();
         await FlatRedBall.Glue.IO.ProjectLoader.Self.LoadProject(csprojPath);
     }
+
+    /// <summary>
+    /// Writes live edit's runtime half - the ~40 files <c>EmbeddedCodeManager</c> copies into a game
+    /// project's GlueControl folder - into the currently loaded project, exactly as
+    /// <c>MainCompilerPlugin.HandleGluxLoaded</c> does (both calls, in this order).
+    ///
+    /// Those files are <c>&lt;Compile Remove&gt;</c>d from GameCommunicationPlugin.csproj because they only
+    /// compile against a game project, and no checked-in sample has live edit turned on, so a typo in
+    /// <c>Embedded\**\*.cs</c> otherwise reaches every live-edit user before anything fails. See GitHub
+    /// issue #1986.
+    ///
+    /// EmbedAll is called directly rather than by turning live edit on in the copied CompilerSettings.json,
+    /// because the plugin that would react to that setting builds real WPF tabs and opens sockets on
+    /// registration and isn't seamed for the test host. What's at risk is whether the embedded closure
+    /// compiles, not whether the plugin decides to embed it.
+    /// </summary>
+    public static void EmbedLiveEditCode()
+    {
+        var wasSynchronous = TaskManager.SynchronousMode;
+        TaskManager.SynchronousMode = true;
+
+        // FileManager.RelativeDirectory is process-wide, and PluginManager pairs a push of it with a pop on
+        // every plugin call, reporting an error when the two disagree. In production EmbedAll runs inside the
+        // glux load that set it; called on its own here it leaves it pointing elsewhere, and the *next* gold
+        // project load in the process is what fails - naming a plugin that has nothing to do with this.
+        var relativeDirectory = FileManager.RelativeDirectory;
+        try
+        {
+            EmbeddedCodeManager.EmbedAll(fullyGenerate: true);
+            GlueCallsCodeGenerator.GenerateAll();
+
+            // The samples set EnableDefaultCompileItems to false, so the embedded files only reach the
+            // compiler through the Compile items EmbedAll added to the in-memory project.
+            GlueCommands.Self.ProjectCommands.SaveProjects();
+        }
+        finally
+        {
+            TaskManager.SynchronousMode = wasSynchronous;
+            FileManager.RelativeDirectory = relativeDirectory;
+        }
+    }
+
+    /// <summary>
+    /// The <c>#define</c> symbols at the top of an embedded GlueControl file, as emitted by
+    /// <c>GlueControlCodeGenerator</c>'s {CompilerDirectives} substitution. Use this rather than searching the
+    /// file text for "#define Foo": several defines prefix each other (<c>HasGum</c> is a prefix of the
+    /// GluxVersions member <c>HasGumSkiaElements</c>), so a substring assertion passes on the wrong line and
+    /// the conditional region it was meant to pin is never compiled.
+    /// </summary>
+    public static IReadOnlyCollection<string> EmbeddedDefines(string generatedFilePath) =>
+        File.ReadAllLines(generatedFilePath)
+            .Select(line => line.Trim())
+            .Where(line => line.StartsWith("#define "))
+            .Select(line => line.Substring("#define ".Length).Trim())
+            .ToHashSet();
 
     /// <summary>
     /// Deletes every *.Generated.cs under <paramref name="directory"/>, and returns how many were removed.

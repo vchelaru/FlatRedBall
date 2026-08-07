@@ -1,9 +1,5 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
-using FlatRedBall.Glue.Managers;
-using FlatRedBall.Glue.Plugins.ExportedImplementations;
-using GameCommunicationPlugin.GlueControl.CodeGeneration;
-using GameCommunicationPlugin.GlueControl.CodeGeneration.GlueCalls;
 using GlueUnitTests.TestSupport;
 using Shouldly;
 using Xunit;
@@ -29,6 +25,7 @@ namespace GlueUnitTests.Projects;
 /// plugins are loaded.
 /// </summary>
 [Trait("Category", "BuildSmoke")]
+[TestCaseOrderer(LiveEditEmbedLastOrderer.TypeName, LiveEditEmbedLastOrderer.AssemblyName)]
 public class GoldProjectCompileTests
 {
     // StaFact, not Fact: plugin StartUp methods construct real WPF toolbars, which need an STA thread.
@@ -72,11 +69,21 @@ public class GoldProjectCompileTests
     // issue - GlueControlCodeGenerator asking the Gum plugin "HasGum" at generation time, which returned
     // null and silently compiled out every #if HasGum branch.
     //
+    // It also carries live edit's embedded closure, which is the other half of #1986. Beefball covers that
+    // closure's legacy configuration; this project is the only one that can compile its modern one - it has
+    // Gum, is at FileVersion 61, and references engine source by ProjectReference, so `#if HasGum` (four
+    // regions in InstanceLogic.cs alone, plus CameraLogic, SelectionLogic and CopyPasteManager),
+    // `#if SpriteManagerHasInsertLayer` (48) and `#if ... || REFERENCES_FRB_SOURCE` all switch on. Those
+    // Gum regions are exactly where the embedded code and the Gum runtime drift apart - see #1978.
+    //
+    // Embedding here rather than in a separate test is deliberate: a real project load is by far the most
+    // expensive part of a gold test, and everything the live edit closure needs is already loaded.
+    //
     // The build step was blocked until issue #1979: this project's NineSlice.gutx predates BorderScale and
     // IsTilingMiddleSections, and Glue never back-fills a loaded project's standard elements, so the
     // generated NineSliceRuntime declared Gum.Wireframe.INineSliceRuntime without implementing it (CS0535).
     [StaFact]
-    public async Task FormsSampleProject_LoadInGlue_ThenBuild_ShouldSucceed()
+    public async Task FormsSampleProject_WithLiveEditCode_LoadInGlue_ThenBuild_ShouldSucceed()
     {
         GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
 
@@ -93,6 +100,8 @@ public class GoldProjectCompileTests
         // With the Gum plugin actually dispatched to, HasGum answers for real instead of returning null.
         FlatRedBall.Glue.Plugins.PluginManager.CallPluginMethod("Gum Plugin", "HasGum").ShouldBe(true);
 
+        GoldProject.EmbedLiveEditCode();
+
         // The Gum plugin's own generators ran, not just Glue's core ones: the Gum runtime wrappers, a Forms
         // component, and a standard element. None of these appear if the plugin is loaded but never
         // dispatched to, which is the failure mode behind this issue.
@@ -101,6 +110,20 @@ public class GoldProjectCompileTests
         generated.ShouldContain("FormsSampleProject/GumRuntimes/TextRuntime.Generated.cs");
         generated.ShouldContain("FormsSampleProject/Forms/Screens/MainMenuGumForms.Generated.cs");
         generated.ShouldContain("FormsSampleProject/Screens/MainMenu.Generated.cs");
+        generated.ShouldContain("FormsSampleProject/GlueControl/InstanceLogic.Generated.cs");
+        generated.ShouldContain("FormsSampleProject/GlueControl/Editing/SelectionLogic.Generated.cs");
+        generated.ShouldContain("FormsSampleProject/GlueControl/Editing/CameraLogic.Generated.cs");
+
+        // What makes this a different exercise from the Beefball live edit test rather than a slower copy of
+        // it. Without these, a regression that stops HasGum from being emitted (the Gum plugin not
+        // answering, the project losing its .gumx) turns every #if HasGum region back into dead text and the
+        // build still passes - covering nothing, silently.
+        var defines = GoldProject.EmbeddedDefines(
+            Path.Combine(project.Root, "FormsSampleProject", "GlueControl", "InstanceLogic.Generated.cs"));
+        defines.ShouldContain("HasGum");
+        defines.ShouldContain("SpriteManagerHasInsertLayer");
+        defines.ShouldContain("HasFrbServicesGraphicsDeviceManager");
+        defines.ShouldContain("ScreenHasCancellationToken");
 
         var (exitCode, output) = NestedDotnetCli.Run($"build \"{csproj}\" -c Debug");
         exitCode.ShouldBe(0, $"dotnet build failed for the regenerated gold project:\n{output}");
@@ -171,22 +194,7 @@ public class GoldProjectCompileTests
         GlueTestBootstrap.RecordedDialogMessages.ShouldBeEmpty();
         ErrorRecordingPlugin.Errors.ShouldBeEmpty();
 
-        // Both together, in this order, is what MainCompilerPlugin.HandleGluxLoaded does in production.
-        var wasSynchronous = TaskManager.SynchronousMode;
-        TaskManager.SynchronousMode = true;
-        try
-        {
-            EmbeddedCodeManager.EmbedAll(fullyGenerate: true);
-            GlueCallsCodeGenerator.GenerateAll();
-        }
-        finally
-        {
-            TaskManager.SynchronousMode = wasSynchronous;
-        }
-
-        // Beefball sets EnableDefaultCompileItems to false, so the embedded files only reach the compiler
-        // through the Compile items EmbedAll added to the in-memory project.
-        GlueCommands.Self.ProjectCommands.SaveProjects();
+        GoldProject.EmbedLiveEditCode();
 
         // Without these the build below would pass by compiling a project that simply has no live edit code
         // in it, which is indistinguishable from the embedding never having happened.
@@ -194,6 +202,21 @@ public class GoldProjectCompileTests
         generated.ShouldContain("Beefball/GlueControl/Editing/EditingManager.Generated.cs");
         generated.ShouldContain("Beefball/GlueControl/Screens/EntityViewingScreen.Generated.cs");
         generated.ShouldContain("Beefball/GlueControl/CommandReceiver.Generated.cs");
+
+        // Beefball has no .gumx, its gluj is FileVersion 42, and it references prebuilt engine DLLs rather
+        // than engine source. So this test compiles the *legacy* half of the embedded closure: the #else
+        // branches of `#if HasGum`, `#if SpriteManagerHasInsertLayer` (48), `#if
+        // HasFrbServicesGraphicsDeviceManager || REFERENCES_FRB_SOURCE` (57) and `#if
+        // ScreenHasCancellationToken || REFERENCES_FRB_SOURCE` (59). FormsSampleProject above covers the
+        // modern side. Pinning the absent defines keeps that split honest - if Beefball is ever upgraded or
+        // given a Gum project, the two tests quietly collapse onto the same branches.
+        var beefballDefines = GoldProject.EmbeddedDefines(
+            Path.Combine(project.Root, "Beefball", "GlueControl", "InstanceLogic.Generated.cs"));
+        beefballDefines.ShouldContain("SupportsEditMode");
+        beefballDefines.ShouldNotContain("HasGum");
+        beefballDefines.ShouldNotContain("SpriteManagerHasInsertLayer");
+        beefballDefines.ShouldNotContain("ScreenHasCancellationToken");
+        beefballDefines.ShouldNotContain("REFERENCES_FRB_SOURCE");
 
         var (exitCode, output) = NestedDotnetCli.Run($"build \"{csproj}\" -c Debug");
         exitCode.ShouldBe(0, $"dotnet build failed for the regenerated gold project:\n{output}");
