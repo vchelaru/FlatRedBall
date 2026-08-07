@@ -840,9 +840,12 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                     dto.BackupElementNameGlue = derived?.Name;
                 }
 
-                var canSend = !isAbstract || !string.IsNullOrEmpty(dto.BackupElementNameGlue);
+                // An abstract Screen with no concrete derived Screen still has something to show - the
+                // running game synthesizes a placeholder subclass at runtime to view/edit it
+                // (AbstractScreenPlaceholderFactory - #2006). Entities have no such fallback, so still
+                // don't try to select one if it's abstract with nothing derived from it.
+                var canSend = !isAbstract || !string.IsNullOrEmpty(dto.BackupElementNameGlue) || element is ScreenSave;
 
-                // If its abstract and there's no derived, don't try to select it
                 if (canSend)
                 {
 

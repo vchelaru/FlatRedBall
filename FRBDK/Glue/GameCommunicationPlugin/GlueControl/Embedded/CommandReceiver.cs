@@ -492,6 +492,15 @@ namespace GlueControl
                 if (selectedNewScreen)
                 {
 #if SupportsEditMode
+                    // The selected Screen is abstract with no concrete derived Screen to fall back to
+                    // (BackupElementNameGlue is only populated when one exists - see
+                    // RefreshManager.PushGlueSelectionToGame). Its SetByDerived fields are just
+                    // default(T), so any concrete subclass is enough to view/edit it - #2006.
+                    if (ownerType.IsAbstract)
+                    {
+                        ownerType = Screens.AbstractScreenPlaceholderFactory.GetOrCreate(ownerType);
+                    }
+
                     ScreenManager.IsNextScreenInEditMode = ScreenManager.IsInEditMode;
 
                     void AfterInitializeLogic(Screen screen)
