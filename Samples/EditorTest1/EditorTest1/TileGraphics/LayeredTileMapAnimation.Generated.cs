@@ -1,0 +1,108 @@
+using FlatRedBall.Graphics.Animation;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace FlatRedBall.TileGraphics
+{
+    public partial class LayeredTileMapAnimation
+    {
+        public IReadOnlyDictionary<string, AnimationChainContainer> AnimationChainContainers => _animationChainContainers;
+        Dictionary<string, AnimationChainContainer> _animationChainContainers 
+           = new ();
+
+        public LayeredTileMapAnimation(Dictionary<string, AnimationChain> animationChainAssociations)
+        {
+            foreach(var kvp in animationChainAssociations)
+            {
+                AnimationChainContainer container = new AnimationChainContainer(kvp.Value);
+
+                _animationChainContainers.Add(kvp.Key, container);
+
+            }
+        }
+
+        public void Activity(LayeredTileMap layeredTileMap)
+        {
+            foreach (var kvp in AnimationChainContainers)
+            {
+                AnimationChainContainer container = kvp.Value;
+
+
+                int indexBefore = container.CurrentFrameIndex;
+                container.Activity(TimeManager.SecondDifference);
+                if (container.CurrentFrameIndex != indexBefore)
+                {
+                    UpdateToAnimationFrame(kvp.Key, kvp.Value, layeredTileMap);
+
+                }
+            }
+        }
+
+        public LayeredTileMapAnimation Clone()
+        {
+            Dictionary<string, AnimationChain> clonedDictionary = new Dictionary<string, AnimationChain>();
+
+            foreach (var kvp in this._animationChainContainers)
+            {
+                clonedDictionary[kvp.Key] = kvp.Value.AnimationChain;
+            }
+
+            var toReturn = new LayeredTileMapAnimation(clonedDictionary);
+
+            return toReturn;
+        }
+
+        public void UpdateToAnimationFrame(string spriteName, AnimationChainContainer animationChainContainer, LayeredTileMap layeredTileMap)
+        {
+            AnimationFrame animationFrame = animationChainContainer.CurrentFrame;
+            Microsoft.Xna.Framework.Vector4 textureValues = new Microsoft.Xna.Framework.Vector4();
+            for (int i = 0; i < layeredTileMap.MapLayers.Count; i++)
+            {
+                MapDrawableBatch mapLayer = layeredTileMap.MapLayers[i];
+                var nameDictionary = mapLayer.NamedTileOrderedIndexes;
+
+                if (nameDictionary.ContainsKey(spriteName))
+                {
+                    var indexes = nameDictionary[spriteName];
+
+                    for (int i1 = 0; i1 < indexes.Count; i1++)
+                    {
+                        int value = indexes[i1];
+                        textureValues.X = animationFrame.LeftCoordinate;
+                        textureValues.Y = animationFrame.RightCoordinate;
+                        textureValues.Z = animationFrame.TopCoordinate;
+                        textureValues.W = animationFrame.BottomCoordinate;
+
+                        var flipFlags = mapLayer.FlipFlagArray[value];
+
+                        if ((flipFlags & TMXGlueLib.DataTypes.ReducedQuadInfo.FlippedHorizontallyFlag) == TMXGlueLib.DataTypes.ReducedQuadInfo.FlippedHorizontallyFlag)
+                        {
+                            var temp = textureValues.Y;
+                            textureValues.Y = textureValues.X;
+                            textureValues.X = temp;
+                        }
+
+                        if ((flipFlags & TMXGlueLib.DataTypes.ReducedQuadInfo.FlippedVerticallyFlag) == TMXGlueLib.DataTypes.ReducedQuadInfo.FlippedVerticallyFlag)
+                        {
+                            var temp = textureValues.Z;
+                            textureValues.Z = textureValues.W;
+                            textureValues.W = temp;
+                        }
+
+                        mapLayer.PaintTileTextureCoordinates(value,
+                            textureValues.X, textureValues.Z,
+                            textureValues.Y, textureValues.W);
+
+                        // not sure why it's done this way, copied from MapDrawableBatch...
+                        if ((flipFlags & TMXGlueLib.DataTypes.ReducedQuadInfo.FlippedDiagonallyFlag) == TMXGlueLib.DataTypes.ReducedQuadInfo.FlippedDiagonallyFlag)
+                        {
+                            mapLayer.ApplyDiagonalFlip(value);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

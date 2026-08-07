@@ -1,0 +1,666 @@
+#define IncludeSetVariable
+// The following #defines come from the version of your GLUJ/GLUX file. For more information see https://docs.flatredball.com/flatredball/glue-reference/glujglux
+#define PreVersion
+#define HasFormsObject
+#define AddedGeneratedGame1
+#define ListsHaveAssociateWithFactoryBool
+#define GumGueHasGetAnimation
+#define CsvInheritanceSupport
+#define IPositionedSizedObjectInEngine
+#define NugetPackageInCsproj
+#define SupportsEditMode
+#define SupportsShapeCollectionAddToManagerMakeAutomaticallyUpdated
+#define ScreensHaveActivityEditMode
+#define SupportsNamedSubcollisions
+#define TimeManagerHasDelaySeconds
+#define GumTextHasIsBold
+#define GlueSavedToJson
+#define IEntityInFrb
+#define SeparateJsonFilesForElements
+#define GumSupportsAchxAnimation
+#define StartupInGeneratedGame
+#define RemoveAutoLocalizationOfVariables
+#define GumHasMIsLayoutSuspendedPublic
+#define SpriteHasUseAnimationTextureFlip
+#define RemoveIsScrollableEntityList
+#define HasGetGridLine
+#define HasScreenManagerAfterScreenDestroyed
+#define ScreenManagerHasPersistentPolygons
+#define ShapeManagerCollideAgainstClosest
+#define SpriteHasTolerateMissingAnimations
+#define AnimationLayerHasName
+#define IPlatformer
+#define GumDefaults2
+#define IStackableInEngine
+#define ICollidableHasItemsCollidedAgainst
+#define CollisionRelationshipManualPhysics
+#define GumSupportsStackSpacing
+#define CollisionRelationshipsSupportMoveSoft
+#define GeneratedCameraSetupFile
+#define ShapeCollectionHasMaxAxisAlignedRectanglesRadiusX
+#define AutoNameCollisionListsAsSingle
+#define GumHasIgnoredByParentSize
+#define GumTextObjectsUpdateTextWith0ChildDepth
+#define HasFrameworkElementManager
+#define HasGumSkiaElements
+#define ITiledTileMetadataInFrb
+#define DamageableHasHealth
+#define HasGame1GenerateEarly
+#define ICollidableHasObjectsCollidedAgainst
+#define HasIRepeatPressableInput
+#define AllTiledFilesGenerated
+#define RemoveRedundantDerivedData
+#define GraphicalUiElementProtectedAnimationProperties
+#define GraphicalUiElementINotifyPropertyChanged
+#define GumTextObjectsHaveTextOverflowProperties
+#define TileShapeCollectionIsICollidable
+#define TileShapeCollectionAddToLayerSupportsAutomaticallyUpdated
+#define ISongInFrb
+#define RendererHasExternalEffectManager
+#define SpriteHasSetCollisionFromAnimation
+#define HasIGumScreenOwner
+#define ScreenIsINameable
+#define SpriteManagerHasInsertLayer
+#define GumUsesSystemTypes
+#define GumCommonCodeReferencing
+#define GumTextSupportsBbCode
+#define DamageDealingToggles
+#define VariantsInsteadOfTypes
+#define ITopDownEntity
+#define CaseSensitiveLoading
+#define ScreensHaveDefaultLayer
+#define HasFrbServicesGraphicsDeviceManager
+#define ShapeCollectionHasLastCollisionCallDeepCheckCount
+#define ScreenHasCancellationToken
+#define GameCanStartInEditMode
+#define GumHasRenderableCloneLogic
+#define ShapeCollectionHasIsPointOnOrInside
+#define AudioManagerStopSongTakesBool
+#define GraphicalUiElementRemoveFromManagersIsVirtual
+#define GumVisualHasRenderTarget
+#define GumNineSliceHasAnimate
+#define ObsoleteGumDimensionUnitTypes
+#define GumHasIRenderTargetTextureReferencer
+#define GumHasGueVirtualIsPointInside
+#define PositionedNodeHasTag
+#define NineSliceHasTilingMiddleSections
+#define GumHasFrbRuntimeInterfaces
+using EditorTest1;
+
+﻿using FlatRedBall;
+using FlatRedBall.Graphics;
+using FlatRedBall.Math.Geometry;
+using Microsoft.Xna.Framework;
+using GlueControl.Editing.Visuals;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using FlatRedBall.Graphics.Animation;
+using FlatRedBall.Math.Paths;
+using Microsoft.Xna.Framework.Graphics;
+
+namespace GlueControl.Editing
+{
+    /// <summary>
+    /// Object used to create immediate-mode graphics (fire and forget). This can be used to display debug information
+    /// when the game is running or markers and other indicators in edit mode. All calls must be made every frame for the objects
+    /// to appear.
+    /// </summary>
+    public class EditorVisuals : FlatRedBall.Managers.IManager
+    {
+        #region Fields/Properties
+
+        static int nextLine = 0;
+        static List<Line> Lines = new List<Line>();
+
+        static int nextText = 0;
+        static List<Text> Texts = new List<Text>();
+
+        static int nextArrow = 0;
+        static List<Arrow> Arrows = new List<Arrow>();
+
+        static int nextSprite = 0;
+        static List<Sprite> Sprites = new List<Sprite>();
+
+        static int nextRectangle = 0;
+        static List<AxisAlignedRectangle> Rectangles = new List<AxisAlignedRectangle>();
+
+        static int nextCircle = 0;
+        static List<Circle> Circles = new List<Circle>();
+
+        static int nextPolygon = 0;
+        static List<Polygon> Polygons = new List<Polygon>();
+
+        static double lastFrameReset;
+
+        public static Layer DefaultLayer { get; set; }
+
+        #endregion
+
+        static EditorVisuals()
+        {
+            FlatRedBallServices.AddManager(new EditorVisuals());
+            DefaultLayer = SpriteManager.TopLayer;
+        }
+
+        #region Draw specific shapes
+        public static Text Text(string text, Vector3 position, Color? color = null)
+        {
+            if (position.Z == Camera.Main.Z)
+            {
+                position.Z = 0;
+            }
+            Color textColor = color ?? Color.White;
+
+            // This screen is cleaning up, so don't make anymore objects:
+            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
+            {
+                return new FlatRedBall.Graphics.Text();
+            }
+            TryResetEveryFrameValues();
+
+            while (nextText >= Texts.Count)
+            {
+                Texts.Add(TextManager.AddText(String.Empty, DefaultLayer));
+            }
+
+            var textInstance = Texts[nextText];
+            textInstance.Name = $"EditorVisuals Text {nextText}";
+            textInstance.Visible = true;
+            textInstance.DisplayText = text;
+            textInstance.Position = position;
+            textInstance.HorizontalAlignment = HorizontalAlignment.Center;
+            textInstance.VerticalAlignment = VerticalAlignment.Center;
+            textInstance.SetPixelPerfectScale(Camera.Main);
+            textInstance.Red = textColor.R / 255.0f;
+            textInstance.Green = textColor.G / 255.0f;
+            textInstance.Blue = textColor.B / 255.0f;
+            nextText++;
+            return textInstance;
+        }
+
+        public static Line Line(Vector3 point1, Vector3 point2, Color? color = null)
+        {
+            if (point1.Z == Camera.Main.Z)
+            {
+                point1.Z = 0;
+            }
+            if (point2.Z == Camera.Main.Z)
+            {
+                point2.Z = 0;
+            }
+            Color lineColor = color ?? Color.White;
+
+            // This screen is cleaning up, so don't make anymore objects:
+            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
+            {
+                var tempLine = new Line();
+                tempLine.Name = "Temp line returned when screen is transitioning";
+                return tempLine;
+            }
+            TryResetEveryFrameValues();
+
+            while (nextLine >= Lines.Count)
+            {
+                var line = new Line();
+                ShapeManager.AddToLayer(line, DefaultLayer);
+                Lines.Add(line);
+            }
+
+            var lineInstance = Lines[nextLine];
+            lineInstance.Name = $"EditorVisuals Line {nextLine}";
+            lineInstance.Visible = true;
+            lineInstance.SetFromAbsoluteEndpoints(point1, point2);
+            lineInstance.Color = lineColor;
+            nextLine++;
+
+            return lineInstance;
+        }
+
+        public static void LinePath(List<Vector3> points, Color? color = null)
+        {
+            for (int i = 0; i < points.Count - 1; i++)
+            {
+                Line(points[i], points[i + 1], color);
+            }
+        }
+
+        public static Arrow Arrow(Vector3 point1, Vector3 point2, Color? color = null)
+        {
+            if (point1.Z == Camera.Main.Z)
+            {
+                point1.Z = 0;
+            }
+            if (point2.Z == Camera.Main.Z)
+            {
+                point2.Z = 0;
+            }
+
+            // This screen is cleaning up, so don't make anymore objects:
+            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
+            {
+                return new Arrow(DefaultLayer);
+            }
+            TryResetEveryFrameValues();
+
+            while (nextArrow >= Arrows.Count)
+            {
+                Arrows.Add(new Visuals.Arrow(DefaultLayer));
+            }
+
+
+            var arrowInstance = Arrows[nextArrow];
+            //arrowInstance.Name = $"EditorVisuals Line {nextLine}";
+            arrowInstance.Visible = true;
+            arrowInstance.SetFromAbsoluteEndpoints(point1, point2);
+            arrowInstance.Color = color ?? Color.White;
+            nextArrow++;
+            return arrowInstance;
+        }
+
+        public static Sprite Sprite(Texture2D texture)
+        {
+            return Sprite(texture, FlatRedBall.Camera.Main.Position, 1);
+        }
+        public static Sprite Sprite(Texture2D texture, Vector3 position, float textureScale = 1)
+        {
+            var sprite = CreateSpriteInternal(position, textureScale);
+            sprite.Texture = texture;
+            return sprite;
+        }
+
+        public static Sprite Sprite(AnimationChain animationChain, Vector3 position, float textureScale = 1)
+        {
+            var sprite = CreateSpriteInternal(position, textureScale);
+            sprite.SetAnimationChain(animationChain);
+            return sprite;
+        }
+
+        private static Sprite CreateSpriteInternal(Vector3 position, float textureScale)
+        {
+            if (position.Z == Camera.Main.Z)
+            {
+                position.Z = 0;
+            }
+
+            // This screen is cleaning up, so don't make anymore objects:
+            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
+            {
+                return new Sprite();
+            }
+
+            TryResetEveryFrameValues();
+
+            if (nextSprite == Sprites.Count)
+            {
+                var newSprite = SpriteManager.AddSprite((Texture2D)null);
+                SpriteManager.AddToLayer(newSprite, DefaultLayer);
+                Sprites.Add(newSprite);
+            }
+
+            var sprite = Sprites[nextSprite];
+            sprite.Name = $"EditorVisuals Sprite {nextSprite}";
+            sprite.Visible = true;
+            sprite.Position = position;
+            sprite.TextureScale = textureScale;
+            sprite.ColorOperation = ColorOperation.Texture;
+            sprite.Alpha = 1;
+
+            nextSprite++;
+
+            return sprite;
+        }
+
+        public static Sprite ColoredRectangle(float width, float height, Vector3 centerPosition, Color? color = null)
+        {
+            var sprite = Sprite((Microsoft.Xna.Framework.Graphics.Texture2D)null, centerPosition, textureScale: -1);
+            sprite.Width = width;
+            sprite.Height = height;
+            sprite.ColorOperation = ColorOperation.Color;
+
+            var effectiveColor = color ?? new Color(255, 0, 0, 100);
+
+            sprite.Red = effectiveColor.R / 255.0f;
+            sprite.Green = effectiveColor.G / 255.0f;
+            sprite.Blue = effectiveColor.B / 255.0f;
+            sprite.Alpha = effectiveColor.A / 255.0f;
+
+            return sprite;
+        }
+
+        public static Sprite ColoredRectangle(Text textToSurround, Color? color = null)
+        {
+            if (color == null)
+            {
+                color = Color.Black;
+            }
+            var rectangle = EditorVisuals.ColoredRectangle(
+                textToSurround.Width + 4,
+                textToSurround.Height,
+                textToSurround.Position.AddZ(-.1f),
+                color);
+
+            switch (textToSurround.VerticalAlignment)
+            {
+                case VerticalAlignment.Center:
+                    // do nothing
+                    break;
+                case VerticalAlignment.Top:
+                    rectangle.Y -= textToSurround.Height / 2.0f;
+                    break;
+                case VerticalAlignment.Bottom:
+                    rectangle.Y += textToSurround.Height / 2.0f;
+                    break;
+            }
+
+            return rectangle;
+        }
+
+        public static AxisAlignedRectangle Rectangle(float width, float height, Vector3 centerPosition, Color? color = null)
+        {
+            if (centerPosition.Z == Camera.Main.Z)
+            {
+                centerPosition.Z = 0;
+            }
+
+            Color rectColor = color ?? Color.White;
+
+            // This screen is cleaning up, so don't make anymore objects:
+            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
+            {
+                return new AxisAlignedRectangle();
+            }
+
+            TryResetEveryFrameValues();
+
+            if (nextRectangle == Rectangles.Count)
+            {
+                var newRectangle = new AxisAlignedRectangle();
+                ShapeManager.AddToLayer(newRectangle, DefaultLayer);
+                Rectangles.Add(newRectangle);
+            }
+
+            var rectangle = Rectangles[nextRectangle];
+            rectangle.Name = $"EditorVisuals Rectangle {nextRectangle}";
+            rectangle.Visible = true;
+            rectangle.Width = width;
+            rectangle.Height = height;
+            rectangle.Position = centerPosition;
+            rectangle.Color = rectColor;
+            nextRectangle++;
+
+            return rectangle;
+        }
+
+        public static Circle Circle(float radius, Vector3 position, Color? color = null)
+        {
+            if (position.Z == Camera.Main.Z)
+            {
+                position.Z = 0;
+            }
+
+            Color circleColor = color ?? Color.White;
+
+            // This screen is cleaning up, so don't make any more objects:
+            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
+            {
+                return new FlatRedBall.Math.Geometry.Circle();
+            }
+
+            TryResetEveryFrameValues();
+
+            if (nextCircle == Circles.Count)
+            {
+                var newCircle = new Circle();
+                ShapeManager.AddToLayer(newCircle, DefaultLayer);
+                Circles.Add(newCircle);
+            }
+
+            var circle = Circles[nextCircle];
+            circle.Name = $"EditorVisuals Circle {nextCircle}";
+            circle.Visible = true;
+            circle.Radius = radius;
+            circle.Position = position;
+            circle.Color = circleColor;
+            nextCircle++;
+
+            return circle;
+        }
+
+        public static Polygon Polygon(Vector3 centerPosition, Color? color = null)
+        {
+            if (centerPosition.Z == Camera.Main.Z)
+            {
+                centerPosition.Z = 0;
+            }
+
+            Color polygonColor = color ?? Color.White;
+
+            // This screen is cleaning up, so don't make anymore objects:
+            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
+            {
+                return new Polygon();
+            }
+
+            TryResetEveryFrameValues();
+
+            if (nextPolygon == Polygons.Count)
+            {
+                var newPolygon = new Polygon();
+                ShapeManager.AddToLayer(newPolygon, DefaultLayer);
+                Polygons.Add(newPolygon);
+            }
+
+            var polygon = Polygons[nextPolygon];
+            polygon.Name = $"EditorVisuals Polygon {nextPolygon}";
+            polygon.Visible = true;
+            polygon.Position = centerPosition;
+            polygon.Color = polygonColor;
+            nextPolygon++;
+
+            return polygon;
+        }
+
+        public static Polygon DrawPath(Path path, Vector3 startingPosition, bool includeOffsetArrow = false)
+        {
+
+            var pathPolygon = Polygon(startingPosition);
+
+
+            if (path != null && path.TotalLength > 0)
+            {
+                var points = GetPoints(path, flipHorizontally: false);
+                pathPolygon.Points = points;
+            }
+            else
+            {
+                pathPolygon.Points = new List<FlatRedBall.Math.Geometry.Point>()
+                {
+                    new FlatRedBall.Math.Geometry.Point(0, 0)
+                };
+            }
+
+            if (includeOffsetArrow && pathPolygon.Points.Count > 0 && (pathPolygon.Points[0].X != 0 || pathPolygon.Points[0].Y != 0))
+            {
+                Arrow(new Vector3(), pathPolygon.Points[0].ToVector3()).Color = Color.Yellow;
+            }
+
+            return pathPolygon;
+        }
+
+        #endregion
+
+        public static void DrawRepositionDirections(FlatRedBall.TileCollisions.TileShapeCollection tileShapeCollection)
+        {
+            foreach (var rectangle in tileShapeCollection.Rectangles)
+            {
+                DrawRepositionDirections(rectangle);
+            }
+        }
+
+        public static void DrawRepositionDirections(AxisAlignedRectangle rectangle)
+        {
+            if (rectangle.RepositionDirections.HasFlag(RepositionDirections.Up))
+            {
+                var endpoint = rectangle.Position;
+                endpoint.Y += rectangle.Height / 2;
+                EditorVisuals.Arrow(rectangle.Position, endpoint);
+            }
+
+            if (rectangle.RepositionDirections.HasFlag(RepositionDirections.Down))
+            {
+                var endpoint = rectangle.Position;
+                endpoint.Y += -rectangle.Height / 2;
+                EditorVisuals.Arrow(rectangle.Position, endpoint);
+            }
+
+            if (rectangle.RepositionDirections.HasFlag(RepositionDirections.Left))
+            {
+                var endpoint = rectangle.Position;
+                endpoint.X += -rectangle.Width / 2;
+                EditorVisuals.Arrow(rectangle.Position, endpoint);
+            }
+
+            if (rectangle.RepositionDirections.HasFlag(RepositionDirections.Right))
+            {
+                var endpoint = rectangle.Position;
+                endpoint.X += rectangle.Width / 2;
+                EditorVisuals.Arrow(rectangle.Position, endpoint);
+            }
+        }
+
+        public static List<FlatRedBall.Math.Geometry.Point> GetPoints(Path pathInstance, bool flipHorizontally)
+        {
+            var points = new List<FlatRedBall.Math.Geometry.Point>();
+
+            const float pointFrequency = 4;
+            var pathLength = pathInstance.TotalLength;
+
+            for (float f = 0; f < pathLength; f += pointFrequency)
+            {
+                var pointAtLength = pathInstance.PointAtLength(f);
+
+                var point = new FlatRedBall.Math.Geometry.Point
+                {
+                    X = pointAtLength.X,
+                    Y = pointAtLength.Y
+                };
+
+                if (flipHorizontally)
+                {
+                    point.X *= -1;
+                }
+
+                points.Add(point);
+            }
+
+            //pathPolygon.Points = points;
+            return points;
+        }
+
+        private static void TryResetEveryFrameValues()
+        {
+            if (lastFrameReset != TimeManager.CurrentTime)
+            {
+                lastFrameReset = TimeManager.CurrentTime;
+
+                foreach (var text in Texts)
+                {
+                    text.Visible = false;
+                }
+                foreach (var line in Lines)
+                {
+                    line.Visible = false;
+                }
+                foreach (var arrow in Arrows)
+                {
+                    arrow.Visible = false;
+                }
+                foreach (var sprite in Sprites)
+                {
+                    sprite.Visible = false;
+                }
+                foreach (var rectangle in Rectangles)
+                {
+                    rectangle.Visible = false;
+                }
+                foreach (var circle in Circles)
+                {
+                    circle.Visible = false;
+                }
+                foreach (var polygon in Polygons)
+                {
+                    polygon.Visible = false;
+                }
+                nextText = 0;
+                nextArrow = 0;
+                nextLine = 0;
+                nextSprite = 0;
+                nextRectangle = 0;
+                nextCircle = 0;
+                nextPolygon = 0;
+            }
+        }
+
+        public static void DestroyContainedObjects()
+        {
+            foreach (var line in Lines)
+            {
+                ShapeManager.Remove(line);
+            }
+            Lines.Clear();
+
+            foreach (Text text in Texts)
+            {
+                TextManager.RemoveText(text);
+            }
+            Texts.Clear();
+
+            foreach (var arrow in Arrows)
+            {
+                arrow.Destroy();
+            }
+            Arrows.Clear();
+
+            foreach (var sprite in Sprites)
+            {
+                SpriteManager.RemoveSprite(sprite);
+            }
+            Sprites.Clear();
+
+            foreach (var rectangle in Rectangles)
+            {
+                ShapeManager.Remove(rectangle);
+            }
+            Rectangles.Clear();
+
+            foreach (var circle in Circles)
+            {
+                ShapeManager.Remove(circle);
+            }
+            Circles.Clear();
+
+            foreach (var polygon in Polygons)
+            {
+                ShapeManager.Remove(polygon);
+            }
+            Polygons.Clear();
+        }
+
+        public void Update()
+        {
+            TryResetEveryFrameValues();
+
+            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
+            {
+                DestroyContainedObjects();
+            }
+        }
+
+        public void UpdateDependencies()
+        {
+        }
+    }
+}
