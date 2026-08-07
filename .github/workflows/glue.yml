@@ -51,12 +51,14 @@ jobs:
 
     # Run via the .sln so $(SolutionDir) is defined (OfficialPlugins has a post-build step that needs it).
     - name: Run unit tests
-      run: dotnet test 'FlatRedBall\FRBDK\Glue\Glue with All.sln' -c ${{ matrix.configuration }} --filter "Category!=BuildSmoke"
+      run: dotnet test 'FlatRedBall\FRBDK\Glue\Glue with All.sln' -c ${{ matrix.configuration }} --filter "Category!=BuildSmoke&Category!=LiveGame"
 
     # Slower: creates a project from each template and runs `dotnet build` on it. Needs the net9 SDK
     # (installed above) and network access for the first NuGet restore.
     - name: Run new-project build smoke test
       run: dotnet test 'FlatRedBall\FRBDK\Glue\Glue with All.sln' -c ${{ matrix.configuration }} --filter "Category=BuildSmoke"
+
+    # Category=LiveGame launches a real MonoGame DesktopGL window - see pr-tests.yml for why it's excluded.
 
     - name: Zip and upload FRBDK
       env: # Or as an environment variable

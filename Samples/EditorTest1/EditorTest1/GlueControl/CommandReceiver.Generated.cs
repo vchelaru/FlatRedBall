@@ -1,3 +1,92 @@
+#define IncludeSetVariable
+// The following #defines come from the version of your GLUJ/GLUX file. For more information see https://docs.flatredball.com/flatredball/glue-reference/glujglux
+#define PreVersion
+#define HasFormsObject
+#define AddedGeneratedGame1
+#define ListsHaveAssociateWithFactoryBool
+#define GumGueHasGetAnimation
+#define CsvInheritanceSupport
+#define IPositionedSizedObjectInEngine
+#define NugetPackageInCsproj
+#define SupportsEditMode
+#define SupportsShapeCollectionAddToManagerMakeAutomaticallyUpdated
+#define ScreensHaveActivityEditMode
+#define SupportsNamedSubcollisions
+#define TimeManagerHasDelaySeconds
+#define GumTextHasIsBold
+#define GlueSavedToJson
+#define IEntityInFrb
+#define SeparateJsonFilesForElements
+#define GumSupportsAchxAnimation
+#define StartupInGeneratedGame
+#define RemoveAutoLocalizationOfVariables
+#define GumHasMIsLayoutSuspendedPublic
+#define SpriteHasUseAnimationTextureFlip
+#define RemoveIsScrollableEntityList
+#define HasGetGridLine
+#define HasScreenManagerAfterScreenDestroyed
+#define ScreenManagerHasPersistentPolygons
+#define ShapeManagerCollideAgainstClosest
+#define SpriteHasTolerateMissingAnimations
+#define AnimationLayerHasName
+#define IPlatformer
+#define GumDefaults2
+#define IStackableInEngine
+#define ICollidableHasItemsCollidedAgainst
+#define CollisionRelationshipManualPhysics
+#define GumSupportsStackSpacing
+#define CollisionRelationshipsSupportMoveSoft
+#define GeneratedCameraSetupFile
+#define ShapeCollectionHasMaxAxisAlignedRectanglesRadiusX
+#define AutoNameCollisionListsAsSingle
+#define GumHasIgnoredByParentSize
+#define GumTextObjectsUpdateTextWith0ChildDepth
+#define HasFrameworkElementManager
+#define HasGumSkiaElements
+#define ITiledTileMetadataInFrb
+#define DamageableHasHealth
+#define HasGame1GenerateEarly
+#define ICollidableHasObjectsCollidedAgainst
+#define HasIRepeatPressableInput
+#define AllTiledFilesGenerated
+#define RemoveRedundantDerivedData
+#define GraphicalUiElementProtectedAnimationProperties
+#define GraphicalUiElementINotifyPropertyChanged
+#define GumTextObjectsHaveTextOverflowProperties
+#define TileShapeCollectionIsICollidable
+#define TileShapeCollectionAddToLayerSupportsAutomaticallyUpdated
+#define ISongInFrb
+#define RendererHasExternalEffectManager
+#define SpriteHasSetCollisionFromAnimation
+#define HasIGumScreenOwner
+#define ScreenIsINameable
+#define SpriteManagerHasInsertLayer
+#define GumUsesSystemTypes
+#define GumCommonCodeReferencing
+#define GumTextSupportsBbCode
+#define DamageDealingToggles
+#define VariantsInsteadOfTypes
+#define ITopDownEntity
+#define CaseSensitiveLoading
+#define ScreensHaveDefaultLayer
+#define HasFrbServicesGraphicsDeviceManager
+#define ShapeCollectionHasLastCollisionCallDeepCheckCount
+#define ScreenHasCancellationToken
+#define GameCanStartInEditMode
+#define GumHasRenderableCloneLogic
+#define ShapeCollectionHasIsPointOnOrInside
+#define AudioManagerStopSongTakesBool
+#define GraphicalUiElementRemoveFromManagersIsVirtual
+#define GumVisualHasRenderTarget
+#define GumNineSliceHasAnimate
+#define ObsoleteGumDimensionUnitTypes
+#define GumHasIRenderTargetTextureReferencer
+#define GumHasGueVirtualIsPointInside
+#define PositionedNodeHasTag
+#define NineSliceHasTilingMiddleSections
+#define GumHasFrbRuntimeInterfaces
+using EditorTest1;
+
 ﻿using GlueControl.Dtos;
 using GlueControl.Editing;
 using Microsoft.Xna.Framework;
@@ -21,7 +110,7 @@ namespace GlueControl
 {
     static class CommandReceiver
     {
-        public const string ProjectNamespace = "{ProjectNamespace}";
+        public const string ProjectNamespace = "EditorTest1";
 
         #region Supporting Methods/Properties
 
@@ -143,7 +232,7 @@ namespace GlueControl
 
         private static bool GetIfMatchesCurrentScreen(string elementNameGlue, out System.Type ownerType, out Screen currentScreen)
         {
-            var ownerTypeName = $"{ProjectNamespace}.{elementNameGlue.Replace("\\", ".")}";
+            var ownerTypeName = $"EditorTest1.{elementNameGlue.Replace("\\", ".")}";
 
             ownerType = typeof(CommandReceiver).Assembly.GetType(ownerTypeName);
             currentScreen = ScreenManager.CurrentScreen;
@@ -411,6 +500,13 @@ namespace GlueControl
             }
             ///////////////////////end early out//////////////////////////
 
+            // No screen has loaded yet (e.g. the game is still starting up), so there's nothing to
+            // select against. Without this, MoveToScreen calls below NRE on a null CurrentScreen.
+            if (FlatRedBall.Screens.ScreenManager.CurrentScreen == null)
+            {
+                return;
+            }
+
             if (selectObjectDto.GlueElement != null)
             {
                 selectObjectDto.GlueElement.FixAllTypes();
@@ -511,17 +607,7 @@ namespace GlueControl
                     }
                     ScreenManager.ScreenLoaded += AfterInitializeLogic;
 
-                    // See the entity branch below for why this can't unconditionally call
-                    // ScreenManager.CurrentScreen.MoveToScreen: there may be no current screen to move from
-                    // (e.g. an abstract StartUpScreen with no concrete derived screen - #2002).
-                    if (ScreenManager.CurrentScreen == null)
-                    {
-                        ScreenManager.Start(ownerType);
-                    }
-                    else
-                    {
-                        ScreenManager.CurrentScreen.MoveToScreen(ownerType);
-                    }
+                    ScreenManager.CurrentScreen.MoveToScreen(ownerType);
                     EditorVisuals.DestroyContainedObjects();
 
                     isOwnerScreen = true;
@@ -577,22 +663,7 @@ namespace GlueControl
 
                         Screens.EntityViewingScreen.GameElementTypeToCreate = GlueToGameElementName(elementNameGlue);
                         Screens.EntityViewingScreen.InstanceToSelect = GetSelectedNamedObjects(selectObjectDto).FirstOrDefault();
-
-                        // EntityViewingScreen is self-contained - it never touches whatever Screen the user
-                        // is editing - so selecting an entity shouldn't depend on one being loaded. But
-                        // MoveToScreen is an instance method that transitions FROM the current screen, and
-                        // throws when there isn't one (see ScreenManager.MoveToScreen's static overload:
-                        // "There is no current screen to move from. Call Start to create the first
-                        // screen."). This happens whenever the project's StartUpScreen can't be launched at
-                        // all - e.g. it's abstract with no concrete derived screen to fall back to.
-                        if (ScreenManager.CurrentScreen == null)
-                        {
-                            ScreenManager.Start(typeof(Screens.EntityViewingScreen));
-                        }
-                        else
-                        {
-                            ScreenManager.CurrentScreen.MoveToScreen(typeof(Screens.EntityViewingScreen));
-                        }
+                        ScreenManager.CurrentScreen.MoveToScreen(typeof(Screens.EntityViewingScreen));
 #endif
                     }
                     else
@@ -976,7 +1047,7 @@ namespace GlueControl
             }
             else
             {
-                return $"{ProjectNamespace}.{elementName.Replace("\\", ".")}";
+                return $"EditorTest1.{elementName.Replace("\\", ".")}";
             }
         }
 

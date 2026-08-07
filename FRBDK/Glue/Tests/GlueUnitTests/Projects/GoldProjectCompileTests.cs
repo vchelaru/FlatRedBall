@@ -1,5 +1,8 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using GameCommunicationPlugin.GlueControl.Managers;
 using GlueUnitTests.TestSupport;
 using Shouldly;
 using Xunit;
@@ -168,6 +171,47 @@ public class GoldProjectCompileTests
 
         var (exitCode, output) = NestedDotnetCli.Run($"build \"{csproj}\" -c Debug");
         exitCode.ShouldBe(0, $"dotnet build failed for the regenerated gold project:\n{output}");
+    }
+
+    // Pins #2002: live edit used to pass an abstract StartUpScreen's type name straight through as the
+    // game's launch arg. The game can't instantiate an abstract class, so nothing ever loaded and
+    // CommandReceiver.HandleDto (Embedded/CommandReceiver.cs) then NREd on a null ScreenManager.CurrentScreen
+    // the moment the user selected anything. DoorsDemo already has exactly the shape needed to prove the
+    // fix: GameScreen is abstract (its NamedObjects are SetByDerived, the standard platformer-wizard
+    // pattern) and Level1 is a concrete screen derived from it - its real StartUpScreen is Level1, so it's
+    // overridden here to reproduce the misconfiguration.
+    [StaFact]
+    public async Task DoorsDemoProject_WithAbstractStartUpScreen_LaunchArgsFallBackToConcreteDerivedScreen()
+    {
+        GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
+
+        using var project = GoldProject.CopyOutOfRepo("Samples/Platformer/DoorsDemo");
+        var csproj = Path.Combine(project.Root, "DoorsDemo", "DoorsDemo.csproj");
+
+        GoldProject.DeleteGeneratedCode(project.Root);
+
+        await GoldProject.LoadInGlueAsync(csproj);
+
+        GlueTestBootstrap.RecordedDialogMessages.ShouldBeEmpty();
+        ErrorRecordingPlugin.Errors.ShouldBeEmpty();
+
+        // Pins the fixture, not the fix: if DoorsDemo ever loses GameScreen's abstract-ness or Level1's
+        // inheritance from it, the assertion below would just look like a GameHostController regression
+        // instead of a changed fixture.
+        var gameScreen = ObjectFinder.Self.GetScreenSave("Screens\\GameScreen");
+        gameScreen.IsAbstract.ShouldBeTrue(
+            "This test depends on DoorsDemo's GameScreen being abstract (a NamedObject marked SetByDerived) - see #2002.");
+        ObjectFinder.Self.GetAllDerivedElementsRecursive(gameScreen)
+            .ShouldContain(item => item.Name == "Screens\\Level1" && !item.IsAbstract,
+                "This test depends on DoorsDemo's Level1 deriving from GameScreen - see #2002.");
+
+        GlueState.Self.CurrentGlueProject.StartUpScreen = "Screens\\GameScreen";
+        GlueState.Self.CurrentScreenSave = null;
+        GlueState.Self.CurrentEntitySave = null;
+
+        var args = GameHostController.GetScreenNameForLaunchArgs();
+
+        args.ShouldBe(GlueState.Self.ProjectNamespace + ".Screens.Level1");
     }
 
     // Live edit's runtime half - the ~40 files EmbeddedCodeManager copies into a game project's GlueControl
