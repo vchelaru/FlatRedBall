@@ -84,3 +84,63 @@ Found while running the fast suite for an unrelated PropertyGrid fix (#2003) —
   `--filter "Category!=BuildSmoke&Category!=LiveGame"` → 304/304 green in 27s, normal timing.
 - Not root-caused — filed as its own issue (#2008) rather than folded into #2003's PR, since it predates
   and is unrelated to that fix.
+
+## 2026-08-07 — RESOLVED: `LiveGameProcessTests` full-suite hang (#2008), root cause and two distinct symptoms
+
+Follow-up to the entry above. Reproduced repeatedly with `dotnet test --filter "Category!=BuildSmoke"
+--no-build` in a fresh worktree — the hang is real and order-dependent, not a fluke: across ~6 back-to-back
+runs it hung twice, passed clean three times, and once completed but with 8 unrelated tests
+(`WizardProjectLogicAddGameScreenTests`, `GumProjectCreationTests`, `EntityInputMovementTests`) failing on a
+`FileNotFoundException`/missing-variable pattern that only appeared when `LiveGameProcessTests` ran earlier
+in the same process. Confirmed (independently, from a different concurrent session on a different worktree)
+that the hang still reproduced on an unmodified checkout while this investigation was in progress.
+
+- **Root cause, found by temporary file-based logging** (`CommandSender.DiagLog`, self-serve-logging style
+  — never asked the terminal to relay anything) around the connect-wait loop, the send semaphore, and
+  `GlueTestBootstrap.EnsureHeadlessProjectLoadReady`'s one-time `SynchronizationContext.SetSynchronizationContext(null)`
+  call: that line only runs once, guarded by a static `_headlessProjectLoadReady` flag, the first time
+  *any* test in the whole process reaches it. Its own comment already flags the intent ("this method may be
+  the first thing a different (STA) test thread calls, so clear this thread's context too") — but when the
+  STA thread it lands on is an `[StaFact]` test's, `SynchronizationContext.Current` at that point isn't
+  stale WinForms garbage, it's `Xunit.StaFact`'s own `UISynchronizationContext`, the pump every subsequent
+  `await` in that test needs to resume. Nulling it doesn't fail loudly — the awaited `Task` still eventually
+  completes (its continuation just runs on a thread-pool thread instead), but StaFact's own outer pump
+  (`PumpTill`/`PumpMessages`/`TryOneWorkItem`) is watching for work items posted to *its* context
+  specifically, gets none, and sits in `Monitor.Wait` forever. Confirmed directly: one hung run's diagnostic
+  log showed `EditorTest1_SelectingEntity_...` entering `LiveGameProcess.StartAsync`'s connect-wait loop and
+  never leaving it, with no exception, no timeout, no further log lines — matching the `dotnet-stack`
+  signature from the entry above exactly (STA thread parked in `TryOneWorkItem`/`Monitor.Wait`, every other
+  thread idle). Whether this STA thread is the *first* in the process to hit
+  `EnsureHeadlessProjectLoadReady` depends on `LiveGameProcessTests`' position in xUnit's default (hash-of-
+  test-case-ID) execution order relative to every other `[StaFact]` test that also calls it
+  (`ScreenDefaultLayerCodeGenerationTests`, `GoldProjectCompileTests`) — hence "sometimes hangs, sometimes
+  doesn't," and the same shape as `LiveEditEmbedLastOrderer`'s already-documented GumPlugin/TaskManager
+  landmine (likely a second manifestation of this same class of bug, not root-caused further here).
+- **The 8-failure run is a second, separate symptom of the same underlying problem**: `LiveGameProcessTests`
+  loads a real gold project into process-wide Glue statics (`GlueState`, `FileManager.RelativeDirectory`,
+  registers real plugins) via the same machinery `GoldProjectCompileTests` uses, then deletes its temp
+  project directory on `Dispose()`. Nothing about that is scoped to `LiveGameProcessTests` alone — any test
+  that runs afterward and relies on that state being clean can inherit stale references. `LiveEditEmbedLastOrderer`
+  only orders test *cases* within one class; nothing stopped a completely different class from running
+  right after `LiveGameProcessTests` at the assembly level.
+- **Fix**: a new assembly-level `ITestCollectionOrderer` (`LiveGameTestsLastCollectionOrderer`, registered
+  via `[assembly: TestCollectionOrderer(...)]` in `AssemblyInfo.cs`) forces the collection containing
+  `LiveGameProcessTests` to run last, so nothing else in the assembly can ever run after it and inherit
+  whatever it leaves dirty — the same fix shape as `LiveEditEmbedLastOrderer`, just at collection scope
+  instead of test-case scope. Did not touch the `SynchronizationContext.SetSynchronizationContext(null)`
+  line itself — genuinely fixing that would mean auditing every `[StaFact]` test's call order project-wide,
+  which is a bigger change than this issue's scope; ordering `LiveGameProcessTests` last sidesteps it
+  because by the time its tests run, some earlier test has always already tripped the one-time guard.
+- **Also fixed in passing**: `GameConnectionManager.ReceiveString` (Glue-side of the live-game socket
+  protocol) awaited the game's response with no timeout at all — `TimeoutInSeconds` was declared
+  (`= 10`) but never actually used anywhere in the file. A game that stops responding mid-request (crash,
+  deadlock in its own embedded `CommandReceiver`) would hang the caller forever with zero CPU, no thread
+  blocked. Not the cause of this specific hang (confirmed via the same diagnostic logging — every hung run
+  died in the connect-wait loop, never reached a response-wait), but a real, independently-reachable
+  production bug worth having fixed regardless.
+- **Verified**: 3 consecutive full `--filter "Category!=BuildSmoke"` runs green (306/306, ~44-50s each) with
+  the fix in, plus `LiveGameProcessTests` alone still green (2/2, 18s). Given the bug's own intermittency,
+  3-for-3 is reassuring but not proof it can never recur through some other ordering-dependent path — if a
+  hang or a similar cross-test-corruption failure resurfaces after this fix, it is a distinct occurrence of
+  the same underlying class of bug (an `[StaFact]` test being first to touch shared bootstrap state), not a
+  regression of this fix, and should get a new entry here.

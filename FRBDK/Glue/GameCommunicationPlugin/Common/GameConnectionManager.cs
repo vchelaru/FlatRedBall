@@ -360,15 +360,28 @@ namespace GameJsonCommunicationPlugin.Common
             try { PluginManager.CallPluginMethod("Compiler Plugin", "HandleOutput", full); } catch { }
         }
 
-        private static async Task<string> ReceiveString(Socket socket)
+        private async Task<string> ReceiveString(Socket socket)
         {
             try
             {
                 byte[] bufferSize = new byte[sizeof(long)];
                 //socket.Receive(bufferSize);
 
+                // The synchronous Receive calls below (the payload loop) honor ReceiveTimeout, but this
+                // header ReceiveAsync does not - without racing it against a timeout task, a game that
+                // never replies (crashed mid-request, deadlocked in its own CommandReceiver, etc.) leaves
+                // this awaiting forever with no thread blocked and no CPU used.
+                socket.ReceiveTimeout = (int)(TimeoutInSeconds * 1000);
+
                 ArraySegment<byte> buffer = new ArraySegment<byte>(bufferSize);
-                await socket.ReceiveAsync(buffer, SocketFlags.None);
+                var receiveTask = socket.ReceiveAsync(buffer, SocketFlags.None);
+                var timeoutTask = Task.Delay(TimeSpan.FromSeconds(TimeoutInSeconds));
+                if (await Task.WhenAny(receiveTask, timeoutTask) == timeoutTask)
+                {
+                    ResetConnection($"No response received within {TimeoutInSeconds} seconds");
+                    return null;
+                }
+                await receiveTask;
 
                 var packetSize = BitConverter.ToInt64(bufferSize, 0);
 
