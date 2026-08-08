@@ -97,6 +97,24 @@ namespace FlatRedBall.Glue.VSHelpers
         }
 
         
+        /// <summary>
+        /// Solution files in <paramref name="directory"/>, classic .sln first.
+        /// </summary>
+        /// <remarks>
+        /// .slnx is Visual Studio's XML solution format, and a project created in a recent VS may ship
+        /// only that - the FRB2 sample does. Missing it here is not a cosmetic gap: LocateSolution
+        /// throws when it finds nothing, and that exception comes out of
+        /// <c>GlueState.CurrentSlnFileName</c> during project load, so the project fails to open at all.
+        /// .sln is listed first so a solution mid-migration (both files present) keeps resolving to the
+        /// one every other tool still reads.
+        /// </remarks>
+        static List<string> GetSolutionFilesIn(string directory)
+        {
+            var files = FileManager.GetAllFilesInDirectory(directory, "sln", 0);
+            files.AddRange(FileManager.GetAllFilesInDirectory(directory, "slnx", 0));
+            return files;
+        }
+
         public static string LocateSolution(FilePath csprojFilePath)
         {
             string projectFileName = csprojFilePath.FullPath;
@@ -107,7 +125,7 @@ namespace FlatRedBall.Glue.VSHelpers
             string solutionFileName = "";
 
             #region Search directory for "filename".sln
-            dirFileList = FileManager.GetAllFilesInDirectory(directory, "sln", 0);
+            dirFileList = GetSolutionFilesIn(directory);
 
             if (dirFileList.Count != 0)
             {
@@ -125,7 +143,7 @@ namespace FlatRedBall.Glue.VSHelpers
             #region Search one directory above for "filename".sln
             if (string.IsNullOrEmpty(solutionFileName))
             {
-                parentDirFileList = FileManager.GetAllFilesInDirectory(FileManager.GetDirectory(directory), "sln", 0);
+                parentDirFileList = GetSolutionFilesIn(FileManager.GetDirectory(directory));
 
                 if (parentDirFileList.Count != 0)
                 {
@@ -155,8 +173,7 @@ namespace FlatRedBall.Glue.VSHelpers
             #region This MUST be an FSB project, but search another directory up for sln
             if (string.IsNullOrEmpty(solutionFileName))
             {
-                dirFileList = FileManager.GetAllFilesInDirectory(FileManager.GetDirectory(FileManager.GetDirectory(directory)),
-                                                                 "sln", 0);
+                dirFileList = GetSolutionFilesIn(FileManager.GetDirectory(FileManager.GetDirectory(directory)));
                 if (dirFileList.Count != 0)
                     solutionFileName = dirFileList[0];
             }

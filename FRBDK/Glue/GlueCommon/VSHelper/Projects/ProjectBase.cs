@@ -119,6 +119,13 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             get { return ""; }
         }
 
+        /// <summary>
+        /// Whether Glue owns this project's .csproj and generated code. False for FlatRedBall 2
+        /// projects, which read Glue's .gluj/.glsj/.glej JSON directly at runtime: Glue authors that
+        /// JSON and nothing else, so it neither generates code nor writes the .csproj back to disk.
+        /// </summary>
+        public virtual bool IsMaintainedByGlue => true;
+
         public string FullContentPath
         {
             get { return Directory + ContentDirectory; }

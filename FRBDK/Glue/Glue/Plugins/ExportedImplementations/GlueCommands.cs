@@ -27,7 +27,25 @@ public class GlueCommands : IGlueCommands
 
     public static GlueCommands Self { get; private set; } = new GlueCommands();
 
-    public IGenerateCodeCommands GenerateCodeCommands{ get; private set; }
+    /// <summary>
+    /// Code generation for the loaded project, or a do-nothing implementation when the project is one
+    /// Glue does not generate code for (an FRB2 project - see <see cref="Frb2Project"/>).
+    /// </summary>
+    /// <remarks>
+    /// Resolved per access off the loaded project rather than swapped in at load time on purpose:
+    /// there is then no install/restore step to get wrong when a project is opened or closed, and no
+    /// window where the wrong one is in place. Generation is kicked off from dozens of places across
+    /// Glue and its plugins, so choosing the implementation once here is what makes "an FRB2 project
+    /// never gets code generated into it" true everywhere instead of at the call sites that
+    /// remembered to check.
+    /// </remarks>
+    public IGenerateCodeCommands GenerateCodeCommands =>
+        GlueState.Self.CurrentMainProject?.IsMaintainedByGlue == false
+            ? _noCodeGenerationCommands
+            : _generateCodeCommands;
+
+    readonly IGenerateCodeCommands _generateCodeCommands;
+    readonly IGenerateCodeCommands _noCodeGenerationCommands;
 
     public IGluxCommands GluxCommands { get; private set; }
 
@@ -151,7 +169,8 @@ public class GlueCommands : IGlueCommands
 
     public GlueCommands()
     {
-        GenerateCodeCommands = new GenerateCodeCommands();
+        _generateCodeCommands = new GenerateCodeCommands();
+        _noCodeGenerationCommands = new NoCodeGenerationCommands(_generateCodeCommands);
         GluxCommands = new GluxCommands();
         ProjectCommands = new ProjectCommands();
         RefreshCommands = new RefreshCommands();

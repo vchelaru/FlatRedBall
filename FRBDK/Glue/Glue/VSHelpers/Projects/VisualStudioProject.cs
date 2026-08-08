@@ -803,7 +803,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 FileManager.RemoveExtension(FileManager.RemovePath(fileName));
 
 
-            if (wasChanged)
+            if (wasChanged && IsMaintainedByGlue)
             {
                 mProject.Save(mProject.ProjectFileLocation.File);
             }
@@ -1056,6 +1056,14 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         public override void Save(string fileName)
         {
+            if (!IsMaintainedByGlue)
+            {
+                // An FRB2 project owns its own .csproj. Items other code added still live in the
+                // in-memory MSBuild project (so IsFilePartOfProject keeps answering sensibly for the
+                // rest of the session) - they just never reach disk.
+                return;
+            }
+
             // this used to save a backup, but doing so
             // changes the mProject's file name. Since the
             // mProject is used to get this project's file name,

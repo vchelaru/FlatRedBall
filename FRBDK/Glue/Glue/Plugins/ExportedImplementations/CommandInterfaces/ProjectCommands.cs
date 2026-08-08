@@ -132,6 +132,11 @@ class ProjectCommands : IProjectCommands
         var fileName = element.Name + ".Generated." + partialName + ".cs";
         var fullFileName = _glueState.CurrentMainProject.Directory + fileName;
 
+        if (CodeWritePolicy.IsSuppressedCodeFile(fullFileName))
+        {
+            return;
+        }
+
         var save = false; // we'll be doing manual saving after it's created
         ProjectManager.CodeProjectHelper.CreateAndAddPartialGeneratedCodeFile(fileName, save);
 
@@ -575,6 +580,11 @@ class ProjectCommands : IProjectCommands
 
     public ProjectItem CreateAndAddCodeFile(FilePath filePath, bool save = true)
     {
+        if (CodeWritePolicy.IsSuppressedCodeFile(filePath))
+        {
+            return null;
+        }
+
         var directory = filePath.GetDirectoryContainingThis();
 
         System.IO.Directory.CreateDirectory(directory.FullPath);
