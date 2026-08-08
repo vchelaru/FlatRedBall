@@ -1,7 +1,7 @@
 ---
 name: glue-unit-test-bootstrap
 description: Bootstrapping GlueUnitTests that touch GlueState.Self/GlueCommands.Self/ProjectManager. Triggers: NullReferenceException in tests from ProjectManager.CodeProjectHelper, FileWatchManager, EditorObjects.IoC.Container, or MainGlueWindow.Self.Invoke.
-version: 1.3.0
+version: 1.4.0
 ---
 
 # Glue Unit Test Bootstrap
@@ -41,6 +41,10 @@ Also process-wide static state a test may need to control alongside the bootstra
 
 - **`ObjectFinder.Self.GlueProject`** — assign a `GlueProjectSave` for anything reaching `ObjectFinder`
   lookups (`GetEntitySaveUnqualified`, `GetAllReferencedFiles`).
+- **`GlueState.Self.CurrentReferencedFileSave`/`CurrentElement`/`CurrentNamedObjectSave`/etc.** are settable
+  directly in tests — `FakeFindManager.TreeNodeByTag` hands back a `SyntheticTreeNode` wrapping the tag, so
+  the setter's real `Find.TreeNodeByTag` round-trip resolves correctly instead of silently discarding the
+  value. See REFACTORING.md's "`FakeFindManager.TreeNodeByTag` now resolves real tags" entry.
 
 Every one of these is process-wide, which is why the whole assembly runs non-parallel — see
 `GlueUnitTests/AssemblyInfo.cs`. So cross-class interleaving isn't a hazard, but leakage still is: a test
