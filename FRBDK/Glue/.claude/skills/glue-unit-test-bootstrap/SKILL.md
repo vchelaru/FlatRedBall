@@ -1,7 +1,7 @@
 ---
 name: glue-unit-test-bootstrap
 description: Bootstrapping GlueUnitTests that touch GlueState.Self/GlueCommands.Self/ProjectManager. Triggers: NullReferenceException in tests from ProjectManager.CodeProjectHelper, FileWatchManager, EditorObjects.IoC.Container, or MainGlueWindow.Self.Invoke.
-version: 1.4.0
+version: 1.5.0
 ---
 
 # Glue Unit Test Bootstrap
@@ -41,10 +41,13 @@ Also process-wide static state a test may need to control alongside the bootstra
 
 - **`ObjectFinder.Self.GlueProject`** — assign a `GlueProjectSave` for anything reaching `ObjectFinder`
   lookups (`GetEntitySaveUnqualified`, `GetAllReferencedFiles`).
-- **`GlueState.Self.CurrentReferencedFileSave`/`CurrentElement`/`CurrentNamedObjectSave`/etc.** are settable
-  directly in tests — `FakeFindManager.TreeNodeByTag` hands back a `SyntheticTreeNode` wrapping the tag, so
-  the setter's real `Find.TreeNodeByTag` round-trip resolves correctly instead of silently discarding the
-  value. See REFACTORING.md's "`FakeFindManager.TreeNodeByTag` now resolves real tags" entry.
+- **`GlueState.Self.CurrentReferencedFileSave`** is settable directly in tests — `FakeFindManager.TreeNodeByTag`
+  hands back a `SyntheticTreeNode` wrapping the tag for this one type, so the setter's real
+  `Find.TreeNodeByTag` round-trip resolves correctly instead of silently discarding the value. Deliberately
+  NOT extended to every tag `GlueState` can resolve (`CurrentNamedObjectSave`, `CurrentElement`, etc.) — see
+  REFACTORING.md's "`FakeFindManager.TreeNodeByTag` now resolves `ReferencedFileSave` tags" entry for why
+  that's unsafe (it wakes up real, previously-dead plugin selection-handling code and hit a pre-existing
+  NRE in `CollidableNamedObjectController`).
 
 Every one of these is process-wide, which is why the whole assembly runs non-parallel — see
 `GlueUnitTests/AssemblyInfo.cs`. So cross-class interleaving isn't a hazard, but leakage still is: a test
@@ -108,6 +111,20 @@ specified could not be found` — while passing when run alone. Call
 `IMainGlueWindow`/`IUiThreadMarshaller` only cover calls that were already routed through `MainGlueWindow.Self`/`TaskManager`. A plugin method you're calling directly for the first time (bypassing `PluginManager.CallPluginMethod`'s silent no-op to get real coverage — see `REFACTORING.md`'s Collision/Gum entries) may still contain its own unseamed `MessageBox.Show(...)` on some branch (e.g. an "already exists, overwrite?" check). That call blocks the test thread on a real, visible modal dialog on the *developer's actual desktop* — not something `GlueTestBootstrap` catches, and not obvious from reading the test in isolation.
 
 Before exercising a plugin method's real logic for the first time: skim it (and what it calls) for `MessageBox.Show`/similar dialog calls, and design the test to never take that branch (fresh unique temp directory per test, `askToOverwrite`/equivalent flags set to avoid the prompt, call the method at most once per test run rather than twice to probe an idempotency branch). If you ever see an unexpected pause or the user reports a popup, stop immediately, confirm no process is still blocked waiting on it, and fix the test to avoid the branch rather than building a dialog seam just to unblock one test.
+
+## Landmine — a warm `obj`/`bin` can report a stale test as green, or a real compile error as passing
+
+`dotnet test` after an edit does an *incremental* build: MSBuild decides per-file whether to recompile, and
+in practice a `git stash`/`git rebase`/repeated edit-and-rerun cycle can leave it not recompiling a file you
+just changed — the run reports the *previous* binary's result, not the current source's. This produced a
+green "317/317" locally on issue #2016's PR while the actual pushed source had two `CS0103` compile errors
+(missing `using`s) that only CI's from-scratch build caught, plus masked a real regression (a broadened
+`FakeFindManager` behavior that broke two unrelated tests) for the same reason.
+
+Before reporting "full suite green" as a claim someone will act on (a PR description, a "tests pass"
+verdict, this file), rebuild from scratch at least once: `rm -rf FRBDK/Glue/Tests/GlueUnitTests/obj FRBDK/Glue/Tests/GlueUnitTests/bin`
+then `dotnet test` without `--no-build`. `--no-build`/`--no-restore` reruns are fine for fast iteration
+*between* clean checkpoints, not as the last thing before trusting the result.
 
 ## Landmine — `dotnet test` on the bare csproj fails with `MSB3073`/`*Undefined*` paths
 
