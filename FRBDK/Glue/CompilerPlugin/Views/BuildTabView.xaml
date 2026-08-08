@@ -33,6 +33,17 @@
                 <Button Click="HandleCancelBuildButtonClick" Content="Cancel Build"></Button>
             </StackPanel>
 
+            <CheckBox Content="Resource diagnostics" VerticalAlignment="Center" Margin="6,0,0,0"
+                      IsChecked="{Binding IsResourceDiagnosticsChecked}">
+                <CheckBox.ToolTip>
+                    <TextBlock>
+                        Samples this editor's USER/GDI object counts, handle and thread counts, and how long<LineBreak/>
+                        the UI thread has been unresponsive. Every sample is written to a log file, and new<LineBreak/>
+                        peaks and UI stalls are printed here. Use this when diagnosing a hang or a leak.
+                    </TextBlock>
+                </CheckBox.ToolTip>
+            </CheckBox>
+
         </WrapPanel>
 
         <RichTextBox Grid.Row="2" ScrollViewer.VerticalScrollBarVisibility="Auto" 
