@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.VSHelpers.Projects;
+using GlueFormsCore.ViewModels;
 using GlueUnitTests.TestSupport;
 using Xunit;
 
@@ -95,5 +96,50 @@ public class Frb2ProjectLoadTests
             .OrderBy(d => d, StringComparer.OrdinalIgnoreCase)
             .ToList();
         Assert.Empty(unexpectedDirectories);
+    }
+
+    [StaFact]
+    public async Task AddScreen_OnAnFrb2Project_WritesTheGlsj_WithoutClaimingACodeFileExists()
+    {
+        GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
+
+        using var temp = new TempDir("Frb2AddScreen_");
+        await GoldProject.LoadInGlueAsync(WriteFrb2Project(temp.Root));
+
+        await GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen("NewScreen");
+
+        // Authoring the JSON is the entire job here, so it has to actually happen.
+        Assert.True(File.Exists(Path.Combine(temp.Root, "Screens", "NewScreen.glsj")),
+            "Adding a screen should have written its .glsj.");
+
+        // No custom-code or generated-code file, and - the bug this pins - no dialog telling the user
+        // an existing NewScreen.cs will be reused. Nothing creates one, so nothing can reuse one:
+        // CreateAndAddCodeFile returns null both when the file is already in the project and when the
+        // project takes no code files at all, and AddScreen used to read either as the former.
+        Assert.Empty(Directory.GetFiles(temp.Root, "*.cs", SearchOption.AllDirectories)
+            .Select(f => Path.GetRelativePath(temp.Root, f).Replace('\\', '/'))
+            .Where(f => f != "Game1.cs"));
+        Assert.Empty(GlueTestBootstrap.RecordedDialogMessages);
+    }
+
+    [StaFact]
+    public async Task AddEntity_OnAnFrb2Project_WritesTheGlej_WithoutClaimingACodeFileExists()
+    {
+        // AddEntity is a separate method with its own copy of AddScreen's create-code-file logic, so it
+        // needs its own coverage rather than being assumed to follow along.
+        GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
+
+        using var temp = new TempDir("Frb2AddEntity_");
+        await GoldProject.LoadInGlueAsync(WriteFrb2Project(temp.Root));
+
+        await GlueCommands.Self.GluxCommands.EntityCommands.AddEntityAsync(
+            new AddEntityViewModel { Name = "NewEntity" });
+
+        Assert.True(File.Exists(Path.Combine(temp.Root, "Entities", "NewEntity.glej")),
+            "Adding an entity should have written its .glej.");
+        Assert.Empty(Directory.GetFiles(temp.Root, "*.cs", SearchOption.AllDirectories)
+            .Select(f => Path.GetRelativePath(temp.Root, f).Replace('\\', '/'))
+            .Where(f => f != "Game1.cs"));
+        Assert.Empty(GlueTestBootstrap.RecordedDialogMessages);
     }
 }

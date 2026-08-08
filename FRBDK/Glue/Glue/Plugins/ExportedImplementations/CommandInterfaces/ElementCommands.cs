@@ -518,7 +518,11 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
 
             var shouldGenerateCustomCode = addedScreen != null;
 
-            if (addedScreen == null)
+            // A null result does not only mean "that file is already here". It also means "this project
+            // takes no code files at all" (an FRB2 project), and telling the user an existing
+            // NewScreen.cs will be reused when no such file exists is worse than saying nothing.
+            // Checking the claim the message makes is the fix for both.
+            if (addedScreen == null && System.IO.File.Exists(fullNonGeneratedFileName))
             {
                 if (!suppressAlreadyExistingFileMessage)
                 {
@@ -1067,7 +1071,9 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
 
         var shouldRewriteCode = newItem != null;
 
-        if (newItem == null)
+        // Same as AddScreen: only claim the file is already there when it actually is. Null also means
+        // "this project takes no code files at all".
+        if (newItem == null && customCodeFilePath.Exists())
         {
             if (!suppressAlreadyExistingFileMessage)
             {
