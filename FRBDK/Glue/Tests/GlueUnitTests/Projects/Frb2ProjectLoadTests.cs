@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -81,5 +82,18 @@ public class Frb2ProjectLoadTests
             .Select(f => Path.GetRelativePath(temp.Root, f).Replace('\\', '/'))
             .ToList();
         Assert.Equal(new[] { "Game1.cs" }, codeFiles);
+
+        // Directories too, not just files. Suppressing a generator at its file write still leaves it
+        // creating the destination folder and announcing "Added file to project" for a file that was
+        // never written - which is what the user sees, and it reads as Glue scaffolding into a project
+        // it is meant to leave alone. Content/ and GlueSettings/ are Glue's to manage.
+        // Allow-list rather than a list of the folders that have gone wrong so far, so a generator
+        // nobody has thought of yet fails this too. Content/ and GlueSettings/ are Glue's to write.
+        var unexpectedDirectories = Directory.GetDirectories(temp.Root, "*", SearchOption.AllDirectories)
+            .Select(d => Path.GetRelativePath(temp.Root, d).Replace('\\', '/'))
+            .Where(d => d != "Content" && d != "GlueSettings")
+            .OrderBy(d => d, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+        Assert.Empty(unexpectedDirectories);
     }
 }

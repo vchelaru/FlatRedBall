@@ -21,7 +21,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
     /// that never goes through that interface - <c>CodeBuildItemAdder</c>'s embedded resource files and
     /// <c>CameraSetupCodeGenerator</c>, both of which write on glux load.
     /// </remarks>
-    static class CodeWritePolicy
+    public static class CodeWritePolicy
     {
         /// <summary>
         /// True when Glue owns the loaded project's code. True with no project loaded, so nothing

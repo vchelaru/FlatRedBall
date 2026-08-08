@@ -155,7 +155,17 @@ namespace FlatRedBall.Glue.VSHelpers
         }
 
         private bool PerformAddInternal(Assembly assemblyContainingResource = null)
-        { 
+        {
+            // Nothing this adder does makes sense for a project Glue does not generate code for. The
+            // guard is here rather than only at the file write because the rest of the work is visible
+            // even when no file is written: it creates the destination directories, adds the items to
+            // the in-memory project, and reports "Added file to project" for each - which reads as Glue
+            // dropping 25 source files into a project it is supposed to leave alone.
+            if (!CodeWritePolicy.WritesCodeForCurrentProject)
+            {
+                return true;
+            }
+
             bool succeeded = true;
             bool preserveCase = FileManager.PreserveCase;
             bool wasAnythingAdded = false;
