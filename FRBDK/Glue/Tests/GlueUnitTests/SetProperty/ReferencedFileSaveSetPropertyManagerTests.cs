@@ -1,10 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using FlatRedBall.Glue.Controls;
-using FlatRedBall.Glue.Elements;
-using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
@@ -13,30 +9,6 @@ using GlueUnitTests.TestSupport;
 using Shouldly;
 
 namespace GlueUnitTests.SetProperty;
-
-/// <summary>
-/// Minimal <see cref="ITreeNode"/> whose Tag is a <see cref="ReferencedFileSave"/> - enough for
-/// <c>GlueState.TakeSnapshot</c> to derive <c>CurrentReferencedFileSave</c> from it. Needed because
-/// <see cref="GlueState"/>'s own <c>CurrentReferencedFileSave</c> setter resolves through
-/// <c>GlueState.Self.Find.TreeNodeByTag</c>, which <see cref="FakeFindManager"/> always answers with
-/// null (by design - see its doc comment), so that setter can never be used directly in this test host.
-/// Going through <see cref="GlueState.SetCurrentTreeNode"/> with a node whose Tag is already the target
-/// RFS sidesteps the lookup entirely, the same way selecting a real tree node in Glue.exe would.
-/// </summary>
-file sealed class FakeReferencedFileTreeNode : ITreeNode
-{
-    public object Tag { get; set; } = null!;
-    public ITreeNode Parent => null;
-    public string Text { get; set; } = "";
-    public IEnumerable<ITreeNode> Children => Enumerable.Empty<ITreeNode>();
-    public TreeNodeType TreeNodeType => TreeNodeType.ReferencedFileSaveNode;
-    public void Remove(ITreeNode child) { }
-    public void Add(ITreeNode child) { }
-    public ITreeNode FindByName(string name) => null;
-    public void RemoveGlobalContentTreeNodesIfDoesntExist(ITreeNode treeNode) { }
-    public ITreeNode FindByTagRecursive(object tag) => Equals(tag, Tag) ? this : null;
-    public void SortByTextConsideringDirectories() { }
-}
 
 // GitHub issue #2016: toggling "Is Database For Localizing" in the ReferencedFileSave "Settings
 // (Preview)" tab crashed Glue with a NullReferenceException. Root cause: that tab is backed by
@@ -77,7 +49,7 @@ public class ReferencedFileSaveSetPropertyManagerTests : IDisposable
     {
         GlueState.Self.CurrentMainProject = _originalMainProject;
         ObjectFinder.Self.GlueProject = _originalGlueProject;
-        GlueState.Self.SetCurrentTreeNode(null, recordState: false);
+        GlueState.Self.CurrentReferencedFileSave = null;
         FlatRedBall.IO.FileManager.RelativeDirectory = _originalRelativeDirectory;
         DialogService.ShowMessageImpl = _originalShowMessageImpl;
 
@@ -96,8 +68,7 @@ public class ReferencedFileSaveSetPropertyManagerTests : IDisposable
     {
         var rfs = new ReferencedFileSave { Name = "GlobalContent/GumProject.gumx" };
         ObjectFinder.Self.GlueProject.GlobalFiles.Add(rfs);
-        GlueState.Self.SetCurrentTreeNode(new FakeReferencedFileTreeNode { Tag = rfs }, recordState: false);
-        GlueState.Self.CurrentReferencedFileSave.ShouldBe(rfs);
+        GlueState.Self.CurrentReferencedFileSave = rfs;
 
         // Mirrors what the real WPF "Settings (Preview)" grid does before it raises PropertyChange:
         // WpfDataUi's InstanceMember already wrote the new value through to the instance, and then

@@ -11,14 +11,21 @@ namespace GlueUnitTests.TestSupport;
 /// tree node from a model object (e.g. <c>GlueState.CurrentNamedObjectSave</c>'s setter calling
 /// <c>Find.TreeNodeByTag</c>) NREs. Wired in by <see cref="GlueTestBootstrap"/>.
 ///
-/// All lookups return null/empty/false: tests here don't assert on tree-node identity, they just need the
-/// production selection-plumbing that reads through <c>GlueState.Self.Find</c> to not crash. A test that
-/// needs real tree-node resolution should build a real <c>FindManager</c> instead of relying on this fake.
+/// <c>TreeNodeByTag</c>/<c>NamedObjectTreeNode</c> hand back a <see cref="SyntheticTreeNode"/> wrapping
+/// the given tag, so a test can set <c>GlueState.Self.CurrentReferencedFileSave</c>/<c>CurrentElement</c>/
+/// <c>CurrentNamedObjectSave</c>/etc. directly - the same as production, no hand-rolled <c>ITreeNode</c>
+/// needed per test (see issue #2016's fix and REFACTORING.md for why this mattered: the old always-null
+/// behavior meant those setters silently discarded whatever was assigned to them). There is still no real
+/// *tree* behind this - a test needing parent/child/sibling relationships or <c>FindByName</c> should build
+/// a real <c>FindManager</c> instead of relying on this fake.
+///
+/// <see cref="GlobalContentTreeNode"/> and <see cref="IfReferencedFileSaveIsReferenced"/> are unrelated to
+/// tag resolution and still return empty/false.
 /// </summary>
 internal class FakeFindManager : IFindManager
 {
-    public ITreeNode NamedObjectTreeNode(NamedObjectSave namedObjectSave) => null!;
-    public ITreeNode TreeNodeByTag(object tag) => null!;
+    public ITreeNode NamedObjectTreeNode(NamedObjectSave namedObjectSave) => TreeNodeByTag(namedObjectSave);
+    public ITreeNode TreeNodeByTag(object tag) => tag == null ? null! : new SyntheticTreeNode(tag);
     public ITreeNode GlobalContentTreeNode => null!;
     public string GlobalContentFilesPath => "";
     public bool IfReferencedFileSaveIsReferenced(ReferencedFileSave referencedFileSave) => false;
