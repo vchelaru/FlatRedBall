@@ -1397,7 +1397,7 @@ first version of the `GuidLogic` retry test also failed for an unrelated reason 
 `ReplaceGuids` also expects to find alongside the `.csproj`), fixed by mirroring the existing
 `ReplaceGuids_ShouldReplaceLegacyProjectGuid` test's fixture shape.
 
-### 2026-08-08 — `FakeFindManager.TreeNodeByTag` now resolves real tags (issue #2016 follow-up)
+### 2026-08-08 — `FakeFindManager.TreeNodeByTag` now resolves `ReferencedFileSave` tags (issue #2016 follow-up)
 
 `GlueState`'s `CurrentReferencedFileSave`/`CurrentElement`/`CurrentNamedObjectSave`/`CurrentStateSave`/etc.
 setters all resolve through `GlueState.Self.Find.TreeNodeByTag(value)` before taking effect — the setter
@@ -1408,12 +1408,20 @@ them in a test — assigning `GlueState.Self.CurrentReferencedFileSave = rfs` lo
 exception) but read back as `null`, and the crash pinned in #2016 needed a hand-rolled `ITreeNode` in the
 test itself to work around it.
 
-Fixed at the seam instead of in the one test: `TreeNodeByTag`/`NamedObjectTreeNode` now return a new
-`SyntheticTreeNode` (`GlueUnitTests/TestSupport/SyntheticTreeNode.cs`) wrapping the given tag, with
-`TreeNodeType` inferred from the tag's runtime type (`ReferencedFileSave` → `ReferencedFileSaveNode`,
-`EntitySave` → `EntityNode`, `StateSave` → `StateNode`, etc. — needed because `GetCurrentStateSaveFromSelection`/
-`GetCurrentStateSaveCategoryFromSelection`/`GetCurrentCustomVariableFromSelection` key off `TreeNodeType`
-via `IsStateNode()`/`IsStateCategoryNode()`/`IsCustomVariable()`, not off `Tag`'s type directly). No real
-tree (no parent/child/sibling relationships, `FindByName` still returns null) — a test that needs actual
-tree-shape behavior still needs a real `FindManager`. Full fast suite (317 tests) green afterward, so
-nothing was relying on the old always-null behavior.
+Fixed at the seam instead of in the one test: `TreeNodeByTag` now returns a new `SyntheticTreeNode`
+(`GlueUnitTests/TestSupport/SyntheticTreeNode.cs`) wrapping the tag, for a `ReferencedFileSave` tag only.
+
+**First attempt resolved every tag type and broke two unrelated tests** — worth recording because it only
+showed up on a genuinely clean build, not the incremental one used while iterating. Making
+`CurrentNamedObjectSave` resolve to a real node makes `GlueState.TakeSnapshot` → `PluginManager.
+ReactToItemsSelected` actually fire — previously dead code in a test host, since the always-null fake meant
+nothing was ever really "selected." That drove `MainCollisionPlugin`'s real selection-handling into a
+pre-existing NRE in `CollidableNamedObjectController.RefreshViewModelTo` — a real, unrelated bug this fake
+had been silently masking in `WizardProjectLogicAddPlayerInstanceTests`/`WizardProjectLogicCombinedScenarioTests`.
+Rather than fix that bug too (out of scope for #2016) or leave the fake accidentally exercising it, scoped
+`TreeNodeByTag` down to just the tag type actually needed. Extending it to another tag type needs the same
+caution — a `dotnet test --no-build`-free (i.e. actually rebuilt) full-suite run, not just a rerun in a
+warm `obj`/`bin` that may still hold last iteration's binaries.
+
+No real tree either way (no parent/child/sibling relationships, `FindByName` still returns null) — a test
+that needs actual tree-shape behavior needs a real `FindManager`.
