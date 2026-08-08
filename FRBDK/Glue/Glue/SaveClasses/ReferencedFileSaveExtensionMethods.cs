@@ -305,6 +305,15 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
         /// <summary>
+        /// Whether IsSharedStatic has any effect for this file, and so should be shown as an editable
+        /// property. It only varies per-instance for Screen-owned files - Entity-owned files are forced
+        /// static (unique-instance optimization) and global content is always static (its code generator
+        /// never reads the flag) - see the comment in ReferencedFileSave's constructor.
+        /// </summary>
+        public static bool GetIsSharedStaticEditable(this ReferencedFileSave instance) =>
+            instance.GetContainerType() == SaveClasses.ContainerType.Screen;
+
+        /// <summary>
         /// Returns the associated AssetTypeInfo for the ReferencedFileSave. If the ReferencedFileSave
         /// specifies a runtime type, then this will return the AssetTypeInfo for that runtime type. Otherwise
         /// the AssetTypeInfo for the extension will be returned.
