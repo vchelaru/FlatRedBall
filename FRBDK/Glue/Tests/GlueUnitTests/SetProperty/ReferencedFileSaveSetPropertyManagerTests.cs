@@ -84,4 +84,27 @@ public class ReferencedFileSaveSetPropertyManagerTests : IDisposable
 
         rfs.IsDatabaseForLocalizing.ShouldBeTrue();
     }
+
+    // GitHub issue #2018: toggling "Is Shared Static" crashed Glue with a NullReferenceException.
+    // Root cause: that checkbox is only shown for global content files (excluded for Entity-owned
+    // files, and IsSharedStatic only matters for files not tied to a single container), but its
+    // handler unconditionally dereferences GlueState.Self.CurrentElement.NamedObjects. A global
+    // content file has no owning Screen/Entity, so CurrentElement is null there.
+    [Fact]
+    public void ReactToChangedReferencedFile_ShouldNotThrow_WhenIsSharedStaticChangesOnGlobalFile()
+    {
+        var rfs = new ReferencedFileSave { Name = "GlobalContent/Test.png" };
+        ObjectFinder.Self.GlueProject.GlobalFiles.Add(rfs);
+        GlueState.Self.CurrentReferencedFileSave = rfs;
+
+        rfs.IsSharedStatic = true;
+
+        var sut = new ReferencedFileSaveSetPropertyManager();
+        var updateTreeView = true;
+
+        Should.NotThrow(() => sut.ReactToChangedReferencedFile(
+            nameof(ReferencedFileSave.IsSharedStatic), oldValue: false, ref updateTreeView));
+
+        rfs.IsSharedStatic.ShouldBeTrue();
+    }
 }
