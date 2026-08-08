@@ -342,12 +342,14 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
 
             if (containerType == ContainerType.Entity)
             {
-                // We do this because this is set automatically if the Entity is unique
-                ExcludeMember(nameof(ReferencedFileSave.IsSharedStatic));
-
                 // We do this because whether the objects from a file are manually updated or not
                 // should be up to the entity, not the source file.
                 ExcludeMember(nameof(ReferencedFileSave.IsManuallyUpdated));
+            }
+
+            if (!instance.GetIsSharedStaticEditable())
+            {
+                ExcludeMember(nameof(ReferencedFileSave.IsSharedStatic));
             }
 
             if (containerType == ContainerType.Entity || ati == null || ati.QualifiedRuntimeTypeName.QualifiedType != "Microsoft.Xna.Framework.Media.Song")

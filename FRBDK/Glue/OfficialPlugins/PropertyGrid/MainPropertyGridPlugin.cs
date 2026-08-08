@@ -160,7 +160,10 @@ namespace OfficialPlugins.VariableDisplay
             // todo - removing this until we get the dropdown working....
             settingsGrid.MembersToIgnore.Add(nameof(ReferencedFileSave.RuntimeType));
 
-
+            if (!referencedFileSave.GetIsSharedStaticEditable())
+            {
+                settingsGrid.MembersToIgnore.Add(nameof(ReferencedFileSave.IsSharedStatic));
+            }
 
             settingsGrid.Instance = referencedFileSave;
 
