@@ -373,14 +373,24 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
                 }
                 else
                 {
-                    if (CurrentGlueProject?.FileVersion >= (int)GlueProjectSave.GluxVersions.GlueSavedToJson)
+                    var extension =
+                        CurrentGlueProject?.FileVersion >= (int)GlueProjectSave.GluxVersions.GlueSavedToJson
+                            ? ".gluj"
+                            : ".glux";
+
+                    var withoutExtension = CurrentMainProject.FullFileName.RemoveExtension();
+
+                    var subdirectory = CurrentMainProject.GlueProjectSubdirectory;
+                    if (string.IsNullOrEmpty(subdirectory))
                     {
-                        return CurrentMainProject.FullFileName.RemoveExtension() + ".gluj";
+                        return withoutExtension + extension;
                     }
-                    else
-                    {
-                        return CurrentMainProject.FullFileName.RemoveExtension() + ".glux";
-                    }
+
+                    // Same file name, different folder - see ProjectBase.GlueProjectSubdirectory. The
+                    // Screens/Entities JSON follows automatically: every writer derives its directory
+                    // from this path.
+                    return CurrentMainProject.Directory + subdirectory +
+                        FileManager.RemovePath(withoutExtension.FullPath) + extension;
                 }
             }
 
@@ -390,6 +400,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
         {
             get
             {
+                // Deliberately follows the .gluj rather than the .csproj: everything Glue authors has to
+                // sit under one folder, so deleting that folder removes every trace of the editor from
+                // the project. These settings getting copied to output along with it is harmless and is
+                // the accepted cost of that.
                 var projectDirectory = GlueProjectFileName.GetDirectoryContainingThis();
 
                 return projectDirectory.FullPath + "GlueSettings/";

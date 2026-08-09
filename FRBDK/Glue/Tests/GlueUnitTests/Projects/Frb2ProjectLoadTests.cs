@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.VSHelpers.Projects;
+using FlatRedBall.IO;
 using GlueFormsCore.ViewModels;
 using GlueUnitTests.TestSupport;
 using Xunit;
@@ -73,9 +74,26 @@ public class Frb2ProjectLoadTests
 
         Assert.IsType<Frb2Project>(GlueState.Self.CurrentMainProject);
 
-        // The .gluj lands next to the .csproj, which is where FRB2 resolves its Content folder from.
-        Assert.True(File.Exists(Path.Combine(temp.Root, ProjectName + ".gluj")),
-            "Loading an FRB2 project should have created its .gluj at the project root.");
+        // Self-contained under Content/FrbEditor/, so the game copies one folder to output with a
+        // single rule. A glob rooted at the project directory would also match bin/ and obj/ and copy
+        // the previous build's copies in again, compounding every build.
+        Assert.True(File.Exists(Path.Combine(temp.Root, "Content", "FrbEditor", ProjectName + ".gluj")),
+            "Loading an FRB2 project should have created its .gluj under Content/FrbEditor/.");
+        Assert.False(File.Exists(Path.Combine(temp.Root, ProjectName + ".gluj")),
+            "The .gluj should not also be left at the project root.");
+
+        // Everything Glue authors goes in that one folder, GlueSettings included, so deleting it
+        // removes every trace of the editor from the project. Those settings being copied to output
+        // along with it is the accepted cost.
+        //
+        // Asserted on the resolved path rather than on the folder existing: the settings files are
+        // written by plugins that do not run in a headless host, so Directory.Exists here would be
+        // testing the test harness rather than where Glue decided to put them.
+        // Trailing separator: ProjectSpecificSettingsFolder returns a directory path, and FilePath
+        // treats "…/GlueSettings" and "…/GlueSettings/" as different values.
+        Assert.Equal(
+            new FilePath(Path.Combine(temp.Root, "Content", "FrbEditor", "GlueSettings") + "/"),
+            new FilePath(GlueState.Self.ProjectSpecificSettingsFolder));
 
         // Glue does not own this project's .csproj.
         Assert.Equal(csprojBefore, File.ReadAllText(csprojPath));
@@ -86,18 +104,17 @@ public class Frb2ProjectLoadTests
             .ToList();
         Assert.Equal(new[] { "Game1.cs" }, codeFiles);
 
-        // Directories too, not just files. Suppressing a generator at its file write still leaves it
-        // creating the destination folder and announcing "Added file to project" for a file that was
-        // never written - which is what the user sees, and it reads as Glue scaffolding into a project
-        // it is meant to leave alone. Content/ and GlueSettings/ are Glue's to manage.
-        // Allow-list rather than a list of the folders that have gone wrong so far, so a generator
-        // nobody has thought of yet fails this too. Content/ and GlueSettings/ are Glue's to write.
-        var unexpectedDirectories = Directory.GetDirectories(temp.Root, "*", SearchOption.AllDirectories)
+        // The point of the layout: one folder holds everything Glue authored, so deleting
+        // Content/FrbEditor leaves no trace of the editor behind. Anything outside it fails this - a
+        // generator's destination folder, a plugin's scaffolding, including one nobody has thought of
+        // yet. Content/ itself is the game's, and the fixture created it.
+        var directoriesOutsideTheEditorFolder = Directory
+            .GetDirectories(temp.Root, "*", SearchOption.AllDirectories)
             .Select(d => Path.GetRelativePath(temp.Root, d).Replace('\\', '/'))
-            .Where(d => d != "Content" && d != "GlueSettings")
+            .Where(d => d != "Content" && !d.StartsWith("Content/FrbEditor"))
             .OrderBy(d => d, StringComparer.OrdinalIgnoreCase)
             .ToList();
-        Assert.Empty(unexpectedDirectories);
+        Assert.Empty(directoriesOutsideTheEditorFolder);
     }
 
     [StaFact]
@@ -111,8 +128,9 @@ public class Frb2ProjectLoadTests
         await GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen("NewScreen");
 
         // Authoring the JSON is the entire job here, so it has to actually happen.
-        Assert.True(File.Exists(Path.Combine(temp.Root, "Screens", "NewScreen.glsj")),
-            "Adding a screen should have written its .glsj.");
+        // Screens follow the .gluj: every writer derives its directory from that path.
+        Assert.True(File.Exists(Path.Combine(temp.Root, "Content", "FrbEditor", "Screens", "NewScreen.glsj")),
+            "Adding a screen should have written its .glsj beside the .gluj.");
 
         // No custom-code or generated-code file, and - the bug this pins - no dialog telling the user
         // an existing NewScreen.cs will be reused. Nothing creates one, so nothing can reuse one:
@@ -173,8 +191,8 @@ public class Frb2ProjectLoadTests
         await GlueCommands.Self.GluxCommands.EntityCommands.AddEntityAsync(
             new AddEntityViewModel { Name = "NewEntity" });
 
-        Assert.True(File.Exists(Path.Combine(temp.Root, "Entities", "NewEntity.glej")),
-            "Adding an entity should have written its .glej.");
+        Assert.True(File.Exists(Path.Combine(temp.Root, "Content", "FrbEditor", "Entities", "NewEntity.glej")),
+            "Adding an entity should have written its .glej beside the .gluj.");
         Assert.Empty(Directory.GetFiles(temp.Root, "*.cs", SearchOption.AllDirectories)
             .Select(f => Path.GetRelativePath(temp.Root, f).Replace('\\', '/'))
             .Where(f => f != "Game1.cs"));

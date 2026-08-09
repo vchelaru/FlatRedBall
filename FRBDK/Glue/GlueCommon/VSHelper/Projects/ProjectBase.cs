@@ -126,6 +126,20 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         /// </summary>
         public virtual bool IsMaintainedByGlue => true;
 
+        /// <summary>
+        /// Where the .gluj and the Screens/Entities JSON beside it live, relative to the project
+        /// directory. Empty means beside the .csproj, which is where a project Glue maintains keeps
+        /// them - its .gluj is a design-time file that never ships.
+        /// </summary>
+        /// <remarks>
+        /// A project whose JSON is runtime content wants it somewhere self-contained instead, so the
+        /// game can copy one folder to output with a single rule and no exclusions - the same shape a
+        /// Gum project already has at Content/GumProject/. A glob rooted at the project directory
+        /// cannot do that: it also matches bin/ and obj/, so each build copies the previous build's
+        /// copies in again.
+        /// </remarks>
+        public virtual string GlueProjectSubdirectory => "";
+
         public string FullContentPath
         {
             get { return Directory + ContentDirectory; }

@@ -36,6 +36,12 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         public override bool IsMaintainedByGlue => false;
 
+        /// <summary>
+        /// Self-contained, so the game copies it to output with one rule and no exclusions, and so it
+        /// parallels the Gum project's own Content/GumProject/ folder.
+        /// </summary>
+        public override string GlueProjectSubdirectory => "Content/FrbEditor/";
+
         public override bool AllowContentCompile => false;
 
         protected override bool NeedToSaveContentProject => false;
