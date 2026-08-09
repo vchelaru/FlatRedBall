@@ -147,6 +147,23 @@ public class Frb2ProjectLoadTests
         "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";
 
     [StaFact]
+    public async Task AddingAContentFile_ToAnFrb2Screen_PutsItInsideTheEditorFolder()
+    {
+        // Dropping a PNG on a screen put it in Content/Screens/NewScreen/, outside the folder that is
+        // supposed to hold everything Glue authored - so deleting Content/FrbEditor would have left the
+        // referenced art orphaned in the game's own content tree.
+        GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
+
+        using var temp = new TempDir("Frb2ContentFolder_");
+        await GoldProject.LoadInGlueAsync(WriteFrb2Project(temp.Root));
+        await GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen("NewScreen");
+
+        Assert.Equal(
+            new FilePath(Path.Combine(temp.Root, "Content", "FrbEditor") + "/"),
+            new FilePath(GlueState.Self.ContentDirectory));
+    }
+
+    [StaFact]
     public async Task AddingAContentFile_ToAnFrb2Project_DoesNotAddItToTheCsproj()
     {
         // Dropping a PNG onto the editor reported "Added Screens/NewScreen/Bear.png ... as content".

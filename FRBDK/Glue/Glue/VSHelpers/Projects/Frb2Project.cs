@@ -29,10 +29,16 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         public override string NeededVisualStudioVersion => "17.0";
 
         /// <summary>
-        /// Matches what FRB2 expects at runtime: <c>GlueContentSource</c> resolves every referenced
-        /// file as <c>&lt;directory holding the .gluj&gt;/Content/&lt;name&gt;</c>.
+        /// The same folder the .gluj sits in, so referenced content lands inside the one directory
+        /// that holds everything the editor authored rather than in the game's own content tree.
         /// </summary>
-        public override string ContentDirectory => "Content/";
+        /// <remarks>
+        /// This is what makes the folder genuinely self-contained: a PNG dropped on a screen goes to
+        /// Content/FrbEditor/Screens/&lt;screen&gt;/, so deleting Content/FrbEditor takes the art with
+        /// it instead of orphaning it. It also gives FRB2 a single rule at runtime - every referenced
+        /// file resolves relative to the .gluj.
+        /// </remarks>
+        public override string ContentDirectory => GlueProjectSubdirectory;
 
         public override bool IsMaintainedByGlue => false;
 

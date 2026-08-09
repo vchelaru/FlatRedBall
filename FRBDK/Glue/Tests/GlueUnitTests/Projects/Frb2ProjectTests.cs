@@ -140,13 +140,15 @@ public class Frb2ProjectTests : IDisposable
     }
 
     [Fact]
-    public void Frb2Project_ContentDirectory_MatchesWhatFrb2ResolvesAgainst()
+    public void Frb2Project_ContentDirectory_IsInsideTheEditorFolder()
     {
-        // FRB2's GlueContentSource resolves every referenced file as
-        // <directory holding the .gluj>/Content/<name>.
+        // Content files are Glue's too, so they belong in the one folder that holds everything the
+        // editor authored - dropping a PNG on a screen must land it in Content/FrbEditor/Screens/...,
+        // not Content/Screens/..., or deleting Content/FrbEditor leaves the referenced art behind.
+        // It is also the .gluj's own folder, which is what FRB2 resolves referenced files against.
         var project = new Frb2Project(LoadCoreProject(WriteCsproj(Frb2ProjectReferenceXml)));
 
-        Assert.Equal("Content/", project.ContentDirectory);
+        Assert.Equal("Content/FrbEditor/", project.ContentDirectory);
     }
 
     [Fact]
