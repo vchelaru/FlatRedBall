@@ -2301,7 +2301,11 @@ public class PluginManager : PluginManagerBase
     {
         bool wasHandled = false;
 
-        string source = exception.Source;
+        // The unhandled-exception handler passes `thrownObject as Exception`, which can be null.
+        if (exception == null)
+        {
+            return false;
+        }
 
         foreach (var instance in mInstances)
         {
@@ -2334,22 +2338,83 @@ public class PluginManager : PluginManagerBase
         return wasHandled;
     }
 
-    private static bool WasExceptionCausedByPlugin(Exception exception, PluginContainer plugin)
+    private static bool WasExceptionCausedByPlugin(Exception exception, PluginContainer plugin) =>
+        WasExceptionThrownByAssembly(exception, plugin.Plugin.GetType().Assembly);
+
+    /// <summary>
+    /// Whether <paramref name="exception"/> actually came from code in <paramref name="assembly"/>,
+    /// determined from the stack trace.
+    /// </summary>
+    /// <remarks>
+    /// This used to also blame an assembly whose *referenced* assemblies included Exception.Source. That
+    /// matches far too much: Source is usually the framework assembly that threw, so a WPF exception with
+    /// Source "PresentationCore" matched every plugin referencing WPF, and the first one enumerated was
+    /// shut down for someone else's error. A real user report was blamed on a plugin with no frames in
+    /// the stack at all. Blaming nobody is fine - the caller then reports the exception normally.
+    /// </remarks>
+    internal static bool WasExceptionThrownByAssembly(Exception exception, Assembly assembly)
     {
-        if(plugin.Plugin.GetType().Assembly.GetName().Name == exception.Source)
+        if (exception == null || assembly == null)
         {
-            return true;
+            return false;
         }
 
-        foreach (var name in plugin.Plugin.GetType().Assembly.GetReferencedAssemblies())
+        foreach (var toCheck in EnumerateExceptionAndInnerExceptions(exception))
         {
-            if (name.Name == exception.Source)
+            // Source is set to the throwing method's assembly, so an exact match is the plugin itself.
+            if (assembly.GetName().Name == toCheck.Source)
             {
                 return true;
+            }
+
+            var frames = new System.Diagnostics.StackTrace(toCheck, fNeedFileInfo: false).GetFrames();
+            if (frames == null)
+            {
+                continue;
+            }
+
+            foreach (var frame in frames)
+            {
+                if (frame?.GetMethod()?.DeclaringType?.Assembly == assembly)
+                {
+                    return true;
+                }
             }
         }
 
         return false;
+    }
+
+    /// <summary>
+    /// Flattens an exception chain, since a plugin's own frames are commonly buried under a
+    /// TargetInvocationException or an AggregateException rather than being on the outermost one.
+    /// </summary>
+    static IEnumerable<Exception> EnumerateExceptionAndInnerExceptions(Exception exception)
+    {
+        if (exception == null)
+        {
+            yield break;
+        }
+
+        yield return exception;
+
+        if (exception is AggregateException aggregate)
+        {
+            foreach (var inner in aggregate.InnerExceptions)
+            {
+                foreach (var nested in EnumerateExceptionAndInnerExceptions(inner))
+                {
+                    yield return nested;
+                }
+            }
+        }
+        else
+        {
+            foreach (var nested in EnumerateExceptionAndInnerExceptions(exception.InnerException))
+            {
+                yield return nested;
+            }
+        }
     }
 
     /// <summary>
