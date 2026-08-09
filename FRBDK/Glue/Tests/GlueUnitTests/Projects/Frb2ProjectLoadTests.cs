@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.VSHelpers.Projects;
 using GlueFormsCore.ViewModels;
@@ -119,6 +121,42 @@ public class Frb2ProjectLoadTests
         Assert.Empty(Directory.GetFiles(temp.Root, "*.cs", SearchOption.AllDirectories)
             .Select(f => Path.GetRelativePath(temp.Root, f).Replace('\\', '/'))
             .Where(f => f != "Game1.cs"));
+        Assert.Empty(GlueTestBootstrap.RecordedDialogMessages);
+    }
+
+    [StaFact]
+    public async Task ReloadingAnFrb2Project_DoesNotPromptAboutMissingCustomCodeFiles()
+    {
+        // An FRB2 screen has no NewScreen.cs by design, so the load-time "this file is missing, want me
+        // to re-create it?" check fires for every screen and entity, on every load.
+        GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
+
+        using var temp = new TempDir("Frb2Reload_");
+        var csprojPath = WriteFrb2Project(temp.Root);
+        await GoldProject.LoadInGlueAsync(csprojPath);
+        await GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen("NewScreen");
+
+        var choicesOffered = new List<string>();
+        var previousShowChoice = DialogService.ShowChoiceImpl;
+        try
+        {
+            // Must be stubbed, not just asserted on afterwards: unstubbed, ShowChoice puts a real modal
+            // on the developer's desktop and the run blocks on it forever.
+            DialogService.ShowChoiceImpl = (message, options) =>
+            {
+                choicesOffered.Add(message);
+                return null;
+            };
+
+            // Load again, now that the .gluj has a screen in it.
+            await GoldProject.LoadInGlueAsync(csprojPath);
+        }
+        finally
+        {
+            DialogService.ShowChoiceImpl = previousShowChoice;
+        }
+
+        Assert.Empty(choicesOffered);
         Assert.Empty(GlueTestBootstrap.RecordedDialogMessages);
     }
 

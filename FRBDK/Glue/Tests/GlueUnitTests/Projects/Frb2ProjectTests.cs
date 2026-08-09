@@ -178,6 +178,23 @@ public class Frb2ProjectTests : IDisposable
     }
 
     [Fact]
+    public async System.Threading.Tasks.Task ContentPipeline_SkipsAnFrb2Project_RatherThanThrowing()
+    {
+        // Dropping a PNG onto an FRB2 project used to take down the plugin: BuildLogic decided the
+        // project "supports the content pipeline" from a deny-list (anything but FNA) but looked up the
+        // build platform from an allow-list of four project types, so a type in neither was declared
+        // supported and then threw for having no platform. FRB2 does not use the content pipeline at
+        // all - its content is copied, not built.
+        var project = new Frb2Project(LoadCoreProject(WriteCsproj(Frb2ProjectReferenceXml)));
+        var png = new ReferencedFileSave { Name = "Content/image.png" };
+
+        var builtFiles = await OfficialPlugins.MonoGameContent.BuildLogic.Self
+            .UpdateFileMembershipAndBuildReferencedFile(project, png, forcePngsToContentPipeline: false);
+
+        Assert.Empty(builtFiles);
+    }
+
+    [Fact]
     public void CreatePlatformSpecificProject_ReturnsFrb2Project_ForAnFrb2Csproj()
     {
         // Before this, an FRB2 .csproj fell through ProjectCreator's DefineConstants cascade (it sets
