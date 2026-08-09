@@ -50,8 +50,7 @@ namespace GameCommunicationPlugin
         public override void StartUp()
         {
             Self = this;
-            _gameCommunicationManager = new GameConnectionManager(ReactToPluginEvent);
-            _gameCommunicationManager.Port = 8888;
+            _gameCommunicationManager = new GameConnectionManager(ReactToPluginEvent, 8888);
             _gameCommunicationManager.OnPacketReceived += HandleOnPacketReceived;
             GameConnectionManager.Self = _gameCommunicationManager;
 

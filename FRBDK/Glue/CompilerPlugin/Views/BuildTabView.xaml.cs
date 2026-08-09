@@ -26,6 +26,21 @@ namespace CompilerPlugin.Views
 
         OutputParser outputParser;
 
+        /// <summary>
+        /// Lines waiting to be shown. Filled from any thread, drained by <see cref="flushTimer"/>.
+        /// </summary>
+        readonly CompilerLibrary.OutputLineBuffer pendingLines = new();
+
+        readonly System.Windows.Threading.DispatcherTimer flushTimer;
+
+        /// <summary>
+        /// Cap on retained lines. Live edit can print continuously for hours, and an unbounded
+        /// FlowDocument grows without limit and gets progressively more expensive to lay out.
+        /// </summary>
+        public int MaxLinesOfText { get; set; } = 2000;
+
+        const int LinesToDropWhenOverCap = 200;
+
         #endregion
 
         #region Events
@@ -47,19 +62,24 @@ namespace CompilerPlugin.Views
 
             InitializeComponent();
 
-            TextBox.Document.Blocks.Add(new Paragraph());
-
             _foregroundBinding = new Binding("Foreground")
             {
                 Source = TextBox,
                 Mode = BindingMode.OneWay
             };
+
+            flushTimer = new System.Windows.Threading.DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(100)
+            };
+            flushTimer.Tick += HandleFlushTimerTick;
+            flushTimer.Start();
         }
 
         private void HandleCompileClick()
         {
+            pendingLines.Clear();
             TextBox.Document.Blocks.Clear();
-            TextBox.Document.Blocks.Add(new Paragraph());
             BuildClicked?.Invoke(this, null);
         }
 
@@ -73,49 +93,53 @@ namespace CompilerPlugin.Views
             MSBuildSettingsClicked?.Invoke();
         }
 
-        public void PrintOutput(string text)
-        {
-            //////////////////////////////////// Early out ////////////////////////////////////////////
-            if (text == null) return;
-            //////////////////////////////////End Early Out////////////////////////////////////////////
+        /// <summary>
+        /// Queues output for display. Safe to call from any thread, and never blocks on the UI thread.
+        /// </summary>
+        public void PrintOutput(string text) => pendingLines.Add(text, isError: false);
 
-            // suppress warnings...
-            var split = text.Split('\n');
+        /// <inheritdoc cref="PrintOutput"/>
+        public void PrintError(string text) => pendingLines.Add(text, isError: true);
+
+        void HandleFlushTimerTick(object sender, EventArgs e)
+        {
+            if (pendingLines.Count == 0)
+            {
+                return;
+            }
+
+            var toAppend = pendingLines.TakeAll();
 
             try
             {
-                Glue.MainGlueWindow.Self.Invoke(() =>
+                foreach (var line in toAppend)
                 {
-                    var paragraph = TextBox.Document.Blocks.LastOrDefault() as Paragraph;
-                    if(paragraph == null)
+                    // Warnings are suppressed, same as before this was buffered.
+                    var outputType = line.IsError ? OutputType.Error : outputParser.GetOutputType(line.Text);
+                    if (outputType == OutputType.Warning)
                     {
-                        paragraph = new Paragraph();
-                        TextBox.Document.Blocks.Add(paragraph);
-                    }
-                    foreach (var line in split)
-                    {
-                        if(!string.IsNullOrWhiteSpace(line))
-                        {
-                            var outputType = outputParser.GetOutputType(line);
-                            if(outputType != OutputType.Warning)
-                            {
-                                Run run = new Run(line + "\r\n");
-                                paragraph.Inlines.Add(run);
-
-                                if (outputType == OutputType.Error)
-                                {
-                                    run.Foreground = Brushes.Red;
-                                } 
-                                else
-                                {
-                                    BindingOperations.SetBinding(run, ForegroundProperty, _foregroundBinding);
-                                }
-                            }
-                        }
+                        continue;
                     }
 
-                    TextBox.ScrollToEnd();
-                });
+                    var run = new Run(line.Text);
+                    if (outputType == OutputType.Error)
+                    {
+                        run.Foreground = Brushes.Red;
+                    }
+                    else
+                    {
+                        BindingOperations.SetBinding(run, ForegroundProperty, _foregroundBinding);
+                    }
+
+                    // One paragraph per line so the document can be trimmed by block. A single
+                    // ever-growing paragraph cannot be, and re-lays out in full on every append.
+                    var paragraph = new Paragraph(run) { Margin = new Thickness(0) };
+                    TextBox.Document.Blocks.Add(paragraph);
+                }
+
+                ShortenOutputIfNecessary();
+
+                TextBox.ScrollToEnd();
             }
             catch
             {
@@ -123,48 +147,22 @@ namespace CompilerPlugin.Views
             }
         }
 
-        public void PrintError(string text)
+        void ShortenOutputIfNecessary()
         {
-            //////////////////////////////////// Early out ////////////////////////////////////////////
-            if (string.IsNullOrEmpty(text)) return;
-            //////////////////////////////////End Early Out////////////////////////////////////////////
-
-            // suppress warnings...
-            var split = text.Split('\n');
-
-            try
+            if (TextBox.Document.Blocks.Count <= MaxLinesOfText)
             {
-                Glue.MainGlueWindow.Self.Invoke(() =>
-                {
-                    var paragraph = TextBox.Document.Blocks.LastOrDefault() as Paragraph;
-                    if (paragraph == null)
-                    {
-                        paragraph = new Paragraph();
-                        TextBox.Document.Blocks.Add(paragraph);
-                    }
-                    foreach (var line in split)
-                    {
-                        if (!string.IsNullOrWhiteSpace(line))
-                        {
-                            paragraph.Inlines.Add(new Run(line) { Foreground = Brushes.Red });
-                        }
-                    }
-                    if(split.Length > 0)
-                    {
-                        paragraph.Inlines.Add(new Run("\r\n") { Foreground = Brushes.Red });
-                    }
-
-                    TextBox.ScrollToEnd();
-                });
+                return;
             }
-            catch
+
+            for (int i = 0; i < LinesToDropWhenOverCap && TextBox.Document.Blocks.FirstBlock != null; i++)
             {
-                // could be exiting the app so tolerate the error, don't show a message to the user
+                TextBox.Document.Blocks.Remove(TextBox.Document.Blocks.FirstBlock);
             }
         }
 
         void Button_Click(object sender, RoutedEventArgs e)
         {
+            pendingLines.Clear();
             TextBox.Document.Blocks.Clear();
         }
 
