@@ -75,6 +75,7 @@ namespace CompilerPlugin
         private Compiler _compiler;
         private Runner _runner;
         private CompilerViewModel _compilerViewModel;
+        private ResourceDiagnosticsManager _resourceDiagnosticsManager;
 
         FlatRedBall.IO.FilePath BuildSettingsUserFilePath => GlueState.Self.ProjectSpecificSettingsFolder + "BuildSettings.user.json";
 
@@ -87,6 +88,10 @@ namespace CompilerPlugin
 
                 case nameof(CompilerViewModel.IsRunning):
                     //CommandSender.CancelConnect();
+                    break;
+
+                case nameof(CompilerViewModel.IsResourceDiagnosticsChecked):
+                    _resourceDiagnosticsManager.SetEnabled(_compilerViewModel.IsResourceDiagnosticsChecked);
                     break;
             }
         }
@@ -121,6 +126,7 @@ namespace CompilerPlugin
             MainControl = new BuildTabView();
             MainControl.DataContext = _compilerViewModel;
             _compilerViewModel.Configuration = "Debug";
+            _resourceDiagnosticsManager = new ResourceDiagnosticsManager(MainControl.PrintOutput);
             _compilerViewModel.PropertyChanged += HandleCompilerViewModelPropertyChanged;
 
             buildTab = CreateTab(MainControl, "Build", TabLocation.Bottom);

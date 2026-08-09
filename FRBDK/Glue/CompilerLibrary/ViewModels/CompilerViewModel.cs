@@ -409,6 +409,16 @@ namespace CompilerLibrary.ViewModels
             set => Set(value);
         }
 
+        /// <summary>
+        /// Whether to sample the editor's window-system resource usage and UI thread responsiveness.
+        /// Off by default - this is for diagnosing hangs and leaks, not for everyday use.
+        /// </summary>
+        public bool IsResourceDiagnosticsChecked
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public ObservableCollection<ToolbarEntityAndStateViewModel> ToolbarEntitiesAndStates
         {
             get => Get<ObservableCollection<ToolbarEntityAndStateViewModel>>();
