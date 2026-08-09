@@ -4,6 +4,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.VSHelpers.Projects;
+using FlatRedBall.IO;
 using GlueUnitTests.TestSupport;
 using Microsoft.Build.Evaluation;
 using Xunit;
@@ -192,6 +193,19 @@ public class Frb2ProjectTests : IDisposable
             .UpdateFileMembershipAndBuildReferencedFile(project, png, forcePngsToContentPipeline: false);
 
         Assert.Empty(builtFiles);
+    }
+
+    [Fact]
+    public void TryRemoveXnbReferences_OnAnFrb2Project_DoesNothingRatherThanThrowing()
+    {
+        // Deleting a file from a screen took the plugin down here. MainContentPipelinePlugin's
+        // HandleFileRemoved calls this directly, so guarding
+        // UpdateFileMembershipAndBuildReferencedFile - the caller that the earlier PNG-drop crash went
+        // through - left this entry point live.
+        var project = new Frb2Project(LoadCoreProject(WriteCsproj(Frb2ProjectReferenceXml)));
+
+        OfficialPlugins.MonoGameContent.BuildLogic.TryRemoveXnbReferences(
+            project, Path.Combine(_directory, "Content", "Screens", "NewScreen", "Bear.png"), save: false);
     }
 
     [Fact]

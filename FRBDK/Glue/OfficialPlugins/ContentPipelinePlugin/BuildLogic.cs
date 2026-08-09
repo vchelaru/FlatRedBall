@@ -164,6 +164,15 @@ namespace OfficialPlugins.MonoGameContent
 
         public static void TryRemoveXnbReferences(VisualStudioProject project, string fullFileName, bool save = true)
         {
+            // There are no xnb references to remove for a project the pipeline cannot build for, and
+            // GetXnbDestinationDirectory below throws rather than returning nothing. Reached directly
+            // from MainContentPipelinePlugin.HandleFileRemoved, not only through
+            // UpdateFileMembershipAndBuildReferencedFile, so guarding that caller is not enough.
+            if (!DoesProjectSupportContentPipeline(project))
+            {
+                return;
+            }
+
             string destinationDirectory = GetXnbDestinationDirectory(fullFileName, project);
 
             ContentItem contentItem = GetContentItem(fullFileName, project, createEvenIfProjectTypeNotSupported: true);
@@ -481,6 +490,15 @@ namespace OfficialPlugins.MonoGameContent
             }
 
             if(string.IsNullOrEmpty(contentDirectory))
+            {
+                return toReturn;
+            }
+
+            // Nothing to build for a project the pipeline has no platform for, and
+            // GetXnbDestinationDirectory below throws rather than returning nothing. Not reached by a
+            // PNG left off the content pipeline, which is why an FRB2 project only tripped the removal
+            // path first - a .wav or .mp3, or a PNG with the pipeline switched on, comes straight here.
+            if (!DoesProjectSupportContentPipeline(project))
             {
                 return toReturn;
             }
