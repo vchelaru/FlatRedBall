@@ -132,6 +132,11 @@ class ProjectCommands : IProjectCommands
         var fileName = element.Name + ".Generated." + partialName + ".cs";
         var fullFileName = _glueState.CurrentMainProject.Directory + fileName;
 
+        if (CodeWritePolicy.IsSuppressedCodeFile(fullFileName))
+        {
+            return;
+        }
+
         var save = false; // we'll be doing manual saving after it's created
         ProjectManager.CodeProjectHelper.CreateAndAddPartialGeneratedCodeFile(fileName, save);
 
@@ -506,6 +511,15 @@ class ProjectCommands : IProjectCommands
         ReferencedFileSave rfs, bool reEvaluateAfterAdd = true,
         string reasonForAdd = "")
     {
+        // Glue does not maintain this project's .csproj, so there is no content item to add - and
+        // nothing to report. The item would only ever exist in the in-memory project, never on disk,
+        // while "Added X as content" told the user Glue had changed a file it must not touch. Checked
+        // per project rather than at the callers so synced projects are judged individually.
+        if (!project.IsMaintainedByGlue)
+        {
+            return;
+        }
+
         string relativeFileName = FileManager.MakeRelative(
             fileToAddAbsolute,
             project.ContentProject.FullFileName.GetDirectoryContainingThis().FullPath + project.ContentProject.ContentDirectory);
@@ -575,6 +589,11 @@ class ProjectCommands : IProjectCommands
 
     public ProjectItem CreateAndAddCodeFile(FilePath filePath, bool save = true)
     {
+        if (CodeWritePolicy.IsSuppressedCodeFile(filePath))
+        {
+            return null;
+        }
+
         var directory = filePath.GetDirectoryContainingThis();
 
         System.IO.Directory.CreateDirectory(directory.FullPath);

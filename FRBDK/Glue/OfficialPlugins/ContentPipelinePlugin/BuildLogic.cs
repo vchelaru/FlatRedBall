@@ -164,6 +164,15 @@ namespace OfficialPlugins.MonoGameContent
 
         public static void TryRemoveXnbReferences(VisualStudioProject project, string fullFileName, bool save = true)
         {
+            // There are no xnb references to remove for a project the pipeline cannot build for, and
+            // GetXnbDestinationDirectory below throws rather than returning nothing. Reached directly
+            // from MainContentPipelinePlugin.HandleFileRemoved, not only through
+            // UpdateFileMembershipAndBuildReferencedFile, so guarding that caller is not enough.
+            if (!DoesProjectSupportContentPipeline(project))
+            {
+                return;
+            }
+
             string destinationDirectory = GetXnbDestinationDirectory(fullFileName, project);
 
             ContentItem contentItem = GetContentItem(fullFileName, project, createEvenIfProjectTypeNotSupported: true);
@@ -302,14 +311,23 @@ namespace OfficialPlugins.MonoGameContent
             return contentItem;
         }
 
-        private static bool DoesProjectSupportContentPipeline(ProjectBase project)
-        {
-            if(project is FnaDesktopProject)
-            {
-                return false;
-            }
-            return true;
-        }
+        /// <summary>
+        /// Whether the content pipeline can build for this project, which is exactly whether there is a
+        /// platform to build for.
+        /// </summary>
+        /// <remarks>
+        /// This used to be a deny-list ("anything except FNA") while
+        /// <see cref="GetPipelinePlatformNameFor"/> is an allow-list of the project types that have a
+        /// platform. A project type in neither was therefore declared supported and then threw out of
+        /// <see cref="GetXnbDestinationDirectory"/> for having no platform - which is what dropping a
+        /// PNG onto an FRB2 project did, taking the plugin down with it. Deriving the answer from the
+        /// platform lookup keeps the two from disagreeing again.
+        ///
+        /// Behavior is unchanged for every project type that existed before: FNA has no platform and
+        /// was already excluded, and the four that do have one are still supported.
+        /// </remarks>
+        private static bool DoesProjectSupportContentPipeline(ProjectBase project) =>
+            !string.IsNullOrEmpty(GetPipelinePlatformNameFor(project));
 
         private static string GetPipelinePlatformNameFor(ProjectBase project)
         {
@@ -472,6 +490,15 @@ namespace OfficialPlugins.MonoGameContent
             }
 
             if(string.IsNullOrEmpty(contentDirectory))
+            {
+                return toReturn;
+            }
+
+            // Nothing to build for a project the pipeline has no platform for, and
+            // GetXnbDestinationDirectory below throws rather than returning nothing. Not reached by a
+            // PNG left off the content pipeline, which is why an FRB2 project only tripped the removal
+            // path first - a .wav or .mp3, or a PNG with the pipeline switched on, comes straight here.
+            if (!DoesProjectSupportContentPipeline(project))
             {
                 return toReturn;
             }

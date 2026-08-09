@@ -16,7 +16,7 @@ namespace OfficialPlugins.Wizard.Views
 
         private void CopyJsonToClipboardClicked(object sender, RoutedEventArgs e)
         {
-            Clipboard.SetText(ViewModel.GeneratedJson);
+            FlatRedBall.Glue.Managers.ClipboardService.SetText(ViewModel.GeneratedJson);
         }
     }
 }

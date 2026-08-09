@@ -300,13 +300,26 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
         }
 
         /// <summary>
-        /// Returns the directory of the .gluj, which is the same directory as the .csproj
+        /// The directory holding the .gluj, which is what every element's .glsj/.glej and the folders
+        /// beside them are relative to.
         /// </summary>
+        /// <remarks>
+        /// Taken from the .gluj rather than the .csproj. Those are the same directory for a project
+        /// Glue maintains, which is why deriving it from the .csproj went unnoticed - but a project
+        /// that keeps its Glue files in their own folder resolved every element path against the wrong
+        /// root, and the symptom was quiet: "View in Explorer" opened the desktop, because Explorer
+        /// falls back to that when handed a path that does not exist.
+        /// </remarks>
         public string CurrentGlueProjectDirectory
         {
             get
             {
-                return CurrentCodeProjectFileName?.GetDirectoryContainingThis().FullPath;
+                // Falls back to the code project's directory once the project has closed.
+                // CurrentCodeProjectFileName is deliberately kept after that point for tasks still
+                // draining, while GlueProjectFileName goes null with CurrentMainProject - so without
+                // this, closing a project turns a path those tasks used into a null reference.
+                return GlueProjectFileName?.GetDirectoryContainingThis().FullPath
+                    ?? CurrentCodeProjectFileName?.GetDirectoryContainingThis().FullPath;
             }
         }
 
@@ -373,14 +386,24 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
                 }
                 else
                 {
-                    if (CurrentGlueProject?.FileVersion >= (int)GlueProjectSave.GluxVersions.GlueSavedToJson)
+                    var extension =
+                        CurrentGlueProject?.FileVersion >= (int)GlueProjectSave.GluxVersions.GlueSavedToJson
+                            ? ".gluj"
+                            : ".glux";
+
+                    var withoutExtension = CurrentMainProject.FullFileName.RemoveExtension();
+
+                    var subdirectory = CurrentMainProject.GlueProjectSubdirectory;
+                    if (string.IsNullOrEmpty(subdirectory))
                     {
-                        return CurrentMainProject.FullFileName.RemoveExtension() + ".gluj";
+                        return withoutExtension + extension;
                     }
-                    else
-                    {
-                        return CurrentMainProject.FullFileName.RemoveExtension() + ".glux";
-                    }
+
+                    // Same file name, different folder - see ProjectBase.GlueProjectSubdirectory. The
+                    // Screens/Entities JSON follows automatically: every writer derives its directory
+                    // from this path.
+                    return CurrentMainProject.Directory + subdirectory +
+                        FileManager.RemovePath(withoutExtension.FullPath) + extension;
                 }
             }
 
@@ -390,6 +413,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
         {
             get
             {
+                // Deliberately follows the .gluj rather than the .csproj: everything Glue authors has to
+                // sit under one folder, so deleting that folder removes every trace of the editor from
+                // the project. These settings getting copied to output along with it is harmless and is
+                // the accepted cost of that.
                 var projectDirectory = GlueProjectFileName.GetDirectoryContainingThis();
 
                 return projectDirectory.FullPath + "GlueSettings/";

@@ -705,6 +705,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public bool SaveIfDiffers(FilePath filePath, string contents, bool ignoreNextChange = false)
         {
+            if (CodeWritePolicy.IsSuppressedCodeFile(filePath))
+            {
+                return false;
+            }
+
             var didChange = false;
             if (filePath.Exists() == false)
             {

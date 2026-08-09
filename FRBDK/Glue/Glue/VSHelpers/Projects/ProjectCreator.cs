@@ -190,6 +190,14 @@ Additional Info:
 
         public static ProjectBase CreatePlatformSpecificProject(Project coreVisualStudioProject, string fileName)
         {
+            // Must come before the DefineConstants cascade: an FRB2 project sets none of the
+            // preprocessor constants that cascade keys off of, so without this it falls all the way
+            // through to "could not determine project type" and Glue cannot open it at all.
+            if (Frb2ProjectDetector.IsFrb2Project(coreVisualStudioProject))
+            {
+                return new Frb2Project(coreVisualStudioProject);
+            }
+
             ProjectBase toReturn = TryGetProjectTypeFromDefineConstants(coreVisualStudioProject, out string errorMessage);
 
 

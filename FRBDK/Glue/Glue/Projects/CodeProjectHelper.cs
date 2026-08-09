@@ -13,6 +13,16 @@ namespace FlatRedBall.Glue.Projects
 
         public void CreateAndAddPartialGeneratedCodeFile(string generatedFileName, bool saveFile)
         {
+            // A project Glue does not generate code for has no partial to pair with. Beyond writing a
+            // file that should not exist, continuing throws: CreateAndAddCodeFile returns null for such
+            // a project and MakeBuildItemNested below dereferences it. Every caller that creates a
+            // .Generated.cs comes through here - AddScreen, AddEntity, CodeWriter, EventCodeGenerator -
+            // so this is the one place that has to know.
+            if (!CodeWritePolicy.WritesCodeForCurrentProject)
+            {
+                return;
+            }
+
             // Currently unit tests don't deal with projects
 #if !TEST
             var existingItem = GlueState.Self.CurrentMainProject.GetItem(generatedFileName);

@@ -15,6 +15,10 @@ Work through these gates in order before writing a fix:
 
    **Loophole:** if pinning the test requires a workaround *inside the test* because a shared test double (a `Fake*`/mock in `TestSupport`) doesn't behave like the real thing — e.g. hand-rolling a substitute object because the shared fake always returns null/empty for the case you need — that IS sub-check (a) failing, not passing. Writing the local workaround instead of noticing this is exactly the shortcut this gate exists to block: it makes one test green without fixing the seam, so the next test hits the same wall. Route to (b) instead: fix the shared fake/seam in `TestSupport` (real behavior, not a wider `null`), then write the test straight against it. Worked example: issue #2016 / `FakeFindManager.TreeNodeByTag` — see REFACTORING.md's "`FakeFindManager.TreeNodeByTag` now resolves real tags" entry.
 4. **Red/Green, heavy TDD — not one big pinning test plus one big implementation.** Decompose the fix into its smallest behaviors/branches; each gets its own small failing test before the code that satisfies it, refactoring between cycles. Repeat until the fix is fully covered.
+
+   **You must actually watch it fail.** If the fix is already written when you think of the test, disable the fix (a temporary `&& false` on the guard) and re-run: a test that passes with the fix disabled proves nothing and is worse than no test, because it reads as coverage forever after. This is not hypothetical — an event-surface test written for a plugin crash passed with both guards disabled, because the event it drove never reached the plugin in a headless host.
+
+   Reproducing the *reported symptom* is the bar, not exercising the same method the stack trace names. A crash reached from two entry points needs a test that fails for the entry point the user hit.
 5. **Manual-test call-out.** If the tests don't cover the full user-facing path, say explicitly how to verify manually. If they do, say "no manual testing needed."
 
 This process is still being refined.

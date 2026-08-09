@@ -706,6 +706,14 @@ namespace FlatRedBall.Glue.IO
 
         private void CheckForMissingCustomFile(GlueElement element)
         {
+            // A project Glue does not generate code for has no custom code file to be missing - nothing
+            // ever creates one. Without this the prompt fires for every screen and every entity, on
+            // every load, offering to re-create a file that should not exist.
+            if (!CodeWritePolicy.WritesCodeForCurrentProject)
+            {
+                return;
+            }
+
             string fileToSearchFor = FileManager.RelativeDirectory + element.Name + ".cs";
 
             if (!System.IO.File.Exists(fileToSearchFor))

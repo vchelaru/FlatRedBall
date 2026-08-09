@@ -451,7 +451,7 @@ namespace OfficialPlugins.Wizard.Models
             settings.DefaultValueHandling = DefaultValueHandling.Ignore;
 
             var converted = JsonConvert.SerializeObject(ViewModel, settings);
-            Clipboard.SetText(converted);
+            FlatRedBall.Glue.Managers.ClipboardService.SetText(converted);
 
             // toast?
         }

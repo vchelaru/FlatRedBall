@@ -23,6 +23,13 @@ namespace TileGraphicsPlugin.Managers
         /// </remarks>
         public void SaveBuildToolsToDisk()
         {
+            // These tools drive Glue's own TMX content build, which a project Glue does not maintain
+            // does not use. Without this the only trace is an empty Libraries/Tmx folder appearing in
+            // the user's project.
+            if (!CodeWritePolicy.WritesCodeForCurrentProject)
+            {
+                return;
+            }
 
             Assembly assembly = Assembly.GetExecutingAssembly();
 

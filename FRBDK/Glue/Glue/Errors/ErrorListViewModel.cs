@@ -72,7 +72,7 @@ namespace FlatRedBall.Glue.Errors
             var whatToCopy = SelectedError?.Details;
             if(!string.IsNullOrEmpty(whatToCopy))
             {
-                Clipboard.SetText(whatToCopy);
+                FlatRedBall.Glue.Managers.ClipboardService.SetText(whatToCopy);
             }
         }
 
@@ -89,7 +89,7 @@ namespace FlatRedBall.Glue.Errors
 
             if (!string.IsNullOrEmpty(whatToCopy))
             {
-                Clipboard.SetText(whatToCopy);
+                FlatRedBall.Glue.Managers.ClipboardService.SetText(whatToCopy);
             }
         }
     }
