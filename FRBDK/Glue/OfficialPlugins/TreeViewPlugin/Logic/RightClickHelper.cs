@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -509,8 +509,8 @@ public static class RightClickHelper
                 SubItems = new[]
                 {
                     new RightClickItemDescriptor { Text = "Copy Path to Clipboard", Handler = () => HandleCopyToClipboardClick(targetNode) },
-                    new RightClickItemDescriptor { Text = $"Copy Code Instance Name ({name})", Handler = () => Clipboard.SetText(name) },
-                    new RightClickItemDescriptor { Text = $"Copy Stripped Name ({strippedName})", Handler = () => Clipboard.SetText(strippedName) },
+                    new RightClickItemDescriptor { Text = $"Copy Code Instance Name ({name})", Handler = () => FlatRedBall.Glue.Managers.ClipboardService.SetText(name) },
+                    new RightClickItemDescriptor { Text = $"Copy Stripped Name ({strippedName})", Handler = () => FlatRedBall.Glue.Managers.ClipboardService.SetText(strippedName) },
                 }
             });
             list.Add(new RightClickItemDescriptor { Text = "Find All References", Handler = () => FindAllReferencesClick(null, EventArgs.Empty) });
@@ -915,19 +915,19 @@ public static class RightClickHelper
         {
             var filePath = GlueCommands.Self.GetAbsoluteFilePath(rfs);
             var absolute = filePath.FullPath;
-            Clipboard.SetText(absolute);
+            FlatRedBall.Glue.Managers.ClipboardService.SetText(absolute);
         }
         else if(node.IsFolderInFilesContainerNode() || node.IsFolderForGlobalContentFiles() || node.IsFilesContainerNode())
         {
             var filePath = node.GetRelativeFilePath();
             var absolute = GlueCommands.Self.GetAbsoluteFilePath(filePath, forceAsContent:true).FullPath;
-            Clipboard.SetText(absolute);
+            FlatRedBall.Glue.Managers.ClipboardService.SetText(absolute);
         }
         else if(node.IsDirectoryNode())
         {
             var filePath = node.GetRelativeFilePath();
             var absolute = GlueCommands.Self.GetAbsoluteFilePath(filePath, forceAsContent: false).FullPath;
-            Clipboard.SetText(absolute);
+            FlatRedBall.Glue.Managers.ClipboardService.SetText(absolute);
         }
     }
 

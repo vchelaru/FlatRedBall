@@ -181,7 +181,7 @@ namespace OfficialPlugins.Wizard
                     jsonSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
                     var serialized = JsonConvert.SerializeObject(nos, jsonSettings);
 
-                    Clipboard.SetText(serialized);
+                    FlatRedBall.Glue.Managers.ClipboardService.SetText(serialized);
                 });
             }
         }

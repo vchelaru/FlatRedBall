@@ -21,7 +21,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TaskDisplayer
         {
             var text = TaskManager.Self.AllTasksDescription;
 
-            System.Windows.Clipboard.SetText(text);
+            FlatRedBall.Glue.Managers.ClipboardService.SetText(text);
         }
 
 
