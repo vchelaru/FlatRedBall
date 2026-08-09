@@ -300,13 +300,26 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
         }
 
         /// <summary>
-        /// Returns the directory of the .gluj, which is the same directory as the .csproj
+        /// The directory holding the .gluj, which is what every element's .glsj/.glej and the folders
+        /// beside them are relative to.
         /// </summary>
+        /// <remarks>
+        /// Taken from the .gluj rather than the .csproj. Those are the same directory for a project
+        /// Glue maintains, which is why deriving it from the .csproj went unnoticed - but a project
+        /// that keeps its Glue files in their own folder resolved every element path against the wrong
+        /// root, and the symptom was quiet: "View in Explorer" opened the desktop, because Explorer
+        /// falls back to that when handed a path that does not exist.
+        /// </remarks>
         public string CurrentGlueProjectDirectory
         {
             get
             {
-                return CurrentCodeProjectFileName?.GetDirectoryContainingThis().FullPath;
+                // Falls back to the code project's directory once the project has closed.
+                // CurrentCodeProjectFileName is deliberately kept after that point for tasks still
+                // draining, while GlueProjectFileName goes null with CurrentMainProject - so without
+                // this, closing a project turns a path those tasks used into a null reference.
+                return GlueProjectFileName?.GetDirectoryContainingThis().FullPath
+                    ?? CurrentCodeProjectFileName?.GetDirectoryContainingThis().FullPath;
             }
         }
 

@@ -147,6 +147,29 @@ public class Frb2ProjectLoadTests
         "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";
 
     [StaFact]
+    public async Task CurrentGlueProjectDirectory_OnAnFrb2Project_IsWhereTheGlujActuallyIs()
+    {
+        // "View in Explorer" on an entity opened the desktop instead of the folder, because it builds
+        // its path as CurrentGlueProjectDirectory + element.Name + extension and that property was
+        // derived from the .csproj rather than the .gluj. Identical for a project that keeps the two
+        // together, which is every FRB1 project - hence nobody noticing.
+        GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
+
+        using var temp = new TempDir("Frb2GlueDir_");
+        await GoldProject.LoadInGlueAsync(WriteFrb2Project(temp.Root));
+        await GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen("NewScreen");
+
+        // Composed the same way every caller composes it, so the assertion fails for the same reason
+        // the menu item did.
+        var screenFile = new FilePath(
+            GlueState.Self.CurrentGlueProjectDirectory + @"Screens\NewScreen.glsj");
+
+        Assert.True(screenFile.Exists(),
+            $"Expected the screen's .glsj at {screenFile.FullPath}, which is where every " +
+            "CurrentGlueProjectDirectory-based path points.");
+    }
+
+    [StaFact]
     public async Task AddingAContentFile_ToAnFrb2Screen_PutsItInsideTheEditorFolder()
     {
         // Dropping a PNG on a screen put it in Content/Screens/NewScreen/, outside the folder that is
