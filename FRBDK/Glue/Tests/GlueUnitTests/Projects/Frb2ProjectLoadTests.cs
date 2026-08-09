@@ -142,6 +142,36 @@ public class Frb2ProjectLoadTests
         Assert.Empty(GlueTestBootstrap.RecordedDialogMessages);
     }
 
+    // A real 1x1 PNG, so anything that reads image headers gets a valid file rather than a stub.
+    const string OnePixelPngBase64 =
+        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";
+
+    [StaFact]
+    public async Task AddingAContentFile_ToAnFrb2Project_DoesNotAddItToTheCsproj()
+    {
+        // Dropping a PNG onto the editor reported "Added Screens/NewScreen/Bear.png ... as content".
+        // Glue does not maintain this .csproj, so there is no content item to add and nothing to say.
+        GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
+
+        using var temp = new TempDir("Frb2AddContent_");
+        var csprojPath = WriteFrb2Project(temp.Root);
+        await GoldProject.LoadInGlueAsync(csprojPath);
+        var screen = await GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen("NewScreen");
+
+        var png = Path.Combine(temp.Root, "Content", "Screens", "NewScreen", "Bear.png");
+        Directory.CreateDirectory(Path.GetDirectoryName(png)!);
+        File.WriteAllBytes(png, Convert.FromBase64String(OnePixelPngBase64));
+
+        var csprojBefore = File.ReadAllText(csprojPath);
+        ErrorRecordingPlugin.Output.Clear();
+
+        await GlueCommands.Self.GluxCommands.CreateReferencedFileSaveForExistingFileAsync(
+            screen, new FilePath(png));
+
+        Assert.DoesNotContain(ErrorRecordingPlugin.Output, line => line.Contains("as content"));
+        Assert.Equal(csprojBefore, File.ReadAllText(csprojPath));
+    }
+
     [StaFact]
     public async Task ReloadingAnFrb2Project_DoesNotPromptAboutMissingCustomCodeFiles()
     {

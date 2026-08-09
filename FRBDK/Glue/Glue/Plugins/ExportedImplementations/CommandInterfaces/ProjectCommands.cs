@@ -511,6 +511,15 @@ class ProjectCommands : IProjectCommands
         ReferencedFileSave rfs, bool reEvaluateAfterAdd = true,
         string reasonForAdd = "")
     {
+        // Glue does not maintain this project's .csproj, so there is no content item to add - and
+        // nothing to report. The item would only ever exist in the in-memory project, never on disk,
+        // while "Added X as content" told the user Glue had changed a file it must not touch. Checked
+        // per project rather than at the callers so synced projects are judged individually.
+        if (!project.IsMaintainedByGlue)
+        {
+            return;
+        }
+
         string relativeFileName = FileManager.MakeRelative(
             fileToAddAbsolute,
             project.ContentProject.FullFileName.GetDirectoryContainingThis().FullPath + project.ContentProject.ContentDirectory);
