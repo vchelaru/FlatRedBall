@@ -37,8 +37,8 @@ not a condition duplicated in each.
 
 - **#2016/#2017** - `IsDatabaseForLocalizing` is conditionally excluded in the WinForms grid (non-CSV
   extensions) but the WPF grid showed it unconditionally; its handler cast `oldValue` without a null
-  check, and the WPF grid's `DataUiGrid.PropertyChange` never populates `OldValue` (a separate landmine -
-  see the commit fixing #2017).
+  check. `ReactToChangedReferencedFile` is `internal` with callers that hand over no old value, so a null
+  `oldValue` is a legitimate input to any handler added there, not a caller bug to chase upstream.
 - **#2018** - `IsSharedStatic` wasn't excluded for global content in *either* grid (only Entity was
   handled). Its handler dereferenced `GlueState.Self.CurrentElement.NamedObjects`, null for a global file.
   The first fix attempt null-guarded the handler instead of hiding the now-provably-meaningless checkbox -
