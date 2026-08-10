@@ -24,6 +24,12 @@ public interface IDialogCommands
 
     AddEntityViewModel CreateAddNewEntityViewModel();
 
+    /// <summary>
+    /// Shows the single delete dialog for an Entity and, if confirmed, removes it. Returns whether it was
+    /// removed. See GitHub issue #429 - this replaced a chain of separate prompts.
+    /// </summary>
+    Task<bool> AskToRemoveEntityAsync(EntitySave entityToRemove, bool askToDeleteFiles = true);
+
     #endregion
 
     #region NamedObjectSave
@@ -40,6 +46,22 @@ public interface IDialogCommands
     #region Screen
 
     void ShowAddNewScreenDialog(AddScreenViewModel viewModel = null);
+
+    /// <summary>
+    /// Shows the single delete dialog for a Screen and, if confirmed, removes it. Returns whether it was
+    /// removed. See GitHub issue #429 - this replaced a chain of separate prompts.
+    /// </summary>
+    Task<bool> AskToRemoveScreenAsync(ScreenSave screenToRemove, bool askToDeleteFiles = true);
+
+    #endregion
+
+    #region Files
+
+    /// <summary>
+    /// Asks what should happen to a list of files a delete left behind, and does it. Screens and Entities
+    /// ask this inside their own delete dialog instead; this is for the paths that don't have one.
+    /// </summary>
+    Task AskWhatToDoWithFilesAsync(List<string> filesToRemove);
 
     #endregion
 

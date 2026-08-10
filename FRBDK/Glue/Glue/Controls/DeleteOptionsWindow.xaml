@@ -1,0 +1,65 @@
+﻿<Window x:Class="GlueFormsCore.Controls.DeleteOptionsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:localization="clr-namespace:Localization;assembly=Localization"
+        mc:Ignorable="d"
+        Title="Delete?" SizeToContent="Height" Width="560" MaxHeight="700" ResizeMode="CanResizeWithGrip"
+        WindowStartupLocation="CenterOwner">
+    <Grid Margin="8">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="{Binding Message}" TextWrapping="Wrap" FontWeight="Bold" Margin="0,0,0,8" />
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+
+                <!-- Things which come along with the delete whether the user likes it or not -->
+                <StackPanel Visibility="{Binding ObjectsToRemoveVisibility}" Margin="0,0,0,8">
+                    <TextBlock Text="{x:Static localization:Texts.DeleteAlsoFollowing}" TextWrapping="Wrap" />
+                    <ListBox ItemsSource="{Binding ObjectsToRemove}" MaxHeight="120" Margin="0,2,0,0" />
+                </StackPanel>
+
+                <!-- One checkbox per optional part of the delete. Plugins add to this list through
+                     PluginManager.FillDeleteOptions rather than showing their own dialog. -->
+                <StackPanel Visibility="{Binding OptionsVisibility}" Margin="0,0,0,8">
+                    <ItemsControl ItemsSource="{Binding Options}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding IsChecked}" Margin="0,2,0,2">
+                                    <TextBlock Text="{Binding Display}" TextWrapping="Wrap" />
+                                </CheckBox>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+
+                <!-- The leftover-files question, which used to be a separate dialog shown after the delete -->
+                <StackPanel Visibility="{Binding FilesToRemoveVisibility}">
+                    <TextBlock Text="What would you like to do with the following files:" TextWrapping="Wrap" />
+                    <ListBox ItemsSource="{Binding FilesToRemove}" MaxHeight="160" Margin="0,2,0,4" />
+                    <RadioButton GroupName="FileAction" Margin="0,2,0,2"
+                                 IsChecked="{Binding IsRemoveAndDeleteFilesChecked}"
+                                 Content="Remove them from the project and delete the files" />
+                    <RadioButton GroupName="FileAction" Margin="0,2,0,2"
+                                 IsChecked="{Binding IsRemoveFilesFromProjectChecked}"
+                                 Content="Remove them from the project but keep the files" />
+                    <RadioButton GroupName="FileAction" Margin="0,2,0,2"
+                                 IsChecked="{Binding IsDoNothingWithFilesChecked}"
+                                 Content="Nothing - leave them as part of the game project" />
+                </StackPanel>
+
+            </StackPanel>
+        </ScrollViewer>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
+            <Button Click="DeleteButton_Click" IsDefault="True" Content="Delete" MinWidth="80" Padding="6,2" />
+            <Button Click="CancelButton_Click" IsCancel="True" Content="Cancel" MinWidth="80" Padding="6,2" Margin="6,0,0,0" />
+        </StackPanel>
+    </Grid>
+</Window>

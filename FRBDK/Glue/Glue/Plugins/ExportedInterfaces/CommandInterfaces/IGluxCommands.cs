@@ -156,11 +156,23 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         Task RemoveEntityAsync(EntitySave entityToRemove, List<string> filesThatCouldBeRemoved = null);
 
+        /// <summary>
+        /// Removes an Entity, applying the answers the user gave in the delete dialog. Pass null for
+        /// <paramref name="deleteOptions"/> to skip every optional part of the delete.
+        /// </summary>
+        Task RemoveEntityAsync(EntitySave entityToRemove, DeleteOptionsViewModel deleteOptions, List<string> filesThatCouldBeRemoved = null);
+
         #endregion
 
         #region Screens
 
         void RemoveScreen(ScreenSave screenToRemove, List<string> filesThatCouldBeRemoved = null);
+
+        /// <summary>
+        /// Removes a Screen, applying the answers the user gave in the delete dialog. Pass null for
+        /// <paramref name="deleteOptions"/> to skip every optional part of the delete.
+        /// </summary>
+        Task RemoveScreenAsync(ScreenSave screenToRemove, DeleteOptionsViewModel deleteOptions, List<string> filesThatCouldBeRemoved = null);
 
         #endregion
 

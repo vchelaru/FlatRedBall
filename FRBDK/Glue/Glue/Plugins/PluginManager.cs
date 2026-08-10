@@ -27,6 +27,7 @@ using System.ComponentModel;
 using System.Runtime.Loader;
 using FlatRedBall.Instructions.Reflection;
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
+using GlueFormsCore.ViewModels;
 using FlatRedBall.Content.Instructions;
 using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.IO;
@@ -1070,16 +1071,22 @@ public class PluginManager : PluginManagerBase
             (plugin) => plugin.ReactToFileRemoved(element, file),
             (plugin) => plugin.ReactToFileRemoved != null);
 
-    internal static void ReactToEntityRemoved(EntitySave entity, List<string> filesToRemove) =>
+    /// <summary>
+    /// Lets every plugin add its own options to the one dialog a delete shows, before it is shown.
+    /// This is public because <c>DeletionPlanner</c> builds the view model outside this assembly's
+    /// plugin internals; see GitHub issue #429.
+    /// </summary>
+    public static void FillDeleteOptions(GlueElement element, DeleteOptionsViewModel viewModel) =>
         CallMethodOnPlugin(
-            plugin => plugin.ReactToEntityRemoved(entity, filesToRemove),
-            plugin => plugin.ReactToEntityRemoved != null,
-            nameof(ReactToEntityRemoved));
+            plugin => plugin.FillDeleteOptions(element, viewModel),
+            plugin => plugin.FillDeleteOptions != null,
+            nameof(FillDeleteOptions));
 
-    internal static void ReactToScreenRemoved(ScreenSave screenSave, List<string> filesToRemove) =>
+    internal static void ReactToElementRemoved(GlueElement element, DeleteOptionsViewModel viewModel) =>
         CallMethodOnPlugin(
-            plugin => plugin.ReactToScreenRemoved(screenSave, filesToRemove),
-            plugin => plugin.ReactToScreenRemoved != null);
+            plugin => plugin.ReactToElementRemoved(element, viewModel),
+            plugin => plugin.ReactToElementRemoved != null,
+            nameof(ReactToElementRemoved));
 
     internal static void ReactToElementVariableChange(GlueElement element, CustomVariable variable, object oldValue)
     {

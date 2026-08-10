@@ -1,6 +1,9 @@
 using System;
 using System.Linq;
+using FlatRedBall.Glue.AutomatedGlue;
 using FlatRedBall.Glue.Managers;
+using GlueFormsCore.Controls;
+using GlueFormsCore.ViewModels;
 
 namespace FlatRedBall.Glue.Controls
 {
@@ -35,6 +38,7 @@ namespace FlatRedBall.Glue.Controls
         public static Action<string> ShowMessageImpl { get; set; } = DefaultShowMessage;
         public static Func<string, DialogButton, DialogButton, DialogButton?> ShowConfirmImpl { get; set; } = DefaultShowConfirm;
         public static Func<string, (string label, object value)[], object> ShowChoiceImpl { get; set; } = DefaultShowChoice;
+        public static Func<DeleteOptionsViewModel, bool> ShowDeleteImpl { get; set; } = DefaultShowDelete;
 
         /// <summary>
         /// Shows a simple single-button ("OK") informational message.
@@ -71,13 +75,45 @@ namespace FlatRedBall.Glue.Controls
             return result is TResult typed ? typed : default;
         }
 
+        /// <summary>
+        /// Shows the one dialog a delete asks everything through - what is being deleted, which optional
+        /// parts to include, and what to do with the files left behind. Returns true if the user confirmed.
+        /// See GitHub issue #429 for why this replaced a chain of separate prompts.
+        /// </summary>
+        public static bool ShowDelete(DeleteOptionsViewModel viewModel)
+        {
+            return TaskManager.Self.OnUiThread(() => ShowDeleteImpl(viewModel));
+        }
+
         private static void DefaultShowMessage(string text)
         {
             System.Windows.MessageBox.Show(text);
         }
 
+        private static bool DefaultShowDelete(DeleteOptionsViewModel viewModel)
+        {
+            if (!GlueGui.ShowGui)
+            {
+                return false;
+            }
+
+            var window = new DeleteOptionsWindow
+            {
+                DataContext = viewModel
+            };
+
+            return window.ShowDialog() == true;
+        }
+
         private static DialogButton? DefaultShowConfirm(string text, DialogButton primary, DialogButton secondary)
         {
+            // Headless (unit tests, automated Glue) has no desktop to put a modal on. Returning null is the
+            // same answer the caller gets when the user closes the window without clicking a button.
+            if (!GlueGui.ShowGui)
+            {
+                return null;
+            }
+
             var mbmb = new MultiButtonMessageBoxWpf
             {
                 MessageText = text
@@ -96,6 +132,11 @@ namespace FlatRedBall.Glue.Controls
 
         private static object DefaultShowChoice(string text, (string label, object value)[] options)
         {
+            if (!GlueGui.ShowGui)
+            {
+                return null;
+            }
+
             var mbmb = new MultiButtonMessageBoxWpf
             {
                 MessageText = text

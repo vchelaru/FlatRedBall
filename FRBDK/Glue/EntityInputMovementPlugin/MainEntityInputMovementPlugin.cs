@@ -57,7 +57,7 @@ namespace EntityInputMovementPlugin
         {
             this.ReactToLoadedGlux += HandleGluxLoaded;
             this.ReactToItemsSelected += HandleItemsSelected;
-            this.ReactToEntityRemoved += HandleElementRemoved;
+            this.ReactToElementRemoved += HandleElementRemoved;
             this.ReactToElementRenamed += HandleElementRenamed;
             this.ModifyAddEntityWindow += TopDownPlugin.Logic.ModifyAddEntityWindowLogic.HandleModifyAddEntityWindow;
             this.NewEntityCreatedWithUi += HandleNewEntityCreatedWithUi;
@@ -255,8 +255,13 @@ namespace EntityInputMovementPlugin
             }
         }
 
-        private void HandleElementRemoved(EntitySave removedElement, List<string> additionalFiles)
+        private void HandleElementRemoved(GlueElement removedElement, GlueFormsCore.ViewModels.DeleteOptionsViewModel deleteOptions)
         {
+            if (!(removedElement is EntitySave))
+            {
+                return;
+            }
+
             // This could be the very last entity that was a top-down or platformer. If so, we should
             // check and remove unused files.
             TopDownPlugin.Controllers.MainController.Self.CheckForNoTopDownEntities();

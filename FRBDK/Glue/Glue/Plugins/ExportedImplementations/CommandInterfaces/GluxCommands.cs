@@ -3168,7 +3168,14 @@ public class GluxCommands : IGluxCommands
         return succeeded;
     }
 
-    public async Task RemoveEntityAsync(EntitySave entityToRemove, List<string> filesThatCouldBeRemoved = null)
+    public Task RemoveEntityAsync(EntitySave entityToRemove, List<string> filesThatCouldBeRemoved = null) =>
+        RemoveEntityAsync(entityToRemove, null, filesThatCouldBeRemoved);
+
+    /// <summary>
+    /// Removes an Entity, applying the answers the user already gave in the single delete dialog. See
+    /// <see cref="RemoveScreenAsync"/> for what a null <paramref name="deleteOptions"/> means.
+    /// </summary>
+    public async Task RemoveEntityAsync(EntitySave entityToRemove, DeleteOptionsViewModel deleteOptions, List<string> filesThatCouldBeRemoved = null)
     {
         // The parameter is an output accumulator, so the documented default overload used to fail at
         // the first Add. RemoveScreen already does this.
@@ -3214,28 +3221,23 @@ public class GluxCommands : IGluxCommands
             GlueCommands.Self.GluxCommands
                 .RemoveNamedObject(nos, false, true, filesThatCouldBeRemoved);
         }
-        for (int i = 0; i < inheritingEntities.Count; i++)
+        // The user already answered this in the delete dialog rather than in one popup per derived entity.
+        foreach (var inheritingEntity in inheritingEntities)
         {
-            EntitySave inheritingEntity = inheritingEntities[i];
-
-            var result = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox("Reset the inheritance for " + inheritingEntity.Name + "?",
-                caption: "Reset Inheritance?");
-
-            if (result == System.Windows.MessageBoxResult.Yes)
+            if (ShouldResetInheritance(deleteOptions, inheritingEntity))
             {
                 inheritingEntity.BaseEntity = "";
                 await CodeWriter.GenerateCode(inheritingEntity);
             }
         }
 
-        FillWithCodeFilesForElement(filesThatCouldBeRemoved, entityToRemove);
-        FillWithJsonFilesForElement(filesThatCouldBeRemoved, entityToRemove);
+        DeletionPlanner.FillWithOwnedFiles(filesThatCouldBeRemoved, entityToRemove);
 
         GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
 
         EditorObjects.IoC.Container.Get<GlueErrorManager>().ClearFixedErrors();
 
-        PluginManager.ReactToEntityRemoved(entityToRemove, filesThatCouldBeRemoved);
+        PluginManager.ReactToElementRemoved(entityToRemove, deleteOptions);
 
         GlueCommands.Self.ProjectCommands.SaveProjects();
 
@@ -3271,7 +3273,16 @@ public class GluxCommands : IGluxCommands
 
     #region Screen
 
-    public async void RemoveScreen(ScreenSave screenToRemove, List<string> filesThatCouldBeRemoved = null)
+    public async void RemoveScreen(ScreenSave screenToRemove, List<string> filesThatCouldBeRemoved = null) =>
+        await RemoveScreenAsync(screenToRemove, null, filesThatCouldBeRemoved);
+
+    /// <summary>
+    /// Removes a Screen, applying the answers the user already gave in the single delete dialog.
+    /// A null <paramref name="deleteOptions"/> means "no dialog was shown" - every optional part of the
+    /// delete (resetting derived screens' inheritance, anything a plugin contributed) is then skipped,
+    /// so a programmatic caller never silently changes elements it did not name.
+    /// </summary>
+    public async Task RemoveScreenAsync(ScreenSave screenToRemove, DeleteOptionsViewModel deleteOptions, List<string> filesThatCouldBeRemoved = null)
     {
         filesThatCouldBeRemoved = filesThatCouldBeRemoved ?? new List<string>();
         List<ScreenSave> inheritingScreens = ObjectFinder.Self.GetAllScreensThatInheritFrom(screenToRemove);
@@ -3325,14 +3336,10 @@ public class GluxCommands : IGluxCommands
 
         await RemoveUnreferencedFiles(screenToRemove, filesThatCouldBeRemoved);
 
-        for (int i = 0; i < inheritingScreens.Count; i++)
+        // The user already answered this in the delete dialog rather than in one popup per derived screen.
+        foreach (var inheritingScreen in inheritingScreens)
         {
-            ScreenSave inheritingScreen = inheritingScreens[i];
-
-            var result = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox("Reset the inheritance for " + inheritingScreen.Name + "?",
-                caption: "Reset Inheritance?");
-
-            if (result == System.Windows.MessageBoxResult.Yes)
+            if (ShouldResetInheritance(deleteOptions, inheritingScreen))
             {
                 inheritingScreen.BaseScreen = "";
 
@@ -3347,15 +3354,17 @@ public class GluxCommands : IGluxCommands
             GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(baseScreen, generateDerivedElements: false);
         }
 
-        PluginManager.ReactToScreenRemoved(screenToRemove, filesThatCouldBeRemoved);
+        PluginManager.ReactToElementRemoved(screenToRemove, deleteOptions);
 
-
-        FillWithCodeFilesForElement(filesThatCouldBeRemoved, screenToRemove);
-        FillWithJsonFilesForElement(filesThatCouldBeRemoved, screenToRemove);
+        DeletionPlanner.FillWithOwnedFiles(filesThatCouldBeRemoved, screenToRemove);
 
         GlueCommands.Self.ProjectCommands.SaveProjects();
         GluxCommands.Self.SaveProjectAndElements();
     }
+
+    static bool ShouldResetInheritance(DeleteOptionsViewModel deleteOptions, GlueElement derivedElement) =>
+        deleteOptions != null &&
+        deleteOptions.IsOptionChecked(new DeletionPlanner.ResetInheritanceTag { DerivedElement = derivedElement });
 
     private static async Task RemoveUnreferencedFiles(IElement element, List<string> filesThatCouldBeRemoved)
     {
@@ -3379,47 +3388,6 @@ public class GluxCommands : IGluxCommands
             {
                 await GluxCommands.Self.RemoveReferencedFileAsync(rfs, filesThatCouldBeRemoved);
             }
-        }
-    }
-
-    static void FillWithJsonFilesForElement(List<string> filesThatCouldBeRemoved, GlueElement element)
-    {
-        string extension = element is ScreenSave
-            ? GlueProjectSave.ScreenExtension
-            : GlueProjectSave.EntityExtension;
-        filesThatCouldBeRemoved.Add(element.Name + "." + extension);
-    }
-
-    static void FillWithCodeFilesForElement(List<string> filesThatCouldBeRemoved, GlueElement element)
-    {
-        string elementName = element.Name;
-
-
-
-        filesThatCouldBeRemoved.Add(elementName + ".cs");
-
-
-        filesThatCouldBeRemoved.Add(elementName + ".Generated.cs");
-
-        string eventFile = elementName + ".Event.cs";
-        string absoluteEvent = GlueCommands.Self.GetAbsoluteFileName(eventFile, false);
-        if (System.IO.File.Exists(absoluteEvent))
-        {
-            filesThatCouldBeRemoved.Add(eventFile);
-        }
-
-        string generatedEventFile = elementName + ".Generated.Event.cs";
-        string absoluteGeneratedEventFile = GlueCommands.Self.GetAbsoluteFileName(generatedEventFile, false);
-        if (System.IO.File.Exists(absoluteGeneratedEventFile))
-        {
-            filesThatCouldBeRemoved.Add(generatedEventFile);
-        }
-
-        string factoryName = "Factories/" + FileManager.RemovePath(elementName) + "Factory.Generated.cs";
-        string absoluteFactoryNameFile = GlueCommands.Self.GetAbsoluteFileName(factoryName, false);
-        if (System.IO.File.Exists(absoluteFactoryNameFile))
-        {
-            filesThatCouldBeRemoved.Add(absoluteFactoryNameFile);
         }
     }
 
@@ -3805,20 +3773,30 @@ public class GluxCommands : IGluxCommands
                 #region Find out if the user really wants to remove this - don't ask if askAreYouSure is false
                 var reallyRemoveResult = System.Windows.MessageBoxResult.Yes;
 
-                // Some objects may use a custom delete dialog. Those types should be checked here first:
+                // Screens and Entities ask everything - the confirm, the derived-element inheritance
+                // resets, whatever the plugins want, and what to do with the leftover files - in one
+                // dialog, so they take a different path from here down. See GitHub issue #429.
                 if (currentObject is ScreenSave screenToRemove)
                 {
-
-                    await TaskManager.Self.AddAsync(() =>
-                    {
-                        if (AskToRemoveScreen(screenToRemove, filesToRemove))
-                        {
-                            deletedElement = screenToRemove;
-                        }
-
-                    }, "Removing Screen");
+                    var wasRemoved = await GlueCommands.Self.DialogCommands.AskToRemoveScreenAsync(screenToRemove, askToDeleteFiles);
+                    deletedElement = wasRemoved ? screenToRemove : null;
 
                     askAreYouSure = false;
+                    // The dialog was the confirm, so the shared tail below (tree refresh, regenerate,
+                    // save) still runs - but only if the user actually went through with it.
+                    reallyRemoveResult = wasRemoved
+                        ? System.Windows.MessageBoxResult.Yes
+                        : System.Windows.MessageBoxResult.No;
+                }
+                else if (currentObject is EntitySave entityToRemove)
+                {
+                    var wasRemoved = await GlueCommands.Self.DialogCommands.AskToRemoveEntityAsync(entityToRemove, askToDeleteFiles);
+                    deletedElement = wasRemoved ? entityToRemove : null;
+
+                    askAreYouSure = false;
+                    reallyRemoveResult = wasRemoved
+                        ? System.Windows.MessageBoxResult.Yes
+                        : System.Windows.MessageBoxResult.No;
                 }
 
 
@@ -3910,81 +3888,11 @@ public class GluxCommands : IGluxCommands
                     }
                     #endregion
 
-                    #region Else if is EntitySave
-
-                    else if (GlueState.Self.CurrentEntitySave != null)
-                    {
-                        var entityToRemove = GlueState.Self.CurrentEntitySave;
-                        await TaskManager.Self.AddAsync(async () =>
-                        {
-                            await AskToRemoveEntity(GlueState.Self.CurrentEntitySave, filesToRemove);
-                            //ProjectManager.RemoveEntity(EditorLogic.CurrentEntitySave);
-                            deletedElement = entityToRemove;
-                        }, "Removing Entity");
-
-                    }
-
-                    #endregion
-
                     #region Files were deleted and the user wants to be asked to delete
 
-                    if (filesToRemove.Count != 0 && askToDeleteFiles)
+                    if (askToDeleteFiles)
                     {
-
-                        for (int i = 0; i < filesToRemove.Count; i++)
-                        {
-                            if (FileManager.IsRelative(filesToRemove[i]))
-                            {
-                                filesToRemove[i] = GlueCommands.Self.GetAbsoluteFileName(filesToRemove[i], false);
-                            }
-                            filesToRemove[i] = filesToRemove[i].Replace("\\", "/");
-                        }
-
-                        StringFunctions.RemoveDuplicates(filesToRemove, true);
-
-                        var lbw = new ListBoxWindowWpf();
-
-                        string messageString = "What would you like to do with the following files:\n";
-                        lbw.Message = messageString;
-
-                        foreach (string s in filesToRemove)
-                        {
-
-                            lbw.AddItem(s);
-                        }
-                        lbw.ClearButtons();
-                        lbw.AddButton("Nothing - leave them as part of the game project", DialogResult.No);
-                        lbw.AddButton("Remove them from the project but keep the files", DialogResult.OK);
-                        lbw.AddButton("Remove and delete the files", DialogResult.Yes);
-
-                        var dialogShowResult = lbw.ShowDialog();
-
-                        if (lbw.ClickedOption is DialogResult result)
-                        {
-                            if (result == DialogResult.OK || result == DialogResult.Yes)
-                            {
-                                await TaskManager.Self.AddAsync(() =>
-                                {
-                                    foreach (var file in filesToRemove)
-                                    {
-                                        FilePath filePath = GlueCommands.Self.GetAbsoluteFileName(file, false);
-                                        // This file may have been removed
-                                        // in windows explorer, and now removed
-                                        // from Glue.  Check to prevent a crash.
-
-                                        GlueCommands.Self.ProjectCommands.RemoveFromProjects(filePath, false);
-
-                                        if (result == DialogResult.Yes && filePath.Exists())
-                                        {
-                                            FileHelper.MoveToRecycleBin(filePath.FullPath);
-                                        }
-                                    }
-                                    GluxCommands.Self.ProjectCommands.SaveProjects();
-
-                                }, "Removing files");
-                            }
-
-                        }
+                        await GlueCommands.Self.DialogCommands.AskWhatToDoWithFilesAsync(filesToRemove);
                     }
 
                     #endregion
@@ -4039,77 +3947,6 @@ public class GluxCommands : IGluxCommands
 
         }
     }
-
-    private static bool AskToRemoveScreen(ScreenSave screenToRemove, List<string> filesThatCouldBeRemoved)
-    {
-        var message = String.Format("Are you sure you want to delete {0}?", screenToRemove);
-
-        List<ScreenSave> inheritingScreens = ObjectFinder.Self.GetAllScreensThatInheritFrom(screenToRemove);
-        if (inheritingScreens.Count != 0)
-        {
-            message += String.Format("\n\n" + "Warning: the Screen {0} is the base for the following Screens:", screenToRemove.GetStrippedName());
-            for (var i = 0; i < inheritingScreens.Count; i++)
-            {
-                message += "\n" + inheritingScreens[i];
-            }
-        }
-
-        var result = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(message, "Are you sure?");
-
-        var wasRemoved = false;
-        if (result == System.Windows.MessageBoxResult.Yes)
-        {
-            wasRemoved = true;
-
-            GlueCommands.Self.GluxCommands.RemoveScreen(screenToRemove, filesThatCouldBeRemoved);
-        }
-        return wasRemoved;
-    }
-
-    private static async Task AskToRemoveEntity(EntitySave entityToRemove, List<string> filesThatCouldBeRemoved)
-    {
-        var namedObjectsToRemove = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(entityToRemove.Name);
-
-        string message = null;
-
-        if (namedObjectsToRemove.Count != 0)
-        {
-            message = String.Format("The Entity {0} is referenced by the following objects:", entityToRemove);
-
-            for (var i = 0; i < namedObjectsToRemove.Count; i++)
-            {
-                message += "\n" + namedObjectsToRemove[i];
-            }
-        }
-
-        var inheritingEntities = ObjectFinder.Self.GetAllEntitiesThatInheritFrom(entityToRemove);
-
-        if (inheritingEntities.Count != 0)
-        {
-            message = String.Format("The Entity {0} is the base for the following Entities:", entityToRemove);
-            for (int i = 0; i < inheritingEntities.Count; i++)
-            {
-                message += "\n" + inheritingEntities[i];
-
-            }
-        }
-
-        if (message != null)
-        {
-            message += "\n\n" + "Are you sure you want to delete?";
-
-            var result = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(message);
-            if (result == System.Windows.MessageBoxResult.Yes)
-            {
-                await GlueCommands.Self.GluxCommands.RemoveEntityAsync(entityToRemove, filesThatCouldBeRemoved);
-            }
-        }
-        else
-        {
-            await GlueCommands.Self.GluxCommands.RemoveEntityAsync(entityToRemove, filesThatCouldBeRemoved);
-        }
-    }
-
 
     private static void AskToRemoveCustomVariablesWithoutState(IElement element)
     {

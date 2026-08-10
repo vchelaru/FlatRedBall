@@ -60,7 +60,7 @@ class ToolbarController : Singleton<ToolbarController>
     }
 
     internal void HandleNewScreenCreated(ScreenSave screen) => RefreshToolbarScreens();
-    internal void HandleScreenRemoved(ScreenSave screen, List<string> arg2) => RefreshToolbarScreens();
+    internal void HandleElementRemoved(GlueElement element, GlueFormsCore.ViewModels.DeleteOptionsViewModel deleteOptions) => RefreshToolbarScreens();
     internal void HandleGluxLoaded() => RefreshToolbarScreens();
     internal void HandleScreenRenamed(IElement element, string newName) => RefreshToolbarScreens();
 
