@@ -119,10 +119,19 @@ public class GluxCommands : IGluxCommands
 
                 GlueState.Self.CurrentGlueProject.StartUpScreen = value;
                 GluxCommands.Self.SaveGlujFile();
-                if (string.IsNullOrEmpty(ProjectManager.GameClassFileName))
+
+                if (!CodeWritePolicy.WritesCodeForCurrentProject)
                 {
+                    // A project Glue does not own the code of reads StartUpScreen straight out of the
+                    // .gluj at runtime, which the save above just wrote. There is no Game class for
+                    // Glue to find and none it should be editing, so there is nothing missing.
+                }
+                else if (string.IsNullOrEmpty(ProjectManager.GameClassFileName))
+                {
+                    // The startup screen itself was saved above - only the code that acts on it wasn't.
                     GlueCommands.Self.DialogCommands.ShowMessageBox(
-                        "Could not set the startup screen because Glue could not find the Game class.");
+                        "The startup screen was saved, but Glue could not find the Game class to update, " +
+                        "so the game will not start on it until that is fixed.");
                 }
                 else
                 {
@@ -3161,6 +3170,9 @@ public class GluxCommands : IGluxCommands
 
     public async Task RemoveEntityAsync(EntitySave entityToRemove, List<string> filesThatCouldBeRemoved = null)
     {
+        // The parameter is an output accumulator, so the documented default overload used to fail at
+        // the first Add. RemoveScreen already does this.
+        filesThatCouldBeRemoved = filesThatCouldBeRemoved ?? new List<string>();
         List<NamedObjectSave> namedObjectsToRemove = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(entityToRemove.Name);
         List<EntitySave> inheritingEntities = ObjectFinder.Self.GetAllEntitiesThatInheritFrom(entityToRemove);
 
