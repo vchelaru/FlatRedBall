@@ -160,10 +160,10 @@ namespace FlatRedBall.Glue.SetVariable
             {
                 updateTreeView = false;
                 bool newValue = rfs.IsDatabaseForLocalizing;
-                // oldValue is null when this change comes from the WPF "Settings (Preview)" grid -
-                // WpfDataUi's DataUiGrid.PropertyChange never populates PropertyChangedArgs.OldValue
-                // (only NewValue), unlike the WinForms PropertyGrid path. A checkbox can only have
-                // flipped from the opposite of its new value, so that's a safe, correct fallback.
+                // Don't unbox oldValue blindly - this method is reachable from both property grids and
+                // from internal callers, and not every one of them has an old value to hand over. A
+                // checkbox can only have flipped from the opposite of its new value, so that's a safe
+                // fallback when it's missing.
                 bool oldValueAsBool = oldValue is bool oldValueUnboxed ? oldValueUnboxed : !newValue;
 
                 if(newValue)
