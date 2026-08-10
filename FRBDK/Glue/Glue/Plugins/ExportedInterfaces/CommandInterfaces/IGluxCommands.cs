@@ -121,7 +121,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
             EditorObjects.SaveClasses.BuildToolAssociation buildToolAssociation, bool isBuiltFile, object options,
             GlueElement sourceElement, string directoryOfTreeNode, bool selectFileAfterCreation = true, AssetTypeInfo forcedAssetTypeInfo = null);
 
-        Task RemoveReferencedFileAsync(ReferencedFileSave referencedFileToRemove, List<string> additionalFilesToRemove, bool regenerateAndSave = true);
+        Task RemoveReferencedFileAsync(ReferencedFileSave referencedFileToRemove, GlueFormsCore.ViewModels.DeleteOptionsViewModel deleteOptions, List<string> additionalFilesToRemove, bool regenerateAndSave = true);
 
         Task DuplicateAsync(ReferencedFileSave rfs, GlueElement forcedContainer = null, FilePath desiredFolder = null);
         
@@ -259,6 +259,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         #endregion
 
         #region StateSaveCategory
+
+        /// <summary>
+        /// Removes a state and, where <paramref name="deleteOptions"/> says so, the variables it leaves
+        /// with no state to refer to. See GitHub issue #2032.
+        /// </summary>
+        void RemoveState(StateSave stateToRemove, GlueFormsCore.ViewModels.DeleteOptionsViewModel deleteOptions);
 
         void RemoveStateSaveCategory(StateSaveCategory category);
 

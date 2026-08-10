@@ -1070,14 +1070,16 @@ public class GluxCommands : IGluxCommands
     }
 
 
-    public async Task RemoveReferencedFileAsync(ReferencedFileSave referencedFileToRemove, List<string> additionalFilesToRemove, bool regenerateAndSave = true)
+    public async Task RemoveReferencedFileAsync(ReferencedFileSave referencedFileToRemove, DeleteOptionsViewModel deleteOptions,
+        List<string> additionalFilesToRemove, bool regenerateAndSave = true)
     {
         await TaskManager.Self.AddAsync(() =>
-            RemoveReferencedFileInternal(referencedFileToRemove, additionalFilesToRemove, regenerateAndSave),
+            RemoveReferencedFileInternal(referencedFileToRemove, deleteOptions, additionalFilesToRemove, regenerateAndSave),
             $"Removing referenced file {referencedFileToRemove}");
     }
 
-    async Task RemoveReferencedFileInternal(ReferencedFileSave referencedFileToRemove, List<string> additionalFilesToRemove, bool regenerateAndSave = true)
+    async Task RemoveReferencedFileInternal(ReferencedFileSave referencedFileToRemove, DeleteOptionsViewModel deleteOptions,
+        List<string> additionalFilesToRemove, bool regenerateAndSave = true)
     {
         // January 13, 2023
         // note about removing
@@ -1136,39 +1138,16 @@ public class GluxCommands : IGluxCommands
                     container.ReferencedFiles.Remove(referencedFileToRemove);
 
                 }
-                // Ask about any NamedObjects that reference this file.                
+                // The user already answered this in the delete dialog rather than in one popup per object,
+                // and the objects a base element defines were a warning there rather than a message box
+                // raised from here. See GitHub issue #2032.
                 for (int i = container.NamedObjects.Count - 1; i > -1; i--)
                 {
                     var nos = container.NamedObjects[i];
-                    if (nos.SourceType == SourceType.File && nos.SourceFile == referencedFileToRemove.Name)
+                    if (nos.SourceType == SourceType.File && nos.SourceFile == referencedFileToRemove.Name &&
+                        !nos.DefinedByBase && ShouldRemoveNamedObject(deleteOptions, nos))
                     {
-                        GlueCommands.Self.DoOnUiThread(() =>
-                        {
-                            if (nos.DefinedByBase)
-                            {
-                                // don't remove it, just tell the user that the object will be broken until fixed
-                                GlueCommands.Self.DialogCommands.ShowMessageBox($"The object {nos} is using the file {referencedFileToRemove}, but the file is being removed.\n\n" +
-                                    $"The project may be broken until this object is fixed");
-                            }
-                            else
-                            {
-                                // Ask the user what to do here - remove it?  Keep it and not compile?
-                                // Escape (no button click) returns default(DialogResult) (None), which isn't
-                                // Yes, so this falls through to "keep it" - same as the original behavior.
-                                var dialogResult = DialogService.ShowChoice(
-                                    "The object\n" + nos.ToString() + "\nreferences the file\n" + referencedFileToRemove.Name +
-                                    "\nWhat would you like to do?",
-                                    ("Remove this object", DialogResult.Yes),
-                                    ("Keep it (object will not be valid until changed)", DialogResult.No));
-
-                                if (dialogResult == DialogResult.Yes)
-                                {
-                                    container.NamedObjects.RemoveAt(i);
-                                }
-                            }
-
-                        });
-
+                        container.NamedObjects.RemoveAt(i);
                     }
                     nos.ResetVariablesReferencing(referencedFileToRemove);
                 }
@@ -2822,7 +2801,15 @@ public class GluxCommands : IGluxCommands
     public void RemoveStateSaveCategory(StateSaveCategory category)
     {
         var owner = ObjectFinder.Self.GetElementContaining(category);
-        GlueState.Self.CurrentElement.StateCategoryList.Remove(category);
+
+        if (owner == null)
+        {
+            return;
+        }
+
+        // This used to remove the category from GlueState.Self.CurrentElement, which is the same element
+        // only as long as the delete came from the tree view selection.
+        owner.StateCategoryList.Remove(category);
 
         var project = GlueState.Self.CurrentGlueProject;
 
@@ -2858,6 +2845,42 @@ public class GluxCommands : IGluxCommands
     #endregion
 
     #region StateSave
+
+    /// <summary>
+    /// Removes a state and, where the user said so in the delete dialog, the variables it leaves without any
+    /// state to refer to. Those variables used to be asked about one popup at a time from in here. See
+    /// GitHub issue #2032.
+    /// </summary>
+    public void RemoveState(StateSave stateToRemove, DeleteOptionsViewModel deleteOptions)
+    {
+        var element = ObjectFinder.Self.GetElementContaining(stateToRemove);
+
+        if (element == null)
+        {
+            return;
+        }
+
+        var name = stateToRemove.Name;
+
+        element.RemoveState(stateToRemove);
+
+        foreach (var variable in element.CustomVariables.ToList())
+        {
+            if (deleteOptions?.IsOptionChecked(new DeletionPlanner.RemoveCustomVariableTag { CustomVariable = variable }) == true)
+            {
+                element.CustomVariables.Remove(variable);
+            }
+        }
+
+        // Refreshing by element rather than by tree selection - the state being deleted is not necessarily
+        // the one selected in the tree view, and RefreshCurrentElementTreeNode throws when nothing is.
+        GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
+
+        PluginManager.ReactToStateRemoved(element, name);
+
+        GluxCommands.Self.SaveProjectAndElements();
+    }
+
 
     public Task AddStateSave(StateSave newState, StateSaveCategory category, GlueElement element)
     {
@@ -3205,7 +3228,7 @@ public class GluxCommands : IGluxCommands
         // So we'll manually remove the RFS's first before removing the entire entity
         for (int i = entityToRemove.ReferencedFiles.Count - 1; i > -1; i--)
         {
-            await GluxCommands.Self.RemoveReferencedFileAsync(entityToRemove.ReferencedFiles[i], filesThatCouldBeRemoved, regenerateAndSave: false);
+            await GluxCommands.Self.RemoveReferencedFileAsync(entityToRemove.ReferencedFiles[i], deleteOptions: null, filesThatCouldBeRemoved, regenerateAndSave: false);
         }
 
 
@@ -3327,7 +3350,7 @@ public class GluxCommands : IGluxCommands
         // For more information see the RemoveEntity function
         for (int i = screenToRemove.ReferencedFiles.Count - 1; i > -1; i--)
         {
-            await GluxCommands.Self.RemoveReferencedFileAsync(screenToRemove.ReferencedFiles[i], filesThatCouldBeRemoved, regenerateAndSave: false);
+            await GluxCommands.Self.RemoveReferencedFileAsync(screenToRemove.ReferencedFiles[i], deleteOptions: null, filesThatCouldBeRemoved, regenerateAndSave: false);
         }
 
         ProjectManager.GlueProjectSave.Screens.Remove(screenToRemove);
@@ -3362,6 +3385,14 @@ public class GluxCommands : IGluxCommands
         GluxCommands.Self.SaveProjectAndElements();
     }
 
+    /// <summary>
+    /// Null options means nobody asked - a file removed as part of deleting the element that owns it, or one
+    /// the wildcard watcher noticed vanish from disk. Neither should silently take objects with it.
+    /// </summary>
+    static bool ShouldRemoveNamedObject(DeleteOptionsViewModel deleteOptions, NamedObjectSave namedObject) =>
+        deleteOptions != null &&
+        deleteOptions.IsOptionChecked(new DeletionPlanner.RemoveNamedObjectTag { NamedObject = namedObject });
+
     static bool ShouldResetInheritance(DeleteOptionsViewModel deleteOptions, GlueElement derivedElement) =>
         deleteOptions != null &&
         deleteOptions.IsOptionChecked(new DeletionPlanner.ResetInheritanceTag { DerivedElement = derivedElement });
@@ -3386,7 +3417,7 @@ public class GluxCommands : IGluxCommands
 
             if (shouldRemove)
             {
-                await GluxCommands.Self.RemoveReferencedFileAsync(rfs, filesThatCouldBeRemoved);
+                await GluxCommands.Self.RemoveReferencedFileAsync(rfs, deleteOptions: null, filesThatCouldBeRemoved);
             }
         }
     }
@@ -3759,24 +3790,59 @@ public class GluxCommands : IGluxCommands
 
         if (currentObject is NamedObjectSave asNos)
         {
-            GlueCommands.Self.DialogCommands.AskToRemoveObjectList(glueState.CurrentNamedObjectSaves.ToList(), saveAndRegenerate);
+            await GlueCommands.Self.DialogCommands.AskToRemoveObjectListAsync(glueState.CurrentNamedObjectSaves.ToList(), saveAndRegenerate);
         }
         else
         {
             // Search terms: removefromproject, remove from project, remove file, remove referencedfilesave
-            List<string> filesToRemove = new List<string>();
-
             if (ProjectManager.StatusCheck() == ProjectManager.CheckResult.Passed)
             {
                 GlueElement deletedElement = null;
-                ReferencedFileSave deletedRfs = null;
                 #region Find out if the user really wants to remove this - don't ask if askAreYouSure is false
                 var reallyRemoveResult = System.Windows.MessageBoxResult.Yes;
 
-                // Screens and Entities ask everything - the confirm, the derived-element inheritance
-                // resets, whatever the plugins want, and what to do with the leftover files - in one
-                // dialog, so they take a different path from here down. See GitHub issue #429.
-                if (currentObject is ScreenSave screenToRemove)
+                // Everything that has been unified asks all of its questions - the confirm, the optional
+                // parts, and what to do with the leftover files - in one dialog, so it takes a different
+                // path from here down. See GitHub issues #429 and #2032.
+                if (currentObject is ReferencedFileSave fileToRemove)
+                {
+                    var wasRemoved = await GlueCommands.Self.DialogCommands.AskToRemoveReferencedFileAsync(fileToRemove, askToDeleteFiles);
+
+                    // The GluxCommand handles saving and regenerating internally, no need to do it twice.
+                    saveAndRegenerate = false;
+                    askAreYouSure = false;
+                    reallyRemoveResult = wasRemoved
+                        ? System.Windows.MessageBoxResult.Yes
+                        : System.Windows.MessageBoxResult.No;
+                }
+                else if (currentObject is StateSave stateToRemove)
+                {
+                    var wasRemoved = await GlueCommands.Self.DialogCommands.AskToRemoveStateAsync(stateToRemove);
+
+                    askAreYouSure = false;
+                    reallyRemoveResult = wasRemoved
+                        ? System.Windows.MessageBoxResult.Yes
+                        : System.Windows.MessageBoxResult.No;
+                }
+                else if (currentObject is StateSaveCategory categoryToRemove)
+                {
+                    var wasRemoved = await GlueCommands.Self.DialogCommands.AskToRemoveStateCategoryAsync(categoryToRemove);
+
+                    askAreYouSure = false;
+                    reallyRemoveResult = wasRemoved
+                        ? System.Windows.MessageBoxResult.Yes
+                        : System.Windows.MessageBoxResult.No;
+                }
+                else if (currentObject is CustomVariable variableToRemove)
+                {
+                    var wasRemoved = await GlueCommands.Self.DialogCommands.AskToRemoveCustomVariableAsync(variableToRemove, askToDeleteFiles);
+
+                    askAreYouSure = false;
+                    reallyRemoveResult = wasRemoved
+                        ? System.Windows.MessageBoxResult.Yes
+                        : System.Windows.MessageBoxResult.No;
+                }
+                else if (currentObject is ScreenSave screenToRemove)
                 {
                     var wasRemoved = await GlueCommands.Self.DialogCommands.AskToRemoveScreenAsync(screenToRemove, askToDeleteFiles);
                     deletedElement = wasRemoved ? screenToRemove : null;
@@ -3803,82 +3869,19 @@ public class GluxCommands : IGluxCommands
 
                 if (askAreYouSure)
                 {
-
-                    string message = string.Empty;
-                    if (currentObject is ReferencedFileSave)
-                    {
-                        // don't say "delete" because it's just being removed unless the user 
-                        // choses to delete on the subsequent dialog
-                        message = $"Are you sure you want to remove\n{currentObject}";
-                    }
-                    else
-                    {
-                        message = String.Format("Are you sure you want to delete {0}?", currentObject);
-                    }
-
-                    reallyRemoveResult = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(message, "Remove?");
+                    // Only the event responses still ask like this - everything else is unified above.
+                    reallyRemoveResult = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(
+                        $"Are you sure you want to delete {currentObject}?", "Remove?");
                 }
                 #endregion
 
                 if (reallyRemoveResult == System.Windows.MessageBoxResult.Yes)
                 {
-                    #region If is NamedObjectSave
-                    // handled above in AskToRemoveObject
-                    #endregion
+                    // Objects, files, states, state categories, variables, Screens and Entities were all
+                    // removed above, by the same dialog that confirmed them.
 
-                    #region Else if is StateSave
-                    if (GlueState.Self.CurrentStateSave != null)
-                    {
-                        var name = GlueState.Self.CurrentStateSave.Name;
-
-                        GlueState.Self.CurrentElement.RemoveState(GlueState.Self.CurrentStateSave);
-
-                        AskToRemoveCustomVariablesWithoutState(GlueState.Self.CurrentElement);
-
-                        GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
-
-                        PluginManager.ReactToStateRemoved(GlueState.Self.CurrentElement, name);
-
-                        GluxCommands.Self.SaveProjectAndElements();
-                    }
-
-                    #endregion
-
-                    #region Else if is StateSaveCategory
-
-                    else if (GlueState.Self.CurrentStateSaveCategory != null)
-                    {
-                        GlueCommands.Self.GluxCommands.RemoveStateSaveCategory(GlueState.Self.CurrentStateSaveCategory);
-                    }
-
-                    #endregion
-
-                    #region Else if is ReferencedFileSave
-
-                    else if (currentObject is ReferencedFileSave rfs)
-                    {
-                        // the GluxCommand handles saving and regenerate internally, no need to do it twice
-                        saveAndRegenerate = false;
-                        var toRemove = rfs;
-                        deletedRfs = rfs;
-                        if (GlueState.Self.Find.IfReferencedFileSaveIsReferenced(toRemove))
-                        {
-                            await GlueCommands.Self.GluxCommands.RemoveReferencedFileAsync(toRemove, filesToRemove, saveAndRegenerate);
-                        }
-                    }
-                    #endregion
-
-                    #region Else if is CustomVariable
-
-                    else if (GlueState.Self.CurrentCustomVariable != null)
-                    {
-                        GlueCommands.Self.GluxCommands.RemoveCustomVariable(GlueState.Self.CurrentCustomVariable, filesToRemove);
-                    }
-
-                    #endregion
-
-                    #region Else if is EventSave
-                    else if (GlueState.Self.CurrentEventResponseSave != null)
+                    #region If is EventSave
+                    if (GlueState.Self.CurrentEventResponseSave != null)
                     {
                         var element = GlueState.Self.CurrentElement;
                         var eventResponse = GlueState.Self.CurrentEventResponseSave;
@@ -3886,15 +3889,6 @@ public class GluxCommands : IGluxCommands
                         PluginManager.ReactToEventResponseRemoved(element, eventResponse);
                         GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
                     }
-                    #endregion
-
-                    #region Files were deleted and the user wants to be asked to delete
-
-                    if (askToDeleteFiles)
-                    {
-                        await GlueCommands.Self.DialogCommands.AskWhatToDoWithFilesAsync(filesToRemove);
-                    }
-
                     #endregion
 
                     if (deletedElement == null && GlueState.Self.CurrentElement == null && currentElementBeforeRemoval != null)
@@ -3947,34 +3941,6 @@ public class GluxCommands : IGluxCommands
 
         }
     }
-
-    private static void AskToRemoveCustomVariablesWithoutState(IElement element)
-    {
-        for (var i = 0; i < element.CustomVariables.Count; i++)
-        {
-            var variable = element.CustomVariables[i];
-
-            if (CustomVariableHelper.IsStateMissingFor(variable, element))
-            {
-                // Escape (no button click) returns default(DialogResult) (None), which isn't OK, so this
-                // falls through to "do nothing" - same as the original behavior.
-                var asDialogResult = DialogService.ShowChoice(
-                    String.Format(
-                        "The variable {0} no longer has any states associated with it.  What would you like to do?",
-                        variable),
-                    ("Remove the variable", DialogResult.OK),
-                    ("Nothing (project may not run until this is fixed)", DialogResult.Cancel));
-
-                if (asDialogResult == DialogResult.OK)
-                {
-                    element.CustomVariables.RemoveAt(i);
-                    i--;
-                }
-
-            }
-        }
-    }
-
 
     void GetAllEntitySavesIn(ITreeNode treeNode, List<EntitySave> allEntitySaves)
     {

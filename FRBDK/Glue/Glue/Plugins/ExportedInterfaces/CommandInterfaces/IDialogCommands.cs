@@ -34,9 +34,13 @@ public interface IDialogCommands
 
     #region NamedObjectSave
 
-    void AskToRemoveObject(NamedObjectSave namedObjectToRemove, bool saveAndRegenerate = true);
+    /// <summary>
+    /// Shows the single delete dialog for an object and, if confirmed, removes it. Returns whether it was
+    /// removed. See GitHub issue #2032 - this replaced <c>RemoveObjectWindow</c>.
+    /// </summary>
+    Task<bool> AskToRemoveObjectAsync(NamedObjectSave namedObjectToRemove, bool saveAndRegenerate = true);
 
-    void AskToRemoveObjectList(List<NamedObjectSave> namedObjectsToRemove, bool saveAndRegenerate = true);
+    Task<bool> AskToRemoveObjectListAsync(List<NamedObjectSave> namedObjectsToRemove, bool saveAndRegenerate = true);
 
 
     Task<NamedObjectSave> ShowAddNewObjectDialog(FlatRedBall.Glue.ViewModels.AddObjectViewModel addObjectViewModel = null);
@@ -55,13 +59,32 @@ public interface IDialogCommands
 
     #endregion
 
+    #region State
+
+    /// <summary>
+    /// Shows the single delete dialog for a state and, if confirmed, removes it. Returns whether it was
+    /// removed. See GitHub issue #2032 - this replaced a yes/no plus a popup per orphaned variable.
+    /// </summary>
+    Task<bool> AskToRemoveStateAsync(StateSave stateToRemove);
+
+    Task<bool> AskToRemoveStateCategoryAsync(StateSaveCategory categoryToRemove);
+
+    #endregion
+
+    #region CustomVariable
+
+    Task<bool> AskToRemoveCustomVariableAsync(CustomVariable variableToRemove, bool askToDeleteFiles = true);
+
+    #endregion
+
     #region Files
 
     /// <summary>
-    /// Asks what should happen to a list of files a delete left behind, and does it. Screens and Entities
-    /// ask this inside their own delete dialog instead; this is for the paths that don't have one.
+    /// Shows the single delete dialog for a file and, if confirmed, removes it. Returns whether it was
+    /// removed. See GitHub issue #2032 - this replaced a confirm, one prompt per object using the file, and
+    /// a leftover-files dialog.
     /// </summary>
-    Task AskWhatToDoWithFilesAsync(List<string> filesToRemove);
+    Task<bool> AskToRemoveReferencedFileAsync(ReferencedFileSave fileToRemove, bool askToDeleteFiles = true);
 
     #endregion
 

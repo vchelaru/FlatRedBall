@@ -392,6 +392,27 @@ namespace FlatRedBall.Glue.SaveClasses.Helpers
 
         }
 
+        /// <summary>
+        /// Whether <paramref name="customVariable"/> would be left with no state to refer to once
+        /// <paramref name="stateBeingRemoved"/> is gone. Deleting a state used to ask about each orphaned
+        /// variable in a popup of its own, raised part-way through the delete; asking up front instead means
+        /// answering this before the state is actually removed. See GitHub issue #2032.
+        /// </summary>
+        public static bool WouldStateBeMissingFor(CustomVariable customVariable, IElement container, StateSave stateBeingRemoved)
+        {
+            if (IsStateMissingFor(customVariable, container))
+            {
+                return true;
+            }
+
+            // Only the uncategorized list can be emptied by removing a single state - removing one from a
+            // category leaves the category, and so the variable's type, in place.
+            return container.States.Count == 1 &&
+                container.States.Contains(stateBeingRemoved) &&
+                IsCustomVariableReferencingState(customVariable) &&
+                customVariable.Type == "VariableState";
+        }
+
         private static bool IsCustomVariableReferencingState(CustomVariable customVariable)
         {
             bool toReturn = string.IsNullOrEmpty(customVariable.SourceObject) &&

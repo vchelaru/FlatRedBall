@@ -97,6 +97,16 @@ namespace GlueFormsCore.ViewModels
         [DependsOn(nameof(ObjectsToRemove))]
         public Visibility ObjectsToRemoveVisibility => (ObjectsToRemove.Count > 0).ToVisibility();
 
+        /// <summary>
+        /// Consequences of the delete the user can neither opt out of nor act on here - an object defined by
+        /// a base element that will be left referencing a file that no longer exists, for instance. These
+        /// used to be their own message box raised part-way through the delete.
+        /// </summary>
+        public ObservableCollection<string> Warnings { get; } = new ObservableCollection<string>();
+
+        [DependsOn(nameof(Warnings))]
+        public Visibility WarningsVisibility => (Warnings.Count > 0).ToVisibility();
+
         public ObservableCollection<DeleteOptionViewModel> Options { get; } = new ObservableCollection<DeleteOptionViewModel>();
 
         [DependsOn(nameof(Options))]
@@ -167,6 +177,7 @@ namespace GlueFormsCore.ViewModels
             FileAction = FileDeleteAction.RemoveAndDelete;
 
             ObjectsToRemove.CollectionChanged += (_, __) => NotifyPropertyChanged(nameof(ObjectsToRemove));
+            Warnings.CollectionChanged += (_, __) => NotifyPropertyChanged(nameof(Warnings));
             FilesToRemove.CollectionChanged += (_, __) => NotifyPropertyChanged(nameof(FilesToRemove));
             Options.CollectionChanged += HandleOptionsChanged;
         }

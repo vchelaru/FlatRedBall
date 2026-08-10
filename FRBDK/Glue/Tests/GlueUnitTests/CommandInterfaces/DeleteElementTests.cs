@@ -1,13 +1,9 @@
-﻿using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
-using GlueFormsCore.ViewModels;
 using GlueUnitTests.TestSupport;
 using Shouldly;
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -22,51 +18,8 @@ namespace GlueUnitTests.CommandInterfaces;
 /// and the delete then applies the answers. See GitHub issue #429.
 /// </summary>
 [Trait("Category", "BuildSmoke")]
-public class DeleteElementTests : IDisposable
+public class DeleteElementTests : DeleteDialogTestBase
 {
-    private readonly Func<DeleteOptionsViewModel, bool> _originalShowDeleteImpl = DialogService.ShowDeleteImpl;
-    private readonly Func<string, DialogButton, DialogButton, DialogButton?> _originalShowConfirmImpl = DialogService.ShowConfirmImpl;
-    private readonly Func<string, (string label, object value)[], object> _originalShowChoiceImpl = DialogService.ShowChoiceImpl;
-
-    /// <summary>
-    /// Every view model handed to the one delete dialog, in order. Length is the assertion that matters:
-    /// the whole point of the issue is that a delete asks once.
-    /// </summary>
-    private readonly List<DeleteOptionsViewModel> _shownDeleteDialogs = new();
-
-    /// <summary>
-    /// Anything that reached one of the *other* dialog seams during a delete. A delete that populates this
-    /// is asking a question outside the single dialog, which is the regression being guarded against.
-    /// </summary>
-    private readonly List<string> _otherPrompts = new();
-
-    public DeleteElementTests()
-    {
-        DialogService.ShowConfirmImpl = (text, _, __) => { _otherPrompts.Add(text); return null; };
-        DialogService.ShowChoiceImpl = (text, _) => { _otherPrompts.Add(text); return null; };
-    }
-
-    public void Dispose()
-    {
-        DialogService.ShowDeleteImpl = _originalShowDeleteImpl;
-        DialogService.ShowConfirmImpl = _originalShowConfirmImpl;
-        DialogService.ShowChoiceImpl = _originalShowChoiceImpl;
-    }
-
-    /// <summary>
-    /// Answers the delete dialog the way a user would: records what it was asked, optionally adjusts the
-    /// options, and clicks Delete.
-    /// </summary>
-    private void AnswerDeleteDialog(Action<DeleteOptionsViewModel> adjust = null, bool confirm = true)
-    {
-        DialogService.ShowDeleteImpl = viewModel =>
-        {
-            _shownDeleteDialogs.Add(viewModel);
-            adjust?.Invoke(viewModel);
-            return confirm;
-        };
-    }
-
     private static async Task<(ScreenSave baseScreen, ScreenSave derived)> AddScreenWithDerivedAsync(
         string baseName, string derivedName)
     {
@@ -76,17 +29,6 @@ public class DeleteElementTests : IDisposable
         derived.BaseScreen = baseScreen.Name;
 
         return (baseScreen, derived);
-    }
-
-    private static async Task<TempDir> LoadFormsSampleAsync()
-    {
-        GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
-
-        var project = GoldProject.CopyOutOfRepo("Samples/FormsSampleProject");
-        await GoldProject.LoadInGlueAsync(
-            Path.Combine(project.Root, "FormsSampleProject", "FormsSampleProject.csproj"));
-
-        return project;
     }
 
     // The reported symptom, stated as a count. Before the fix this screen produced a confirm, then one
@@ -107,9 +49,8 @@ public class DeleteElementTests : IDisposable
         var wasRemoved = await GlueCommands.Self.DialogCommands.AskToRemoveScreenAsync(baseScreen);
 
         wasRemoved.ShouldBeTrue();
-        _shownDeleteDialogs.Count.ShouldBe(1);
-        _otherPrompts.ShouldBeEmpty(
-            "every question a delete asks belongs in the one delete dialog: " + string.Join(" | ", _otherPrompts));
+        ShownDeleteDialogs.Count.ShouldBe(1);
+        OtherPrompts.ShouldBeEmpty(OtherPromptsMessage);
     }
 
     // The two derived screens are two separate opt-in choices in that one dialog, not two popups.
@@ -124,8 +65,7 @@ public class DeleteElementTests : IDisposable
 
         await GlueCommands.Self.DialogCommands.AskToRemoveScreenAsync(baseScreen);
 
-        var viewModel = _shownDeleteDialogs.Single();
-        viewModel.IsOptionChecked(new DeletionPlanner.ResetInheritanceTag { DerivedElement = derived })
+        TheOnlyDeleteDialog.IsOptionChecked(new DeletionPlanner.ResetInheritanceTag { DerivedElement = derived })
             .ShouldBeTrue();
     }
 
@@ -203,9 +143,8 @@ public class DeleteElementTests : IDisposable
         var wasRemoved = await GlueCommands.Self.DialogCommands.AskToRemoveEntityAsync(baseEntity);
 
         wasRemoved.ShouldBeTrue();
-        _shownDeleteDialogs.Count.ShouldBe(1);
-        _otherPrompts.ShouldBeEmpty(
-            "every question a delete asks belongs in the one delete dialog: " + string.Join(" | ", _otherPrompts));
+        ShownDeleteDialogs.Count.ShouldBe(1);
+        OtherPrompts.ShouldBeEmpty(OtherPromptsMessage);
         derivedEntity.BaseEntity.ShouldBe("");
     }
 
@@ -250,10 +189,9 @@ public class DeleteElementTests : IDisposable
 
         await GlueCommands.Self.DialogCommands.AskToRemoveScreenAsync(screen);
 
-        var viewModel = _shownDeleteDialogs.Single();
-        viewModel.Options.ShouldContain(
+        TheOnlyDeleteDialog.Options.ShouldContain(
             option => Equals(option.Tag, "GumPlugin.DeleteGumScreen"),
             "the Gum plugin should ask about its screen as a checkbox in Glue's delete dialog");
-        _otherPrompts.ShouldBeEmpty();
+        OtherPrompts.ShouldBeEmpty(OtherPromptsMessage);
     }
 }

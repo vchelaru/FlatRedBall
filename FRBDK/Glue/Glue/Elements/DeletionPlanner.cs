@@ -1,7 +1,10 @@
 ﻿using System;
+using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.SaveClasses.Helpers;
 using FlatRedBall.IO;
 using GlueFormsCore.ViewModels;
 using System.Collections.Generic;
@@ -18,6 +21,9 @@ namespace FlatRedBall.Glue.Elements
     /// (the "are you sure", the per-derived-screen inheritance reset inside <c>RemoveScreen</c>, the Gum
     /// plugin's own prompt inside <c>ReactToScreenRemoved</c>, and the leftover-files dialog at the end).
     /// See GitHub issue #429.
+    ///
+    /// Every other delete Glue has - objects, files, states, state categories, variables - was folded in
+    /// the same way afterwards, so there is one shape of delete rather than four. See GitHub issue #2032.
     /// </summary>
     public static class DeletionPlanner
     {
@@ -33,6 +39,20 @@ namespace FlatRedBall.Glue.Elements
                 obj is ResetInheritanceTag other && other.DerivedElement == DerivedElement;
 
             public override int GetHashCode() => DerivedElement?.GetHashCode() ?? 0;
+        }
+
+        /// <summary>
+        /// Tag used for the "remove the object X" options a file removal offers, so the removal can find
+        /// them again without matching on display text.
+        /// </summary>
+        public class RemoveNamedObjectTag
+        {
+            public NamedObjectSave NamedObject { get; set; }
+
+            public override bool Equals(object obj) =>
+                obj is RemoveNamedObjectTag other && other.NamedObject == NamedObject;
+
+            public override int GetHashCode() => NamedObject?.GetHashCode() ?? 0;
         }
 
         public static DeleteOptionsViewModel CreateForScreen(ScreenSave screen)
@@ -66,6 +86,256 @@ namespace FlatRedBall.Glue.Elements
             FinishPlan(viewModel);
 
             return viewModel;
+        }
+
+        /// <summary>
+        /// Objects had a delete dialog of their own - <c>RemoveObjectWindow</c> - which predated this view
+        /// model and could show neither options nor the files the delete would leave behind.
+        /// </summary>
+        public static DeleteOptionsViewModel CreateForNamedObjects(IList<NamedObjectSave> namedObjects)
+        {
+            var viewModel = new DeleteOptionsViewModel
+            {
+                Message = "Would you like to delete:\n" +
+                    string.Join("\n", namedObjects.Select(item => item.ToString())),
+                ProjectRootForDisplay = ToCanonicalPath(GlueState.Self.CurrentGlueProjectDirectory)
+            };
+
+            foreach (var namedObject in namedObjects)
+            {
+                var owner = ObjectFinder.Self.GetElementContaining(namedObject);
+
+                if (owner == null)
+                {
+                    continue;
+                }
+
+                var alsoRemoved = GluxCommands.GetObjectsToRemoveIfRemoving(namedObject, owner);
+
+                AddAll(alsoRemoved.CustomVariables);
+                AddAll(alsoRemoved.SubObjectsInList);
+                AddAll(alsoRemoved.CollisionRelationships);
+                AddAll(alsoRemoved.DerivedNamedObjects);
+                AddAll(alsoRemoved.EventResponses);
+            }
+
+            viewModel.RefreshFilesToRemove();
+
+            return viewModel;
+
+            void AddAll<T>(IEnumerable<T> items)
+            {
+                foreach (var item in items)
+                {
+                    viewModel.ObjectsToRemove.Add(item.ToString());
+                }
+            }
+        }
+
+        /// <summary>
+        /// Tag used for the "remove the variable X" options a state delete offers.
+        /// </summary>
+        public class RemoveCustomVariableTag
+        {
+            public CustomVariable CustomVariable { get; set; }
+
+            public override bool Equals(object obj) =>
+                obj is RemoveCustomVariableTag other && other.CustomVariable == CustomVariable;
+
+            public override int GetHashCode() => CustomVariable?.GetHashCode() ?? 0;
+        }
+
+        /// <summary>
+        /// Deleting a state used to ask a plain yes/no and then, from inside the delete, one popup per
+        /// variable it had orphaned. The variables are options on the same dialog now.
+        ///
+        /// Only an older project reaches those options: a state delete leaves a variable dangling only when
+        /// it empties the element's uncategorized <c>States</c> list, and Glue's UI no longer lets you make
+        /// an uncategorized state. A project made today gets the confirm and nothing else.
+        /// </summary>
+        public static DeleteOptionsViewModel CreateForState(StateSave state)
+        {
+            var element = ObjectFinder.Self.GetElementContaining(state);
+
+            var viewModel = CreateSimplePlan($"Are you sure you want to delete {state}?");
+
+            foreach (var variable in element?.CustomVariables ?? Enumerable.Empty<CustomVariable>())
+            {
+                if (CustomVariableHelper.WouldStateBeMissingFor(variable, element, state))
+                {
+                    viewModel.AddOption(
+                        $"Remove the variable {variable}, which would no longer have any states associated with it",
+                        new RemoveCustomVariableTag { CustomVariable = variable });
+                }
+            }
+
+            viewModel.RefreshFilesToRemove();
+
+            return viewModel;
+        }
+
+        /// <summary>
+        /// Deleting a category takes every variable of that category's type with it - not a choice, so the
+        /// dialog lists them rather than offering them.
+        /// </summary>
+        public static DeleteOptionsViewModel CreateForStateCategory(StateSaveCategory category)
+        {
+            var viewModel = CreateSimplePlan($"Are you sure you want to delete {category}?");
+
+            foreach (var variable in GetVariablesOfCategory(category))
+            {
+                viewModel.ObjectsToRemove.Add(variable.ToString());
+            }
+
+            viewModel.RefreshFilesToRemove();
+
+            return viewModel;
+        }
+
+        /// <summary>
+        /// The variables <c>GluxCommands.RemoveStateSaveCategory</c> removes along with the category: the
+        /// ones typed as the category itself.
+        /// </summary>
+        public static List<CustomVariable> GetVariablesOfCategory(StateSaveCategory category)
+        {
+            var owner = ObjectFinder.Self.GetElementContaining(category);
+            var project = ObjectFinder.Self.GlueProject;
+
+            if (owner == null || project == null)
+            {
+                return new List<CustomVariable>();
+            }
+
+            var qualifiedCategoryName = owner.Name.Replace("\\", ".") + "." + category.Name;
+
+            return project.Screens.Cast<GlueElement>()
+                .Concat(project.Entities)
+                .SelectMany(item => item.CustomVariables)
+                .Where(item => item.Type == qualifiedCategoryName)
+                .ToList();
+        }
+
+        public static DeleteOptionsViewModel CreateForCustomVariable(CustomVariable variable) =>
+            CreateSimplePlan($"Are you sure you want to delete {variable}?");
+
+        /// <summary>
+        /// A plan with nothing but the confirm - the delete it describes orphans no files and offers no
+        /// choices, so the dialog is the one question it needs to ask.
+        /// </summary>
+        static DeleteOptionsViewModel CreateSimplePlan(string message) =>
+            new DeleteOptionsViewModel
+            {
+                Message = message,
+                ProjectRootForDisplay = ToCanonicalPath(GlueState.Self.CurrentGlueProjectDirectory)
+            };
+
+        /// <summary>
+        /// Removing a file used to ask one "the object X references the file Y, what would you like to do?"
+        /// per object, each raised from inside the removal itself, and a separate message box for every
+        /// object defined by a base element. Those become options and warnings on one dialog here.
+        /// </summary>
+        public static DeleteOptionsViewModel CreateForReferencedFile(ReferencedFileSave file)
+        {
+            var viewModel = new DeleteOptionsViewModel
+            {
+                // Not "delete" - the file is only removed from the project unless the user picks otherwise
+                // below.
+                Message = $"Are you sure you want to remove {file}?",
+                ProjectRootForDisplay = ToCanonicalPath(GlueState.Self.CurrentGlueProjectDirectory)
+            };
+
+            var container = file.GetContainer();
+
+            foreach (var nos in container?.NamedObjects ?? Enumerable.Empty<NamedObjectSave>())
+            {
+                if (nos.SourceType != SourceType.File || nos.SourceFile != file.Name)
+                {
+                    continue;
+                }
+
+                if (nos.DefinedByBase)
+                {
+                    // Removing it here wouldn't stick - it comes from the base element - so this is the one
+                    // thing a delete tells the user about rather than offering to do.
+                    viewModel.Warnings.Add(
+                        $"The object {nos} is using the file {file}, but the file is being removed. " +
+                        "The project may be broken until this object is fixed.");
+                }
+                else
+                {
+                    viewModel.AddOption($"Remove the object {nos}, which references this file",
+                        new RemoveNamedObjectTag { NamedObject = nos });
+                }
+            }
+
+            viewModel.AlwaysRemovedFiles.AddRange(GetFilesThatWouldBeRemoved(file));
+            viewModel.RefreshFilesToRemove();
+
+            return viewModel;
+        }
+
+        /// <summary>
+        /// The files removing <paramref name="file"/> would orphan: the file itself once nothing else
+        /// references it, plus the data class generated for a CSV that was the last of its type.
+        /// </summary>
+        public static List<string> GetFilesThatWouldBeRemoved(ReferencedFileSave file)
+        {
+            var toReturn = new List<string>();
+
+            if (file == null || ObjectFinder.Self.GlueProject == null)
+            {
+                return toReturn;
+            }
+
+            // A wildcard file is deleted from disk by the removal itself rather than offered as a choice -
+            // there is no exclusion pattern support, so leaving it on disk would just re-add it.
+            if (!file.IsCreatedByWildcard && !IsReferencedByAnythingOtherThan(file))
+            {
+                toReturn.Add(ToCanonicalPath(file.GetRelativePath()));
+            }
+
+            AddCsvDataClassIfOrphaned(toReturn, file);
+
+            return toReturn.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+        }
+
+        static bool IsReferencedByAnythingOtherThan(ReferencedFileSave file)
+        {
+            var filePath = GlueCommands.Self.GetAbsoluteFilePath(file);
+
+            var referencedElsewhere = ObjectFinder.Self.GetAllReferencedFiles()
+                .Where(item => item != file)
+                .Any(item => GlueCommands.Self.GetAbsoluteFilePath(item) == filePath);
+
+            return referencedElsewhere || FileReferenceManager.Self.IsFileReferencedRecursively(filePath);
+        }
+
+        /// <summary>
+        /// A CSV generates a data class shared by every CSV of the same type, so it is only orphaned when the
+        /// one being removed was the last of them - and never when the user wrote the class by hand.
+        /// Mirrors what <c>GluxCommands.ReactToRemovalIfCsv</c> does, one step ahead of it.
+        /// </summary>
+        static void AddCsvDataClassIfOrphaned(List<string> toReturn, ReferencedFileSave file)
+        {
+            if (!file.IsCsvOrTreatedAsCsv)
+            {
+                return;
+            }
+
+            if (ObjectFinder.Self.GlueProject.GetCustomClassReferencingFile(file.Name) != null)
+            {
+                return;
+            }
+
+            var typeName = file.GetTypeForCsvFile();
+
+            var otherCsvOfSameType = ObjectFinder.Self.GetAllReferencedFiles()
+                .Any(item => item != file && item.IsCsvOrTreatedAsCsv && item.GetTypeForCsvFile() == typeName);
+
+            if (!otherCsvOfSameType)
+            {
+                toReturn.Add(ToCanonicalPath("DataTypes/" + typeName + ".Generated.cs"));
+            }
         }
 
         static DeleteOptionsViewModel CreateForElement(GlueElement element)

@@ -1,6 +1,8 @@
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using System.Linq;
 
 namespace GlueUnitTests.TestSupport;
 
@@ -32,5 +34,17 @@ internal class FakeFindManager : IFindManager
     public ITreeNode TreeNodeByTag(object tag) => tag is ReferencedFileSave rfs ? new SyntheticTreeNode(rfs) : null!;
     public ITreeNode GlobalContentTreeNode => null!;
     public string GlobalContentFilesPath => "";
-    public bool IfReferencedFileSaveIsReferenced(ReferencedFileSave referencedFileSave) => false;
+    /// <summary>
+    /// The same answer the real <c>FindManager</c> gives. It reads no tree state at all despite living in
+    /// the tree view plugin, so there is nothing to fake: a hard-coded false just meant every
+    /// removal-of-a-file path early-returned in tests, which reads as "the removal ran and did nothing".
+    /// </summary>
+    public bool IfReferencedFileSaveIsReferenced(ReferencedFileSave referencedFileSave)
+    {
+        var container = referencedFileSave?.GetContainer();
+
+        return container != null
+            ? container.GetAllReferencedFileSavesRecursively().Contains(referencedFileSave)
+            : GlueState.Self.CurrentGlueProject?.GlobalFiles.Contains(referencedFileSave) == true;
+    }
 }
