@@ -12,13 +12,10 @@ using Shouldly;
 namespace GlueUnitTests.SetProperty;
 
 // GitHub issue #2016: toggling "Is Database For Localizing" in the ReferencedFileSave "Settings
-// (Preview)" tab crashed Glue with a NullReferenceException. Root cause: that tab is backed by
-// WpfDataUi's DataUiGrid, whose PropertyChange event never populates PropertyChangedArgs.OldValue
-// (only NewValue) - see DataUiGrid.HandleInstanceMemberSetByUi in the sibling Gum repo. So
-// MainPropertyGridPlugin.HandlePropertyChanged always forwards oldValue: null for any property changed
-// through this grid, unlike the WinForms PropertyGrid path (SetPropertyManager.PropertyValueChanged),
-// which gets a real old value from System.ComponentModel. This test reproduces that always-null
-// oldValue directly against the real production method.
+// (Preview)" tab crashed Glue with a NullReferenceException, because the handler unboxed oldValue as
+// bool unconditionally. ReactToChangedReferencedFile is internal and has several callers that pass no
+// old value, so a null oldValue is a legitimate input, not a bug in one caller - this test pins the
+// null-safe handling against the real production method.
 public class ReferencedFileSaveSetPropertyManagerTests : IDisposable
 {
     private readonly FlatRedBall.Glue.VSHelpers.Projects.VisualStudioProject _originalMainProject;
@@ -77,9 +74,8 @@ public class ReferencedFileSaveSetPropertyManagerTests : IDisposable
         ObjectFinder.Self.GlueProject.GlobalFiles.Add(rfs);
         GlueState.Self.CurrentReferencedFileSave = rfs;
 
-        // Mirrors what the real WPF "Settings (Preview)" grid does before it raises PropertyChange:
-        // WpfDataUi's InstanceMember already wrote the new value through to the instance, and then
-        // fires PropertyChange with OldValue left at its default (null) - see the class comment above.
+        // Matches the contract every caller honors: the new value is already written through to the
+        // ReferencedFileSave before ReactToChangedReferencedFile is notified about the change.
         rfs.IsDatabaseForLocalizing = true;
 
         var sut = new ReferencedFileSaveSetPropertyManager();
