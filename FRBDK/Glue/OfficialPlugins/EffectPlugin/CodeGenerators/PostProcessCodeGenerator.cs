@@ -71,13 +71,10 @@ internal class PostProcessCodeGenerator
 
                 }
 
-                var directory = destinationFile.GetDirectoryContainingThis();
-                if (!System.IO.Directory.Exists(directory.FullPath))
-                {
-                    System.IO.Directory.CreateDirectory(directory.FullPath);
-                }
-
-                System.IO.File.WriteAllText(destinationFile.FullPath, fileContents);
+                // SaveIfDiffers rather than File.WriteAllText: it is where CodeWritePolicy is consulted,
+                // so a project Glue does not own the code of (FRB2) gets nothing written into it. It
+                // creates the directory too.
+                GlueCommands.Self.FileCommands.SaveIfDiffers(destinationFile, fileContents);
 
                 GlueCommands.Self.ProjectCommands.TryAddCodeFileToProjectAsync(destinationFile.FullPath);
             });

@@ -406,13 +406,10 @@ public class CodeGeneratorManager : Singleton<CodeGeneratorManager>
             shouldCustomGumBeInProject = true;
             var customCode = CustomCodeGenerator.Self.GetCustomGumRuntimeCustomCode(element);
 
-            var directory = FileManager.GetDirectory(customGumRuntimeSaveLocation);
-            System.IO.Directory.CreateDirectory(directory);
-
             PrintIfVerbose($"Saving custom runtime code: {customGumRuntimeSaveLocation}");
 
             GlueCommands.Self.TryMultipleTimes(() =>
-                FlatRedBall.IO.FileManager.SaveText(customCode, customGumRuntimeSaveLocation));
+                GlueCommands.Self.FileCommands.SaveIfDiffers(customGumRuntimeSaveLocation, customCode));
         }
 
         if (shouldCustomGumBeInProject)
@@ -451,14 +448,11 @@ public class CodeGeneratorManager : Singleton<CodeGeneratorManager>
             if (resultToReturn.DidSaveCustomForms)
             {
 
-                var directory = FileManager.GetDirectory(customFormsSaveLocation);
-                System.IO.Directory.CreateDirectory(directory);
-
                 PrintIfVerbose($"Saved custom forms code: {customFormsSaveLocation}");
 
 
                 GlueCommands.Self.TryMultipleTimes(() =>
-                    FlatRedBall.IO.FileManager.SaveText(customFormsCode, customFormsSaveLocation));
+                    GlueCommands.Self.FileCommands.SaveIfDiffers(customFormsSaveLocation, customFormsCode));
 
                 bool wasAnythingAdded =
                     FlatRedBall.Glue.ProjectManager.CodeProjectHelper.AddFileToCodeProjectIfNotAlreadyAdded(
@@ -516,14 +510,11 @@ public class CodeGeneratorManager : Singleton<CodeGeneratorManager>
         }
         if (resultToReturn.DidSaveGeneratedGumRuntime)
         {
-            // in case directory doesn't exist
-            System.IO.Directory.CreateDirectory(generatedSaveLocation.GetDirectoryContainingThis().FullPath);
-
             PrintIfVerbose($"Saved generated runtime code: {generatedSaveLocation.FullPath}");
 
 
             GlueCommands.Self.TryMultipleTimes(() =>
-                FlatRedBall.IO.FileManager.SaveText(generatedGumRuntimeCode, generatedSaveLocation.FullPath));
+                GlueCommands.Self.FileCommands.SaveIfDiffers(generatedSaveLocation, generatedGumRuntimeCode));
         }
 
         if (shouldGeneratedGumBeInProject)
@@ -573,13 +564,10 @@ public class CodeGeneratorManager : Singleton<CodeGeneratorManager>
 
         if (resultToReturn.DidSaveGeneratedForms)
         {
-            // in case it doesn't exist
-            System.IO.Directory.CreateDirectory(generatedFormsSaveLocation.GetDirectoryContainingThis().FullPath);
-
             PrintIfVerbose($"Saved generated forms code: {generatedFormsSaveLocation.FullPath}");
 
             GlueCommands.Self.TryMultipleTimes(() =>
-                FlatRedBall.IO.FileManager.SaveText(generatedFormsCode, generatedFormsSaveLocation.FullPath));
+                GlueCommands.Self.FileCommands.SaveIfDiffers(generatedFormsSaveLocation, generatedFormsCode));
         }
 
         if (shouldGeneratedFormsBeInProject)
@@ -818,15 +806,16 @@ public class CodeGeneratorManager : Singleton<CodeGeneratorManager>
     {
         bool wasSaved = false;
 
-        var directory = FileManager.GetDirectory(fileName);
-        Directory.CreateDirectory(directory);
         const int timesToTry = 4;
         int timesTried = 0;
         while (true)
         {
             try
             {
-                FlatRedBall.IO.FileManager.SaveText(fileContents, fileName);
+                // SaveIfDiffers, not FileManager.SaveText: it is where CodeWritePolicy is consulted, so
+                // nothing is written into a project Glue does not own the code of. It creates the
+                // directory too.
+                GlueCommands.Self.FileCommands.SaveIfDiffers(fileName, fileContents);
                 wasSaved = true;
                 break;
             }

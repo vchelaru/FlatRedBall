@@ -66,9 +66,16 @@ public class NewProjectTemplateListTests
     // Namespace is the template folder name; it is also the token ProjectCreationHelper replaces with
     // the new project's name. AddNewLocalProjectOption is the "Select Local Project..." row, which
     // points at a folder the user picks rather than at a template in this repo.
+    //
+    // Both invariants above are about the zip pipeline - a template this repo builds, the release
+    // uploads, and the window downloads - so they apply to entries that actually have a zip. A
+    // DotnetNewProjectInfo has no Url because the dotnet CLI owns its template, so it has no zip to
+    // build and no engine to register. Keyed on the entry having a Url rather than on its type, so a
+    // future non-zip template is exempt automatically and every new zip template is still guarded.
     private static HashSet<string> WizardTemplateNames() =>
         EmptyTemplates.Projects
             .Where(project => project is not AddNewLocalProjectOption)
+            .Where(project => !string.IsNullOrEmpty(project.Url))
             .Select(project => project.Namespace)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 

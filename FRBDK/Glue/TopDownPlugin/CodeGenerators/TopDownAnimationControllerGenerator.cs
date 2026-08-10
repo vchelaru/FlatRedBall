@@ -1,7 +1,6 @@
-﻿using FlatRedBall.Glue.Managers;
+﻿using FlatRedBall.Glue.Plugins.CodeGenerators;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
-using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,44 +9,15 @@ using System.Threading.Tasks;
 
 namespace TopDownPlugin.CodeGenerators;
 
-public class TopDownAnimationControllerGenerator : Singleton<TopDownAnimationControllerGenerator>
+public class TopDownAnimationControllerGenerator : FullFileCodeGenerator
 {
-    string RelativeFileLocation = "TopDown/TopDownAnimationControllerGenerator.Generated.cs";
-    public FilePath FileLocation => GlueState.Self.CurrentGlueProjectDirectory + RelativeFileLocation;
+    public override string RelativeFile => "TopDown/TopDownAnimationControllerGenerator.Generated.cs";
 
-    public void GenerateAndSave()
-    {
+    static TopDownAnimationControllerGenerator mSelf;
+    public static TopDownAnimationControllerGenerator Self =>
+        mSelf ??= new TopDownAnimationControllerGenerator();
 
-        TaskManager.Self.Add(() =>
-        {
-            var contents = GenerateFileContents();
-
-            var relativeDirectory = RelativeFileLocation;
-
-            GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(relativeDirectory);
-
-            var glueProjectDirectory = GlueState.Self.CurrentGlueProjectDirectory;
-
-            if (!string.IsNullOrEmpty(glueProjectDirectory))
-            {
-                var fullFile = GlueState.Self.CurrentGlueProjectDirectory + relativeDirectory;
-
-                try
-                {
-                    GlueCommands.Self.TryMultipleTimes(() =>
-                        System.IO.File.WriteAllText(fullFile, contents));
-                }
-                catch (Exception e)
-                {
-                    GlueCommands.Self.PrintError(e.ToString());
-                }
-            }
-
-        }, "Adding TopDownAnimationControllerGenerator.Generated.cs to the project");
-
-    }
-
-    private string GenerateFileContents()
+    protected override string GenerateFileContents()
     {
         var toReturn =
 @"

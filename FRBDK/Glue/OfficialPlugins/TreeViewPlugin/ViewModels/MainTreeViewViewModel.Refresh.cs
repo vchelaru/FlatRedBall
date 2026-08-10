@@ -328,11 +328,23 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
                         if (treeNode == null)
                         {
+                            var directoryName = FileManager.RemovePath(directory);
+
+                            if (IsNameOwnedByElementNode(parentTreeNode, directoryName))
+                            {
+                                // This directory holds a Screen's or Entity's content, and the element
+                                // already has a node here - so the folder is the element's, not a peer of
+                                // it, and its contents belong under the element's Files node. The lookup
+                                // above cannot tell: it only matches nodes where IsDirectoryNode() is
+                                // true, and that is false for any node carrying a Tag.
+                                continue;
+                            }
+
                             treeNode = new NodeViewModel(TreeNodeType.GeneralDirectoryNode, parentTreeNode);
 
                             treeNode.IsEditable = true;
 
-                            treeNode.Text = FileManager.RemovePath(directory);
+                            treeNode.Text = directoryName;
                             parentTreeNode.Children.Add(treeNode);
                         }
 
@@ -373,6 +385,37 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                             parentTreeNode.Children.RemoveAt(i);
                         }
                     }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Whether a Screen or Entity node under <paramref name="parentTreeNode"/> already goes by
+        /// <paramref name="name"/>, which makes a directory of that name the element's own content
+        /// folder rather than a folder sitting beside it.
+        /// </summary>
+        internal static bool IsNameOwnedByElementNode(NodeViewModel parentTreeNode, string name) =>
+            parentTreeNode.Children.Any(node =>
+                node.Tag is GlueElement &&
+                string.Equals(node.Text, name, StringComparison.OrdinalIgnoreCase));
+
+        /// <summary>
+        /// Drops a plain folder node that an element is about to take the name of. Needed because the
+        /// directory pass and the element pass run in either order: when directories are enumerated
+        /// first there is no element node yet for them to defer to, so the folder node has to go when
+        /// the element arrives.
+        /// </summary>
+        internal static void RemoveFolderNodeNamed(NodeViewModel parentTreeNode, string name)
+        {
+            for (int i = parentTreeNode.Children.Count - 1; i > -1; i--)
+            {
+                var child = parentTreeNode.Children[i];
+
+                if (child.Tag == null &&
+                    child.TreeNodeType == TreeNodeType.GeneralDirectoryNode &&
+                    string.Equals(child.Text, name, StringComparison.OrdinalIgnoreCase))
+                {
+                    parentTreeNode.Children.RemoveAt(i);
                 }
             }
         }
@@ -441,6 +484,8 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 throw new NullReferenceException("treeNode is null.  This is bad");
             }
 
+            RemoveFolderNodeNamed(treeNodeToAddTo, treeNode.Text);
+
             treeNodeToAddTo.Children.Add(treeNode);
             treeNodeToAddTo.SortByTextConsideringDirectories();
 
@@ -453,7 +498,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             return treeNode;
         }
 
-        private NodeViewModel AddScreenTreeNode(ScreenSave screenSave)
+        internal NodeViewModel AddScreenTreeNode(ScreenSave screenSave)
         {
             string containingDirectory = FileManager.MakeRelative(FileManager.GetDirectory(screenSave.Name));
 
@@ -491,6 +536,8 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             if (treeNodeToAddTo != null)
             {
+                RemoveFolderNodeNamed(treeNodeToAddTo, treeNode.Text);
+
                 treeNodeToAddTo.Children.Add(treeNode);
                 treeNodeToAddTo.SortByTextConsideringDirectories();
             }

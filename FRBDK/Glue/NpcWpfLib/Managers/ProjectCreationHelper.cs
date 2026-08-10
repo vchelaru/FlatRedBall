@@ -82,8 +82,19 @@ public static class ProjectCreationHelper
         Notifier.ShowMessage(message);
     }
 
+    /// <summary>
+    /// Creates projects from dotnet CLI templates. Defaults to shelling out to the real CLI; tests can
+    /// swap in a fake so creation can run headless. See <see cref="IDotnetNewService"/>.
+    /// </summary>
+    public static IDotnetNewService DotnetNew { get; set; } = new DotnetNewService();
+
     public static async Task<bool> MakeNewProject(NewProjectViewModel viewModel)
     {
+        if (viewModel.SelectedProject is DotnetNewProjectInfo dotnetNewProject)
+        {
+            return await MakeNewDotnetTemplateProject(viewModel, dotnetNewProject);
+        }
+
         string stringToReplace = GetDefaultProjectNamespace(viewModel.SelectedProject);
 
         string projectZipUrl = GetFileToDownload(viewModel);
@@ -188,6 +199,63 @@ public static class ProjectCreationHelper
         return generalResponse.Succeeded;
     }
 
+
+    /// <summary>
+    /// The dotnet CLI path. Deliberately short: `dotnet new` already names the project, rewrites the
+    /// namespaces and generates fresh guids, so none of RenameEverything, ReplaceGuids or the zip
+    /// download/unzip steps apply.
+    /// </summary>
+    static async Task<bool> MakeNewDotnetTemplateProject(
+        NewProjectViewModel viewModel, DotnetNewProjectInfo templateInfo)
+    {
+        var unpackDirectory = viewModel.FinalDirectory;
+
+        if (!GetIfFileNameIsValid(viewModel, unpackDirectory))
+        {
+            return false;
+        }
+
+        unpackDirectory = viewModel.FinalDirectory;
+
+        var response = await DotnetNew.CreateProjectAsync(
+            templateInfo.TemplatePackageId,
+            templateInfo.TemplateShortName,
+            viewModel.ProjectName,
+            unpackDirectory);
+
+        if (!response.Succeeded)
+        {
+            ShowMessageBox(response.Message);
+            return false;
+        }
+
+        if (viewModel.OpenSlnFolderAfterCreation)
+        {
+            System.Diagnostics.Process.Start(
+                Environment.GetEnvironmentVariable("WINDIR") + @"\explorer.exe", unpackDirectory);
+        }
+
+        System.Console.Out.WriteLine(unpackDirectory);
+
+        return true;
+    }
+
+    /// <summary>
+    /// Which .csproj Glue should open once a project has been created. A zip template unpacks a single
+    /// project into a folder named after it; a dotnet template can produce several - `dotnet new
+    /// frb2-desktop` makes a .Common and a .Desktop - and only one of them is the game.
+    /// </summary>
+    public static string GetProjectToOpen(PlatformProjectInfo projectInfo, string projectName, string createdDirectory)
+    {
+        if (projectInfo is DotnetNewProjectInfo { ProjectToOpenPattern: not null } dotnetNew)
+        {
+            return Path.Combine(createdDirectory,
+                dotnetNew.ProjectToOpenPattern.Replace("{ProjectName}", projectName)
+                    .Replace('/', Path.DirectorySeparatorChar));
+        }
+
+        return Path.Combine(createdDirectory, projectName, projectName + ".csproj");
+    }
 
     private static void RenameEverything(NewProjectViewModel viewModel, string stringToReplace, string unpackDirectory)
     {

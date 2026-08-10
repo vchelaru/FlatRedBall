@@ -167,13 +167,9 @@ namespace OfficialPlugins.EffectPlugin
 
                 fileContent = fileContent.Replace("ReplaceNamespace", $"{GlueState.Self.ProjectNamespace}.EffectWrappers");
                 
-                var directory = destinationFile.GetDirectoryContainingThis();
-                if(!System.IO.Directory.Exists(directory.FullPath))
-                {
-                    System.IO.Directory.CreateDirectory(directory.FullPath);
-                }
-
-                System.IO.File.WriteAllText(destinationFile.FullPath, fileContent);
+                // See PostProcessCodeGenerator: SaveIfDiffers is the seam that consults CodeWritePolicy,
+                // and it creates the directory itself.
+                GlueCommands.Self.FileCommands.SaveIfDiffers(destinationFile, fileContent);
 
                 GlueCommands.Self.ProjectCommands.TryAddCodeFileToProjectAsync(destinationFile.FullPath);
             }

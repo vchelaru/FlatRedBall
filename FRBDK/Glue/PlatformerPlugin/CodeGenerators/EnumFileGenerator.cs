@@ -1,6 +1,6 @@
 ﻿using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Glue.IO;
-using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins.CodeGenerators;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.IO;
 using System;
@@ -11,50 +11,21 @@ using System.Threading.Tasks;
 
 namespace FlatRedBall.PlatformerPlugin.Generators
 {
-    public class EnumFileGenerator : Singleton<EnumFileGenerator>
+    public class EnumFileGenerator : FullFileCodeGenerator
     {
-        public string RelativeFileLocation => "Platformer/Enums.Generated.cs";
-        public FilePath FileLocation => (GlueState.Self.CurrentGlueProjectDirectory + RelativeFileLocation);
+        public override string RelativeFile => "Platformer/Enums.Generated.cs";
 
-        public void GenerateAndSave()
+        static EnumFileGenerator mSelf;
+        public static EnumFileGenerator Self => mSelf ??= new EnumFileGenerator();
+
+        protected override void AfterSave()
         {
-
-            TaskManager.Self.Add(() =>
-            {
-                var contents = GenerateFileContents();
-
-                var relativeDirectory = RelativeFileLocation;
-
-                GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(relativeDirectory);
-
-                var glueProjectDirectory = GlueState.Self.CurrentGlueProjectDirectory;
-
-                if(!string.IsNullOrEmpty(glueProjectDirectory))
-                {
-                    var fullFile = GlueState.Self.CurrentGlueProjectDirectory + relativeDirectory;
-
-                    try
-                    {
-                        GlueCommands.Self.TryMultipleTimes(() =>
-                            System.IO.File.WriteAllText(fullFile, contents));
-                    }
-                    catch(Exception e)
-                    {
-                        GlueCommands.Self.PrintError(e.ToString());
-                    }
-
-                    FilePath oldFile = GlueState.Self.CurrentGlueProjectDirectory +
-                        "Platformer/Enums.cs";
-                    GlueCommands.Self.ProjectCommands.RemoveFromProjects(
-                        oldFile, saveAfterRemoving: true);
-                }
-
-            }, "Adding platformer enum files to the project");
-
-            
+            // What this generator used to be called, before it was suffixed .Generated.
+            FilePath oldFile = GlueState.Self.CurrentGlueProjectDirectory + "Platformer/Enums.cs";
+            GlueCommands.Self.ProjectCommands.RemoveFromProjects(oldFile, saveAfterRemoving: true);
         }
 
-        private string GenerateFileContents()
+        protected override string GenerateFileContents()
         {
             var toReturn =
 $@"

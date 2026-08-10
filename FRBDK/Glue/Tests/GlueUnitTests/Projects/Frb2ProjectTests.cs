@@ -43,6 +43,54 @@ public class Frb2ProjectDetectorTests
     }
 
     [Fact]
+    public void IsFrb2Project_IsTrue_ForTheDotnetNewTemplatesPackageReference()
+    {
+        // What `dotnet new frb2-desktop` actually produces in MyGame.Common: the engine comes from
+        // nuget, not from a ProjectReference into the FRB2 repo. Versions live in
+        // Directory.Packages.props, so the Include carries no version.
+        Assert.True(Frb2ProjectDetector.IsFrb2Project(new[]
+        {
+            Item("PackageReference", "FlatRedBall2.MonoGame"),
+            Item("PackageReference", "MonoGame.Framework.DesktopGL"),
+        }));
+    }
+
+    [Fact]
+    public void IsFrb2Project_IsTrue_ForTheKniPackageReference()
+    {
+        // The multiplatform template's Common project takes both backends.
+        Assert.True(Frb2ProjectDetector.IsFrb2Project(new[]
+        {
+            Item("PackageReference", "FlatRedBall2.Kni"),
+        }));
+    }
+
+    [Fact]
+    public void IsFrb2Project_IsFalse_ForAnFrb1PackageReference()
+    {
+        // The dangerous false positive: mistaking an FRB1 project for FRB2 silently stops Glue
+        // generating its code. FRB1's packages are FlatRedBall.*, which must not match FlatRedBall2.*.
+        Assert.False(Frb2ProjectDetector.IsFrb2Project(new[]
+        {
+            Item("PackageReference", "FlatRedBall.Forms"),
+            Item("PackageReference", "FlatRedBall"),
+        }));
+    }
+
+    [Fact]
+    public void IsFrb2Project_IsFalse_ForTheDesktopLauncherProject()
+    {
+        // MyGame.Desktop only holds Program.cs and the content pipeline - it reaches the engine through
+        // MyGame.Common, so it is not itself the project Glue edits.
+        Assert.False(Frb2ProjectDetector.IsFrb2Project(new[]
+        {
+            Item("PackageReference", "MonoGame.Framework.DesktopGL"),
+            Item("PackageReference", "MonoGame.Content.Builder.Task"),
+            Item("ProjectReference", @"..\MyGame.Common\MyGame.Common.csproj"),
+        }));
+    }
+
+    [Fact]
     public void IsFrb2Project_IsFalse_ForFrb1SourceLinkedProject()
     {
         // "Link Game to FRB Source" on an FRB1 project produces this. It must not be mistaken for FRB2,

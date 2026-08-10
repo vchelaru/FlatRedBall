@@ -17,13 +17,19 @@ namespace FlatRedBall.Glue.Plugins.CodeGenerators
     {
         public abstract string RelativeFile { get; }
 
+        /// <summary>
+        /// Where <see cref="GenerateAndSave"/> writes, for callers that need to remove the file from
+        /// the project when the feature it belongs to is turned off.
+        /// </summary>
+        public FilePath FileLocation => GlueState.Self.CurrentGlueProjectDirectory + RelativeFile;
+
         public void GenerateAndSave()
         {
             TaskManager.Self.Add(() =>
             {
                 var contents = GenerateFileContents();
 
-                FilePath fullPath = GlueState.Self.CurrentGlueProjectDirectory + RelativeFile;
+                FilePath fullPath = FileLocation;
 
                 GlueCommands.Self.TryMultipleTimes(() =>
                 {
@@ -32,9 +38,17 @@ namespace FlatRedBall.Glue.Plugins.CodeGenerators
 
                 });
 
+                AfterSave();
+
             }, $"Adding {RelativeFile}");
         }
 
         protected abstract string GenerateFileContents();
+
+        /// <summary>
+        /// Runs after the file has been written, for cleanup a generator needs to do alongside it -
+        /// typically removing an earlier file this one replaced.
+        /// </summary>
+        protected virtual void AfterSave() { }
     }
 }

@@ -1,48 +1,19 @@
-﻿using FlatRedBall.Glue.Managers;
+﻿using FlatRedBall.Glue.Plugins.CodeGenerators;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
-using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace FlatRedBall.PlatformerPlugin.Generators
 {
-    public class IPlatformerCodeGenerator : Singleton<IPlatformerCodeGenerator>
+    public class IPlatformerCodeGenerator : FullFileCodeGenerator
     {
-        string RelativeFileLocation => "Platformer/IPlatformer.Generated.cs";
-        public FilePath FileLocation => GlueState.Self.CurrentGlueProjectDirectory + RelativeFileLocation;
+        public override string RelativeFile => "Platformer/IPlatformer.Generated.cs";
 
-        public void GenerateAndSave()
-        {
-            TaskManager.Self.Add(() =>
-            {
-                var contents = GenerateFileContents();
+        static IPlatformerCodeGenerator mSelf;
+        public static IPlatformerCodeGenerator Self => mSelf ??= new IPlatformerCodeGenerator();
 
-                var relativeDirectory = RelativeFileLocation;
-
-                GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(relativeDirectory);
-
-                var glueProjectDirectory = GlueState.Self.CurrentGlueProjectDirectory;
-
-                if (!string.IsNullOrEmpty(glueProjectDirectory))
-                {
-                    var fullFile = GlueState.Self.CurrentGlueProjectDirectory + relativeDirectory;
-
-                    try
-                    {
-                        GlueCommands.Self.TryMultipleTimes(() =>
-                            System.IO.File.WriteAllText(fullFile, contents));
-                    }
-                    catch (Exception e)
-                    {
-                        GlueCommands.Self.PrintError(e.ToString());
-                    }
-                }
-
-            }, "Adding IPlatformer.Generated.cs to the project");
-        }
-
-        private string GenerateFileContents()
+        protected override string GenerateFileContents()
         {
             var toReturn =
 $@"

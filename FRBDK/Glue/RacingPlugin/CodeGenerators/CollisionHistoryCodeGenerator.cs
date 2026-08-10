@@ -1,5 +1,5 @@
 ﻿using FlatRedBall.Glue.IO;
-using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins.CodeGenerators;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.IO;
 using System;
@@ -10,9 +10,14 @@ using System.Threading.Tasks;
 
 namespace RacingPlugin.CodeGenerators
 {
-    public class CollisionHistoryCodeGenerator : Singleton<CollisionHistoryCodeGenerator>
+    public class CollisionHistoryCodeGenerator : FullFileCodeGenerator
     {
-        public string GetFileContents()
+        public override string RelativeFile => "DataTypes/CollisionHistory.Generated.cs";
+
+        static CollisionHistoryCodeGenerator mSelf;
+        public static CollisionHistoryCodeGenerator Self => mSelf ??= new CollisionHistoryCodeGenerator();
+
+        protected override string GenerateFileContents()
         {
             string projectNamespace = GlueState.Self.ProjectNamespace + ".DataTypes";
 
@@ -49,11 +54,6 @@ namespace " + projectNamespace + @"
 }
 ";
             return toReturn;
-        }
-
-        internal FilePath GetFilePath()
-        {
-            return GlueState.Self.CurrentGlueProjectDirectory + "/DataTypes/CollisionHistory.Generated.cs";
         }
     }
 }

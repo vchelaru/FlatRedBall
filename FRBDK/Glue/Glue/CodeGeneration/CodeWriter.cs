@@ -2433,10 +2433,15 @@ namespace FlatRedBallAddOns.Entities
         {
             string strippedName = FileManager.RemovePath(element.Name);
 
-            // This also has a factory, so check for that.
+            // This also has a factory, so check for that. Everything else here comes from enumerating
+            // the disk, so this has to check too - the factory has not been generated yet for a newly
+            // pooled entity, and never is for a project Glue does not generate code for.
             string fullName = GlueState.Self.CurrentGlueProjectDirectory + "Factories/" + strippedName + "Factory.Generated.cs";
 
-            foundCsFiles.Add(fullName);
+            if (System.IO.File.Exists(fullName))
+            {
+                foundCsFiles.Add(fullName);
+            }
         }
 
         return foundCsFiles;

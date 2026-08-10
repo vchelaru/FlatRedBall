@@ -114,7 +114,7 @@ namespace RacingPlugin.Controllers
                 TaskManager.Self.Add(
                     () =>
                     {
-                        EnumFileGenerator.Self.GenerateAndSaveEnumFile();
+                        EnumFileGenerator.Self.GenerateAndSave();
 
                         // not sure if this needs any interfaces
                         //InterfacesFileGenerator.Self.GenerateAndSave();
@@ -128,16 +128,7 @@ namespace RacingPlugin.Controllers
 
         public void AddCollisionHistoryFile()
         {
-            var filePath = CollisionHistoryCodeGenerator.Self.GetFilePath();
-            GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(filePath, save:false);
-
-            var contents = CollisionHistoryCodeGenerator.Self.GetFileContents();
-            GlueCommands.Self.TryMultipleTimes(() =>
-            {
-                System.IO.File.WriteAllText(filePath.FullPath, contents);
-            });
-
-
+            CollisionHistoryCodeGenerator.Self.GenerateAndSave();
         }
 
         private void DetermineWhatToGenerate(string propertyName, RacingEntityViewModel viewModel, out bool shouldGenerateCsv, out bool shouldGenerateEntity, out bool shouldAddTopDownVariables)
