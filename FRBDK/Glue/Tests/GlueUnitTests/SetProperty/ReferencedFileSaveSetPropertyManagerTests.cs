@@ -67,7 +67,13 @@ public class ReferencedFileSaveSetPropertyManagerTests : IDisposable
     [Fact]
     public void ReactToChangedReferencedFile_ShouldNotThrow_WhenIsDatabaseForLocalizingChangesWithNullOldValue()
     {
-        var rfs = new ReferencedFileSave { Name = "GlobalContent/GumProject.gumx" };
+        // A .csv, because that is what IsDatabaseForLocalizing applies to - the path under test runs
+        // RemoveCodeForCsv/CsvCodeGenerator and never looks at the extension. It also has to not be a
+        // .gumx: assigning CurrentReferencedFileSave round-trips through Find.TreeNodeByTag and raises
+        // ReactToItemsSelected for real, and MainGumPlugin answers a .gumx selection by building its WPF
+        // GumControl - which throws in a test host and leaves PluginManager disabling the Gum plugin for
+        // every test that runs after this one.
+        var rfs = new ReferencedFileSave { Name = "GlobalContent/Localization.csv" };
         ObjectFinder.Self.GlueProject.GlobalFiles.Add(rfs);
         GlueState.Self.CurrentReferencedFileSave = rfs;
 

@@ -155,7 +155,12 @@ namespace GumPlugin.ViewModels
             ShowMouse = backingRfs.Properties.GetValue<bool>(nameof(ShowMouse));
             UpdateFromGlueObject();
 
-            GumProjectInfo = $"{gumProjectSave.Screens.Count} Screens\n{gumProjectSave.Components.Count} Components\n{gumProjectSave.Behaviors.Count} Behaviors";
+            // Null until the Gum project itself has loaded, and the .gumx can be selected before then.
+            // Throwing here costs more than the missing summary: PluginManager turns any exception out
+            // of a plugin into PluginContainer.Fail, which disables the Gum plugin for the session.
+            GumProjectInfo = gumProjectSave == null
+                ? string.Empty
+                : $"{gumProjectSave.Screens.Count} Screens\n{gumProjectSave.Components.Count} Components\n{gumProjectSave.Behaviors.Count} Behaviors";
         }
 
 
