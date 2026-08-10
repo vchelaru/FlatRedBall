@@ -1,4 +1,4 @@
-﻿using FlatRedBall.Glue.Managers;
+﻿using FlatRedBall.Glue.Plugins.CodeGenerators;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using System;
 using System.Collections.Generic;
@@ -8,27 +8,14 @@ using System.Threading.Tasks;
 
 namespace RacingPlugin.CodeGenerators
 {
-    class EnumFileGenerator : Singleton<EnumFileGenerator>
+    class EnumFileGenerator : FullFileCodeGenerator
     {
-        public void GenerateAndSaveEnumFile()
-        {
-            TaskManager.Self.Add(() =>
-            {
-                var contents = GenerateFileContents();
+        public override string RelativeFile => "RacingEntity/Enums.cs";
 
-                var relativeDirectory = "RacingEntity/Enums.cs";
+        static EnumFileGenerator mSelf;
+        public static EnumFileGenerator Self => mSelf ??= new EnumFileGenerator();
 
-                GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(relativeDirectory);
-
-                var fullFile = GlueState.Self.CurrentGlueProjectDirectory + relativeDirectory;
-
-                GlueCommands.Self.TryMultipleTimes(() =>
-                    System.IO.File.WriteAllText(fullFile, contents));
-
-            }, "Adding racing entity enum files to the project");
-        }
-
-        private string GenerateFileContents()
+        protected override string GenerateFileContents()
         {
             var toReturn =
 $@"

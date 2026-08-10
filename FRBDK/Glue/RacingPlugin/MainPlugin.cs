@@ -64,7 +64,7 @@ namespace RacingPlugin
             if (anyTopDownEntities)
             {
                 MainController.Self.AddCollisionHistoryFile();
-                EnumFileGenerator.Self.GenerateAndSaveEnumFile();
+                EnumFileGenerator.Self.GenerateAndSave();
                 // just in case it's not there:
                 //InterfacesFileGenerator.Self.GenerateAndSave();
                 //AiCodeGenerator.Self.GenerateAndSave();

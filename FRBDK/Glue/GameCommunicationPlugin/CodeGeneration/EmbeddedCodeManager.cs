@@ -34,8 +34,11 @@ namespace GameCommunicationPlugin.CodeGeneration
             var prefix = "GameCommunicationPlugin.Embedded.";
             string glueControlManagerCode = GetEmbeddedStringContents(prefix + resourcePath);
             FilePath destinationFilePath = glueControlFolder + relativeDestinationFilePath;
-            GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(destinationFilePath);
-            GlueCommands.Self.TryMultipleTimes(() => System.IO.File.WriteAllText(destinationFilePath.FullPath, glueControlManagerCode));
+            GlueCommands.Self.TryMultipleTimes(() =>
+            {
+                GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(destinationFilePath);
+                GlueCommands.Self.FileCommands.SaveIfDiffers(destinationFilePath, glueControlManagerCode);
+            });
         }
 
         private static string GetEmbeddedStringContents(string embeddedLocation)
