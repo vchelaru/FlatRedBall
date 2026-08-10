@@ -42,7 +42,7 @@
                 <!-- The leftover-files question, which used to be a separate dialog shown after the delete -->
                 <StackPanel Visibility="{Binding FilesToRemoveVisibility}">
                     <TextBlock Text="What would you like to do with the following files:" TextWrapping="Wrap" />
-                    <ListBox ItemsSource="{Binding FilesToRemove}" MaxHeight="160" Margin="0,2,0,4" />
+                    <ListBox ItemsSource="{Binding FilesToRemoveDisplay}" MaxHeight="160" Margin="0,2,0,4" />
                     <RadioButton GroupName="FileAction" Margin="0,2,0,2"
                                  IsChecked="{Binding IsRemoveAndDeleteFilesChecked}"
                                  Content="Remove them from the project and delete the files" />

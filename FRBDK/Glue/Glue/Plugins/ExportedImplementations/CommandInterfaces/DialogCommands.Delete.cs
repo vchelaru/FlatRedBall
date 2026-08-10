@@ -108,6 +108,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
 
             var normalized = NormalizeFilePaths(filesToRemove);
+            var root = DeletionPlanner.ToCanonicalPath(GlueState.Self.CurrentGlueProjectDirectory);
 
             var listBoxWindow = new ListBoxWindowWpf
             {
@@ -116,7 +117,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             foreach (var file in normalized)
             {
-                listBoxWindow.AddItem(file);
+                listBoxWindow.AddItem(DeleteOptionsViewModel.ToDisplayPath(file, root));
             }
 
             listBoxWindow.ClearButtons();
@@ -165,9 +166,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         {
             var toReturn = files
                 .Where(item => !string.IsNullOrWhiteSpace(item))
-                .Select(item => (FileManager.IsRelative(item)
-                    ? GlueCommands.Self.GetAbsoluteFileName(item, false)
-                    : item).Replace("\\", "/"))
+                .Select(DeletionPlanner.ToCanonicalPath)
                 .ToList();
 
             StringFunctions.RemoveDuplicates(toReturn, true);

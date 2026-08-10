@@ -105,9 +105,22 @@ namespace GlueFormsCore.ViewModels
         /// <summary>
         /// The files this delete would leave orphaned, kept in sync with which <see cref="Options"/> are
         /// checked. Never assign to this - add to <see cref="AlwaysRemovedFiles"/> or to an option's
-        /// <see cref="DeleteOptionViewModel.AdditionalFilesToRemove"/>.
+        /// <see cref="DeleteOptionViewModel.AdditionalFilesToRemove"/>. These are the paths acted on;
+        /// <see cref="FilesToRemoveDisplay"/> is what the user sees.
         /// </summary>
         public ObservableCollection<string> FilesToRemove { get; } = new ObservableCollection<string>();
+
+        /// <summary>
+        /// <see cref="FilesToRemove"/> shortened to paths relative to <see cref="ProjectRootForDisplay"/>.
+        /// A delete's file list is assembled from several sources that each spell a path their own way, so
+        /// showing them raw mixed separators and mixed absolute with relative in the same list.
+        /// </summary>
+        public ObservableCollection<string> FilesToRemoveDisplay { get; } = new ObservableCollection<string>();
+
+        /// <summary>
+        /// Trimmed off the front of each file for display. Null leaves paths at full length.
+        /// </summary>
+        public string ProjectRootForDisplay { get; set; }
 
         [DependsOn(nameof(FilesToRemove))]
         public Visibility FilesToRemoveVisibility => (FilesToRemove.Count > 0).ToVisibility();
@@ -203,15 +216,46 @@ namespace GlueFormsCore.ViewModels
         {
             var desired = AlwaysRemovedFiles
                 .Concat(CheckedOptions.SelectMany(item => item.AdditionalFilesToRemove))
-                .Where(item => !string.IsNullOrEmpty(item))
-                .Distinct()
+                .Where(item => !string.IsNullOrWhiteSpace(item))
+                .Select(item => item.Replace('\\', '/'))
+                .Distinct(System.StringComparer.OrdinalIgnoreCase)
                 .ToList();
 
             FilesToRemove.Clear();
+            FilesToRemoveDisplay.Clear();
             foreach (var file in desired)
             {
                 FilesToRemove.Add(file);
+                FilesToRemoveDisplay.Add(ToDisplayPath(file, ProjectRootForDisplay));
             }
+        }
+
+        /// <summary>
+        /// Shortens a path to one relative to <paramref name="root"/>, with forward slashes. A file
+        /// outside the project still comes back relative (a "../" chain) rather than as a full path, so
+        /// every row in the list reads the same way.
+        /// </summary>
+        public static string ToDisplayPath(string file, string root)
+        {
+            if (string.IsNullOrWhiteSpace(file) || string.IsNullOrWhiteSpace(root))
+            {
+                return file;
+            }
+
+            var normalizedRoot = root.Replace('\\', '/');
+            if (!normalizedRoot.EndsWith("/"))
+            {
+                normalizedRoot += "/";
+            }
+
+            if (file.StartsWith(normalizedRoot, System.StringComparison.OrdinalIgnoreCase))
+            {
+                return file.Substring(normalizedRoot.Length);
+            }
+
+            // Different drive, no shared root - MakeRelative can't express it, so it hands the path back
+            // unchanged rather than producing something nonsensical.
+            return FlatRedBall.IO.FileManager.MakeRelative(file, normalizedRoot).Replace('\\', '/');
         }
 
         private void HandleOptionsChanged(object sender, NotifyCollectionChangedEventArgs args)

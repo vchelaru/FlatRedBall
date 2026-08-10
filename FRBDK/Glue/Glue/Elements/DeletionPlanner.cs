@@ -1,3 +1,4 @@
+﻿using System;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
@@ -72,12 +73,33 @@ namespace FlatRedBall.Glue.Elements
             var viewModel = new DeleteOptionsViewModel
             {
                 Element = element,
-                Message = $"Are you sure you want to delete {element}?"
+                Message = $"Are you sure you want to delete {element}?",
+                ProjectRootForDisplay = ToCanonicalPath(GlueState.Self.CurrentGlueProjectDirectory)
             };
 
             viewModel.AlwaysRemovedFiles.AddRange(GetFilesThatWouldBeRemoved(element));
 
             return viewModel;
+        }
+
+        /// <summary>
+        /// One spelling for every file in a delete: absolute, with forward slashes. The lists feeding the
+        /// dialog come from several places - a ReferencedFileSave's content-relative path, an element's
+        /// code path, a plugin's <c>FilePath.FullPath</c> - and used to reach the user exactly as each
+        /// source happened to spell it, so the same list mixed separators and mixed absolute with relative.
+        /// </summary>
+        public static string ToCanonicalPath(string file)
+        {
+            if (string.IsNullOrWhiteSpace(file))
+            {
+                return file;
+            }
+
+            var absolute = FileManager.IsRelative(file)
+                ? GlueCommands.Self.GetAbsoluteFileName(file, false)
+                : file;
+
+            return absolute.Replace('\\', '/');
         }
 
         static void AddResetInheritanceOption(DeleteOptionsViewModel viewModel, GlueElement derivedElement)
@@ -123,47 +145,43 @@ namespace FlatRedBall.Glue.Elements
                 var relativePath = rfs.GetRelativePath();
                 if (!referencedElsewhere.Contains(relativePath))
                 {
-                    toReturn.Add(relativePath);
+                    toReturn.Add(ToCanonicalPath(relativePath));
                 }
             }
 
             FillWithOwnedFiles(toReturn, element);
 
-            return toReturn.Distinct().ToList();
+            return toReturn.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
         }
 
         /// <summary>
         /// Adds the code and JSON files an element owns outright - its custom and generated .cs, its event
         /// files and factory if they exist on disk, and its .glsj/.glej. Shared by the planner (to show the
-        /// user) and by the delete itself (to act on).
+        /// user) and by the delete itself (to act on), all as canonical paths.
         /// </summary>
         public static void FillWithOwnedFiles(List<string> filesThatCouldBeRemoved, GlueElement element)
         {
             var elementName = element.Name;
 
-            filesThatCouldBeRemoved.Add(elementName + ".cs");
-            filesThatCouldBeRemoved.Add(elementName + ".Generated.cs");
+            Add(elementName + ".cs");
+            Add(elementName + ".Generated.cs");
 
             AddIfExists(elementName + ".Event.cs");
             AddIfExists(elementName + ".Generated.Event.cs");
-
-            var factoryName = "Factories/" + FileManager.RemovePath(elementName) + "Factory.Generated.cs";
-            var absoluteFactoryName = GlueCommands.Self.GetAbsoluteFileName(factoryName, false);
-            if (System.IO.File.Exists(absoluteFactoryName))
-            {
-                filesThatCouldBeRemoved.Add(absoluteFactoryName);
-            }
+            AddIfExists("Factories/" + FileManager.RemovePath(elementName) + "Factory.Generated.cs");
 
             var extension = element is ScreenSave
                 ? GlueProjectSave.ScreenExtension
                 : GlueProjectSave.EntityExtension;
-            filesThatCouldBeRemoved.Add(elementName + "." + extension);
+            Add(elementName + "." + extension);
+
+            void Add(string relativeFile) => filesThatCouldBeRemoved.Add(ToCanonicalPath(relativeFile));
 
             void AddIfExists(string relativeFile)
             {
                 if (System.IO.File.Exists(GlueCommands.Self.GetAbsoluteFileName(relativeFile, false)))
                 {
-                    filesThatCouldBeRemoved.Add(relativeFile);
+                    Add(relativeFile);
                 }
             }
         }

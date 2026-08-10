@@ -65,6 +65,45 @@ public class DeleteOptionsViewModelTests
         viewModel.FilesToRemove.Count(item => item == "Screens/GameScreen.cs").ShouldBe(1);
     }
 
+    // The list is assembled from a ReferencedFileSave's content-relative path, an element's code path and
+    // a plugin's FilePath.FullPath, so left raw it showed backslashes next to forward slashes and full
+    // paths next to relative ones in the same list.
+    [Fact]
+    public void FilesToRemoveDisplay_ShouldBeProjectRelative_WithForwardSlashes()
+    {
+        var viewModel = new DeleteOptionsViewModel { ProjectRootForDisplay = "C:/Projects/MyGame" };
+        viewModel.AlwaysRemovedFiles.Add(@"C:\Projects\MyGame\Screens\NewScreen.cs");
+        viewModel.AlwaysRemovedFiles.Add("C:/Projects/MyGame/GumRuntimes/NewScreenRuntime.Generated.cs");
+        viewModel.RefreshFilesToRemove();
+
+        viewModel.FilesToRemoveDisplay.ShouldBe(new[]
+        {
+            "Screens/NewScreen.cs",
+            "GumRuntimes/NewScreenRuntime.Generated.cs"
+        });
+    }
+
+    [Fact]
+    public void FilesToRemoveDisplay_ShouldStayRelative_ForAFileOutsideTheProject()
+    {
+        var viewModel = new DeleteOptionsViewModel { ProjectRootForDisplay = "C:/Projects/MyGame" };
+        viewModel.AlwaysRemovedFiles.Add("C:/Projects/SharedArt/Tileset.png");
+        viewModel.RefreshFilesToRemove();
+
+        viewModel.FilesToRemoveDisplay.Single().ShouldBe("../SharedArt/Tileset.png");
+    }
+
+    [Fact]
+    public void FilesToRemove_ShouldNotTreatSeparatorDifferencesAsDifferentFiles()
+    {
+        var viewModel = new DeleteOptionsViewModel();
+        viewModel.AlwaysRemovedFiles.Add(@"C:\Projects\MyGame\Screens\NewScreen.cs");
+        viewModel.AlwaysRemovedFiles.Add("C:/Projects/MyGame/Screens/NewScreen.cs");
+        viewModel.RefreshFilesToRemove();
+
+        viewModel.FilesToRemove.Count.ShouldBe(1);
+    }
+
     [Fact]
     public void AddOption_ShouldCheckTheOptionByDefault()
     {

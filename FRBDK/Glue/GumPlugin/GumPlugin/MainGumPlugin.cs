@@ -350,21 +350,24 @@ public class MainGumPlugin : PluginBase
             String.Format(Localization.Texts.GumConfirmDeleteScreen, gumScreen.Name, element),
             DeleteGumScreenOptionTag);
 
-        option.AdditionalFilesToRemove.Add(CodeGeneratorManager.Self.CustomRuntimeCodeLocationFor(gumScreen).FullPath);
-        option.AdditionalFilesToRemove.Add(CodeGeneratorManager.Self.GeneratedRuntimeCodeLocationFor(gumScreen).FullPath);
+        AddFile(CodeGeneratorManager.Self.CustomRuntimeCodeLocationFor(gumScreen));
+        AddFile(CodeGeneratorManager.Self.GeneratedRuntimeCodeLocationFor(gumScreen));
 
         // If there are forms screens, remove those too:
         var formsCustomFilePath = CodeGeneratorManager.Self.CustomFormsCodeLocationFor(gumScreen);
         if (formsCustomFilePath.Exists())
         {
-            option.AdditionalFilesToRemove.Add(formsCustomFilePath.FullPath);
+            AddFile(formsCustomFilePath);
         }
 
         var formsGeneratedFilePath = CodeGeneratorManager.Self.GeneratedFormsCodeLocationFor(gumScreen);
         if (formsGeneratedFilePath.Exists())
         {
-            option.AdditionalFilesToRemove.Add(formsGeneratedFilePath.FullPath);
+            AddFile(formsGeneratedFilePath);
         }
+
+        void AddFile(FilePath filePath) =>
+            option.AdditionalFilesToRemove.Add(DeletionPlanner.ToCanonicalPath(filePath.FullPath));
     }
 
     private void HandleElementRemoved(GlueElement element, DeleteOptionsViewModel viewModel)
