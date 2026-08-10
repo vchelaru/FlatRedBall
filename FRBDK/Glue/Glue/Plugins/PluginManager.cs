@@ -875,6 +875,8 @@ public class PluginManager : PluginManagerBase
 
     internal static void HandleFileReadError(FilePath filePath, GeneralResponse response)
     {
+        SaveRelativeDirectory();
+
         CallMethodOnPluginNotUiThread(
             plugin =>
             {
@@ -2580,57 +2582,49 @@ public class PluginManager : PluginManagerBase
     }
 
 
-    static System.Collections.Concurrent.ConcurrentStack<string> mOldRelativeDirectories = new System.Collections.Concurrent.ConcurrentStack<string>();
+    /// <summary>
+    /// Per-thread, because <see cref="FileManager.RelativeDirectory"/> is per-thread - it reads and
+    /// writes a dictionary keyed on the managed thread id. Glue makes these plugin calls from
+    /// Parallel.For workers (see ProjectCommands.CallUpdateFileMembershipsOnAllFiles), so one shared
+    /// stack had workers popping each other's entries: a resume would restore another thread's
+    /// directory over its own and report "the relativeDirectory wasn't set properly" against a caller
+    /// that did nothing wrong, and the orphaned entries outlived the project load that pushed them.
+    /// </summary>
+    [ThreadStatic]
+    static Stack<string> mOldRelativeDirectories;
+
+    static Stack<string> OldRelativeDirectories => mOldRelativeDirectories ??= new Stack<string>();
 
     static void SaveRelativeDirectory()
     {
-        mOldRelativeDirectories.Push(FileManager.RelativeDirectory);
+        OldRelativeDirectories.Push(FileManager.RelativeDirectory);
     }
 
     static void ResumeRelativeDirectory(string function)
     {
-        if (mOldRelativeDirectories.Count == 0)
+        var stack = OldRelativeDirectories;
+
+        if (stack.Count == 0)
         {
-            FileManager.RelativeDirectory = FileManager.GetDirectory(
-                FlatRedBall.Glue.Plugins.ExportedImplementations.GlueState.Self.CurrentCodeProjectFileName.FullPath);
+            // Nothing to resume - every push on this thread has already been consumed, which means a
+            // resume is unbalanced. Falling back to the loaded project's directory is a guess, and
+            // with no project loaded there isn't even one to make, so leave the directory alone
+            // rather than dereferencing null.
+            var codeProject = FlatRedBall.Glue.Plugins.ExportedImplementations.GlueState.Self.CurrentCodeProjectFileName;
+            if (codeProject != null)
+            {
+                FileManager.RelativeDirectory = FileManager.GetDirectory(codeProject.FullPath);
+            }
+            return;
         }
-        else
+
+        var saved = stack.Pop();
+
+        if (FileManager.RelativeDirectory != saved)
         {
-            bool differs = true;
-
-            try
-            {
-                string top = null;
-                if(mOldRelativeDirectories.TryPeek(out top))
-                {
-                    differs = FileManager.RelativeDirectory != top;
-                }
-            }
-            catch
-            {
-                // no big deal we'll just act as if it differs
-            }
-            if (differs)
-            {
-                ReceiveError("The relativeDirectory wasn't set properly in " + function);
-
-                string top = null;
-                if (mOldRelativeDirectories.TryPeek(out top))
-                {
-                    FileManager.RelativeDirectory = top;
-                }
-
-            }
-
-            try
-            {
-                string throwaway;
-                mOldRelativeDirectories.TryPop(out throwaway);
-            }
-            catch(ArgumentOutOfRangeException)
-            {
-                // no big deal
-            }
+            // A plugin changed the relative directory and did not put it back.
+            ReceiveError("The relativeDirectory wasn't set properly in " + function);
+            FileManager.RelativeDirectory = saved;
         }
     }
 

@@ -70,7 +70,16 @@ namespace FlatRedBall.IO
 
 #endif
 
-        static Dictionary<int, string> mRelativeDirectoryDictionary = new Dictionary<int, string>();
+        /// <summary>
+        /// The relative directory is per-thread. This used to be a Dictionary keyed on managed thread
+        /// id whose setter took a lock but whose getter did not, so a read racing a write that resized
+        /// it could throw - and the getter swallowed that and silently answered
+        /// <see cref="DefaultRelativeDirectory"/> instead. Glue reads and writes this from Parallel.For
+        /// workers while updating file memberships, so that race was live and intermittent. ThreadStatic
+        /// gives the same semantics with no sharing to get wrong, and no lock on the read path.
+        /// </summary>
+        [ThreadStatic]
+        static string mRelativeDirectoryForThread;
 
 
 
@@ -112,29 +121,7 @@ namespace FlatRedBall.IO
         /// </summary>
         static public string RelativeDirectory
         {
-            get
-            {
-                int threadID = System.Threading.Thread.CurrentThread.ManagedThreadId;
-
-                if (mRelativeDirectoryDictionary.ContainsKey(threadID))
-                {
-                    // VERY rare, but possible:
-                    try
-                    {
-                        // the thread ID could go away inbetween the if.
-                        return mRelativeDirectoryDictionary[threadID];
-                    }
-                    catch
-                    {
-                        return DefaultRelativeDirectory;
-                    }
-                }
-                else
-                {
-                    return DefaultRelativeDirectory;
-                }
-
-            }
+            get => mRelativeDirectoryForThread ?? DefaultRelativeDirectory;
             set
             {
 
@@ -172,29 +159,10 @@ namespace FlatRedBall.IO
 
 
 
-                int threadID = System.Threading.Thread.CurrentThread.ManagedThreadId;
-
-                lock (mRelativeDirectoryDictionary)
-                {
-                    if (valueToSet == DefaultRelativeDirectory)
-                    {
-                        if (mRelativeDirectoryDictionary.ContainsKey(threadID))
-                        {
-                            mRelativeDirectoryDictionary.Remove(threadID);
-                        }
-                    }
-                    else
-                    {
-                        if (mRelativeDirectoryDictionary.ContainsKey(threadID))
-                        {
-                            mRelativeDirectoryDictionary[threadID] = valueToSet;
-                        }
-                        else
-                        {
-                            mRelativeDirectoryDictionary.Add(threadID, valueToSet);
-                        }
-                    }
-                }
+                // Null rather than storing the default, so the getter falls back to whatever
+                // DefaultRelativeDirectory is at read time - the dictionary version removed the entry
+                // for exactly this reason.
+                mRelativeDirectoryForThread = valueToSet == DefaultRelativeDirectory ? null : valueToSet;
             }
         }
 
