@@ -155,7 +155,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.WildcardFilePlugin
 
                     if(fileForCandidate == changedFile || fileForCandidate.IsRelativeTo(changedFile))
                     {
-                        await GlueCommands.Self.GluxCommands.RemoveReferencedFileAsync(file, null);
+                        await GlueCommands.Self.GluxCommands.RemoveReferencedFileAsync(file, deleteOptions: null, additionalFilesToRemove: null);
                     }
                 }
             }

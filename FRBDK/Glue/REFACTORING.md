@@ -1425,3 +1425,29 @@ warm `obj`/`bin` that may still hold last iteration's binaries.
 
 No real tree either way (no parent/child/sibling relationships, `FindByName` still returns null) — a test
 that needs actual tree-shape behavior needs a real `FindManager`.
+
+### 2026-08-10 — every delete path now plans, asks once, then executes (issue #2032)
+
+#429 gave Screens and Entities a plan-ask-execute flow (`DeletionPlanner` → `DeleteOptionsViewModel` →
+`DialogService.ShowDelete`). The other deletes still interleaved asking with doing: removing a file raised a
+`DialogService.ShowChoice` per object using it *from inside* `RemoveReferencedFileInternal`, deleting a state
+raised one per orphaned variable from inside the delete, and objects had a separate `RemoveObjectWindow`.
+Both are now options on the one dialog, answered before anything is mutated, which is what makes them
+testable at all — `DeleteFileTests`/`DeleteObjectTests`/`DeleteStateTests` assert a dialog *count*, not a
+dialog's contents.
+
+Three seams this needed:
+
+- **`FakeFindManager.IfReferencedFileSaveIsReferenced` returned a hard-coded `false`.** The real
+  `FindManager` implementation reads no tree state at all despite living in the tree view plugin, so there
+  was nothing to fake; the constant made every file-removal path early-return in tests, which reads as "the
+  removal ran and did nothing" rather than as a fake behaving unlike the real thing. Same shape as the
+  `TreeNodeByTag` entry above: fix the seam, don't work around it in the test.
+- **`GluxCommands.RemoveStateSaveCategory` removed the category from `GlueState.Self.CurrentElement`** while
+  resolving everything else through `ObjectFinder`, so it only worked when the delete came from the tree
+  view selection. It uses the owner it already looked up now.
+- **State removal called `RefreshCurrentElementTreeNode`**, which throws when nothing is selected. Now
+  `RefreshTreeNodeFor(element)`, the element the state actually belongs to.
+
+`DialogCommands.AskWhatToDoWithFilesAsync` and `RemoveObjectWindow`/`RemoveObjectViewModel` are gone - the
+leftover-files question is a section of the one dialog, not a dialog of its own.

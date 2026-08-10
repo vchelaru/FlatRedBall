@@ -25,6 +25,17 @@
                     <ListBox ItemsSource="{Binding ObjectsToRemove}" MaxHeight="120" Margin="0,2,0,0" />
                 </StackPanel>
 
+                <!-- Consequences the user can't opt out of and can't fix from here -->
+                <StackPanel Visibility="{Binding WarningsVisibility}" Margin="0,0,0,8">
+                    <ItemsControl ItemsSource="{Binding Warnings}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}" TextWrapping="Wrap" Foreground="DarkRed" Margin="0,2,0,2" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+
                 <!-- One checkbox per optional part of the delete. Plugins add to this list through
                      PluginManager.FillDeleteOptions rather than showing their own dialog. -->
                 <StackPanel Visibility="{Binding OptionsVisibility}" Margin="0,0,0,8">
