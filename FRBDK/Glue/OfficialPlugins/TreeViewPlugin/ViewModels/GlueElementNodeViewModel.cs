@@ -44,11 +44,19 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 StatesNode = new StatesRootNodeViewModel(this, glueElement) { Text = "States" };
                 Children.Add(StatesNode);
 
-                EventsNode = new EventsRootViewModel(this, glueElement) { Text = "Events" };
-                Children.Add(EventsNode);
+                // Both of these describe generated source, so neither means anything for a project Glue
+                // does not own the code of: Code lists the element's .cs files, and Events exist to
+                // generate its .Event.cs. An FRB2 game reads the .gluj at runtime and writes all of its
+                // own source. The nodes above stay - Files, Objects, Variables and States are .gluj
+                // data, which is exactly what Glue is still there to author.
+                if (CodeWritePolicy.WritesCodeForCurrentProject)
+                {
+                    EventsNode = new EventsRootViewModel(this, glueElement) { Text = "Events" };
+                    Children.Add(EventsNode);
 
-                CodeNode = new CodeRootViewModel(this, glueElement) { Text = "Code" };
-                Children.Add(CodeNode);
+                    CodeNode = new CodeRootViewModel(this, glueElement) { Text = "Code" };
+                    Children.Add(CodeNode);
+                }
             }
 
             if (glueElement is ScreenSave)
