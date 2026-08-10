@@ -148,6 +148,10 @@ namespace FlatRedBall.Glue.Elements
         /// <summary>
         /// Deleting a state used to ask a plain yes/no and then, from inside the delete, one popup per
         /// variable it had orphaned. The variables are options on the same dialog now.
+        ///
+        /// Only an older project reaches those options: a state delete leaves a variable dangling only when
+        /// it empties the element's uncategorized <c>States</c> list, and Glue's UI no longer lets you make
+        /// an uncategorized state. A project made today gets the confirm and nothing else.
         /// </summary>
         public static DeleteOptionsViewModel CreateForState(StateSave state)
         {

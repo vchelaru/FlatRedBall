@@ -14,9 +14,19 @@ namespace GlueUnitTests.CommandInterfaces;
 /// any files left behind - and a state delete raised its own popup per variable it had orphaned, from
 /// inside the delete. These pin the move onto the one delete dialog. See GitHub issue #2032.
 /// </summary>
+/// <remarks>
+/// The tests below that add a state straight to <c>ScreenSave.States</c> (rather than to a category) cover
+/// a shape only older projects have: Glue's UI no longer lets you make an uncategorized state. That is also
+/// the only shape in which a state delete leaves a variable dangling, so in a project made today the state
+/// delete offers no options and the dialog is just the confirm.
+/// </remarks>
 [Trait("Category", "BuildSmoke")]
 public class DeleteStateTests : DeleteDialogTestBase
 {
+    /// <summary>
+    /// Passing no category makes an uncategorized state, which only older projects have - see the remarks
+    /// on the class.
+    /// </summary>
     static async Task<StateSave> AddStateAsync(ScreenSave screen, string name, StateSaveCategory category = null)
     {
         var state = new StateSave { Name = name };
