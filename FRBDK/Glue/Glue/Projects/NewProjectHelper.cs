@@ -89,7 +89,10 @@ public class NewProjectHelper
 
         if(viewModel != null)
         {
-            createdProject = $@"{viewModel.FinalDirectory}\{viewModel.ProjectName}\{viewModel.ProjectName}.csproj";
+            // Not every template puts the project Glue should open at the same place - a dotnet
+            // template can produce several projects, only one of which is the game.
+            createdProject = Npc.ProjectCreationHelper.GetProjectToOpen(
+                viewModel.SelectedProject, viewModel.ProjectName, viewModel.FinalDirectory);
         }
 
         GlueCommands.Self.DialogCommands.ShowSpinner("Preparing Project...");

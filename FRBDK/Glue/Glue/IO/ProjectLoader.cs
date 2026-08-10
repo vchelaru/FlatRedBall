@@ -83,6 +83,24 @@ namespace FlatRedBall.Glue.IO
             }
             //////////////////// End EARLY OUT////////////////////////////////
 
+            // A FlatRedBall 2 game created by `dotnet new frb2-desktop` is two projects: MyGame.Common
+            // holds Game1, the content and the engine reference, while MyGame.Desktop is a launcher that
+            // reaches the engine through Common. Common is the one Glue edits, but Desktop is the
+            // runnable one and just as natural a thing to pick, and picking it used to end at "could not
+            // determine the project type" with nothing loaded. Resolving here rather than deeper in the
+            // load keeps every later step - Load, RelativeDirectory, the solution lookup - agreeing on
+            // one path.
+            var frb2GameProject = Frb2ProjectDetector.FindFrb2GameProjectFor(projectFileName);
+            if (frb2GameProject != null &&
+                !string.Equals(FileManager.Standardize(frb2GameProject),
+                    FileManager.Standardize(projectFileName), StringComparison.OrdinalIgnoreCase))
+            {
+                GlueCommands.Self.PrintOutput(
+                    $"Opening {FileManager.RemovePath(frb2GameProject)} instead of " +
+                    $"{FileManager.RemovePath(projectFileName)} - it is the FlatRedBall project of the two.");
+                projectFileName = frb2GameProject;
+            }
+
             TaskManager.Self.RecordTaskHistory($"--Received Load project Command {projectFileName}--");
 
             FileWatchManager.PerformFlushing = false;

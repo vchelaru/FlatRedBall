@@ -31,6 +31,20 @@ namespace Npc.Data
             Add("FNA .NET 7 (Windows, Mac, Linux)", "FlatRedBallDesktopFnaTemplate",
                 "http://files.flatredball.com/content/FrbXnaTemplates/DailyBuild/ZippedTemplates/FlatRedBallDesktopFnaTemplate.zip");
 
+            // FlatRedBall 2 ships its templates as a nuget package rather than a zip this repo builds,
+            // so this entry is created by the dotnet CLI and is exempt from the zip-pipeline checks in
+            // NewProjectTemplateListTests. Glue opens the .Common project of the pair - it holds Game1,
+            // the content and the engine reference, while .Desktop is only a launcher.
+            Projects.Add(new DotnetNewProjectInfo
+            {
+                FriendlyName = "FlatRedBall 2 Desktop (Windows, Mac, Linux) - MonoGame",
+                Namespace = "FlatRedBall2DesktopTemplate",
+                TemplatePackageId = "FlatRedBall2.Templates",
+                TemplateShortName = "frb2-desktop",
+                ProjectToOpenPattern = "{ProjectName}.Common/{ProjectName}.Common.csproj",
+                SupportedInGlue = true,
+            });
+
             Projects.Add(new AddNewLocalProjectOption());
         }
 
