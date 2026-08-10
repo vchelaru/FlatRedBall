@@ -23,6 +23,7 @@ using GumPlugin.CodeGeneration;
 using GumPlugin.Controls;
 using GumPlugin.Managers;
 using GumPlugin.ViewModels;
+using GlueFormsCore.ViewModels;
 using HQ.Util.Unmanaged;
 
 namespace GumPlugin;
@@ -160,7 +161,8 @@ public class MainGumPlugin : PluginBase
 
         this.NewScreenCreated += HandleNewScreen;
 
-        this.ReactToScreenRemoved += HandleScreenRemoved;
+        this.FillDeleteOptions += HandleFillDeleteOptions;
+        this.ReactToElementRemoved += HandleElementRemoved;
 
         #endregion
 
@@ -325,45 +327,75 @@ public class MainGumPlugin : PluginBase
     }
 
 
-    private void HandleScreenRemoved(FlatRedBall.Glue.SaveClasses.ScreenSave glueScreen, List<string> listToFillWithAdditionalFilesToRemove)
+    /// <summary>
+    /// Tag for the "also delete the Gum screen" option, so the answer can be read back in
+    /// <see cref="HandleElementRemoved"/> without matching on display text.
+    /// </summary>
+    const string DeleteGumScreenOptionTag = "GumPlugin.DeleteGumScreen";
+
+    /// <summary>
+    /// Adds the Gum screen question as a checkbox on Glue's delete dialog. This used to be a separate
+    /// MessageBox raised part-way through the delete, which is the second popup GitHub issue #429 is about.
+    /// </summary>
+    private void HandleFillDeleteOptions(GlueElement element, DeleteOptionsViewModel viewModel)
     {
-        if (AppState.Self.GumProjectSave != null)
+        var gumScreen = GetGumScreenFor(element);
+
+        if (gumScreen == null)
         {
-            var gumScreenName = GumPluginCommands.Self.GetExpectedGumScreenNameFor(glueScreen);
-
-            var gumScreen = AppState.Self.GumProjectSave.Screens.FirstOrDefault(item => item.Name == gumScreenName);
-
-            if (gumScreen != null)
-            {
-                var result = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(
-                    String.Format(Localization.Texts.GumConfirmDeleteScreen, gumScreen.Name, glueScreen));
-                if (result == System.Windows.MessageBoxResult.Yes)
-                {
-                    // don't await this, we want this method to immediately add to the lists
-                    _ = GumPluginCommands.Self.RemoveScreen(gumScreen);
-
-                    listToFillWithAdditionalFilesToRemove.Add(CodeGeneratorManager.Self.CustomRuntimeCodeLocationFor(gumScreen).FullPath);
-                    listToFillWithAdditionalFilesToRemove.Add(CodeGeneratorManager.Self.GeneratedRuntimeCodeLocationFor(gumScreen).FullPath);
-
-                    // If there are forms screens, remove those too:
-                    var formsCustomFilePath = CodeGeneratorManager.Self.CustomFormsCodeLocationFor(gumScreen);
-
-                    if (formsCustomFilePath.Exists())
-                    {
-                        listToFillWithAdditionalFilesToRemove.Add(formsCustomFilePath.FullPath);
-                    }
-
-                    var formsGeneratedFilePath = CodeGeneratorManager.Self.GeneratedFormsCodeLocationFor(gumScreen);
-                    if (formsGeneratedFilePath.Exists())
-                    {
-                        listToFillWithAdditionalFilesToRemove.Add(formsGeneratedFilePath.FullPath);
-                    }
-                }
-
-            }
-
-
+            return;
         }
+
+        var option = viewModel.AddOption(
+            String.Format(Localization.Texts.GumConfirmDeleteScreen, gumScreen.Name, element),
+            DeleteGumScreenOptionTag);
+
+        AddFile(CodeGeneratorManager.Self.CustomRuntimeCodeLocationFor(gumScreen));
+        AddFile(CodeGeneratorManager.Self.GeneratedRuntimeCodeLocationFor(gumScreen));
+
+        // If there are forms screens, remove those too:
+        var formsCustomFilePath = CodeGeneratorManager.Self.CustomFormsCodeLocationFor(gumScreen);
+        if (formsCustomFilePath.Exists())
+        {
+            AddFile(formsCustomFilePath);
+        }
+
+        var formsGeneratedFilePath = CodeGeneratorManager.Self.GeneratedFormsCodeLocationFor(gumScreen);
+        if (formsGeneratedFilePath.Exists())
+        {
+            AddFile(formsGeneratedFilePath);
+        }
+
+        void AddFile(FilePath filePath) =>
+            option.AdditionalFilesToRemove.Add(DeletionPlanner.ToCanonicalPath(filePath.FullPath));
+    }
+
+    private void HandleElementRemoved(GlueElement element, DeleteOptionsViewModel viewModel)
+    {
+        if (viewModel?.IsOptionChecked(DeleteGumScreenOptionTag) != true)
+        {
+            return;
+        }
+
+        var gumScreen = GetGumScreenFor(element);
+
+        if (gumScreen != null)
+        {
+            // don't await this, the delete has already been approved and the files are already listed
+            _ = GumPluginCommands.Self.RemoveScreen(gumScreen);
+        }
+    }
+
+    private static Gum.DataTypes.ScreenSave GetGumScreenFor(GlueElement element)
+    {
+        if (AppState.Self.GumProjectSave == null || !(element is FlatRedBall.Glue.SaveClasses.ScreenSave glueScreen))
+        {
+            return null;
+        }
+
+        var gumScreenName = GumPluginCommands.Self.GetExpectedGumScreenNameFor(glueScreen);
+
+        return AppState.Self.GumProjectSave.Screens.FirstOrDefault(item => item.Name == gumScreenName);
     }
 
     private void HandleItemSelected(ITreeNode selectedTreeNode)

@@ -168,7 +168,7 @@ namespace GameCommunicationPlugin.GlueControl
                 _refreshManager.HandleNewScreenCreated();
                 return Task.CompletedTask;
             };
-            this.ReactToScreenRemoved += ToolbarController.Self.HandleScreenRemoved;
+            this.ReactToElementRemoved += ToolbarController.Self.HandleElementRemoved;
             // todo - handle startup changed...
 
             this.ReactToNewObjectListAsync += _refreshManager.HandleNewObjectList;

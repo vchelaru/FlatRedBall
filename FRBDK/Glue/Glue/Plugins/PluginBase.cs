@@ -415,18 +415,21 @@ namespace FlatRedBall.Glue.Plugins
         public Action<GlueElement, ReferencedFileSave> ReactToFileRemoved { get; protected set; }
 
         /// <summary>
-        /// Delegate raised whenever an entity is going to be removed. The first argument
-        /// (EntitySave) is the entity to remove. The string list argument is 
-        /// a list of to-be-removed files. Entities can add addiitonal files.
+        /// Delegate raised before the delete dialog for a Screen or Entity is shown, so a plugin can add
+        /// its own checkboxes (and the files those checkboxes bring with them) to the same dialog.
+        /// <b>Do not show a dialog from here</b> - adding an option is how a plugin asks its question now.
+        /// Read the answer back in <see cref="ReactToElementRemoved"/> with
+        /// <c>DeleteOptionsViewModel.IsOptionChecked</c>.
         /// </summary>
-        public Action<EntitySave, List<string>> ReactToEntityRemoved { get; protected set; }
+        public Action<GlueElement, DeleteOptionsViewModel> FillDeleteOptions { get; protected set; }
 
         /// <summary>
-        /// Delegate raised whenever a Screen is removed. The first argument is the screen
-        /// which is being removed. The second argument is a list of files to remove. Plugins
-        /// can optionally add additional files to-be-removed when a Screen is removed.
+        /// Delegate raised when a Screen or Entity has been removed. The view model is the one the user
+        /// answered, so a plugin can act on the options it added in <see cref="FillDeleteOptions"/>. Files a
+        /// plugin wants deleted are declared on its option rather than added here - by this point the user
+        /// has already approved the file list.
         /// </summary>
-        public Action<ScreenSave, List<string>> ReactToScreenRemoved { get; protected set; }
+        public Action<GlueElement, DeleteOptionsViewModel> ReactToElementRemoved { get; protected set; }
 
         public Action<IElement, EventResponseSave> ReactToEventRemoved { get; protected set; }
 

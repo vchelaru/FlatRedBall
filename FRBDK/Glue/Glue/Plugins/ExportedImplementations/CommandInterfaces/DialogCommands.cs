@@ -34,7 +34,7 @@ using System.Reflection;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 
-class DialogCommands : IDialogCommands
+partial class DialogCommands : IDialogCommands
 {
     NameVerifier _nameVerifier;
 
@@ -386,58 +386,8 @@ class DialogCommands : IDialogCommands
             await GlueCommands.Self.GluxCommands
                 .RemoveNamedObjectListAsync(namedObjectsToRemove, true, true, filesToRemove);
 
-            if (filesToRemove.Count != 0)
-            {
-
-                for (int i = 0; i < filesToRemove.Count; i++)
-                {
-                    if (FileManager.IsRelative(filesToRemove[i]))
-                    {
-                        filesToRemove[i] = GlueCommands.Self.GetAbsoluteFileName(filesToRemove[i], false);
-                    }
-                    filesToRemove[i] = filesToRemove[i].Replace("\\", "/");
-                }
-
-                StringFunctions.RemoveDuplicates(filesToRemove, true);
-
-                var lbw = new ListBoxWindowWpf();
-
-                string messageString = "What would you like to do with the following files:\n";
-                lbw.Message = messageString;
-
-                foreach (var s in filesToRemove)
-                {
-                    lbw.AddItem(s);
-                }
-                lbw.ClearButtons();
-                lbw.AddButton("Nothing - leave them as part of the game project", DialogResult.No);
-                lbw.AddButton("Remove them from the project but keep the files", DialogResult.OK);
-                lbw.AddButton("Remove and delete the files", DialogResult.Yes);
-
-                lbw.ShowDialog();
-                var result = (DialogResult)lbw.ClickedOption;
-
-                if (result is DialogResult.OK or DialogResult.Yes)
-                {
-                    foreach (var file in filesToRemove)
-                    {
-                        FilePath fileName = GlueCommands.Self.GetAbsoluteFileName(file, false);
-                        // This file may have been removed
-                        // in windows explorer, and now removed
-                        // from Glue.  Check to prevent a crash.
-
-                        GlueCommands.Self.ProjectCommands.RemoveFromProjects(fileName, false);
-                    }
-                }
-
-                if (result == DialogResult.Yes)
-                {
-                    foreach (var fileName in filesToRemove.Select(file => GlueCommands.Self.GetAbsoluteFileName(file, false)).Where(System.IO.File.Exists))
-                    {
-                        FileHelper.MoveToRecycleBin(fileName);
-                    }
-                }
-            }
+            // Same question, same handling as every other delete path - see DialogCommands.Delete.cs.
+            await AskWhatToDoWithFilesAsync(filesToRemove);
 
             TaskManager.Self.AddOrRunIfTasked(() =>
             {
@@ -1153,30 +1103,31 @@ class DialogCommands : IDialogCommands
         caption ??= "Confirm";
         var result = System.Windows.MessageBoxResult.None;
 
-        if (GlueGui.ShowGui)
+        // The GlueGui.ShowGui check that used to live here now lives in DialogService's *default* (WPF)
+        // implementation, where "don't put a modal on a desktop that isn't there" belongs. Keeping it here
+        // meant a headless host never reached the seam at all, so a test could not see that a prompt was
+        // asked - which is how a delete could grow extra dialogs with the tests staying green.
+        //
+        // DialogService.ShowConfirm already marshals to the UI thread, but this stays wrapped in
+        // DoOnUiThread since `result` is captured by the caller synchronously below via DoOnUiThread's
+        // blocking behavior.
+        GlueCommands.Self.DoOnUiThread(() =>
         {
-            // DialogService.ShowConfirm already marshals to the UI thread, but this stays wrapped in
-            // DoOnUiThread since `result` is captured by the caller synchronously below via DoOnUiThread's
-            // blocking behavior.
-            GlueCommands.Self.DoOnUiThread(() =>
-           {
-               var confirmResult = DialogService.ShowConfirm(message, DialogButton.Yes, DialogButton.No);
+            var confirmResult = DialogService.ShowConfirm(message, DialogButton.Yes, DialogButton.No);
 
-               if (confirmResult == DialogButton.Yes)
-               {
-                   result = System.Windows.MessageBoxResult.Yes;
-                   yesAction?.Invoke();
-               }
-               else if (confirmResult == DialogButton.No)
-               {
-                   result = System.Windows.MessageBoxResult.No;
-                   noAction?.Invoke();
-               }
-               // Escape/close without a button click: confirmResult is null, result stays MessageBoxResult.None,
-               // matching the original WPF MessageBox.Show(...) escape behavior.
-           });
-
-        }
+            if (confirmResult == DialogButton.Yes)
+            {
+                result = System.Windows.MessageBoxResult.Yes;
+                yesAction?.Invoke();
+            }
+            else if (confirmResult == DialogButton.No)
+            {
+                result = System.Windows.MessageBoxResult.No;
+                noAction?.Invoke();
+            }
+            // Escape/close without a button click: confirmResult is null, result stays MessageBoxResult.None,
+            // matching the original WPF MessageBox.Show(...) escape behavior.
+        });
 
         return result;
     }
