@@ -220,6 +220,7 @@
                 Grid.Row="1"
                 Grid.Column="1"
                 Visibility="{Binding WhileRunningViewVisibility}"
+                RecenterCameraClick="BottomStatusBar_RecenterCameraClick"
                 ZoomMinusClick="BottomStatusBar_ZoomMinusClick"
                 ZoomPlusClick="BottomStatusBar_ZoomPlusClick" />
 

@@ -37,5 +37,12 @@
                 </ToolTip>
             </ToggleButton.ToolTip>
         </ToggleButton>
+        <Button
+            Height="20"
+            Margin="4,0,0,0"
+            Click="RecenterCameraClicked"
+            Content="{materialDesign:PackIcon ImageFilterCenterFocus}"
+            Style="{DynamicResource IconButton}"
+            ToolTip="Recenter Camera - resets position and zoom to the game's default" />
     </StackPanel>
 </UserControl>
