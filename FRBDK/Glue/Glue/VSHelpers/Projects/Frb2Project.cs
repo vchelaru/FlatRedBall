@@ -40,8 +40,6 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         /// </remarks>
         public override string ContentDirectory => GlueProjectSubdirectory;
 
-        public override bool IsMaintainedByGlue => false;
-
         /// <summary>
         /// Self-contained, so the game copies it to output with one rule and no exclusions, and so it
         /// parallels the Gum project's own Content/GumProject/ folder.
@@ -56,6 +54,9 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         {
             ContentProject = this;
             CodeProject = this;
+            // Off until the loaded .gluj's GenerateCode setting says otherwise - see
+            // Frb2CodeGenerationSync, which applies that setting once the project JSON is loaded.
+            IsMaintainedByGlue = false;
         }
     }
 }

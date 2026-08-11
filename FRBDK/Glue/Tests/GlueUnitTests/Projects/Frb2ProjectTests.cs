@@ -451,4 +451,123 @@ public class Frb2CodeGenerationSuppressionTests : IDisposable
         Assert.Equal("Frb2Game.Screens", commands.GetNamespaceForElementName("Screens\\Level1"));
         Assert.Equal("no versions here", commands.ReplaceGlueVersionString("no versions here"));
     }
+
+    [Fact]
+    public void GenerateCodeCommands_IsTheRealOne_WhenFrb2ProjectOptsIntoCodeGeneration()
+    {
+        var frb2 = CreateProject(p => new Frb2Project(p), "Frb2Game");
+        frb2.IsMaintainedByGlue = true;
+        GlueState.Self.CurrentMainProject = frb2;
+
+        Assert.IsNotType<NoCodeGenerationCommands>(GlueCommands.Self.GenerateCodeCommands);
+    }
+
+    [Fact]
+    public void SaveIfDiffers_WritesCodeFiles_WhenFrb2ProjectOptsIntoCodeGeneration()
+    {
+        var frb2 = CreateProject(p => new Frb2Project(p), "Frb2Game");
+        frb2.IsMaintainedByGlue = true;
+        GlueState.Self.CurrentMainProject = frb2;
+        var codeFile = Path.Combine(_directory, "Setup", "CameraSetup.Generated.cs");
+        Directory.CreateDirectory(Path.GetDirectoryName(codeFile));
+
+        var didWrite = GlueCommands.Self.FileCommands.SaveIfDiffers(codeFile, "// generated");
+
+        Assert.True(didWrite);
+        Assert.True(File.Exists(codeFile));
+    }
+}
+
+/// <summary>
+/// <see cref="Frb2CodeGenerationSync"/> applies GlueProjectSave.GenerateCode to
+/// ProjectBase.IsMaintainedByGlue - the one place project load turns an FRB2 project's opt-in setting
+/// into the flag GenerateCodeCommands/CodeWritePolicy actually key off.
+/// </summary>
+public class Frb2CodeGenerationSyncTests : IDisposable
+{
+    readonly string _directory;
+
+    public Frb2CodeGenerationSyncTests()
+    {
+        GlueTestBootstrap.EnsureInitialized();
+        _directory = Path.Combine(Path.GetTempPath(), "GlueUnitTests_Frb2Sync_" + Guid.NewGuid());
+        Directory.CreateDirectory(_directory);
+    }
+
+    public void Dispose()
+    {
+        try
+        {
+            Directory.Delete(_directory, recursive: true);
+        }
+        catch (IOException)
+        {
+        }
+    }
+
+    Frb2Project CreateFrb2Project()
+    {
+        var csprojPath = Path.Combine(_directory, "Frb2Game.csproj");
+        File.WriteAllText(csprojPath, @"<Project xmlns=""http://schemas.microsoft.com/developer/msbuild/2003"">
+  <PropertyGroup>
+    <RootNamespace>Frb2Game</RootNamespace>
+  </PropertyGroup>
+</Project>");
+        GlueTestBootstrap.EnsureMsBuildEnvironmentVariable();
+        return new Frb2Project(new Project(csprojPath, null, null, new ProjectCollection()));
+    }
+
+    [Fact]
+    public void ApplyGenerateCodeSetting_TurnsOnCodeGeneration_WhenTheProjectOptsIn()
+    {
+        var project = CreateFrb2Project();
+        var glueProjectSave = new GlueProjectSave { GenerateCode = true };
+
+        Frb2CodeGenerationSync.ApplyGenerateCodeSetting(project, glueProjectSave);
+
+        Assert.True(project.IsMaintainedByGlue);
+    }
+
+    [Fact]
+    public void ApplyGenerateCodeSetting_LeavesCodeGenerationOff_WhenTheProjectDoesNotOptIn()
+    {
+        var project = CreateFrb2Project();
+        var glueProjectSave = new GlueProjectSave { GenerateCode = false };
+
+        Frb2CodeGenerationSync.ApplyGenerateCodeSetting(project, glueProjectSave);
+
+        Assert.False(project.IsMaintainedByGlue);
+    }
+
+    [Fact]
+    public void ApplyGenerateCodeSetting_LeavesCodeGenerationOff_WhenNoGlueProjectSaveIsLoadedYet()
+    {
+        // The pre-existing-project path in ProjectLoader can reach this before a GlueProjectSave is
+        // assigned - must not throw, and must not turn generation on with nothing to read a setting from.
+        var project = CreateFrb2Project();
+
+        Frb2CodeGenerationSync.ApplyGenerateCodeSetting(project, null);
+
+        Assert.False(project.IsMaintainedByGlue);
+    }
+
+    [Fact]
+    public void ApplyGenerateCodeSetting_DoesNothing_ForANonFrb2Project()
+    {
+        // FRB1 projects are mandatory-codegen and never read this setting, so opting a non-FRB2
+        // project's GlueProjectSave into GenerateCode must never flip its IsMaintainedByGlue.
+        var csprojPath = Path.Combine(_directory, "Frb1Game.csproj");
+        File.WriteAllText(csprojPath, @"<Project xmlns=""http://schemas.microsoft.com/developer/msbuild/2003"">
+  <PropertyGroup>
+    <RootNamespace>Frb1Game</RootNamespace>
+  </PropertyGroup>
+</Project>");
+        GlueTestBootstrap.EnsureMsBuildEnvironmentVariable();
+        var project = new ClassLibraryProject(new Project(csprojPath, null, null, new ProjectCollection()));
+        var glueProjectSave = new GlueProjectSave { GenerateCode = true };
+
+        Frb2CodeGenerationSync.ApplyGenerateCodeSetting(project, glueProjectSave);
+
+        Assert.True(project.IsMaintainedByGlue);
+    }
 }

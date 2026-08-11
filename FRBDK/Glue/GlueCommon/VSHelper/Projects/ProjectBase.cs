@@ -120,11 +120,12 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         }
 
         /// <summary>
-        /// Whether Glue owns this project's .csproj and generated code. False for FlatRedBall 2
-        /// projects, which read Glue's .gluj/.glsj/.glej JSON directly at runtime: Glue authors that
-        /// JSON and nothing else, so it neither generates code nor writes the .csproj back to disk.
+        /// Whether Glue owns this project's .csproj and generated code. Always true for FRB1 projects -
+        /// code generation there is mandatory. False by default for FlatRedBall 2 projects, which read
+        /// Glue's .gluj/.glsj/.glej JSON directly at runtime and so do not need generated code, but
+        /// settable per-project via <c>GlueProjectSave.GenerateCode</c> for a project that opts in.
         /// </summary>
-        public virtual bool IsMaintainedByGlue => true;
+        public bool IsMaintainedByGlue { get; set; } = true;
 
         /// <summary>
         /// Where the .gluj and the Screens/Entities JSON beside it live, relative to the project
