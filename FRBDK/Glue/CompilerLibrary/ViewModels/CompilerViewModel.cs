@@ -140,6 +140,9 @@ namespace CompilerLibrary.ViewModels
             set => Set(value);
         }
 
+        [DependsOn(nameof(IsFixedSizePreview))]
+        public bool ZoomControlsEnabled => !IsFixedSizePreview;
+
         [DependsOn(nameof(HasWindowPointer))]
         [DependsOn(nameof(IsWindowEmbedded))]
         [DependsOn(nameof(IsRunning))]

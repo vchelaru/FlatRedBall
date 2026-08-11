@@ -240,6 +240,15 @@ namespace GlueControl.Dtos
         public PlusOrMinus PlusOrMinus { get; set; }
     }
 
+    /// <summary>
+    /// Resets zoom to 100% - used when entering fixed-size preview mode so the view is a true,
+    /// unzoomed representation of the game (issue #2035).
+    /// </summary>
+    public class ResetZoomDto
+    {
+        // no members
+    }
+
     #endregion
 
     #region AddObjectDto

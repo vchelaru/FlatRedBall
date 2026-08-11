@@ -112,6 +112,13 @@ namespace OfficialPlugins.GameHost.Views
                 {
                     if (args.PropertyName == nameof(ViewModel.IsFixedSizePreview))
                     {
+                        if (ViewModel.IsFixedSizePreview)
+                        {
+                            // Fixed-size preview is meant to be a true, unzoomed representation of
+                            // the game, so any independent zoom the user had dialed in is reset.
+                            _ = CommandSender.Self.Send(new ResetZoomDto());
+                        }
+
                         SetGameToEmbeddedGameWindow();
                     }
                 };

@@ -372,6 +372,13 @@ namespace GlueControl.Editing
             PushZoomLevelToEditor();
         }
 
+        public static void ResetZoomTo100()
+        {
+            currentZoomLevelIndex = Array.IndexOf(zoomLevels, 100);
+            UpdateCameraToZoomLevel(zoomAroundCursorPosition: false);
+            PushZoomLevelToEditor();
+        }
+
 
         private static void UpdateZoomIndexToCamera()
         {

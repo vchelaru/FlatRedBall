@@ -918,6 +918,8 @@ namespace GlueControl
             }
         }
 
+        private static void HandleDto(ResetZoomDto resetZoomDto) => CameraLogic.ResetZoomTo100();
+
         #endregion
 
         #region Rename
