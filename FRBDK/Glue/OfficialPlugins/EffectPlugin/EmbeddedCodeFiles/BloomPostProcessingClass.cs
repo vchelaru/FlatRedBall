@@ -1017,6 +1017,11 @@ internal class ReplaceClassName : IPostProcess
 
         internal static void CreateRenderTarget(ref RenderTarget2D renderTarget, int width, int height, SurfaceFormat surfaceFormat, RenderTargetUsage renderTargetUsage)
         {
+            // Width/height can be 0 (or briefly negative-rounding) during window resizes - a
+            // RenderTarget2D can't have a 0 dimension, so clamp instead of crashing.
+            width = Math.Max(1, width);
+            height = Math.Max(1, height);
+
             if (renderTarget == null
                 || renderTarget.Width != width
                 || renderTarget.Height != height
