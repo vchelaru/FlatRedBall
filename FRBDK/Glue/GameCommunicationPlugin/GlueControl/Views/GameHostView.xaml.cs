@@ -146,35 +146,14 @@ namespace OfficialPlugins.GameHost.Views
             });
 
             gameHandle = handle;
-            var succeededMakingGameBorderless = await MakeGameBorderless();
 
-            if(succeededMakingGameBorderless)
-            {
-                JObject windowInfo = JObject.Parse(await _eventCallerWithResult("Runner_GetWindowInfo", ""));
-
-                // I used to have this code check if the window was at 0,0,
-                // but that doesn't seem to actually work - the loop would run 
-                // indefinitely, continually changing the position of the cursor.
-                // Now I just do it 5 times and it seems to work
-                for (int i = 0; i < 5; i++)
-                {
-                    var delay = 180;
-                    await Task.Delay(delay);
-
-                    var width = windowInfo.ContainsKey("ActualWidth") ? windowInfo.Value<int>("ActualWidth") : 0;
-                    var height = windowInfo.ContainsKey("ActualHeight") ? windowInfo.Value<int>("ActualHeight") : 0;
-
-                    _eventCaller("Runner_MoveWindow", JsonConvert.SerializeObject(new
-                    {
-                        X = 0,
-                        Y = 0,
-                        Width = width,
-                        Height = height,
-                        Repaint = true
-                    }));
-                }
-
-            }
+            // Sizing and positioning the embedded window is SetGameToEmbeddedGameWindow's job -
+            // MoveGameToHost calls ForceRefreshGameArea right after this returns. This used to follow up
+            // with its own Runner_MoveWindow loop driven by a "Runner_GetWindowInfo" request, but no
+            // plugin has ever handled that event name, and the awaiting flavor of the plugin event bus
+            // waits forever rather than failing (see PluginBase.ReactToPluginEventWithReturn), so
+            // reaching it hangs EmbedHwnd and IsWindowEmbedded is never set.
+            await MakeGameBorderless();
         }
 
         private async Task<bool> MakeGameBorderless()
