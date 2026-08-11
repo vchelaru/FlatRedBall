@@ -148,6 +148,7 @@
     <Compile Include="GlueControl\Views\AirspacePopup.cs" />
     <Compile Include="GlueControl\Views\BottomStatusBar.xaml.cs" />
     <Compile Include="GlueControl\Views\EditingToolsView.xaml.cs" />
+    <Compile Include="GlueControl\Views\FixedSizePreviewCalculator.cs" />
     <Compile Include="GlueControl\Views\GameHostView.xaml.cs" />
     <Compile Include="GlueControl\Views\GlueViewSettings.xaml.cs" />
     <Compile Include="GlueControl\Views\ProfilingControl.xaml.cs" />

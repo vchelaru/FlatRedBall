@@ -21,5 +21,20 @@
             Margin="4"
             VerticalAlignment="Center"
             Text="{Binding ResolutionDisplayText, FallbackValue=800x600}" />
+        <ToggleButton
+            Height="20"
+            Margin="4,0,0,0"
+            IsChecked="{Binding IsFixedSizePreview}"
+            Content="{materialDesign:PackIcon AspectRatio}"
+            Style="{DynamicResource IconToggleButton}">
+            <ToggleButton.ToolTip>
+                <ToolTip>
+                    <StackPanel>
+                        <TextBlock FontWeight="Bold" Text="Fixed-Size Preview" />
+                        <TextBlock Text="Locks the preview to the project's target resolution, scaled to fit and letterboxed." />
+                    </StackPanel>
+                </ToolTip>
+            </ToggleButton.ToolTip>
+        </ToggleButton>
     </StackPanel>
 </UserControl>

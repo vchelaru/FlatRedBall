@@ -134,6 +134,12 @@ namespace CompilerLibrary.ViewModels
             set => Set(value);
         }
 
+        public bool IsFixedSizePreview
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         [DependsOn(nameof(HasWindowPointer))]
         [DependsOn(nameof(IsWindowEmbedded))]
         [DependsOn(nameof(IsRunning))]

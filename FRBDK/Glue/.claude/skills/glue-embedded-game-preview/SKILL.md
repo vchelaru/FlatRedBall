@@ -1,0 +1,52 @@
+---
+name: glue-embedded-game-preview
+description: How the Game tab's live preview embeds and resizes the real running game window, and its zoom/resolution status bar. Triggers: GameHostView, WinformsHost, Runner_MoveWindow, BottomStatusBar, ZoomControl, CurrentDisplayInfoDto, SetParent game window.
+version: 1.0.0
+---
+
+# Glue Embedded Game Preview
+
+The "Game" tab does not render the game into a WPF surface. Glue launches the game as a real,
+separate process and reparents its native window (`SetParent`, `GameHostView.xaml.cs::EmbedHwnd`)
+into a WinForms `Panel` hosted by a `WindowsFormsHost` (`GameHostView.xaml` → `WinformsHost`).
+
+## Resize flow
+
+`WinformsHost_SizeChanged` → `SetGameToEmbeddedGameWindow` sends a `Runner_MoveWindow` command over
+the existing `CommandSender` socket (see `glue-live-game-testing` for that wire protocol), telling the
+*real game process* to resize its actual OS window to fill the panel exactly. There's no visual
+scaling on Glue's side — every resize is the game window itself changing size, and whatever the
+game's own `AspectRatioBehavior`/`ResizeBehavior` (see below) does with that size happens for real,
+in-process, same as it would for an end user.
+
+`BackgroundGrid` (dark `#555555`, `GameHostView.xaml`) sits behind `MainGrid`/`WinformsHost` in the
+same grid cell. `MainGrid` has no background, so shrinking `WinformsHost` below the panel's full size
+(instead of stretching it) reveals `BackgroundGrid` as letterbox bars — no new visual needed.
+
+## Zoom / resolution status bar
+
+`BottomStatusBar.xaml` (`ZoomControl` + resolution `TextBlock`) is fed by
+`CurrentDisplayInfoDto`, pushed from `GlueControl.Editing.CameraLogic` (`Embedded/Editing/CameraLogic.cs`,
+game process only — `PushZoomLevelToEditor`) and applied on the Glue side in
+`CommandReceiving/CommandReceiver.cs::HandleDto(CurrentDisplayInfoDto)`, which writes
+`CompilerViewModel.CurrentZoomLevelDisplay`/`ResolutionDisplayText`. Zoom itself (`ChangeZoomDto`,
+`+`/`-`) is a separate concept from window size — it scales `Camera.Main.OrthogonalHeight` inside the
+game and is independent of what size the embedded OS window actually is. None of this zoom state is
+persisted to the project file; it resets every Glue launch.
+
+## Landmine — `GameCommunicationPlugin.csproj` has no implicit globbing
+
+`<EnableDefaultCompileItems>false</EnableDefaultCompileItems>` means a new `.cs` file under this
+project (e.g. adding a class next to `GameHostView.xaml.cs`) silently compiles into nothing until
+it's added to the `<Compile Include="GlueControl\Views\...` `<ItemGroup>` by hand - no error, the
+type just doesn't exist for anything that references the assembly (`CS0103` in a consumer, not in
+this project).
+
+## Project's target resolution vs. live preview size
+
+The *live preview* window size above is unrelated to the project's configured target resolution/aspect
+ratio, which lives in `DisplaySettingsViewModel`/`GlueCommon/SaveClasses/DisplaySettings.cs`
+(`Glue/Plugins/EmbeddedPlugins/CameraPlugin/`) — edited via the Camera Settings panel
+(`CameraSettingsControl.xaml`), and only takes effect through codegen (`CameraSetupCodeGenerator.cs`)
+for what a *built* game does at startup/on resize. The live preview's `WinformsHost` panel is not
+driven by this in any way today — it always stretches to fill the tab.

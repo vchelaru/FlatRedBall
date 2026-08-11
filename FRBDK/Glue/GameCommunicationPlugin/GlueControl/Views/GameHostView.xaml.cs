@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using GameCommunicationPlugin.GlueControl.CommandSending;
 using GameCommunicationPlugin.GlueControl.Dtos;
+using GameCommunicationPlugin.GlueControl.Views;
 using System;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -106,6 +107,14 @@ namespace OfficialPlugins.GameHost.Views
                 //    //    //    break;
                 //    //}
                 //};
+
+                ViewModel.PropertyChanged += (_, args) =>
+                {
+                    if (args.PropertyName == nameof(ViewModel.IsFixedSizePreview))
+                    {
+                        SetGameToEmbeddedGameWindow();
+                    }
+                };
             }
         }
 
@@ -260,8 +269,35 @@ namespace OfficialPlugins.GameHost.Views
                 gameHandle != IntPtr.Zero;
             if (shouldMove)
             {
-                var newWidth = (int)(WinformsHost.ActualWidth* WindowsScaleFactor);
-                var newHeight = (int)(WinformsHost.ActualHeight * WindowsScaleFactor);
+                // MainGrid always fills its cell (Stretch, no explicit size), so it's the stable
+                // "available space" to measure against - unlike WinformsHost, whose own size we're
+                // about to set explicitly below when in fixed-size preview mode.
+                var panelWidth = MainGrid.ActualWidth;
+                var panelHeight = MainGrid.ActualHeight;
+
+                double embeddedWidth = panelWidth;
+                double embeddedHeight = panelHeight;
+
+                var displaySettings = ViewModel.IsFixedSizePreview
+                    ? GlueState.Self.CurrentGlueProject?.DisplaySettings
+                    : null;
+
+                if (displaySettings != null)
+                {
+                    var size = FixedSizePreviewCalculator.GetEmbeddedWindowSize(
+                        panelWidth, panelHeight, displaySettings.ResolutionWidth, displaySettings.ResolutionHeight);
+                    embeddedWidth = size.Width;
+                    embeddedHeight = size.Height;
+                }
+
+                var isLetterboxed = displaySettings != null;
+                WinformsHost.HorizontalAlignment = isLetterboxed ? HorizontalAlignment.Center : HorizontalAlignment.Stretch;
+                WinformsHost.VerticalAlignment = isLetterboxed ? VerticalAlignment.Center : VerticalAlignment.Stretch;
+                WinformsHost.Width = isLetterboxed ? embeddedWidth : double.NaN;
+                WinformsHost.Height = isLetterboxed ? embeddedHeight : double.NaN;
+
+                var newWidth = (int)(embeddedWidth * WindowsScaleFactor);
+                var newHeight = (int)(embeddedHeight * WindowsScaleFactor);
 
                 _eventCaller("Runner_MoveWindow", JsonConvert.SerializeObject(new
                 {
@@ -272,6 +308,11 @@ namespace OfficialPlugins.GameHost.Views
                     Repaint = true
                 }));
             }
+        }
+
+        private void MainGrid_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            SetGameToEmbeddedGameWindow();
         }
 
         private void WhileRunningView_RestartGameCurrentScreenClicked(object sender, EventArgs e)
