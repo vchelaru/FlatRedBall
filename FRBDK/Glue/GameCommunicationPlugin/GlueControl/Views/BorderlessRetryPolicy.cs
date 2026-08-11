@@ -8,8 +8,8 @@ namespace GameCommunicationPlugin.GlueControl.Views
     /// in the Game tab (issue #2048). Runner_GameStarted fires as soon as the game process has a
     /// window handle, but the DTO is only actually handled once the game's Initialize has gotten as
     /// far as constructing GlueControlManager - until then the socket is connected yet
-    /// GlueControlManager.Self is null, so the receive loop answers with an empty payload and the
-    /// command is silently dropped. Retrying past that gap is the whole point of this type.
+    /// GlueControlManager.Self is null, so the receive loop reports itself as not ready and the
+    /// command is dropped. Retrying past that gap is the whole point of this type.
     /// </summary>
     public static class BorderlessRetryPolicy
     {

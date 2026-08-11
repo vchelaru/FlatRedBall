@@ -51,6 +51,18 @@ namespace GameCommunicationPlugin.GlueControl.CommandSending
 
         public static CommandSender Self { get; private set; }
 
+        GameJsonCommunicationPlugin.Common.GameConnectionManager connectionManager;
+        /// <summary>
+        /// The transport this sender writes to. Defaults to the process-wide instance the plugin creates;
+        /// assignable so a test can point one sender at its own loopback connection instead of racing the
+        /// singleton.
+        /// </summary>
+        internal GameJsonCommunicationPlugin.Common.GameConnectionManager ConnectionManager
+        {
+            get => connectionManager ?? GameJsonCommunicationPlugin.Common.GameConnectionManager.Self;
+            set => connectionManager = value;
+        }
+
 
         #endregion
 
@@ -58,7 +70,7 @@ namespace GameCommunicationPlugin.GlueControl.CommandSending
         {
             Self = new CommandSender();
         }
-        private CommandSender() { }
+        internal CommandSender() { }
 
         #region General Send
 
@@ -83,6 +95,16 @@ namespace GameCommunicationPlugin.GlueControl.CommandSending
             if(sendResponse.Succeeded == false)
             {
                 toReturn.SetFrom(sendResponse);
+            }
+            // An empty reply is the game's "handled it, nothing to send back", which is a fine answer for a
+            // fire-and-forget command but not for a caller that asked for typed data. Deserializing it
+            // yields null without throwing, so without this the caller gets Succeeded = true, Data = null
+            // and has to invent its own meaning for that.
+            else if(string.IsNullOrWhiteSpace(responseString))
+            {
+                toReturn.Succeeded = false;
+                toReturn.Message = $"The game did not send back a {typeof(T).Name}, so the command was not carried out";
+                toReturn.Data = default(T);
             }
             else
             {
@@ -212,7 +234,7 @@ namespace GameCommunicationPlugin.GlueControl.CommandSending
                 var toReturn = new global::ToolsUtilities.GeneralResponse<string>();
                 try
                 {
-                    var gameConnectionManager = GameJsonCommunicationPlugin.Common.GameConnectionManager.Self;
+                    var gameConnectionManager = ConnectionManager;
                     if(gameConnectionManager != null)
                     {
                         var response = await gameConnectionManager.SendItemWithResponse(whatToSend);
@@ -231,7 +253,7 @@ namespace GameCommunicationPlugin.GlueControl.CommandSending
             }
             else
             {
-                await GameJsonCommunicationPlugin.Common.GameConnectionManager.Self.SendItem(whatToSend);
+                await ConnectionManager.SendItem(whatToSend);
                 // I guess we return success?
                 return new global::ToolsUtilities.GeneralResponse<string>() { Succeeded = true };
             }

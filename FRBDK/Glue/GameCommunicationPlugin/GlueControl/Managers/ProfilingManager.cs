@@ -14,8 +14,24 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 {
     public class ProfilingManager : Singleton<ProfilingManager>
     {
-        ProfilingControlViewModel ProfilingViewModel;
+        /// <summary>
+        /// Assignable rather than set only by <see cref="Initialize"/>, which also starts the polling
+        /// timer - a test wants the refresh logic without a WPF dispatcher running.
+        /// </summary>
+        internal ProfilingControlViewModel ProfilingViewModel { get; set; }
         CompilerViewModel CompilerViewModel;
+
+        CommandSending.CommandSender commandSender;
+        /// <summary>
+        /// Defaults to the process-wide sender; assignable so a test can point this manager at its own
+        /// fake game instead of mutating the singleton.
+        /// </summary>
+        internal CommandSending.CommandSender CommandSender
+        {
+            get => commandSender ?? CommandSending.CommandSender.Self;
+            set => commandSender = value;
+        }
+
         public void Initialize(ProfilingControlViewModel profilingViewModel, CompilerViewModel compilerViewModel)
         {
             ProfilingViewModel = profilingViewModel;
@@ -42,20 +58,20 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             dto.IsTimestepDisabled = ProfilingViewModel.IsDisableFixedTimestepChecked;
 
             GeneralResponse<ProfilingDataDto> response;
-            if(CommandSending.CommandSender.Self.GlueViewSettingsViewModel.EnableLiveEdit == false)
+            if(CommandSender.GlueViewSettingsViewModel.EnableLiveEdit == false)
             {
                 response = GeneralResponse<ProfilingDataDto>.UnsuccessfulWith("Live edit is disabled - enable it from the Editor Settings tab to receive profiling information from the game");
             }
 
             else
             {
-                response = await CommandSending.CommandSender.Self.Send<Dtos.ProfilingDataDto>(dto, CommandSending.SendImportance.IfNotBusy );
+                response = await CommandSender.Send<Dtos.ProfilingDataDto>(dto, CommandSending.SendImportance.IfNotBusy );
             }
 
             if (response.Succeeded)
             {
-                // for some reason the data can be null here. We don't want to treat this as a failure, so let's
-                // handle a null:
+                // Succeeded no longer implies data - a command the game dropped is reported as a failure
+                // now - but a handler can still legitimately answer with a JSON null.
                 if(response.Data != null)
                 {
                     ProfilingViewModel.SummaryText = response.Data.SummaryData;

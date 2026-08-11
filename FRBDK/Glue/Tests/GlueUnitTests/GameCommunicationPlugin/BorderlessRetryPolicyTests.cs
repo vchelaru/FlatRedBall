@@ -9,9 +9,9 @@ namespace GlueUnitTests.GameCommunicationPlugin;
 
 /// <summary>
 /// The retry budget for the SetBorderlessDto sent when the game is embedded in the Game tab
-/// (issue #2048). The game answers with an empty payload - which reads as failure - for the window
-/// between its socket connecting and GlueControlManager being constructed, so the budget has to
-/// outlast that gap or the game keeps its window frame for the rest of the session.
+/// (issue #2048). The game reports itself as not ready for the window between its socket connecting
+/// and GlueControlManager being constructed, so the budget has to outlast that gap or the game keeps
+/// its window frame for the rest of the session.
 /// </summary>
 public class BorderlessRetryPolicyTests
 {
