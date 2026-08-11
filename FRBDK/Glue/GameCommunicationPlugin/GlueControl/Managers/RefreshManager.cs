@@ -505,11 +505,11 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
                 var response = await CommandSender.Self.Send<AddObjectDtoListResponse>(list);
 
-                if (response.Succeeded == false ||
-                    response.Data?.Data == null ||
-                    response.Data.Data.Any(item => item.CreationResponse.Succeeded == false))
+                var restartReason = GetAddObjectRestartReason(response);
+
+                if (restartReason != null)
                 {
-                    CreateStopAndRestartTask("Restarting because the add object group failed");
+                    CreateStopAndRestartTask(restartReason);
                 }
                 else
                 {
@@ -524,6 +524,33 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Why adding this group of objects live has to fall back to a full stop/rebuild/relaunch, or null
+        /// if it does not. A restart is the most expensive thing this class can do, so the reason it
+        /// happened has to reach the user - "the game never answered" and "the game refused one of the
+        /// objects" are very different problems.
+        /// </summary>
+        internal static string GetAddObjectRestartReason(ToolsUtilities.GeneralResponse<AddObjectDtoListResponse> response)
+        {
+            if (response?.Succeeded != true)
+            {
+                return "Restarting because the game did not carry out the add object group: " +
+                    (string.IsNullOrEmpty(response?.Message) ? "no response" : response.Message);
+            }
+
+            if (response.Data?.Data == null)
+            {
+                return "Restarting because the add object group failed";
+            }
+
+            if (response.Data.Data.Any(item => item.CreationResponse.Succeeded == false))
+            {
+                return "Restarting because the add object group failed";
+            }
+
+            return null;
         }
 
         private AddObjectDto CreateAddObjectDtoFor(NamedObjectSave newNamedObject)

@@ -184,12 +184,12 @@ namespace OfficialPlugins.GameHost.Views
             var succeeded = await BorderlessRetryPolicy.TryRepeatedlyAsync(async () =>
             {
                 var sendResponse = await CommandSender.Self.Send(dto);
-                var response = sendResponse.Succeeded ? sendResponse.Data : string.Empty;
 
-                // An empty response means the game got the command but had nothing to handle it
-                // with yet (GlueControlManager.Self still null), so this is a "try again", not a
-                // "the game refused".
-                return !string.IsNullOrWhiteSpace(response);
+                // A game that isn't ready to dispatch the command yet (GlueControlManager.Self still
+                // null during Game1.Initialize) reports as unsuccessful, so this is a "try again". It
+                // used to test the response string for content instead, which happened to retry for the
+                // right reason but reads as a success check for a command whose handler returns nothing.
+                return sendResponse.Succeeded;
             });
 
             if (!succeeded)

@@ -18,6 +18,15 @@ namespace GlueCommunication
     {
         public static bool CanUseJsonManager = false;
 
+        /// <summary>
+        /// Replied when a command arrives before GlueControlManager exists, so Glue can tell a dropped
+        /// command apart from a handled one. Must stay identical to
+        /// GameJsonCommunicationPlugin.Common.GameConnectionManager.NotReadyPayload on the Glue side -
+        /// this file is an embedded resource that only compiles inside a game project, so the two cannot
+        /// share a constant. GameConnectionResponseTests pins that they agree.
+        /// </summary>
+        public const string NotReadyPayload = "__GlueControlNotReady__";
+
         #region private
         private Object _lock = new Object();
         private IPAddress _addr;
@@ -134,8 +143,15 @@ namespace GlueCommunication
 
                         if(packet != null)
                         {
+                            var glueControlManager = GlueControl.GlueControlManager.Self;
 
-                            var returnValue = await GlueControl.GlueControlManager.Self?.ProcessMessage(packet.Payload);
+                            // Sockets connect before Game1.Initialize constructs GlueControlManager, so
+                            // there is a window where a command arrives with nothing able to dispatch it.
+                            // Saying so explicitly is the only way Glue can tell that apart from the empty
+                            // reply a successfully handled void command sends back.
+                            var returnValue = glueControlManager != null
+                                ? await glueControlManager.ProcessMessage(packet.Payload)
+                                : NotReadyPayload;
 
                             var sendBytes = returnValue != null
                                 ? Encoding.ASCII.GetBytes(returnValue)

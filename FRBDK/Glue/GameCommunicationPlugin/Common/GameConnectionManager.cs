@@ -115,6 +115,20 @@ namespace GameJsonCommunicationPlugin.Common
         public double TimeoutInSeconds { get; set; } = 10;
         #endregion
 
+        /// <summary>
+        /// What the game replies with when its socket is up but it cannot dispatch the command yet -
+        /// GlueControlManager is constructed in Game1.Initialize, well after GameConnectionManager
+        /// connects. Without an explicit marker the game replies with an empty body, which is also what a
+        /// successfully handled void command returns, so a dropped command reads as success.
+        /// </summary>
+        /// <remarks>
+        /// The game-side copy of this class is an embedded resource (see
+        /// <c>GlueControl\Embedded\GameConnectionManager.cs</c>), compiled only inside a game project, so
+        /// it repeats this literal rather than sharing the constant. GameConnectionResponseTests pins that
+        /// the two agree.
+        /// </remarks>
+        public const string NotReadyPayload = "__GlueControlNotReady__";
+
         public static GameConnectionManager Self { get; set; }
 
         public GameConnectionManager(Action<string, string> eventCaller)
@@ -556,22 +570,43 @@ namespace GameJsonCommunicationPlugin.Common
             }
         }
 
+        /// <summary>
+        /// Sends a packet and classifies what comes back. The classification is the whole point: an empty
+        /// reply is the game's normal "handled it, nothing to send back" answer, so it can only be told
+        /// apart from a dropped command if the drop says so explicitly.
+        /// </summary>
         public async Task<GeneralResponse<string>> SendItemWithResponse(Packet item)
         {
             var responseToReturn = new GeneralResponse<string>();
 
-            if (IsConnected)
-            {
-                var responseString = await SendItemImmediately(item);
-
-                responseToReturn.Succeeded = true;
-                responseToReturn.Data = responseString;
-            }
-            else
+            if (!IsConnected)
             {
                 responseToReturn.Succeeded = false;
                 responseToReturn.Message = "Not connected";
+                return responseToReturn;
             }
+
+            var responseString = await SendItemImmediately(item);
+
+            if (responseString == null)
+            {
+                // The game never answered - it died mid-request, or the read timed out and tore the
+                // connection down. Either way the command was not carried out.
+                responseToReturn.Succeeded = false;
+                responseToReturn.Message = $"No response received from the game for '{item?.PacketType}'";
+            }
+            else if (responseString == NotReadyPayload)
+            {
+                responseToReturn.Succeeded = false;
+                responseToReturn.Message =
+                    $"The game is not ready to handle commands yet, so '{item?.PacketType}' was dropped";
+            }
+            else
+            {
+                responseToReturn.Succeeded = true;
+                responseToReturn.Data = responseString;
+            }
+
             return responseToReturn;
         }
 

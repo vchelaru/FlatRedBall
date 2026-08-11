@@ -163,6 +163,12 @@ internal sealed class LiveGameProcess : IDisposable
     }
 
     /// <summary>
+    /// Sends any DTO over the real CommandSender, for tests that care about what the running game answers
+    /// rather than about a particular editor gesture.
+    /// </summary>
+    public Task<GeneralResponse<string>> Send(object dto) => CommandSender.Self.Send(dto);
+
+    /// <summary>
     /// Sends the same SelectObjectDto Glue sends when the user clicks an entity in the tree, over the real
     /// CommandSender/wire protocol - see RefreshManager.PushGlueSelectionToGame for the production version
     /// of this DTO shape.

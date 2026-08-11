@@ -809,24 +809,14 @@ namespace GameCommunicationPlugin.GlueControl
 
             var response = await CommandSender.Self.Send<Dtos.GeneralCommandResponse>(dto, SendImportance.RetryOnFailure);
 
-            if (response?.Succeeded != true)
+            var failureMessage = GetSetEditModeFailureMessage(
+                response, CompilerViewModel.PlayOrEdit, CommandSender.Self.IsConnected);
+
+            if (failureMessage != null)
             {
-                var message = string.Format($"Failed to set game/edit mode to {CompilerViewModel.PlayOrEdit}\n");
-                if (response == null)
-                {
-                    message += "Game sent back no response";
-                }
-                else
-                {
-                    message += $"Game sent back the following message: {response.Message}";
-                }
-                PluginManager.CallPluginMethod("Compiler Plugin", "HandleOutput", message);
-                
-                GlueCommands.Self.PrintOutput(message);
-            }
-            else if (CommandSender.Self.IsConnected == false)
-            {
-                var message = $"Failed to set game/edit mode to {CompilerViewModel.PlayOrEdit} because the game is not connected.";
+                PluginManager.CallPluginMethod("Compiler Plugin", "HandleOutput", failureMessage);
+
+                GlueCommands.Self.PrintOutput(failureMessage);
             }
             else if (isInEditMode)
             {
@@ -901,6 +891,35 @@ namespace GameCommunicationPlugin.GlueControl
             }
                     
             await CommandSender.Self.Send(setCameraAspectRatioDto);
+        }
+
+        /// <summary>
+        /// What to print when switching the game between play and edit mode did not take effect, or null
+        /// if it did. Pulled out of ReactToPlayOrEditSet so the rule can be pinned by tests - the method
+        /// itself needs a running game, a loaded project and a live plugin host.
+        /// </summary>
+        internal static string GetSetEditModeFailureMessage(
+            ToolsUtilities.GeneralResponse<Dtos.GeneralCommandResponse> response,
+            PlayOrEdit playOrEdit,
+            bool isConnected)
+        {
+            if (response?.Succeeded != true)
+            {
+                var message = $"Failed to set game/edit mode to {playOrEdit}\n";
+
+                message += response == null
+                    ? "Game sent back no response"
+                    : $"Game sent back the following message: {response.Message}";
+
+                return message;
+            }
+
+            if (!isConnected)
+            {
+                return $"Failed to set game/edit mode to {playOrEdit} because the game is not connected.";
+            }
+
+            return null;
         }
 
         private async Task HandlePortOrGenerateCheckedChanged(string propertyName)
