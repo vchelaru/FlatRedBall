@@ -14,6 +14,7 @@
             <GlueControls:ZoomControl
                 ButtonVisibility="{Binding EditingToolsVisibility}"
                 CurrentZoomLevelDisplay="{Binding CurrentZoomLevelDisplay}"
+                IsEnabled="{Binding ZoomControlsEnabled}"
                 ZoomMinusClick="ZoomMinusClicked"
                 ZoomPlusClick="ZoomPlusClicked" />
         </Grid>
@@ -21,5 +22,20 @@
             Margin="4"
             VerticalAlignment="Center"
             Text="{Binding ResolutionDisplayText, FallbackValue=800x600}" />
+        <ToggleButton
+            Height="20"
+            Margin="4,0,0,0"
+            IsChecked="{Binding IsFixedSizePreview}"
+            Content="{materialDesign:PackIcon AspectRatio}"
+            Style="{DynamicResource IconToggleButton}">
+            <ToggleButton.ToolTip>
+                <ToolTip>
+                    <StackPanel>
+                        <TextBlock FontWeight="Bold" Text="Fixed-Size Preview" />
+                        <TextBlock Text="Locks the preview to the project's target resolution, scaled to fit and letterboxed. Zoom is locked to 100% for a true representation." />
+                    </StackPanel>
+                </ToolTip>
+            </ToggleButton.ToolTip>
+        </ToggleButton>
     </StackPanel>
 </UserControl>

@@ -1230,6 +1230,11 @@ public class PluginManager : PluginManagerBase
             plugin.ScaleGumChanged(),
             plugin => plugin.ScaleGumChanged != null);
 
+    internal static void ReactToScaleChanged() =>
+        CallMethodOnPlugin(plugin =>
+            plugin.ScaleChanged(),
+            plugin => plugin.ScaleChanged != null);
+
     public static async Task<NamedObjectSave> ReactToCreateCollisionRelationshipsBetween(NamedObjectSave firstNos, NamedObjectSave secondNos)
     {
         NamedObjectSave nos = null;

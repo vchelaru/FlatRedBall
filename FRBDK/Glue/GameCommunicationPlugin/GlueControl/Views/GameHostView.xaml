@@ -205,7 +205,8 @@
             <Grid
                 x:Name="MainGrid"
                 Grid.Column="1"
-                Visibility="{Binding WhileRunningEmbeddedVisibility}">
+                Visibility="{Binding WhileRunningEmbeddedVisibility}"
+                SizeChanged="MainGrid_SizeChanged">
                 <WindowsFormsHost
                     x:Name="WinformsHost"
                     IsHitTestVisible="False"

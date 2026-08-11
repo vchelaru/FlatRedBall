@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using GameCommunicationPlugin.GlueControl.CommandSending;
 using GameCommunicationPlugin.GlueControl.Dtos;
+using GameCommunicationPlugin.GlueControl.Views;
 using System;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -106,6 +107,15 @@ namespace OfficialPlugins.GameHost.Views
                 //    //    //    break;
                 //    //}
                 //};
+
+                ViewModel.PropertyChanged += (_, args) =>
+                {
+                    if (args.PropertyName == nameof(ViewModel.IsFixedSizePreview))
+                    {
+                        UpdateFixedSizePreviewLock();
+                        SetGameToEmbeddedGameWindow();
+                    }
+                };
             }
         }
 
@@ -251,27 +261,98 @@ namespace OfficialPlugins.GameHost.Views
             }
         }
 
+        private bool IsGameEmbeddedAndRunning =>
+            ViewModel.IsRunning &&
+            ViewModel.IsGenerateGlueControlManagerInGame1Checked &&
+            ViewModel.DidRunnerStartProcess &&
+            gameHandle != IntPtr.Zero;
+
         public void SetGameToEmbeddedGameWindow()
         {
-            var shouldMove =
-                ViewModel.IsRunning &&
-                ViewModel.IsGenerateGlueControlManagerInGame1Checked &&
-                ViewModel.DidRunnerStartProcess &&
-                gameHandle != IntPtr.Zero;
-            if (shouldMove)
+            if (IsGameEmbeddedAndRunning)
             {
-                var newWidth = (int)(WinformsHost.ActualWidth* WindowsScaleFactor);
-                var newHeight = (int)(WinformsHost.ActualHeight * WindowsScaleFactor);
+                // WinformsHost always fills MainGrid (Stretch, no explicit size) - even in
+                // fixed-size preview mode. Letterboxing is achieved by moving/sizing the real
+                // embedded game window smaller than winformsPanel via X/Y/Width/Height below,
+                // not by resizing/centering winformsPanel or WinformsHost themselves.
+                //
+                // This matters beyond layout: winformsPanel is the game window's real Win32
+                // *parent*, and MoveWindow only generates WM_MOVE/position-changed notifications
+                // for a window whose position *relative to its own immediate parent* changes.
+                // Centering used to be done by moving winformsPanel/WinformsHost instead (the
+                // ancestor) while leaving the game window pinned at (0,0) within it - so the game
+                // window's own relative position never changed, it never got a native move
+                // notification, and MonoGame/SDL's cached window position (used to translate the
+                // cursor's absolute screen position into client-relative mouse coordinates) went
+                // stale by exactly the centering offset. That showed up as rectangle-select and
+                // zoom-around-cursor both being offset by the letterbox margin (issue #2035).
+                var panelWidth = MainGrid.ActualWidth;
+                var panelHeight = MainGrid.ActualHeight;
+
+                double embeddedWidth = panelWidth;
+                double embeddedHeight = panelHeight;
+
+                var displaySettings = ViewModel.IsFixedSizePreview
+                    ? GlueState.Self.CurrentGlueProject?.DisplaySettings
+                    : null;
+
+                if (displaySettings != null)
+                {
+                    var effectiveTarget = FixedSizePreviewCalculator.GetEffectiveTargetResolution(
+                        displaySettings.ResolutionWidth, displaySettings.ResolutionHeight, displaySettings.Scale);
+
+                    var size = FixedSizePreviewCalculator.GetEmbeddedWindowSize(
+                        panelWidth, panelHeight, effectiveTarget.Width, effectiveTarget.Height);
+                    embeddedWidth = size.Width;
+                    embeddedHeight = size.Height;
+                }
+
+                var offset = FixedSizePreviewCalculator.GetEmbeddedWindowOffset(
+                    panelWidth, panelHeight, (int)embeddedWidth, (int)embeddedHeight);
+
+                var newX = (int)(offset.X * WindowsScaleFactor);
+                var newY = (int)(offset.Y * WindowsScaleFactor);
+                var newWidth = (int)(embeddedWidth * WindowsScaleFactor);
+                var newHeight = (int)(embeddedHeight * WindowsScaleFactor);
 
                 _eventCaller("Runner_MoveWindow", JsonConvert.SerializeObject(new
                 {
-                    X = 0,
-                    Y = 0,
+                    X = newX,
+                    Y = newY,
                     Width = newWidth,
                     Height = newHeight,
                     Repaint = true
                 }));
             }
+        }
+
+        /// <summary>
+        /// Locks (or unlocks) the game's camera to the project's design resolution while
+        /// fixed-size preview is on, so it's a true representation of the game rather than an
+        /// independently-zoomable view (issue #2035). Scale doesn't factor in here - only the
+        /// window's actual pixel size (<see cref="SetGameToEmbeddedGameWindow"/>) reflects Scale;
+        /// the locked camera always shows exactly ResolutionWidth/Height of world regardless of
+        /// window size, same as a real launched build.
+        /// </summary>
+        public void UpdateFixedSizePreviewLock()
+        {
+            if (IsGameEmbeddedAndRunning)
+            {
+                var displaySettings = ViewModel.IsFixedSizePreview
+                    ? GlueState.Self.CurrentGlueProject?.DisplaySettings
+                    : null;
+
+                _ = CommandSender.Self.Send(new SetFixedSizePreviewLockDto
+                {
+                    IsLocked = displaySettings != null,
+                    ResolutionHeight = displaySettings?.ResolutionHeight ?? 0
+                });
+            }
+        }
+
+        private void MainGrid_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            SetGameToEmbeddedGameWindow();
         }
 
         private void WhileRunningView_RestartGameCurrentScreenClicked(object sender, EventArgs e)

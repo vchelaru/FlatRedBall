@@ -202,6 +202,13 @@ namespace GameCommunicationPlugin.GlueControl
             this.ReactToStateCategoryExcludedVariablesChanged += _refreshManager.HandleStateCategoryExcludedVariablesChanged;
             //this.ReactToMainWindowMoved += gameHostView.ReactToMainWindowMoved;
             this.ReactToMainWindowResizeEnd += gameHostView.ReactToMainWindowResizeEnd;
+            // Keeps the embedded fixed-size preview in sync when Display Settings' Resolution/Scale
+            // change while the game is running - otherwise the preview only picks up the new size
+            // on the next resize/restart (issue #2035).
+            this.ResolutionChanged += gameHostView.SetGameToEmbeddedGameWindow;
+            this.ScaleChanged += gameHostView.SetGameToEmbeddedGameWindow;
+            // Resolution (not Scale) also changes what the fixed-size camera lock targets.
+            this.ResolutionChanged += gameHostView.UpdateFixedSizePreviewLock;
             this.TryHandleTreeNodeDoubleClicked += _refreshManager.HandleTreeNodeDoubleClicked;
             this.GrabbedTreeNodeChanged += HandleGrabbedTreeNodeChanged;
 

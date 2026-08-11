@@ -106,6 +106,11 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
                 {
                    PluginManager.ReactToScaleGumChanged();
                 }
+
+                if(propertyName == nameof(viewModel.Scale))
+                {
+                   PluginManager.ReactToScaleChanged();
+                }
             }
         } 
 

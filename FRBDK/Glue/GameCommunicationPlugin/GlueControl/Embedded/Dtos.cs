@@ -240,6 +240,17 @@ namespace GlueControl.Dtos
         public PlusOrMinus PlusOrMinus { get; set; }
     }
 
+    /// <summary>
+    /// Locks (or unlocks) the camera to an exact OrthogonalHeight and disables independent
+    /// zoom input (mouse wheel, hotkeys) - used by fixed-size preview mode so the view is a
+    /// true representation of the game rather than an independently-zoomable one (issue #2035).
+    /// </summary>
+    public class SetFixedSizePreviewLockDto
+    {
+        public bool IsLocked { get; set; }
+        public float ResolutionHeight { get; set; }
+    }
+
     #endregion
 
     #region AddObjectDto

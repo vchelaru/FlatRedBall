@@ -918,6 +918,9 @@ namespace GlueControl
             }
         }
 
+        private static void HandleDto(SetFixedSizePreviewLockDto dto) =>
+            CameraLogic.SetFixedSizePreviewLock(dto.IsLocked, dto.ResolutionHeight);
+
         #endregion
 
         #region Rename
