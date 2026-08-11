@@ -250,6 +250,14 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
         public float ResolutionHeight { get; set; }
     }
 
+    /// <summary>
+    /// Snaps the camera's position back to the origin (0,0) and zoom back to the game's default - issue #2044.
+    /// </summary>
+    public class RecenterCameraDto
+    {
+        // no members
+    }
+
     #endregion
 
     #region AddObjectDto

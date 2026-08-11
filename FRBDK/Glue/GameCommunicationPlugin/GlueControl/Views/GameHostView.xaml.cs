@@ -457,6 +457,12 @@ namespace OfficialPlugins.GameHost.Views
             await CommandSender.Self.Send(dto);
         }
 
+        private async void BottomStatusBar_RecenterCameraClick()
+        {
+            var dto = new RecenterCameraDto();
+            await CommandSender.Self.Send(dto);
+        }
+
         private void ToolsSidePanel_Drop(object sender, DragEventArgs e)
         {
             var draggedNode = GlueState.Self.DraggedTreeNode;

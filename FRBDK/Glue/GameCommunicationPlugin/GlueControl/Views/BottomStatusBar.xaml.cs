@@ -20,6 +20,7 @@ namespace GameCommunicationPlugin.GlueControl.Views
     {
         public event Action ZoomMinusClick;
         public event Action ZoomPlusClick;
+        public event Action RecenterCameraClick;
         public BottomStatusBar()
         {
             InitializeComponent();
@@ -33,6 +34,11 @@ namespace GameCommunicationPlugin.GlueControl.Views
         private void ZoomPlusClicked()
         {
             ZoomPlusClick?.Invoke();
+        }
+
+        private void RecenterCameraClicked(object sender, RoutedEventArgs e)
+        {
+            RecenterCameraClick?.Invoke();
         }
     }
 }

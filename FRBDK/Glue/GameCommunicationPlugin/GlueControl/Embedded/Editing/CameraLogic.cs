@@ -296,7 +296,7 @@ namespace GlueControl.Editing
                 camera.Y += yMovementRatio * MaxVelocity * TimeManager.SecondDifference;
             }
         }
-        public static void UpdateCameraToZoomLevel(bool zoomAroundCursorPosition = true, bool forceTo100 = false)
+        public static void UpdateCameraToZoomLevel(bool zoomAroundCursorPosition = true, bool forceTo100 = false, bool forceToGameDefault = false)
         {
             var mouse = InputManager.Mouse;
             var worldXBefore = mouse.WorldXAt(0);
@@ -317,9 +317,18 @@ namespace GlueControl.Editing
             }
             else
             {
-                var divisor = forceTo100
-                    ? 1
-                    : zoomLevels[(int)currentZoomLevelIndex] / 100.0f;
+                // Divisor here is "screen pixels per world unit" (PixelsPerUnitAt), which is what
+                // the zoom percentage actually represents - it stays constant as the window/panel
+                // resizes since it's derived from the *current* DestinationRectangle.Height, not an
+                // absolute value. forceToGameDefault reproduces a real launch's pixel density
+                // (Data.Scale / 100) using that same window-relative formula, rather than pinning
+                // OrthogonalHeight to an absolute Data.ResolutionHeight (which would make the ratio
+                // panel-size-dependent instead of matching Data.Scale) - issue #2044.
+                var divisor = forceToGameDefault
+                    ? CameraSetup.Data.Scale / 100.0f
+                    : forceTo100
+                        ? 1
+                        : zoomLevels[(int)currentZoomLevelIndex] / 100.0f;
 
                 if (Camera.Main.Orthogonal == true)
                 {
@@ -447,6 +456,26 @@ namespace GlueControl.Editing
             lockedOrthogonalHeight = resolutionHeight;
             UpdateCameraToZoomLevel(zoomAroundCursorPosition: false);
             PushZoomLevelToEditor();
+        }
+
+        // Matches the position reset in the generated ResetCamera method (CameraSetupCodeGenerator).
+        public static void RecenterCamera()
+        {
+            Camera.Main.X = 0;
+            Camera.Main.Y = 0;
+            Camera.Main.XVelocity = 0;
+            Camera.Main.YVelocity = 0;
+
+            // Zoom is already locked/fixed while fixed-size preview is on, so leave it alone -
+            // same guard DoZoomPlus/DoZoomMinus use.
+            if (!isFixedSizePreviewLocked)
+            {
+                // Reset to the real game's default zoom (pixel density = Data.Scale / 100), not an
+                // arbitrary editor zoom level. See forceToGameDefault's comment above.
+                UpdateCameraToZoomLevel(zoomAroundCursorPosition: false, forceToGameDefault: true);
+                UpdateZoomIndexToCamera();
+                PushZoomLevelToEditor();
+            }
         }
 
         public static void PushZoomLevelToEditor()
