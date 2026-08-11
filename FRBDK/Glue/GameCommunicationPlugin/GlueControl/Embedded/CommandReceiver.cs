@@ -918,7 +918,8 @@ namespace GlueControl
             }
         }
 
-        private static void HandleDto(ResetZoomDto resetZoomDto) => CameraLogic.ResetZoomTo100();
+        private static void HandleDto(SetFixedSizePreviewLockDto dto) =>
+            CameraLogic.SetFixedSizePreviewLock(dto.IsLocked, dto.ResolutionHeight);
 
         #endregion
 

@@ -63,6 +63,12 @@ namespace GlueControl.Editing
 
         public static float CurrentZoomRatio => zoomLevels[(int)currentZoomLevelIndex] / 100.0f;
 
+        // Fixed-size preview mode (issue #2035): pins the camera to an exact OrthogonalHeight
+        // (the project's design resolution) and ignores independent zoom input, so the preview is
+        // a true representation of the game rather than an editor-only zoomed view.
+        static bool isFixedSizePreviewLocked;
+        static float lockedOrthogonalHeight;
+
         public static float CameraXMovement { get; private set; }
         public static float CameraYMovement { get; private set; }
 
@@ -317,7 +323,9 @@ namespace GlueControl.Editing
 
                 if (Camera.Main.Orthogonal == true)
                 {
-                    Camera.Main.OrthogonalHeight = Camera.Main.DestinationRectangle.Height / divisor;
+                    Camera.Main.OrthogonalHeight = isFixedSizePreviewLocked
+                        ? lockedOrthogonalHeight
+                        : Camera.Main.DestinationRectangle.Height / divisor;
                 }
                 else
                 {
@@ -360,6 +368,10 @@ namespace GlueControl.Editing
 
         public static void DoZoomMinus(bool zoomAroundCursorPosition = false)
         {
+            if (isFixedSizePreviewLocked)
+            {
+                return;
+            }
             currentZoomLevelIndex = Math.Max(currentZoomLevelIndex - 1, 0);
             UpdateCameraToZoomLevel(zoomAroundCursorPosition);
             PushZoomLevelToEditor();
@@ -367,6 +379,10 @@ namespace GlueControl.Editing
 
         public static void DoZoomPlus(bool zoomAroundCursorPosition = false)
         {
+            if (isFixedSizePreviewLocked)
+            {
+                return;
+            }
             currentZoomLevelIndex = Math.Min(currentZoomLevelIndex + 1, zoomLevels.Length - 1);
             UpdateCameraToZoomLevel(zoomAroundCursorPosition);
             PushZoomLevelToEditor();
@@ -424,6 +440,14 @@ namespace GlueControl.Editing
             }
         }
 
+
+        public static void SetFixedSizePreviewLock(bool isLocked, float resolutionHeight)
+        {
+            isFixedSizePreviewLocked = isLocked;
+            lockedOrthogonalHeight = resolutionHeight;
+            UpdateCameraToZoomLevel(zoomAroundCursorPosition: false);
+            PushZoomLevelToEditor();
+        }
 
         public static void PushZoomLevelToEditor()
         {

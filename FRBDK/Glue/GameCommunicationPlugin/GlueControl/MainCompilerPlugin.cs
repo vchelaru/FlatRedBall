@@ -207,6 +207,8 @@ namespace GameCommunicationPlugin.GlueControl
             // on the next resize/restart (issue #2035).
             this.ResolutionChanged += gameHostView.SetGameToEmbeddedGameWindow;
             this.ScaleChanged += gameHostView.SetGameToEmbeddedGameWindow;
+            // Resolution (not Scale) also changes what the fixed-size camera lock targets.
+            this.ResolutionChanged += gameHostView.UpdateFixedSizePreviewLock;
             this.TryHandleTreeNodeDoubleClicked += _refreshManager.HandleTreeNodeDoubleClicked;
             this.GrabbedTreeNodeChanged += HandleGrabbedTreeNodeChanged;
 

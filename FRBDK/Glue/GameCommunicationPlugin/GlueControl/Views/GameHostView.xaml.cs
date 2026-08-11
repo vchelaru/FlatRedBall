@@ -112,13 +112,7 @@ namespace OfficialPlugins.GameHost.Views
                 {
                     if (args.PropertyName == nameof(ViewModel.IsFixedSizePreview))
                     {
-                        if (ViewModel.IsFixedSizePreview)
-                        {
-                            // Fixed-size preview is meant to be a true, unzoomed representation of
-                            // the game, so any independent zoom the user had dialed in is reset.
-                            _ = CommandSender.Self.Send(new ResetZoomDto());
-                        }
-
+                        UpdateFixedSizePreviewLock();
                         SetGameToEmbeddedGameWindow();
                     }
                 };
@@ -267,14 +261,15 @@ namespace OfficialPlugins.GameHost.Views
             }
         }
 
+        private bool IsGameEmbeddedAndRunning =>
+            ViewModel.IsRunning &&
+            ViewModel.IsGenerateGlueControlManagerInGame1Checked &&
+            ViewModel.DidRunnerStartProcess &&
+            gameHandle != IntPtr.Zero;
+
         public void SetGameToEmbeddedGameWindow()
         {
-            var shouldMove =
-                ViewModel.IsRunning &&
-                ViewModel.IsGenerateGlueControlManagerInGame1Checked &&
-                ViewModel.DidRunnerStartProcess &&
-                gameHandle != IntPtr.Zero;
-            if (shouldMove)
+            if (IsGameEmbeddedAndRunning)
             {
                 // MainGrid always fills its cell (Stretch, no explicit size), so it's the stable
                 // "available space" to measure against - unlike WinformsHost, whose own size we're
@@ -317,6 +312,30 @@ namespace OfficialPlugins.GameHost.Views
                     Height = newHeight,
                     Repaint = true
                 }));
+            }
+        }
+
+        /// <summary>
+        /// Locks (or unlocks) the game's camera to the project's design resolution while
+        /// fixed-size preview is on, so it's a true representation of the game rather than an
+        /// independently-zoomable view (issue #2035). Scale doesn't factor in here - only the
+        /// window's actual pixel size (<see cref="SetGameToEmbeddedGameWindow"/>) reflects Scale;
+        /// the locked camera always shows exactly ResolutionWidth/Height of world regardless of
+        /// window size, same as a real launched build.
+        /// </summary>
+        public void UpdateFixedSizePreviewLock()
+        {
+            if (IsGameEmbeddedAndRunning)
+            {
+                var displaySettings = ViewModel.IsFixedSizePreview
+                    ? GlueState.Self.CurrentGlueProject?.DisplaySettings
+                    : null;
+
+                _ = CommandSender.Self.Send(new SetFixedSizePreviewLockDto
+                {
+                    IsLocked = displaySettings != null,
+                    ResolutionHeight = displaySettings?.ResolutionHeight ?? 0
+                });
             }
         }
 

@@ -240,12 +240,14 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
     }
 
     /// <summary>
-    /// Resets zoom to 100% - used when entering fixed-size preview mode so the view is a true,
-    /// unzoomed representation of the game (issue #2035).
+    /// Locks (or unlocks) the camera to an exact OrthogonalHeight and disables independent
+    /// zoom input (mouse wheel, hotkeys) - used by fixed-size preview mode so the view is a
+    /// true representation of the game rather than an independently-zoomable one (issue #2035).
     /// </summary>
-    public class ResetZoomDto
+    public class SetFixedSizePreviewLockDto
     {
-        // no members
+        public bool IsLocked { get; set; }
+        public float ResolutionHeight { get; set; }
     }
 
     #endregion
