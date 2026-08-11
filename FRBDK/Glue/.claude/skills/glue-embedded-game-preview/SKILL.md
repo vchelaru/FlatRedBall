@@ -97,3 +97,20 @@ is what using editor-zoom-100% would have done. `DoZoomPlus`/`DoZoomMinus` (mous
 hotkeys, and the Glue UI's `ChangeZoomDto` all route through these two) no-op while locked. The lock is
 re-sent whenever `ResolutionChanged` fires (`MainCompilerPlugin`) but *not* `ScaleChanged` — Scale only
 affects window pixel size (`SetGameToEmbeddedGameWindow`), never the locked `OrthogonalHeight` target.
+
+## Landmine — editor zoom % *does* match `Data.Scale`, but only as a ratio, not as `OrthogonalHeight`
+
+Don't over-correct the landmine above into "editor zoom is entirely disconnected from `Data.Scale`." The
+*pixel-density ratio* `DestinationRectangle.Height / OrthogonalHeight` at editor zoom level `N%` always
+equals `N/100`, for any panel size — the panel height cancels out of `UpdateCameraToZoomLevel`'s own
+formula (`OrthogonalHeight = DestinationRectangle.Height / divisor`). A real launch at `Data.Scale=N%`
+produces that identical ratio at its natural size. So "editor 200%" and "`Data.Scale=200%`" genuinely
+mean the same screen-pixels-per-world-unit, panel-size-independent — resizing the panel changes how much
+*world* is visible (by design; that's edit mode's whole point), not the ratio.
+
+What breaks the match is assigning `OrthogonalHeight` an absolute value (e.g. `Data.ResolutionHeight`)
+instead of computing it through that same window-relative divisor formula: an absolute assignment makes
+the ratio panel-size-*dependent*, so the displayed zoom % stops tracking `Data.Scale` and instead reflects
+whatever the panel currently happens to be. `UpdateCameraToZoomLevel`'s `forceToGameDefault` flag
+(`divisor = Data.Scale / 100`, issue #2044) is the correct pattern for "reset to the game's real default
+zoom" — reuse it rather than setting `OrthogonalHeight` directly.
