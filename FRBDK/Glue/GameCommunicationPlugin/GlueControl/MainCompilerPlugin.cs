@@ -1140,13 +1140,13 @@ namespace GameCommunicationPlugin.GlueControl
                     CompilerViewModel.IsWindowEmbedded = true;
                 });
 
-                // sometimes the game doesn't embed itself properly. To fix this, we can resize the window:
-                await Task.Delay(50);
-
-                await GlueCommands.Self.DoOnUiThread(async () =>
-                {
-                    await gameHostView.ForceRefreshGameArea(force: true);
-                });
+                // Sometimes the game doesn't embed itself properly - see EmbedSettlePolicy for what
+                // "properly" means here and why one pass isn't always enough.
+                await Views.EmbedSettlePolicy.SettleAsync(() =>
+                    GlueCommands.Self.DoOnUiThread(async () =>
+                    {
+                        await gameHostView.ForceRefreshGameArea(force: true);
+                    }));
             }
             else
             {
