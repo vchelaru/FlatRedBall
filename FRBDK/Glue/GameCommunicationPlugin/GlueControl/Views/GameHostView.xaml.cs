@@ -179,24 +179,27 @@ namespace OfficialPlugins.GameHost.Views
 
         private async Task<bool> MakeGameBorderless()
         {
-            var attemptsToConnect = 0;
-            int maxAttempts = 6;
-            bool succeeded = false;
             var dto = new GameCommunicationPlugin.GlueControl.Dtos.SetBorderlessDto { IsBorderless = true };
 
-            do
+            var succeeded = await BorderlessRetryPolicy.TryRepeatedlyAsync(async () =>
             {
                 var sendResponse = await CommandSender.Self.Send(dto);
                 var response = sendResponse.Succeeded ? sendResponse.Data : string.Empty;
 
-                succeeded = !string.IsNullOrWhiteSpace(response);
+                // An empty response means the game got the command but had nothing to handle it
+                // with yet (GlueControlManager.Self still null), so this is a "try again", not a
+                // "the game refused".
+                return !string.IsNullOrWhiteSpace(response);
+            });
 
-                if (!succeeded)
-                {
-                    await Task.Delay(15);
-                    attemptsToConnect++;
-                }
-            } while (succeeded == false && attemptsToConnect < maxAttempts);
+            if (!succeeded)
+            {
+                GlueCommands.Self.PrintOutput(
+                    $"Failed to make the game window borderless after {BorderlessRetryPolicy.TotalBudgetMilliseconds}ms, " +
+                    "so it will stay embedded with its own title bar and won't be resized to fit the Game tab. " +
+                    "Restarting the game usually fixes this - please report it (with this message) at " +
+                    "https://github.com/vchelaru/FlatRedBall/issues/2048 if it keeps happening.");
+            }
 
             return succeeded;
         }

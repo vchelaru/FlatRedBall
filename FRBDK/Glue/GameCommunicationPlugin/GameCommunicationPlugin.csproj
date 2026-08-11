@@ -146,6 +146,7 @@
     <Compile Include="GlueControl\ViewModels\RunnerToolbarViewModel.cs" />
     <Compile Include="GlueControl\ViewModels\TestViewModel.cs" />
     <Compile Include="GlueControl\Views\AirspacePopup.cs" />
+    <Compile Include="GlueControl\Views\BorderlessRetryPolicy.cs" />
     <Compile Include="GlueControl\Views\BottomStatusBar.xaml.cs" />
     <Compile Include="GlueControl\Views\EditingToolsView.xaml.cs" />
     <Compile Include="GlueControl\Views\FixedSizePreviewCalculator.cs" />
