@@ -463,6 +463,18 @@ public class Frb2CodeGenerationSuppressionTests : IDisposable
     }
 
     [Fact]
+    public void GenerateCodeCommands_IsTheFrb2Implementation_WhenFrb2ProjectOptsIntoCodeGeneration()
+    {
+        // Not the FRB1 GenerateCodeCommands: its methods assume FRB1-only concepts (Game1.Generated.cs,
+        // camera setup, factories) that would generate against APIs an FRB2 project does not have.
+        var frb2 = CreateProject(p => new Frb2Project(p), "Frb2Game");
+        frb2.IsMaintainedByGlue = true;
+        GlueState.Self.CurrentMainProject = frb2;
+
+        Assert.IsType<Frb2GenerateCodeCommands>(GlueCommands.Self.GenerateCodeCommands);
+    }
+
+    [Fact]
     public void SaveIfDiffers_WritesCodeFiles_WhenFrb2ProjectOptsIntoCodeGeneration()
     {
         var frb2 = CreateProject(p => new Frb2Project(p), "Frb2Game");

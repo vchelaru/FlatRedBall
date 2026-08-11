@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace FlatRedBall.Glue.CodeGeneration
 {
+    // FRB1-only: FRB2 has its own IGenerateCodeCommands implementation (Frb2GenerateCodeCommands)
+    // that calls Frb2CodeGenerator directly rather than through here - see GlueCommands.GenerateCodeCommands.
     public class CodeGeneratorIElement
     {
         public static async Task GenerateSpecificElement(GlueElement element)
