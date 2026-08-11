@@ -119,9 +119,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 dto.NamedObjectsToUpdate.Add(namedObjectWithElement);
             }
 
-            var serializedForHash = JsonConvert.SerializeObject(dto, Formatting.None);
-
-            var hash = serializedForHash.GetHashCode();
+            var hash = GetDedupHash(dto);
 
             var customId = hash;
 
@@ -167,6 +165,34 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             // We'll use AddOrMoveToEnd to make sure that if the user is spamming values, we'll only send the last one.
             //}, $"Pushing {listOfVariables.Count} variables to game", TaskExecutionPreference.Asap, customId:$"Pushing variables with hash {hash}");
             }, $"Pushing {listOfVariables.Count} variables to game", TaskExecutionPreference.AddOrMoveToEnd, customId:$"Pushing variables with hash {hash}");
+        }
+
+        // dto.NamedObjectsToUpdate holds live references into Glue's in-memory project model (see
+        // NamedObjectWithElementName.NamedObjectSave), and serializing walks each NamedObjectSave's own
+        // mutable lists (ContainedObjects, Properties, InstructionSaves). If another part of Glue mutates
+        // one of those lists concurrently - e.g. adding an object to a list while this pushes a change for
+        // that same list - Json.NET's enumerator throws mid-walk (issue #2047). This hash is only used to
+        // dedup rapid-fire pushes (TaskExecutionPreference.AddOrMoveToEnd), so retrying is enough: it just
+        // needs a stable snapshot, not necessarily the exact one from the instant this was called.
+        private static int GetDedupHash(GlueVariableSetDataList dto)
+        {
+            const int maxAttempts = 5;
+            for (int attempt = 1; attempt <= maxAttempts; attempt++)
+            {
+                try
+                {
+                    return JsonConvert.SerializeObject(dto, Formatting.None).GetHashCode();
+                }
+                catch (InvalidOperationException)
+                {
+                    // retry - falls through to the loop's next attempt, or the fallback below once
+                    // maxAttempts is exhausted.
+                }
+            }
+
+            // Still racing after retries - fall back to a value that just means "don't dedupe this one"
+            // rather than crashing the plugin.
+            return Guid.NewGuid().GetHashCode();
         }
 
         public List<GlueVariableSetData> GetNamedObjectValueChangedDtos(string changedMember, object oldValue, NamedObjectSave nos, AssignOrRecordOnly assignOrRecordOnly, string gameScreenName, object forcedCurrentValue = null)
