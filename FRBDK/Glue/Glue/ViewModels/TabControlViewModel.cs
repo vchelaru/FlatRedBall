@@ -160,7 +160,13 @@ namespace GlueFormsCore.ViewModels
                     _ => null
                 };
 
-                gridLength = new GridLength(length ?? 220, GridUnitType.Pixel);
+                // A saved width of 0 (or less) is not a deliberate preference - it can only get persisted
+                // by closing the app while a panel is transiently empty (see AdjustGrid's `count == 0`
+                // branch below, and GitHub issue #2043: plugins like the Properties panel add a tab then
+                // immediately hide it again during their own StartUp, before anything is selected). Treat
+                // it the same as a missing value so the panel recovers to a usable width instead of
+                // staying collapsed to the MinPanelConverter floor forever.
+                gridLength = new GridLength(length is > 0 ? length.Value : 220, GridUnitType.Pixel);
             }
             else if (tab.Count == 0)
             {
