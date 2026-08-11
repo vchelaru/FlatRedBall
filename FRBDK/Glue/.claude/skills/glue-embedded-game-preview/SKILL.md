@@ -59,3 +59,24 @@ it's `ResolutionWidth/Height * DisplaySettings.Scale / 100` (`FixedSizePreviewCa
 since `Scale` (Camera Settings' desktop scale, e.g. 400%) is how a real launched window is already
 upscaled from the project's internal resolution. Using the raw resolution previews the wrong size for
 any project with a non-100% `Scale`.
+
+## Landmine — editor zoom "100%" is not the same "100%" as a real launch
+
+`CameraLogic`'s own zoom (`+`/`-`, `zoomLevels`) is an *editor-only* pan/zoom convenience: its 100%
+means "1 world unit = 1 window pixel," computed purely from `Camera.Main.DestinationRectangle.Height`
+(`UpdateCameraToZoomLevel`) — it has no idea what `Data.Scale` is. The real generated game
+(`CameraSetupCodeGenerator.cs` ~line 696) instead sets
+`Camera.Main.OrthogonalHeight = DestinationRectangle.Height / (Data.Scale / 100)`, which — at the
+window's natural size (`ResolutionHeight * Scale / 100` pixels tall) — always works out to
+`OrthogonalHeight == ResolutionHeight`, independent of `Scale`. `Scale` is a pure pixel-multiplier
+(crisp upscaling), not a "show more/less world" zoom.
+
+Fixed-size preview mode locks onto *that* value, not editor-zoom-100%: `CameraLogic.SetFixedSizePreviewLock`
+pins `OrthogonalHeight` to a constant (`DisplaySettings.ResolutionHeight`, sent via
+`SetFixedSizePreviewLockDto`) regardless of the embedded window's current pixel size — so when the Glue
+panel is too small and the window gets letterbox-shrunk (`FixedSizePreviewCalculator`), the whole
+picture optically shrinks uniformly (screenshot-thumbnail style) instead of revealing more world, which
+is what using editor-zoom-100% would have done. `DoZoomPlus`/`DoZoomMinus` (mouse wheel, `Ctrl+/-`
+hotkeys, and the Glue UI's `ChangeZoomDto` all route through these two) no-op while locked. The lock is
+re-sent whenever `ResolutionChanged` fires (`MainCompilerPlugin`) but *not* `ScaleChanged` — Scale only
+affects window pixel size (`SetGameToEmbeddedGameWindow`), never the locked `OrthogonalHeight` target.
