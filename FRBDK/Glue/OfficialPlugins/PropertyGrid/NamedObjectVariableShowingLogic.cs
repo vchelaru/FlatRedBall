@@ -116,10 +116,17 @@ namespace OfficialPlugins.VariableDisplay
                         {
                             var nameOnInstance = (newMember as NamedObjectSaveVariableDataGridItem).NameOnInstance;
 
-                            var variableDefinition = variableDefinitions[nameOnInstance];
-                            memberAsNamedObjectSaveVariableDataGridItem.RefreshFrom(instance, variableDefinition: variableDefinition, container: container, categories: grid.Categories, customTypeName: null,
-                                nameOnInstance: nameOnInstance);
-                            memberAsNamedObjectSaveVariableDataGridItem.DetailText = newMember.DetailText;
+                            // The variable definitions are re-derived from the instance's current
+                            // AssetTypeInfo, which can lose entries that the grid's existing members
+                            // were built from - for example if the instance's source file has gone
+                            // missing since the grid was last populated. Skip refreshing this member
+                            // rather than crashing; a full refresh will replace it once one is triggered.
+                            if (variableDefinitions.TryGetValue(nameOnInstance, out var variableDefinition))
+                            {
+                                memberAsNamedObjectSaveVariableDataGridItem.RefreshFrom(instance, variableDefinition: variableDefinition, container: container, categories: grid.Categories, customTypeName: null,
+                                    nameOnInstance: nameOnInstance);
+                                memberAsNamedObjectSaveVariableDataGridItem.DetailText = newMember.DetailText;
+                            }
                         }
                         else
                         {
