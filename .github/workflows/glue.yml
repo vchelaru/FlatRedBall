@@ -2,6 +2,18 @@ name: FlatRedBall Editor
 
 on:
   workflow_dispatch:
+    inputs:
+      PublishTarget:
+        description: 'Where to publish this build'
+        required: true
+        default: 'ftp-frbdk'
+        type: choice
+        options:
+          - ftp-frbdk
+          - glue-daily
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -44,7 +56,19 @@ jobs:
       run: dotnet build -c Debug 'FlatRedBall\FRBDK\BuildServerUploader\BuildServerUploader.sln'
      
     - name: Change version numbers
+      if: ${{ github.event.inputs.PublishTarget == 'ftp-frbdk' }}
       run: .\FlatRedBall\FRBDK\BuildServerUploader\BuildServerUploaderConsole\bin\x86\Debug\BuildServerUploaderConsole.exe changefrbdkversion
+
+    # glue-daily uses its own date-based Glue.csproj version rather than the FRBDK-wide one above.
+    - name: Bump Glue version for daily build
+      if: ${{ github.event.inputs.PublishTarget == 'glue-daily' }}
+      shell: pwsh
+      run: |
+        $csprojPath = 'FlatRedBall\FRBDK\Glue\Glue\Glue.csproj'
+        $version = Get-Date -Format "yyyy.M.d"
+        $text = Get-Content $csprojPath -Raw
+        $text = $text -replace '<Version>[0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?</Version>', "<Version>$version</Version>"
+        Set-Content $csprojPath $text -NoNewline
 
     - name: Build
       run: dotnet build -c ${{ matrix.configuration }} 'FlatRedBall\FRBDK\Glue\Glue with All.sln'
@@ -61,10 +85,35 @@ jobs:
     # Category=LiveGame launches a real MonoGame DesktopGL window - see pr-tests.yml for why it's excluded.
 
     - name: Zip and upload FRBDK
+      if: ${{ github.event.inputs.PublishTarget == 'ftp-frbdk' }}
       env: # Or as an environment variable
         username: ${{ secrets.FTPUSERNAME }}
         password: ${{ secrets.FTPPASSWORD }}
       run: .\FlatRedBall\FRBDK\BuildServerUploader\BuildServerUploaderConsole\bin\x86\Debug\BuildServerUploaderConsole.exe zipanduploadfrbdk "${{ env.username }}" "${{ env.password }}"
+
+    # Rolling pre-release so artists can grab a working Glue build without cloning/building anything.
+    # Mirrors what FRBDK/Glue/PublishDailyBuild.ps1 does locally, but from CI (no sibling Gum checkout needed).
+    - name: Zip and publish glue-daily release
+      if: ${{ github.event.inputs.PublishTarget == 'glue-daily' }}
+      shell: pwsh
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        $binDir = "FlatRedBall\FRBDK\Glue\Glue\bin\${{ matrix.configuration }}"
+        $zipPath = "FlatRedBall\FRBDK\Glue\Glue\bin\GlueDailyBuild.zip"
+        Compress-Archive -Path (Join-Path $binDir "*") -DestinationPath $zipPath -Force
+
+        $shortSha = "${{ github.sha }}".Substring(0, 7)
+        $date = Get-Date -Format "yyyy-MM-dd HH:mm"
+        $notes = "Automated daily build. Not for production - grab whatever's newest.`n`nFlatRedBall commit: $shortSha`nBuilt: $date"
+
+        gh release view glue-daily --repo "${{ github.repository }}" *> $null
+        if ($LASTEXITCODE -eq 0) {
+          gh release upload glue-daily $zipPath --repo "${{ github.repository }}" --clobber
+          gh release edit glue-daily --repo "${{ github.repository }}" --title "Glue Daily Build ($date)" --notes $notes
+        } else {
+          gh release create glue-daily $zipPath --repo "${{ github.repository }}" --title "Glue Daily Build ($date)" --notes $notes --prerelease
+        }
 
     - name: Package
       uses: actions/upload-artifact@v4
