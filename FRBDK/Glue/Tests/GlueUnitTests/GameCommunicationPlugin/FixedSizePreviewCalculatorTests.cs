@@ -84,4 +84,27 @@ public class FixedSizePreviewCalculatorTests
         target.Width.ShouldBe(133);
         target.Height.ShouldBe(133);
     }
+
+    [Fact]
+    public void GetEmbeddedWindowOffset_ShouldBeZero_WhenEmbeddedWindowFillsThePanel()
+    {
+        var offset = FixedSizePreviewCalculator.GetEmbeddedWindowOffset(
+            panelWidth: 800, panelHeight: 600, embeddedWidth: 800, embeddedHeight: 600);
+
+        offset.X.ShouldBe(0);
+        offset.Y.ShouldBe(0);
+    }
+
+    [Fact]
+    public void GetEmbeddedWindowOffset_ShouldCenterTheEmbeddedWindow_WhenPanelIsLarger()
+    {
+        // The panel is bigger than the (letterboxed) embedded window - it should be centered,
+        // not pinned to the top-left, or rectangle-select/zoom-around-cursor land in the wrong
+        // spot relative to what's actually drawn (issue #2035 follow-up).
+        var offset = FixedSizePreviewCalculator.GetEmbeddedWindowOffset(
+            panelWidth: 1000, panelHeight: 800, embeddedWidth: 800, embeddedHeight: 600);
+
+        offset.X.ShouldBe(100);
+        offset.Y.ShouldBe(100);
+    }
 }

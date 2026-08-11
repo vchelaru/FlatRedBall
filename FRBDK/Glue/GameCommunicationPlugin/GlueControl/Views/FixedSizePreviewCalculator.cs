@@ -44,5 +44,21 @@ namespace GameCommunicationPlugin.GlueControl.Views
                 (int)Math.Round(resolutionWidth * scale),
                 (int)Math.Round(resolutionHeight * scale));
         }
+
+        /// <summary>
+        /// The top-left position (relative to the panel) to place the embedded window at so it's
+        /// centered - used as the embedded window's own X/Y (not the panel's), so the real game
+        /// window itself is the one that moves. See the "resize flow" landmine in
+        /// glue-embedded-game-preview: moving the panel/host instead leaves the game window's
+        /// position relative to its own immediate parent unchanged, so it never gets a native
+        /// move notification and MonoGame/SDL's cached mouse-to-window offset goes stale.
+        /// </summary>
+        public static (int X, int Y) GetEmbeddedWindowOffset(
+            double panelWidth, double panelHeight, int embeddedWidth, int embeddedHeight)
+        {
+            return (
+                (int)Math.Round((panelWidth - embeddedWidth) / 2.0),
+                (int)Math.Round((panelHeight - embeddedHeight) / 2.0));
+        }
     }
 }

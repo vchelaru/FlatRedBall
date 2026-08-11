@@ -12,16 +12,32 @@ into a WinForms `Panel` hosted by a `WindowsFormsHost` (`GameHostView.xaml` → 
 
 ## Resize flow
 
-`WinformsHost_SizeChanged` → `SetGameToEmbeddedGameWindow` sends a `Runner_MoveWindow` command over
-the existing `CommandSender` socket (see `glue-live-game-testing` for that wire protocol), telling the
-*real game process* to resize its actual OS window to fill the panel exactly. There's no visual
-scaling on Glue's side — every resize is the game window itself changing size, and whatever the
-game's own `AspectRatioBehavior`/`ResizeBehavior` (see below) does with that size happens for real,
-in-process, same as it would for an end user.
+`WinformsHost_SizeChanged`/`MainGrid_SizeChanged` → `SetGameToEmbeddedGameWindow` sends a
+`Runner_MoveWindow` command — not over the DTO socket, but as a raw `_eventCaller`/`ReactToPluginEvent`
+string handled by `CompilerPlugin.HandleEvent` (`case "Runner_MoveWindow"`), which calls
+`Runner.MoveWindow` → the real Win32 `MoveWindow` API directly on `gameHandle`. Every resize is the
+*real game process's* actual OS window changing size/position for real, in-process — there's no visual
+scaling on Glue's side, and whatever the game's own `AspectRatioBehavior`/`ResizeBehavior` (see below)
+does with that size happens the same as it would for an end user.
 
-`BackgroundGrid` (dark `#555555`, `GameHostView.xaml`) sits behind `MainGrid`/`WinformsHost` in the
-same grid cell. `MainGrid` has no background, so shrinking `WinformsHost` below the panel's full size
-(instead of stretching it) reveals `BackgroundGrid` as letterbox bars — no new visual needed.
+`WinformsHost` and its underlying WinForms `Panel` (`winformsPanel`, `GameHostView` constructor) always
+stay full-size, filling `MainGrid` (Stretch, no explicit size/alignment) — **even in fixed-size preview
+mode.** Letterboxing is achieved by moving/sizing only the real embedded game window (via
+`Runner_MoveWindow`'s X/Y/Width/Height) smaller than `winformsPanel`, whose own dark `BackColor`
+(`FromArgb(30,30,30)`, set in the `GameHostView` constructor) shows through the margins as letterbox
+bars.
+
+**Landmine — do not center by resizing/repositioning `WinformsHost`/`winformsPanel` (the ANCESTOR)
+instead of the game window itself.** An earlier version of fixed-size preview did exactly that
+(`WinformsHost.HorizontalAlignment/VerticalAlignment = Center` + explicit `Width`/`Height`, always
+passing `X=0,Y=0` to `Runner_MoveWindow`). It looked correct visually but broke rectangle-select and
+zoom-around-cursor by exactly the centering offset: `gameHandle`'s position *relative to its own
+immediate parent* (`winformsPanel`) never changed, so it never received a native move notification —
+only its *ancestor* moved. MonoGame/SDL's cached window position (used to translate the cursor's
+absolute screen position into client-relative mouse coordinates) went stale by that offset. The fix
+was to always keep `winformsPanel` full-size/unmoved and instead pass the letterbox offset as
+`Runner_MoveWindow`'s `X`/`Y` — since that's a real position change to `gameHandle` relative to its own
+immediate parent, it generates the native move notification MonoGame/SDL needs.
 
 ## Zoom / resolution status bar
 
@@ -53,7 +69,8 @@ preview's `WinformsHost` panel ignores it and always stretches to fill the tab.
 
 The "fixed-size preview" toggle (`BottomStatusBar`'s aspect-ratio icon, `CompilerViewModel.IsFixedSizePreview`,
 issue #2035) is the one exception: when on, `GameHostView.SetGameToEmbeddedGameWindow` sizes/centers
-`WinformsHost` to `DisplaySettings.ResolutionWidth/Height` scaled to fit the panel
+the real embedded game window (not `WinformsHost` — see the resize-flow landmine above) to
+`DisplaySettings.ResolutionWidth/Height` scaled to fit the panel
 (`FixedSizePreviewCalculator`, unit-tested). **Landmine:** "100%" there is not the raw resolution —
 it's `ResolutionWidth/Height * DisplaySettings.Scale / 100` (`FixedSizePreviewCalculator.GetEffectiveTargetResolution`),
 since `Scale` (Camera Settings' desktop scale, e.g. 400%) is how a real launched window is already

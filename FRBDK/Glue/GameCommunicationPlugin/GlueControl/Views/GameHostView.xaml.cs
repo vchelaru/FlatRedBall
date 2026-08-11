@@ -271,9 +271,21 @@ namespace OfficialPlugins.GameHost.Views
         {
             if (IsGameEmbeddedAndRunning)
             {
-                // MainGrid always fills its cell (Stretch, no explicit size), so it's the stable
-                // "available space" to measure against - unlike WinformsHost, whose own size we're
-                // about to set explicitly below when in fixed-size preview mode.
+                // WinformsHost always fills MainGrid (Stretch, no explicit size) - even in
+                // fixed-size preview mode. Letterboxing is achieved by moving/sizing the real
+                // embedded game window smaller than winformsPanel via X/Y/Width/Height below,
+                // not by resizing/centering winformsPanel or WinformsHost themselves.
+                //
+                // This matters beyond layout: winformsPanel is the game window's real Win32
+                // *parent*, and MoveWindow only generates WM_MOVE/position-changed notifications
+                // for a window whose position *relative to its own immediate parent* changes.
+                // Centering used to be done by moving winformsPanel/WinformsHost instead (the
+                // ancestor) while leaving the game window pinned at (0,0) within it - so the game
+                // window's own relative position never changed, it never got a native move
+                // notification, and MonoGame/SDL's cached window position (used to translate the
+                // cursor's absolute screen position into client-relative mouse coordinates) went
+                // stale by exactly the centering offset. That showed up as rectangle-select and
+                // zoom-around-cursor both being offset by the letterbox margin (issue #2035).
                 var panelWidth = MainGrid.ActualWidth;
                 var panelHeight = MainGrid.ActualHeight;
 
@@ -295,19 +307,18 @@ namespace OfficialPlugins.GameHost.Views
                     embeddedHeight = size.Height;
                 }
 
-                var isLetterboxed = displaySettings != null;
-                WinformsHost.HorizontalAlignment = isLetterboxed ? HorizontalAlignment.Center : HorizontalAlignment.Stretch;
-                WinformsHost.VerticalAlignment = isLetterboxed ? VerticalAlignment.Center : VerticalAlignment.Stretch;
-                WinformsHost.Width = isLetterboxed ? embeddedWidth : double.NaN;
-                WinformsHost.Height = isLetterboxed ? embeddedHeight : double.NaN;
+                var offset = FixedSizePreviewCalculator.GetEmbeddedWindowOffset(
+                    panelWidth, panelHeight, (int)embeddedWidth, (int)embeddedHeight);
 
+                var newX = (int)(offset.X * WindowsScaleFactor);
+                var newY = (int)(offset.Y * WindowsScaleFactor);
                 var newWidth = (int)(embeddedWidth * WindowsScaleFactor);
                 var newHeight = (int)(embeddedHeight * WindowsScaleFactor);
 
                 _eventCaller("Runner_MoveWindow", JsonConvert.SerializeObject(new
                 {
-                    X = 0,
-                    Y = 0,
+                    X = newX,
+                    Y = newY,
                     Width = newWidth,
                     Height = newHeight,
                     Repaint = true
