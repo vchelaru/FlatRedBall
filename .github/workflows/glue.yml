@@ -106,13 +106,10 @@ jobs:
         $date = Get-Date -Format "yyyy-MM-dd HH:mm"
         $notes = "Automated daily build. Not for production - grab whatever's newest.`n`nFlatRedBall commit: $shortSha`nBuilt: $date"
 
-        gh release view glue-daily --repo "${{ github.repository }}" *> $null
-        if ($LASTEXITCODE -eq 0) {
-          gh release upload glue-daily $zipPath --repo "${{ github.repository }}" --clobber
-          gh release edit glue-daily --repo "${{ github.repository }}" --title "Glue Daily Build ($date)" --notes $notes
-        } else {
-          gh release create glue-daily $zipPath --repo "${{ github.repository }}" --title "Glue Daily Build ($date)" --notes $notes --prerelease
-        }
+        # Delete + recreate rather than edit in place: GitHub's /releases list sorts by creation date,
+        # not last-edited, so editing in place left this release buried at its original creation date.
+        gh release delete glue-daily --repo "${{ github.repository }}" --yes --cleanup-tag *> $null
+        gh release create glue-daily $zipPath --repo "${{ github.repository }}" --title "Glue Daily Build ($date)" --notes $notes --prerelease
 
     - name: Package
       uses: actions/upload-artifact@v4
