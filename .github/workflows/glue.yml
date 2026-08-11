@@ -92,7 +92,6 @@ jobs:
       run: .\FlatRedBall\FRBDK\BuildServerUploader\BuildServerUploaderConsole\bin\x86\Debug\BuildServerUploaderConsole.exe zipanduploadfrbdk "${{ env.username }}" "${{ env.password }}"
 
     # Rolling pre-release so artists can grab a working Glue build without cloning/building anything.
-    # Mirrors what FRBDK/Glue/PublishDailyBuild.ps1 does locally, but from CI (no sibling Gum checkout needed).
     - name: Zip and publish glue-daily release
       if: ${{ github.event.inputs.PublishTarget == 'glue-daily' }}
       shell: pwsh
