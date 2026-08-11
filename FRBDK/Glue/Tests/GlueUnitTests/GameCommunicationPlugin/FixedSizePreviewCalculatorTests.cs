@@ -52,4 +52,36 @@ public class FixedSizePreviewCalculatorTests
         size.Width.ShouldBe(640);
         size.Height.ShouldBe(480);
     }
+
+    [Fact]
+    public void GetEffectiveTargetResolution_ShouldReturnResolutionUnscaled_AtDefaultScale()
+    {
+        var target = FixedSizePreviewCalculator.GetEffectiveTargetResolution(
+            resolutionWidth: 800, resolutionHeight: 600, scalePercent: 100);
+
+        target.Width.ShouldBe(800);
+        target.Height.ShouldBe(600);
+    }
+
+    [Fact]
+    public void GetEffectiveTargetResolution_ShouldApplyProjectScale()
+    {
+        // e.g. a pixel-art project with a 320x180 internal resolution whose Camera Settings
+        // scale the default desktop window up to 400% (issue #2035 follow-up).
+        var target = FixedSizePreviewCalculator.GetEffectiveTargetResolution(
+            resolutionWidth: 320, resolutionHeight: 180, scalePercent: 400);
+
+        target.Width.ShouldBe(1280);
+        target.Height.ShouldBe(720);
+    }
+
+    [Fact]
+    public void GetEffectiveTargetResolution_ShouldRoundToNearestPixel()
+    {
+        var target = FixedSizePreviewCalculator.GetEffectiveTargetResolution(
+            resolutionWidth: 100, resolutionHeight: 100, scalePercent: 133);
+
+        target.Width.ShouldBe(133);
+        target.Height.ShouldBe(133);
+    }
 }

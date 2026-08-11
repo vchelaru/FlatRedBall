@@ -284,8 +284,11 @@ namespace OfficialPlugins.GameHost.Views
 
                 if (displaySettings != null)
                 {
+                    var effectiveTarget = FixedSizePreviewCalculator.GetEffectiveTargetResolution(
+                        displaySettings.ResolutionWidth, displaySettings.ResolutionHeight, displaySettings.Scale);
+
                     var size = FixedSizePreviewCalculator.GetEmbeddedWindowSize(
-                        panelWidth, panelHeight, displaySettings.ResolutionWidth, displaySettings.ResolutionHeight);
+                        panelWidth, panelHeight, effectiveTarget.Width, effectiveTarget.Height);
                     embeddedWidth = size.Width;
                     embeddedHeight = size.Height;
                 }

@@ -24,5 +24,25 @@ namespace GameCommunicationPlugin.GlueControl.Views
                 (int)Math.Round(targetWidth * scale),
                 (int)Math.Round(targetHeight * scale));
         }
+
+        /// <summary>
+        /// "100%" for fixed-size preview is the project's default desktop display size, not its
+        /// raw internal resolution - Camera Settings' Scale (e.g. 400% for a pixel-art project)
+        /// is how a real launched game window would already be upscaled.
+        /// </summary>
+        public static (int Width, int Height) GetEffectiveTargetResolution(
+            int resolutionWidth, int resolutionHeight, int scalePercent)
+        {
+            if (scalePercent <= 0)
+            {
+                return (resolutionWidth, resolutionHeight);
+            }
+
+            var scale = scalePercent / 100.0;
+
+            return (
+                (int)Math.Round(resolutionWidth * scale),
+                (int)Math.Round(resolutionHeight * scale));
+        }
     }
 }
