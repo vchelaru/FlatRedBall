@@ -44,9 +44,18 @@ this project).
 
 ## Project's target resolution vs. live preview size
 
-The *live preview* window size above is unrelated to the project's configured target resolution/aspect
-ratio, which lives in `DisplaySettingsViewModel`/`GlueCommon/SaveClasses/DisplaySettings.cs`
+The project's configured target resolution/aspect ratio lives in
+`DisplaySettingsViewModel`/`GlueCommon/SaveClasses/DisplaySettings.cs`
 (`Glue/Plugins/EmbeddedPlugins/CameraPlugin/`) — edited via the Camera Settings panel
-(`CameraSettingsControl.xaml`), and only takes effect through codegen (`CameraSetupCodeGenerator.cs`)
-for what a *built* game does at startup/on resize. The live preview's `WinformsHost` panel is not
-driven by this in any way today — it always stretches to fill the tab.
+(`CameraSettingsControl.xaml`) — and normally only takes effect through codegen
+(`CameraSetupCodeGenerator.cs`) for what a *built* game does at startup/on resize. By default the live
+preview's `WinformsHost` panel ignores it and always stretches to fill the tab.
+
+The "fixed-size preview" toggle (`BottomStatusBar`'s aspect-ratio icon, `CompilerViewModel.IsFixedSizePreview`,
+issue #2035) is the one exception: when on, `GameHostView.SetGameToEmbeddedGameWindow` sizes/centers
+`WinformsHost` to `DisplaySettings.ResolutionWidth/Height` scaled to fit the panel
+(`FixedSizePreviewCalculator`, unit-tested). **Landmine:** "100%" there is not the raw resolution —
+it's `ResolutionWidth/Height * DisplaySettings.Scale / 100` (`FixedSizePreviewCalculator.GetEffectiveTargetResolution`),
+since `Scale` (Camera Settings' desktop scale, e.g. 400%) is how a real launched window is already
+upscaled from the project's internal resolution. Using the raw resolution previews the wrong size for
+any project with a non-100% `Scale`.
