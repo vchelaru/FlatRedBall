@@ -44,15 +44,16 @@ immediate parent, it generates the native move notification MonoGame/SDL needs.
 `Runner_GameStarted` fires as soon as the game process has a `MainWindowHandle` (`Runner.cs`), which is
 *earlier* than the game being able to act on anything. In generated `Game1.Initialize`, `GameConnectionManager`
 is constructed (and connects) several statements before `GlueControlManager`, with `CameraSetup.SetupCamera`
-between them. In that window the socket is live but `GlueControlManager.Self` is null, so the game's receive
-loop (`Embedded/GameConnectionManager.cs`) hits `GlueControlManager.Self?.ProcessMessage(...)` and answers
-with a **zero-length payload** — no error, no log, on either side. Glue's `CommandSender` reports
-`Succeeded = true` with empty `Data`, so callers that test `Succeeded` see success while the command did
-nothing; the ones that work test the response string for content instead.
+between them. In that window the socket is live but `GlueControlManager.Self` is null, so nothing can
+dispatch an incoming DTO. Anything sent on game startup therefore needs a retry budget that outlasts
+graphics-device setup, not just the connection (`BorderlessRetryPolicy`). Waiting on
+`GameCommunication_Connected` does **not** close this — connected is precisely the state where it fails.
 
-Anything sent on game startup therefore needs a retry budget that outlasts graphics-device setup, not just
-the connection (`BorderlessRetryPolicy`, issue #2048). Waiting on `GameCommunication_Connected` does **not**
-close this — connected is precisely the state where it still fails.
+**Retry on `Succeeded`, never on the reply's content.** The game answers that window with
+`GameConnectionManager.NotReadyPayload` and Glue turns it into an unsuccessful `GeneralResponse`, so
+`Succeeded` is the readiness signal. Most `HandleDto` overloads return `void` — `SetBorderlessDto` included —
+and a healthy game answers those with an *empty* payload, so a "did it send anything back?" check never
+becomes true no matter how long the budget is.
 
 ## Zoom / resolution status bar
 
