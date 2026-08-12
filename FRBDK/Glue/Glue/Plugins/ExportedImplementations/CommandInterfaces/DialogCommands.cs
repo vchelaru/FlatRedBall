@@ -55,37 +55,22 @@ partial class DialogCommands : IDialogCommands
             // by removing this, we can fix
             // this bug: https://github.com/vchelaru/FlatRedBall/issues/1620
             //openFileDialog.InitialDirectory = "c:\\";
-            openFileDialog.Filter = "Project/Solution files (*.vcproj;*.csproj;*.sln;*.glux;*.gluj)|*.vcproj;*.csproj;*.sln;*.glux;*.gluj";
+            openFileDialog.Filter = "Project/Solution files (*.vcproj;*.csproj;*.sln;*.slnx;*.glux;*.gluj)|*.vcproj;*.csproj;*.sln;*.slnx;*.glux;*.gluj";
             openFileDialog.FilterIndex = 1;
             openFileDialog.RestoreDirectory = true;
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                string projectFileName = openFileDialog.FileName;
+                string projectFileName = ProjectFileResolver.ResolveCsproj(openFileDialog.FileName);
 
-                var extension = FileManager.GetExtension(projectFileName);
-                if (extension == "sln")
+                if (projectFileName == null)
                 {
-                    var solution = VSSolution.FromFile(projectFileName);
-
-                    string solutionName = projectFileName;
-
-                    var foundProject = solution.ReferencedProjects.FirstOrDefault(item =>
-                    {
-                        var isRegularProject = FileManager.GetExtension(item.Name) == "csproj" || FileManager.GetExtension(item.Name) == "vsproj";
-
-                        bool hasSameName = FileManager.RemovePath(FileManager.RemoveExtension(solutionName)).ToLowerInvariant() ==
-                            FileManager.RemovePath(FileManager.RemoveExtension(item.Name)).ToLowerInvariant();
-
-
-                        return isRegularProject && hasSameName;
-                    });
-
-                    projectFileName = FileManager.GetDirectory(solutionName) + foundProject.Name;
-                }
-                else if(extension == "gluj")
-                {
-                    projectFileName = FileManager.RemoveExtension(projectFileName) + ".csproj";
+                    // A solution with several projects and none named after it - picking one would be
+                    // a guess, and the user can point at the .csproj they mean.
+                    GlueCommands.Self.DialogCommands.ShowMessageBox(
+                        $"Could not tell which project in {FileManager.RemovePath(openFileDialog.FileName)} to open. " +
+                        $"Please select the .csproj instead.");
+                    return;
                 }
 
                 try

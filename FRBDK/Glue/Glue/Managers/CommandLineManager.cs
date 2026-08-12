@@ -1,4 +1,6 @@
-﻿using System;
+﻿using FlatRedBall.Glue.VSHelpers;
+using FlatRedBall.IO;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +11,13 @@ namespace FlatRedBall.Glue.Managers
     {
         const string ExitWhenQuietArg = "exitwhenquiet";
         const int DefaultExitWhenQuietSeconds = 5;
+
+        /// <summary>
+        /// What can be passed as the project to open - the same set the Load Project dialog offers,
+        /// since a file that opens by double-clicking should also open from a shortcut or a script.
+        /// </summary>
+        static readonly HashSet<string> ProjectExtensions =
+            new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "csproj", "sln", "slnx", "glux", "gluj" };
 
         string mProjectToLoad = null;
 
@@ -37,19 +46,9 @@ namespace FlatRedBall.Glue.Managers
 
             foreach(string var in commandLineArgs)
             {
-                if (var.Contains(".glux"))
+                if (ProjectExtensions.Contains(FileManager.GetExtension(var)))
                 {
-                    mProjectToLoad = var;
-                    mProjectToLoad = mProjectToLoad.Replace(".glux", ".csproj");
-                }
-                if (var.Contains(".gluj"))
-                {
-                    mProjectToLoad = var;
-                    mProjectToLoad = mProjectToLoad.Replace(".gluj", ".csproj");
-                }
-                if (var.Contains(".csproj"))
-                {
-                    mProjectToLoad = var;
+                    mProjectToLoad = ProjectFileResolver.ResolveCsproj(var);
                 }
                 if (var.Equals(ExitWhenQuietArg, StringComparison.OrdinalIgnoreCase))
                 {
