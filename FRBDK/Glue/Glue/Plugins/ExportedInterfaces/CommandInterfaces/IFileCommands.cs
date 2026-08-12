@@ -64,6 +64,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         FilePath GetCustomCodeFilePath(GlueElement glueElement);
 
+        /// <summary>
+        /// Where the element's tool-owned <c>&lt;Name&gt;.Generated.cs</c> belongs - the sibling of
+        /// <see cref="GetCustomCodeFilePath"/>, which is the half the user owns. The two are partials of
+        /// one class, so they must resolve to the same directory.
+        /// </summary>
+        FilePath GetGeneratedCodeFilePath(GlueElement glueElement);
+
         FilePath GetGlueExecutingFolder();
 
         Task PasteFolder(FilePath sourceFolder, FilePath destinationFolder);

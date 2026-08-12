@@ -43,21 +43,20 @@ public class GlueCommands : IGlueCommands
     {
         get
         {
-            var project = GlueState.Self.CurrentMainProject;
-
-            if (project?.IsMaintainedByGlue == false)
-            {
-                return _noCodeGenerationCommands;
-            }
-
-            // FRB2's generated code binds to a runtime object tree its own reflection-based loader
-            // already built, rather than constructing anything - different enough from FRB1's
-            // generators (which the rest of GenerateCodeCommands' methods assume, e.g. Game1.Generated.cs,
-            // camera setup, factories) that it needs its own IGenerateCodeCommands rather than a shared
-            // one with branches inside it.
-            if (project is Frb2Project)
+            // Checked before IsMaintainedByGlue, which is false for every FRB2 project whether it opted
+            // in or not - that flag answers "does Glue own the .csproj and FRB1's generator set", and an
+            // FRB2 project never does. FRB2's generated code binds to a runtime object tree its own
+            // reflection-based loader already built rather than constructing anything, which is
+            // different enough from FRB1's generators (Game1.Generated.cs, camera setup, factories) that
+            // it needs its own IGenerateCodeCommands rather than a shared one with branches inside it.
+            if (CodeWritePolicy.GeneratesFrb2Code)
             {
                 return _frb2GenerateCodeCommands;
+            }
+
+            if (GlueState.Self.CurrentMainProject?.IsMaintainedByGlue == false)
+            {
+                return _noCodeGenerationCommands;
             }
 
             return _generateCodeCommands;

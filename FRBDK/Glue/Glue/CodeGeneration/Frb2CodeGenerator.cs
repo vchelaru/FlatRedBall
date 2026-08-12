@@ -50,9 +50,19 @@ namespace FlatRedBall.Glue.CodeGeneration
         /// Generates (or regenerates) <c>&lt;Name&gt;.Generated.cs</c> for a Screen or Entity, and
         /// seeds the sibling custom <c>&lt;Name&gt;.cs</c> once if it does not exist yet. Safe to call
         /// whenever the loaded project is FRB2 and has opted into code generation - callers are not
-        /// expected to check that first, since <see cref="Plugins.ExportedImplementations.CodeWritePolicy"/>
-        /// and the <c>IGenerateCodeCommands</c> seam already gate whether generation runs at all.
+        /// expected to check that first, since the <c>IGenerateCodeCommands</c> seam
+        /// (<see cref="Plugins.ExportedImplementations.CodeWritePolicy.GeneratesFrb2Code"/>) already
+        /// gates whether generation runs at all.
         /// </summary>
+        /// <remarks>
+        /// Writes both files directly rather than through <c>FileCommands.SaveIfDiffers</c> /
+        /// <c>CodeProjectHelper.CreateAndAddPartialGeneratedCodeFile</c>, which is what FRB1's CodeWriter
+        /// uses. Those two exist to add the file to the .csproj as a nested item and to honour
+        /// <c>CodeWritePolicy.WritesCodeForCurrentProject</c> - and an FRB2 project wants neither. Its
+        /// .csproj is not Glue's to write, and the SDK-style project already globs <c>**/*.cs</c>, so
+        /// there is no project item to add; going through those seams is what previously let Glue
+        /// rewrite an FRB2 .csproj on every generate.
+        /// </remarks>
         public static Task GenerateCode(GlueElement element)
         {
             if (element == null)
@@ -60,20 +70,36 @@ namespace FlatRedBall.Glue.CodeGeneration
                 throw new ArgumentNullException(nameof(element));
             }
 
-            string generatedFileName = element.Name + ".Generated.cs";
             string elementNamespace = GlueCommands.Self.GenerateCodeCommands.GetNamespaceForElement(element);
 
-            // Ensures the .Generated.cs is a nested project item and that a project not maintained by
-            // Glue is a no-op - same seam FRB1's CodeWriter goes through for this.
-            ProjectManager.CodeProjectHelper.CreateAndAddPartialGeneratedCodeFile(generatedFileName, saveFile: false);
-
-            string contents = GenerateGeneratedFileContents(element, elementNamespace);
-
-            GlueCommands.Self.FileCommands.SaveIfDiffers(generatedFileName, contents, ignoreNextChange: true);
+            WriteIfDiffers(
+                GlueCommands.Self.FileCommands.GetGeneratedCodeFilePath(element),
+                GenerateGeneratedFileContents(element, elementNamespace));
 
             CreateCustomCodeFileIfMissing(element, elementNamespace);
 
             return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Writes <paramref name="contents"/> to <paramref name="filePath"/>, creating the directory,
+        /// and does nothing at all when the file already says exactly that.
+        /// </summary>
+        /// <remarks>
+        /// The unchanged-content check is not just an optimisation: rewriting identical bytes still
+        /// raises a file-watcher event and still marks the file dirty for anything watching the project
+        /// folder. It is the same behaviour <c>FileCommands.SaveIfDiffers</c> provides for FRB1.
+        /// </remarks>
+        private static void WriteIfDiffers(FilePath filePath, string contents)
+        {
+            if (filePath.Exists() && FileManager.FromFileText(filePath.FullPath) == contents)
+            {
+                return;
+            }
+
+            System.IO.Directory.CreateDirectory(filePath.GetDirectoryContainingThis().FullPath);
+            FlatRedBall.Glue.IO.FileWatchManager.IgnoreNextChangeOnFile(filePath.FullPath);
+            FileManager.SaveText(contents, filePath.FullPath);
         }
 
         /// <summary>
@@ -194,14 +220,10 @@ namespace FlatRedBall.Glue.CodeGeneration
         public static void GenerateCustomCode(GlueElement element) =>
             WriteCustomCode(element, GlueCommands.Self.GenerateCodeCommands.GetNamespaceForElement(element));
 
-        private static void WriteCustomCode(GlueElement element, string elementNamespace)
-        {
-            string contents = GenerateCustomCodeContents(element, elementNamespace);
-
-            FilePath customCodePath = GlueCommands.Self.FileCommands.GetCustomCodeFilePath(element);
-            FlatRedBall.Glue.IO.FileWatchManager.IgnoreNextChangeOnFile(customCodePath.FullPath);
-            FileManager.SaveText(contents, customCodePath.FullPath);
-        }
+        private static void WriteCustomCode(GlueElement element, string elementNamespace) =>
+            WriteIfDiffers(
+                GlueCommands.Self.FileCommands.GetCustomCodeFilePath(element),
+                GenerateCustomCodeContents(element, elementNamespace));
 
         /// <summary>Pure content-building half of <see cref="GenerateCustomCode"/>, for direct unit testing.</summary>
         public static string GenerateCustomCodeContents(GlueElement element, string elementNamespace)

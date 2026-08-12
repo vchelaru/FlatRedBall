@@ -1,4 +1,6 @@
 using System;
+using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.VSHelpers.Projects;
 using FlatRedBall.IO;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations
@@ -29,6 +31,26 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
         /// </summary>
         public static bool WritesCodeForCurrentProject =>
             GlueState.Self.CurrentMainProject?.IsMaintainedByGlue != false;
+
+        /// <summary>
+        /// True when the loaded project is an FRB2 project that has opted into typed accessors for its
+        /// Screens and Entities (<see cref="GlueProjectSave.GenerateCode"/>).
+        /// </summary>
+        /// <remarks>
+        /// Deliberately separate from <see cref="WritesCodeForCurrentProject"/> rather than turning it
+        /// on, because that property answers "does Glue own this project's code and .csproj" - and
+        /// every FRB1 generator, the csproj writer, and the tree view's Code/Events nodes read it.
+        /// Making the opt-in flip it ran the entire FRB1 generator set against an FRB2 project
+        /// (CameraSetup, FileAliases, the Performance/ pool types, the Tiled and TopDown plugins' output)
+        /// and let Glue rewrite the .csproj, none of which an FRB2 game can compile or wants.
+        ///
+        /// Read live off the loaded <c>GlueProjectSave</c> rather than cached onto the project at load
+        /// time, so there is no ordering requirement between "the JSON is loaded" and "the flag is
+        /// applied", and no stale copy after the setting changes.
+        /// </remarks>
+        public static bool GeneratesFrb2Code =>
+            GlueState.Self.CurrentMainProject is Frb2Project &&
+            GlueState.Self.CurrentGlueProject?.GenerateCode == true;
 
         public static bool IsSuppressedCodeFile(FilePath filePath) =>
             !WritesCodeForCurrentProject &&

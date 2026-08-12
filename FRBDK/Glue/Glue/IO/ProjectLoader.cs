@@ -279,10 +279,6 @@ namespace FlatRedBall.Glue.IO
 
             if (succeeded)
             {
-                // Must happen before anything below generates code - it's what lets an FRB2 project
-                // that opted in via GlueProjectSave.GenerateCode actually generate.
-                Frb2CodeGenerationSync.ApplyGenerateCodeSetting(GlueState.Self.CurrentMainProject, ProjectManager.GlueProjectSave);
-
                 // This seems to take some time (like 1 second). Can we possibly
                 // make it faster by having it chek Game1.cs first? Why is this so slow?
                 ProjectManager.FindGameClass();

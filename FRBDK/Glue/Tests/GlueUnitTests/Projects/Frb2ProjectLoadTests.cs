@@ -20,97 +20,18 @@ namespace GlueUnitTests.Projects;
 /// else - no generated code, and the .csproj untouched.
 /// </summary>
 /// <remarks>
-/// The fixture is written here rather than checked in because an FRB2 game's only distinguishing
-/// feature is a ProjectReference to FlatRedBall2.csproj, which lives in a different repository. MSBuild
-/// evaluation does not require a ProjectReference's target to exist, so a synthetic project is a
-/// faithful stand-in for what <see cref="Frb2ProjectDetector"/> and the loader actually look at.
+/// This is the default. <see cref="Frb2CodeGenerationLoadTests"/> covers the same project once it opts
+/// into typed accessors, where the .csproj must still be untouched and FRB1's generators must still
+/// not run.
 /// </remarks>
 [Collection("Frb2ProjectLoad")]
 public class Frb2ProjectLoadTests
 {
-    const string ProjectName = "Frb2LoadTestGame";
+    const string ProjectName = Frb2ProjectFixture.ProjectName;
 
-    static string WriteFrb2Project(string root)
-    {
-        Directory.CreateDirectory(Path.Combine(root, "Content"));
+    static string WriteFrb2Project(string root) => Frb2ProjectFixture.Write(root);
 
-        var csprojPath = Path.Combine(root, ProjectName + ".csproj");
-        File.WriteAllText(csprojPath, $@"<Project Sdk=""Microsoft.NET.Sdk"">
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
-    <RootNamespace>{ProjectName}</RootNamespace>
-  </PropertyGroup>
-  <ItemGroup>
-    <ProjectReference Include=""..\..\src\FlatRedBall2.csproj"" />
-  </ItemGroup>
-</Project>");
-
-        File.WriteAllText(Path.Combine(root, "Game1.cs"),
-            "namespace " + ProjectName + ";\npublic class Game1\n{\n}\n");
-
-        // A .slnx, not a .sln, because that is what the real FRB2 sample ships and what a solution
-        // created in a recent Visual Studio looks like. ProjectSyncer.LocateSolution throws when it
-        // finds no solution at all, and that exception surfaces during load - so getting this wrong
-        // means the project does not open.
-        File.WriteAllText(Path.Combine(root, ProjectName + ".slnx"),
-            $"<Solution>\n  <Project Path=\"{ProjectName}.csproj\" />\n</Solution>\n");
-        return csprojPath;
-    }
-
-    /// <summary>
-    /// The layout `dotnet new frb2-desktop` produces: a MyGame.Common holding Game1, Content and the
-    /// engine PackageReference, a MyGame.Desktop launcher that only reaches the engine through Common,
-    /// and a .slnx one level up.
-    ///
-    /// The version is kept out of the Include here deliberately - the shipped template writes it inline
-    /// (Version="*-*") while central package management puts it in Directory.Packages.props, and the
-    /// detector has to match on the package id either way.
-    /// </summary>
-    static string WriteTemplateShapedFrb2Project(string root)
-    {
-        var commonDirectory = Path.Combine(root, ProjectName + ".Common");
-        var desktopDirectory = Path.Combine(root, ProjectName + ".Desktop");
-        Directory.CreateDirectory(Path.Combine(commonDirectory, "Content"));
-        Directory.CreateDirectory(desktopDirectory);
-
-        File.WriteAllText(Path.Combine(root, "Directory.Packages.props"),
-            "<Project>\n  <PropertyGroup>\n    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>\n" +
-            "  </PropertyGroup>\n  <ItemGroup>\n    <PackageVersion Include=\"FlatRedBall2.MonoGame\" Version=\"1.0.0\" />\n" +
-            "  </ItemGroup>\n</Project>\n");
-
-        var commonCsproj = Path.Combine(commonDirectory, ProjectName + ".Common.csproj");
-        File.WriteAllText(commonCsproj, $@"<Project Sdk=""Microsoft.NET.Sdk"">
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <RootNamespace>{ProjectName}</RootNamespace>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include=""FlatRedBall2.MonoGame"" />
-    <PackageReference Include=""MonoGame.Framework.DesktopGL"" />
-  </ItemGroup>
-</Project>");
-
-        File.WriteAllText(Path.Combine(commonDirectory, "Game1.cs"),
-            "namespace " + ProjectName + ";\npublic class Game1\n{\n}\n");
-
-        File.WriteAllText(Path.Combine(desktopDirectory, ProjectName + ".Desktop.csproj"), $@"<Project Sdk=""Microsoft.NET.Sdk"">
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include=""MonoGame.Framework.DesktopGL"" />
-    <ProjectReference Include=""..\{ProjectName}.Common\{ProjectName}.Common.csproj"" />
-  </ItemGroup>
-</Project>");
-
-        File.WriteAllText(Path.Combine(root, ProjectName + ".slnx"),
-            $"<Solution>\n  <Project Path=\"{ProjectName}.Common/{ProjectName}.Common.csproj\" />\n" +
-            $"  <Project Path=\"{ProjectName}.Desktop/{ProjectName}.Desktop.csproj\" />\n</Solution>\n");
-
-        return commonCsproj;
-    }
+    static string WriteTemplateShapedFrb2Project(string root) => Frb2ProjectFixture.WriteTemplateShaped(root);
 
     [StaFact]
     public async Task LoadingATemplateCreatedFrb2Project_IsRecognisedAndWritesNoCode()
@@ -325,27 +246,12 @@ public class Frb2ProjectLoadTests
         await GoldProject.LoadInGlueAsync(csprojPath);
         await GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen("NewScreen");
 
-        var choicesOffered = new List<string>();
-        var previousShowChoice = DialogService.ShowChoiceImpl;
-        try
-        {
-            // Must be stubbed, not just asserted on afterwards: unstubbed, ShowChoice puts a real modal
-            // on the developer's desktop and the run blocks on it forever.
-            DialogService.ShowChoiceImpl = (message, options) =>
-            {
-                choicesOffered.Add(message);
-                return null;
-            };
+        using var dialogs = new RecordedChoiceDialogs();
 
-            // Load again, now that the .gluj has a screen in it.
-            await GoldProject.LoadInGlueAsync(csprojPath);
-        }
-        finally
-        {
-            DialogService.ShowChoiceImpl = previousShowChoice;
-        }
+        // Load again, now that the .gluj has a screen in it.
+        await GoldProject.LoadInGlueAsync(csprojPath);
 
-        Assert.Empty(choicesOffered);
+        Assert.Empty(dialogs.Messages);
         Assert.Empty(GlueTestBootstrap.RecordedDialogMessages);
     }
 
