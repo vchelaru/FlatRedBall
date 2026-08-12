@@ -118,26 +118,44 @@ namespace FlatRedBall.Glue.VSHelpers
             var projects = solution.ReferencedProjects
                 .Where(item => FileManager.GetExtension(item.Name) == "csproj" ||
                                FileManager.GetExtension(item.Name) == "vsproj")
+                .Select(item => AbsolutePathOf(item.Name, solutionDirectory))
+                .Where(item => item != null)
                 .ToArray();
 
             var solutionName = FileManager.RemovePath(FileManager.RemoveExtension(solutionFileName));
 
-            var found =
-                projects.FirstOrDefault(item =>
-                    string.Equals(FileManager.RemovePath(FileManager.RemoveExtension(item.Name)), solutionName,
-                        StringComparison.OrdinalIgnoreCase))
-                // An FRB2 solution lists the engine projects alongside the game, so this only helps
-                // the single-project case - where a renamed solution leaves nothing to match on.
-                ?? (projects.Length == 1 ? projects[0] : null);
+            var named = projects.FirstOrDefault(item =>
+                string.Equals(FileManager.RemovePath(FileManager.RemoveExtension(item)), solutionName,
+                    StringComparison.OrdinalIgnoreCase));
 
-            if (found == null)
+            if (named != null)
             {
-                return null;
+                return named;
             }
 
+            // Renaming a solution leaves nothing to match on, and there is only one thing it can mean.
+            if (projects.Length == 1)
+            {
+                return projects[0];
+            }
+
+            // `dotnet new frb2-desktop` names neither of its projects after the solution - MyGame.slnx
+            // holds MyGame.Common and MyGame.Desktop. Both lead to Common, which is the project Glue
+            // edits, so asking each one which FRB2 game it belongs to settles it without guessing.
+            var frb2GameProjects = projects
+                .Select(Frb2ProjectDetector.FindFrb2GameProjectFor)
+                .Where(item => item != null)
+                .GroupBy(item => FileManager.Standardize(item), StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+
+            return frb2GameProjects.Length == 1 ? frb2GameProjects[0].First() : null;
+        }
+
+        static string AbsolutePathOf(string projectInSolution, string solutionDirectory)
+        {
             try
             {
-                return Path.GetFullPath(Path.Combine(solutionDirectory, found.Name));
+                return Path.GetFullPath(Path.Combine(solutionDirectory, projectInSolution));
             }
             catch (ArgumentException)
             {
