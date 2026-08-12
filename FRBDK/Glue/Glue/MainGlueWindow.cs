@@ -717,8 +717,6 @@ public partial class MainGlueWindow : Form, IMainGlueWindow
 
 
     private System.Windows.Forms.Timer _exitWhenQuietTimer;
-    private bool _exitWhenQuietHasBeenBusy;
-    private DateTime _exitWhenQuietLastBusyTime;
 
     /// <summary>
     /// Automation hook (see CommandLineManager.ExitWhenQuietSeconds): once tasks have gone from
@@ -736,24 +734,12 @@ public partial class MainGlueWindow : Form, IMainGlueWindow
             return;
         }
 
+        var watcher = new QuietExitWatcher(TimeSpan.FromSeconds(quietSeconds.Value), () => DateTime.Now);
+
         _exitWhenQuietTimer = new System.Windows.Forms.Timer { Interval = 500 };
         _exitWhenQuietTimer.Tick += (_, _) =>
         {
-            if (!TaskManager.Self.AreAllAsyncTasksDone)
-            {
-                _exitWhenQuietHasBeenBusy = true;
-                _exitWhenQuietLastBusyTime = DateTime.Now;
-                return;
-            }
-
-            // Don't exit before any work has even been queued yet (e.g. the project load's
-            // task hasn't been added to TaskManager yet) - only arm once we've seen busy.
-            if (!_exitWhenQuietHasBeenBusy)
-            {
-                return;
-            }
-
-            if ((DateTime.Now - _exitWhenQuietLastBusyTime).TotalSeconds >= quietSeconds.Value)
+            if (watcher.Tick(isBusy: !TaskManager.Self.AreAllAsyncTasksDone))
             {
                 _exitWhenQuietTimer.Stop();
                 this.Close();
