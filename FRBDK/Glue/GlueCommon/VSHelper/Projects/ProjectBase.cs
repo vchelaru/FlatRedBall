@@ -124,6 +124,13 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         /// projects, which read Glue's .gluj/.glsj/.glej JSON directly at runtime: Glue authors that
         /// JSON and nothing else, so it neither generates code nor writes the .csproj back to disk.
         /// </summary>
+        /// <remarks>
+        /// Fixed per project type, never toggled at runtime. An FRB2 project opting into generated
+        /// accessors (<c>GlueProjectSave.GenerateCode</c>) must not flip this: whether Glue owns the
+        /// .csproj, whether FRB1's generator set runs, and whether Glue writes that project's typed
+        /// accessors are three separate questions, and this one flag gates all three. The opt-in is
+        /// <c>CodeWritePolicy.GeneratesFrb2Code</c> instead.
+        /// </remarks>
         public virtual bool IsMaintainedByGlue => true;
 
         /// <summary>

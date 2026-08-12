@@ -259,6 +259,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return filePath;
         }
 
+        // Rooted at CurrentGlueProjectDirectory, same as the custom half above. Composing this from
+        // FileManager.RelativeDirectory instead - the .csproj's folder - is identical for FRB1, where
+        // the .gluj sits beside the .csproj, and splits the two halves of the partial class across
+        // different directories for any project type that moves the .gluj (FRB2 puts it under
+        // Content/FrbEditor/).
+        public FilePath GetGeneratedCodeFilePath(GlueElement glueElement) =>
+            GlueState.Self.CurrentGlueProjectDirectory + glueElement.Name + ".Generated.cs";
+
         public ReferencedFileSave GetReferencedFile(FilePath filePath)
         {
             return GetReferencedFiles(filePath).FirstOrDefault();

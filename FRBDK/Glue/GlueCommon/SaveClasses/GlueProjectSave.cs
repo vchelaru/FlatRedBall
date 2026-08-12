@@ -275,6 +275,18 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #endregion
 
+        #region FlatRedBall 2
+
+        /// <summary>
+        /// Whether Glue generates code for this project. Only meaningful for FlatRedBall 2 projects -
+        /// FRB1 code generation is mandatory and always ignores this. Off by default: an FRB2 game runs
+        /// entirely from this JSON via runtime reflection, so a project only needs this once it wants
+        /// typed accessors instead of string-based lookups.
+        /// </summary>
+        public bool GenerateCode { get; set; }
+
+        #endregion
+
         #region Fields / Properties
 
         public GluxPluginData PluginData

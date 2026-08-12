@@ -4,8 +4,8 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 {
     /// <summary>
     /// A FlatRedBall 2 game project. FRB2 builds its Screens and Entities from Glue's
-    /// .gluj/.glsj/.glej JSON at runtime, so Glue authors only that JSON here: it generates no code
-    /// and never writes the .csproj back to disk.
+    /// .gluj/.glsj/.glej JSON at runtime, so Glue authors only that JSON here: none of FRB1's code
+    /// generation runs, and the .csproj is never written back to disk.
     /// </summary>
     /// <remarks>
     /// The .csproj is still fully loaded and read - it is what identifies the project as FRB2 (see
@@ -15,6 +15,11 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
     ///
     /// Getting those JSON files copied to the build output is the game project's own job: one static
     /// glob it carries in its .csproj, not something Glue maintains.
+    ///
+    /// A project can opt into typed accessors for its Screens/Entities
+    /// (<c>GlueProjectSave.GenerateCode</c>), which <c>Frb2CodeGenerator</c> writes beside the JSON
+    /// without going through any of those suppressed seams. That opt-in deliberately leaves
+    /// <see cref="IsMaintainedByGlue"/> false - see its own remarks.
     /// </remarks>
     public class Frb2Project : VisualStudioProject
     {

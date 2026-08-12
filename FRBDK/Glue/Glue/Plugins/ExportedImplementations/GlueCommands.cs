@@ -39,13 +39,33 @@ public class GlueCommands : IGlueCommands
     /// never gets code generated into it" true everywhere instead of at the call sites that
     /// remembered to check.
     /// </remarks>
-    public IGenerateCodeCommands GenerateCodeCommands =>
-        GlueState.Self.CurrentMainProject?.IsMaintainedByGlue == false
-            ? _noCodeGenerationCommands
-            : _generateCodeCommands;
+    public IGenerateCodeCommands GenerateCodeCommands
+    {
+        get
+        {
+            // Checked before IsMaintainedByGlue, which is false for every FRB2 project whether it opted
+            // in or not - that flag answers "does Glue own the .csproj and FRB1's generator set", and an
+            // FRB2 project never does. FRB2's generated code binds to a runtime object tree its own
+            // reflection-based loader already built rather than constructing anything, which is
+            // different enough from FRB1's generators (Game1.Generated.cs, camera setup, factories) that
+            // it needs its own IGenerateCodeCommands rather than a shared one with branches inside it.
+            if (CodeWritePolicy.GeneratesFrb2Code)
+            {
+                return _frb2GenerateCodeCommands;
+            }
+
+            if (GlueState.Self.CurrentMainProject?.IsMaintainedByGlue == false)
+            {
+                return _noCodeGenerationCommands;
+            }
+
+            return _generateCodeCommands;
+        }
+    }
 
     readonly IGenerateCodeCommands _generateCodeCommands;
     readonly IGenerateCodeCommands _noCodeGenerationCommands;
+    readonly IGenerateCodeCommands _frb2GenerateCodeCommands;
 
     public IGluxCommands GluxCommands { get; private set; }
 
@@ -171,6 +191,7 @@ public class GlueCommands : IGlueCommands
     {
         _generateCodeCommands = new GenerateCodeCommands();
         _noCodeGenerationCommands = new NoCodeGenerationCommands(_generateCodeCommands);
+        _frb2GenerateCodeCommands = new Frb2GenerateCodeCommands(_generateCodeCommands);
         GluxCommands = new GluxCommands();
         ProjectCommands = new ProjectCommands();
         RefreshCommands = new RefreshCommands();
