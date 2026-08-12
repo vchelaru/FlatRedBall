@@ -78,9 +78,15 @@ namespace EntityInputMovementPlugin
 
         private async void HandleGluxLoaded()
         {
+            // Before anything reads a movement csv - the name changed at CsvInheritanceSupport, and reading
+            // under the new name in a project that still has the old one silently resets tuned values.
+            bool didMigrateCsvNames = MigrateLegacyMovementCsvNames();
+
             bool didChangeGlux = await UpdateTopDownCodePresenceInProject();
 
             UpdatePlatformerCodePresenceInProject();
+
+            didChangeGlux |= didMigrateCsvNames;
 
             if (didChangeGlux)
             {
@@ -98,6 +104,26 @@ namespace EntityInputMovementPlugin
             {
                 await FlatRedBall.PlatformerPlugin.Controllers.MainController.ForceCsvGenerationFor(firstPlatformerEntity);
             }
+        }
+
+        private static bool MigrateLegacyMovementCsvNames()
+        {
+            var didMigrateAny = false;
+
+            foreach (var entity in GlueState.Self.CurrentGlueProject.Entities)
+            {
+                if (FlatRedBall.PlatformerPlugin.Controllers.MainController.IsPlatformer(entity))
+                {
+                    didMigrateAny |= FlatRedBall.PlatformerPlugin.Controllers.MainController.MigrateLegacyCsvNameFor(entity);
+                }
+
+                if (TopDownPlugin.Controllers.MainController.IsTopDown(entity))
+                {
+                    didMigrateAny |= TopDownPlugin.Controllers.MainController.MigrateLegacyCsvNameFor(entity);
+                }
+            }
+
+            return didMigrateAny;
         }
 
         private async void HandleEntityImported(GlueElement newElement)
