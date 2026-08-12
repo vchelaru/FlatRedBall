@@ -1,6 +1,6 @@
 ---
 name: glue-project-types
-description: How Glue decides what kind of project it opened, and the seams that stop it writing code/csproj for FRB2 projects. Triggers: ProjectCreator, ProjectBase, VisualStudioProject, Frb2Project, IsMaintainedByGlue, CodeWritePolicy, "could not determine project type", LocateSolution.
+description: How Glue decides what kind of project it opened, and the seams that stop it writing code/csproj for FRB2 projects. Triggers: ProjectCreator, Frb2Project, IsMaintainedByGlue, CodeWritePolicy, GenerateCode, Frb2CodeGenerator, "could not determine project type", LocateSolution.
 ---
 
 # Glue Project Types
@@ -51,9 +51,33 @@ Plugin generators that call `FileManager.SaveText` directly (Platformer/TopDown/
 generators, Gum, GameCommunication) still bypass all of this. They only fire for projects that opt into
 those behaviors.
 
-`Frb2Project.ContentDirectory` is `"Content/"` because FRB2's `GlueContentSource` resolves referenced
-files as `<directory holding the .gluj>/Content/<name>` — the `.gluj` must stay beside the Content folder,
-which is why it is written at project root like FRB1's.
+`Frb2Project.ContentDirectory` and `GlueProjectSubdirectory` are both `"Content/FrbEditor/"` — unlike
+FRB1, the `.gluj` does *not* sit beside the `.csproj`. Everything Glue authors for an FRB2 project lives
+under that one folder so deleting it removes every trace of the editor, and every relative path in the
+JSON resolves against it.
+
+## FRB2 code generation is opt-in, and not via `IsMaintainedByGlue`
+
+`GlueProjectSave.GenerateCode` (default `false`) turns on typed accessors for an FRB2 project's
+Screens/Entities, written by `Glue/CodeGeneration/Frb2CodeGenerator.cs` via `Frb2GenerateCodeCommands`.
+
+**Landmine:** the opt-in is `CodeWritePolicy.GeneratesFrb2Code`, deliberately *not*
+`ProjectBase.IsMaintainedByGlue`, which stays permanently `false` for `Frb2Project`. That flag gates all
+four seams in the table above at once, so routing the setting through it hands an FRB2 project the entire
+FRB1 pipeline: Glue rewrites the `.csproj`, and every generator in the landmine above writes its
+FRB1-only output into a project that cannot compile it. `GenerateCodeCommands` therefore checks
+`GeneratesFrb2Code` *before* the `IsMaintainedByGlue` early-out.
+
+**Landmine:** `Frb2CodeGenerator` writes both halves of the partial class itself rather than through
+`FileCommands.SaveIfDiffers` / `CodeProjectHelper.CreateAndAddPartialGeneratedCodeFile`. Those add a
+nested `.csproj` item and honour the FRB1 write-gate, neither of which applies — FRB2's SDK-style project
+already globs `**/*.cs`. Both halves resolve through `IFileCommands.GetGeneratedCodeFilePath` /
+`GetCustomCodeFilePath`, which are rooted at `CurrentGlueProjectDirectory` (the `.gluj`'s folder).
+Composing either from `FileManager.RelativeDirectory` instead is identical for FRB1 and splits the pair
+across directories for FRB2.
+
+The tree view's Code/Events nodes still key off `WritesCodeForCurrentProject`, so an opted-in project's
+generated files show up on disk but not in Glue's Explorer tree.
 
 ## Solution lookup can fail a load
 

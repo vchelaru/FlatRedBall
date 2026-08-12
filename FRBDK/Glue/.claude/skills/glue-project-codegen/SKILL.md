@@ -54,3 +54,4 @@ Other gotchas:
 - `gluj-versions` — the `GluxVersions` enum, `FileVersion` gating, and the version-bump checklist. This skill assumes that context; don't restate it here.
 - `gum-codegen` — Gum standard-runtime (NineSlice/Text/Container/…) property and state codegen specifically. Separate pipeline from the general `ElementComponentCodeGenerator` list above.
 - `glue-file-watch` — the general external-change-detection and self-save-suppression mechanism referenced above.
+- `glue-project-types` — everything above is FRB1's mandatory pipeline. FRB2 projects generate nothing by default and, when opted in, use a separate generator that never goes through `CodeWriter`.
