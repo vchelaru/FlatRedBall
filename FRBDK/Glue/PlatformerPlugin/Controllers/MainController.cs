@@ -46,6 +46,15 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
             return viewModel;
         }
 
+        /// <summary>
+        /// Drops the cached view model so the next GetViewModel hands back a clean one. Glue itself has no
+        /// use for this (one running instance, one view model), but tests share this singleton across
+        /// projects, where a left-over IsPlatformer = true makes the next "IsPlatformer = true" a silent
+        /// no-op. Clearing the field rather than setting the properties back avoids firing the handler
+        /// against an entity that no longer exists.
+        /// </summary>
+        public void ResetViewModel() => viewModel = null;
+
         public void MakeCurrentEntityPlatformer()
         {
             if(viewModel != null)
@@ -388,6 +397,23 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
                     );
 
             }
+        }
+
+        /// <summary>
+        /// Renames a pre-CsvInheritanceSupport PlatformerValues.csv to the name this project's version
+        /// generates. Has to run before anything reads the csv: the view model loads from the current
+        /// name, so an unmigrated project reads nothing, falls back to defaults, and writes those defaults
+        /// back out as a second csv - losing whatever was tuned in the original.
+        /// </summary>
+        public static bool MigrateLegacyCsvNameFor(EntitySave entitySave)
+        {
+            if (CsvGenerator.StrippedCsvFile == CsvGenerator.LegacyStrippedCsvFile)
+            {
+                return false;
+            }
+
+            return RenamedCsvMigrator.MigrateCsvRename(
+                entitySave, CsvGenerator.LegacyStrippedCsvFile, CsvGenerator.StrippedCsvFile);
         }
 
         public static async Task ForceCsvGenerationFor(EntitySave entitySave)

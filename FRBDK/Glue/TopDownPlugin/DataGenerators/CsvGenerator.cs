@@ -19,6 +19,12 @@ namespace TopDownPlugin.DataGenerators
     {
         #region Fields/Properties
 
+        /// <summary>
+        /// What the csv was called before CsvInheritanceSupport. Projects made before that version still
+        /// have it under this name until they're migrated - see MainController.MigrateLegacyCsvNameFor.
+        /// </summary>
+        public const string LegacyStrippedCsvFile = "TopDownValues";
+
         public static string StrippedCsvFile
         {
             get
@@ -31,7 +37,7 @@ namespace TopDownPlugin.DataGenerators
                 }
                 else
                 {
-                    return "TopDownValues";
+                    return LegacyStrippedCsvFile;
                 }
             }
         }

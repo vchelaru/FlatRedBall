@@ -19,6 +19,12 @@ namespace FlatRedBall.PlatformerPlugin.Generators
     {
         #region Fields/Properties
 
+        /// <summary>
+        /// What the csv was called before CsvInheritanceSupport. Projects made before that version still
+        /// have it under this name until they're migrated - see MainController.MigrateLegacyCsvNameFor.
+        /// </summary>
+        public const string LegacyStrippedCsvFile = "PlatformerValues";
+
         public static string StrippedCsvFile
         {
             get
@@ -29,7 +35,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                 }
                 else
                 {
-                    return "PlatformerValues";
+                    return LegacyStrippedCsvFile;
                 }
             }
         }

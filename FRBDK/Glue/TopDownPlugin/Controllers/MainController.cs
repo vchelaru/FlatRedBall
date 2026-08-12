@@ -57,6 +57,15 @@ namespace TopDownPlugin.Controllers
             return viewModel;
         }
 
+        /// <summary>
+        /// Drops the cached view model so the next GetViewModel hands back a clean one. Glue itself has no
+        /// use for this (one running instance, one view model), but tests share this singleton across
+        /// projects, where a left-over IsTopDown = true makes the next "IsTopDown = true" a silent no-op.
+        /// Clearing the field rather than setting the properties back avoids firing the handler against an
+        /// entity that no longer exists.
+        /// </summary>
+        public void ResetViewModel() => viewModel = null;
+
         public void MakeCurrentEntityTopDown()
         {
             if (viewModel != null)
@@ -351,9 +360,26 @@ namespace TopDownPlugin.Controllers
         }
 
 
+        /// <summary>
+        /// Renames a pre-CsvInheritanceSupport TopDownValues.csv to the name this project's version
+        /// generates. Has to run before anything reads the csv: the view model loads from the current
+        /// name, so an unmigrated project reads nothing, falls back to defaults, and writes those defaults
+        /// back out as a second csv - losing whatever was tuned in the original.
+        /// </summary>
+        public static bool MigrateLegacyCsvNameFor(EntitySave entitySave)
+        {
+            if (CsvGenerator.StrippedCsvFile == CsvGenerator.LegacyStrippedCsvFile)
+            {
+                return false;
+            }
+
+            return RenamedCsvMigrator.MigrateCsvRename(
+                entitySave, CsvGenerator.LegacyStrippedCsvFile, CsvGenerator.StrippedCsvFile);
+        }
+
         #region Update To / Refresh From Model
 
-        public static bool IsTopDown(EntitySave entitySave) => 
+        public static bool IsTopDown(EntitySave entitySave) =>
             entitySave.Properties.GetValue<bool>(nameof(TopDownEntityViewModel.IsTopDown));
 
         public bool GetIfInheritsFromTopDown(EntitySave entitySave) =>
