@@ -593,7 +593,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         var result = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(message);
                         if (result == System.Windows.MessageBoxResult.Yes)
                         {
-                            OpenProcess();
+                            // No association exists, so re-running OpenProcess() here would just
+                            // shell-execute the file again and fail with the same exception. Show
+                            // Windows' "Open With" picker instead - that's what "set the association"
+                            // actually promised.
+                            System.Diagnostics.Process.Start(CreateOpenWithDialogStartInfo(fileName));
                         }
                     }
                     else
@@ -652,6 +656,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
             }
         }
+
+        internal static ProcessStartInfo CreateOpenWithDialogStartInfo(string fileName) => new ProcessStartInfo
+        {
+            FileName = fileName,
+            UseShellExecute = true,
+            Verb = "openas"
+        };
 
         private FilePath TryToGetFilePathFromExtension(string textExtension)
         {
