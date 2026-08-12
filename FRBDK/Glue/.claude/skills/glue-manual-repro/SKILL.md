@@ -25,6 +25,12 @@ tool yourself" rule is about the final user-facing manual-test step, not interna
 - **A project auto-load on startup can take minutes**, not seconds (MSBuild restore, codegen) — a window
   title still reading generic "FlatRedBall Editor" (no project path) means it hasn't finished; don't
   read the UI state as final until the title shows the loaded `.csproj` path.
+- **`exitwhenquiet` may never fire.** The automation hook
+  (`MainGlueWindow.StartExitWhenQuietWatcherIfRequested`) exits only once
+  `TaskManager.Self.AreAllAsyncTasksDone` has held for N seconds, and on some projects that never
+  happens — Glue loads fine and then just stays open (issue #2053). Don't build a headless
+  verify loop on a clean exit; launch, wait for the title to show the `.csproj`, kill, and assert on
+  files written.
 
 ## Reusable pattern
 
