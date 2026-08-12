@@ -1061,6 +1061,61 @@ namespace FlatRedBall
             }
 
             ReplaceTextureCalled?.Invoke(oldTexture, newTexture);
+
+#if DEBUG
+            // A missed replacement doesn't fail here - it fails much later and much more confusingly,
+            // as an ObjectDisposedException deep in the renderer once oldTexture is actually disposed.
+            // Failing loudly at the reload site instead names the exact Sprite/AnimationChain responsible.
+            VerifyNoRemainingTextureReferences(oldTexture);
+#endif
+        }
+
+        #region XML Docs
+        /// <summary>
+        /// Checks every Sprite managed by SpriteManager (including AnimationChains frames) for a
+        /// remaining reference to oldTexture, throwing immediately if one is found. Called automatically
+        /// by ReplaceTexture in DEBUG builds. Only covers SpriteManager-tracked sprites - sprites living
+        /// in a SpriteGrid/TextureGrid are outside SpriteManager's lists and have their own ReplaceTexture
+        /// methods that must be called separately.
+        /// </summary>
+        /// <param name="oldTexture">The texture that should no longer be referenced by any live sprite.</param>
+        #endregion
+        public static void VerifyNoRemainingTextureReferences(Texture2D oldTexture)
+        {
+            foreach (var sprite in SpriteManager.AutomaticallyUpdatedSprites)
+            {
+                ThrowIfSpriteReferencesTexture(sprite, oldTexture);
+            }
+            foreach (var sprite in SpriteManager.ManuallyUpdatedSprites)
+            {
+                ThrowIfSpriteReferencesTexture(sprite, oldTexture);
+            }
+        }
+
+        private static void ThrowIfSpriteReferencesTexture(Sprite sprite, Texture2D oldTexture)
+        {
+            if (sprite.Texture == oldTexture)
+            {
+                throw new InvalidOperationException(
+                    $"ReplaceTexture did not update the Texture on Sprite \"{sprite.Name}\" - " +
+                    "it still references the old texture, which is about to be disposed.");
+            }
+
+            if (sprite.AnimationChains != null)
+            {
+                foreach (var chain in sprite.AnimationChains)
+                {
+                    for (int i = 0; i < chain.Count; i++)
+                    {
+                        if (chain[i].Texture == oldTexture)
+                        {
+                            throw new InvalidOperationException(
+                                $"ReplaceTexture did not update frame {i} of AnimationChain \"{chain.Name}\" " +
+                                $"on Sprite \"{sprite.Name}\" - it still references the old texture, which is about to be disposed.");
+                        }
+                    }
+                }
+            }
         }
 
         #region XML Docs
