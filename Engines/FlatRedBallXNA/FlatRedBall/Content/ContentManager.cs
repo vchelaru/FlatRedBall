@@ -752,7 +752,10 @@ namespace FlatRedBall.Content
 
                         }
 
-                        mNonDisposableDictionary.Add(fullNameWithType, loadedAsset);
+                        // AnimationChainList implements IDisposable, so it belongs in mDisposableDictionary
+                        // (added below, alongside every other IDisposable loadedAsset) rather than here -
+                        // otherwise code that scans DisposableObjects (e.g. FlatRedBallServices.ReplaceTexture)
+                        // would only find it by the accident of also falling through to that shared block.
                     }
 
                     #endregion
