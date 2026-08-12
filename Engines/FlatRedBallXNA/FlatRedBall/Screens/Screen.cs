@@ -597,7 +597,7 @@ namespace FlatRedBall.Screens
 
                 return GetInstanceRecursive(afterDot, instance);
             }
-            return container;
+            return GetInstance(variableName, container);
 
         }
 
