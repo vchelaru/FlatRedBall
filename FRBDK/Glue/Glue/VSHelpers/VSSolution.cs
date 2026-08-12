@@ -305,11 +305,25 @@ namespace FlatRedBall.Glue.VSHelpers
             return $"Project(\"{{{projectTypeId.ToString().ToUpperInvariant()}}}\") = \"{projectName}\", \"{relativePath}\", \"{{{projectId.ToString().ToUpperInvariant()}}}\"\r\nEndProject";
         }
 
+        /// <summary>
+        /// Reads a solution's referenced projects. Handles both the classic .sln text format and
+        /// Visual Studio's XML .slnx.
+        /// </summary>
+        /// <remarks>
+        /// Reading only - everything on this class that *writes* a solution assumes the .sln text
+        /// format and does not apply to .slnx.
+        /// </remarks>
         public static VSSolution FromFile(FilePath fileName)
         {
             VSSolution toReturn = new VSSolution();
 
             toReturn.FullFileName = fileName.FullPath;
+
+            if (fileName.Extension?.ToLowerInvariant() == "slnx")
+            {
+                ParseSlnx(fileName, toReturn);
+                return toReturn;
+            }
 
             var lines = System.IO.File.ReadAllLines(fileName.FullPath);
 
@@ -319,6 +333,23 @@ namespace FlatRedBall.Glue.VSHelpers
             }
 
             return toReturn;
+        }
+
+        // Projects can be nested inside <Folder> elements, so this looks at every descendant rather
+        // than the root's children.
+        private static void ParseSlnx(FilePath fileName, VSSolution solution)
+        {
+            var document = System.Xml.Linq.XDocument.Load(fileName.FullPath);
+
+            foreach (var element in document.Descendants("Project"))
+            {
+                var path = element.Attribute("Path")?.Value;
+
+                if (!string.IsNullOrEmpty(path))
+                {
+                    solution.ReferencedProjects.Add(new CsprojReference { Name = path });
+                }
+            }
         }
 
         private static void ParseLine(string line, VSSolution solution)
