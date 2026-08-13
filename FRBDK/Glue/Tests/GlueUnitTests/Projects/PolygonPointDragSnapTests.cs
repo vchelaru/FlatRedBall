@@ -147,4 +147,92 @@ public class PolygonPointDragSnapTests
             nos, gameScreen, listToAddTo: null, selectNewNos: false,
             performSaveAndGenerateCode: true, updateUi: false);
     }
+
+    /// <summary>
+    /// Mirrors a real reported case (issue #2074): a Polygon that's a NamedObject nested inside an Entity,
+    /// exposed via HasPublicProperty rather than a bare Screen object. PolygonPointHandles.EveryFrameUpdate
+    /// has an entirely separate "tunneled" code path for a Polygon reached through a CustomVariable whose
+    /// SourceObjectProperty is "Points" - this entity deliberately has no such CustomVariable, matching the
+    /// real .glej (ResonatorPyramid) that reported the bug, so this exercises the plain
+    /// "item as Polygon"/EntityViewingScreen-resolved-instance path instead.
+    ///
+    /// Adds the Polygon to the existing Entities\Entity1 rather than creating a new entity:
+    /// EntityCommands.AddEntityAsync auto-creates a "&lt;EntityName&gt;List" NamedObject on GameScreen
+    /// (mirroring Entity1List), and that addition alone broke GameScreen.AddToManagers with an NRE - a
+    /// separate, unrelated bug in that codegen path this test isn't trying to pin.
+    /// </summary>
+    [StaFact]
+    public async Task DraggingAPolygonPointNestedInAnEntity_WithSnappingEnabled_SnapsToGrid()
+    {
+        GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
+
+        using var game = await LiveGameProcess.StartAsync(
+            "Samples/EditorTest1",
+            csprojRelativeToProjectRoot: "EditorTest1/EditorTest1.csproj",
+            exeRelativeToProjectRoot: "EditorTest1/bin/Debug/net9.0/EditorTest1.exe",
+            afterLoadBeforeEmbed: AddNestedPolygonToEntity1);
+
+        // Selecting the entity loads EntityViewingScreen (a real Screen), which is enough to satisfy
+        // SetEditMode's "there must be a current screen to restart" requirement - no need to touch
+        // GameScreen at all for this test.
+        var selectEntityResponse = await game.SelectEntity("Entities\\Entity1");
+        selectEntityResponse.Succeeded.ShouldBeTrue(selectEntityResponse.Message);
+
+        var editModeResponse = await game.Send(new SetEditMode
+        {
+            IsInEditMode = true,
+            AbsoluteGlueProjectFilePath = System.IO.Path.Combine(game.ProjectRoot, "EditorTest1", "EditorTest1.gluj"),
+        });
+        editModeResponse.Succeeded.ShouldBeTrue(editModeResponse.Message);
+        await Task.Delay(1000);
+
+        var entity = ObjectFinder.Self.GetEntitySave("Entities\\Entity1");
+        var selectPolygonResponse = await game.Send(new SelectObjectDto
+        {
+            ElementNameGlue = "Entities\\Entity1",
+            EntitySave = entity,
+            NamedObjectNames = { "PolygonInstance" },
+        });
+        selectPolygonResponse.Succeeded.ShouldBeTrue(selectPolygonResponse.Message);
+
+        var setPointsResponse = await game.Send(new SetPolygonPointsForTestingDto { Points = InitialPoints });
+        setPointsResponse.Succeeded.ShouldBeTrue(setPointsResponse.Message);
+
+        var settingsResponse = await game.Send(new GlueViewSettingsDto
+        {
+            EnableSnapping = true,
+            SnapSize = 8,
+            PolygonPointSnapSize = 8,
+        });
+        settingsResponse.Succeeded.ShouldBeTrue(settingsResponse.Message);
+
+        var dragResponse = await game.Send<SimulatePolygonPointDragResponse>(new SimulatePolygonPointDragDto
+        {
+            PointIndex = 0,
+            ScreenXChange = 3,
+            ScreenYChange = 0,
+        });
+
+        dragResponse.Succeeded.ShouldBeTrue(dragResponse.Message);
+        dragResponse.Data.X.ShouldBe(-8,
+            "a 3-pixel drag with an 8-unit snap should round back to the starting grid line, not move by a fraction of a unit");
+    }
+
+    static async Task AddNestedPolygonToEntity1()
+    {
+        var entity = ObjectFinder.Self.GetEntitySave("Entities\\Entity1");
+
+        var nos = new NamedObjectSave();
+        nos.SetDefaults();
+        nos.InstanceName = "PolygonInstance";
+        nos.SourceType = SourceType.FlatRedBallType;
+        nos.SourceClassType = "FlatRedBall.Math.Geometry.Polygon";
+        // Matches ResonatorPyramid.glej: exposed as a public property on the entity, not tunneled through
+        // a CustomVariable.
+        nos.HasPublicProperty = true;
+
+        await GlueCommands.Self.GluxCommands.AddNamedObjectToAsync(
+            nos, entity, listToAddTo: null, selectNewNos: false,
+            performSaveAndGenerateCode: true, updateUi: false);
+    }
 }
