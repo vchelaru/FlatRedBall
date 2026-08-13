@@ -39,6 +39,12 @@ namespace GlueFormsCore.ViewModels
         public int Count => Tabs.Count;
         public ObservableCollection<PluginTab> Tabs { get; private set; } = new ObservableCollection<PluginTab>();
 
+        // Per-node-type tab memory (issue #2068). Keyed by type name rather than a single global
+        // "most recently clicked" timestamp (which is what issue #1593 actually broke - see
+        // ShowMostRecentTabFor) so a tab manually chosen while viewing one node type never overrides
+        // the default/bookmark tab for an unrelated type.
+        public Dictionary<string, PluginTab> TabsForTypes { get; private set; } = new Dictionary<string, PluginTab>();
+
         public TabContainerViewModel()
         {
             Tabs.CollectionChanged += OnTabsCollectionChanged;
@@ -54,6 +60,17 @@ namespace GlueFormsCore.ViewModels
             }
         }
 
+        public void SetTabForCurrentType(PluginTab tab)
+        {
+            var treeNode = GlueState.Self.CurrentTreeNode;
+            var selectedType = treeNode?.Tag?.GetType()?.Name ?? treeNode?.Text;
+
+            if (selectedType != null)
+            {
+                TabsForTypes[selectedType] = tab;
+            }
+        }
+
         public void ShowMostRecentTabFor(string typeName)
         {
             if (Count == 0 || typeName is null)
@@ -61,14 +78,10 @@ namespace GlueFormsCore.ViewModels
                 return;
             }
 
-            // removing remembering of last tabs clicked
-            // https://github.com/vchelaru/FlatRedBall/issues/1593
-            //SelectedTab =
-            //    Tabs.OrderByDescending(item => item.LastTimeClicked)
-            //        .ThenByDescending(item => item.IsPreferredDisplayerForType(typeName))
-            //        .First();
-            SelectedTab =
-                Tabs.OrderByDescending(item => item.IsPreferredDisplayerForType(typeName))
+            SelectedTab = TabsForTypes.TryGetValue(typeName, out PluginTab tab)
+                ? tab
+                : Tabs.OrderByDescending(item => item.IsPreferredDisplayerForType(typeName))
+                    .ThenByDescending(item => item.LastTimeClicked)
                     .First();
         }
     }
