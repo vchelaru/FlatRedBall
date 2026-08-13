@@ -112,7 +112,14 @@ namespace GameCommunicationPlugin.GlueControl.ViewModels
         public decimal PolygonPointSnapSize
         {
             get => Get<decimal>();
-            set => Set(value);
+            set
+            {
+                // 0 (or below) makes PolygonPointHandles.ApplyDrag's Snap() a no-op - polygon point
+                // dragging looks completely unsnapped, with no error or visual sign anything is wrong.
+                const decimal minValue = 1;
+                value = Math.Max(value, minValue);
+                Set(value);
+            }
         }
 
         [DependsOn(nameof(EnableLiveEdit))]
