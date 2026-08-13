@@ -89,4 +89,37 @@ public class LiveGameProcessTests
 
         (await game.GetCurrentScreenName()).ShouldBe("EditorTest1.Screens.GameScreen_EditorPlaceholder");
     }
+
+    // Pins #2077: GameScreen's Map (a LayeredTileMap NamedObjectSave with ShiftMapToMoveGameplayLayerToZ0)
+    // is SetByDerived - only a concrete derived Screen assigns it, so on the AbstractScreenPlaceholderFactory
+    // placeholder from the test above it stays default(T), i.e. null. TmxCodeGenerator's
+    // TryGenerateShiftZ0Code/GenerateCreateEntitiesCode unconditionally emitted
+    // "Map.MapLayers.FindByName(...)" with no null guard, so AddToManagers() NREs the moment the
+    // placeholder loads - independent of the new-Entity repro in the issue, which only happened to be how
+    // it was noticed (see the issue's own "not yet root-caused" note).
+    //
+    // SelectObjectDto's response carries no failure signal (Succeeded is true either way - see the test
+    // above; ScreenManager.LoadScreen sets CurrentScreen before Initialize ever runs), so the only way to
+    // observe the exception from outside the game process is CommandReceiver.Receive's top-level
+    // catch-all, which Console.WriteLines it - captured via LiveGameProcess's redirected stdout.
+    [StaFact]
+    public async Task EditorTest1_SelectingGameScreenPlaceholder_DoesNotThrowInAddToManagers()
+    {
+        GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
+
+        using var game = await LiveGameProcess.StartAsync(
+            "Samples/EditorTest1",
+            csprojRelativeToProjectRoot: "EditorTest1/EditorTest1.csproj",
+            exeRelativeToProjectRoot: "EditorTest1/bin/Debug/net9.0/EditorTest1.exe");
+
+        var selectResponse = await game.SelectScreen("Screens\\GameScreen");
+        selectResponse.Succeeded.ShouldBeTrue(selectResponse.Message);
+
+        // Give the game a moment to process the DTO and, if it throws, flush the exception to stdout -
+        // there's no ack for "AddToManagers finished" to await instead.
+        await Task.Delay(1000);
+
+        var output = string.Join("\n", game.GetCapturedStandardOutputLines());
+        output.ShouldNotContain("NullReferenceException");
+    }
 }

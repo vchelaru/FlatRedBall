@@ -54,6 +54,12 @@ public class NestedDotnetCliTests
             .EnumerateFiles(FindTestProjectRoot(), "*.cs", SearchOption.AllDirectories)
             .Where(file => !file.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}"))
             .Where(file => !Path.GetFileName(file).StartsWith("NestedDotnetCli", StringComparison.Ordinal))
+            // LiveGameProcess.cs redirects the built game .exe's stdout - not a nested `dotnet` invocation,
+            // so NestedDotnetCli.Run (which expects a `dotnet <args>` command it runs to completion or
+            // times out) doesn't fit. It doesn't have the #1969 deadlock shape either: the process is
+            // long-lived by design (killed by Dispose, not awaited to exit), and output is drained via the
+            // async OutputDataReceived/BeginOutputReadLine event pair rather than a blocking ReadToEnd().
+            .Where(file => Path.GetFileName(file) != "LiveGameProcess.cs")
             .Where(file => File.ReadAllText(file).Contains("RedirectStandardOutput", StringComparison.Ordinal))
             .Select(Path.GetFileName)
             .ToList();

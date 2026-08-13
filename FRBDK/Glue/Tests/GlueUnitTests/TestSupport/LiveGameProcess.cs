@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -33,14 +35,18 @@ internal sealed class LiveGameProcess : IDisposable
     readonly TempDir project;
     readonly System.Diagnostics.Process process;
     readonly GameJsonCommunicationPlugin.Common.GameConnectionManager connectionManager;
+    readonly ConcurrentQueue<string> capturedStandardOutput;
 
     public string ProjectRoot => project.Root;
 
-    LiveGameProcess(TempDir project, System.Diagnostics.Process process, GameJsonCommunicationPlugin.Common.GameConnectionManager connectionManager)
+    LiveGameProcess(TempDir project, System.Diagnostics.Process process,
+        GameJsonCommunicationPlugin.Common.GameConnectionManager connectionManager,
+        ConcurrentQueue<string> capturedStandardOutput)
     {
         this.project = project;
         this.process = process;
         this.connectionManager = connectionManager;
+        this.capturedStandardOutput = capturedStandardOutput;
     }
 
     /// <summary>
@@ -125,11 +131,32 @@ internal sealed class LiveGameProcess : IDisposable
             GameJsonCommunicationPlugin.Common.GameConnectionManager.Self = connectionManager;
 
             var exePath = Path.Combine(project.Root, exeRelativeToProjectRoot);
-            var process = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(exePath)
+            var capturedStandardOutput = new ConcurrentQueue<string>();
+            var process = new System.Diagnostics.Process
             {
-                UseShellExecute = false,
-                WorkingDirectory = Path.GetDirectoryName(exePath),
-            });
+                StartInfo = new System.Diagnostics.ProcessStartInfo(exePath)
+                {
+                    UseShellExecute = false,
+                    WorkingDirectory = Path.GetDirectoryName(exePath),
+                    RedirectStandardOutput = true,
+                }
+            };
+            // Async, event-based capture rather than ReadToEnd(): this process is long-lived (killed by
+            // Dispose, not naturally exiting), so a blocking read would never return - see NestedDotnetCli's
+            // doc comment for the same deadlock shape with dotnet build's child MSBuild nodes. This is what
+            // CommandReceiver.Receive's catch-all writes an unhandled DTO-handling exception to (see
+            // Embedded/CommandReceiver.cs) - the only way to observe a screen-load exception from outside
+            // the game process, since ScreenManager.LoadScreen sets CurrentScreen before Initialize runs and
+            // the SelectObjectDto response carries no failure signal either way.
+            process.OutputDataReceived += (_, e) =>
+            {
+                if (e.Data != null)
+                {
+                    capturedStandardOutput.Enqueue(e.Data);
+                }
+            };
+            process.Start();
+            process.BeginOutputReadLine();
 
             var deadline = DateTime.UtcNow + (connectTimeout ?? TimeSpan.FromSeconds(20));
             while (!connectionManager.IsConnected && DateTime.UtcNow < deadline)
@@ -156,7 +183,7 @@ internal sealed class LiveGameProcess : IDisposable
             // IsPrintEditorToGameCheckboxChecked defaults false, so this only needs to exist.
             CommandSender.Self.CompilerViewModel = CompilerViewModel.Self;
 
-            return new LiveGameProcess(project, process, connectionManager);
+            return new LiveGameProcess(project, process, connectionManager, capturedStandardOutput);
         }
         catch
         {
@@ -175,6 +202,14 @@ internal sealed class LiveGameProcess : IDisposable
         var screenName = await CommandSender.Self.GetScreenName();
         return screenName ?? "";
     }
+
+    /// <summary>
+    /// A snapshot of the game process's captured stdout so far, one entry per line. An unhandled exception
+    /// from a DTO handler (e.g. a screen failing to Initialize) lands here via
+    /// CommandReceiver.Receive's catch-all Console.WriteLine - see the capture wiring in StartAsync for why
+    /// this is the only way to observe that from outside the process.
+    /// </summary>
+    public IReadOnlyList<string> GetCapturedStandardOutputLines() => capturedStandardOutput.ToArray();
 
     /// <summary>
     /// Sends any DTO over the real CommandSender, for tests that care about what the running game answers
