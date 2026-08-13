@@ -1,12 +1,14 @@
 using System;
 using System.IO;
 using System.Runtime.Serialization;
+using EngineUnitTests.TestSupport;
 using FlatRedBall.Graphics.Animation;
 using Microsoft.Xna.Framework.Graphics;
 using Shouldly;
 
 namespace EngineUnitTests.Graphics.Animation;
 
+[Collection(nameof(EngineStatefulTestCollection))]
 public class ReplaceTextureTests
 {
     // FlatRedBallServices.ReplaceTexture is only ever exercised through a full MonoGame-backed game
@@ -16,20 +18,6 @@ public class ReplaceTextureTests
     // codepath, so an uninitialized instance stands in for a "real" loaded texture.
     static Texture2D FakeTexture() =>
         (Texture2D)FormatterServices.GetUninitializedObject(typeof(Texture2D));
-
-    static bool s_initialized;
-    static void EnsureInitialized()
-    {
-        // FlatRedBallServices initialization is process-wide static state and most of it (once set)
-        // can't be re-run without crashing (e.g. InstructionManager.CreateInterpolators re-adds keys
-        // to a static dictionary), so every test in this class must share a single InitializeCommandLine
-        // call rather than each calling it independently.
-        if (!s_initialized)
-        {
-            FlatRedBall.FlatRedBallServices.InitializeCommandLine();
-            s_initialized = true;
-        }
-    }
 
     static string WriteTempAchxWithOneEmptyChain(string chainName)
     {
@@ -47,7 +35,7 @@ public class ReplaceTextureTests
     [Fact]
     public void ReplaceTexture_ShouldUpdateAnimationChainListLoadedIntoContentManager()
     {
-        EnsureInitialized();
+        EngineTestBootstrap.EnsureInitialized();
 
         var achxPath = WriteTempAchxWithOneEmptyChain("Shadow");
         try
@@ -75,7 +63,7 @@ public class ReplaceTextureTests
         // AnimationChains textures"): SpriteManager.ReplaceTexture walks every live sprite's own
         // AnimationChains and fixes frame textures directly, independent of ContentManager tracking.
         // This was previously uncovered by any test.
-        EnsureInitialized();
+        EngineTestBootstrap.EnsureInitialized();
 
         var oldTexture = FakeTexture();
         var newTexture = FakeTexture();

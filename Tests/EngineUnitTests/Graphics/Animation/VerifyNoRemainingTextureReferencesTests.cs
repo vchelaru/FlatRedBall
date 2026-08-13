@@ -1,11 +1,13 @@
 using System;
 using System.Runtime.Serialization;
+using EngineUnitTests.TestSupport;
 using FlatRedBall.Graphics.Animation;
 using Microsoft.Xna.Framework.Graphics;
 using Shouldly;
 
 namespace EngineUnitTests.Graphics.Animation;
 
+[Collection(nameof(EngineStatefulTestCollection))]
 public class VerifyNoRemainingTextureReferencesTests
 {
     // See ReplaceTextureTests.cs for why an uninitialized Texture2D stands in for a "real" one here:
@@ -14,22 +16,10 @@ public class VerifyNoRemainingTextureReferencesTests
     static Texture2D FakeTexture() =>
         (Texture2D)FormatterServices.GetUninitializedObject(typeof(Texture2D));
 
-    static bool s_initialized;
-    static void EnsureInitialized()
-    {
-        // See ReplaceTextureTests.cs: FlatRedBallServices initialization is process-wide static state
-        // that can only run once per process, so every test in this class shares one call.
-        if (!s_initialized)
-        {
-            FlatRedBall.FlatRedBallServices.InitializeCommandLine();
-            s_initialized = true;
-        }
-    }
-
     [Fact]
     public void ShouldThrow_WhenALiveSpriteTextureStillReferencesTheOldTexture()
     {
-        EnsureInitialized();
+        EngineTestBootstrap.EnsureInitialized();
 
         var oldTexture = FakeTexture();
         var sprite = FlatRedBall.SpriteManager.AddSprite(oldTexture);
@@ -51,7 +41,7 @@ public class VerifyNoRemainingTextureReferencesTests
     [Fact]
     public void ShouldThrow_WhenALiveSpriteAnimationChainFrameStillReferencesTheOldTexture()
     {
-        EnsureInitialized();
+        EngineTestBootstrap.EnsureInitialized();
 
         var oldTexture = FakeTexture();
         var newTexture = FakeTexture();
@@ -84,7 +74,7 @@ public class VerifyNoRemainingTextureReferencesTests
     [Fact]
     public void ShouldNotThrow_WhenNoLiveSpriteReferencesTheOldTexture()
     {
-        EnsureInitialized();
+        EngineTestBootstrap.EnsureInitialized();
 
         var oldTexture = FakeTexture();
         var newTexture = FakeTexture();
@@ -107,7 +97,7 @@ public class VerifyNoRemainingTextureReferencesTests
         // The happy path through the actual public entry point (not just the diagnostic in isolation):
         // confirms the automatic DEBUG-time check added to ReplaceTexture doesn't false-positive once
         // SpriteManager.ReplaceTexture has done its job.
-        EnsureInitialized();
+        EngineTestBootstrap.EnsureInitialized();
 
         var oldTexture = FakeTexture();
         var newTexture = FakeTexture();
