@@ -986,20 +986,38 @@ class ProjectCommands : IProjectCommands
                     throw new NullReferenceException("Main Project");
                 }
 
-                var codeProject = mainProject.CodeProject as VisualStudioProject;
+                // A synced project (Glue > Add Synced Project) has its own .csproj, and the general
+                // per-save sync (VisualStudioProject.SyncTo) only mirrors Compile/Content items, not
+                // PackageReference - so it needs the package added here too or it's missing the
+                // reference and full of compile errors.
+                var projectsToUpdate = new List<VisualStudioProject> { mainProject };
+                projectsToUpdate.AddRange(_glueState.SyncedProjects.OfType<VisualStudioProject>());
 
-                if (!codeProject.HasPackage(packageName, out var existingVersionNumber))
+                string addedOrExistingVersionNumber = null;
+                bool anyPackageAdded = false;
+
+                foreach (var projectToUpdate in projectsToUpdate)
                 {
+                    var codeProject = projectToUpdate.CodeProject as VisualStudioProject;
 
-                    codeProject.AddNugetPackage(packageName, versionNumber);
+                    if (!codeProject.HasPackage(packageName, out var existingVersionNumber))
+                    {
+                        codeProject.AddNugetPackage(packageName, versionNumber);
+                        anyPackageAdded = true;
+                        addedOrExistingVersionNumber = versionNumber;
+                    }
+                    else
+                    {
+                        addedOrExistingVersionNumber ??= existingVersionNumber;
+                    }
+                }
+
+                if (anyPackageAdded)
+                {
                     GlueCommands.Self.ProjectCommands.SaveProjects();
+                }
 
-                    return versionNumber;
-                }
-                else
-                {
-                    return existingVersionNumber;
-                }
+                return addedOrExistingVersionNumber;
             }, $"Adding Nuget Package {packageName}");
         }
 
