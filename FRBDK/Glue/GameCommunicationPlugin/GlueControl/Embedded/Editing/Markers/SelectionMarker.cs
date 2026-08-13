@@ -537,6 +537,7 @@ namespace GlueControl.Editing
 
         ResizeHandles ResizeHandles;
         PolygonPointHandles PolygonPointHandles;
+        internal PolygonPointHandles PolygonPointHandlesForTesting => PolygonPointHandles;
 
         public float ExtraPaddingInPixels { get; set; } = 2;
 

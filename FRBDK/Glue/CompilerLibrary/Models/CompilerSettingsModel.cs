@@ -48,7 +48,7 @@ namespace CompilerLibrary.Models
 
             EnableSnapping = true;
             SnapSize = 8;
-            PolygonPointSnapSize = 1;
+            PolygonPointSnapSize = SnapSize;
         }
     }
 }

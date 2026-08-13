@@ -220,6 +220,42 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
     }
     #endregion
 
+    #region SetPolygonPointsForTesting
+
+    /// <summary>
+    /// Test-only: sets the currently-selected Polygon's Points directly (world-space, relative to the
+    /// polygon's own Position), bypassing codegen/InstructionSave so a test fixture doesn't depend on how
+    /// a freshly-added Polygon NamedObjectSave happens to default-initialize.
+    /// </summary>
+    public class SetPolygonPointsForTestingDto
+    {
+        public List<Microsoft.Xna.Framework.Vector2> Points { get; set; } = new List<Microsoft.Xna.Framework.Vector2>();
+    }
+    #endregion
+
+    #region SimulatePolygonPointDrag
+
+    /// <summary>
+    /// Test-only: drives the currently-selected Polygon's point-drag-and-snap logic without a real mouse.
+    /// See PolygonPointHandles.SimulateDragForTesting (Embedded) - grabs the point at PointIndex exactly
+    /// like a mouse-down on its handle would, then applies one drag step of (ScreenXChange, ScreenYChange).
+    /// </summary>
+    public class SimulatePolygonPointDragDto
+    {
+        public int PointIndex { get; set; }
+        public float ScreenXChange { get; set; }
+        public float ScreenYChange { get; set; }
+    }
+    #endregion
+
+    #region SimulatePolygonPointDragResponse
+    public class SimulatePolygonPointDragResponse
+    {
+        public float X { get; set; }
+        public float Y { get; set; }
+    }
+    #endregion
+
     #region GetCameraSave
     public class GetCameraSave
     {

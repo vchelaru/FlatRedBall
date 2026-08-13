@@ -300,14 +300,22 @@ namespace GlueControl.Editing
 
         private void DoCursorDownMovement(Polygon polygon, Cursor cursor)
         {
-            var isEndpoint = PointIndexGrabbed == 0 || PointIndexGrabbed == polygon.Points.Count - 1;
+            ApplyDrag(polygon, cursor.ScreenXChange, cursor.ScreenYChange, CameraLogic.CurrentZoomRatio);
+        }
 
+        /// <summary>
+        /// Applies one frame of point-drag movement: accumulates the screen-space delta into the running
+        /// unsnapped position, snaps it if PointSnapSize is set, and applies it to the currently grabbed
+        /// point - keeping the polygon closed if that point is a merged first/last endpoint.
+        /// </summary>
+        private void ApplyDrag(Polygon polygon, float screenXChange, float screenYChange, float zoomRatio)
+        {
+            var isEndpoint = PointIndexGrabbed == 0 || PointIndexGrabbed == polygon.Points.Count - 1;
             var areEndPointsOverlapping =
                 polygon.AbsolutePointPosition(0) == polygon.AbsolutePointPosition(polygon.Points.Count - 1);
 
-
-            UnsnappedPosition.X += cursor.ScreenXChange / CameraLogic.CurrentZoomRatio;
-            UnsnappedPosition.Y += -cursor.ScreenYChange / CameraLogic.CurrentZoomRatio;
+            UnsnappedPosition.X += screenXChange / zoomRatio;
+            UnsnappedPosition.Y += -screenYChange / zoomRatio;
 
             float Snap(float value) =>
                 PointSnapSize > 0
@@ -321,12 +329,26 @@ namespace GlueControl.Editing
             {
                 polygon.SetPointFromAbsolutePosition(0, snappedX, snappedY);
                 polygon.SetPointFromAbsolutePosition(polygon.Points.Count - 1, snappedX, snappedY);
-
             }
             else
             {
                 polygon.SetPointFromAbsolutePosition(PointIndexGrabbed.Value, snappedX, snappedY);
             }
+        }
+
+        /// <summary>
+        /// Test-only entry point driven by SimulatePolygonPointDragDto (see CommandReceiver.HandleDto) -
+        /// grabs the point at pointIndex exactly like a real mouse-down on its handle would, then applies
+        /// one drag step, without needing a real Cursor/mouse. Exists so a LiveGameProcess-based test can
+        /// drive this class's actual drag+snap logic end to end (including whatever set PointSnapSize)
+        /// instead of the only way to reach it being a human physically dragging a mouse.
+        /// </summary>
+        internal void SimulateDragForTesting(Polygon polygon, int pointIndex, float screenXChange, float screenYChange)
+        {
+            PointIndexGrabbed = pointIndex;
+            UnsnappedPosition = polygon.AbsolutePointPosition(pointIndex);
+            ApplyDrag(polygon, screenXChange, screenYChange, zoomRatio: 1f);
+            PointIndexGrabbed = null;
         }
 
         private void DoCursorHoverActivity(Polygon polygon)
