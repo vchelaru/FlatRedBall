@@ -304,7 +304,6 @@ namespace GlueControl
                 Succeeded = true,
             };
 
-
             if (ScreenManager.CurrentScreen == null)
             {
                 response.Succeeded = false;
@@ -858,6 +857,39 @@ namespace GlueControl
             getCameraPositionResponse.Z = Camera.Main.Z;
             return getCameraPositionResponse;
         }
+
+        #region SetPolygonPointsForTesting
+
+        private static void HandleDto(GlueControl.Dtos.SetPolygonPointsForTestingDto dto)
+        {
+            var polygon = Editing.EditingManager.Self.PrimarySelectionAsPolygonForTesting;
+
+            polygon.Points = dto.Points
+                .Select(item => new FlatRedBall.Math.Geometry.Point(item.X, item.Y))
+                .ToList();
+            polygon.ForceUpdateDependencies();
+        }
+
+        #endregion
+
+        #region SimulatePolygonPointDrag
+
+        private static object HandleDto(GlueControl.Dtos.SimulatePolygonPointDragDto dto)
+        {
+            var polygon = Editing.EditingManager.Self.PrimarySelectionAsPolygonForTesting;
+            var handles = Editing.EditingManager.Self.PrimarySelectionPolygonPointHandlesForTesting;
+
+            handles.SimulateDragForTesting(polygon, dto.PointIndex, dto.ScreenXChange, dto.ScreenYChange);
+
+            var point = polygon.Points[dto.PointIndex];
+            return new GlueControl.Dtos.SimulatePolygonPointDragResponse
+            {
+                X = (float)point.X,
+                Y = (float)point.Y
+            };
+        }
+
+        #endregion
 
         #endregion
 

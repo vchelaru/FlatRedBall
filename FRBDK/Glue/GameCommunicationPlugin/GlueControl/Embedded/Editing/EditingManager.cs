@@ -194,6 +194,22 @@ namespace GlueControl.Editing
             }
         }
 
+        /// <summary>
+        /// The PolygonPointHandles for the primary selected marker, or null if nothing/non-polygon is
+        /// selected. Test-only - used by SimulatePolygonPointDragDto (see CommandReceiver.HandleDto) so a
+        /// LiveGameProcess-based test can drive a point drag without a real Cursor/mouse.
+        /// </summary>
+        internal PolygonPointHandles PrimarySelectionPolygonPointHandlesForTesting =>
+            (SelectedMarkers.FirstOrDefault() as SelectionMarker)?.PolygonPointHandlesForTesting;
+
+        /// <summary>
+        /// The primary selected item, if it is directly a Polygon (not a tunneled/wrapped one - see
+        /// PolygonPointHandles.EveryFrameUpdate). Test-only, alongside
+        /// <see cref="PrimarySelectionPolygonPointHandlesForTesting"/>.
+        /// </summary>
+        internal FlatRedBall.Math.Geometry.Polygon PrimarySelectionAsPolygonForTesting =>
+            itemsSelected.FirstOrDefault() as FlatRedBall.Math.Geometry.Polygon;
+
         List<ISelectionMarker> SelectedMarkers = new List<ISelectionMarker>();
         SelectionMarker HighlightMarker;
         MeasurementMarker MeasurementMarker;

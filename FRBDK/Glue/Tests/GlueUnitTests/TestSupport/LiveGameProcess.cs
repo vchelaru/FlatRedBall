@@ -62,12 +62,20 @@ internal sealed class LiveGameProcess : IDisposable
     /// in. Game1.Generated.cs is preserved exactly as checked in either way - see the class doc comment for
     /// why (its GlueControlManager wiring can't be regenerated in the test host) - only its port is patched.
     /// </param>
+    /// <param name="afterLoadBeforeEmbed">
+    /// Optional hook that runs after the project is loaded into Glue (so <c>ObjectFinder.Self</c>/
+    /// <c>GlueCommands.Self</c> are usable, real project-editing APIs like
+    /// <c>GluxCommands.AddNamedObjectToAsync</c> can add fixture objects) but before the live-edit closure
+    /// is embedded and the project built - so a test-only object added here reaches the built exe. Only
+    /// called when <paramref name="refreshLiveEditCodeFromSource"/> is true.
+    /// </param>
     public static async Task<LiveGameProcess> StartAsync(
         string repoRelativeProjectDirectory,
         string csprojRelativeToProjectRoot,
         string exeRelativeToProjectRoot,
         bool refreshLiveEditCodeFromSource = true,
-        TimeSpan? connectTimeout = null)
+        TimeSpan? connectTimeout = null,
+        Func<Task> afterLoadBeforeEmbed = null)
     {
         var project = GoldProject.CopyOutOfRepo(repoRelativeProjectDirectory);
         try
@@ -87,6 +95,12 @@ internal sealed class LiveGameProcess : IDisposable
                 // (MainCompilerPlugin owns that - see the class doc comment). Everything else still gets a
                 // real regenerate-if-changed pass from LoadInGlueAsync, same as any other gold project.
                 await GoldProject.LoadInGlueAsync(csprojPath);
+
+                if (afterLoadBeforeEmbed != null)
+                {
+                    await afterLoadBeforeEmbed();
+                }
+
                 GoldProject.EmbedLiveEditCode();
 
                 // LoadInGlueAsync's normal codegen pass may have rewritten Game1.Generated.cs without the
@@ -167,6 +181,13 @@ internal sealed class LiveGameProcess : IDisposable
     /// rather than about a particular editor gesture.
     /// </summary>
     public Task<GeneralResponse<string>> Send(object dto) => CommandSender.Self.Send(dto);
+
+    /// <summary>
+    /// Same as <see cref="Send"/>, but deserializes the game's raw JSON reply into <typeparamref name="T"/>
+    /// - see <see cref="CommandSender.Send{T}"/> - for tests that need the handler's typed return value
+    /// rather than just success/failure.
+    /// </summary>
+    public Task<GeneralResponse<T>> Send<T>(object dto) => CommandSender.Self.Send<T>(dto);
 
     /// <summary>
     /// Sends the same SelectObjectDto Glue sends when the user clicks an entity in the tree, over the real
