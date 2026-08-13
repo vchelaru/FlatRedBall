@@ -134,12 +134,27 @@ namespace TileGraphicsPlugin.CodeGeneration
             {
                 if(nos.GetAssetTypeInfo()?.Extension == "tmx")
                 {
-                    TryGenerateShiftZ0Code(nos, codeBlock);
+                    // The map may not be instantiated at this point - e.g. SetByDerived, only assigned by a
+                    // derived Screen/Entity - in which case nos.InstanceName is null here and every line
+                    // below would NRE. See issue #2077.
+                    var shouldHaveIfNullCheck = nos.Instantiate == false || nos.SetByDerived;
+                    var innerCodeBlock = codeBlock;
+                    if (shouldHaveIfNullCheck)
+                    {
+                        innerCodeBlock = innerCodeBlock.If(nos.InstanceName + " != null");
+                    }
+
+                    TryGenerateShiftZ0Code(nos, innerCodeBlock);
 
                     // not sure if we need this for files, but for now
-                    // going to implement just on NOS's since that's the 
+                    // going to implement just on NOS's since that's the
                     // preferred pattern.
-                    GenerateCreateEntitiesCode(nos, element as GlueElement, codeBlock);
+                    GenerateCreateEntitiesCode(nos, element as GlueElement, innerCodeBlock);
+
+                    if (shouldHaveIfNullCheck)
+                    {
+                        innerCodeBlock.End();
+                    }
                 }
             }
 
