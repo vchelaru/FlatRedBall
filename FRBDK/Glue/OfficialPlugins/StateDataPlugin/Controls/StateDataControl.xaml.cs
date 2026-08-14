@@ -170,8 +170,17 @@ namespace OfficialPlugins.StateDataPlugin.Controls
             ///////////End Early Out/////////////////
 
 
-            var childrenOfChildren = currentRow.Descendants<DataGridCell>()
-                .OfType<DataGridCell>().ToArray()[currentColumnIndex.Value];
+            var cellsInRow = currentRow.Descendants<DataGridCell>()
+                .OfType<DataGridCell>().ToArray();
+
+            // The row's cells may not all be visually realized yet due to virtualization,
+            // so the array can be shorter than the column count.
+            if (currentColumnIndex.Value < 0 || currentColumnIndex.Value >= cellsInRow.Length)
+            {
+                return false;
+            }
+
+            var childrenOfChildren = cellsInRow[currentColumnIndex.Value];
 
             var textBox = childrenOfChildren.Descendants<TextBox>()
                 .OfType<TextBox>()
