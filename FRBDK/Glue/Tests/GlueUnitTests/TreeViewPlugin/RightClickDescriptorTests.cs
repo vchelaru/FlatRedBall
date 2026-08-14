@@ -1,6 +1,7 @@
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using FlatRedBall.Glue.SaveClasses;
+using GlueUnitTests.TestSupport;
 using Moq;
 using Shouldly;
 
@@ -13,6 +14,13 @@ namespace GlueUnitTests.TreeViewPlugin;
 /// </summary>
 public class RightClickDescriptorTests
 {
+    public RightClickDescriptorTests()
+    {
+        // IsNamedObjectNode's branch reads AvailableAssetTypes.CommonAtis (via GetAssetTypeInfo()
+        // comparisons), which is only populated by real Glue startup / this bootstrap.
+        GlueTestBootstrap.EnsureInitialized();
+    }
+
     static Mock<ITreeNode> MakeNode(TreeNodeType type, object tag = null)
     {
         var mock = new Mock<ITreeNode>() { CallBase = true };
@@ -247,6 +255,38 @@ public class RightClickDescriptorTests
 
         removeIdx.ShouldBeGreaterThanOrEqualTo(0);
         copyNameIdx.ShouldBeGreaterThan(removeIdx);
+    }
+
+    #endregion
+
+    #region NamedObjectNode
+
+    [Fact]
+    public void NamedObjectNode_ContainsRename()
+    {
+        var nos = new NamedObjectSave { InstanceName = "PlayerInstance" };
+        var node = MakeNode(TreeNodeType.NamedObjectSaveNode, nos);
+
+        var texts = GetTexts(node.Object);
+
+        texts.ShouldContain("Rename");
+    }
+
+    [Fact]
+    public void NamedObjectNode_RenameComesBeforeDuplicate()
+    {
+        var nos = new NamedObjectSave { InstanceName = "PlayerInstance" };
+        var node = MakeNode(TreeNodeType.NamedObjectSaveNode, nos);
+
+        var items = RightClickHelper.GetItemDescriptors(node.Object, MakeGlueState().Object, MenuShowingAction.RegularRightClick)
+                                    .Where(d => !d.IsSeparator)
+                                    .ToList();
+
+        int renameIdx = items.FindIndex(d => d.Text == "Rename");
+        int duplicateIdx = items.FindIndex(d => d.Text == "Duplicate");
+
+        renameIdx.ShouldBeGreaterThanOrEqualTo(0);
+        duplicateIdx.ShouldBeGreaterThan(renameIdx);
     }
 
     #endregion
