@@ -464,6 +464,7 @@ public static class RightClickHelper
             }
 
             // Common ops
+            list.Add(RenameItem());
             list.Add(new RightClickItemDescriptor { Text = "Duplicate", Handler = () => DuplicateClick(null, EventArgs.Empty) });
             list.AddRange(RemoveItems());
             list.Add(RightClickItemDescriptor.Separator);
