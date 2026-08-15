@@ -28,3 +28,18 @@ call queued later can still run first.
 `Name`) gives two logically-identical requests different ids across a mutation, so they never coalesce.
 Also: `AddOrRunIfTasked`'s "already in a task, run inline" fast path explicitly excludes
 `AddOrMoveToEnd` — it always goes through the real queue.
+
+## The nested-task fast path checks `TaskManager.Self`, not the calling instance
+
+`AddOrRunIfTasked`'s `IsInTask()` gate is hardcoded to `TaskManager.Self.SyncTaskThreadId`, not
+`this.SyncTaskThreadId` — so a `TaskManager.Self.AddAsync(...)` call made from inside an already-running
+task's callback (any preference except `AddOrMoveToEnd`) runs inline via `RunTask(...).Wait()` instead of
+re-entering the priority queue, meaning its own `TaskExecutionPreference` argument is inert. In production
+this is safe because `StartDoTaskManagerLoop` wraps the dedicated task thread in Nito.AsyncEx's
+`AsyncContext.Run`, which pins every `await` continuation started within it back to that same thread — so
+`IsInTask()` still sees the same thread ID after any number of nested `await`s. This can't be observed
+under `GlueUnitTests`: `GlueTestBootstrap` forces `SynchronousMode = true` before `TaskManager.Self` is
+ever constructed, which permanently fixes that one singleton instance's `SyncTaskThreadId` to whatever
+thread first touched it — no later toggle of `TaskManager.SynchronousMode` (e.g. in
+`TaskManagerSynchronousModeTests`) un-fixes it, so nested calls always look "in task" there regardless of
+what the real threaded model would do.
