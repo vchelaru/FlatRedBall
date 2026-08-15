@@ -112,6 +112,10 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
     public async Task RenameElement(GlueElement elementToRename, string newFullElementName, bool showRenameWindow = true)
     {
         newFullElementName = newFullElementName.Replace("/", "\\");
+        // GitHub issue #2085: AddEntity queues its follow-up codegen (GenerateElementCode) at
+        // AddOrMoveToEnd. A rename immediately following an add must queue at the same tier, or the
+        // AddAsync default of Fifo lets it jump ahead of that still-pending codegen (tier beats enqueue
+        // order - see glue-task-manager) instead of running after it.
         await TaskManager.Self.AddAsync(() =>
         {
             bool isValid = true;
@@ -134,7 +138,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
             {
                 DoRenameInner(elementToRename, newFullElementName, showRenameWindow);
             }
-        }, $"Renaming {elementToRename} to {newFullElementName}");
+        }, $"Renaming {elementToRename} to {newFullElementName}", TaskExecutionPreference.AddOrMoveToEnd);
     }
 
     private void DoRenameInner(GlueElement elementToRename, string newElementName, bool showRenameWindow)
