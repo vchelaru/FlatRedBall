@@ -1106,6 +1106,18 @@ namespace GlueControl.Editing
 
         private void ChangeSizeBy(PositionedObject item, ResizeSide sideOver)
         {
+            var mouse = InputManager.Mouse;
+            var mouseChangeWorldSpace = new Vector3(mouse.WorldXChangeAt(item.Z), mouse.WorldYChangeAt(item.Z), 0);
+            ChangeSizeBy(item, sideOver, mouseChangeWorldSpace);
+        }
+
+        /// <summary>
+        /// Core drag-resize logic, parameterized on the raw (unrotated) world-space mouse delta instead of
+        /// reading InputManager.Mouse directly, so SimulateResizeDragForTesting (LiveGameProcess tests, see
+        /// #2087) can drive it without a real Cursor/mouse.
+        /// </summary>
+        internal void ChangeSizeBy(PositionedObject item, ResizeSide sideOver, Vector3 mouseChangeWorldSpace)
+        {
             Vector3 rotatedPositionMultiple = new Vector3();
             Vector3 unrotatedPositionMultiple = new Vector3();
 
@@ -1190,10 +1202,8 @@ namespace GlueControl.Editing
                 heightMultiple *= 2;
             }
 
-            var mouse = InputManager.Mouse;
             var scalable = item as IScalable;
-            var mouseChange = new Vector3(mouse.WorldXChangeAt(item.Z), mouse.WorldYChangeAt(item.Z), 0);
-            mouseChange = mouseChange.RotatedBy(-item.RotationZ);
+            var mouseChange = mouseChangeWorldSpace.RotatedBy(-item.RotationZ);
 
             float xChangeForPosition = rotatedPositionMultiple.X * mouseChange.X;
             float yChangeForPosition = rotatedPositionMultiple.Y * mouseChange.Y;
@@ -1271,10 +1281,20 @@ namespace GlueControl.Editing
                     if (scaleXChange != 0)
                     {
                         var scaleBefore = scalable.ScaleX;
-                        scalable.ScaleX = newScaleX;
-                        // Normally the object that is being resized will accept this scale. However, if it's a custom game object, it may
-                        // have its own internal snapping. Therefore, we should figure out the change by looking at the ScaleX again:
-                        scaleXChange = scalable.ScaleX - scaleBefore;
+                        try
+                        {
+                            scalable.ScaleX = newScaleX;
+                            // Normally the object that is being resized will accept this scale. However, if it's a custom game object, it may
+                            // have its own internal snapping. Therefore, we should figure out the change by looking at the ScaleX again:
+                            scaleXChange = scalable.ScaleX - scaleBefore;
+                        }
+                        catch (ArgumentException)
+                        {
+                            // The object rejected this size - e.g. CapsulePolygon requires a minimum Width (#2087).
+                            // Stay at the last size the object actually accepted instead of crashing the game.
+                            unsnappedItemSize = new Vector2(scaleBefore * 2, unsnappedItemSize.Value.Y);
+                            scaleXChange = 0;
+                        }
                     }
                 }
 
@@ -1300,9 +1320,18 @@ namespace GlueControl.Editing
                     if (scaleYChange != 0)
                     {
                         var scaleBefore = scalable.ScaleY;
-                        scalable.ScaleY = newScaleY;
-                        // see the scaleXAssignment above for info on why we use the object:
-                        scaleYChange = scalable.ScaleY - scaleBefore;
+                        try
+                        {
+                            scalable.ScaleY = newScaleY;
+                            // see the scaleXAssignment above for info on why we use the object:
+                            scaleYChange = scalable.ScaleY - scaleBefore;
+                        }
+                        catch (ArgumentException)
+                        {
+                            // see the scaleXAssignment above - same rejection handling for the Y axis (#2087).
+                            unsnappedItemSize = new Vector2(unsnappedItemSize.Value.X, scaleBefore * 2);
+                            scaleYChange = 0;
+                        }
                     }
                 }
 
@@ -1319,6 +1348,17 @@ namespace GlueControl.Editing
             item.ForceUpdateDependencies();
         }
 
+        /// <summary>
+        /// Test-only entry point driven by SimulateResizeDragDto (see CommandReceiver.HandleDto) - applies
+        /// one resize-drag step on this marker's Owner exactly like a real mouse-drag on a resize handle
+        /// would, without needing a real Cursor/mouse. Exists so a LiveGameProcess-based test can drive
+        /// ChangeSizeBy's actual resize logic - including whatever the resized object's own IScalable
+        /// setter does with the requested size - end to end. See #2087.
+        /// </summary>
+        internal void SimulateResizeDragForTesting(ResizeSide sideOver, float worldXChange, float worldYChange)
+        {
+            ChangeSizeBy(Owner as PositionedObject, sideOver, new Vector3(worldXChange, worldYChange, 0));
+        }
 
         #endregion
 

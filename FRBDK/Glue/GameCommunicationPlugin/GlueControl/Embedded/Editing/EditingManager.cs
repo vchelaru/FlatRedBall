@@ -203,6 +203,14 @@ namespace GlueControl.Editing
             (SelectedMarkers.FirstOrDefault() as SelectionMarker)?.PolygonPointHandlesForTesting;
 
         /// <summary>
+        /// The primary selected marker, or null if nothing is selected. Test-only - used by
+        /// SimulateResizeDragDto (see CommandReceiver.HandleDto) so a LiveGameProcess-based test can drive
+        /// a resize-handle drag without a real Cursor/mouse. See #2087.
+        /// </summary>
+        internal SelectionMarker PrimarySelectionMarkerForTesting =>
+            SelectedMarkers.FirstOrDefault() as SelectionMarker;
+
+        /// <summary>
         /// The primary selected item, if it is directly a Polygon (not a tunneled/wrapped one - see
         /// PolygonPointHandles.EveryFrameUpdate). Test-only, alongside
         /// <see cref="PrimarySelectionPolygonPointHandlesForTesting"/>.

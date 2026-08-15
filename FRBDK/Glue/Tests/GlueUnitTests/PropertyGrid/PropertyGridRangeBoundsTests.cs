@@ -44,8 +44,7 @@ public class PropertyGridRangeBoundsTests
     [Fact]
     public void CapsulePolygon_WidthAndHeight_ShouldHaveMinValueOne()
     {
-        // CapsulePolygon.Width/Height only throw for negative values now (#2087), but the property
-        // grid still clamps at 1 - a positive value is required to render a non-degenerate capsule.
+        // CapsulePolygon.Width/Height throw for value < 1, unconditionally (not DEBUG-gated).
         GetVariable(AvailableAssetTypes.CommonAtis.CapsulePolygon, "Width").MinValue.ShouldBe(1);
         GetVariable(AvailableAssetTypes.CommonAtis.CapsulePolygon, "Height").MinValue.ShouldBe(1);
     }

@@ -16,9 +16,9 @@ namespace FlatRedBall.Math.Geometry
             get { return mWidth; }
             set
             {
-                if (value < 0)
+                if (value < 1)
                 {
-                    throw new ArgumentException("Cannot set a negative " + nameof(Width) + " value.", nameof(Width));
+                    throw new ArgumentException(nameof(Width) + " must be bigger than zero.", nameof(Width));
                 }
                 else
                 {
@@ -39,9 +39,9 @@ namespace FlatRedBall.Math.Geometry
             get { return mHeight; }
             set
             {
-                if (value < 0)
+                if (value < 1)
                 {
-                    throw new ArgumentException("Cannot set a negative " + nameof(Height) + " value.", nameof(Height));
+                    throw new ArgumentException(nameof(Height) + " must be bigger than zero.", nameof(Height));
                 }
                 else
                 {
