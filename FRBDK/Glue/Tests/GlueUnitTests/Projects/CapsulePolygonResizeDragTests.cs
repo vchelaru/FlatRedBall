@@ -69,8 +69,13 @@ public class CapsulePolygonResizeDragTests
         });
 
         dragResponse.Succeeded.ShouldBeTrue(dragResponse.Message);
-        dragResponse.Data.ScaleY.ShouldBeGreaterThanOrEqualTo(0.5f,
-            "CapsulePolygon.Height cannot go below 1 (ScaleY below 0.5) - the drag should clamp instead of crashing");
+        // TestCapsule starts at the CapsulePolygon() default (Width=32, Height=16, so ScaleY=8). A tight
+        // upper bound here (not just >= 0.5) is deliberate: a fix that merely discards the whole
+        // rejected frame and reverts to the pre-drag ScaleY (8) would also satisfy ">= 0.5" while still
+        // producing a frozen/jittery drag in real usage - see #2087. Only a fix that actually clamps
+        // toward the real boundary lands this close to 0.5.
+        dragResponse.Data.ScaleY.ShouldBeInRange(0.5f, 0.51f,
+            "CapsulePolygon.Height cannot go below 1 (ScaleY below 0.5) - the drag should clamp to that boundary, not revert to the pre-drag size");
 
         var capturedOutput = game.GetCapturedStandardOutputLines();
         capturedOutput.ShouldNotContain(line => line.Contains("ArgumentException"),

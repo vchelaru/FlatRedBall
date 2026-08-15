@@ -1104,6 +1104,47 @@ namespace GlueControl.Editing
             ? MathFunctions.RoundFloat(value, SizeSnappingSize)
             : value;
 
+        static bool TrySetScale(Action<float> setScale, float value)
+        {
+            try
+            {
+                setScale(value);
+                return true;
+            }
+            catch (ArgumentException)
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Binary-searches between a known-valid scale and a known-rejected one for the boundary the
+        /// object's own IScalable setter actually accepts, and leaves the object set to it. Used when
+        /// ChangeSizeBy's drag delta overshoots a validating setter (e.g. CapsulePolygon requires a
+        /// minimum Width/Height - #2087) so a single large (fast) drag step lands right at the object's
+        /// real minimum instead of being discarded outright.
+        /// </summary>
+        static void ClampScaleToBoundary(Action<float> setScale, float knownValid, float knownRejected)
+        {
+            var low = knownValid;
+            var high = knownRejected;
+            for (int i = 0; i < 20; i++)
+            {
+                var mid = (low + high) / 2f;
+                if (TrySetScale(setScale, mid))
+                {
+                    low = mid;
+                }
+                else
+                {
+                    high = mid;
+                }
+            }
+            // Guarantee the object ends up at the best valid value found, regardless of which one the
+            // loop's last iteration happened to try.
+            TrySetScale(setScale, low);
+        }
+
         private void ChangeSizeBy(PositionedObject item, ResizeSide sideOver)
         {
             var mouse = InputManager.Mouse;
@@ -1281,20 +1322,22 @@ namespace GlueControl.Editing
                     if (scaleXChange != 0)
                     {
                         var scaleBefore = scalable.ScaleX;
-                        try
+                        if (!TrySetScale(v => scalable.ScaleX = v, newScaleX))
                         {
-                            scalable.ScaleX = newScaleX;
-                            // Normally the object that is being resized will accept this scale. However, if it's a custom game object, it may
-                            // have its own internal snapping. Therefore, we should figure out the change by looking at the ScaleX again:
-                            scaleXChange = scalable.ScaleX - scaleBefore;
+                            // The object rejected this size - e.g. CapsulePolygon requires a minimum Width
+                            // (#2087). Binary-search toward the boundary between the last known-good value
+                            // and the rejected one, so a single large drag step (a fast mouse move) lands
+                            // right at the object's actual minimum, instead of discarding the whole frame's
+                            // movement and freezing the drag at scaleBefore until the user slows down enough
+                            // for one frame's delta to land inside the valid range on its own.
+                            ClampScaleToBoundary(v => scalable.ScaleX = v, scaleBefore, newScaleX);
                         }
-                        catch (ArgumentException)
-                        {
-                            // The object rejected this size - e.g. CapsulePolygon requires a minimum Width (#2087).
-                            // Stay at the last size the object actually accepted instead of crashing the game.
-                            unsnappedItemSize = new Vector2(scaleBefore * 2, unsnappedItemSize.Value.Y);
-                            scaleXChange = 0;
-                        }
+                        // Normally the object that is being resized will accept this scale. However, if it's a custom game object, it may
+                        // have its own internal snapping. Therefore, we should figure out the change by looking at the ScaleX again:
+                        scaleXChange = scalable.ScaleX - scaleBefore;
+                        // Resync our unsnapped tracking to whatever the object actually landed on (it may
+                        // have been clamped above), so next frame's delta builds on the real current size.
+                        unsnappedItemSize = new Vector2(scalable.ScaleX * 2, unsnappedItemSize.Value.Y);
                     }
                 }
 
@@ -1320,18 +1363,14 @@ namespace GlueControl.Editing
                     if (scaleYChange != 0)
                     {
                         var scaleBefore = scalable.ScaleY;
-                        try
-                        {
-                            scalable.ScaleY = newScaleY;
-                            // see the scaleXAssignment above for info on why we use the object:
-                            scaleYChange = scalable.ScaleY - scaleBefore;
-                        }
-                        catch (ArgumentException)
+                        if (!TrySetScale(v => scalable.ScaleY = v, newScaleY))
                         {
                             // see the scaleXAssignment above - same rejection handling for the Y axis (#2087).
-                            unsnappedItemSize = new Vector2(unsnappedItemSize.Value.X, scaleBefore * 2);
-                            scaleYChange = 0;
+                            ClampScaleToBoundary(v => scalable.ScaleY = v, scaleBefore, newScaleY);
                         }
+                        // see the scaleXAssignment above for info on why we use the object:
+                        scaleYChange = scalable.ScaleY - scaleBefore;
+                        unsnappedItemSize = new Vector2(unsnappedItemSize.Value.X, scalable.ScaleY * 2);
                     }
                 }
 
