@@ -1565,19 +1565,15 @@ public class GluxCommands : IGluxCommands
 
             await AddNamedObjectToAsync(newNos, element, listToAddTo, selectNewNos);
 
-        }, $"Adding Named Object {addObjectViewModel.ObjectName} to {element.Name}");
+        }, $"Adding Named Object {addObjectViewModel.ObjectName} to {element.Name}", TaskExecutionPreference.Asap);
         return newNos;
     }
 
     public async Task AddNamedObjectToAsync(NamedObjectSave newNos, GlueElement elementToAddTo, NamedObjectSave? listToAddTo = null, bool selectNewNos = true,
          bool performSaveAndGenerateCode = true, bool updateUi = true)
     {
-        var frameId1 = System.Threading.Thread.CurrentThread.ManagedThreadId;
         await TaskManager.Self.AddAsync(async () =>
         {
-            
-            var frameId2 = System.Threading.Thread.CurrentThread.ManagedThreadId;
-
             var ati = newNos.GetAssetTypeInfo();
 
             if (listToAddTo != null)
@@ -1659,7 +1655,7 @@ public class GluxCommands : IGluxCommands
             {
                 GlueCommands.Self.GluxCommands.SaveProjectAndElements();
             }
-        }, $"Adding named object {newNos.InstanceName} to {elementToAddTo.Name}");
+        }, $"Adding named object {newNos.InstanceName} to {elementToAddTo.Name}", TaskExecutionPreference.Asap);
     }
 
     public void RemoveNamedObject(NamedObjectSave namedObjectToRemove, bool performSaveAndGenerateCode = true,
