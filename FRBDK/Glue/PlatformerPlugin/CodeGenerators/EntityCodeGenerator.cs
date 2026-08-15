@@ -505,13 +505,13 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                     // if slowing down and max speed is 0, use the last max speed
                     else if(maxSpeed == 0)
                     {
-                        accelerationMagnitude = FlatRedBall.Math.MathFunctions.DivideOrDefault(
+                        accelerationMagnitude = DivideOrDefault(
                             lastNonZeroPlatformerHorizontalMaxSpeed, CurrentMovement.DecelerationTimeX,
                             absoluteValueVelocityDifference / TimeManager.SecondDifference);
                     }
                     else
                     {
-                        accelerationMagnitude = FlatRedBall.Math.MathFunctions.DivideOrDefault(
+                        accelerationMagnitude = DivideOrDefault(
                             maxSpeed, CurrentMovement.DecelerationTimeX,
                             absoluteValueVelocityDifference / TimeManager.SecondDifference);
                     }
@@ -528,6 +528,20 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                 this.XAcceleration = accelerationMagnitude * System.Math.Sign(desiredSpeed - XVelocity);
             }
             groundHorizontalVelocity = 0;
+        }
+
+        /// <summary>
+        /// Returns magnitude / time, or fallbackIfTimeIsZeroOrLess if time is 0 or negative. Used instead
+        /// of dividing directly when time comes from a user-configurable duration (such as Slow Down Time /
+        /// DecelerationTimeX) that may be set to 0, which would otherwise produce NaN or Infinity.
+        /// </summary>
+        private static float DivideOrDefault(float magnitude, float time, float fallbackIfTimeIsZeroOrLess)
+        {
+            if(time <= 0)
+            {
+                return fallbackIfTimeIsZeroOrLess;
+            }
+            return magnitude / time;
         }
 
         private void ApplyClimbingInput()

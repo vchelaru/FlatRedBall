@@ -120,6 +120,7 @@ internal static class GlueTestBootstrap
     static bool _tiledPluginRegisteredWithPluginManager;
     static bool _screenPluginRegisteredWithPluginManager;
     static bool _entityInputMovementPluginRegisteredWithPluginManager;
+    static bool _axisAlignedRectanglePluginRegisteredWithPluginManager;
 
     /// <summary>
     /// Every message production code sent through <see cref="DialogService"/> since
@@ -413,6 +414,7 @@ internal static class GlueTestBootstrap
         EnsureCollisionPluginRegisteredWithPluginManager();
         EnsureScreenPluginRegisteredWithPluginManager();
         EnsureEntityInputMovementPluginRegisteredWithPluginManager();
+        EnsureAxisAlignedRectanglePluginRegisteredWithPluginManager();
 
         lock (_lock)
         {
@@ -424,6 +426,28 @@ internal static class GlueTestBootstrap
 
             PluginManager.RegisterPluginForTesting(new MainTiledPluginClass());
             PluginManager.RegisterPluginForTesting(new MainContentPipelinePlugin());
+        }
+    }
+
+    /// <summary>
+    /// Opt-in: constructs a real <see cref="OfficialPlugins.AxisAlignedRectanglePlugin.MainAxisAlignedRectanglePlugin"/>
+    /// and registers it with <see cref="PluginManager.RegisterPluginForTesting"/>, running its real
+    /// <c>StartUp</c>. That StartUp adds the XVelocity/YVelocity/ZVelocity <c>VariableDefinition</c>s to the
+    /// AxisAlignedRectangle ATI - without it, any entity with an AxisAlignedRectangle NamedObjectSave whose
+    /// CustomVariables tunnel one of those (e.g. a collision-driven "bounce" entity) fails code generation
+    /// with "Found the AssetTypeInfo AxisAlignedRectangle but missing the variable XVelocity".
+    /// </summary>
+    public static void EnsureAxisAlignedRectanglePluginRegisteredWithPluginManager()
+    {
+        lock (_lock)
+        {
+            if (_axisAlignedRectanglePluginRegisteredWithPluginManager)
+            {
+                return;
+            }
+            _axisAlignedRectanglePluginRegisteredWithPluginManager = true;
+
+            PluginManager.RegisterPluginForTesting(new OfficialPlugins.AxisAlignedRectanglePlugin.MainAxisAlignedRectanglePlugin());
         }
     }
 

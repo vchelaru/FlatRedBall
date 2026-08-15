@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using GameCommunicationPlugin.GlueControl.Managers;
 using GlueUnitTests.TestSupport;
@@ -264,5 +265,93 @@ public class GoldProjectCompileTests
 
         var (exitCode, output) = NestedDotnetCli.Run($"build \"{csproj}\" -c Debug");
         exitCode.ShouldBe(0, $"dotnet build failed for the regenerated gold project:\n{output}");
+    }
+
+    // Proves a Platformer codegen change compiles against the real engine, not just that the generator's
+    // own C# source (the string literal templates in PlatformerPlugin's EntityCodeGenerator.cs) compiles -
+    // a generated call to a member that does not exist on whatever the project references fails here but
+    // would pass a syntax-only check of the generator's own source. Also pins issue #2091's actual fix: a
+    // Platformer entity with Ground -> Slow Down Time (DecelerationTimeX) set to 0 used to divide straight
+    // through to NaN/Infinity - PositionedObject.XAcceleration's setter then threw an ArgumentException,
+    // crashing the game on startup.
+    //
+    // The fix deliberately does NOT call a new FlatRedBall.Math.MathFunctions method: an earlier version of
+    // this fix did exactly that, and this same test (built against FormsSampleProject, which references the
+    // engine via source ProjectReference) passed - but DoorsDemoProject_LoadInGlue_ThenBuild_ShouldSucceed
+    // above then failed, because DoorsDemo references FlatRedBall via a *released* NuGet package that
+    // obviously does not have a method added in this branch. Any Platformer/TopDown project that has not been
+    // linked to engine source - which is the common case, see the frb-source-linking skill - would have hit
+    // the exact CS0117 this issue was originally about, just shipped by this fix instead of caught by it.
+    // The fix instead emits its own small `DivideOrDefault` helper directly into the generated entity (see
+    // EntityCodeGenerator.cs), so it depends on nothing newer than whatever engine version the project
+    // already references.
+    //
+    // FormsSampleProject has no Platformer entity of its own, so one is added here through the same real
+    // production path WizardProjectLogic uses (PluginManager.CallPluginMethod("Entity Input Movement
+    // Plugin", "MakeEntityPlatformer", ...) -> PlatformerPlugin.Controllers.MainController.Self.GetViewModel()
+    // -> IsPlatformer = true - see EntityInputMovementTests for the same call chain) rather than by adding a
+    // new checked-in gold project. Deliberately not TestProjectDesktopNet6, even though it already has real
+    // Platformer entities: it has ~180 entities/screens covering unrelated Glue features, several of which
+    // have their own pre-existing, unrelated generation gaps (e.g. issue #2094) that would have to be
+    // excluded one at a time to get a clean build.
+    [StaFact]
+    public async Task FormsSampleProject_WithAddedPlatformerEntity_LoadInGlue_ThenBuild_ShouldSucceed()
+    {
+        GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
+
+        using var project = GoldProject.CopyOutOfRepo("Samples/FormsSampleProject");
+        var csproj = Path.Combine(project.Root, "FormsSampleProject", "FormsSampleProject.csproj");
+
+        GoldProject.DeleteGeneratedCode(project.Root);
+
+        await GoldProject.LoadInGlueAsync(csproj);
+
+        GlueTestBootstrap.RecordedDialogMessages.ShouldBeEmpty();
+        ErrorRecordingPlugin.Errors.ShouldBeEmpty();
+
+        var entity = GlueCommands.Self.GluxCommands.EntityCommands.AddEntity("Entities\\PlatformerCodegenSmokeTestEntity", is2D: true);
+
+        var viewModel = FlatRedBall.PlatformerPlugin.Controllers.MainController.Self.GetViewModel();
+        viewModel.BackingData = entity;
+        viewModel.IsPlatformer = true;
+        await TaskManager.Self.WaitForAllTasksFinished();
+
+        // The shared "PlatformerValues" CustomClassSave's own generated properties (DataTypes/PlatformerValues.
+        // Generated.cs) are not part of GenerateElementCode(entity) - without this, the entity compiles fine
+        // but references CurrentMovement members (JumpVelocity, CanClimb, ...) the custom class never emitted.
+        GlueCommands.Self.GenerateCodeCommands.GenerateCustomClassesCode();
+        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entity);
+        await TaskManager.Self.WaitForAllTasksFinished();
+
+        GlueTestBootstrap.RecordedDialogMessages.ShouldBeEmpty();
+        ErrorRecordingPlugin.Errors.ShouldBeEmpty();
+
+        var generatedPath = Path.Combine(project.Root, "FormsSampleProject", "Entities", "PlatformerCodegenSmokeTestEntity.Generated.cs");
+        File.Exists(generatedPath).ShouldBeTrue();
+        // Pins the fixture, not the fix: if the Platformer entity code generator ever stops emitting its own
+        // DivideOrDefault helper (issue #2091's fix), the build below keeps passing while proving nothing
+        // about that specific guard existing in the generated code.
+        File.ReadAllText(generatedPath).ShouldContain("private static float DivideOrDefault(");
+
+        var (exitCode, output) = NestedDotnetCli.Run($"build \"{csproj}\" -c Debug");
+        exitCode.ShouldBe(0, $"dotnet build failed for the regenerated gold project:\n{output}");
+
+        // Pins runtime behavior, not just that it compiles: reflects into the just-built assembly and calls
+        // the generated DivideOrDefault directly, the same way ApplyHorizontalInput does, to prove a
+        // DecelerationTimeX of 0 or less returns the fallback instead of NaN/Infinity - reproducing issue
+        // #2091's reported crash (PositionedObject.XAcceleration's setter rejecting NaN) rather than a proxy
+        // for it.
+        var builtAssemblyPath = Path.Combine(project.Root, "FormsSampleProject", "bin", "Debug", "net6.0", "FormsSampleProject.dll");
+        File.Exists(builtAssemblyPath).ShouldBeTrue();
+        var assembly = System.Reflection.Assembly.LoadFrom(builtAssemblyPath);
+        var entityType = assembly.GetType("FormsSampleProject.Entities.PlatformerCodegenSmokeTestEntity");
+        entityType.ShouldNotBeNull();
+        var divideOrDefault = entityType!.GetMethod("DivideOrDefault",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+        divideOrDefault.ShouldNotBeNull();
+
+        divideOrDefault!.Invoke(null, new object[] { 10f, 2f, 999f }).ShouldBe(5f);
+        divideOrDefault.Invoke(null, new object[] { 10f, 0f, 42f }).ShouldBe(42f);
+        divideOrDefault.Invoke(null, new object[] { 10f, -1f, 42f }).ShouldBe(42f);
     }
 }
