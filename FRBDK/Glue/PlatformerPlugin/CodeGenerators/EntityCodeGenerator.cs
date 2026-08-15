@@ -505,11 +505,15 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                     // if slowing down and max speed is 0, use the last max speed
                     else if(maxSpeed == 0)
                     {
-                        accelerationMagnitude = lastNonZeroPlatformerHorizontalMaxSpeed / CurrentMovement.DecelerationTimeX;
+                        accelerationMagnitude = FlatRedBall.Math.MathFunctions.DivideOrDefault(
+                            lastNonZeroPlatformerHorizontalMaxSpeed, CurrentMovement.DecelerationTimeX,
+                            absoluteValueVelocityDifference / TimeManager.SecondDifference);
                     }
                     else
                     {
-                        accelerationMagnitude = maxSpeed / CurrentMovement.DecelerationTimeX;
+                        accelerationMagnitude = FlatRedBall.Math.MathFunctions.DivideOrDefault(
+                            maxSpeed, CurrentMovement.DecelerationTimeX,
+                            absoluteValueVelocityDifference / TimeManager.SecondDifference);
                     }
                 }
                 

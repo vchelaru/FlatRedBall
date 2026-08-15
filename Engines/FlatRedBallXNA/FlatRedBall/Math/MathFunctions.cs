@@ -1474,6 +1474,20 @@ namespace FlatRedBall.Math
             return new Vector3((float)System.Math.Cos((double)radians), (float)System.Math.Sin((double)radians), 0f);
         }
 
+        /// <summary>
+        /// Returns magnitude / time, or fallbackIfTimeIsZeroOrLess if time is 0 or negative. Use this instead
+        /// of dividing directly when time comes from a user-configurable duration (such as an acceleration or
+        /// deceleration time) that may be set to 0, which would otherwise produce NaN or Infinity.
+        /// </summary>
+        public static float DivideOrDefault(float magnitude, float time, float fallbackIfTimeIsZeroOrLess)
+        {
+            if (time <= 0)
+            {
+                return fallbackIfTimeIsZeroOrLess;
+            }
+            return magnitude / time;
+        }
+
         #endregion
     }
 }
