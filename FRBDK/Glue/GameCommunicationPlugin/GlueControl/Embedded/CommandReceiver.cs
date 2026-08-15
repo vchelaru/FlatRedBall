@@ -891,6 +891,25 @@ namespace GlueControl
 
         #endregion
 
+        #region SimulateResizeDrag
+
+        private static object HandleDto(GlueControl.Dtos.SimulateResizeDragDto dto)
+        {
+            var marker = Editing.EditingManager.Self.PrimarySelectionMarkerForTesting;
+            var side = (Editing.ResizeSide)System.Enum.Parse(typeof(Editing.ResizeSide), dto.Side);
+
+            marker.SimulateResizeDragForTesting(side, dto.WorldXChange, dto.WorldYChange);
+
+            var scalable = marker.Owner as FlatRedBall.Math.Geometry.IScalable;
+            return new GlueControl.Dtos.SimulateResizeDragResponse
+            {
+                ScaleX = scalable.ScaleX,
+                ScaleY = scalable.ScaleY
+            };
+        }
+
+        #endregion
+
         #endregion
 
         #region Set Camera Position

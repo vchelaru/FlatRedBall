@@ -257,6 +257,30 @@ namespace GlueControl.Dtos
     }
     #endregion
 
+    #region SimulateResizeDrag
+
+    /// <summary>
+    /// Test-only: drives the currently-selected item's resize-handle-drag logic without a real mouse. See
+    /// SelectionMarker.SimulateResizeDragForTesting - applies one resize-drag step of (WorldXChange,
+    /// WorldYChange), as if Side's handle had been dragged that far in world units. See #2087.
+    /// </summary>
+    public class SimulateResizeDragDto
+    {
+        /// <summary>Name of a GlueControl.Editing.ResizeSide value (e.g. "Bottom", "Right").</summary>
+        public string Side { get; set; }
+        public float WorldXChange { get; set; }
+        public float WorldYChange { get; set; }
+    }
+    #endregion
+
+    #region SimulateResizeDragResponse
+    public class SimulateResizeDragResponse
+    {
+        public float ScaleX { get; set; }
+        public float ScaleY { get; set; }
+    }
+    #endregion
+
     #region GetCameraSave
     public class GetCameraSave
     {

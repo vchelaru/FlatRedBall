@@ -1104,7 +1104,28 @@ namespace GlueControl.Editing
             ? MathFunctions.RoundFloat(value, SizeSnappingSize)
             : value;
 
+        /// <summary>
+        /// The smallest Width/Height ChangeSizeBy will drag an item down to, by type - so the drag never
+        /// asks an object's IScalable setter for a size it will reject. Most shapes are fine down to 0
+        /// (a degenerate but valid size - see AxisAlignedRectangle/AxisAlignedCube/Capsule2D, which only
+        /// reject negative). CapsulePolygon is the one exception: Width/Height throw below 1 (#2087).
+        /// </summary>
+        static float GetMinimumDragSize(PositionedObject item) =>
+            item is FlatRedBall.Math.Geometry.CapsulePolygon ? 1f : 0f;
+
         private void ChangeSizeBy(PositionedObject item, ResizeSide sideOver)
+        {
+            var mouse = InputManager.Mouse;
+            var mouseChangeWorldSpace = new Vector3(mouse.WorldXChangeAt(item.Z), mouse.WorldYChangeAt(item.Z), 0);
+            ChangeSizeBy(item, sideOver, mouseChangeWorldSpace);
+        }
+
+        /// <summary>
+        /// Core drag-resize logic, parameterized on the raw (unrotated) world-space mouse delta instead of
+        /// reading InputManager.Mouse directly, so SimulateResizeDragForTesting (LiveGameProcess tests, see
+        /// #2087) can drive it without a real Cursor/mouse.
+        /// </summary>
+        internal void ChangeSizeBy(PositionedObject item, ResizeSide sideOver, Vector3 mouseChangeWorldSpace)
         {
             Vector3 rotatedPositionMultiple = new Vector3();
             Vector3 unrotatedPositionMultiple = new Vector3();
@@ -1190,10 +1211,8 @@ namespace GlueControl.Editing
                 heightMultiple *= 2;
             }
 
-            var mouse = InputManager.Mouse;
             var scalable = item as IScalable;
-            var mouseChange = new Vector3(mouse.WorldXChangeAt(item.Z), mouse.WorldYChangeAt(item.Z), 0);
-            mouseChange = mouseChange.RotatedBy(-item.RotationZ);
+            var mouseChange = mouseChangeWorldSpace.RotatedBy(-item.RotationZ);
 
             float xChangeForPosition = rotatedPositionMultiple.X * mouseChange.X;
             float yChangeForPosition = rotatedPositionMultiple.Y * mouseChange.Y;
@@ -1260,7 +1279,7 @@ namespace GlueControl.Editing
                     // Vic says - this needs more work. Didn't work like this and I don't want to dive in yet
                     var sizeX = unsnappedItemSize.Value.X;
                     sizeX = sizeX + mouseChange.X * widthMultiple;
-                    sizeX = Math.Max(0, sizeX);
+                    sizeX = Math.Max(GetMinimumDragSize(item), sizeX);
 
                     unsnappedItemSize = new Vector2(sizeX, unsnappedItemSize.Value.Y);
 
@@ -1290,7 +1309,7 @@ namespace GlueControl.Editing
                     //scalable.ScaleY = newScaleY;
                     var sizeY = unsnappedItemSize.Value.Y;
                     sizeY = sizeY + mouseChange.Y * heightMultiple;
-                    sizeY = Math.Max(0, sizeY);
+                    sizeY = Math.Max(GetMinimumDragSize(item), sizeY);
 
                     unsnappedItemSize = new Vector2(unsnappedItemSize.Value.X, sizeY);
 
@@ -1319,6 +1338,17 @@ namespace GlueControl.Editing
             item.ForceUpdateDependencies();
         }
 
+        /// <summary>
+        /// Test-only entry point driven by SimulateResizeDragDto (see CommandReceiver.HandleDto) - applies
+        /// one resize-drag step on this marker's Owner exactly like a real mouse-drag on a resize handle
+        /// would, without needing a real Cursor/mouse. Exists so a LiveGameProcess-based test can drive
+        /// ChangeSizeBy's actual resize logic - including whatever the resized object's own IScalable
+        /// setter does with the requested size - end to end. See #2087.
+        /// </summary>
+        internal void SimulateResizeDragForTesting(ResizeSide sideOver, float worldXChange, float worldYChange)
+        {
+            ChangeSizeBy(Owner as PositionedObject, sideOver, new Vector3(worldXChange, worldYChange, 0));
+        }
 
         #endregion
 
