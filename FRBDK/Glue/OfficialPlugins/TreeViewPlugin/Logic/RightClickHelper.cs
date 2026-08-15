@@ -334,7 +334,7 @@ public static class RightClickHelper
             }
             else
             {
-                list.Add(new RightClickItemDescriptor { Text = "Add Object", Handler = () => GlueCommands.Self.DialogCommands.ShowAddNewObjectDialog() });
+                list.Add(new RightClickItemDescriptor { Text = "Add Object", Handler = async () => await AddObjectAndBeginRename() });
             }
         }
 
@@ -453,13 +453,13 @@ public static class RightClickHelper
                 }
                 if (shouldAdd)
                 {
-                    list.Add(new RightClickItemDescriptor { Text = "Add Object", Handler = () => GlueCommands.Self.DialogCommands.ShowAddNewObjectDialog() });
+                    list.Add(new RightClickItemDescriptor { Text = "Add Object", Handler = async () => await AddObjectAndBeginRename() });
                     list.Add(RightClickItemDescriptor.Separator);
                 }
             }
             else if (currentNamedObject?.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.ShapeCollection)
             {
-                list.Add(new RightClickItemDescriptor { Text = "Add Object", Handler = () => GlueCommands.Self.DialogCommands.ShowAddNewObjectDialog() });
+                list.Add(new RightClickItemDescriptor { Text = "Add Object", Handler = async () => await AddObjectAndBeginRename() });
                 list.Add(RightClickItemDescriptor.Separator);
             }
 
@@ -889,7 +889,7 @@ public static class RightClickHelper
         }
     }
 
-    private static void HandleAddLayerClick(object sender, EventArgs e)
+    private static async void HandleAddLayerClick(object sender, EventArgs e)
     {
         var viewModel = new AddObjectViewModel();
 
@@ -898,7 +898,28 @@ public static class RightClickHelper
         viewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Layer;
         viewModel.IsTypePredetermined = true;
 
-        GlueCommands.Self.DialogCommands.ShowAddNewObjectDialog(viewModel);
+        await AddObjectAndBeginRename(viewModel);
+    }
+
+    /// <summary>
+    /// Shows the "New Object" dialog (or skips it entirely when the type is already predetermined -
+    /// see DialogCommands.CreateAndShowAddNamedObjectWindow) and, once the object is added and
+    /// selected, drops the new tree node straight into inline-rename mode - the same mechanism
+    /// RenameItem() uses. See the glue-add-object-flow skill.
+    /// </summary>
+    internal static async Task AddObjectAndBeginRename(AddObjectViewModel viewModel = null)
+    {
+        var newNamedObject = await GlueCommands.Self.DialogCommands.ShowAddNewObjectDialog(viewModel);
+
+        if (newNamedObject != null)
+        {
+            await SelectionLogic.Current.SelectByTag(newNamedObject, false);
+
+            if (SelectionLogic.Current.CurrentNode?.IsEditable == true)
+            {
+                SelectionLogic.Current.CurrentNode.IsEditing = true;
+            }
+        }
     }
 
     private static void HandleCopyToBuildFolder(object sender, EventArgs e)

@@ -89,7 +89,7 @@ public partial class MainTreeViewControl : UserControl, ITreeViewDisplay
             }
             else if(currentNode.IsRootNamedObjectNode())
             {
-                await GlueCommands.Self.DialogCommands.ShowAddNewObjectDialog();
+                await RightClickHelper.AddObjectAndBeginRename();
             }
             else if(currentNode.IsRootCustomVariablesNode())
             {
