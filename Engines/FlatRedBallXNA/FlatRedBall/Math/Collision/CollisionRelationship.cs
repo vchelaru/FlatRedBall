@@ -231,6 +231,13 @@ namespace FlatRedBall.Math.Collision
             }
 #endif
 
+            // An instance may intentionally have a null Collision (e.g. it doesn't need one), so skip
+            // rather than NRE - see issue #2084.
+            if (first.Collision == null || second.Collision == null)
+            {
+                return false;
+            }
+
             this.DeepCollisionsThisFrame++;
 
             if (CollisionType == CollisionType.EventOnlyCollision || eventOnly)
@@ -2104,6 +2111,13 @@ namespace FlatRedBall.Math.Collision
 
         private bool DoCollisionPhysicsInner(FirstCollidableT first, ShapeCollection second, bool eventOnly)
         {
+            // An instance may intentionally have a null Collision (e.g. it doesn't need one), so skip
+            // rather than NRE - see issue #2084.
+            if (first.Collision == null)
+            {
+                return false;
+            }
+
             this.DeepCollisionsThisFrame++;
 
             if (CollisionType == CollisionType.EventOnlyCollision || eventOnly)
@@ -2174,7 +2188,7 @@ namespace FlatRedBall.Math.Collision
                 return first.CollideAgainstMove(second, moveFirstMass, moveSecondMass);
             }
         }
-                
+
         private bool CollideAgainstConsiderSubCollisionMoveSoft(FirstCollidableT first, ShapeCollection second)
         {
             if(firstSubCollisionCircle != null)
@@ -2304,6 +2318,13 @@ namespace FlatRedBall.Math.Collision
 
         private bool DoCollisionPhysicsInner(FirstCollidableT first, ShapeCollection second, bool eventOnly)
         {
+            // An instance may intentionally have a null Collision (e.g. it doesn't need one), so skip
+            // rather than NRE - see issue #2084.
+            if (first.Collision == null)
+            {
+                return false;
+            }
+
             this.DeepCollisionsThisFrame++;
 
             if (CollisionType == CollisionType.EventOnlyCollision || eventOnly)
