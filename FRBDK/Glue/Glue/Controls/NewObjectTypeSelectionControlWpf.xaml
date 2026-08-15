@@ -15,7 +15,6 @@
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
-            <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
 
 
@@ -113,13 +112,7 @@
         </Grid>
 
 
-        <StackPanel  Grid.Row="3">
-            <Label Margin="0,5,0,0" Content="{x:Static localization:Texts.EnterNewObjectName}" />
-            <TextBox Text="{Binding ObjectName}" KeyDown="HandleEnterEscape"></TextBox>
-            
-        </StackPanel>
-
-        <Grid HorizontalAlignment="Right" Margin="0,5,0,0"  Grid.Row="4" Height="40">
+        <Grid HorizontalAlignment="Right" Margin="0,5,0,0"  Grid.Row="3" Height="40">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="100"></ColumnDefinition>
                 <ColumnDefinition Width="10"></ColumnDefinition>

@@ -102,15 +102,17 @@ partial class DialogCommands : IDialogCommands
 
         if (shouldAdd == true)
         {
-            bool isValid = _nameVerifier.IsNamedObjectNameValid(addObjectViewModel.ObjectName, out string whyItIsntValid);
+            // The object name no longer comes from free-typed user input - it's either the
+            // AddObjectViewModel-computed default (SetDefaultObjectName, already unique/valid) or,
+            // once inline rename lands the user's typed name, validated separately by
+            // GluxCommands.RenameNamedObjectSave. See the glue-add-object-flow skill.
+            bool isValid = true;
+            string whyItIsntValid = null;
 
-            if (isValid)
+            if (addObjectViewModel.SourceType == SourceType.Entity && !RecursionManager.Self.CanContainInstanceOf(GlueState.Self.CurrentElement, addObjectViewModel.SourceClassType))
             {
-                if (addObjectViewModel.SourceType == SourceType.Entity && !RecursionManager.Self.CanContainInstanceOf(GlueState.Self.CurrentElement, addObjectViewModel.SourceClassType))
-                {
-                    isValid = false;
-                    whyItIsntValid = L.Texts.TypeInfiniteRecursion;
-                }
+                isValid = false;
+                whyItIsntValid = L.Texts.TypeInfiniteRecursion;
             }
 
             if (isValid)
@@ -132,7 +134,7 @@ partial class DialogCommands : IDialogCommands
     /// </summary>
     /// <param name="addObjectViewModel"></param>
     /// <returns>The WPF dialog result for showing the window.</returns>
-    private static bool? CreateAndShowAddNamedObjectWindow(ref AddObjectViewModel addObjectViewModel)
+    internal static bool? CreateAndShowAddNamedObjectWindow(ref AddObjectViewModel addObjectViewModel)
     {
         var currentObject = GlueState.Self.CurrentNamedObjectSave;
 
@@ -272,6 +274,15 @@ partial class DialogCommands : IDialogCommands
                     }
                 }
             }
+        }
+
+        if (addObjectViewModel.IsTypePredetermined)
+        {
+            // Nothing left to pick - the type radios and list are both disabled (see
+            // AddObjectViewModel.IsSelectionEnabled). Showing the window would just be a naming
+            // prompt; skip it and let the caller add immediately with the already-computed default
+            // name (SetDefaultObjectName). See the glue-add-object-flow skill.
+            return true;
         }
 
         var wpf = new NewObjectTypeSelectionControlWpf();
