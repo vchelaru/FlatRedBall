@@ -31,6 +31,12 @@ namespace OfficialPlugins.MonoGameContent
             new FilePath(AppDomain.CurrentDomain.BaseDirectory + @"..\..\..\..\PrebuiltTools\MGCB\MGCB.exe"),
         };
 
+        // Missing-builder-tool errors are reported per content file, and a project can have hundreds of
+        // sounds/images. Without this, the same "could not find MGCB" message gets printed to the output
+        // log once per file, drowning out everything else. Track which exe paths we've already reported
+        // this session so the log line only prints once per missing tool.
+        static HashSet<string> reportedMissingBuildExePaths = new HashSet<string>();
+
         static string GetCommandLineBuildExe(VisualStudioProject project)
         {
             if(project is KniWebProject)
@@ -459,17 +465,26 @@ namespace OfficialPlugins.MonoGameContent
             var contentDirectory = GlueState.ContentDirectory;
 
             //////////////EARLY OUT////////////////////////
-            if (commandLineBuildExe == null)
+            if (commandLineBuildExe == null || !System.IO.File.Exists(commandLineBuildExe))
             {
-                var error = $"Could not find Monogame Builder Tool. Looked in the following locations:";
-
-                foreach(var filePath in possibleMGCBPaths)
+                if (reportedMissingBuildExePaths.Add(commandLineBuildExe ?? "null"))
                 {
-                    error += $"\n\t{filePath}";
+                    string error;
+                    if (commandLineBuildExe == null)
+                    {
+                        error = "Could not find Monogame Builder Tool. Looked in the following locations:";
+                        foreach (var filePath in possibleMGCBPaths)
+                        {
+                            error += $"\n\t{filePath}";
+                        }
+                        error += "\nTry installing MonoGame";
+                    }
+                    else
+                    {
+                        error = $"Could not find the Monogame Builder Tool at {commandLineBuildExe}\nTry installing MonoGame";
+                    }
+                    GlueCommands.PrintError(error);
                 }
-
-                error += "\nTry installing MonoGame";
-                GlueCommands.PrintError(error);
 
                 var viewModel = new DelegateBasedErrorViewModel();
                 
