@@ -115,7 +115,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
 
             if(viewModel != null)
             {
-                ApplyViewModelToScreen(newScreen, viewModel);
+                _ = ApplyViewModelToScreen(newScreen, viewModel);
             }
         }
 
@@ -175,7 +175,8 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
             }
         }
 
-        private async void ApplyViewModelToScreen(ScreenSave newScreen, ViewModels.AddScreenViewModel viewModel)
+        // internal (not private) so GlueUnitTests can drive it directly - see AddScreenPluginTests.
+        internal static async Task ApplyViewModelToScreen(ScreenSave newScreen, ViewModels.AddScreenViewModel viewModel)
         {
 
             var shouldSave = false;
@@ -192,12 +193,14 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
                     }
                     if (viewModel.IsAddSolidCollisionShapeCollectionChecked)
                     {
-                        await AddCollision(newScreen, "SolidCollision");
+                        await AddCollision(newScreen, "SolidCollision",
+                            setFromMapObject: viewModel.IsAddMapLayeredTileMapChecked);
                         shouldSave = true;
                     }
                     if (viewModel.IsAddCloudCollisionShapeCollectionChecked)
                     {
-                        await AddCollision(newScreen, "CloudCollision");
+                        await AddCollision(newScreen, "CloudCollision",
+                            setFromMapObject: viewModel.IsAddMapLayeredTileMapChecked);
                         shouldSave = true;
                     }
 
