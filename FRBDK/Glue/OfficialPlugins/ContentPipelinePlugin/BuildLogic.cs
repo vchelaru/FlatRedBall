@@ -634,6 +634,41 @@ namespace OfficialPlugins.MonoGameContent
             return toReturn;
         }
 
+        /// <summary>
+        /// Reads the version of the project's referenced MonoGame.Framework.* package (DesktopGL,
+        /// WindowsDX, Android, iOS, etc.), or null if the project doesn't reference one or the version
+        /// isn't parseable.
+        /// </summary>
+        internal static Version GetReferencedMonoGameFrameworkVersion(VisualStudioProject project)
+        {
+            var packageReference = project.EvaluatedItems
+                .FirstOrDefault(item => item.ItemType == "PackageReference" &&
+                    item.EvaluatedInclude.StartsWith("MonoGame.Framework."));
+
+            var versionText = packageReference?.GetMetadataValue("Version");
+
+            return Version.TryParse(versionText, out var version) ? version : null;
+        }
+
+        /// <summary>
+        /// Content built by a newer MGCB than the project's referenced MonoGame.Framework runtime fails
+        /// at runtime with "This MGFX effect seems to be for a newer release of MonoGame." - an older
+        /// MGCB building for a newer runtime is not this problem, so only that direction is flagged.
+        /// </summary>
+        internal static string GetMonoGameFrameworkMgcbMismatchError(Version referencedMonoGameVersion, Version mgcbVersion)
+        {
+            if (referencedMonoGameVersion == null || mgcbVersion == null || mgcbVersion <= referencedMonoGameVersion)
+            {
+                return null;
+            }
+
+            return $"The installed MGCB (content builder) version is {mgcbVersion}, but this project references " +
+                $"MonoGame.Framework version {referencedMonoGameVersion}, which is older. Content built by a newer " +
+                "MGCB than the referenced runtime can fail to load at runtime with \"This MGFX effect seems to be " +
+                $"for a newer release of MonoGame.\" Either upgrade the project's MonoGame.Framework.* package reference " +
+                $"to {mgcbVersion} or newer, or install a matching MGCB: dotnet tool install dotnet-mgcb --global --version {referencedMonoGameVersion}";
+        }
+
         // todo - this can be slow - like 100 ms. This only needs to happen 1 time per run per project type.
         static bool HasInstalledBuilder = false;
 
@@ -720,6 +755,13 @@ namespace OfficialPlugins.MonoGameContent
                     {
                         GlueCommands.PrintError($"dotnet-mgcb (the content pipeline) is already installed, but using version {versionFound}.");
                     }
+                }
+
+                var referencedMonoGameVersion = GetReferencedMonoGameFrameworkVersion(visualStudioProject);
+                var mismatchError = GetMonoGameFrameworkMgcbMismatchError(referencedMonoGameVersion, versionFound);
+                if(mismatchError != null)
+                {
+                    GlueCommands.PrintError(mismatchError);
                 }
             }
         }
