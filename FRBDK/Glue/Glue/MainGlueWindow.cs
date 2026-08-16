@@ -205,12 +205,18 @@ public partial class MainGlueWindow : Form, IMainGlueWindow
         // This is required for various aspects of WPF controls to work correctly.
         _ = new Wpf.Application() { ShutdownMode = Wpf.ShutdownMode.OnExplicitShutdown };
 
+        // Must be set before anything below can show a dialog (e.g. SetMsBuildEnvironmentVariable on a
+        // failed SDK lookup) - DialogService routes through TaskManager.OnUiThread, which checks
+        // IsOnUiThread against UiThreadId and falls back to MainGlueWindow.Self.Invoke otherwise. Setting
+        // both late meant a dialog shown from this early in the constructor NullReferenceException'd on
+        // Self instead of displaying.
+        Self = this;
+        UiThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
+
         // Vic says - this makes Glue use the latest MSBuild environments
         // Running on AnyCPU means we run in 64 bit and can load VS 22 64 bit libs.
         SetMsBuildEnvironmentVariable();
 
-        Self = this;
-        UiThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
         InitializeComponent();
 
         MinimumSize = new System.Drawing.Size(150, 150);
