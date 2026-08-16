@@ -479,17 +479,29 @@ namespace OfficialPlugins.MonoGameContent
                         }
                         error += "\nTry installing MonoGame";
                     }
-                    else if (project is KniWebProject)
+                    else if (project is KniWebProject kniProject)
                     {
                         var kniPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + @"\KNI\v4.0\Tools\MGCB.exe";
+
+                        // The KNI content builder version needs to match what this specific project
+                        // references, so read it from the project file rather than assuming a version:
+                        var referencedKniVersion = kniProject.Project.AllEvaluatedItems
+                            .FirstOrDefault(item => item.ItemType == "PackageReference" && item.EvaluatedInclude == "nkast.Kni.Platform.Blazor.GL")
+                            ?.GetMetadataValue("Version");
+
+                        var versionGuidance = string.IsNullOrEmpty(referencedKniVersion)
+                            ? "Try installing KNI"
+                            : $"Try installing KNI matching this project's referenced nkast.Kni.Platform.Blazor.GL version ({referencedKniVersion}) or newer";
+
                         error = "Could not find the KNI content builder tool (needed to build content for the Web/KNI project). Looked in the following locations:" +
                             $"\n\t{kniPath}" +
                             $"\n\t{commandLineBuildExe} (older MonoGame fallback)" +
-                            "\nTry installing KNI, or reinstalling MonoGame if you don't have the KNI content builder.";
+                            $"\n{versionGuidance} (https://github.com/kniEngine/kni), or reinstalling MonoGame if you don't have the KNI content builder.";
                     }
                     else
                     {
-                        error = $"Could not find the Monogame Builder Tool at {commandLineBuildExe}\nTry installing MonoGame";
+                        error = $"Could not find the Monogame Builder Tool at {commandLineBuildExe}" +
+                            "\nTry running: dotnet tool install dotnet-mgcb --global --version 3.8.1";
                     }
                     error += $"\nFirst encountered while trying to build: {rfsFilePath.FullPath}";
                     GlueCommands.PrintError(error);
