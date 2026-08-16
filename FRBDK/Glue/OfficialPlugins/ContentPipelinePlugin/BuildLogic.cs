@@ -479,10 +479,19 @@ namespace OfficialPlugins.MonoGameContent
                         }
                         error += "\nTry installing MonoGame";
                     }
+                    else if (project is KniWebProject)
+                    {
+                        var kniPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + @"\KNI\v4.0\Tools\MGCB.exe";
+                        error = "Could not find the KNI content builder tool (needed to build content for the Web/KNI project). Looked in the following locations:" +
+                            $"\n\t{kniPath}" +
+                            $"\n\t{commandLineBuildExe} (older MonoGame fallback)" +
+                            "\nTry installing KNI, or reinstalling MonoGame if you don't have the KNI content builder.";
+                    }
                     else
                     {
                         error = $"Could not find the Monogame Builder Tool at {commandLineBuildExe}\nTry installing MonoGame";
                     }
+                    error += $"\nFirst encountered while trying to build: {rfsFilePath.FullPath}";
                     GlueCommands.PrintError(error);
                 }
 
