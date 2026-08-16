@@ -37,19 +37,31 @@ namespace OfficialPlugins.MonoGameContent
         // this session so the log line only prints once per missing tool.
         static HashSet<string> reportedMissingBuildExePaths = new HashSet<string>();
 
+        static string KniRootDirectory => Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + @"\KNI";
+
+        // The KNI installer names its install folder after the installed SDK release (e.g. v4.2), not
+        // after any particular project's referenced package version, so this can't be a fixed path -
+        // it has to look at whatever version folders are actually present.
+        static string FindInstalledKniMgcb()
+        {
+            if (!System.IO.Directory.Exists(KniRootDirectory))
+            {
+                return null;
+            }
+
+            return System.IO.Directory.GetDirectories(KniRootDirectory, "v*")
+                .OrderByDescending(dir => Version.TryParse(FileManager.RemovePath(dir).TrimStart('v'), out var version) ? version : new Version(0, 0))
+                .Select(dir => System.IO.Path.Combine(dir, "Tools", "MGCB.exe"))
+                .FirstOrDefault(System.IO.File.Exists);
+        }
+
         static string GetCommandLineBuildExe(VisualStudioProject project)
         {
             if(project is KniWebProject)
             {
-                // prefer the new location, but then fall back to the old location if the new one doesn't exist:
-                var mgcbLocation =
-                    Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + @"\KNI\v4.0\Tools\MGCB.exe";
-
-                if (!System.IO.File.Exists(mgcbLocation))
-                {
-                    mgcbLocation = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + @"\MSBuild\MonoGame\v3.0\Tools\MGCB.exe";
-                }
-                return mgcbLocation;
+                // prefer an installed KNI build, but fall back to the old MonoGame location if KNI isn't installed:
+                return FindInstalledKniMgcb() ??
+                    Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + @"\MSBuild\MonoGame\v3.0\Tools\MGCB.exe";
             }
             else if(project.DotNetVersion?.Major >= 6)
             {
@@ -481,8 +493,6 @@ namespace OfficialPlugins.MonoGameContent
                     }
                     else if (project is KniWebProject kniProject)
                     {
-                        var kniPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + @"\KNI\v4.0\Tools\MGCB.exe";
-
                         // The KNI content builder version needs to match what this specific project
                         // references, so read it from the project file rather than assuming a version:
                         var referencedKniVersion = kniProject.Project.AllEvaluatedItems
@@ -494,7 +504,7 @@ namespace OfficialPlugins.MonoGameContent
                             : $"Try installing KNI matching this project's referenced nkast.Kni.Platform.Blazor.GL version ({referencedKniVersion}) or newer";
 
                         error = "Could not find the KNI content builder tool (needed to build content for the Web/KNI project). Looked in the following locations:" +
-                            $"\n\t{kniPath}" +
+                            $"\n\t{KniRootDirectory}\\v*\\Tools\\MGCB.exe (no installed version found)" +
                             $"\n\t{commandLineBuildExe} (older MonoGame fallback)" +
                             $"\n{versionGuidance} (https://github.com/kniEngine/kni), or reinstalling MonoGame if you don't have the KNI content builder.";
                     }
