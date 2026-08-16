@@ -425,6 +425,25 @@ namespace FlatRedBall.Glue.Elements
         }
 
         /// <summary>
+        /// The Glue-generated (never hand-authored) relative paths an element owns: its ".Generated.cs",
+        /// ".Generated.Event.cs", and factory - the subset of <see cref="FillWithOwnedFiles"/>'s files that
+        /// are pure build output. Used by the load-time orphaned-csproj-entry reconciliation (issue #2103)
+        /// to know which currently-live elements still "claim" a generated file name, so an entry isn't
+        /// removed out from under an element whose file simply hasn't been regenerated yet (e.g. a fresh
+        /// checkout, where *.Generated.cs is gitignored and doesn't exist until Glue regenerates it).
+        /// Deliberately excludes the hand-authored ".cs"/".Event.cs" files <see cref="FillWithOwnedFiles"/>
+        /// also lists - reconciliation never touches those, so they don't need to be "owned" here.
+        /// </summary>
+        public static IEnumerable<string> GetOwnedGeneratedRelativePaths(GlueElement element)
+        {
+            var elementName = element.Name;
+
+            yield return elementName + ".Generated.cs";
+            yield return elementName + ".Generated.Event.cs";
+            yield return "Factories/" + FileManager.RemovePath(elementName) + "Factory.Generated.cs";
+        }
+
+        /// <summary>
         /// Adds the code and JSON files an element owns outright - its custom and generated .cs, its event
         /// files and factory if they exist on disk, and its .glsj/.glej. Shared by the planner (to show the
         /// user) and by the delete itself (to act on), all as canonical paths.

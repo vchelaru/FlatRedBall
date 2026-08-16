@@ -426,7 +426,43 @@ namespace FlatRedBall.Glue.IO
 
                 GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
                 Section.EndContextAndTime();
+                Section.GetAndStartContextAndTime("RemoveOrphanedCsprojEntries");
 
+                RemoveOrphanedGeneratedCsprojEntries();
+                Section.EndContextAndTime();
+
+            }
+        }
+
+        /// <summary>
+        /// GitHub issue #2103: a Screen/Entity deleted or renamed outside Glue's own delete/rename flow
+        /// (a manual .glux edit, a merge, an older Glue version) can leave its ".Generated.cs" still
+        /// referenced in the .csproj, producing CS2001 the next time the project builds. Codegen above has
+        /// just run, so any file a live element still owns has been (re)created - anything still missing
+        /// and unclaimed by a current element is a leftover from an incomplete cleanup, not a fresh
+        /// checkout waiting on codegen.
+        /// </summary>
+        static void RemoveOrphanedGeneratedCsprojEntries()
+        {
+            var mainProject = GlueState.Self.CurrentMainProject;
+            if (mainProject == null || ObjectFinder.Self.GlueProject == null)
+            {
+                return;
+            }
+
+            var allElements = ObjectFinder.Self.GlueProject.Screens.Cast<GlueElement>()
+                .Concat(ObjectFinder.Self.GlueProject.Entities);
+
+            var removed = mainProject.RemoveOrphanedGeneratedCompileItems(allElements);
+
+            if (removed.Count > 0)
+            {
+                foreach (var relativePath in removed)
+                {
+                    PluginManager.ReceiveOutput("Removed orphaned csproj entry (no backing file, no owning element): " + relativePath);
+                }
+
+                GlueCommands.Self.ProjectCommands.SaveProjects();
             }
         }
 
