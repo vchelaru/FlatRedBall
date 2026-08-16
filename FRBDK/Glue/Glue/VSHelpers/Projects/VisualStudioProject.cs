@@ -17,6 +17,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.Utilities;
+using FlatRedBall.Glue.VSHelpers;
 using FlatRedBall.IO;
 using Microsoft.Build.Evaluation;
 using Newtonsoft.Json.Linq;
@@ -1237,6 +1238,52 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             }
 
             return anyRemoved;
+        }
+
+        /// <summary>
+        /// Removes &lt;Compile Include&gt; entries for Glue-generated files (".Generated.cs",
+        /// ".Generated.Event.cs", factories) whose backing file no longer exists on disk and which no
+        /// element in <paramref name="ownerElements"/> currently owns - see GitHub issue #2103. Run at
+        /// project load, after codegen has had a chance to (re)create any file a live element still owns,
+        /// so "missing on disk" plus "unowned" together are a safe signal the entry is a leftover from a
+        /// delete/rename that didn't clean up the csproj (a merge, a manual edit, an older Glue version).
+        /// Never touches wildcard or conditional (platform-specific) entries, or hand-authored files - only
+        /// Glue's own generated-file naming is a candidate. Returns the removed entries' Include values.
+        /// </summary>
+        public List<string> RemoveOrphanedGeneratedCompileItems(IEnumerable<GlueElement> ownerElements)
+        {
+            var ownedRelativePaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var element in ownerElements ?? Enumerable.Empty<GlueElement>())
+            {
+                foreach (var relativePath in DeletionPlanner.GetOwnedGeneratedRelativePaths(element))
+                {
+                    ownedRelativePaths.Add(relativePath.Replace('/', '\\'));
+                }
+            }
+
+            var candidates = EvaluatedItems
+                .Where(item => item.ItemType == "Compile")
+                .Select(item => new CandidateCompileItem
+                {
+                    UnevaluatedInclude = item.UnevaluatedInclude,
+                    IsWildcard = item.UnevaluatedInclude?.Contains("*") == true,
+                    IsConditional = !string.IsNullOrEmpty(item.Xml?.Condition)
+                        || !string.IsNullOrEmpty((item.Xml?.Parent as Microsoft.Build.Construction.ProjectItemGroupElement)?.Condition)
+                });
+
+            var orphanedIncludes = OrphanedGeneratedCompileItemFinder.FindOrphanedIncludes(
+                candidates,
+                include => File.Exists(this.Directory + include.Replace('\\', '/')),
+                ownedRelativePaths);
+
+            var itemsToRemove = orphanedIncludes
+                .Select(include => GetItem(include))
+                .Where(item => item != null)
+                .ToList();
+
+            RemoveItems(itemsToRemove);
+
+            return orphanedIncludes;
         }
 
         public override bool RemoveItem(string itemName)
