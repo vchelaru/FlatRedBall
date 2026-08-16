@@ -353,5 +353,57 @@ public class GoldProjectCompileTests
         divideOrDefault!.Invoke(null, new object[] { 10f, 2f, 999f }).ShouldBe(5f);
         divideOrDefault.Invoke(null, new object[] { 10f, 0f, 42f }).ShouldBe(42f);
         divideOrDefault.Invoke(null, new object[] { 10f, -1f, 42f }).ShouldBe(42f);
+
+        // Reproduces the actual reported crash end to end: a Ground movement with DecelerationTimeX == 0,
+        // evaluated on the very first ApplyHorizontalInput call - the same moment TimeManager.SecondDifference
+        // is still its default of 0, since no Update() has run yet (ScreenManager.Start -> a screen's first
+        // Activity). DivideOrDefault alone is not enough to prove this is fixed: its own fallback argument,
+        // absoluteValueVelocityDifference / TimeManager.SecondDifference, is computed eagerly by the CALLER
+        // before DivideOrDefault ever runs, so testing DivideOrDefault in isolation - as the block above does -
+        // passes even when that call site still divides by a possibly-zero SecondDifference.
+        var engineAssembly = System.Reflection.Assembly.LoadFrom(
+            Path.Combine(project.Root, "FormsSampleProject", "bin", "Debug", "net6.0", "FlatRedBallDesktopGLNet6.dll"));
+        // FlatRedBallServices.InitializeCommandLine() is the engine's own designed-for-this headless
+        // bootstrap ("Used to initialize FlatRedBall without rendering anything to the screen") - the same
+        // one EngineUnitTests/TestSupport/EngineTestBootstrap.cs already uses. Needed before constructing
+        // any PositionedObject-derived entity: LoadStaticContent reaches FlatRedBallServices.GetContentManagerByName,
+        // which locks a static dictionary that is null until this runs.
+        var flatRedBallServicesType = engineAssembly.GetType("FlatRedBall.FlatRedBallServices");
+        flatRedBallServicesType.ShouldNotBeNull();
+        flatRedBallServicesType!.GetMethod("InitializeCommandLine", Type.EmptyTypes)!.Invoke(null, null);
+
+        var timeManagerType = engineAssembly.GetType("FlatRedBall.TimeManager");
+        timeManagerType.ShouldNotBeNull();
+        var secondDifferenceField = timeManagerType!.GetField("mSecondDifference",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+        secondDifferenceField.ShouldNotBeNull();
+        secondDifferenceField!.SetValue(null, 0f);
+
+        var platformerValuesType = assembly.GetType("FormsSampleProject.DataTypes.PlatformerValues");
+        platformerValuesType.ShouldNotBeNull();
+        var groundMovement = Activator.CreateInstance(platformerValuesType!);
+        // The CSV-generated custom class emits public fields, not properties.
+        platformerValuesType.GetField("MaxSpeedX")!.SetValue(groundMovement, 200f);
+        platformerValuesType.GetField("AccelerationTimeX")!.SetValue(groundMovement, 5f);
+        platformerValuesType.GetField("DecelerationTimeX")!.SetValue(groundMovement, 0f);
+        platformerValuesType.GetField("UsesAcceleration")!.SetValue(groundMovement, true);
+
+        // The default constructor reads FlatRedBall.Screens.ScreenManager.CurrentScreen.ContentManagerName,
+        // which is null with no screen running - use the (contentManagerName, addToManagers) overload with
+        // addToManagers: false instead, so this never touches SpriteManager/a live engine loop.
+        var entityInstance = Activator.CreateInstance(entityType, "GlueUnitTests", false);
+        entityType.GetProperty("GroundMovement")!.SetValue(entityInstance, groundMovement);
+        var movementTypeType = assembly.GetType("FormsSampleProject.Entities.MovementType");
+        movementTypeType.ShouldNotBeNull();
+        entityType.GetProperty("CurrentMovementType")!.SetValue(entityInstance, Enum.Parse(movementTypeType!, "Ground"));
+
+        var applyHorizontalInput = entityType.GetMethod("ApplyHorizontalInput",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        applyHorizontalInput.ShouldNotBeNull();
+
+        // Should not throw: reproduces issue #2091's actual reported crash - PositionedObject.XAcceleration's
+        // setter rejecting a NaN computed from 0f / 0f (absoluteValueVelocityDifference / TimeManager.
+        // SecondDifference), which is still 0 on this, the very first ApplyHorizontalInput call.
+        Should.NotThrow(() => applyHorizontalInput!.Invoke(entityInstance, null));
     }
 }

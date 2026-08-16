@@ -507,13 +507,13 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                     {
                         accelerationMagnitude = DivideOrDefault(
                             lastNonZeroPlatformerHorizontalMaxSpeed, CurrentMovement.DecelerationTimeX,
-                            absoluteValueVelocityDifference / TimeManager.SecondDifference);
+                            DivideOrDefault(absoluteValueVelocityDifference, TimeManager.SecondDifference, 0));
                     }
                     else
                     {
                         accelerationMagnitude = DivideOrDefault(
                             maxSpeed, CurrentMovement.DecelerationTimeX,
-                            absoluteValueVelocityDifference / TimeManager.SecondDifference);
+                            DivideOrDefault(absoluteValueVelocityDifference, TimeManager.SecondDifference, 0));
                     }
                 }
                 
