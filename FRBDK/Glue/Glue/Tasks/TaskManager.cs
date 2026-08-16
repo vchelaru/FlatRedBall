@@ -396,6 +396,12 @@ namespace FlatRedBall.Glue.Managers
         {
             if(task.IsCancelled == false)
             {
+                // Restored (not unconditionally nulled) in the finally block below - a nested RunTask
+                // (e.g. an AddOrMoveToEnd task queued from inside an already-running task; see
+                // AddOrRunIfTasked, which always routes AddOrMoveToEnd through the real Add/RunTask path
+                // even when already "in a task") would otherwise clobber the outer task's "currently
+                // running" marker out from under it once the inner call finishes.
+                var previouslyRunningTask = CurrentlyRunningTask;
                 if(markAsCurrent) CurrentlyRunningTask = task;
                 TaskAddedOrRemoved?.Invoke(TaskEvent.Started, task);
                 task.TimeStarted = DateTime.Now;
@@ -406,8 +412,9 @@ namespace FlatRedBall.Glue.Managers
                 finally
                 {
                     task.TimeEnded = DateTime.Now;
-                    // Set it to null before raising the event so that the TaskCount uses a null object.
-                    if (markAsCurrent) CurrentlyRunningTask = null;
+                    // Set it to null (or restore the outer task) before raising the event so that the
+                    // TaskCount uses a null object.
+                    if (markAsCurrent) CurrentlyRunningTask = previouslyRunningTask;
                     TaskAddedOrRemoved?.Invoke(TaskEvent.Removed, task);
                 }
             }
