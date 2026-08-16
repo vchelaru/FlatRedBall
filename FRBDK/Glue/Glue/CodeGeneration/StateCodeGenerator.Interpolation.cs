@@ -460,11 +460,17 @@ namespace FlatRedBall.Glue.CodeGeneration
                         curBlock = curBlock.End(); // end the else
                     }
 
-                    curBlock = curBlock.End();
+                    // The #endif must be added before curBlock.End() - End() only moves the
+                    // "current" pointer back up the code block tree (it doesn't emit anything),
+                    // so calling AddEndIfIfNecessary after End() appends "#endif" as a sibling
+                    // *after* the whole if-block instead of as its last line, which strands
+                    // the if-block's closing "}" inside the #if/#endif region.
                     if (nos != null)
                     {
                         NamedObjectSaveCodeGenerator.AddEndIfIfNecessary(curBlock, nos);
                     }
+
+                    curBlock = curBlock.End();
                 }
             }
             return curBlock;
