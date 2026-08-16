@@ -1451,3 +1451,24 @@ Three seams this needed:
 
 `DialogCommands.AskWhatToDoWithFilesAsync` and `RemoveObjectWindow`/`RemoveObjectViewModel` are gone - the
 leftover-files question is a section of the one dialog, not a dialog of its own.
+
+### 2026-08-16 — `DivideOrDefault`'s fallback argument was itself unguarded (issue #2091 follow-up)
+
+Issue #2091's fix (a Platformer entity with `DecelerationTimeX == 0` dividing straight to NaN) extracted the
+guard into a `DivideOrDefault(magnitude, time, fallback)` helper and unit-tested it directly - correctly.
+The crash survived anyway: the call site computed its `fallback` argument as `absoluteValueVelocityDifference
+/ TimeManager.SecondDifference`, evaluated eagerly by the *caller* before `DivideOrDefault` ever ran.
+`SecondDifference` is 0 on the very first `ApplyHorizontalInput` call (before any `Update()` has run), making
+the "safe" fallback itself NaN - `DivideOrDefault` then correctly-but-uselessly returned it.
+
+Fixed by nesting: the fallback now goes through `DivideOrDefault(absoluteValueVelocityDifference,
+TimeManager.SecondDifference, 0)` too, so neither division can produce NaN/Infinity (`EntityCodeGenerator.cs`,
+`PlatformerPlugin`).
+
+Caught only by testing the actual generated call site under the real failing condition, not the isolated
+helper: `GoldProjectCompileTests.FormsSampleProject_WithAddedPlatformerEntity_LoadInGlue_ThenBuild_ShouldSucceed`
+builds a real gold project, reflects into the compiled entity, forces `TimeManager.SecondDifference = 0` via
+`FlatRedBall.FlatRedBallServices.InitializeCommandLine()` (the engine's headless bootstrap), and calls
+`ApplyHorizontalInput` directly - reproducing the exact reported `ArgumentException` before the fix, passing
+after. See the `glue-project-codegen` skill's "Runtime-testing generated code" section for the general
+pattern.

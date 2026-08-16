@@ -49,6 +49,17 @@ Other gotchas:
 - Generators never emit `using` statements — deliberate, since multiple plugins' generators could pick conflicting types for the same short name. Use fully-qualified names in generated code.
 - The hand-written half of a Screen/Entity (`CustomInitialize`, `CustomActivity`, `CustomDestroy`, `CustomLoadStaticContent`) lives in a sibling non-`.Generated.cs` partial seeded from `CodeWriter.ScreenTemplateCode`/`EntityTemplateCode` — the `.Generated.cs` partial calls into these at fixed points.
 
+## Runtime-testing generated code
+
+Compiling generated code proves it resolves against the engine, not that its logic is correct. To pin
+runtime behavior, build a gold project, `Assembly.LoadFrom` its output DLL, and reflect into the generated
+type — see `GoldProjectCompileTests.FormsSampleProject_WithAddedPlatformerEntity_LoadInGlue_ThenBuild_ShouldSucceed`.
+
+Landmines: constructing an entity needs `FlatRedBall.FlatRedBallServices.InitializeCommandLine()` first
+(reflectively) or `LoadStaticContent` NREs; the parameterless ctor reads `ScreenManager.CurrentScreen`
+(null headless) — use the `(contentManagerName, addToManagers: false)` overload; a CSV-generated custom
+class emits public fields, not properties.
+
 ## Related skills
 
 - `gluj-versions` — the `GluxVersions` enum, `FileVersion` gating, and the version-bump checklist. This skill assumes that context; don't restate it here.
