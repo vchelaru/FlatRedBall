@@ -625,6 +625,11 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
                         viewModel.UpdateFromGlueObject();
                     }
 
+                    // The relationship's first/second collidable can now be empty or point at a
+                    // missing object (see CollisionRelationshipErrorViewModel.TryGetErrorMessageFor) -
+                    // refresh immediately instead of waiting for the next Error tab refresh/project reload.
+                    GlueCommands.Self.RefreshCommands.RefreshErrors();
+
                     break;
                 case nameof(viewModel.FirstSubCollisionSelectedItem):
                     TryApplyAutoName(element, namedObject);
