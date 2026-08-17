@@ -27,6 +27,7 @@
     <ProjectReference Include="..\..\TileGraphicsPlugin\TileGraphicsPlugin\TiledPlugin.csproj" />
     <ProjectReference Include="..\..\EntityInputMovementPlugin\EntityInputMovementPlugin.csproj" />
     <ProjectReference Include="..\..\GameCommunicationPlugin\GameCommunicationPlugin.csproj" />
+    <ProjectReference Include="..\..\CompilerPlugin\CompilerPlugin.csproj" />
   </ItemGroup>
 
   <ItemGroup>
