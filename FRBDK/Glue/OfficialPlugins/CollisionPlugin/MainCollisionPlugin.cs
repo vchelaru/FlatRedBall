@@ -24,6 +24,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using FlatRedBall.Glue.Managers;
 
 namespace OfficialPlugins.CollisionPlugin
 {
@@ -216,10 +217,16 @@ namespace OfficialPlugins.CollisionPlugin
             {
                 // Scoped to just this plugin's own CollisionErrorReporter (a single, cheap relationship
                 // rescan) rather than GlueCommands.Self.RefreshCommands.RefreshErrors(), which reruns every
-                // registered error reporter across the whole project and shares a task queue key with
-                // codegen - on a widely-inherited screen, that shared key gets pushed behind every
-                // derived-screen GenerateElementCode call, delaying the Error window by seconds.
-                RefreshErrors();
+                // registered error reporter across the whole project.
+                //
+                // Fifo (not the default AddOrMoveToEnd) matters here, not just for cost: this fires from
+                // inside the already-running "Restarting due to change" task, and GenerateElementCode for a
+                // widely-inherited screen synchronously enqueues one AddOrMoveToEnd task per derived screen
+                // at that same moment - an AddOrMoveToEnd refresh call would land behind all of them and
+                // not show up for seconds. Fifo sits in a higher-priority tier, and since we're already
+                // inside a task, TaskManager.AddOrRunIfTasked runs it inline immediately instead of queueing
+                // it at all.
+                RefreshErrors(TaskExecutionPreference.Fifo);
             }
         }
 

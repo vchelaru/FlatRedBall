@@ -17,6 +17,7 @@ using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Errors;
+using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.CodeGeneration.Game1;
 using FlatRedBall.IO;
 using GlueFormsCore.Controls;
@@ -908,11 +909,13 @@ namespace FlatRedBall.Glue.Plugins
         /// <summary>
         /// Refreshes all errors for all ErrorReporters referenced by this plugin.
         /// </summary>
-        protected void RefreshErrors()
+        /// <param name="executionPreference">See <see cref="Plugins.ExportedInterfaces.CommandInterfaces.IRefreshCommands.RefreshErrorsFor"/>
+        /// for what this controls. Defaults to AddOrMoveToEnd, unchanged from prior behavior.</param>
+        protected void RefreshErrors(TaskExecutionPreference executionPreference = TaskExecutionPreference.AddOrMoveToEnd)
         {
             foreach (var reporter in ErrorReporters)
             {
-                GlueCommands.Self.RefreshCommands.RefreshErrorsFor(reporter);
+                GlueCommands.Self.RefreshCommands.RefreshErrorsFor(reporter, executionPreference);
             }
         }
 

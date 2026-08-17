@@ -32,6 +32,9 @@ namespace OfficialPlugins.CollisionPlugin.Errors
             GlueCommands.Self.DialogCommands.FocusTab("Collision");
         }
 
+        public override bool GetIfIsFixed() =>
+            TryGetErrorMessageFor(CollisionRelationship, Container) == null;
+
         public static string TryGetErrorMessageFor(NamedObjectSave namedObject, IElement container)
         {
             var firstCollidable = namedObject.GetFirstCollidableObjectName();

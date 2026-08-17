@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.Errors;
+using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.SaveClasses;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
@@ -47,7 +48,15 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// </summary>
         void RefreshErrors();
 
-        void RefreshErrorsFor(ErrorReporterBase errorReporter);
+        /// <summary>
+        /// Reruns just the given error reporter and merges its results into the Error window.
+        /// </summary>
+        /// <param name="executionPreference">Defaults to AddOrMoveToEnd, which debounces rapid repeat calls
+        /// (e.g. a slider drag) but shares its task queue tier with codegen - on a widely-inherited screen,
+        /// a call queued this way can end up running seconds late, after every derived-screen codegen task.
+        /// Pass Fifo (or any other preference) for a refresh that must show up promptly.</param>
+        void RefreshErrorsFor(ErrorReporterBase errorReporter,
+            TaskExecutionPreference executionPreference = TaskExecutionPreference.AddOrMoveToEnd);
 
         Task ClearFixedErrors();
 

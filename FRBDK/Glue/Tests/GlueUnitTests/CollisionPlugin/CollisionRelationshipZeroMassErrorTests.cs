@@ -95,6 +95,30 @@ public class CollisionRelationshipZeroMassErrorTests
         error.ShouldBeNull();
     }
 
+    [Fact]
+    public void GetIfIsFixed_ShouldReturnTrue_AfterAZeroMassIsChangedToNonZero()
+    {
+        // Regression: RefreshCommands.RefreshErrorsFor (the scoped per-reporter refresh MainCollisionPlugin
+        // uses) only removes an error from the Error window when GetIfIsFixed() returns true - see
+        // GlueErrorManager.ClearFixedErrors(List<ErrorViewModel>). The base ErrorViewModel.GetIfIsFixed()
+        // defaults to false, so without this override the zero-mass error would never clear once the user
+        // fixed the mass, even though a fresh TryGetErrorMessageFor call would correctly return null.
+        var container = new EntitySave();
+        var first = AddCollidable(container, "FirstInstance");
+        var second = AddCollidable(container, "SecondInstance");
+
+        var relationship = CreateRelationship(CollisionType.MoveCollision, first.InstanceName, second.InstanceName,
+            firstMass: 0f, secondMass: 0f);
+
+        var error = new CollisionRelationshipErrorViewModel(relationship, container);
+        error.GetIfIsFixed().ShouldBeFalse();
+
+        relationship.Properties.SetValuePersistIfDefault(
+            nameof(CollisionRelationshipViewModel.SecondCollisionMass), 1f);
+
+        error.GetIfIsFixed().ShouldBeTrue();
+    }
+
     [Theory]
     [InlineData(nameof(CollisionRelationshipViewModel.CollisionType))]
     [InlineData(nameof(CollisionRelationshipViewModel.FirstCollisionMass))]

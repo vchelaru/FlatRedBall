@@ -202,7 +202,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }, "Clearing Fixed Errors", TaskExecutionPreference.AddOrMoveToEnd);
         }
 
-        public void RefreshErrorsFor(ErrorReporterBase errorReporter)
+        public void RefreshErrorsFor(ErrorReporterBase errorReporter,
+            TaskExecutionPreference executionPreference = TaskExecutionPreference.AddOrMoveToEnd)
         {
             TaskManager.Self.AddOrRunIfTasked(() =>
             {
@@ -232,7 +233,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     }
                 }
 
-            }, $"Refreshing errors for {errorReporter}", TaskExecutionPreference.AddOrMoveToEnd);
+            }, $"Refreshing errors for {errorReporter}", executionPreference);
         }
 
         public void RefreshDirectoryTreeNodes()
