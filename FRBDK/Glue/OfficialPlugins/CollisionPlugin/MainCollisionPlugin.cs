@@ -214,7 +214,12 @@ namespace OfficialPlugins.CollisionPlugin
         {
             if (CollisionRelationshipViewModelController.CanChangeAffectRelationshipErrors(changedMember, namedObject))
             {
-                GlueCommands.Self.RefreshCommands.RefreshErrors();
+                // Scoped to just this plugin's own CollisionErrorReporter (a single, cheap relationship
+                // rescan) rather than GlueCommands.Self.RefreshCommands.RefreshErrors(), which reruns every
+                // registered error reporter across the whole project and shares a task queue key with
+                // codegen - on a widely-inherited screen, that shared key gets pushed behind every
+                // derived-screen GenerateElementCode call, delaying the Error window by seconds.
+                RefreshErrors();
             }
         }
 
