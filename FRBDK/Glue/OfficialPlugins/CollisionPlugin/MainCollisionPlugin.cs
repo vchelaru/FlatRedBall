@@ -116,6 +116,8 @@ namespace OfficialPlugins.CollisionPlugin
 
             this.ReactToChangedPropertyHandler += CollisionRelationshipViewModelController.HandleGlueObjectPropertyChanged;
 
+            this.ReactToNamedObjectChangedValue += HandleNamedObjectChangedValue;
+
             this.AdjustDisplayedEntity += StackableEntityManager.Self.HandleDisplayedEntity;
 
             this.ReactToCreateCollisionRelationshipsBetween += async (NamedObjectSave first, NamedObjectSave second) =>
@@ -205,6 +207,14 @@ namespace OfficialPlugins.CollisionPlugin
             foreach(var screen in screensToRegenerate)
             {
                 GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(screen, generateDerivedElements:false);
+            }
+        }
+
+        private void HandleNamedObjectChangedValue(string changedMember, object oldValue, NamedObjectSave namedObject)
+        {
+            if (CollisionRelationshipViewModelController.CanChangeAffectRelationshipErrors(changedMember, namedObject))
+            {
+                GlueCommands.Self.RefreshCommands.RefreshErrors();
             }
         }
 

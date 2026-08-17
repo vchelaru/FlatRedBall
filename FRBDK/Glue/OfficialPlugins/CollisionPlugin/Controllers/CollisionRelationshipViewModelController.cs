@@ -408,6 +408,20 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             return namedObject?.GetAssetTypeInfo()?.FriendlyName == "TileShapeCollection";
         }
 
+        /// <summary>
+        /// Whether a NamedObjectSave property change could affect whether CollisionRelationshipErrorViewModel
+        /// reports this relationship as an error (e.g. a zero-mass Move/Bounce/MoveSoft collision, see
+        /// GitHub issue #2115), and therefore whether the Error window should be refreshed.
+        /// </summary>
+        public static bool CanChangeAffectRelationshipErrors(string changedMember, NamedObjectSave namedObject)
+        {
+            var affectsMassError = changedMember == nameof(CollisionRelationshipViewModel.CollisionType) ||
+                changedMember == nameof(CollisionRelationshipViewModel.FirstCollisionMass) ||
+                changedMember == nameof(CollisionRelationshipViewModel.SecondCollisionMass);
+
+            return affectsMassError && namedObject.IsCollisionRelationship();
+        }
+
         public static void HandleGlueObjectPropertyChanged(string changedMember, object oldValue, GlueElement element)
         {
             var namedObject = GlueState.Self.CurrentNamedObjectSave;

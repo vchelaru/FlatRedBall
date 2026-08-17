@@ -282,23 +282,10 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
         [DependsOn(nameof(GlueObject))]
         [DependsOn(nameof(FirstCollisionName))]
         [DependsOn(nameof(SecondCollisionName))]
-        [DependsOn(nameof(CollisionType))]
-        [DependsOn(nameof(FirstCollisionMass))]
-        [DependsOn(nameof(SecondCollisionMass))]
         public string WarningText
         {
             get
             {
-                var usesMass = CollisionType == CollisionType.MoveCollision ||
-                    CollisionType == CollisionType.BounceCollision ||
-                    CollisionType == CollisionType.MoveSoftCollision;
-
-                if (usesMass && FirstCollisionMass == 0 && SecondCollisionMass == 0)
-                {
-                    return "Both masses cannot be 0 - this will crash at runtime. " +
-                        "Change at least one mass to a non-zero value.";
-                }
-
                 var nos = GlueObject as NamedObjectSave;
 
                 if(nos != null)

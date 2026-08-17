@@ -2,6 +2,7 @@
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using OfficialPlugins.CollisionPlugin.ExtensionMethods;
+using OfficialPlugins.CollisionPlugin.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -64,10 +65,42 @@ namespace OfficialPlugins.CollisionPlugin.Errors
             {
                 return $"CollisionRelationship {namedObject.InstanceName} references missing object {secondCollidable} in {container}";
             }
+            else if (BothMassesAreZero(namedObject))
+            {
+                return $"CollisionRelationship {namedObject.InstanceName} in {container} has both masses set to 0, which will crash at runtime. Change at least one mass to a non-zero value.";
+            }
             else
             {
                 return null;
             }
+        }
+
+        static bool BothMassesAreZero(NamedObjectSave namedObject)
+        {
+            var collisionType = (CollisionType)namedObject.Properties.GetValue<int>(
+                nameof(CollisionRelationshipViewModel.CollisionType));
+
+            var usesMass = collisionType == CollisionType.MoveCollision ||
+                collisionType == CollisionType.BounceCollision ||
+                collisionType == CollisionType.MoveSoftCollision;
+
+            if (!usesMass)
+            {
+                return false;
+            }
+
+            // Masses default to 1 in codegen if the property was never explicitly set on this
+            // NamedObjectSave (see CollisionCodeGenerator), so an absent property is not a 0.
+            float GetMassOrDefault(string propertyName)
+            {
+                var isExplicitlySet = namedObject.Properties.Any(item => item.Name == propertyName);
+                return isExplicitlySet ? namedObject.Properties.GetValue<float>(propertyName) : 1f;
+            }
+
+            var firstMass = GetMassOrDefault(nameof(CollisionRelationshipViewModel.FirstCollisionMass));
+            var secondMass = GetMassOrDefault(nameof(CollisionRelationshipViewModel.SecondCollisionMass));
+
+            return firstMass == 0 && secondMass == 0;
         }
     }
 }
