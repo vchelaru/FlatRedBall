@@ -77,4 +77,45 @@ public class CollisionRelationshipNullCollisionTests
 
         didCollide.ShouldBeFalse();
     }
+
+    // Pins #2118: the entity-level check above doesn't cover sub-collisions set via
+    // SetFirstSubCollision/SetSecondSubCollision - those delegates can return null for a
+    // particular instance (e.g. a Composite whose optional sub-object isn't created this time)
+    // even though the entity's own Collision is non-null, and previously NRE'd inside
+    // AxisAlignedRectangle.CollideAgainst instead of being skipped.
+    [Theory]
+    [InlineData(CollisionRelationshipTestCollisionType.EventOnly)]
+    [InlineData(CollisionRelationshipTestCollisionType.Move)]
+    [InlineData(CollisionRelationshipTestCollisionType.Bounce)]
+    public void PositionedObjectVsPositionedObjectRelationship_DoCollisions_ShouldNotThrow_WhenSecondSubCollisionRectangleIsNull(CollisionRelationshipTestCollisionType collisionType)
+    {
+        var first = CreateEntityWithCollision();
+        var second = CreateEntityWithCollision();
+        var firstRectangle = new AxisAlignedRectangle { Width = 10, Height = 10 };
+
+        var relationship = new PositionedObjectVsPositionedObjectRelationship<NullableCollisionEntity, NullableCollisionEntity>(first, second);
+        relationship.SetFirstSubCollision((Func<NullableCollisionEntity, AxisAlignedRectangle>)(e => firstRectangle));
+        relationship.SetSecondSubCollision((Func<NullableCollisionEntity, AxisAlignedRectangle>)(e => null));
+
+        switch (collisionType)
+        {
+            case CollisionRelationshipTestCollisionType.Move:
+                relationship.SetMoveCollision(1, 1);
+                break;
+            case CollisionRelationshipTestCollisionType.Bounce:
+                relationship.SetBounceCollision(1, 1, 1);
+                break;
+        }
+
+        var didCollide = relationship.DoCollisions();
+
+        didCollide.ShouldBeFalse();
+    }
+
+    public enum CollisionRelationshipTestCollisionType
+    {
+        EventOnly,
+        Move,
+        Bounce
+    }
 }

@@ -262,8 +262,36 @@ namespace FlatRedBall.Math.Collision
             }
         }
 
+        // A sub-collision delegate (set via SetFirstSubCollision/SetSecondSubCollision) may return
+        // null for a particular instance (e.g. a Composite whose optional sub-object isn't created
+        // this time), even though the entity-level null check in DoCollisionPhysicsInner passed.
+        // See issue #2118 - the entity-level check added for #2084 doesn't cover this case.
+        private bool FirstSubCollisionIsNull(FirstCollidableT first)
+        {
+            if (firstSubCollisionCircle != null) return firstSubCollisionCircle(first) == null;
+            if (firstSubCollisionRectangle != null) return firstSubCollisionRectangle(first) == null;
+            if (firstSubCollisionPolygon != null) return firstSubCollisionPolygon(first) == null;
+            if (firstSubCollisionLine != null) return firstSubCollisionLine(first) == null;
+            if (firstSubCollisionCollidable != null) return firstSubCollisionCollidable(first) == null;
+            return false;
+        }
+
+        private bool SecondSubCollisionIsNull(SecondCollidableT second)
+        {
+            if (secondSubCollisionCircle != null) return secondSubCollisionCircle(second) == null;
+            if (secondSubCollisionRectangle != null) return secondSubCollisionRectangle(second) == null;
+            if (secondSubCollisionPolygon != null) return secondSubCollisionPolygon(second) == null;
+            if (secondSubCollisionCollidable != null) return secondSubCollisionCollidable(second) == null;
+            return false;
+        }
+
         private bool CollideAgainstConsiderSubCollisionEventOnly(FirstCollidableT first, SecondCollidableT second)
         {
+            if (FirstSubCollisionIsNull(first) || SecondSubCollisionIsNull(second))
+            {
+                return false;
+            }
+
             if (firstSubCollisionCircle != null)
             {
                 if (secondSubCollisionCircle != null)
@@ -413,6 +441,11 @@ namespace FlatRedBall.Math.Collision
 
         private bool CollideAgainstConsiderSubCollisionMove(FirstCollidableT first, SecondCollidableT second)
         {
+            if (FirstSubCollisionIsNull(first) || SecondSubCollisionIsNull(second))
+            {
+                return false;
+            }
+
             if (firstSubCollisionCircle != null)
             {
                 if (secondSubCollisionCircle != null)
@@ -561,6 +594,11 @@ namespace FlatRedBall.Math.Collision
 
         private bool CollideAgainstConsiderSubCollisionMoveSoft(FirstCollidableT first, SecondCollidableT second)
         {
+            if (FirstSubCollisionIsNull(first) || SecondSubCollisionIsNull(second))
+            {
+                return false;
+            }
+
             if (firstSubCollisionCircle != null)
             {
                 //return firstSubCollisionCircle(first).CollideAgainstMoveSoft(secondSub)
@@ -637,6 +675,11 @@ namespace FlatRedBall.Math.Collision
 
         private bool CollideAgainstConsiderSubCollisionBounce(FirstCollidableT first, SecondCollidableT second)
         {
+            if (FirstSubCollisionIsNull(first) || SecondSubCollisionIsNull(second))
+            {
+                return false;
+            }
+
             if (firstSubCollisionCircle != null)
             {
                 if (secondSubCollisionCircle != null)
@@ -2142,8 +2185,25 @@ namespace FlatRedBall.Math.Collision
             }
         }
 
+        // A sub-collision delegate (set via SetFirstSubCollision) may return null for a particular
+        // instance even though the entity-level null check in DoCollisionPhysicsInner passed - see
+        // issue #2118.
+        private bool FirstSubCollisionIsNull(FirstCollidableT first)
+        {
+            if (firstSubCollisionCircle != null) return firstSubCollisionCircle(first) == null;
+            if (firstSubCollisionRectangle != null) return firstSubCollisionRectangle(first) == null;
+            if (firstSubCollisionPolygon != null) return firstSubCollisionPolygon(first) == null;
+            if (firstSubCollisionCollidable != null) return firstSubCollisionCollidable(first) == null;
+            return false;
+        }
+
         private bool CollideAgainstConsiderSubCollisionEventOnly(FirstCollidableT first, ShapeCollection second)
         {
+            if (FirstSubCollisionIsNull(first))
+            {
+                return false;
+            }
+
             if (firstSubCollisionCircle != null)
             {
                 return second.CollideAgainst(firstSubCollisionCircle(first));
@@ -2167,6 +2227,11 @@ namespace FlatRedBall.Math.Collision
         }
         private bool CollideAgainstConsiderSubCollisionMove(FirstCollidableT first, ShapeCollection second)
         {
+            if (FirstSubCollisionIsNull(first))
+            {
+                return false;
+            }
+
             if (firstSubCollisionCircle != null)
             {
                 return second.CollideAgainstMove(firstSubCollisionCircle(first), moveSecondMass, moveFirstMass);
@@ -2191,6 +2256,11 @@ namespace FlatRedBall.Math.Collision
 
         private bool CollideAgainstConsiderSubCollisionMoveSoft(FirstCollidableT first, ShapeCollection second)
         {
+            if (FirstSubCollisionIsNull(first))
+            {
+                return false;
+            }
+
             if(firstSubCollisionCircle != null)
             {
                 throw new NotImplementedException("Circle vs shapecollection move soft collision is not yet implemented.");
@@ -2215,6 +2285,11 @@ namespace FlatRedBall.Math.Collision
         }
         private bool CollideAgainstConsiderSubCollisionBounce(FirstCollidableT first, ShapeCollection second)
         {
+            if (FirstSubCollisionIsNull(first))
+            {
+                return false;
+            }
+
             if (firstSubCollisionCircle != null)
             {
                 return second.CollideAgainstBounce(firstSubCollisionCircle(first), moveSecondMass, moveFirstMass, bounceElasticity);
@@ -2349,8 +2424,25 @@ namespace FlatRedBall.Math.Collision
             }
         }
 
+        // A sub-collision delegate (set via SetFirstSubCollision) may return null for a particular
+        // instance even though the entity-level null check in DoCollisionPhysicsInner passed - see
+        // issue #2118.
+        private bool FirstSubCollisionIsNull(FirstCollidableT first)
+        {
+            if (firstSubCollisionCircle != null) return firstSubCollisionCircle(first) == null;
+            if (firstSubCollisionRectangle != null) return firstSubCollisionRectangle(first) == null;
+            if (firstSubCollisionPolygon != null) return firstSubCollisionPolygon(first) == null;
+            if (firstSubCollisionCollidable != null) return firstSubCollisionCollidable(first) == null;
+            return false;
+        }
+
         private bool CollideAgainstConsiderSubCollisionEventOnly(FirstCollidableT first, ShapeCollection second)
         {
+            if (FirstSubCollisionIsNull(first))
+            {
+                return false;
+            }
+
             if (firstSubCollisionCircle != null)
             {
                 return second.CollideAgainst(firstSubCollisionCircle(first));
@@ -2374,6 +2466,11 @@ namespace FlatRedBall.Math.Collision
         }
         private bool CollideAgainstConsiderSubCollisionMove(FirstCollidableT first, ShapeCollection second)
         {
+            if (FirstSubCollisionIsNull(first))
+            {
+                return false;
+            }
+
             if (firstSubCollisionCircle != null)
             {
                 return second.CollideAgainstMove(firstSubCollisionCircle(first), moveSecondMass, moveFirstMass);
@@ -2397,6 +2494,11 @@ namespace FlatRedBall.Math.Collision
         }
         private bool CollideAgainstConsiderSubCollisionMoveSoft(FirstCollidableT first, ShapeCollection second)
         {
+            if (FirstSubCollisionIsNull(first))
+            {
+                return false;
+            }
+
             {
                 if (firstSubCollisionCircle != null)
                 {
@@ -2423,6 +2525,11 @@ namespace FlatRedBall.Math.Collision
 
         private bool CollideAgainstConsiderSubCollisionBounce(FirstCollidableT first, ShapeCollection second)
         {
+            if (FirstSubCollisionIsNull(first))
+            {
+                return false;
+            }
+
             if (firstSubCollisionCircle != null)
             {
                 return second.CollideAgainstBounce(firstSubCollisionCircle(first), moveSecondMass, moveFirstMass, bounceElasticity);
