@@ -24,7 +24,8 @@ internal static class TestVisualStudioProjectFactory
     /// a freshly-written, minimal .csproj in a new temp directory. Callers own cleanup of the returned
     /// directory.
     /// </summary>
-    public static ClassLibraryProject CreateInNewTempDirectory(out string directory, string projectName = "TestProject")
+    public static ClassLibraryProject CreateInNewTempDirectory(out string directory, string projectName = "TestProject",
+        string extraItemGroupXml = null)
     {
         directory = Path.Combine(Path.GetTempPath(), "GlueUnitTests_" + Guid.NewGuid());
         Directory.CreateDirectory(directory);
@@ -34,6 +35,9 @@ internal static class TestVisualStudioProjectFactory
   <PropertyGroup>
     <RootNamespace>{projectName}</RootNamespace>
   </PropertyGroup>
+  <ItemGroup>
+    {extraItemGroupXml}
+  </ItemGroup>
 </Project>");
 
         // Some production paths (e.g. GluxCommands.AddSingleFileTo, via ProjectManager.ProjectRootDirectory
