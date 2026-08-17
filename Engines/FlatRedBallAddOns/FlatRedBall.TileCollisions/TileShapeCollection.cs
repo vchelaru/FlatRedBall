@@ -458,6 +458,8 @@ namespace FlatRedBall.TileCollisions
         /// <returns>The AxisAlignedRectangle at the location, or null if none is found.</returns>
         public AxisAlignedRectangle GetRectangleAtPosition(float worldX, float worldY)
         {
+            // middleOfTile* only narrows the candidate range below - it must stay tile-rounded
+            // regardless of worldX/worldY, since mSortAxis is sorted by tile position.
             float middleOfTileX = MathFunctions.RoundFloat(worldX, GridSize, LeftSeedX + GridSize / 2.0f);
             float middleOfTileY = MathFunctions.RoundFloat(worldY, GridSize, BottomSeedY + GridSize / 2.0f);
             float keyValue = GetCoordinateValueForPartitioning(middleOfTileX, middleOfTileY);
@@ -472,6 +474,8 @@ namespace FlatRedBall.TileCollisions
             int endExclusive = mShapes.AxisAlignedRectangles.GetFirstAfter(keyValueAfter, mSortAxis,
                 0, mShapes.AxisAlignedRectangles.Count);
 
+            // The actual containment check uses worldX/worldY (not middleOfTile*) so rectangles
+            // smaller than a full grid cell are still found correctly - see #1890.
             AxisAlignedRectangle toReturn = GetRectangleAtPosition(worldX, worldY, startInclusive, endExclusive);
 
             return toReturn;
