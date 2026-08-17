@@ -112,6 +112,8 @@ namespace OfficialPlugins.CollisionPlugin
 
             this.ReactToObjectRemoved += HandleObjectRemoved;
 
+            this.ReactToNewObjectListAsync += HandleNewObjectListAsync;
+
             this.ReactToChangedPropertyHandler += CollisionRelationshipViewModelController.HandleGlueObjectPropertyChanged;
 
             this.AdjustDisplayedEntity += StackableEntityManager.Self.HandleDisplayedEntity;
@@ -218,6 +220,19 @@ namespace OfficialPlugins.CollisionPlugin
             {
                 GlueCommands.Self.RefreshCommands.RefreshErrors();
             }
+        }
+
+        private Task HandleNewObjectListAsync(List<NamedObjectSave> newObjects)
+        {
+            // A freshly-added relationship starts with no first/second collidable, which is exactly
+            // the incomplete state that generates broken code (see CollisionRelationshipErrorViewModel).
+            // Refresh immediately instead of waiting for the next Error tab refresh/project reload.
+            if(newObjects.Any(item => item.IsCollisionRelationship()))
+            {
+                GlueCommands.Self.RefreshCommands.RefreshErrors();
+            }
+
+            return Task.CompletedTask;
         }
 
         private void HandleGluxLoad()
