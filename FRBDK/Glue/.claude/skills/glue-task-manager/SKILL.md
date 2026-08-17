@@ -29,6 +29,19 @@ call queued later can still run first.
 Also: `AddOrRunIfTasked`'s "already in a task, run inline" fast path explicitly excludes
 `AddOrMoveToEnd` — it always goes through the real queue.
 
+## A same-tier task queued early can still surface last
+
+`GenerateElementCode` on a screen with N derived screens synchronously enqueues one `AddOrMoveToEnd`
+task per derived screen the moment it runs - so any other `AddOrMoveToEnd` call made around the same
+time (e.g. a plugin's own error-refresh reacting to the same property change) ends up dequeued after
+all N of them, even though it was queued just as early. This is "tiers beat enqueue order" above,
+just easy to miss because the delay looks like *your* call ran late, not like a same-tier burst beat
+it. `RefreshCommands.RefreshErrorsFor` (`RefreshCommands.cs`) takes an optional `executionPreference`
+for exactly this: pass `Fifo` (or anything but `AddOrMoveToEnd`) from a reaction that must show up
+promptly, and - since `AddOrRunIfTasked`'s inline fast path excludes only `AddOrMoveToEnd` - if you're
+already inside a task, it runs immediately instead of queueing at all. Conversely, a reaction that
+must wait until codegen has actually landed still wants `AddOrMoveToEnd` (see above).
+
 ## The nested-task fast path checks `TaskManager.Self`, not the calling instance
 
 `AddOrRunIfTasked`'s `IsInTask()` gate is hardcoded to `TaskManager.Self.SyncTaskThreadId`, not
