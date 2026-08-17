@@ -544,14 +544,7 @@ namespace CompilerPlugin.Managers
             }
             else
             {
-                if (process.ExitCode != 0)
-                {
-                    string message = await GetCrashMessage();
-                    if (!string.IsNullOrEmpty(message))
-                    {
-                        NotifyCrash(message);
-                    }
-                }
+                await NotifyIfCrashed(process.ExitCode);
             }
 
             runningGameProcess = null;
@@ -573,6 +566,18 @@ namespace CompilerPlugin.Managers
                 catch (ObjectDisposedException)
                 {
                     // do nothing.
+                }
+            }
+        }
+
+        internal async Task NotifyIfCrashed(int exitCode)
+        {
+            if (exitCode != 0)
+            {
+                string message = await GetCrashMessage();
+                if (!string.IsNullOrEmpty(message))
+                {
+                    NotifyCrash(message);
                 }
             }
         }
