@@ -66,6 +66,7 @@ namespace CompilerPlugin.Managers
         bool foundExternallyRunningProcess = false;
         private Action<string, string> _eventCaller;
         private CompilerViewModel _compilerViewModel;
+        private Action<string> _notifyCrash;
         System.Windows.Forms.Timer timer;
 
         private bool _isWaitingForGameToStart;
@@ -154,10 +155,11 @@ namespace CompilerPlugin.Managers
         public event Action<string> ErrorReceived;
         #endregion
 
-        public Runner(Action<string, string> eventCaller, CompilerViewModel compilerViewModel)
+        public Runner(Action<string, string> eventCaller, CompilerViewModel compilerViewModel, Action<string> notifyCrash = null)
         {
             _eventCaller = eventCaller;
             _compilerViewModel = compilerViewModel;
+            _notifyCrash = notifyCrash ?? DefaultNotifyCrash;
 
             _compilerViewModel.IsWaitingForGameToStart = IsWaitingForGameToStart;
             _compilerViewModel.IsRunning = IsRunning;
@@ -542,14 +544,7 @@ namespace CompilerPlugin.Managers
             }
             else
             {
-                if (process.ExitCode != 0)
-                {
-                    string message = await GetCrashMessage();
-                    if (!string.IsNullOrEmpty(message))
-                    {
-                        System.Windows.MessageBox.Show(message);
-                    }
-                }
+                await NotifyIfCrashed(process.ExitCode);
             }
 
             runningGameProcess = null;
@@ -573,6 +568,28 @@ namespace CompilerPlugin.Managers
                     // do nothing.
                 }
             }
+        }
+
+        internal async Task NotifyIfCrashed(int exitCode)
+        {
+            if (exitCode != 0)
+            {
+                string message = await GetCrashMessage();
+                if (!string.IsNullOrEmpty(message))
+                {
+                    NotifyCrash(message);
+                }
+            }
+        }
+
+        internal void NotifyCrash(string message)
+        {
+            _notifyCrash(message);
+        }
+
+        private static void DefaultNotifyCrash(string message)
+        {
+            GlueCommands.Self.DialogCommands.ShowToast(message, TimeSpan.FromSeconds(10));
         }
 
         private async Task<string> GetCrashMessage()
