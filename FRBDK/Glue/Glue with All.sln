@@ -99,12 +99,18 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GlueUnitTests", "Tests\Glue
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gum.Analyzers", "..\..\..\Gum\Tools\Gum.Analyzers\Gum.Analyzers.csproj", "{8A17AC92-C2A1-35C1-910E-858AD7715352}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkiaGum.Standalone", "..\..\..\Gum\Runtimes\SkiaGum.Standalone\SkiaGum.Standalone.csproj", "{317E351A-7599-90A4-03FD-991745D21AC3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C953AF0B-B890-40CE-888D-8F60579CD03E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C953AF0B-B890-40CE-888D-8F60579CD03E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C953AF0B-B890-40CE-888D-8F60579CD03E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C953AF0B-B890-40CE-888D-8F60579CD03E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5FE94178-9907-4878-AFAC-8F347CA86B50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5FE94178-9907-4878-AFAC-8F347CA86B50}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5FE94178-9907-4878-AFAC-8F347CA86B50}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -113,10 +119,6 @@ Global
 		{9403B27A-6E3A-4083-8A42-0EB62B699246}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9403B27A-6E3A-4083-8A42-0EB62B699246}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9403B27A-6E3A-4083-8A42-0EB62B699246}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C953AF0B-B890-40CE-888D-8F60579CD03E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C953AF0B-B890-40CE-888D-8F60579CD03E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C953AF0B-B890-40CE-888D-8F60579CD03E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C953AF0B-B890-40CE-888D-8F60579CD03E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D784E25F-320D-47F5-9397-63E33B81A64F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D784E25F-320D-47F5-9397-63E33B81A64F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D784E25F-320D-47F5-9397-63E33B81A64F}.Release|Any CPU.ActiveCfg = Release|x86
@@ -237,6 +239,10 @@ Global
 		{8A17AC92-C2A1-35C1-910E-858AD7715352}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A17AC92-C2A1-35C1-910E-858AD7715352}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8A17AC92-C2A1-35C1-910E-858AD7715352}.Release|Any CPU.Build.0 = Release|Any CPU
+		{317E351A-7599-90A4-03FD-991745D21AC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{317E351A-7599-90A4-03FD-991745D21AC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{317E351A-7599-90A4-03FD-991745D21AC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{317E351A-7599-90A4-03FD-991745D21AC3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -281,6 +287,7 @@ Global
 		{3AC20D6E-C39F-91E6-8942-F44C8430814A} = {07985C4C-B3CF-432C-8A27-36FDD006231F}
 		{ABCCA529-A8A3-44E4-B2E8-C69EA3B00644} = {3CB2E620-1431-4DEA-AD58-E844D5DDCC60}
 		{8A17AC92-C2A1-35C1-910E-858AD7715352} = {07985C4C-B3CF-432C-8A27-36FDD006231F}
+		{317E351A-7599-90A4-03FD-991745D21AC3} = {07985C4C-B3CF-432C-8A27-36FDD006231F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {878CCBB8-EADE-4F25-9DE7-D55D999D414A}
