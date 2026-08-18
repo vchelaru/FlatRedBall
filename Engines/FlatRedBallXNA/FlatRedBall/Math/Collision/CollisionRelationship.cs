@@ -240,6 +240,16 @@ namespace FlatRedBall.Math.Collision
 
             this.DeepCollisionsThisFrame++;
 
+            // Two objects that share a top parent (e.g. an object AttachTo'd to the player) would
+            // otherwise have physics reposition their shared parent, which doesn't change their
+            // relative offset - they still overlap next frame, causing endless repositioning.
+            // Only skip the physics response, not the collision check itself, so events still fire.
+            // See issue #2122.
+            if (!eventOnly && CollisionType != CollisionType.EventOnlyCollision && first.TopParent == second.TopParent)
+            {
+                eventOnly = true;
+            }
+
             if (CollisionType == CollisionType.EventOnlyCollision || eventOnly)
             {
                 return CollideAgainstConsiderSubCollisionEventOnly(first, second);
