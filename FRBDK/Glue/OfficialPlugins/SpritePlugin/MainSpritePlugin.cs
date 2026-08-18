@@ -7,6 +7,7 @@ using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Math;
 using OfficialPlugins.Common.Controls;
 using OfficialPlugins.SpritePlugin.CodeGenerators;
+using OfficialPlugins.SpritePlugin.Errors;
 using OfficialPlugins.SpritePlugin.Managers;
 using OfficialPlugins.SpritePlugin.Views;
 using System;
@@ -29,6 +30,8 @@ namespace OfficialPlugins.SpritePlugin
 
             this.RegisterCodeGenerator(new SpriteCodeGenerator());
 
+            this.AddErrorReporter(new SpriteMissingTextureErrorReporter());
+
             AssignEvents();
         }
 
@@ -48,6 +51,10 @@ namespace OfficialPlugins.SpritePlugin
             {
                 TextureVariableManager.Self.HandleChange(variable);
             }
+
+            // Refresh reactively so a missing-Texture warning shows up immediately rather than
+            // only after a manual Refresh click or project reload.
+            GlueCommands.Self.RefreshCommands.RefreshErrors();
         }
 
         private void HandleGluxLoaded()
