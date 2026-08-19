@@ -285,8 +285,8 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
     /// <summary>
     /// Test-only: drives EditingManager's click-to-select logic without a real mouse/keyboard. See
     /// EditingManager.SimulateClickSelectForTesting (Embedded) - selects ObjectName exactly as a real click
-    /// on it would, replacing the current selection unless AdditiveModifierDown is true (Ctrl or Shift
-    /// held), in which case it's added to (or toggled off of) the existing selection. See #2125.
+    /// on it would, replacing the current selection unless AdditiveModifierDown is true (Ctrl held), in
+    /// which case it's added to (or toggled off of) the existing selection.
     /// </summary>
     public class SimulateClickSelectDto
     {

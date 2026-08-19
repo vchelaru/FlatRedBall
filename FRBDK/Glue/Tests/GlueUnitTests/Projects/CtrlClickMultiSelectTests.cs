@@ -11,19 +11,18 @@ using Xunit;
 namespace GlueUnitTests.Projects;
 
 /// <summary>
-/// Reproduces issue #2125 end to end against a real running game: Edit Mode selection previously only
-/// let Ctrl+click add/remove an object from the current selection - Shift+click did nothing but replace
-/// it, same as a plain click. Drives EditingManager.SimulateClickSelectForTesting (Embedded) - the exact
-/// same production click-selection decision (EditingManager.PerformClickSelection) a real mouse click with
-/// a modifier key held would run, just fed an explicit "modifier held" bool instead of reading
-/// InputManager.Keyboard, so this exercises the real DTO -> EditingManager wiring, not just the modifier
-/// key read in isolation.
+/// Pins Edit Mode's Ctrl+click add/remove multi-selection (previously untested - see #2125, where the
+/// request turned out to already be covered by existing Ctrl+click behavior). Drives
+/// EditingManager.SimulateClickSelectForTesting (Embedded) - the exact same production click-selection
+/// decision (EditingManager.PerformClickSelection) a real Ctrl+click would run, just fed an explicit
+/// "modifier held" bool instead of reading InputManager.Keyboard, so this exercises the real DTO ->
+/// EditingManager wiring, not just the modifier key read in isolation.
 /// </summary>
 [Trait("Category", "LiveGame")]
-public class ShiftClickMultiSelectTests
+public class CtrlClickMultiSelectTests
 {
     [StaFact]
-    public async Task ShiftClickingAnUnselectedObject_AddsItToTheSelection_AndShiftClickingItAgain_RemovesIt()
+    public async Task CtrlClickingAnUnselectedObject_AddsItToTheSelection_AndCtrlClickingItAgain_RemovesIt()
     {
         GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
 
@@ -60,23 +59,23 @@ public class ShiftClickMultiSelectTests
         clickAResponse.Succeeded.ShouldBeTrue(clickAResponse.Message);
         clickAResponse.Data.SelectedObjectNames.ShouldBe(new[] { "TestObjectA" });
 
-        // Shift+click on TestObjectB - adds it, TestObjectA stays selected.
-        var shiftClickBResponse = await game.Send<SimulateClickSelectResponse>(new SimulateClickSelectDto
+        // Ctrl+click on TestObjectB - adds it, TestObjectA stays selected.
+        var ctrlClickBResponse = await game.Send<SimulateClickSelectResponse>(new SimulateClickSelectDto
         {
             ObjectName = "TestObjectB",
             AdditiveModifierDown = true,
         });
-        shiftClickBResponse.Succeeded.ShouldBeTrue(shiftClickBResponse.Message);
-        shiftClickBResponse.Data.SelectedObjectNames.OrderBy(name => name).ShouldBe(new[] { "TestObjectA", "TestObjectB" });
+        ctrlClickBResponse.Succeeded.ShouldBeTrue(ctrlClickBResponse.Message);
+        ctrlClickBResponse.Data.SelectedObjectNames.OrderBy(name => name).ShouldBe(new[] { "TestObjectA", "TestObjectB" });
 
-        // Shift+click on TestObjectA again - toggles it back off, TestObjectB stays selected.
-        var shiftClickARemoveResponse = await game.Send<SimulateClickSelectResponse>(new SimulateClickSelectDto
+        // Ctrl+click on TestObjectA again - toggles it back off, TestObjectB stays selected.
+        var ctrlClickARemoveResponse = await game.Send<SimulateClickSelectResponse>(new SimulateClickSelectDto
         {
             ObjectName = "TestObjectA",
             AdditiveModifierDown = true,
         });
-        shiftClickARemoveResponse.Succeeded.ShouldBeTrue(shiftClickARemoveResponse.Message);
-        shiftClickARemoveResponse.Data.SelectedObjectNames.ShouldBe(new[] { "TestObjectB" });
+        ctrlClickARemoveResponse.Succeeded.ShouldBeTrue(ctrlClickARemoveResponse.Message);
+        ctrlClickARemoveResponse.Data.SelectedObjectNames.ShouldBe(new[] { "TestObjectB" });
     }
 
     static async Task AddTwoTestObjectsToGameScreen()

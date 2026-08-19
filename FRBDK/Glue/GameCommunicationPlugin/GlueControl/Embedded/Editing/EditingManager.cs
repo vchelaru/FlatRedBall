@@ -646,10 +646,7 @@ namespace GlueControl.Editing
             if (shouldTreatAsPush)
             {
                 var itemOver = itemsOver.FirstOrDefault();
-                // Ctrl and Shift both toggle add/remove from the current selection (see #2125) rather than
-                // replacing it, matching the common convention of both modifiers behaving the same way for
-                // click-to-select.
-                var additiveModifierDown = InputManager.Keyboard.IsCtrlDown || InputManager.Keyboard.IsShiftDown;
+                var additiveModifierDown = InputManager.Keyboard.IsCtrlDown;
 
                 PerformClickSelection(itemOver, additiveModifierDown);
             }
@@ -659,8 +656,8 @@ namespace GlueControl.Editing
         /// Core click-to-select decision: replaces the selection with itemOver, or when
         /// additiveModifierDown is true, adds itemOver to the existing selection (toggling it off if it was
         /// already selected). Parameterized on itemOver/additiveModifierDown instead of reading
-        /// InputManager.Mouse/Keyboard directly, so SimulateClickSelectForTesting (LiveGameProcess tests,
-        /// see #2125) can drive it without a real Cursor/mouse/keyboard.
+        /// InputManager.Mouse/Keyboard directly, so SimulateClickSelectForTesting (LiveGameProcess tests)
+        /// can drive it without a real Cursor/mouse/keyboard.
         /// </summary>
         private void PerformClickSelection(INameable itemOver, bool additiveModifierDown)
         {
@@ -738,7 +735,7 @@ namespace GlueControl.Editing
         }
 
         /// <summary>
-        /// Test-only entry point mirroring DoGrabLogic's click-selection decision (see #2125) - resolves
+        /// Test-only entry point mirroring DoGrabLogic's click-selection decision - resolves
         /// objectName the same way a real click resolves whatever the ray hit, then runs the identical
         /// add/toggle logic, without needing a real Cursor/mouse or keyboard modifier state. Driven by
         /// SimulateClickSelectDto (see CommandReceiver.HandleDto).
