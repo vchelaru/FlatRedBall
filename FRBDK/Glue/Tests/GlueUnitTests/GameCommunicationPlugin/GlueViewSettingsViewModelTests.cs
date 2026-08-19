@@ -32,4 +32,44 @@ public class GlueViewSettingsViewModelTests
 
         viewModel.PolygonPointSnapSize.ShouldBeGreaterThan(0);
     }
+
+    [Theory]
+    [InlineData(-3999, 0)]
+    [InlineData(-1, 0)]
+    [InlineData(0, 0)]
+    [InlineData(255, 255)]
+    [InlineData(256, 255)]
+    [InlineData(10000, 255)]
+    public void BackgroundRed_OutOfRangeValue_ClampsTo0To255(int input, int expected)
+    {
+        var viewModel = new GlueViewSettingsViewModel();
+
+        viewModel.BackgroundRed = input;
+
+        viewModel.BackgroundRed.ShouldBe(expected);
+    }
+
+    [Theory]
+    [InlineData(-3999, 0)]
+    [InlineData(10000, 255)]
+    public void BackgroundGreen_OutOfRangeValue_ClampsTo0To255(int input, int expected)
+    {
+        var viewModel = new GlueViewSettingsViewModel();
+
+        viewModel.BackgroundGreen = input;
+
+        viewModel.BackgroundGreen.ShouldBe(expected);
+    }
+
+    [Theory]
+    [InlineData(-3999, 0)]
+    [InlineData(10000, 255)]
+    public void BackgroundBlue_OutOfRangeValue_ClampsTo0To255(int input, int expected)
+    {
+        var viewModel = new GlueViewSettingsViewModel();
+
+        viewModel.BackgroundBlue = input;
+
+        viewModel.BackgroundBlue.ShouldBe(expected);
+    }
 }

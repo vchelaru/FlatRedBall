@@ -119,7 +119,7 @@ namespace GameCommunicationPlugin.GlueControl.Views
                 var colorProperties = properties.GetOrCreateImdp(propertyName);
                 colorProperties.Category = Localization.Texts.GridAndMarkings;
                 colorProperties.IsHiddenDelegate = (notused) => ViewModel.SetBackgroundColor == false;
-
+                colorProperties.PreferredDisplayer = typeof(WpfDataUi.Controls.SliderDisplay);
             }
 
             var lockScreenBoundsProperties = properties.GetOrCreateImdp(nameof(ViewModel.LockScreenBoundsToWorldSpace));
@@ -128,6 +128,20 @@ namespace GameCommunicationPlugin.GlueControl.Views
             lockScreenBoundsProperties.IsHiddenDelegate = (notused) => ViewModel.ShowScreenBounds == false;
 
             DataUiGrid.Apply(properties);
+
+            ApplyColorSliderRange(nameof(ViewModel.BackgroundRed));
+            ApplyColorSliderRange(nameof(ViewModel.BackgroundGreen));
+            ApplyColorSliderRange(nameof(ViewModel.BackgroundBlue));
+            void ApplyColorSliderRange(string propertyName)
+            {
+                var member = GetMember(propertyName);
+                if (member != null)
+                {
+                    member.PropertiesToSetOnDisplayer[nameof(WpfDataUi.Controls.SliderDisplay.MinValue)] = 0.0;
+                    member.PropertiesToSetOnDisplayer[nameof(WpfDataUi.Controls.SliderDisplay.MaxValue)] = 255.0;
+                }
+            }
+
             DataUiGrid.Refresh();
         }
 
