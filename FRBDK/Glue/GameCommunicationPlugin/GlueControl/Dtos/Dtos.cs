@@ -280,6 +280,29 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
     }
     #endregion
 
+    #region SimulateClickSelect
+
+    /// <summary>
+    /// Test-only: drives EditingManager's click-to-select logic without a real mouse/keyboard. See
+    /// EditingManager.SimulateClickSelectForTesting (Embedded) - selects ObjectName exactly as a real click
+    /// on it would, replacing the current selection unless AdditiveModifierDown is true (Ctrl or Shift
+    /// held), in which case it's added to (or toggled off of) the existing selection. See #2125.
+    /// </summary>
+    public class SimulateClickSelectDto
+    {
+        /// <summary>InstanceName of the NamedObjectSave clicked, or null/empty for a click on empty space.</summary>
+        public string ObjectName { get; set; }
+        public bool AdditiveModifierDown { get; set; }
+    }
+    #endregion
+
+    #region SimulateClickSelectResponse
+    public class SimulateClickSelectResponse
+    {
+        public List<string> SelectedObjectNames { get; set; }
+    }
+    #endregion
+
     #region GetCameraSave
     public class GetCameraSave
     {

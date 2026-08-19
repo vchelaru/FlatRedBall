@@ -646,79 +646,107 @@ namespace GlueControl.Editing
             if (shouldTreatAsPush)
             {
                 var itemOver = itemsOver.FirstOrDefault();
-                itemGrabbed = itemOver as IStaticPositionable;
+                // Ctrl and Shift both toggle add/remove from the current selection (see #2125) rather than
+                // replacing it, matching the common convention of both modifiers behaving the same way for
+                // click-to-select.
+                var additiveModifierDown = InputManager.Keyboard.IsCtrlDown || InputManager.Keyboard.IsShiftDown;
 
-                var clickedOnSelectedItem = itemsSelected.Contains(itemOver);
+                PerformClickSelection(itemOver, additiveModifierDown);
+            }
+        }
 
-                var isCtrlDown = InputManager.Keyboard.IsCtrlDown;
-                if (!clickedOnSelectedItem)
+        /// <summary>
+        /// Core click-to-select decision: replaces the selection with itemOver, or when
+        /// additiveModifierDown is true, adds itemOver to the existing selection (toggling it off if it was
+        /// already selected). Parameterized on itemOver/additiveModifierDown instead of reading
+        /// InputManager.Mouse/Keyboard directly, so SimulateClickSelectForTesting (LiveGameProcess tests,
+        /// see #2125) can drive it without a real Cursor/mouse/keyboard.
+        /// </summary>
+        private void PerformClickSelection(INameable itemOver, bool additiveModifierDown)
+        {
+            itemGrabbed = itemOver as IStaticPositionable;
+
+            var clickedOnSelectedItem = itemsSelected.Contains(itemOver);
+
+            if (!clickedOnSelectedItem)
+            {
+                if (itemOver?.Name == null)
                 {
-                    if (itemOver?.Name == null)
-                    {
-                        Select((NamedObjectSave)null, addToExistingSelection: isCtrlDown, playBump: true);
-                    }
-                    else
-                    {
-                        NamedObjectSave nos = null;
-                        if (itemOver?.Name != null)
-                        {
-                            nos = GetNosFromItemName(itemOver.Name);
-                        }
-
-                        if (nos != null)
-                        {
-                            Select(nos, addToExistingSelection: isCtrlDown, playBump: true);
-                        }
-                        else
-                        {
-                            if (!isCtrlDown)
-                            {
-                                CurrentNamedObjects.Clear();
-                            }
-                            // this shouldn't happen, but for now we tolerate it until the current is sent
-                            Select(itemOver?.Name, addToExistingSelection: isCtrlDown, playBump: true);
-                        }
-                    }
+                    Select((NamedObjectSave)null, addToExistingSelection: additiveModifierDown, playBump: true);
                 }
-                else if (isCtrlDown)
+                else
                 {
                     NamedObjectSave nos = null;
                     if (itemOver?.Name != null)
                     {
                         nos = GetNosFromItemName(itemOver.Name);
                     }
+
                     if (nos != null)
                     {
-                        RemoveFromSelection(nos);
+                        Select(nos, addToExistingSelection: additiveModifierDown, playBump: true);
                     }
-                }
-
-                if (itemGrabbed != null)
-                {
-                    foreach (var item in itemsSelected)
+                    else
                     {
-                        var marker = MarkerFor(item);
-
-                        marker.CanMoveItem = item == itemGrabbed;
-                    }
-
-                    if (!clickedOnSelectedItem)
-                    {
-                        if (isCtrlDown)
+                        if (!additiveModifierDown)
                         {
-                            ObjectSelected(itemsSelected);
+                            CurrentNamedObjects.Clear();
                         }
-                        else
-                        {
-                            ObjectSelected(new List<INameable> { itemGrabbed as INameable });
-                        }
+                        // this shouldn't happen, but for now we tolerate it until the current is sent
+                        Select(itemOver?.Name, addToExistingSelection: additiveModifierDown, playBump: true);
                     }
-                }
-                else if (!clickedOnSelectedItem)
-                {
-                    ObjectSelected(new List<INameable>());
                 }
             }
+            else if (additiveModifierDown)
+            {
+                NamedObjectSave nos = null;
+                if (itemOver?.Name != null)
+                {
+                    nos = GetNosFromItemName(itemOver.Name);
+                }
+                if (nos != null)
+                {
+                    RemoveFromSelection(nos);
+                }
+            }
+
+            if (itemGrabbed != null)
+            {
+                foreach (var item in itemsSelected)
+                {
+                    var marker = MarkerFor(item);
+
+                    marker.CanMoveItem = item == itemGrabbed;
+                }
+
+                if (!clickedOnSelectedItem)
+                {
+                    if (additiveModifierDown)
+                    {
+                        ObjectSelected(itemsSelected);
+                    }
+                    else
+                    {
+                        ObjectSelected(new List<INameable> { itemGrabbed as INameable });
+                    }
+                }
+            }
+            else if (!clickedOnSelectedItem)
+            {
+                ObjectSelected(new List<INameable>());
+            }
+        }
+
+        /// <summary>
+        /// Test-only entry point mirroring DoGrabLogic's click-selection decision (see #2125) - resolves
+        /// objectName the same way a real click resolves whatever the ray hit, then runs the identical
+        /// add/toggle logic, without needing a real Cursor/mouse or keyboard modifier state. Driven by
+        /// SimulateClickSelectDto (see CommandReceiver.HandleDto).
+        /// </summary>
+        internal void SimulateClickSelectForTesting(string objectName, bool additiveModifierDown)
+        {
+            INameable itemOver = string.IsNullOrEmpty(objectName) ? null : GetObjectByName(objectName);
+            PerformClickSelection(itemOver, additiveModifierDown);
         }
 
         private NamedObjectSave GetNosFromItemName(string itemName)

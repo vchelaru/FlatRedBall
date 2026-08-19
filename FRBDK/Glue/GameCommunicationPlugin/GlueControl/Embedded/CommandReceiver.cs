@@ -910,6 +910,22 @@ namespace GlueControl
 
         #endregion
 
+        #region SimulateClickSelect
+
+        private static object HandleDto(GlueControl.Dtos.SimulateClickSelectDto dto)
+        {
+            var editingManager = Editing.EditingManager.Self;
+
+            editingManager.SimulateClickSelectForTesting(dto.ObjectName, dto.AdditiveModifierDown);
+
+            return new GlueControl.Dtos.SimulateClickSelectResponse
+            {
+                SelectedObjectNames = editingManager.ItemsSelected.Select(item => item.Name).ToList()
+            };
+        }
+
+        #endregion
+
         #endregion
 
         #region Set Camera Position
