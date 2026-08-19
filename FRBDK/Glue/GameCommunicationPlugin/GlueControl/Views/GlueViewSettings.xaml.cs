@@ -120,20 +120,12 @@ namespace GameCommunicationPlugin.GlueControl.Views
                 colorProperties.Category = Localization.Texts.GridAndMarkings;
                 colorProperties.IsHiddenDelegate = (notused) => ViewModel.SetBackgroundColor == false;
                 colorProperties.PreferredDisplayer = typeof(WpfDataUi.Controls.SliderDisplay);
-            }
 
-            var lockScreenBoundsProperties = properties.GetOrCreateImdp(nameof(ViewModel.LockScreenBoundsToWorldSpace));
-            lockScreenBoundsProperties.Category = Localization.Texts.GridAndMarkings;
-            lockScreenBoundsProperties.DisplayName = Localization.Texts.LockScreenBoundsToWorldSpace;
-            lockScreenBoundsProperties.IsHiddenDelegate = (notused) => ViewModel.ShowScreenBounds == false;
-
-            DataUiGrid.Apply(properties);
-
-            ApplyColorSliderRange(nameof(ViewModel.BackgroundRed));
-            ApplyColorSliderRange(nameof(ViewModel.BackgroundGreen));
-            ApplyColorSliderRange(nameof(ViewModel.BackgroundBlue));
-            void ApplyColorSliderRange(string propertyName)
-            {
+                // Must happen before DataUiGrid.Apply(properties) below: SetBackgroundColor defaults to
+                // false, and Apply() ends by hiding newly-registered IsHiddenDelegate members (removing
+                // them from category.Members) - after that, GetMember can no longer find this member to
+                // set its MinValue/MaxValue, and the slider silently falls back to WPF Slider's own
+                // default range of 0-10.
                 var member = GetMember(propertyName);
                 if (member != null)
                 {
@@ -142,6 +134,12 @@ namespace GameCommunicationPlugin.GlueControl.Views
                 }
             }
 
+            var lockScreenBoundsProperties = properties.GetOrCreateImdp(nameof(ViewModel.LockScreenBoundsToWorldSpace));
+            lockScreenBoundsProperties.Category = Localization.Texts.GridAndMarkings;
+            lockScreenBoundsProperties.DisplayName = Localization.Texts.LockScreenBoundsToWorldSpace;
+            lockScreenBoundsProperties.IsHiddenDelegate = (notused) => ViewModel.ShowScreenBounds == false;
+
+            DataUiGrid.Apply(properties);
             DataUiGrid.Refresh();
         }
 
