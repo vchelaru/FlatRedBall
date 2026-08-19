@@ -119,7 +119,19 @@ namespace GameCommunicationPlugin.GlueControl.Views
                 var colorProperties = properties.GetOrCreateImdp(propertyName);
                 colorProperties.Category = Localization.Texts.GridAndMarkings;
                 colorProperties.IsHiddenDelegate = (notused) => ViewModel.SetBackgroundColor == false;
+                colorProperties.PreferredDisplayer = typeof(WpfDataUi.Controls.SliderDisplay);
 
+                // Must happen before DataUiGrid.Apply(properties) below: SetBackgroundColor defaults to
+                // false, and Apply() ends by hiding newly-registered IsHiddenDelegate members (removing
+                // them from category.Members) - after that, GetMember can no longer find this member to
+                // set its MinValue/MaxValue, and the slider silently falls back to WPF Slider's own
+                // default range of 0-10.
+                var member = GetMember(propertyName);
+                if (member != null)
+                {
+                    member.PropertiesToSetOnDisplayer[nameof(WpfDataUi.Controls.SliderDisplay.MinValue)] = 0.0;
+                    member.PropertiesToSetOnDisplayer[nameof(WpfDataUi.Controls.SliderDisplay.MaxValue)] = 255.0;
+                }
             }
 
             var lockScreenBoundsProperties = properties.GetOrCreateImdp(nameof(ViewModel.LockScreenBoundsToWorldSpace));

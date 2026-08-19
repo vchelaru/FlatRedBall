@@ -52,20 +52,22 @@ namespace GameCommunicationPlugin.GlueControl.ViewModels
         public int BackgroundRed
         {
             get => Get<int>();
-            set => Set(value);
+            set => Set(ClampToByteRange(value));
         }
 
         public int BackgroundGreen
         {
             get => Get<int>();
-            set => Set(value);
+            set => Set(ClampToByteRange(value));
         }
 
         public int BackgroundBlue
         {
             get => Get<int>();
-            set => Set(value);
+            set => Set(ClampToByteRange(value));
         }
+
+        static int ClampToByteRange(int value) => Math.Clamp(value, 0, 255);
 
         public bool ShowGrid
         {
