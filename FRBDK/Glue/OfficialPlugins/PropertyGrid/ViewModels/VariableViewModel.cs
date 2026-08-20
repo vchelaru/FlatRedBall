@@ -16,5 +16,17 @@ namespace OfficialPlugins.PropertyGrid.ViewModels
 
         [DependsOn(nameof(CanAddVariable))]
         public Visibility AddVariableVisibility => CanAddVariable.ToVisibility();
+
+        public bool HasNoVariablesToShow
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(HasNoVariablesToShow))]
+        public Visibility EmptyStateVisibility => HasNoVariablesToShow.ToVisibility();
+
+        [DependsOn(nameof(HasNoVariablesToShow))]
+        public Visibility DataUiGridVisibility => (!HasNoVariablesToShow).ToVisibility();
     }
 }

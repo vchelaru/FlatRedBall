@@ -13,7 +13,9 @@
       <RowDefinition Height="Auto"/>
     </Grid.RowDefinitions>
 
-    <wpfdataui:DataUiGrid x:Name="DataUiGrid"></wpfdataui:DataUiGrid>
+    <wpfdataui:DataUiGrid x:Name="DataUiGrid" Grid.Row="0" Visibility="{Binding DataUiGridVisibility}"></wpfdataui:DataUiGrid>
+    <TextBlock Grid.Row="0" Text="No variables available" HorizontalAlignment="Center" VerticalAlignment="Top"
+               Margin="0,12,0,0" Foreground="Gray" Visibility="{Binding EmptyStateVisibility}" />
     <Button Grid.Row="1" Visibility="{Binding AddVariableVisibility}" Click="AddVariableButtonClick" Content="{x:Static localization:Texts.VariableCreate}" />
   </Grid>
 </UserControl>
