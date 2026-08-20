@@ -180,17 +180,6 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 var firstRfs = rfses.FirstOrDefault();
                 var isGlobalContent = rfses.Any(item => item.GetContainer() == null);
 
-                // TEMPORARY DIAGNOSTIC - remove once the achx live-reload issue is confirmed fixed.
-                try
-                {
-                    var dump = string.Join(" | ", rfses.Select(item =>
-                        $"Name={item.Name} Container={item.GetContainer()?.Name ?? "(null)"} InstanceName={item.GetInstanceName()} IsSharedStatic={item.IsSharedStatic}"));
-                    System.IO.File.AppendAllText(
-                        @"C:\Users\Vic Personal\AppData\Local\Temp\claude\C--Users-Vic-Personal-Documents-GitHub-FlatRedBall\c3dbb8d3-7415-4b77-bd64-5a9ec0f1c9a7\scratchpad\glue-refresh-diagnostic.log",
-                        $"{DateTime.Now:HH:mm:ss.fff} HandleFileChanged({fileName}): isGlobalContent={isGlobalContent}, firstRfs.Name={firstRfs?.Name}, firstRfs.InstanceName={firstRfs?.GetInstanceName()}. rfses: {dump}{Environment.NewLine}");
-                }
-                catch { }
-
                 bool canSendCommands = ViewModel.IsGenerateGlueControlManagerInGame1Checked;
 
                 var handled = false;
