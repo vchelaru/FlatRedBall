@@ -302,14 +302,10 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                         await Task.Delay(500);
 
                         // it's part of global content and can be reloaded, so let's just tell
-                        // it to reload. GlobalContent.GetFile/Reload key off the folder-qualified
-                        // instance name (e.g. "Entities_Player_AnimationChainListFile"), not the bare
-                        // stripped file name used above for ForceReloadFileDto - sending the bare name
-                        // here made GetFile silently return null for any global file nested in a
-                        // subfolder, so GlobalContent.Reload(null) matched nothing and never reloaded.
+                        // it to reload:
                         await CommandSender.Self.Send(new ReloadGlobalContentDto
                         {
-                            StrippedGlobalContentFileName = firstRfs.GetInstanceName()
+                            StrippedGlobalContentFileName = GetGlobalContentReloadIdentifier(firstRfs)
                         });
 
                         printOutput($"Reloading global file {strippedName}");
@@ -335,6 +331,16 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             }
             return false;
         }
+
+        /// <summary>
+        /// The identifier to send in a ReloadGlobalContentDto for referencedFile. This must match what
+        /// GlobalContent.GetFile's generated switch keys on (ReferencedFileSaveCodeGenerator.GenerateGetFileMethodByName
+        /// uses referencedFile.GetInstanceName() as the case label) - a bare, path-stripped file name only
+        /// matches for global files with no container folder; anything nested (e.g. Entities/Player/Foo.achx,
+        /// whose instance name is "Entities_Player_Foo") would make GetFile return null and Reload silently no-op.
+        /// </summary>
+        internal static string GetGlobalContentReloadIdentifier(ReferencedFileSave referencedFile) =>
+            referencedFile.GetInstanceName();
 
         private bool GetIfShouldReactToFileChange(FilePath filePath)
         {
