@@ -180,6 +180,17 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 var firstRfs = rfses.FirstOrDefault();
                 var isGlobalContent = rfses.Any(item => item.GetContainer() == null);
 
+                // TEMPORARY DIAGNOSTIC - remove once the achx live-reload issue is confirmed fixed.
+                try
+                {
+                    var dump = string.Join(" | ", rfses.Select(item =>
+                        $"Name={item.Name} Container={item.GetContainer()?.Name ?? "(null)"} InstanceName={item.GetInstanceName()} IsSharedStatic={item.IsSharedStatic}"));
+                    System.IO.File.AppendAllText(
+                        @"C:\Users\Vic Personal\AppData\Local\Temp\claude\C--Users-Vic-Personal-Documents-GitHub-FlatRedBall\c3dbb8d3-7415-4b77-bd64-5a9ec0f1c9a7\scratchpad\glue-refresh-diagnostic.log",
+                        $"{DateTime.Now:HH:mm:ss.fff} HandleFileChanged({fileName}): isGlobalContent={isGlobalContent}, firstRfs.Name={firstRfs?.Name}, firstRfs.InstanceName={firstRfs?.GetInstanceName()}. rfses: {dump}{Environment.NewLine}");
+                }
+                catch { }
+
                 bool canSendCommands = ViewModel.IsGenerateGlueControlManagerInGame1Checked;
 
                 var handled = false;
@@ -303,9 +314,10 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
                         // it's part of global content and can be reloaded, so let's just tell
                         // it to reload:
+                        var globalRfs = SelectGlobalReferencedFile(rfses, firstRfs);
                         await CommandSender.Self.Send(new ReloadGlobalContentDto
                         {
-                            StrippedGlobalContentFileName = GetGlobalContentReloadIdentifier(firstRfs)
+                            StrippedGlobalContentFileName = GetGlobalContentReloadIdentifier(globalRfs)
                         });
 
                         printOutput($"Reloading global file {strippedName}");
@@ -341,6 +353,19 @@ namespace GameCommunicationPlugin.GlueControl.Managers
         /// </summary>
         internal static string GetGlobalContentReloadIdentifier(ReferencedFileSave referencedFile) =>
             referencedFile.GetInstanceName();
+
+        /// <summary>
+        /// The same physical file can be referenced by more than one ReferencedFileSave - e.g. a shared
+        /// .achx declared as global content AND separately referenced (also as IsSharedStatic) by a test
+        /// entity for standalone testing. Only the entry with no container is the actual global one whose
+        /// GetInstanceName() matches GlobalContent.GetFile's switch keys (this mirrors the same
+        /// GetContainer() == null check HandleFileChanged already uses to compute isGlobalContent) - a
+        /// non-global entry's instance name is relative to ITS OWN container instead, which silently
+        /// doesn't match any GetFile case.
+        /// </summary>
+        internal static ReferencedFileSave SelectGlobalReferencedFile(
+            IEnumerable<ReferencedFileSave> referencedFiles, ReferencedFileSave fallback) =>
+            referencedFiles.FirstOrDefault(item => item.GetContainer() == null) ?? fallback;
 
         private bool GetIfShouldReactToFileChange(FilePath filePath)
         {
