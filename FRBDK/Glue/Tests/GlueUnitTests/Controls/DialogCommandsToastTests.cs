@@ -51,14 +51,24 @@ public class DialogCommandsToastTests : IDisposable
         TaskManager.UiThreadMarshaller = marshaller;
         string passedText = null;
         DialogCommands.ShowToastPanelImpl = text => passedText = text;
+        var hidden = new TaskCompletionSource<bool>();
+        DialogCommands.HideToastPanelImpl = () => hidden.TrySetResult(true);
 
         TaskManager.Self.IsOnUiThread.ShouldBeFalse();
-        new DialogCommands().ShowToast("hello world", TimeSpan.FromMilliseconds(1));
-        // ShowToast is async void; give the pre-await portion a chance to run before asserting.
-        await Task.Yield();
+        // ShowToast is async void, but it runs synchronously up to its first await (Task.Delay) before
+        // returning here - so the OnUiThread call for the show itself has already happened.
+        new DialogCommands().ShowToast("hello world", TimeSpan.FromMilliseconds(10));
 
         passedText.ShouldBe("hello world");
         marshaller.InvokeActionCallCount.ShouldBe(1);
+
+        // Drain the toast's own real-time auto-hide before the test ends instead of leaving its
+        // Task.Delay pending - an earlier version of this test used a long delay to dodge that, but the
+        // leftover timer kept the test host process alive until it fired against already-restored
+        // (real, WPF-touching) impls from a later test's Dispose(), NRE-ing there (issue #2130 PR).
+        var completed = await Task.WhenAny(hidden.Task, Task.Delay(TimeSpan.FromSeconds(5)));
+        completed.ShouldBe(hidden.Task, "the toast's auto-hide should have fired via HideToastPanelImpl within 5 seconds");
+        marshaller.InvokeActionCallCount.ShouldBe(2);
     }
 
     [Fact]
