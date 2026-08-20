@@ -1027,13 +1027,30 @@ partial class DialogCommands : IDialogCommands
 
     #region Toast
 
+    // Swappable so tests can pin the OnUiThread routing below without a live MainPanelControl (only ever
+    // constructed by real WPF startup - see GlueTestBootstrap). Same pattern as DialogService's *Impl seam.
+    internal static Action<string> ShowToastPanelImpl { get; set; } = DefaultShowToastPanel;
+    internal static Action HideToastPanelImpl { get; set; } = DefaultHideToastPanel;
+
+    private static void DefaultShowToastPanel(string text)
+    {
+        var panel = MainPanelControl.Self;
+        panel.ToastLabel.Content = text;
+        panel.Toast.Visibility = System.Windows.Visibility.Visible;
+    }
+
+    private static void DefaultHideToastPanel()
+    {
+        MainPanelControl.Self.Toast.Visibility = System.Windows.Visibility.Collapsed;
+    }
+
     CancellationTokenSource lastToastCancellation = null;
     public async void ShowToast(string text, TimeSpan? timeToShowToast = null)
     {
-        var panel = MainPanelControl.Self;
-
-        panel.ToastLabel.Content = text;
-        panel.Toast.Visibility = System.Windows.Visibility.Visible;
+        // ShowToast can be called from a background TaskManager task (e.g. an Edit Mode load or an
+        // add-object response) - see #2130, a WPF cross-thread crash from touching ToastLabel/Toast
+        // directly off the UI thread. Route through TaskManager.Self.OnUiThread like DialogService does.
+        TaskManager.Self.OnUiThread(() => ShowToastPanelImpl(text));
 
         if(lastToastCancellation != null)
         {
@@ -1063,8 +1080,7 @@ partial class DialogCommands : IDialogCommands
 
     public void HideToast()
     {
-        var panel = MainPanelControl.Self;
-        panel.Toast.Visibility = System.Windows.Visibility.Collapsed;
+        TaskManager.Self.OnUiThread(HideToastPanelImpl);
     }
 
 
