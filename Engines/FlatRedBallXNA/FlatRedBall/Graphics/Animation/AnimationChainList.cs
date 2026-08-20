@@ -138,6 +138,21 @@ namespace FlatRedBall.Graphics.Animation
             return newList;
         }
 
+        /// <summary>
+        /// Replaces the contents of this list with the contents of newValues, keeping this instance's
+        /// identity so existing references to it (such as a Sprite's AnimationChains) see the update
+        /// without needing to be reassigned.
+        /// </summary>
+        public void ReplaceValues(AnimationChainList newValues)
+        {
+            Clear();
+            AddRange(newValues);
+
+            mName = newValues.mName;
+            mFileRelativeTextures = newValues.mFileRelativeTextures;
+            mTimeMeasurementUnit = newValues.mTimeMeasurementUnit;
+        }
+
 		void IDisposable.Dispose()
 		{
 			// No need to do anything here - all referenced textures are
