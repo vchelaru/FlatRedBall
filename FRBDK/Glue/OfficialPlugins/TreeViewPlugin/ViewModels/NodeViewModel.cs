@@ -442,7 +442,14 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         internal NodeViewModel GetNodeByTag(object tag)
         {
-            if(tag == this.Tag)
+            if(tag == null)
+            {
+                // Directory/category nodes (Screens, Entities, folders) have a null Tag, so a null
+                // search tag must never match them - otherwise callers passing an unresolved object
+                // (e.g. a NamedObjectSave that couldn't be found) land on an arbitrary untagged node.
+                return null;
+            }
+            else if(tag == this.Tag)
             {
                 return this;
             }

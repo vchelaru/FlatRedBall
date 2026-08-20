@@ -254,6 +254,17 @@ public class SearchNavigationTests
         _vm.GetTreeNodeByTag(tag).ShouldBeNull();
     }
 
+    [WpfFact]
+    public void GetTreeNodeByTag_NullTag_DoesNotMatchUntaggedFolderNodes()
+    {
+        // Folder/category nodes (like a Screen's directory node) have a null Tag. An unresolved
+        // selection (e.g. a NamedObjectSave the game couldn't be matched to) must not land on one
+        // of these - see issue #2131 (clicking an object in Edit Mode selected the Screen folder).
+        AddDir(_vm.ScreenRootNode, "GameScreen");
+
+        _vm.GetTreeNodeByTag(null).ShouldBeNull();
+    }
+
     #endregion
 
     #region IsInTreeView
