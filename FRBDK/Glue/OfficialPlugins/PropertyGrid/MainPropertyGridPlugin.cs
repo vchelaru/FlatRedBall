@@ -114,37 +114,35 @@ namespace OfficialPlugins.VariableDisplay
             var nos = GlueState.Self.CurrentNamedObjectSave;
             var element = GlueState.Self.CurrentElement;
 
-            if (nos != null)
-            {
-                HandleNamedObjectSelect(nos, element);
-            }
-            else if(GlueState.Self.CurrentStateSave != null || GlueState.Self.CurrentStateSaveCategory != null)
-            {
-                // For now we don't handle showing states, so let's hide it so the user doens't think
-                // they are editing states
-                variableTab?.Hide();
-            }
-            else if(GlueState.Self.CurrentElement != null && 
-                (selectedTreeNode?.IsRootCustomVariablesNode() == true 
-                // Feb 18, 2021 - It's annoying to have to select the Variables
-                // node. The user should be able to see variables just by selecting
-                // the entity itself.
-                || selectedTreeNode?.IsElementNode() == true))
-            {
-                ShowVariablesForCurrentElement();
-            }
-            else if(GlueState.Self.CurrentReferencedFileSave != null)
-            {
-                variableTab?.Hide();
-                ShowPropertiesForReferencedFileSave(GlueState.Self.CurrentReferencedFileSave);
-            }
-            else
-            {
-                variableTab?.Hide();
-                settingsTab?.Hide();
+            var mode = VariablePanelModeLogic.DetermineMode(
+                nos,
+                element,
+                GlueState.Self.CurrentStateSave,
+                GlueState.Self.CurrentStateSaveCategory,
+                selectedTreeNode,
+                GlueState.Self.CurrentReferencedFileSave);
 
+            switch (mode)
+            {
+                case VariablePanelMode.NamedObject:
+                    HandleNamedObjectSelect(nos, element);
+                    break;
+                case VariablePanelMode.Element:
+                    ShowVariablesForCurrentElement();
+                    break;
+                case VariablePanelMode.ReferencedFile:
+                    // Keep the Variables tab open (with an empty state) rather than hiding it -
+                    // hiding/re-showing it collapses and re-expands the right panel's width, which
+                    // flickers the whole main editor layout on every selection change:
+                    ShowEmptyVariables();
+                    ShowPropertiesForReferencedFileSave(GlueState.Self.CurrentReferencedFileSave);
+                    break;
+                case VariablePanelMode.Empty:
+                default:
+                    ShowEmptyVariables();
+                    settingsTab?.Hide();
+                    break;
             }
-
         }
 
         private void ShowPropertiesForReferencedFileSave(ReferencedFileSave referencedFileSave)
@@ -181,6 +179,7 @@ namespace OfficialPlugins.VariableDisplay
             AddOrShowVariableGrid();
 
             variableViewModel.CanAddVariable = true;
+            variableViewModel.HasNoVariablesToShow = false;
             VariableGrid.DataUiGrid.Instance = GlueState.Self.CurrentElement;
             ElementVariableShowingLogic.UpdateShownVariables(VariableGrid.DataUiGrid, GlueState.Self.CurrentElement);
         }
@@ -188,12 +187,12 @@ namespace OfficialPlugins.VariableDisplay
         private void HandleNamedObjectSelect(NamedObjectSave namedObject, GlueElement currentElement)
         {
             // Update August 17, 2021
-            // If it's a list, don't show the Variables tab. It's never got anything:
+            // If it's a list, don't show the Variables tab's content. It's never got anything:
             var hide = namedObject.IsList;
 
             if(hide)
             {
-                variableTab?.Hide();
+                ShowEmptyVariables();
                 return;
             }
 
@@ -266,6 +265,7 @@ namespace OfficialPlugins.VariableDisplay
             AddOrShowVariableGrid();
             // can't add variables on the instance:
             variableViewModel.CanAddVariable = false;
+            variableViewModel.HasNoVariablesToShow = false;
 
             // Setting the instance resets all categories. Categories get replaced
             // in the UpdateShownVariables method, so do we even need the instance set here?
@@ -346,6 +346,18 @@ namespace OfficialPlugins.VariableDisplay
                 //variableTab.Focus();
             }
             variableTab.Show();
+        }
+
+        // Keeps the Variables tab open showing an empty state, instead of hiding the tab. Hiding
+        // (removing) the tab collapses the right panel's width to 0, then re-showing it snaps the
+        // width back open - flickering the whole main editor layout on every selection change that
+        // toggles in/out of "nothing to show" (folders, states, lists, etc.). See GitHub issue #2134.
+        private void ShowEmptyVariables()
+        {
+            AddOrShowVariableGrid();
+            variableViewModel.CanAddVariable = false;
+            variableViewModel.HasNoVariablesToShow = true;
+            VariableGrid.DataUiGrid.Instance = null;
         }
     }
 }
