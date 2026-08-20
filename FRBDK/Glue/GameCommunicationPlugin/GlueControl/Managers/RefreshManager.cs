@@ -303,9 +303,10 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
                         // it's part of global content and can be reloaded, so let's just tell
                         // it to reload:
+                        var globalRfs = SelectGlobalReferencedFile(rfses, firstRfs);
                         await CommandSender.Self.Send(new ReloadGlobalContentDto
                         {
-                            StrippedGlobalContentFileName = strippedName
+                            StrippedGlobalContentFileName = GetGlobalContentReloadIdentifier(globalRfs)
                         });
 
                         printOutput($"Reloading global file {strippedName}");
@@ -331,6 +332,29 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             }
             return false;
         }
+
+        /// <summary>
+        /// The identifier to send in a ReloadGlobalContentDto for referencedFile. This must match what
+        /// GlobalContent.GetFile's generated switch keys on (ReferencedFileSaveCodeGenerator.GenerateGetFileMethodByName
+        /// uses referencedFile.GetInstanceName() as the case label) - a bare, path-stripped file name only
+        /// matches for global files with no container folder; anything nested (e.g. Entities/Player/Foo.achx,
+        /// whose instance name is "Entities_Player_Foo") would make GetFile return null and Reload silently no-op.
+        /// </summary>
+        internal static string GetGlobalContentReloadIdentifier(ReferencedFileSave referencedFile) =>
+            referencedFile.GetInstanceName();
+
+        /// <summary>
+        /// The same physical file can be referenced by more than one ReferencedFileSave - e.g. a shared
+        /// .achx declared as global content AND separately referenced (also as IsSharedStatic) by a test
+        /// entity for standalone testing. Only the entry with no container is the actual global one whose
+        /// GetInstanceName() matches GlobalContent.GetFile's switch keys (this mirrors the same
+        /// GetContainer() == null check HandleFileChanged already uses to compute isGlobalContent) - a
+        /// non-global entry's instance name is relative to ITS OWN container instead, which silently
+        /// doesn't match any GetFile case.
+        /// </summary>
+        internal static ReferencedFileSave SelectGlobalReferencedFile(
+            IEnumerable<ReferencedFileSave> referencedFiles, ReferencedFileSave fallback) =>
+            referencedFiles.FirstOrDefault(item => item.GetContainer() == null) ?? fallback;
 
         private bool GetIfShouldReactToFileChange(FilePath filePath)
         {

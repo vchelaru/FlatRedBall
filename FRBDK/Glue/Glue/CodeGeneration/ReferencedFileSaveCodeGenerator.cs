@@ -1023,9 +1023,33 @@ namespace FlatRedBall.Glue.CodeGeneration
                     GetInitializationForReferencedFile(referencedFile, container, codeBlock, loadType);
                     codeBlock.Line($"FlatRedBall.FlatRedBallServices.ReplaceTexture(oldTexture, {referencedFile.GetInstanceName()});");
                 }
+                else if (ati?.QualifiedRuntimeTypeName.QualifiedType == "FlatRedBall.Graphics.Animation.AnimationChainList" &&
+                    (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.AnimationChainListHasReplaceValues ||
+                    GlueState.Self.CurrentMainProject.IsFrbSourceLinked()))
+                {
+                    // AnimationChainList is referenced directly by live objects (e.g. a Sprite's
+                    // AnimationChains), so reloading can't just reassign this field to a newly-loaded
+                    // instance - anything already holding the old reference would keep seeing stale data.
+                    // Instead we mutate the existing instance in place and keep the content manager's
+                    // cache pointed at that same instance so the next reload can find it again.
+                    // ReplaceValues only exists on engines new enough to declare
+                    // GluxVersions.AnimationChainListHasReplaceValues (or when source-linked, which always
+                    // builds against current engine source) - older/unlinked projects fall through to the
+                    // reassign-the-field codegen below, same as before this method existed.
+                    var instanceName = referencedFile.GetInstanceName();
+                    var fileToLoad = GetFileToLoadForRfs(referencedFile, ati);
+                    var newlyLoadedVariable = $"newlyLoaded{instanceName}";
+
+                    codeBlock.Line($"var cm = FlatRedBall.FlatRedBallServices.GetContentManagerByName(\"Global\");");
+                    codeBlock.Line($"cm.UnloadAsset({instanceName});");
+                    codeBlock.Line($"var {newlyLoadedVariable} = FlatRedBall.FlatRedBallServices.Load<FlatRedBall.Graphics.Animation.AnimationChainList>(\"{fileToLoad}\");");
+                    codeBlock.Line($"{instanceName}.ReplaceValues({newlyLoadedVariable});");
+                    codeBlock.Line($"cm.UnloadAsset({newlyLoadedVariable});");
+                    codeBlock.Line($"cm.AddDisposable(\"{fileToLoad}\", {instanceName});");
+                }
                 else if (ati?.CustomReloadFunc != null)
                 {
-                    var line = 
+                    var line =
                         ati.CustomReloadFunc(container, null, referencedFile, "Global");
 
                     codeBlock.Line(line);

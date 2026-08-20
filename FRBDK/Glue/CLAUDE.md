@@ -9,6 +9,12 @@ deprecated and being stripped out: write new user-facing text as a plain string 
 touch a line that reads `L.Texts.Something`, inline the English text instead of leaving it or adding a
 new resource.
 
+## Behavioral Fixes Need a Test, Not Just a Manual Retest
+
+A fix to Glue behavior (RefreshManager, CodeGeneration, etc.) isn't done until a `GlueUnitTests` test
+exercises it — one that fails against the old code and passes against the new. Don't substitute "it
+compiles" plus asking the user to manually rebuild/retest for this.
+
 ## Refactoring Approach
 
 See [REFACTORING.md](REFACTORING.md) for the full refactoring philosophy, checklist, and progress notes.
