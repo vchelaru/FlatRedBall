@@ -302,10 +302,14 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                         await Task.Delay(500);
 
                         // it's part of global content and can be reloaded, so let's just tell
-                        // it to reload:
+                        // it to reload. GlobalContent.GetFile/Reload key off the folder-qualified
+                        // instance name (e.g. "Entities_Player_AnimationChainListFile"), not the bare
+                        // stripped file name used above for ForceReloadFileDto - sending the bare name
+                        // here made GetFile silently return null for any global file nested in a
+                        // subfolder, so GlobalContent.Reload(null) matched nothing and never reloaded.
                         await CommandSender.Self.Send(new ReloadGlobalContentDto
                         {
-                            StrippedGlobalContentFileName = strippedName
+                            StrippedGlobalContentFileName = firstRfs.GetInstanceName()
                         });
 
                         printOutput($"Reloading global file {strippedName}");
