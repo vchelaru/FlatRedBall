@@ -207,6 +207,12 @@ namespace FlatRedBall.Glue.SaveClasses
             // now implement.
             GumHasFrbRuntimeInterfaces = 68,
 
+            // August 20, 2026 - AnimationChainList has ReplaceValues, which the .achx global-content
+            // reload codegen now calls to update an existing instance in place (instead of reassigning
+            // the field to a new instance, which live objects like Sprites had already grabbed a
+            // reference away from).
+            AnimationChainListHasReplaceValues = 69,
+
             // Stop! If adding an entry here, modify SyntaxVersionAttribute on FlatRedBallServices
             // and LatestVersion down below
             // and update the docs
@@ -216,7 +222,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.GumHasFrbRuntimeInterfaces;
+        public const int LatestVersion = (int)GluxVersions.AnimationChainListHasReplaceValues;
 
         public int FileVersion { get; set; }
 
