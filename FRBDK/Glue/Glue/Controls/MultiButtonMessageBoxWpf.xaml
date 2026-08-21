@@ -4,14 +4,14 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:localization="clr-namespace:Localization;assembly=Localization"
-             mc:Ignorable="d" 
-             Width="500" SizeToContent="Height">
+             mc:Ignorable="d"
+             Width="500" Height="600" MinHeight="150">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <ScrollViewer Grid.Row="0" MaxHeight="400" VerticalScrollBarVisibility="Auto" Margin="8,8,8,15">
+        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" Margin="8,8,8,15">
             <TextBlock TextWrapping="Wrap" x:Name="LabelInstance"
                        Text="{x:Static localization:Texts.ValidationTextForWrapping}" />
         </ScrollViewer>
