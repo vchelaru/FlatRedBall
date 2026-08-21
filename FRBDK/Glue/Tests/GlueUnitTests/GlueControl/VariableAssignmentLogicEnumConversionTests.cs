@@ -92,6 +92,33 @@ public class VariableAssignmentLogicEnumConversionTests : IDisposable
         output.ShouldContain("ALL_OK");
     }
 
+    // Issue #2141: live-editing RepositionDirections on an AxisAlignedRectangle in Edit mode throws
+    // InvalidOperationException. Root cause is the same class of bug as #1978, but on the other side of
+    // ConvertStringToType's fallback: reflection-discovered variables (ExposedVariableManager.GetMemberVariables,
+    // via property.PropertyType.Name) report Type as an unqualified short name like "RepositionDirections",
+    // never "FlatRedBall.Math.Geometry.RepositionDirections". The generic enum fallback only matched a
+    // namespace-qualified name (Type.GetType / assembly.GetType(fullName)), so short-named engine enums that
+    // aren't hardcoded (unlike HorizontalAlignment/VerticalAlignment) were left as unconverted strings.
+    [Fact]
+    public void LiveEditingEngineEnumVariable_ShouldConvertShortEnumName_NotAnUnconvertedString()
+    {
+        EmbeddedCodeManager.EmbedAll(fullyGenerate: true);
+        GlueCallsCodeGenerator.GenerateAll();
+
+        var generatedDirectory = Path.Combine(_tempProjectDirectory, "GlueControl");
+        var repoRoot = FindRepoRoot();
+        var scratchDirectory = Path.Combine(_tempProjectDirectory, "EngineEnumConversionScratch");
+        WriteScratchProject(scratchDirectory, repoRoot, generatedDirectory);
+        WriteEngineEnumProgram(scratchDirectory);
+
+        var (exitCode, output) = NestedDotnetCli.Run($"run --project \"{scratchDirectory}\" -c Debug");
+
+        exitCode.ShouldBe(0,
+            "Live-editing RepositionDirections (an engine enum reported by its short, unqualified type " +
+            "name) did not convert cleanly to the real enum type:" + Environment.NewLine + output);
+        output.ShouldContain("ALL_OK");
+    }
+
     private static void WriteScratchProject(string scratchDirectory, string repoRoot, string generatedDirectory)
     {
         Directory.CreateDirectory(scratchDirectory);
@@ -337,6 +364,65 @@ public class VariableAssignmentLogicEnumConversionTests : IDisposable
                 FlatRedBall.Instructions.Reflection.LateBinder.SetValueStatic(gue, "XOrigin", gumHorizontal);
                 Check("LateBinder.SetValueStatic applied XOrigin without throwing",
                     gue.XOrigin, RenderingLibrary.Graphics.HorizontalAlignment.Center);
+
+                if (failureCount == 0)
+                {
+                    Console.WriteLine("ALL_OK");
+                    Environment.Exit(0);
+                }
+                else
+                {
+                    Environment.Exit(1);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("FAIL: unhandled exception: " + ex);
+                Environment.Exit(1);
+            }
+            """);
+    }
+
+    private static void WriteEngineEnumProgram(string scratchDirectory)
+    {
+        File.WriteAllText(Path.Combine(scratchDirectory, "Program.cs"), """
+            using System;
+            using GlueControl.Editing;
+
+            int failureCount = 0;
+
+            void Check(string label, object actual, object expected)
+            {
+                if (Equals(actual, expected))
+                {
+                    Console.WriteLine($"OK: {label} -> {actual} ({actual?.GetType()})");
+                }
+                else
+                {
+                    Console.WriteLine($"FAIL: {label} - expected {expected} ({expected?.GetType()}), got {actual} ({actual?.GetType()})");
+                    failureCount++;
+                }
+            }
+
+            try
+            {
+                // Issue #2141 repro: ConvertVariableValue (the actual production caller) invokes
+                // ConvertStringToType with only data.Type/data.VariableValue - no contextualInstanceType -
+                // exactly as reproduced here. ExposedVariableManager reports RepositionDirections' Type as
+                // the short, unqualified name "RepositionDirections", not "FlatRedBall.Math.Geometry.RepositionDirections".
+                var repositionDirections = VariableAssignmentLogic.ConvertStringToType(
+                    "RepositionDirections", "Up", isState: false, out _);
+                Check("Engine FlatRedBall.Math.Geometry.RepositionDirections (short, unqualified Type)",
+                    repositionDirections, FlatRedBall.Math.Geometry.RepositionDirections.Up);
+
+                // Closes the loop against the exact call path a live game hits: apply the converted value
+                // onto a real AxisAlignedRectangle's real RepositionDirections property the same way
+                // Screen.ApplyVariable does, via FlatRedBall's reflection-based LateBinder - this is what
+                // actually threw InvalidOperationException in the original bug report.
+                var rectangle = new FlatRedBall.Math.Geometry.AxisAlignedRectangle();
+                FlatRedBall.Instructions.Reflection.LateBinder.SetValueStatic(rectangle, "RepositionDirections", repositionDirections);
+                Check("LateBinder.SetValueStatic applied RepositionDirections without throwing",
+                    rectangle.RepositionDirections, FlatRedBall.Math.Geometry.RepositionDirections.Up);
 
                 if (failureCount == 0)
                 {
