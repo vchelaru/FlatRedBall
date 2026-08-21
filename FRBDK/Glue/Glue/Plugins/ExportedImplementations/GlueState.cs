@@ -164,7 +164,17 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
                 }
                 else
                 {
-                    List<ITreeNode> treeNodes = value.Select(item =>GlueState.Self.Find.TreeNodeByTag(item)).ToList();
+                    // A NamedObjectSave the caller couldn't resolve to a tree node (e.g. a selection
+                    // reported by the running game that no longer matches anything in the loaded
+                    // project - see GitHub issue #2149) must be dropped here rather than passed through
+                    // as a null ITreeNode: TakeSnapshot's GetCurrentNamedObjectSavesFromSelection
+                    // dereferences every node's Tag, so a null entry throws mid-snapshot - after
+                    // CurrentElement has already been recomputed (and cleared) but before
+                    // CurrentNamedObjectSaves is, leaving them mismatched.
+                    List<ITreeNode> treeNodes = value
+                        .Select(item => GlueState.Self.Find.TreeNodeByTag(item))
+                        .Where(node => node != null)
+                        .ToList();
                     CurrentTreeNodes = treeNodes;
                 }
             }
