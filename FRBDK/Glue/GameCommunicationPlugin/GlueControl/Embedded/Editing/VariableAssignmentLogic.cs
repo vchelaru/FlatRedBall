@@ -1371,7 +1371,7 @@ namespace GlueControl.Editing
                         }
                         break;
                     case "float?":
-                        if (!string.IsNullOrWhiteSpace(variableValue))
+                        if (!string.IsNullOrWhiteSpace(variableValue) && variableValue != "null")
                         {
                             convertedValue = float.Parse(variableValue);
                         }
@@ -1397,7 +1397,7 @@ namespace GlueControl.Editing
 
                     case "int?":
 
-                        if (!string.IsNullOrWhiteSpace(variableValue))
+                        if (!string.IsNullOrWhiteSpace(variableValue) && variableValue != "null")
                         {
                             convertedValue = int.Parse(variableValue);
                         }
@@ -1434,7 +1434,7 @@ namespace GlueControl.Editing
                         break;
                     case "bool?":
                     case "Nullable<Boolean>":
-                        if (!string.IsNullOrWhiteSpace(variableValue))
+                        if (!string.IsNullOrWhiteSpace(variableValue) && variableValue != "null")
                         {
                             convertedValue = bool.Parse(variableValue.ToLowerInvariant());
                         }
