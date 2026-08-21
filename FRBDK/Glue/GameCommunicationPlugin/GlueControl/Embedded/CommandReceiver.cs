@@ -924,6 +924,20 @@ namespace GlueControl
             };
         }
 
+        private static object HandleDto(GlueControl.Dtos.SimulateClickSelectRespectingActivityGateDto dto)
+        {
+            var editingManager = Editing.EditingManager.Self;
+
+            var wasProcessed = editingManager.SimulateClickSelectRespectingActivityGateForTesting(
+                dto.ObjectName, dto.AdditiveModifierDown);
+
+            return new GlueControl.Dtos.SimulateClickSelectRespectingActivityGateResponse
+            {
+                WasProcessed = wasProcessed,
+                SelectedObjectNames = editingManager.ItemsSelected.Select(item => item.Name).ToList()
+            };
+        }
+
         #endregion
 
         #endregion

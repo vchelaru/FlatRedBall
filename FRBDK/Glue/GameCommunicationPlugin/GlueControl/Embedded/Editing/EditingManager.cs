@@ -253,7 +253,13 @@ namespace GlueControl.Editing
 
         public bool IsEmbeddedInActiveGlue => EmbeddedWindowLogic.IsParentGlueFocused;
 
-        public bool IsGameOrGlueActive => IsEmbeddedInActiveGlue || FlatRedBallServices.Game.IsActive;
+        // When embedded, the game window is reparented into Glue (SetParent) and never receives normal
+        // WM_ACTIVATE/deactivate notifications, so FlatRedBallServices.Game.IsActive gets stuck true -
+        // it can't be trusted here. Only IsEmbeddedInActiveGlue (a real foreground-window check) reflects
+        // whether Glue is actually the active window. See issue #2154.
+        public bool IsGameOrGlueActive => EmbeddedWindowLogic.IsEmbedded
+            ? IsEmbeddedInActiveGlue
+            : FlatRedBallServices.Game.IsActive;
 
         #endregion
 
@@ -744,6 +750,24 @@ namespace GlueControl.Editing
         {
             INameable itemOver = string.IsNullOrEmpty(objectName) ? null : GetObjectByName(objectName);
             PerformClickSelection(itemOver, additiveModifierDown);
+        }
+
+        /// <summary>
+        /// Test-only entry point for issue #2154 (Edit Mode processing clicks while the game/Glue window
+        /// is unfocused or covered) - same as SimulateClickSelectForTesting, but first checks
+        /// IsGameOrGlueActive, the same gate EditingManager.Activity applies before ever reaching
+        /// DoGrabLogic for a real click. Returns false (and performs no selection change) when the gate
+        /// would have blocked a real click too. Driven by SimulateClickSelectRespectingActivityGateDto.
+        /// </summary>
+        internal bool SimulateClickSelectRespectingActivityGateForTesting(string objectName, bool additiveModifierDown)
+        {
+            if (!IsGameOrGlueActive)
+            {
+                return false;
+            }
+
+            SimulateClickSelectForTesting(objectName, additiveModifierDown);
+            return true;
         }
 
         private NamedObjectSave GetNosFromItemName(string itemName)
