@@ -254,6 +254,23 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
             public float? TopOfLadderY { get; set; }
 
+            /// <summary>
+            /// Called automatically the frame the entity is climbing (CurrentMovement.CanClimb), is
+            /// clamped at TopOfLadderY (has climbed as high as this ladder allows), and is not holding
+            /// the climb-up input. Override in custom code to leave the climbing movement values, e.g.
+            /// by assigning GroundMovement to a non-climbing PlatformerValues - the entity's Y is
+            /// already positioned at the top of the ladder when this fires.
+            /// </summary>
+            partial void OnLadderTopReached();
+
+            /// <summary>
+            /// Called automatically the frame the entity is climbing (CurrentMovement.CanClimb), is on
+            /// the ground (solid collision resolved below its feet), and is not holding the climb-up
+            /// input. Override in custom code to leave the climbing movement values, e.g. by assigning
+            /// GroundMovement to a non-climbing PlatformerValues.
+            /// </summary>
+            partial void OnLadderBottomReached();
+
 ");
 
 
@@ -551,12 +568,29 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                 var verticalInputValue = VerticalInput?.Value ?? 0;
                 this.YVelocity = verticalInputValue * CurrentMovement.MaxClimbingSpeed;
 
+                bool clampedAtTopOfLadder = false;
                 if(this.Y > TopOfLadderY)
                 {
                     this.Y = TopOfLadderY.Value;
+                    clampedAtTopOfLadder = true;
                     if(this.YVelocity > 0)
                     {
                         this.YVelocity = 0;
+                    }
+                }
+
+                // Floor transitions: neither condition requires knowing which TileShapeCollection
+                // represents the ladder (that is project-specific), only generic entity state - so both
+                // can fire automatically instead of requiring hand-written polling in CustomActivity.
+                if(verticalInputValue <= 0)
+                {
+                    if(clampedAtTopOfLadder)
+                    {
+                        OnLadderTopReached();
+                    }
+                    else if(mIsOnGround)
+                    {
+                        OnLadderBottomReached();
                     }
                 }
 

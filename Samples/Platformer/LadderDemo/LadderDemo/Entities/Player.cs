@@ -188,14 +188,6 @@ public partial class Player
                 AirMovement = PlatformerValuesStatic["Air"];
             }
         }
-        else
-        {
-            if (VerticalInput.Value < 0 && IsOnGround)
-            {
-                GroundMovement = PlatformerValuesStatic["Ground"];
-            }
-        }
-
         // Even if we are colliding with it, we want to see if the player's "body" is over
         // the ladder. We can do this by checking the center.
         var isOverLadder = LastCollisionLadderRectange != null &&
@@ -219,6 +211,20 @@ public partial class Player
             // fall off the ladder...
             CurrentMovementType = MovementType.Air;
         }
+    }
+
+    // Generated code calls this automatically once climbing is clamped at TopOfLadderY and the player
+    // isn't holding Up - Y is already positioned at the top of the ladder when this fires.
+    partial void OnLadderTopReached()
+    {
+        GroundMovement = PlatformerValuesStatic["Ground"];
+    }
+
+    // Generated code calls this automatically once the player is grounded while climbing and isn't
+    // holding Up - replaces the old hand-rolled "VerticalInput.Value < 0 && IsOnGround" poll.
+    partial void OnLadderBottomReached()
+    {
+        GroundMovement = PlatformerValuesStatic["Ground"];
     }
 
     private void CustomDestroy()
