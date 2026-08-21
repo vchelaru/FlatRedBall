@@ -1,8 +1,10 @@
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 using FlatRedBall.Glue.SaveClasses;
 using GlueUnitTests.TestSupport;
 using Shouldly;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -105,5 +107,37 @@ public class DeleteObjectTests : DeleteDialogTestBase
         ShownDeleteDialogs.Count.ShouldBe(1);
         OtherPrompts.ShouldBeEmpty(OtherPromptsMessage);
         screen.NamedObjects.ShouldBeEmpty();
+    }
+
+    // GlueState.CurrentNamedObjectSave's setter round-trips through Find.TreeNodeByTag, which FakeFindManager
+    // deliberately doesn't resolve for NamedObjectSave (see FakeFindManager's doc comment) - so this reaches
+    // past the snapshot field directly instead, to mark the object selected without touching real tree/plugin
+    // selection-reaction code that has nothing to do with the bug under test.
+    static void SetCurrentNamedObjectSaveDirectly(NamedObjectSave nos)
+    {
+        var snapshotField = typeof(GlueState).GetField("snapshot", BindingFlags.NonPublic | BindingFlags.Instance);
+        var snapshot = snapshotField.GetValue(GlueState.Self);
+        var namedObjectSavesField = snapshot.GetType().GetField("CurrentNamedObjectSaves");
+        namedObjectSavesField.SetValue(snapshot, new List<NamedObjectSave> { nos });
+    }
+
+    // Reported crash (GitHub issue #2142): removal is tasked, so a fast double-removal (e.g. the running
+    // game's live sync racing a manual delete) can find the object already gone from its element by the
+    // time RemoveNamedObjectAsync looks it up, while it's still the current selection. RemoveNamedObjectAsync
+    // isn't on IGluxCommands (it's an internal implementation detail used by RemoveNamedObjectListAsync), so
+    // this calls the concrete type directly to reproduce the exact method named in the reported stack trace.
+    [StaFact]
+    public async Task RemovingTheSelectedObject_ShouldNotThrow_WhenItWasAlreadyRemovedFromItsElement()
+    {
+        using var project = await LoadFormsSampleAsync();
+
+        var screen = await GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen("AlreadyRemovedScreen");
+        var nos = await AddObjectAsync(screen, "DoomedSprite");
+
+        SetCurrentNamedObjectSaveDirectly(nos);
+        screen.NamedObjects.Remove(nos);
+
+        var gluxCommands = (GluxCommands)GlueCommands.Self.GluxCommands;
+        await gluxCommands.RemoveNamedObjectAsync(nos);
     }
 }

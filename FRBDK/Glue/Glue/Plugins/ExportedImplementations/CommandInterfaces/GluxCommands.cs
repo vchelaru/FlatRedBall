@@ -1753,7 +1753,9 @@ public class GluxCommands : IGluxCommands
         indexInChild = -1;
         containerOfRemoved = null;
         element = namedObjectToRemove.GetContainer();
-        if (wasSelected)
+        // element can be null if namedObjectToRemove was already removed from its container by a
+        // concurrent/duplicate removal (see the early-out in RemoveNamedObject for the sync equivalent).
+        if (wasSelected && element != null)
         {
             if (element.NamedObjects.Contains(namedObjectToRemove))
             {
