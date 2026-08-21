@@ -113,6 +113,46 @@ public class TabMemoryTests
         }
     }
 
+    [Fact]
+    public void ShowMostRecentTabFor_ShouldNotSelectStaleRememberedTab_WhenThatTabIsNoLongerShown()
+    {
+        // GitHub issue #2139: occasionally, selecting an object in the Explorer left neither the
+        // Variables nor Properties tab selected. Root cause: TabsForTypes remembers a tab by reflection
+        // type name (e.g. "NamedObjectSave"), but a plugin can Hide() that exact tab for a *different*
+        // instance of the same type (e.g. a type-specific tab that only shows for some NamedObjectSaves).
+        // ShowMostRecentTabFor must not blindly trust a remembered tab that isn't currently shown.
+        GlueTestBootstrap.EnsureInitialized();
+
+        var container = PluginManager.TabControlViewModel.RightTabItems;
+        var (originalTabs, cleanup) = IsolateContainer(container);
+        try
+        {
+            var variablesTab = new PluginTab { IsPreferredDisplayerForType = t => t == nameof(NamedObjectSave) };
+            var specialTab = new PluginTab();
+            container.Add(variablesTab);
+            container.Add(specialTab);
+
+            var nodeA = new FakeTreeNode(new NamedObjectSave(), "ObjectA", TreeNodeType.NamedObjectSaveNode);
+            GlueState.Self.CurrentTreeNode = nodeA;
+            specialTab.IsSelected = true;
+            container.TabsForTypes[nameof(NamedObjectSave)].ShouldBe(specialTab);
+
+            // Simulate a plugin hiding the type-specific tab for a different NamedObjectSave instance
+            // that doesn't support it - specialTab is no longer in Tabs, but is still remembered.
+            container.Remove(specialTab);
+
+            var nodeB = new FakeTreeNode(new NamedObjectSave(), "ObjectB", TreeNodeType.NamedObjectSaveNode);
+            GlueState.Self.CurrentTreeNode = nodeB;
+
+            container.Tabs.ShouldContain(container.SelectedTab, "the selected tab must actually be shown, never a stale/hidden remembered tab");
+            container.SelectedTab.ShouldBe(variablesTab);
+        }
+        finally
+        {
+            cleanup();
+        }
+    }
+
     private static (List<PluginTab> originalTabs, System.Action cleanup) IsolateContainer(TabContainerViewModel container)
     {
         var originalTabs = container.Tabs.ToList();

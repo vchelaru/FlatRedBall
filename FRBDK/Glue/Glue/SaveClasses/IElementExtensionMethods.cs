@@ -57,6 +57,11 @@ public static class IElementExtensionMethods
     /// <returns>All referenced file saves from this and base elements.</returns>
     public static IEnumerable<ReferencedFileSave> GetAllReferencedFileSavesRecursively(this IElement instance)
     {
+        if (instance == null)
+        {
+            yield break;
+        }
+
         foreach (ReferencedFileSave rfs in instance.ReferencedFiles)
         {
             yield return rfs;

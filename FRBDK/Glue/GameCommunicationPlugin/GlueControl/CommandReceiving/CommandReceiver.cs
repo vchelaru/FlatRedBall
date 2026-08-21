@@ -900,7 +900,12 @@ namespace OfficialPlugins.Compiler.CommandReceiving
                     _refreshManager.IgnoreNextObjectSelect = true;
                 }
 
-                property.SetValue(target, converted);
+                // This dispatch runs on whatever thread received the socket message (TaskManager's
+                // background thread), not the UI thread that owns the tree/tab view models these
+                // properties drive (e.g. GlueState.CurrentNamedObjectSaves, selection sent from the
+                // running game). Applying it off-thread silently fails to update the UI. See GitHub
+                // issue #2139.
+                GlueCommands.Self.DoOnUiThread(() => property.SetValue(target, converted));
 
                 toReturn = null;
             }
