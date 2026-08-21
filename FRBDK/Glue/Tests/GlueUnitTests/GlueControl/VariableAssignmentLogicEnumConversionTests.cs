@@ -119,6 +119,31 @@ public class VariableAssignmentLogicEnumConversionTests : IDisposable
         output.ShouldContain("ALL_OK");
     }
 
+    // Issue #2151: live-editing a nullable value-type Gum variable (MaxWidth/MaxHeight/MinWidth/MinHeight,
+    // all float?) to null throws FormatException. VariableSendingManager sends the string literal "null"
+    // (TypeManager.GetDefaultForType("float?") returns the text "null", not a JSON null) as VariableValue,
+    // and ConvertStringToType's "float?"/"int?"/"bool?" cases only guarded against an empty/whitespace
+    // string, so they called e.g. float.Parse("null") instead of recognizing it as the null sentinel.
+    [Fact]
+    public void LiveEditingNullableValueTypeVariable_ShouldConvertLiteralNullString_NotThrowFormatException()
+    {
+        EmbeddedCodeManager.EmbedAll(fullyGenerate: true);
+        GlueCallsCodeGenerator.GenerateAll();
+
+        var generatedDirectory = Path.Combine(_tempProjectDirectory, "GlueControl");
+        var repoRoot = FindRepoRoot();
+        var scratchDirectory = Path.Combine(_tempProjectDirectory, "NullableValueTypeConversionScratch");
+        WriteScratchProject(scratchDirectory, repoRoot, generatedDirectory);
+        WriteNullableValueTypeProgram(scratchDirectory);
+
+        var (exitCode, output) = NestedDotnetCli.Run($"run --project \"{scratchDirectory}\" -c Debug");
+
+        exitCode.ShouldBe(0,
+            "Live-editing a nullable value-type Gum variable (MaxWidth/MaxHeight/MinWidth/MinHeight) to " +
+            "null did not convert cleanly to a null value:" + Environment.NewLine + output);
+        output.ShouldContain("ALL_OK");
+    }
+
     private static void WriteScratchProject(string scratchDirectory, string repoRoot, string generatedDirectory)
     {
         Directory.CreateDirectory(scratchDirectory);
@@ -423,6 +448,67 @@ public class VariableAssignmentLogicEnumConversionTests : IDisposable
                 FlatRedBall.Instructions.Reflection.LateBinder.SetValueStatic(rectangle, "RepositionDirections", repositionDirections);
                 Check("LateBinder.SetValueStatic applied RepositionDirections without throwing",
                     rectangle.RepositionDirections, FlatRedBall.Math.Geometry.RepositionDirections.Up);
+
+                if (failureCount == 0)
+                {
+                    Console.WriteLine("ALL_OK");
+                    Environment.Exit(0);
+                }
+                else
+                {
+                    Environment.Exit(1);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("FAIL: unhandled exception: " + ex);
+                Environment.Exit(1);
+            }
+            """);
+    }
+
+    private static void WriteNullableValueTypeProgram(string scratchDirectory)
+    {
+        File.WriteAllText(Path.Combine(scratchDirectory, "Program.cs"), """
+            using System;
+            using GlueControl.Editing;
+
+            int failureCount = 0;
+
+            void Check(string label, object actual, object expected)
+            {
+                if (Equals(actual, expected))
+                {
+                    Console.WriteLine($"OK: {label} -> {actual} ({actual?.GetType()})");
+                }
+                else
+                {
+                    Console.WriteLine($"FAIL: {label} - expected {expected} ({expected?.GetType()}), got {actual} ({actual?.GetType()})");
+                    failureCount++;
+                }
+            }
+
+            try
+            {
+                // Issue #2151 repro: VariableSendingManager sends the literal string "null" (not a JSON
+                // null) as VariableValue for a cleared nullable value-type variable - this is the exact
+                // string ConvertStringToType receives for MaxWidth/MaxHeight/MinWidth/MinHeight (all float?).
+                var nullableFloat = VariableAssignmentLogic.ConvertStringToType(
+                    "float?", "null", isState: false, out _);
+                Check("float? \"null\" (MaxWidth/MaxHeight/MinWidth/MinHeight)", nullableFloat, null);
+
+                var nullableInt = VariableAssignmentLogic.ConvertStringToType(
+                    "int?", "null", isState: false, out _);
+                Check("int? \"null\"", nullableInt, null);
+
+                var nullableBool = VariableAssignmentLogic.ConvertStringToType(
+                    "bool?", "null", isState: false, out _);
+                Check("bool? \"null\"", nullableBool, null);
+
+                // Regression check: a real numeric string must still parse for these nullable types.
+                var parsedFloat = VariableAssignmentLogic.ConvertStringToType(
+                    "float?", "12.5", isState: false, out _);
+                Check("float? \"12.5\" (existing behavior)", parsedFloat, 12.5f);
 
                 if (failureCount == 0)
                 {
