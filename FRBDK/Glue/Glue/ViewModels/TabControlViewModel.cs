@@ -78,7 +78,11 @@ namespace GlueFormsCore.ViewModels
                 return;
             }
 
-            SelectedTab = TabsForTypes.TryGetValue(typeName, out PluginTab tab)
+            // The remembered tab may no longer be shown - a plugin can Hide() the exact same tab
+            // instance for a different object of the same type (e.g. a type-specific tab that only
+            // some objects support). Trusting a stale reference here leaves SelectedTab pointing at a
+            // tab that isn't in Tabs, so nothing appears selected (GitHub issue #2139).
+            SelectedTab = TabsForTypes.TryGetValue(typeName, out PluginTab tab) && Tabs.Contains(tab)
                 ? tab
                 : Tabs.OrderByDescending(item => item.IsPreferredDisplayerForType(typeName))
                     .ThenByDescending(item => item.LastTimeClicked)
