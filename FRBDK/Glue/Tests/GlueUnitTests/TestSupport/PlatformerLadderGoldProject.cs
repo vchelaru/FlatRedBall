@@ -63,6 +63,12 @@ internal static class PlatformerLadderGoldProject
         // to LadderDemo instead of standing up a separate project - the whole point is one build.
         var smokeTestEntity = FlatRedBall.Glue.Plugins.ExportedImplementations.GlueCommands.Self
             .GluxCommands.EntityCommands.AddEntity("Entities\\" + SmokeTestEntityName, is2D: true);
+
+        // MainController's view model is a process-wide singleton (see its ResetViewModel doc) - a
+        // leftover IsPlatformer = true from another gold-project test in this same BuildSmoke run
+        // would make the assignment below a silent no-op, leaving this entity's Properties bag
+        // never actually marked as a platformer and skipping all of EntityCodeGenerator's output.
+        FlatRedBall.PlatformerPlugin.Controllers.MainController.Self.ResetViewModel();
         var viewModel = FlatRedBall.PlatformerPlugin.Controllers.MainController.Self.GetViewModel();
         viewModel.BackingData = smokeTestEntity;
         viewModel.IsPlatformer = true;
@@ -135,9 +141,10 @@ internal static class PlatformerLadderGoldProject
         // Needed before constructing any PositionedObject-derived entity - LoadStaticContent reaches
         // FlatRedBallServices.GetContentManagerByName, which locks a static dictionary that is null
         // until this runs. See GoldProjectCompileTests' platformer test for the same requirement.
-        var flatRedBallServicesType = engineAssembly.GetType("FlatRedBall.FlatRedBallServices");
-        flatRedBallServicesType.ShouldNotBeNull();
-        flatRedBallServicesType!.GetMethod("InitializeCommandLine", Type.EmptyTypes)!.Invoke(null, null);
+        // GoldProject.EnsureEngineInitialized (not a bare InitializeCommandLine() call) because this
+        // resident engineAssembly instance may already be initialized by another gold-project test that
+        // ran earlier in this same process.
+        GoldProject.EnsureEngineInitialized(engineAssembly);
 
         return new Loaded
         {
