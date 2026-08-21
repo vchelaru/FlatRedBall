@@ -15,6 +15,7 @@ using GlueControl.Dtos;
 using FlatRedBall.Forms.Controls;
 using GlueControl.Models;
 using System.Runtime.CompilerServices;
+using System.Reflection;
 using FlatRedBall.Instructions.Reflection;
 using FlatRedBall.Utilities;
 
@@ -1565,6 +1566,36 @@ namespace GlueControl.Editing
                             AppDomain.CurrentDomain.GetAssemblies()
                                 .Select(assembly => assembly.GetType(type))
                                 .FirstOrDefault(candidate => candidate != null);
+
+                        if (enumType == null && !string.IsNullOrEmpty(type) && type.Contains(".") == false)
+                        {
+                            // The above only matches a namespace-qualified name. Variables discovered
+                            // through plain reflection (ExposedVariableManager) report Type as just
+                            // PropertyType.Name (e.g. "RepositionDirections"), never qualified, so engine
+                            // enums like FlatRedBall.Math.Geometry.RepositionDirections never matched and
+                            // were left as unconverted strings. Fall back to a short-name scan, preferring
+                            // contextualInstanceType's own assembly first since more than one loaded
+                            // assembly can define an enum with the same short name (that ambiguity is why
+                            // HorizontalAlignment/VerticalAlignment above are hardcoded rather than relying
+                            // on this fallback).
+                            var assembliesToSearch = contextualInstanceType == null
+                                ? AppDomain.CurrentDomain.GetAssemblies()
+                                : new[] { contextualInstanceType.Assembly }.Concat(AppDomain.CurrentDomain.GetAssemblies());
+
+                            enumType = assembliesToSearch
+                                .SelectMany(assembly =>
+                                {
+                                    try
+                                    {
+                                        return assembly.GetTypes();
+                                    }
+                                    catch (ReflectionTypeLoadException e)
+                                    {
+                                        return e.Types.Where(candidate => candidate != null);
+                                    }
+                                })
+                                .FirstOrDefault(candidate => candidate.IsEnum && candidate.Name == type);
+                        }
 
                         if (enumType?.IsEnum == true)
                         {
