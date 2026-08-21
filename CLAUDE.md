@@ -7,3 +7,4 @@
 - Use closing keywords ("Closes #N", "Fixes #N") when the PR actually resolves the whole issue. When it only covers part of a multi-PR issue, reference it plainly ("Part of #N") so merging doesn't close work that isn't done, and close the issue manually once the rest lands.
 - Work ends when the PR is opened. Report and stop; don't start the next issue on your own.
 - Every subagent's final report must include what it got stuck on / what took the most time or retries, even if it ultimately succeeded — this feeds back into improving skills and process, not just task completion.
+- **Do implementation work in-session, not via subagents/forks.** Long-running or tool-heavy work (build cycles, TDD loops) stays in this session so its output — including worktree/cwd changes — is directly visible, even though that means it blocks the conversation and fills this session's context. Don't spawn an `Agent`/fork for FlatRedBall implementation work without being asked.
