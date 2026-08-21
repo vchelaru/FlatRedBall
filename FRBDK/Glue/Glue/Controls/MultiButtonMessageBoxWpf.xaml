@@ -7,9 +7,14 @@
              mc:Ignorable="d" 
              Width="500" SizeToContent="Height">
     <Grid>
-        <StackPanel x:Name="MainPanel">
-            <TextBlock TextWrapping="Wrap" x:Name="LabelInstance" Margin="8,8,8,15" 
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <ScrollViewer Grid.Row="0" MaxHeight="400" VerticalScrollBarVisibility="Auto" Margin="8,8,8,15">
+            <TextBlock TextWrapping="Wrap" x:Name="LabelInstance"
                        Text="{x:Static localization:Texts.ValidationTextForWrapping}" />
-        </StackPanel>
+        </ScrollViewer>
+        <StackPanel x:Name="MainPanel" Grid.Row="1" />
     </Grid>
 </Window>

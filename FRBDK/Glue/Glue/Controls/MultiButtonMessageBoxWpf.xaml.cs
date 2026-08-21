@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
@@ -49,10 +50,33 @@ namespace FlatRedBall.Glue.Controls
 
         public void AddButton(string text, object result)
         {
-            Button button = new Button();
+            Button button = CreateButton(text);
+            button.Tag = result;
             button.Click += HandleButtonClickInternal;
+
+            buttons.Add(button);
+
+            this.MainPanel.Children.Add(button);
+        }
+
+        /// <summary>
+        /// Adds a button that runs <paramref name="action"/> without closing the dialog, e.g. a
+        /// "Copy to Clipboard" button that a user may click before also clicking OK.
+        /// </summary>
+        public void AddActionButton(string text, Action action)
+        {
+            Button button = CreateButton(text);
+            button.Click += (sender, e) => action();
+
+            buttons.Add(button);
+
+            this.MainPanel.Children.Add(button);
+        }
+
+        private Button CreateButton(string text)
+        {
+            Button button = new Button();
             button.TabIndex = buttons.Count;
-            //button.Content = text;
 
             TextBlock myTextBlock = new TextBlock();
             // Set the TextWrapping property to Wrap
@@ -63,17 +87,13 @@ namespace FlatRedBall.Glue.Controls
             // Set the content of the Button to the TextBlock
             button.Content = myTextBlock;
 
-            button.Tag  = result;
-
             button.Margin = new Thickness(8,4,8,4);
 
-            // Make this 50 so that it is bigger and can have 2 lines of text. 
+            // Make this 50 so that it is bigger and can have 2 lines of text.
             // Eventually this could be automatic.
             button.Height = 50;
 
-            buttons.Add(button);
-
-            this.MainPanel.Children.Add(button);
+            return button;
         }
 
         private void HandleButtonClickInternal(object sender, RoutedEventArgs e)
