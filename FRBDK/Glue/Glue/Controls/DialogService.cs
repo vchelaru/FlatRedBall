@@ -87,7 +87,20 @@ namespace FlatRedBall.Glue.Controls
 
         private static void DefaultShowMessage(string text)
         {
-            System.Windows.MessageBox.Show(text);
+            if (!GlueGui.ShowGui)
+            {
+                return;
+            }
+
+            var mbmb = new MultiButtonMessageBoxWpf
+            {
+                MessageText = text
+            };
+
+            mbmb.AddActionButton("Copy to Clipboard", () => ClipboardService.SetText(text));
+            mbmb.AddButton("OK", DialogButton.Ok);
+
+            mbmb.ShowDialog();
         }
 
         private static bool DefaultShowDelete(DeleteOptionsViewModel viewModel)
