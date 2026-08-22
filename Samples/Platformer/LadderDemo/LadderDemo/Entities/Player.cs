@@ -214,10 +214,14 @@ public partial class Player
     }
 
     // Generated code calls this automatically once climbing is clamped at TopOfLadderY and the player
-    // isn't holding Up - Y is already positioned at the top of the ladder when this fires.
+    // isn't holding Up - Y is already positioned at the top of the ladder when this fires. Deliberately
+    // left empty: swapping GroundMovement here used to enable gravity immediately, which only "works"
+    // if the level has solid ground flush under the ladder's own column - Level1Map doesn't, so the
+    // player fell straight through it. Matching FRB2's reference behavior, the player stays suspended
+    // in the climbing values at the top until CustomActivity's isOverLadder check drops them into Air
+    // movement when they actually step sideways off the ladder.
     partial void OnLadderTopReached()
     {
-        GroundMovement = PlatformerValuesStatic["Ground"];
     }
 
     // Generated code calls this automatically once the player is grounded while climbing and isn't
