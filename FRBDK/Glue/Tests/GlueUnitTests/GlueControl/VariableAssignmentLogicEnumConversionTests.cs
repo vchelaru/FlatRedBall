@@ -144,6 +144,31 @@ public class VariableAssignmentLogicEnumConversionTests : IDisposable
         output.ShouldContain("ALL_OK");
     }
 
+    // Issue #2161: live-editing a FlatRedBall Text's BitmapFont-typed Font variable to <NONE> (Glue's
+    // sentinel string for "no file selected") throws InvalidOperationException. ConvertStringToType's
+    // BitmapFont case only recognized a literal null VariableValue, not the "<NONE>" sentinel string Glue's
+    // UI sends when a font selection is cleared, so the raw "<NONE>" string reached LateBinder.SetValue
+    // unconverted.
+    [Fact]
+    public void LiveEditingBitmapFontVariable_ShouldConvertNoneSentinel_NotThrowInvalidOperationException()
+    {
+        EmbeddedCodeManager.EmbedAll(fullyGenerate: true);
+        GlueCallsCodeGenerator.GenerateAll();
+
+        var generatedDirectory = Path.Combine(_tempProjectDirectory, "GlueControl");
+        var repoRoot = FindRepoRoot();
+        var scratchDirectory = Path.Combine(_tempProjectDirectory, "BitmapFontNoneScratch");
+        WriteScratchProject(scratchDirectory, repoRoot, generatedDirectory);
+        WriteBitmapFontNoneProgram(scratchDirectory);
+
+        var (exitCode, output) = NestedDotnetCli.Run($"run --project \"{scratchDirectory}\" -c Debug");
+
+        exitCode.ShouldBe(0,
+            "Live-editing a FlatRedBall Text's Font variable to <NONE> did not convert cleanly:" +
+            Environment.NewLine + output);
+        output.ShouldContain("ALL_OK");
+    }
+
     private static void WriteScratchProject(string scratchDirectory, string repoRoot, string generatedDirectory)
     {
         Directory.CreateDirectory(scratchDirectory);
@@ -509,6 +534,63 @@ public class VariableAssignmentLogicEnumConversionTests : IDisposable
                 var parsedFloat = VariableAssignmentLogic.ConvertStringToType(
                     "float?", "12.5", isState: false, out _);
                 Check("float? \"12.5\" (existing behavior)", parsedFloat, 12.5f);
+
+                if (failureCount == 0)
+                {
+                    Console.WriteLine("ALL_OK");
+                    Environment.Exit(0);
+                }
+                else
+                {
+                    Environment.Exit(1);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("FAIL: unhandled exception: " + ex);
+                Environment.Exit(1);
+            }
+            """);
+    }
+
+    private static void WriteBitmapFontNoneProgram(string scratchDirectory)
+    {
+        File.WriteAllText(Path.Combine(scratchDirectory, "Program.cs"), """
+            using System;
+            using GlueControl.Editing;
+
+            int failureCount = 0;
+
+            void Check(string label, bool condition, string detail)
+            {
+                if (condition)
+                {
+                    Console.WriteLine($"OK: {label}");
+                }
+                else
+                {
+                    Console.WriteLine($"FAIL: {label} - {detail}");
+                    failureCount++;
+                }
+            }
+
+            try
+            {
+                // Issue #2161 repro: Glue sends the literal string "<NONE>" (not a JSON/CLR null) as
+                // VariableValue when a BitmapFont-typed variable (e.g. a Text's Font) is cleared in the UI.
+                var convertedFont = VariableAssignmentLogic.ConvertStringToType(
+                    "BitmapFont", "<NONE>", isState: false, out _);
+                Check("BitmapFont \"<NONE>\" is not left as the unconverted string",
+                    !(convertedFont is string),
+                    $"got back the raw string \"{convertedFont}\" instead of a converted value");
+
+                // Closes the loop against the exact call path a live game hits: apply the converted value
+                // onto a real FlatRedBall.Graphics.Text's real Font property the same way Screen.ApplyVariable
+                // does, via FlatRedBall's reflection-based LateBinder - this is what actually threw
+                // InvalidOperationException in the original bug report.
+                var text = new FlatRedBall.Graphics.Text();
+                FlatRedBall.Instructions.Reflection.LateBinder.SetValueStatic(text, "Font", convertedFont);
+                Console.WriteLine("OK: LateBinder.SetValueStatic applied Font without throwing");
 
                 if (failureCount == 0)
                 {
