@@ -148,6 +148,7 @@
     <ProjectReference Include="..\..\AchxToSpineAtlas\SpineAtlasLibrary\SpineAtlasLibrary.csproj" />
     <ProjectReference Include="..\..\Localization\Localization.csproj" />
     <ProjectReference Include="..\PluginLibraries\PluginLibraries.csproj" />
+    <ProjectReference Include="..\..\..\..\Gum\WpfDataUi\WpfDataUi.csproj" />
   </ItemGroup>
 
   <ItemGroup>

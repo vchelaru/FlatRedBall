@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using WpfDataUi.Controls;
 
 namespace OfficialPlugins.PathPlugin.Views
 {
@@ -94,5 +95,79 @@ namespace OfficialPlugins.PathPlugin.Views
         {
             ViewModel?.HandleTextBoxFocus();
         }
+
+        #region Label Dragging
+
+        double? dragStartX;
+        double dragUnroundedValue;
+        TextBlock draggingLabel;
+
+        private void Label_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (ViewModel == null) return;
+
+            draggingLabel = (TextBlock)sender;
+            dragStartX = e.GetPosition(this).X;
+            dragUnroundedValue = GetDraggedValue(draggingLabel);
+
+            Mouse.Capture(draggingLabel);
+        }
+
+        private void Label_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (dragStartX == null || draggingLabel == null) return;
+
+            if (e.LeftButton != MouseButtonState.Pressed)
+            {
+                if (Mouse.Captured == draggingLabel)
+                {
+                    Mouse.Capture(null);
+                }
+                return;
+            }
+
+            var newX = e.GetPosition(this).X;
+            var pixelDifference = newX - dragStartX.Value;
+            dragStartX = newX;
+
+            if (pixelDifference == 0) return;
+
+            dragUnroundedValue += pixelDifference;
+            var newValue = SnapDraggedValue(dragUnroundedValue);
+            SetDraggedValue(draggingLabel, newValue);
+        }
+
+        private void Label_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            draggingLabel = null;
+            dragStartX = null;
+            if (Mouse.Captured == sender)
+            {
+                Mouse.Capture(null);
+            }
+        }
+
+        double GetDraggedValue(TextBlock label)
+        {
+            if (Equals(label, XLabel)) return ViewModel.X;
+            if (Equals(label, YLabel)) return ViewModel.Y;
+            return ViewModel.Angle;
+        }
+
+        void SetDraggedValue(TextBlock label, float value)
+        {
+            if (Equals(label, XLabel)) ViewModel.X = value;
+            else if (Equals(label, YLabel)) ViewModel.Y = value;
+            else ViewModel.Angle = value;
+        }
+
+        // Reuses WpfDataUi's own label-drag snapping so this matches the drag feel of every other
+        // numeric field in Glue (1px = 1 unit, snapped to whole numbers) rather than a hand-rolled
+        // approximation of it. Internal (not private) so GlueUnitTests can pin the snapping behavior
+        // without driving real WPF mouse events.
+        internal static float SnapDraggedValue(double unroundedValue) =>
+            (float)TextBoxDisplayLogic.SnapDraggedValue(unroundedValue, rounding: 1);
+
+        #endregion
     }
 }
