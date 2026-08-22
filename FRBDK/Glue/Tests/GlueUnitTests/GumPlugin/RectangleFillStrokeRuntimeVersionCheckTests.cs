@@ -2,10 +2,12 @@ using System;
 using System.IO;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.VSHelpers.Projects;
 using Gum.DataTypes;
 using GlueUnitTests.Tasks;
 using GlueUnitTests.TestSupport;
 using GumPlugin.ErrorReporting;
+using Microsoft.Build.Evaluation;
 using Shouldly;
 using Xunit;
 
@@ -101,6 +103,23 @@ public class RectangleFillStrokeRuntimeVersionCheckTests : IDisposable
 
         RectangleFillStrokeRuntimeVersionCheck.GetIfCurrentlyFixed().ShouldBeFalse();
         RectangleFillStrokeRuntimeVersionCheck.DetectedRuntimeSyntaxVersion().ShouldBeNull();
+    }
+
+    [Fact]
+    public void GetIfCurrentlyFixed_V3GumProject_Frb2Project_IsFixed_RegardlessOfReferences()
+    {
+        // GitHub issue #2172: FRB2 has no committed GumCore.*.dll to go stale, so this check does not
+        // apply to it at all - without the Frb2Project early-out, DetectedRuntimeSyntaxVersion's
+        // FRB1-only name lists never resolve an FRB2 engine reference, so this fired on every FRB2
+        // project the moment its gumx hit version 3+ (the default for any project saved by current
+        // Gum tooling).
+        SetGumProjectVersion((int)GumProjectSave.GumxVersions.ShapeVariableExpansion);
+        AddStaleDllReference();
+
+        var csprojPath = GlueState.Self.CurrentMainProject.FullFileName.FullPath;
+        GlueState.Self.CurrentMainProject = new Frb2Project(new Project(csprojPath, null, null, new ProjectCollection()));
+
+        RectangleFillStrokeRuntimeVersionCheck.GetIfCurrentlyFixed().ShouldBeTrue();
     }
 
     [Fact]
