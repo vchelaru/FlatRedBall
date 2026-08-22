@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.VSHelpers.Projects;
 using Gum.DataTypes;
 using GumPlugin.Managers;
 
@@ -40,6 +41,18 @@ namespace GumPlugin.ErrorReporting
             var gumProject = AppState.Self.GumProjectSave;
             if (gumProject == null ||
                 gumProject.Version < (int)GumProjectSave.GumxVersions.ShapeVariableExpansion)
+            {
+                return true;
+            }
+
+            // GitHub issue #2172: this check only knows how to find an FRB1-shaped engine reference
+            // (a committed GumCore.*.dll, or a FlatRedBall.GumCore.* NuGet package) that can drift
+            // behind the gumx format it's stamped against. FRB2 has no such reference to go stale -
+            // its engine comes from either a Directory.Packages.props-pinned NuGet package or a live
+            // source ProjectReference, both always current with the rest of the engine - so there is
+            // nothing for this check to catch there, and DetectedRuntimeSyntaxVersion's FRB1-only name
+            // lists made it misfire as "not present" on every FRB2 project regardless.
+            if (GlueState.Self.CurrentMainProject is Frb2Project)
             {
                 return true;
             }
