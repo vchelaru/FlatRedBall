@@ -225,6 +225,14 @@ public partial class Player
 
         if (isOverLadder == false && CurrentMovement.CanClimb)
         {
+            // Reset GroundMovement away from Climbing right here, not just CurrentMovementType: if
+            // DetermineMovementValues (runs before CustomActivity, via PlatformerActivity) sees
+            // mIsOnGround become true on some later frame while CurrentMovementType is still Air, it
+            // flips CurrentMovementType back to Ground immediately - which resolves CurrentMovement to
+            // GroundMovement. Left as Climbing, that reads CanClimb=true again despite being genuinely
+            // grounded, so gravity never re-engages and horizontal input slides the player forever.
+            GroundMovement = PlatformerValuesStatic["Ground"];
+            AirMovement = PlatformerValuesStatic["Air"];
             // fall off the ladder...
             CurrentMovementType = MovementType.Air;
         }

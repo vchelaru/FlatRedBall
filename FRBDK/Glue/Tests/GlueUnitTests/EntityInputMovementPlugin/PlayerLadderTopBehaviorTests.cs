@@ -327,4 +327,136 @@ public class PlayerLadderTopBehaviorTests
             .ShouldBe(Enum.Parse(movementTypeType!, "Ground"), "isOverLadder going stale-null from losing vertical (not horizontal) contact must not drop the player into Air");
         playerType.GetProperty("GroundMovement")!.GetValue(player).ShouldBe(climbingValues);
     }
+
+    /// <summary>
+    /// Reported after playing at the ladder's top: pressing a horizontal direction with solid ground
+    /// immediately beside the ladder (Level1Map's actual layout) lets the player glide off sideways
+    /// forever, still visually in the climbing pose, instead of landing normally.
+    ///
+    /// Root cause: CustomActivity's "reset GroundMovement away from Climbing" block only runs when
+    /// CurrentMovement.CanClimb is ALREADY false at the top of the method - but isOverLadder's own exit
+    /// (further down the same method) is what flips CurrentMovementType to Air in the first place, one
+    /// frame later than the reset check runs. If DetermineMovementValues (which runs earlier in the
+    /// frame, via PlatformerActivity) flips CurrentMovementType back to Ground - because mIsOnGround
+    /// just became true from touching the solid floor beside the ladder - before this method's own
+    /// CanClimb check gets a chance to see CanClimb=false, GroundMovement is left as Climbing
+    /// permanently: CurrentMovementType is Ground (correctly grounded) but resolves to the Climbing
+    /// PlatformerValues (CanClimb=true, MaxSpeedX=50), so gravity never re-engages (YAcceleration stays
+    /// 0) and horizontal input keeps sliding the player sideways without end.
+    /// </summary>
+    [StaFact]
+    public async Task SteppingOffLadderOntoSolidGround_ResetsGroundMovementAwayFromClimbing()
+    {
+        var loaded = await PlatformerLadderGoldProject.LoadOnceAsync();
+        var assembly = loaded.GameAssembly;
+
+        loaded.EngineAssembly.GetType("FlatRedBall.FlatRedBallServices")!
+            .GetField("mPrimaryThreadId", BindingFlags.NonPublic | BindingFlags.Static)!
+            .SetValue(null, (int?)Environment.CurrentManagedThreadId);
+
+        var playerType = assembly.GetType("LadderDemo.Entities.Player");
+        playerType.ShouldNotBeNull();
+
+        var platformerValuesType = assembly.GetType("LadderDemo.DataTypes.PlatformerValues");
+        platformerValuesType.ShouldNotBeNull();
+
+        object CreateValues(bool canClimb)
+        {
+            var values = Activator.CreateInstance(platformerValuesType!);
+            platformerValuesType!.GetField("CanClimb")!.SetValue(values, canClimb);
+            platformerValuesType.GetField("MaxClimbingSpeed")!.SetValue(values, 100f);
+            platformerValuesType.GetField("Gravity")!.SetValue(values, 500f);
+            // Matches the real CSV's Climbing.MaxSpeedX=50 - nonzero on purpose (question 1: horizontal
+            // drift while climbing is intentional data, not a bug), which is exactly what makes this
+            // bug visible: the player keeps sliding once stuck with Climbing as GroundMovement.
+            platformerValuesType.GetField("MaxSpeedX")!.SetValue(values, canClimb ? 50f : 100f);
+            return values!;
+        }
+
+        var climbingValues = CreateValues(canClimb: true);
+        var groundValues = CreateValues(canClimb: false);
+
+        var dictType = typeof(System.Collections.Generic.Dictionary<,>)
+            .MakeGenericType(typeof(string), platformerValuesType!);
+        var staticValues = (IDictionary)Activator.CreateInstance(dictType)!;
+        staticValues["Ground"] = groundValues;
+        // The fix reads PlatformerValuesStatic["Air"] too (resetting AirMovement alongside
+        // GroundMovement) - reuse the same non-climbing preset, its identity doesn't matter here.
+        staticValues["Air"] = groundValues;
+        playerType!.GetField("PlatformerValuesStatic", BindingFlags.Public | BindingFlags.Static)!
+            .SetValue(null, staticValues);
+
+        var player = FormatterServices.GetUninitializedObject(playerType!);
+        playerType.GetField("IsPlatformingEnabled")!.SetValue(player, true);
+
+        var animationControllerType = loaded.EngineAssembly.GetType("FlatRedBall.Graphics.Animation.AnimationController");
+        playerType.GetField("animationController", BindingFlags.NonPublic | BindingFlags.Instance)!
+            .SetValue(player, Activator.CreateInstance(animationControllerType!));
+
+        var inputManagerType = loaded.EngineAssembly.GetType("FlatRedBall.Input.InputManager");
+        var keyboard = inputManagerType!.GetProperty("Keyboard", BindingFlags.Public | BindingFlags.Static)!.GetValue(null);
+        playerType.GetProperty("InputDevice")!.GetSetMethod(nonPublic: true)!.Invoke(player, new[] { keyboard });
+
+        playerType.GetProperty("GroundMovement")!.SetValue(player, climbingValues);
+        // AirMovement must be a real (non-climbing) value too - CustomActivity's isOverLadder exit sets
+        // CurrentMovementType = Air, which resolves CurrentMovement to AirMovement, not GroundMovement.
+        playerType.GetProperty("AirMovement")!.SetValue(player, groundValues);
+        var movementTypeType = assembly.GetType("LadderDemo.Entities.MovementType");
+        playerType.GetProperty("CurrentMovementType")!.SetValue(player, Enum.Parse(movementTypeType!, "Ground"));
+
+        var tileShapeCollectionType = assembly.GetType("FlatRedBall.TileCollisions.TileShapeCollection");
+        var axisType = loaded.EngineAssembly.GetType("FlatRedBall.Math.Axis");
+        var ladderCollision = Activator.CreateInstance(tileShapeCollectionType!);
+        tileShapeCollectionType!.GetProperty("GridSize")!.SetValue(ladderCollision, 16f);
+        tileShapeCollectionType.GetProperty("SortAxis")!.SetValue(ladderCollision, Enum.Parse(axisType!, "Y"));
+        tileShapeCollectionType.GetMethod("AddCollisionAtWorld", new[] { typeof(float), typeof(float) })!
+            .Invoke(ladderCollision, new object[] { 100f, 232f });
+        var topRectangle = tileShapeCollectionType
+            .GetMethod("GetRectangleAtPosition", new[] { typeof(float), typeof(float) })!
+            .Invoke(ladderCollision, new object[] { 100f, 232f });
+
+        var determineMovementValues = playerType.GetMethod("DetermineMovementValues", BindingFlags.NonPublic | BindingFlags.Instance);
+        var customActivity = playerType.GetMethod("CustomActivity", BindingFlags.NonPublic | BindingFlags.Instance);
+        var mIsOnGroundField = playerType.GetField("mIsOnGround", BindingFlags.NonPublic | BindingFlags.Instance)!;
+
+        // Frame A: standing at the top of the ladder, still within its footprint.
+        mIsOnGroundField.SetValue(player, false);
+        playerType.GetProperty("X")!.SetValue(player, 100f);
+        playerType.GetProperty("LastCollisionLadderRectange")!.SetValue(player, topRectangle);
+        Should.NotThrow(() =>
+        {
+            determineMovementValues!.Invoke(player, null);
+            customActivity!.Invoke(player, null);
+        });
+        playerType.GetProperty("CurrentMovementType")!.GetValue(player).ShouldBe(Enum.Parse(movementTypeType!, "Ground"));
+
+        // Frame B: the player has walked right, past the ladder's cached footprint. mIsOnGround is
+        // still false here - the actual solid-ground touch registers on the FOLLOWING frame (Frame C),
+        // matching real collision timing (CollideAgainst runs after Player.Activity - see GameScreen's
+        // Activity order). This frame's CustomActivity is what should reset GroundMovement away from
+        // Climbing, since it's the one call where isOverLadder actually goes false.
+        playerType.GetProperty("X")!.SetValue(player, 150f);
+        playerType.GetProperty("LastCollisionLadderRectange")!.SetValue(player, null);
+        Should.NotThrow(() =>
+        {
+            determineMovementValues!.Invoke(player, null);
+            customActivity!.Invoke(player, null); // isOverLadder=false -> CurrentMovementType=Air
+        });
+        playerType.GetProperty("CurrentMovementType")!.GetValue(player).ShouldBe(Enum.Parse(movementTypeType!, "Air"));
+
+        // Frame C: the player is now touching the solid ground beside the ladder. DetermineMovementValues
+        // (which runs BEFORE CustomActivity each frame, via PlatformerActivity) sees mIsOnGround=true and
+        // CurrentMovementType=Air, and flips CurrentMovementType back to Ground immediately - resolving
+        // CurrentMovement to GroundMovement. THE BUG: if Frame B's CustomActivity never reset
+        // GroundMovement away from the Climbing preset, this resolves right back to it, so the player is
+        // grounded but still "climbing" - CanClimb stays true, gravity never re-engages, and horizontal
+        // input keeps sliding them forever. Checked immediately after DetermineMovementValues, before
+        // CustomActivity runs again, since that's the exact moment the stale value is visible.
+        mIsOnGroundField.SetValue(player, true);
+        Should.NotThrow(() => determineMovementValues!.Invoke(player, null));
+
+        var currentMovement = playerType.GetProperty("CurrentMovement", BindingFlags.NonPublic | BindingFlags.Instance)!.GetValue(player);
+        var canClimb = (bool)platformerValuesType!.GetField("CanClimb")!.GetValue(currentMovement)!;
+        canClimb.ShouldBeFalse("player is stuck in the climbing pose (GroundMovement never reset) after stepping off the ladder onto solid ground");
+    }
 }
