@@ -172,7 +172,8 @@ namespace FlatRedBall.Glue.IO
                 {
                     ProjectManager.GlueProjectSave = new GlueProjectSave();
 
-                    ProjectManager.GlueProjectSave.FileVersion = GlueProjectSave.LatestVersion;
+                    ProjectManager.GlueProjectSave.FileVersion =
+                        GlueProjectSave.GetFileVersionForNewProject(GlueState.Self.EngineDllSyntaxVersion);
 
                     // After assigning the file version the glue project may change version, so try to update it:
                     glueProjectFile = GlueState.Self.GlueProjectFileName;
