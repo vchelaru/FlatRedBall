@@ -57,3 +57,13 @@ if (this.FileVersion < (int)GluxVersions.SomeFeature) { ... }
 ```
 
 This keeps the intent readable and survives renumbering.
+
+## New-project FileVersion
+
+A newly-created project's `FileVersion` is clamped to the referenced engine dll's syntax version
+when it's lower than `LatestVersion` — see `GlueProjectSave.GetFileVersionForNewProject`
+(`GlueCommon/SaveClasses/GlueProjectSave.cs`), called from `ProjectLoader.LoadProject`
+(`Glue/IO/ProjectLoader.cs`) only on the first-time-creation path (no existing `.glux`/`.gluj`
+found). Loading an *existing* project never goes through this — `FileVersion` comes straight from
+the file, so a user who manually raises it still hits `GlueProjectFileVersionErrorViewModel`'s
+error as before.
