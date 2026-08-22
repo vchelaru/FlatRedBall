@@ -311,6 +311,10 @@ public class GoldProjectCompileTests
 
         var entity = GlueCommands.Self.GluxCommands.EntityCommands.AddEntity("Entities\\PlatformerCodegenSmokeTestEntity", is2D: true);
 
+        // MainController's view model is a process-wide singleton (see its ResetViewModel doc) - a
+        // leftover IsPlatformer = true from another gold-project test in this same BuildSmoke run
+        // would make the assignment below a silent no-op.
+        FlatRedBall.PlatformerPlugin.Controllers.MainController.Self.ResetViewModel();
         var viewModel = FlatRedBall.PlatformerPlugin.Controllers.MainController.Self.GetViewModel();
         viewModel.BackingData = entity;
         viewModel.IsPlatformer = true;
@@ -368,9 +372,10 @@ public class GoldProjectCompileTests
         // one EngineUnitTests/TestSupport/EngineTestBootstrap.cs already uses. Needed before constructing
         // any PositionedObject-derived entity: LoadStaticContent reaches FlatRedBallServices.GetContentManagerByName,
         // which locks a static dictionary that is null until this runs.
-        var flatRedBallServicesType = engineAssembly.GetType("FlatRedBall.FlatRedBallServices");
-        flatRedBallServicesType.ShouldNotBeNull();
-        flatRedBallServicesType!.GetMethod("InitializeCommandLine", Type.EmptyTypes)!.Invoke(null, null);
+        // GoldProject.EnsureEngineInitialized (not a bare InitializeCommandLine() call) because .NET
+        // resolves this LoadFrom to an already-resident FlatRedBallDesktopGLNet6 instance when another
+        // gold-project test in this same process already loaded and initialized it.
+        GoldProject.EnsureEngineInitialized(engineAssembly);
 
         var timeManagerType = engineAssembly.GetType("FlatRedBall.TimeManager");
         timeManagerType.ShouldNotBeNull();

@@ -226,6 +226,16 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public int FileVersion { get; set; }
 
+        // Clamps to the referenced engine dll's syntax version when it's older than LatestVersion.
+        public static int GetFileVersionForNewProject(int? engineDllSyntaxVersion)
+        {
+            if (engineDllSyntaxVersion.HasValue && engineDllSyntaxVersion.Value < LatestVersion)
+            {
+                return engineDllSyntaxVersion.Value;
+            }
+            return LatestVersion;
+        }
+
         #endregion
 
         #region Camera Fields

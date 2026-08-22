@@ -20,8 +20,6 @@ public partial class Player
 
     public bool PressedUp => InputDevice.DefaultUpPressable.WasJustPressed;
 
-    public AxisAlignedRectangle LastCollisionLadderRectange { get; set; }
-
     public void SetIndex(int index)
     {
         switch (index)
@@ -43,6 +41,7 @@ public partial class Player
 
     private void CustomInitialize()
     {
+        ClimbingMovement = PlatformerValuesStatic["Climbing"];
 
         animationController = new AnimationController(SpriteInstance);
 
@@ -139,7 +138,7 @@ public partial class Player
         var climb = new AnimationLayer();
         climb.EveryFrameAction = () =>
         {
-            if (CurrentMovement.CanClimb)
+            if (CurrentMovementType == MovementType.Climbing)
             {
                 if (YVelocity == 0)
                 {
@@ -171,7 +170,11 @@ public partial class Player
     {
         animationController.Activity();
 
-        if (!CurrentMovement.CanClimb)
+        // Ladder grab/clamp/exit (isOverLadder tracking, top/bottom transitions, movement-slot
+        // selection) is all handled by generated code now (ApplyClimbingInput) - this only needs to
+        // pick which non-climbing ground/air preset is active, which is a genuinely per-project
+        // concern (ducking, running) that generated code can't know about.
+        if (CurrentMovementType != MovementType.Climbing)
         {
             if (VerticalInput.Value < 0)
             {
@@ -188,37 +191,21 @@ public partial class Player
                 AirMovement = PlatformerValuesStatic["Air"];
             }
         }
-        else
-        {
-            if (VerticalInput.Value < 0 && IsOnGround)
-            {
-                GroundMovement = PlatformerValuesStatic["Ground"];
-            }
-        }
+    }
 
-        // Even if we are colliding with it, we want to see if the player's "body" is over
-        // the ladder. We can do this by checking the center.
-        var isOverLadder = LastCollisionLadderRectange != null &&
-            X < LastCollisionLadderRectange.Right && X > LastCollisionLadderRectange.Left;
+    // Generated code calls this automatically once climbing is clamped at TopOfLadderY and the player
+    // isn't holding Up - Y is already positioned at the top of the ladder when this fires. Purely a
+    // notification hook (e.g. for sound/animation triggers) - the entity stays in the climbing state,
+    // suspended with no gravity, until it actually leaves the ladder, which generated code handles.
+    partial void OnLadderTopReached()
+    {
+    }
 
-        if (InputDevice.DefaultUpPressable.WasJustPressed && LastCollisionLadderRectange != null)
-        {
-            GroundMovement = PlatformerValuesStatic["Climbing"];
-            // snap the player's position to the center of the ladder
-            X = LastCollisionLadderRectange.X;
-            XVelocity = 0;
-            if (IsOnGround == false)
-            {
-                // force the player on ground:
-                CurrentMovementType = MovementType.Ground;
-            }
-        }
-
-        if (isOverLadder == false && CurrentMovement.CanClimb)
-        {
-            // fall off the ladder...
-            CurrentMovementType = MovementType.Air;
-        }
+    // Generated code calls this automatically once the player is grounded while climbing and isn't
+    // holding Up. Purely a notification hook - exiting the climbing state on landing is handled
+    // automatically by generated code.
+    partial void OnLadderBottomReached()
+    {
     }
 
     private void CustomDestroy()

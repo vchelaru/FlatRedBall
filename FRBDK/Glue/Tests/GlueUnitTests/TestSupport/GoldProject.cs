@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using FlatRedBall.IO;
@@ -160,6 +161,37 @@ internal static class GoldProject
             .OrderBy(f => f, StringComparer.OrdinalIgnoreCase)
             .ToList();
 
+    /// <summary>
+    /// Calls FlatRedBallServices.InitializeCommandLine() on <paramref name="engineAssembly"/> via
+    /// reflection, unless it is already initialized - re-running it isn't safe
+    /// (InstructionManager.CreateInterpolators populates a static dictionary and throws on a duplicate
+    /// key the second time). Multiple gold-project tests can resolve to the same resident engine
+    /// assembly instance in one process (see PlatformerLadderGoldProject's engine-assembly-reuse
+    /// comment), so whichever test's [StaFact] thread runs second must not re-initialize - it only needs
+    /// to re-point the private static mPrimaryThreadId at its own thread, since
+    /// FlatRedBallServices.IsThreadPrimary() enforces same-thread-as-init for things like ShapeManager.
+    /// GlueUnitTests runs its whole assembly non-parallel (see glue-unit-test-bootstrap), so reassigning
+    /// it here is race-free.
+    /// </summary>
+    public static void EnsureEngineInitialized(Assembly engineAssembly)
+    {
+        var flatRedBallServicesType = engineAssembly.GetType("FlatRedBall.FlatRedBallServices")!;
+        var isInitialized = (bool)flatRedBallServicesType
+            .GetProperty("IsInitialized", BindingFlags.Public | BindingFlags.Static)!
+            .GetValue(null)!;
+
+        if (!isInitialized)
+        {
+            flatRedBallServicesType.GetMethod("InitializeCommandLine", Type.EmptyTypes)!.Invoke(null, null);
+        }
+        else
+        {
+            var primaryThreadIdField = flatRedBallServicesType.GetField(
+                "mPrimaryThreadId", BindingFlags.NonPublic | BindingFlags.Static)!;
+            primaryThreadIdField.SetValue(null, (int?)Environment.CurrentManagedThreadId);
+        }
+    }
+
     static void MakeProjectReferencesAbsolute(string copiedCsproj, string originalCsproj)
     {
         var document = XDocument.Load(copiedCsproj);
@@ -193,8 +225,11 @@ internal static class GoldProject
         {
             var name = Path.GetFileName(directory);
             // Copying a previous build's output roughly triples the copy and gains nothing - the build in
-            // the temp directory starts from scratch anyway.
-            if (name is "bin" or "obj")
+            // the temp directory starts from scratch anyway. ".vs" is Visual Studio's local IntelliSense
+            // cache - copying it is pointless and its files (e.g. FileContentIndex/*.vsidx) are commonly
+            // locked by an open VS instance, throwing IOException here for a reason unrelated to the
+            // project being copied.
+            if (name is "bin" or "obj" or ".vs")
             {
                 continue;
             }
@@ -204,7 +239,7 @@ internal static class GoldProject
         foreach (var file in Directory.GetFiles(source, "*", SearchOption.AllDirectories))
         {
             var relative = Path.GetRelativePath(source, file);
-            if (relative.Split(Path.DirectorySeparatorChar).Any(segment => segment is "bin" or "obj"))
+            if (relative.Split(Path.DirectorySeparatorChar).Any(segment => segment is "bin" or "obj" or ".vs"))
             {
                 continue;
             }
