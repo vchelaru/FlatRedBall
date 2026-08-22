@@ -104,4 +104,227 @@ public class PlayerLadderTopBehaviorTests
         // be) directly underneath the ladder's own column.
         playerType.GetProperty("GroundMovement")!.GetValue(player).ShouldBe(climbingValues);
     }
+
+    /// <summary>
+    /// The first test above only proved OnLadderTopReached itself doesn't swap GroundMovement - it never
+    /// exercised the rest of the per-frame pipeline that runs afterward every frame the player just sits
+    /// at the top: Player.Activity() calls PlatformerActivity() (ApplyInput() then
+    /// DetermineMovementValues()) then CustomActivity(). DetermineMovementValues has its own
+    /// !CurrentMovement.CanClimb check that could independently flip CurrentMovementType to Air, and
+    /// CustomActivity's isOverLadder check is the only other thing allowed to do that - this test runs
+    /// several simulated frames of that real sequence (skipping only ApplyHorizontalInput/ApplyJumpInput,
+    /// which need JumpInput/HorizontalInput wired up and are neutral with no keys pressed either way) with
+    /// mIsOnGround forced false throughout, matching Level1Map's real ladder shafts having no solid tile
+    /// under them, and proves the player stays put instead of falling on any of those frames.
+    /// </summary>
+    [StaFact]
+    public async Task RepeatedFramesAtTopWithNoSolidGroundBelow_PlayerStaysSuspendedAcrossFrames()
+    {
+        var loaded = await PlatformerLadderGoldProject.LoadOnceAsync();
+        var assembly = loaded.GameAssembly;
+
+        // ShapeManager (used by AddCollisionAtWorld below) enforces same-thread-as-init - see
+        // LadderTopOfLadderYTests for why this reflection re-point is needed on every [StaFact].
+        loaded.EngineAssembly.GetType("FlatRedBall.FlatRedBallServices")!
+            .GetField("mPrimaryThreadId", BindingFlags.NonPublic | BindingFlags.Static)!
+            .SetValue(null, (int?)Environment.CurrentManagedThreadId);
+
+        var playerType = assembly.GetType("LadderDemo.Entities.Player");
+        playerType.ShouldNotBeNull();
+
+        var platformerValuesType = assembly.GetType("LadderDemo.DataTypes.PlatformerValues");
+        platformerValuesType.ShouldNotBeNull();
+
+        object CreateValues(bool canClimb)
+        {
+            var values = Activator.CreateInstance(platformerValuesType!);
+            platformerValuesType!.GetField("CanClimb")!.SetValue(values, canClimb);
+            platformerValuesType.GetField("MaxClimbingSpeed")!.SetValue(values, 100f);
+            platformerValuesType.GetField("Gravity")!.SetValue(values, 500f);
+            return values!;
+        }
+
+        var climbingValues = CreateValues(canClimb: true);
+        var groundValues = CreateValues(canClimb: false);
+
+        var dictType = typeof(System.Collections.Generic.Dictionary<,>)
+            .MakeGenericType(typeof(string), platformerValuesType!);
+        var staticValues = (IDictionary)Activator.CreateInstance(dictType)!;
+        staticValues["Ground"] = groundValues;
+        playerType!.GetField("PlatformerValuesStatic", BindingFlags.Public | BindingFlags.Static)!
+            .SetValue(null, staticValues);
+
+        var player = FormatterServices.GetUninitializedObject(playerType!);
+        playerType.GetField("IsPlatformingEnabled")!.SetValue(player, true);
+        playerType.GetField("mIsOnGround", BindingFlags.NonPublic | BindingFlags.Instance)!
+            .SetValue(player, false);
+
+        // CustomActivity() unconditionally calls animationController.Activity() and reads
+        // InputDevice.DefaultUpPressable - both null on an uninitialized object. A real (but
+        // layer-less) AnimationController.Activity() is a no-op, and InputManager.Keyboard is a real,
+        // already-initialized IInputDevice with nothing pressed - both let CustomActivity run for real
+        // without needing full construction or a GraphicsDevice.
+        var animationControllerType = loaded.EngineAssembly.GetType("FlatRedBall.Graphics.Animation.AnimationController");
+        animationControllerType.ShouldNotBeNull();
+        playerType.GetField("animationController", BindingFlags.NonPublic | BindingFlags.Instance)!
+            .SetValue(player, Activator.CreateInstance(animationControllerType!));
+
+        var inputManagerType = loaded.EngineAssembly.GetType("FlatRedBall.Input.InputManager");
+        inputManagerType.ShouldNotBeNull();
+        var keyboard = inputManagerType!.GetProperty("Keyboard", BindingFlags.Public | BindingFlags.Static)!.GetValue(null);
+        keyboard.ShouldNotBeNull();
+        playerType.GetProperty("InputDevice")!.GetSetMethod(nonPublic: true)!.Invoke(player, new[] { keyboard });
+
+        playerType.GetProperty("GroundMovement")!.SetValue(player, climbingValues);
+        var movementTypeType = assembly.GetType("LadderDemo.Entities.MovementType");
+        movementTypeType.ShouldNotBeNull();
+        playerType.GetProperty("CurrentMovementType")!.SetValue(player, Enum.Parse(movementTypeType!, "Ground"));
+
+        // A real ladder rectangle (not a hand-built stand-in) so isOverLadder's Left/Right check in
+        // CustomActivity is exercised against real engine geometry, same as LadderTopOfLadderYTests.
+        var tileShapeCollectionType = assembly.GetType("FlatRedBall.TileCollisions.TileShapeCollection");
+        tileShapeCollectionType.ShouldNotBeNull();
+        var axisType = loaded.EngineAssembly.GetType("FlatRedBall.Math.Axis");
+        var ladderCollision = Activator.CreateInstance(tileShapeCollectionType!);
+        const float gridSize = 16f;
+        tileShapeCollectionType!.GetProperty("GridSize")!.SetValue(ladderCollision, gridSize);
+        tileShapeCollectionType.GetProperty("SortAxis")!.SetValue(ladderCollision, Enum.Parse(axisType!, "Y"));
+        var addCollisionAtWorld = tileShapeCollectionType.GetMethod("AddCollisionAtWorld", new[] { typeof(float), typeof(float) });
+        addCollisionAtWorld!.Invoke(ladderCollision, new object[] { 100f, 232f });
+        var topRectangle = tileShapeCollectionType
+            .GetMethod("GetRectangleAtPosition", new[] { typeof(float), typeof(float) })!
+            .Invoke(ladderCollision, new object[] { 100f, 232f });
+        topRectangle.ShouldNotBeNull();
+        playerType.GetProperty("LastCollisionLadderRectange")!.SetValue(player, topRectangle);
+
+        playerType.GetProperty("TopOfLadderY")!.SetValue(player, (float?)240f);
+        playerType.GetProperty("X")!.SetValue(player, 100f); // matches the ladder rectangle's own X
+        playerType.GetProperty("Y")!.SetValue(player, 245f); // above the clamp, simulating having just climbed up
+        playerType.GetProperty("YVelocity")!.SetValue(player, 50f);
+
+        var applyClimbingInput = playerType.GetMethod("ApplyClimbingInput", BindingFlags.NonPublic | BindingFlags.Instance);
+        var determineMovementValues = playerType.GetMethod("DetermineMovementValues", BindingFlags.NonPublic | BindingFlags.Instance);
+        var customActivity = playerType.GetMethod("CustomActivity", BindingFlags.NonPublic | BindingFlags.Instance);
+        applyClimbingInput.ShouldNotBeNull();
+        determineMovementValues.ShouldNotBeNull();
+        customActivity.ShouldNotBeNull();
+
+        for (int frame = 0; frame < 3; frame++)
+        {
+            Should.NotThrow(() =>
+            {
+                applyClimbingInput!.Invoke(player, null);
+                determineMovementValues!.Invoke(player, null);
+                customActivity!.Invoke(player, null);
+            }, $"frame {frame}");
+
+            ((float)playerType.GetProperty("Y")!.GetValue(player)!).ShouldBe(240f, $"frame {frame}: player fell from the top of the ladder");
+            ((float)playerType.GetProperty("YAcceleration")!.GetValue(player)!).ShouldBe(0f, $"frame {frame}: gravity engaged with no solid ground below");
+            playerType.GetProperty("GroundMovement")!.GetValue(player).ShouldBe(climbingValues, $"frame {frame}");
+            playerType.GetProperty("CurrentMovementType")!.GetValue(player).ShouldBe(Enum.Parse(movementTypeType!, "Ground"), $"frame {frame}");
+        }
+    }
+
+    /// <summary>
+    /// The actual remaining bug (found from a real play-test, via file-logged diagnostics added to
+    /// Player.cs): GameScreen.cs's DoCollisionActivity nulls LastCollisionLadderRectange every frame
+    /// BEFORE re-running PlayerVsLadderCollision.DoCollisions(), on the theory that a fresh collision
+    /// re-sets it if the player is still touching the ladder. That's true while climbing through the
+    /// shaft, but false the instant the player is clamped flush at TopOfLadderY: standing ON TOP of the
+    /// topmost ladder tile no longer vertically OVERLAPS it, so the collision doesn't re-fire and
+    /// LastCollisionLadderRectange stays null - even though the player hasn't moved sideways at all.
+    /// CustomActivity's isOverLadder reads that null as "stepped off the ladder" and forces
+    /// CurrentMovementType = Air, which is real (non-climbing) AirMovement - gravity engages and the
+    /// player falls. This reproduces exactly that one-frame sequence.
+    /// </summary>
+    [StaFact]
+    public async Task LastCollisionLadderRectangeGoesNullAfterTopClamp_DoesNotDropPlayerIntoAir()
+    {
+        var loaded = await PlatformerLadderGoldProject.LoadOnceAsync();
+        var assembly = loaded.GameAssembly;
+
+        // ShapeManager (used by AddCollisionAtWorld below) enforces same-thread-as-init - see
+        // LadderTopOfLadderYTests for why this reflection re-point is needed on every [StaFact].
+        loaded.EngineAssembly.GetType("FlatRedBall.FlatRedBallServices")!
+            .GetField("mPrimaryThreadId", BindingFlags.NonPublic | BindingFlags.Static)!
+            .SetValue(null, (int?)Environment.CurrentManagedThreadId);
+
+        var playerType = assembly.GetType("LadderDemo.Entities.Player");
+        playerType.ShouldNotBeNull();
+
+        var platformerValuesType = assembly.GetType("LadderDemo.DataTypes.PlatformerValues");
+        platformerValuesType.ShouldNotBeNull();
+
+        object CreateValues(bool canClimb)
+        {
+            var values = Activator.CreateInstance(platformerValuesType!);
+            platformerValuesType!.GetField("CanClimb")!.SetValue(values, canClimb);
+            platformerValuesType.GetField("MaxClimbingSpeed")!.SetValue(values, 100f);
+            platformerValuesType.GetField("Gravity")!.SetValue(values, 500f);
+            return values!;
+        }
+
+        var climbingValues = CreateValues(canClimb: true);
+        var groundValues = CreateValues(canClimb: false);
+
+        var dictType = typeof(System.Collections.Generic.Dictionary<,>)
+            .MakeGenericType(typeof(string), platformerValuesType!);
+        var staticValues = (IDictionary)Activator.CreateInstance(dictType)!;
+        staticValues["Ground"] = groundValues;
+        playerType!.GetField("PlatformerValuesStatic", BindingFlags.Public | BindingFlags.Static)!
+            .SetValue(null, staticValues);
+
+        var player = FormatterServices.GetUninitializedObject(playerType!);
+        playerType.GetField("IsPlatformingEnabled")!.SetValue(player, true);
+        playerType.GetField("mIsOnGround", BindingFlags.NonPublic | BindingFlags.Instance)!
+            .SetValue(player, false);
+
+        var animationControllerType = loaded.EngineAssembly.GetType("FlatRedBall.Graphics.Animation.AnimationController");
+        playerType.GetField("animationController", BindingFlags.NonPublic | BindingFlags.Instance)!
+            .SetValue(player, Activator.CreateInstance(animationControllerType!));
+
+        var inputManagerType = loaded.EngineAssembly.GetType("FlatRedBall.Input.InputManager");
+        var keyboard = inputManagerType!.GetProperty("Keyboard", BindingFlags.Public | BindingFlags.Static)!.GetValue(null);
+        playerType.GetProperty("InputDevice")!.GetSetMethod(nonPublic: true)!.Invoke(player, new[] { keyboard });
+
+        playerType.GetProperty("GroundMovement")!.SetValue(player, climbingValues);
+        var movementTypeType = assembly.GetType("LadderDemo.Entities.MovementType");
+        playerType.GetProperty("CurrentMovementType")!.SetValue(player, Enum.Parse(movementTypeType!, "Ground"));
+
+        var tileShapeCollectionType = assembly.GetType("FlatRedBall.TileCollisions.TileShapeCollection");
+        var axisType = loaded.EngineAssembly.GetType("FlatRedBall.Math.Axis");
+        var ladderCollision = Activator.CreateInstance(tileShapeCollectionType!);
+        tileShapeCollectionType!.GetProperty("GridSize")!.SetValue(ladderCollision, 16f);
+        tileShapeCollectionType.GetProperty("SortAxis")!.SetValue(ladderCollision, Enum.Parse(axisType!, "Y"));
+        tileShapeCollectionType.GetMethod("AddCollisionAtWorld", new[] { typeof(float), typeof(float) })!
+            .Invoke(ladderCollision, new object[] { 100f, 232f });
+        var topRectangle = tileShapeCollectionType
+            .GetMethod("GetRectangleAtPosition", new[] { typeof(float), typeof(float) })!
+            .Invoke(ladderCollision, new object[] { 100f, 232f });
+
+        playerType.GetProperty("TopOfLadderY")!.SetValue(player, (float?)240f);
+        playerType.GetProperty("X")!.SetValue(player, 100f); // matches the ladder rectangle's own X - never moves
+        playerType.GetProperty("Y")!.SetValue(player, 240f); // already clamped at the top
+
+        var customActivity = playerType.GetMethod("CustomActivity", BindingFlags.NonPublic | BindingFlags.Instance);
+        customActivity.ShouldNotBeNull();
+
+        // Frame A: still vertically overlapping the ladder (LastCollisionLadderRectange set for real,
+        // as OnPlayerVsLadderCollisionCollided would have just done) - baseline sanity check.
+        playerType.GetProperty("LastCollisionLadderRectange")!.SetValue(player, topRectangle);
+        Should.NotThrow(() => customActivity!.Invoke(player, null));
+        playerType.GetProperty("CurrentMovementType")!.GetValue(player).ShouldBe(Enum.Parse(movementTypeType!, "Ground"));
+
+        // Frame B: mirrors GameScreen.cs's DoCollisionActivity - LastCollisionLadderRectange is nulled
+        // before re-detecting, and re-detection finds nothing because standing flush at the top no
+        // longer vertically overlaps the ladder tile. X has not changed at all.
+        playerType.GetProperty("LastCollisionLadderRectange")!.SetValue(player, null);
+        Should.NotThrow(() => customActivity!.Invoke(player, null));
+
+        // The bug: this used to force CurrentMovementType to Air purely from losing vertical overlap,
+        // not from the player stepping sideways off the ladder.
+        playerType.GetProperty("CurrentMovementType")!.GetValue(player)
+            .ShouldBe(Enum.Parse(movementTypeType!, "Ground"), "isOverLadder going stale-null from losing vertical (not horizontal) contact must not drop the player into Air");
+        playerType.GetProperty("GroundMovement")!.GetValue(player).ShouldBe(climbingValues);
+    }
 }

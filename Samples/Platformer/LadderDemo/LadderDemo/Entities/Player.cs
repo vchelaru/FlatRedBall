@@ -22,6 +22,17 @@ public partial class Player
 
     public AxisAlignedRectangle LastCollisionLadderRectange { get; set; }
 
+    // GameScreen.cs's DoCollisionActivity nulls LastCollisionLadderRectange every frame before
+    // re-running the ladder collision, so a fresh touch can reset it if the player is still on the
+    // ladder. That's right while climbing through the shaft, but wrong the instant the player is
+    // clamped flush at TopOfLadderY: standing ON TOP of the topmost ladder tile no longer vertically
+    // overlaps it, so the collision doesn't re-fire and LastCollisionLadderRectange stays null even
+    // though the player hasn't moved sideways. isOverLadder below reads from these cached bounds
+    // instead, updated whenever a real ladder touch occurs but never cleared just because contact
+    // paused - only stepping outside them (an actual horizontal move) counts as leaving the ladder.
+    float? ladderColumnLeft;
+    float? ladderColumnRight;
+
     public void SetIndex(int index)
     {
         switch (index)
@@ -188,10 +199,16 @@ public partial class Player
                 AirMovement = PlatformerValuesStatic["Air"];
             }
         }
+        if (LastCollisionLadderRectange != null)
+        {
+            ladderColumnLeft = LastCollisionLadderRectange.Left;
+            ladderColumnRight = LastCollisionLadderRectange.Right;
+        }
+
         // Even if we are colliding with it, we want to see if the player's "body" is over
         // the ladder. We can do this by checking the center.
-        var isOverLadder = LastCollisionLadderRectange != null &&
-            X < LastCollisionLadderRectange.Right && X > LastCollisionLadderRectange.Left;
+        var isOverLadder = ladderColumnLeft != null && ladderColumnRight != null &&
+            X < ladderColumnRight && X > ladderColumnLeft;
 
         if (InputDevice.DefaultUpPressable.WasJustPressed && LastCollisionLadderRectange != null)
         {
