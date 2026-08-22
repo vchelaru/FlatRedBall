@@ -303,6 +303,31 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
     }
     #endregion
 
+    #region SimulateClickSelectRespectingActivityGate
+
+    /// <summary>
+    /// Test-only: same as SimulateClickSelectDto, but routed through EditingManager.IsGameOrGlueActive
+    /// first - the same gate a real click goes through in EditingManager.Activity (DoGrabLogic is only
+    /// reached when the game/Glue window is active). SimulateClickSelectDto deliberately bypasses that
+    /// gate (see its own doc comment), so it can't pin issue #2154 (Edit Mode processing clicks while the
+    /// window is unfocused/covered) - this DTO exists specifically for that.
+    /// </summary>
+    public class SimulateClickSelectRespectingActivityGateDto
+    {
+        /// <summary>InstanceName of the NamedObjectSave clicked, or null/empty for a click on empty space.</summary>
+        public string ObjectName { get; set; }
+        public bool AdditiveModifierDown { get; set; }
+    }
+    #endregion
+
+    #region SimulateClickSelectRespectingActivityGateResponse
+    public class SimulateClickSelectRespectingActivityGateResponse
+    {
+        public bool WasProcessed { get; set; }
+        public List<string> SelectedObjectNames { get; set; }
+    }
+    #endregion
+
     #region GetCameraSave
     public class GetCameraSave
     {
