@@ -11,7 +11,7 @@
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
-        <Image Source="/Content/logo-512.png" Margin="15"></Image>
+        <Image Source="/Content/logo-512.png" Margin="15" MaxWidth="200" MaxHeight="200" HorizontalAlignment="Center"></Image>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
