@@ -20,19 +20,6 @@ public partial class Player
 
     public bool PressedUp => InputDevice.DefaultUpPressable.WasJustPressed;
 
-    public AxisAlignedRectangle LastCollisionLadderRectange { get; set; }
-
-    // GameScreen.cs's DoCollisionActivity nulls LastCollisionLadderRectange every frame before
-    // re-running the ladder collision, so a fresh touch can reset it if the player is still on the
-    // ladder. That's right while climbing through the shaft, but wrong the instant the player is
-    // clamped flush at TopOfLadderY: standing ON TOP of the topmost ladder tile no longer vertically
-    // overlaps it, so the collision doesn't re-fire and LastCollisionLadderRectange stays null even
-    // though the player hasn't moved sideways. isOverLadder below reads from these cached bounds
-    // instead, updated whenever a real ladder touch occurs but never cleared just because contact
-    // paused - only stepping outside them (an actual horizontal move) counts as leaving the ladder.
-    float? ladderColumnLeft;
-    float? ladderColumnRight;
-
     public void SetIndex(int index)
     {
         switch (index)
@@ -54,6 +41,7 @@ public partial class Player
 
     private void CustomInitialize()
     {
+        ClimbingMovement = PlatformerValuesStatic["Climbing"];
 
         animationController = new AnimationController(SpriteInstance);
 
@@ -150,7 +138,7 @@ public partial class Player
         var climb = new AnimationLayer();
         climb.EveryFrameAction = () =>
         {
-            if (CurrentMovement.CanClimb)
+            if (CurrentMovementType == MovementType.Climbing)
             {
                 if (YVelocity == 0)
                 {
@@ -182,7 +170,11 @@ public partial class Player
     {
         animationController.Activity();
 
-        if (!CurrentMovement.CanClimb)
+        // Ladder grab/clamp/exit (isOverLadder tracking, top/bottom transitions, movement-slot
+        // selection) is all handled by generated code now (ApplyClimbingInput) - this only needs to
+        // pick which non-climbing ground/air preset is active, which is a genuinely per-project
+        // concern (ducking, running) that generated code can't know about.
+        if (CurrentMovementType != MovementType.Climbing)
         {
             if (VerticalInput.Value < 0)
             {
@@ -199,61 +191,21 @@ public partial class Player
                 AirMovement = PlatformerValuesStatic["Air"];
             }
         }
-        if (LastCollisionLadderRectange != null)
-        {
-            ladderColumnLeft = LastCollisionLadderRectange.Left;
-            ladderColumnRight = LastCollisionLadderRectange.Right;
-        }
-
-        // Even if we are colliding with it, we want to see if the player's "body" is over
-        // the ladder. We can do this by checking the center.
-        var isOverLadder = ladderColumnLeft != null && ladderColumnRight != null &&
-            X < ladderColumnRight && X > ladderColumnLeft;
-
-        if (InputDevice.DefaultUpPressable.WasJustPressed && LastCollisionLadderRectange != null)
-        {
-            GroundMovement = PlatformerValuesStatic["Climbing"];
-            // snap the player's position to the center of the ladder
-            X = LastCollisionLadderRectange.X;
-            XVelocity = 0;
-            if (IsOnGround == false)
-            {
-                // force the player on ground:
-                CurrentMovementType = MovementType.Ground;
-            }
-        }
-
-        if (isOverLadder == false && CurrentMovement.CanClimb)
-        {
-            // Reset GroundMovement away from Climbing right here, not just CurrentMovementType: if
-            // DetermineMovementValues (runs before CustomActivity, via PlatformerActivity) sees
-            // mIsOnGround become true on some later frame while CurrentMovementType is still Air, it
-            // flips CurrentMovementType back to Ground immediately - which resolves CurrentMovement to
-            // GroundMovement. Left as Climbing, that reads CanClimb=true again despite being genuinely
-            // grounded, so gravity never re-engages and horizontal input slides the player forever.
-            GroundMovement = PlatformerValuesStatic["Ground"];
-            AirMovement = PlatformerValuesStatic["Air"];
-            // fall off the ladder...
-            CurrentMovementType = MovementType.Air;
-        }
     }
 
     // Generated code calls this automatically once climbing is clamped at TopOfLadderY and the player
-    // isn't holding Up - Y is already positioned at the top of the ladder when this fires. Deliberately
-    // left empty: swapping GroundMovement here used to enable gravity immediately, which only "works"
-    // if the level has solid ground flush under the ladder's own column - Level1Map doesn't, so the
-    // player fell straight through it. Matching FRB2's reference behavior, the player stays suspended
-    // in the climbing values at the top until CustomActivity's isOverLadder check drops them into Air
-    // movement when they actually step sideways off the ladder.
+    // isn't holding Up - Y is already positioned at the top of the ladder when this fires. Purely a
+    // notification hook (e.g. for sound/animation triggers) - the entity stays in the climbing state,
+    // suspended with no gravity, until it actually leaves the ladder, which generated code handles.
     partial void OnLadderTopReached()
     {
     }
 
     // Generated code calls this automatically once the player is grounded while climbing and isn't
-    // holding Up - replaces the old hand-rolled "VerticalInput.Value < 0 && IsOnGround" poll.
+    // holding Up. Purely a notification hook - exiting the climbing state on landing is handled
+    // automatically by generated code.
     partial void OnLadderBottomReached()
     {
-        GroundMovement = PlatformerValuesStatic["Ground"];
     }
 
     private void CustomDestroy()

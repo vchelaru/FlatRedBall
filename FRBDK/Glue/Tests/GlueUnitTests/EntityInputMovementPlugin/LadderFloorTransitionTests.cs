@@ -9,12 +9,18 @@ namespace GlueUnitTests.EntityInputMovementPlugin;
 
 /// <summary>
 /// Pins runtime behavior of the platformer entity codegen's ladder floor transitions (issue #2148):
-/// reaching the top of a ladder and standing on the floor above it, and reaching the bottom of a
-/// ladder and standing on the floor below it. Builds the real Samples/Platformer/LadderDemo gold
-/// project once, plus a bare content-free smoke-test entity added to it (see
+/// reaching the top of a ladder and standing on the upper floor, and reaching the bottom of a
+/// ladder and transitioning back to normal ground movement. Builds the real Samples/Platformer/LadderDemo
+/// gold project once, plus a bare content-free smoke-test entity added to it (see
 /// <see cref="PlatformerLadderGoldProject"/>), and reflects into the generated entity - see the
 /// glue-project-codegen skill's "Runtime-testing generated code" section for why compiling alone does
 /// not prove this.
+///
+/// Ladder grab/clamp/exit is entirely generated (ApplyClimbingInput) since the #2148 follow-up that
+/// moved it out of hand-rolled per-project CustomActivity code, matching FRB2's engine-owned
+/// PlatformerBehavior architecture: CurrentMovementType.Climbing selects a dedicated ClimbingMovement
+/// slot that GroundMovement/AirMovement are never mutated to hold, so there is no stale-climbing-values
+/// state to leak once the entity genuinely leaves the ladder.
 /// </summary>
 [Trait("Category", "BuildSmoke")]
 public class LadderFloorTransitionTests
@@ -45,16 +51,34 @@ public class LadderFloorTransitionTests
         return values!;
     }
 
-    static void SetGroundMovementThenMovementType(object entity, Type entityType, object values, string movementTypeName)
+    /// <summary>
+    /// Builds a real AxisAlignedRectangle centered on centerX (Width 16, matching the real ladder's
+    /// GridSize) and assigns it to LastCollisionLadderRectange - the generated ApplyClimbingInput
+    /// caches its Left/Right into ladderColumnLeft/Right from this, exactly as project collision glue
+    /// (GameScreen.Event.cs) would after a real ladder collision.
+    /// </summary>
+    static void SetLadderRectangleAt(object entity, Type entityType, float centerX)
     {
-        // Order matters: PlatformerInit wires AfterGroundMovementSet -> UpdateCurrentMovement, and
-        // UpdateCurrentMovement reads GroundMovement - so GroundMovement must already be assigned
-        // before CurrentMovementType is set, or CurrentMovement resolves against null.
-        entityType.GetProperty("GroundMovement")!.SetValue(entity, values);
+        var rectProperty = entityType.GetProperty("LastCollisionLadderRectange")!;
+        var rectType = rectProperty.PropertyType;
+        var rect = Activator.CreateInstance(rectType);
+        rectType.GetProperty("X")!.SetValue(rect, centerX);
+        rectType.GetProperty("Width")!.SetValue(rect, 16f);
+        rectProperty.SetValue(entity, rect);
+    }
+
+    /// <summary>
+    /// Enters the climbing state the way generated ApplyClimbingInput's grab branch does: assign
+    /// ClimbingMovement (never GroundMovement - that slot is never mutated by climbing logic) and set
+    /// CurrentMovementType directly to Climbing.
+    /// </summary>
+    static void SetClimbingMovementThenMovementType(object entity, Type entityType, object values)
+    {
+        entityType.GetProperty("ClimbingMovement")!.SetValue(entity, values);
 
         var movementTypeType = entityType.Assembly.GetType("LadderDemo.Entities.MovementType");
         movementTypeType.ShouldNotBeNull();
-        entityType.GetProperty("CurrentMovementType")!.SetValue(entity, Enum.Parse(movementTypeType!, movementTypeName));
+        entityType.GetProperty("CurrentMovementType")!.SetValue(entity, Enum.Parse(movementTypeType!, "Climbing"));
     }
 
     static MethodInfo GetApplyClimbingInput(Type entityType)
@@ -67,12 +91,25 @@ public class LadderFloorTransitionTests
     static bool GetBoolField(object entity, Type entityType, string name) =>
         (bool)entityType.GetField(name)!.GetValue(entity)!;
 
+    static object CurrentMovementTypeValue(object entity, Type entityType) =>
+        entityType.GetProperty("CurrentMovementType")!.GetValue(entity)!;
+
+    static object MovementType(Type entityType, string name) =>
+        Enum.Parse(entityType.Assembly.GetType("LadderDemo.Entities.MovementType")!, name);
+
+    // Matches EntityCodeGenerator.cs's ClimbingTopOverlapInset: the clamp lands the entity slightly
+    // inside the topmost ladder tile rather than flush with its edge.
+    const float ClimbingTopOverlapInset = 0.5f;
+
     [StaFact]
     public async Task ApplyClimbingInput_ClampedAtTopAndNotHoldingUp_ExitsClimbingAtTopOfLadder()
     {
         var (entity, entityType) = await CreateSmokeTestEntityAsync();
         var climbing = CreateClimbingValues(entityType);
-        SetGroundMovementThenMovementType(entity, entityType, climbing, "Ground");
+        SetClimbingMovementThenMovementType(entity, entityType, climbing);
+
+        entityType.GetProperty("X")!.SetValue(entity, 0f);
+        SetLadderRectangleAt(entity, entityType, 0f); // establishes ladderColumnLeft/Right so isOverLadder stays true
 
         entityType.GetProperty("TopOfLadderY")!.SetValue(entity, (float?)100f);
         // Above the clamp - simulates having just climbed to (or past) the top of the ladder.
@@ -85,17 +122,18 @@ public class LadderFloorTransitionTests
         // "VerticalInput?.Value ?? 0", i.e. not holding Up, which is the exit condition.
         Should.NotThrow(() => applyClimbingInput.Invoke(entity, null));
 
-        // The existing clamp behavior (pre-dates this fix): Y pinned to TopOfLadderY, upward velocity zeroed.
-        ((float)entityType.GetProperty("Y")!.GetValue(entity)!).ShouldBe(100f);
+        // The clamp: feet pinned just inside the top of the ladder (inset, not flush - see
+        // ClimbingTopOverlapInset), upward velocity zeroed.
+        ((float)entityType.GetProperty("Y")!.GetValue(entity)!).ShouldBe(100f - ClimbingTopOverlapInset);
         ((float)entityType.GetProperty("YVelocity")!.GetValue(entity)!).ShouldBe(0f);
 
-        // The fix: OnLadderTopReached fired - closing #2148's "reaching the top of the ladder and
-        // standing on the upper floor" gap. Before this fix nothing called this hook, so a real
-        // project's override (e.g. swapping GroundMovement to a non-climbing PlatformerValues, as
-        // LadderDemo's Player.cs now does) never ran, leaving the entity clamped at the top with
-        // gravity suppressed (CurrentMovement.CanClimb still true) until stepping sideways off the ladder.
+        // The notification hook fired...
         GetBoolField(entity, entityType, "ReachedTopOfLadder").ShouldBeTrue();
         GetBoolField(entity, entityType, "ReachedBottomOfLadder").ShouldBeFalse();
+
+        // ...but the entity stays in the climbing state (still within the ladder's footprint,
+        // X unchanged) - matches FRB2: reaching the top alone does not exit climbing.
+        CurrentMovementTypeValue(entity, entityType).ShouldBe(MovementType(entityType, "Climbing"));
     }
 
     [StaFact]
@@ -103,9 +141,13 @@ public class LadderFloorTransitionTests
     {
         var (entity, entityType) = await CreateSmokeTestEntityAsync();
         var climbing = CreateClimbingValues(entityType);
-        SetGroundMovementThenMovementType(entity, entityType, climbing, "Ground");
+        SetClimbingMovementThenMovementType(entity, entityType, climbing);
 
-        // No TopOfLadderY set (null) - this is the bottom-of-ladder scenario, not a top clamp.
+        entityType.GetProperty("X")!.SetValue(entity, 0f);
+        // Still within the ladder's footprint - isolates this test to the mIsOnGround exit path
+        // rather than the (separately tested) isOverLadder exit path.
+        SetLadderRectangleAt(entity, entityType, 0f);
+
         entityType.GetProperty("Y")!.SetValue(entity, 0f);
 
         var isOnGroundField = entityType.GetField("mIsOnGround", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -116,11 +158,13 @@ public class LadderFloorTransitionTests
 
         Should.NotThrow(() => applyClimbingInput.Invoke(entity, null));
 
-        // OnLadderBottomReached fired: same fix, bottom-of-ladder case. This tightens the previous
-        // sample behavior (which required an active down-press) to "grounded and not holding up",
-        // matching FRB2's PlatformerBehavior.landedWhileDescending.
         GetBoolField(entity, entityType, "ReachedBottomOfLadder").ShouldBeTrue();
         GetBoolField(entity, entityType, "ReachedTopOfLadder").ShouldBeFalse();
+
+        // Reaching solid ground while climbing and not holding Up must exit the climbing state -
+        // this used to only happen because the (now-removed) hand-rolled hook overwrote GroundMovement;
+        // generated ApplyClimbingInput must do this itself now.
+        CurrentMovementTypeValue(entity, entityType).ShouldNotBe(MovementType(entityType, "Climbing"));
     }
 
     [StaFact]
@@ -128,7 +172,10 @@ public class LadderFloorTransitionTests
     {
         var (entity, entityType) = await CreateSmokeTestEntityAsync();
         var climbing = CreateClimbingValues(entityType);
-        SetGroundMovementThenMovementType(entity, entityType, climbing, "Ground");
+        SetClimbingMovementThenMovementType(entity, entityType, climbing);
+
+        entityType.GetProperty("X")!.SetValue(entity, 0f);
+        SetLadderRectangleAt(entity, entityType, 0f);
 
         entityType.GetProperty("TopOfLadderY")!.SetValue(entity, (float?)100f);
         entityType.GetProperty("Y")!.SetValue(entity, 50f); // below the clamp
@@ -142,6 +189,7 @@ public class LadderFloorTransitionTests
         // Not clamped (Y < TopOfLadderY) and not grounded - neither exit hook should have fired.
         GetBoolField(entity, entityType, "ReachedTopOfLadder").ShouldBeFalse();
         GetBoolField(entity, entityType, "ReachedBottomOfLadder").ShouldBeFalse();
-        entityType.GetProperty("GroundMovement")!.GetValue(entity).ShouldBe(climbing);
+        CurrentMovementTypeValue(entity, entityType).ShouldBe(MovementType(entityType, "Climbing"));
+        entityType.GetProperty("ClimbingMovement")!.GetValue(entity).ShouldBe(climbing);
     }
 }

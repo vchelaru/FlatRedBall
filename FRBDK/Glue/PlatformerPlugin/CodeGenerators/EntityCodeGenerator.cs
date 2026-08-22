@@ -252,22 +252,50 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             /// </summary>
             private float? cloudCollisionFallThroughY = null;
 
+            /// <summary>
+            /// Movement values used while CurrentMovementType is MovementType.Climbing. Must be
+            /// assigned (typically once, in CustomInitialize) before the entity can enter the
+            /// climbing state - ApplyClimbingInput reads this every frame while climbing.
+            /// </summary>
+            public DataTypes.PlatformerValues ClimbingMovement { get; set; }
+
+            /// <summary>
+            /// The ladder/climb-column rectangle the entity is currently (or was most recently)
+            /// touching. Project collision code sets this - null it every frame before re-detecting
+            /// and let a fresh collision set it again if still touching; ApplyClimbingInput tolerates
+            /// a frame where this goes null without exiting the climbing state (see ladderColumnLeft/
+            /// ladderColumnRight below).
+            /// </summary>
+            public FlatRedBall.Math.Geometry.AxisAlignedRectangle LastCollisionLadderRectange { get; set; }
+
+            // Cached horizontal bounds of the ladder column the entity last touched, kept separate
+            // from LastCollisionLadderRectange's own null/non-null state: standing flush at the very
+            // top of a ladder no longer vertically overlaps the topmost tile, so collision detection
+            // can legitimately stop finding it there for a frame even though the entity hasn't moved
+            // sideways at all. Refreshed whenever a fresh collision arrives, never cleared just
+            // because contact paused - only actually moving outside them counts as leaving the ladder.
+            private float? ladderColumnLeft;
+            private float? ladderColumnRight;
+
+            // How far inside the topmost ladder cell the entity is clamped, rather than flush with
+            // its edge - keeps the collision shape overlapping the tile so a single frame at the top
+            // doesn't itself cause a lost-collision false exit.
+            private const float ClimbingTopOverlapInset = 0.5f;
+
             public float? TopOfLadderY { get; set; }
 
             /// <summary>
-            /// Called automatically the frame the entity is climbing (CurrentMovement.CanClimb), is
-            /// clamped at TopOfLadderY (has climbed as high as this ladder allows), and is not holding
-            /// the climb-up input. Override in custom code to leave the climbing movement values, e.g.
-            /// by assigning GroundMovement to a non-climbing PlatformerValues - the entity's Y is
-            /// already positioned at the top of the ladder when this fires.
+            /// Called automatically the frame the entity reaches the top of a ladder (clamped at
+            /// TopOfLadderY) while not holding the climb-up input. Purely a notification hook - the
+            /// entity stays in the climbing state (suspended, no gravity) until it actually leaves the
+            /// ladder's footprint or reaches solid ground, both handled automatically.
             /// </summary>
             partial void OnLadderTopReached();
 
             /// <summary>
-            /// Called automatically the frame the entity is climbing (CurrentMovement.CanClimb), is on
-            /// the ground (solid collision resolved below its feet), and is not holding the climb-up
-            /// input. Override in custom code to leave the climbing movement values, e.g. by assigning
-            /// GroundMovement to a non-climbing PlatformerValues.
+            /// Called automatically the frame the entity is climbing, is on the ground (solid
+            /// collision resolved below its feet), and is not holding the climb-up input. Purely a
+            /// notification hook - exiting the climbing state on landing is handled automatically.
             /// </summary>
             partial void OnLadderBottomReached();
 
@@ -370,6 +398,9 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                     break;
                 case MovementType.Air:
                     mCurrentMovement = AirMovement;
+                    break;
+                case MovementType.Climbing:
+                    mCurrentMovement = ClimbingMovement;
                     break;
                 case MovementType.AfterDoubleJump:
 
@@ -563,39 +594,72 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
         private void ApplyClimbingInput()
         {
-            if(CurrentMovement.CanClimb)
+            // Refreshed unconditionally (not just while climbing) so grabbing the ladder below
+            // always has an up-to-date footprint to snap/compare against.
+            if(LastCollisionLadderRectange != null)
             {
-                var verticalInputValue = VerticalInput?.Value ?? 0;
-                this.YVelocity = verticalInputValue * CurrentMovement.MaxClimbingSpeed;
-
-                bool clampedAtTopOfLadder = false;
-                if(this.Y > TopOfLadderY)
-                {
-                    this.Y = TopOfLadderY.Value;
-                    clampedAtTopOfLadder = true;
-                    if(this.YVelocity > 0)
-                    {
-                        this.YVelocity = 0;
-                    }
-                }
-
-                // Floor transitions: neither condition requires knowing which TileShapeCollection
-                // represents the ladder (that is project-specific), only generic entity state - so both
-                // can fire automatically instead of requiring hand-written polling in CustomActivity.
-                if(verticalInputValue <= 0)
-                {
-                    if(clampedAtTopOfLadder)
-                    {
-                        OnLadderTopReached();
-                    }
-                    else if(mIsOnGround)
-                    {
-                        OnLadderBottomReached();
-                    }
-                }
-
+                ladderColumnLeft = LastCollisionLadderRectange.Left;
+                ladderColumnRight = LastCollisionLadderRectange.Right;
             }
 
+            if(CurrentMovementType != MovementType.Climbing)
+            {
+                // Grab: neither this nor anything below requires knowing which TileShapeCollection
+                // represents the ladder (that is project-specific) - only that project code populated
+                // LastCollisionLadderRectange this frame, and generic entity/input state.
+                if(InputDevice.DefaultUpPressable.WasJustPressed && LastCollisionLadderRectange != null)
+                {
+                    // snap the entity's position to the center of the ladder
+                    X = LastCollisionLadderRectange.X;
+                    XVelocity = 0;
+                    CurrentMovementType = MovementType.Climbing;
+                }
+                return;
+            }
+
+            var verticalInputValue = VerticalInput?.Value ?? 0;
+            this.YVelocity = verticalInputValue * ClimbingMovement.MaxClimbingSpeed;
+
+            bool clampedAtTopOfLadder = false;
+            if(TopOfLadderY != null && this.Y > TopOfLadderY.Value - ClimbingTopOverlapInset)
+            {
+                // Clamped inset from the true top (TopOfLadderY), not flush with it: flush would
+                // leave the entity's collision shape just outside the topmost ladder tile, and
+                // losing that overlap for even one frame reads (via ladderColumnLeft/Right going
+                // stale) as having stepped off - see the isOverLadder computation below.
+                this.Y = TopOfLadderY.Value - ClimbingTopOverlapInset;
+                clampedAtTopOfLadder = true;
+                if(this.YVelocity > 0)
+                {
+                    this.YVelocity = 0;
+                }
+            }
+
+            if(verticalInputValue <= 0)
+            {
+                if(clampedAtTopOfLadder)
+                {
+                    OnLadderTopReached();
+                }
+                else if(mIsOnGround)
+                {
+                    OnLadderBottomReached();
+                }
+            }
+
+            var isOverLadder = ladderColumnLeft != null && ladderColumnRight != null &&
+                X < ladderColumnRight.Value && X > ladderColumnLeft.Value;
+
+            // Exit: stepped sideways off the ladder's footprint, or reached solid ground while not
+            // holding the climb-up input. Set to Air rather than Ground directly - DetermineMovementValues
+            // (which runs immediately after this, still within the same frame's PlatformerActivity)
+            // corrects it to Ground if mIsOnGround is actually true. Either way CurrentMovement now
+            // resolves to GroundMovement/AirMovement, never ClimbingMovement - those two slots are
+            // never mutated by climbing logic, so there is no stale-climbing-values state to leak.
+            if(isOverLadder == false || (mIsOnGround && verticalInputValue <= 0))
+            {
+                CurrentMovementType = MovementType.Air;
+            }
         }
 
 
