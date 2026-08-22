@@ -53,9 +53,19 @@ internal class Frb2AddSourceManager
 
     /// <summary>
     /// The testable core: given an explicit engine .csproj path, swaps the project's
-    /// FlatRedBall2.* PackageReference for a ProjectReference to it, and adds the engine project to
-    /// the game's solution (.slnx-safe, via `dotnet sln add`).
+    /// FlatRedBall2.* PackageReference for a ProjectReference to it, and adds both the engine
+    /// project and its AnimationChain.Common sibling to the game's solution (.slnx-safe, via
+    /// `dotnet sln add`).
     /// </summary>
+    /// <remarks>
+    /// Only <paramref name="engineCsprojFullPath"/> becomes a ProjectReference on the game project.
+    /// AnimationChain.Common is not: FlatRedBall2.csproj already carries its own ProjectReference to
+    /// it, so a game that references FlatRedBall2.csproj gets AnimationChain.Common transitively -
+    /// the same shape a real hand-linked game (e.g. the FlatRedBall2 repo's own PlatformKing sample)
+    /// has. It is still added to the solution, matching that sample, so it shows up in Solution
+    /// Explorer instead of being invisible; that's cosmetic, not required for the build to work, so a
+    /// missing/renamed AnimationChain.Common project does not fail the whole link.
+    /// </remarks>
     internal GeneralResponse LinkFrb2ProjectToSource(Frb2Project frb2Project, string engineCsprojFullPath)
     {
         if (!File.Exists(engineCsprojFullPath))
@@ -73,25 +83,31 @@ internal class Frb2AddSourceManager
 
         var alreadyReferencedAsSource = frb2Project.HasProjectReference(engineProjectNameNoExtension);
 
-        if (packageReferences.Count == 0 && alreadyReferencedAsSource)
-        {
-            // Already linked - nothing to do.
-            return GeneralResponse.SuccessfulResponse;
-        }
-
         var slnFilePath = GlueState.Self.SlnFileForProject(frb2Project);
         var existingSln = VSSolution.FromFile(slnFilePath);
-        var alreadyInSln = existingSln.ReferencedProjects.Any(reference =>
-            string.Equals(FileManager.RemovePath(reference.Name), FileManager.RemovePath(engineCsprojFullPath),
-                StringComparison.OrdinalIgnoreCase));
 
-        if (!alreadyInSln)
+        if (!IsInSolution(existingSln, engineCsprojFullPath))
         {
             if (!VSSolution.AddExistingProjectWithDotNet(slnFilePath, new FilePath(engineCsprojFullPath), out _, out var slnError))
             {
                 return GeneralResponse.UnsuccessfulWith(
                     $"Failed to add {engineCsprojFullPath} to the solution. Errors: {slnError}");
             }
+        }
+
+        var animationChainCsproj = Path.Combine(
+            Path.GetDirectoryName(engineCsprojFullPath) ?? "", "AnimationChain.Common", "AnimationChain.Common.csproj");
+
+        if (File.Exists(animationChainCsproj) && !IsInSolution(existingSln, animationChainCsproj))
+        {
+            // Cosmetic (see remarks) - failing to add it should not fail the whole link.
+            VSSolution.AddExistingProjectWithDotNet(slnFilePath, new FilePath(animationChainCsproj), out _, out _);
+        }
+
+        if (packageReferences.Count == 0 && alreadyReferencedAsSource)
+        {
+            // Already linked - nothing left to change on the game project itself.
+            return GeneralResponse.SuccessfulResponse;
         }
 
         foreach (var packageReference in packageReferences)
@@ -108,4 +124,9 @@ internal class Frb2AddSourceManager
 
         return GeneralResponse.SuccessfulResponse;
     }
+
+    static bool IsInSolution(VSSolution sln, string csprojFullPath) =>
+        sln.ReferencedProjects.Any(reference =>
+            string.Equals(FileManager.RemovePath(reference.Name), FileManager.RemovePath(csprojFullPath),
+                StringComparison.OrdinalIgnoreCase));
 }
