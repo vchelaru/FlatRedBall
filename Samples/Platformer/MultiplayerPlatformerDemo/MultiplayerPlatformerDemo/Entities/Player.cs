@@ -21,8 +21,6 @@ public partial class Player
 
     public bool PressedUp => InputDevice.DefaultUpPressable.WasJustPressed;
 
-    public AxisAlignedRectangle LastCollisionLadderRectange { get; set; }
-
     public void SetIndex(int index)
     {
         switch (index)

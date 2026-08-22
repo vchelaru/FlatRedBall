@@ -37,7 +37,8 @@ namespace {GlueState.Self.ProjectNamespace}.Entities
     {{
         Ground,
         Air,
-        AfterDoubleJump
+        AfterDoubleJump,
+        Climbing
     }}
     public enum HorizontalDirection
     {{

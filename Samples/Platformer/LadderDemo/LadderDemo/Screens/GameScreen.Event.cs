@@ -30,6 +30,10 @@ public partial class GameScreen
             rectangleAbove = ladder.GetRectangleAtPosition(topRectangle.X, topRectangle.Y + ladder.GridSize);
         }
 
-        player.TopOfLadderY = topRectangle.Bottom;
+        // Bottom (rather than Top) only caps how high the player can climb - it leaves the player's
+        // feet a full GridSize below the ladder's own top edge, short of any floor tile that starts
+        // there. Top puts the feet flush with the top of the ladder, so OnLadderTopReached (issue
+        // #2148) actually lands the player on solid ground instead of stopping mid-climb.
+        player.TopOfLadderY = topRectangle.Top;
     }
 }
