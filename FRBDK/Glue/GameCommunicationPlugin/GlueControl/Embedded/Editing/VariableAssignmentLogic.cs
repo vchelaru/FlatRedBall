@@ -1303,7 +1303,9 @@ namespace GlueControl.Editing
             }
             else if (type == typeof(FlatRedBall.Graphics.BitmapFont).ToString() || type == "BitmapFont")
             {
-                if (variableValue == null)
+                // Glue's UI sends the sentinel string "<NONE>" (not a CLR/JSON null) when a Font selection
+                // is cleared, so it must be treated the same as variableValue == null here.
+                if (variableValue == null || variableValue == "<NONE>")
                 {
                     convertedValue = FlatRedBall.Graphics.TextManager.DefaultFont;
                 }
