@@ -63,6 +63,7 @@ namespace PluginTestbed.GlobalContentManagerPlugins
         private ToolStripMenuItem _linkToSourceMenuItem;
         private readonly GlueState _glueState;
         private readonly AddSourceManager _addSourceManager;
+        private readonly Frb2AddSourceManager _frb2AddSourceManager;
 
         public override string FriendlyName => "FRB Source";
 
@@ -72,6 +73,7 @@ namespace PluginTestbed.GlobalContentManagerPlugins
         {
             _glueState = GlueState.Self;
             _addSourceManager = new AddSourceManager();
+            _frb2AddSourceManager = new Frb2AddSourceManager();
         }
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
@@ -192,12 +194,23 @@ namespace PluginTestbed.GlobalContentManagerPlugins
         }
 
         public bool HasFrbAndGumReposInDefaultLocation() =>
-            System.IO.Directory.Exists(_addSourceManager.DefaultFrbFilePath) &&
-            System.IO.Directory.Exists(_addSourceManager.DefaultGumFilePath);
+            (System.IO.Directory.Exists(_addSourceManager.DefaultFrbFilePath) &&
+             System.IO.Directory.Exists(_addSourceManager.DefaultGumFilePath)) ||
+            _frb2AddSourceManager.HasFrb2RepoInDefaultLocation();
 
         public async Task AddFrbSourceToDefaultLocation(VisualStudioProject visualStudioProject)
         {
-            await _addSourceManager.LinkToSourceUsingDefaults(visualStudioProject);
+            // FRB2 projects use a different solution/reference shape entirely (no .shproj, a .slnx
+            // rather than a classic .sln) - AddSourceManager's FRB1 logic doesn't apply and previously
+            // failed here with "Unable to parse solution file" for any FRB2 project.
+            if (visualStudioProject is Frb2Project frb2Project)
+            {
+                await _frb2AddSourceManager.LinkToSourceUsingDefaults(frb2Project);
+            }
+            else
+            {
+                await _addSourceManager.LinkToSourceUsingDefaults(visualStudioProject);
+            }
         }
     }
 }

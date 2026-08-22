@@ -13,7 +13,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
 using GeneralResponse = ToolsUtilities.GeneralResponse;
 
 
@@ -529,7 +528,11 @@ internal class AddSourceManager
 
         if (!VSSolution.AddExistingProjectWithDotNet(solution, project, out var outputMessages, out var errorMessages))
         {
-            MessageBox.Show($"Failed to add project {project}. Errors: {errorMessages}");
+            // GlueCommands.Self.DialogCommands.ShowMessageBox marshals to the UI thread and shows an
+            // owned WPF dialog - unlike a raw MessageBox.Show, which (this runs inside
+            // TaskManager.Self.AddAsync, on a background thread) creates an unowned native dialog that
+            // can render behind Glue's main window and read as a hang rather than a message box.
+            GlueCommands.Self.DialogCommands.ShowMessageBox($"Failed to add project {project}. Errors: {errorMessages}");
             return false;
         }
 
@@ -550,7 +553,9 @@ internal class AddSourceManager
 
         if (!VSSolution.AddExistingProject(solution, projectTypeId, projectId, projectName, project, new List<VSSolution.SharedProject> { }, new List<string>(), new List<string>(), out var errorMessages))
         {
-            MessageBox.Show($"Failed to add project {project}. Errors: {errorMessages}");
+            // See the comment in AddProject: this must go through the UI-thread-marshaling dialog
+            // seam, not a raw MessageBox.Show, since this runs on a TaskManager background thread.
+            GlueCommands.Self.DialogCommands.ShowMessageBox($"Failed to add project {project}. Errors: {errorMessages}");
             return false;
         }
 

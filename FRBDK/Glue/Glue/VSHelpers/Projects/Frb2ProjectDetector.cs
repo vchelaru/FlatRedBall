@@ -34,14 +34,16 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         /// <summary>
         /// Matches the engine packages a template-created game takes - FlatRedBall2.MonoGame,
-        /// FlatRedBall2.Kni, and anything else published under that prefix.
+        /// FlatRedBall2.Kni, and anything else published under that prefix. Public so the
+        /// FRB-source-linking feature can find the same package references to remove when swapping
+        /// them for a ProjectReference into a sibling FlatRedBall2 checkout.
         /// </summary>
         /// <remarks>
         /// The trailing dot matters: FRB1's packages are FlatRedBall.*, and treating one of those as
         /// FRB2 would silently stop Glue generating that project's code. "FlatRedBall2" cannot be a
         /// prefix of "FlatRedBall." so the two families cannot be confused.
         /// </remarks>
-        static bool IsFrb2Package(string include) =>
+        public static bool IsFrb2Package(string include) =>
             !string.IsNullOrEmpty(include) &&
             (string.Equals(include, Frb2PackagePrefix, StringComparison.OrdinalIgnoreCase) ||
              include.StartsWith(Frb2PackagePrefix + ".", StringComparison.OrdinalIgnoreCase));
