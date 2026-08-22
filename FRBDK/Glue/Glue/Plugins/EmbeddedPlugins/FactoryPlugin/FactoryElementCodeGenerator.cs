@@ -383,6 +383,16 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin
 
         public static void AddGeneratedPerformanceTypes()
         {
+            // GitHub issue #2169: an FRB2 project owns its own .csproj and generated code
+            // (CodeWritePolicy.WritesCodeForCurrentProject is false), so this must not write the
+            // Performance/*.Generated.cs files or add them as Compile items - the same seam
+            // SaveIfDiffers already suppresses on, but UpdateFileMembershipInProject below has no such
+            // check, so it was still adding a Compile item pointing at a file that was never written.
+            if (!CodeWritePolicy.WritesCodeForCurrentProject)
+            {
+                return;
+            }
+
             // May 23, 2024
             // PoolList is part
             // of FRB and also generated

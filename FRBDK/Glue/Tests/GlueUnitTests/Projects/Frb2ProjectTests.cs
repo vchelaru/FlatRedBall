@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 using FlatRedBall.Glue.SaveClasses;
@@ -426,6 +427,25 @@ public class Frb2CodeGenerationSuppressionTests : IDisposable
 
         Assert.False(didWrite);
         Assert.False(File.Exists(codeFile));
+    }
+
+    [Fact]
+    public void AddGeneratedPerformanceTypes_DoesNothing_WhenTheProjectIsFrb2()
+    {
+        // GitHub issue #2169: these files were never owned by a Screen/Entity, so once they were added
+        // to an FRB2 project's in-memory Compile items, GitHub issue #2103's orphan-cleanup treated them
+        // as leftovers and removed them again on the next load - noisy and pointless, since an FRB2
+        // project shouldn't have had them in the first place.
+        GlueState.Self.CurrentMainProject = CreateProject(p => new Frb2Project(p), "Frb2Game");
+
+        FactoryElementCodeGenerator.AddGeneratedPerformanceTypes();
+
+        Assert.False(File.Exists(Path.Combine(_directory, "Performance", "PoolList.Generated.cs")));
+        Assert.False(File.Exists(Path.Combine(_directory, "Performance", "IEntityFactory.Generated.cs")));
+        Assert.False(GlueState.Self.CurrentMainProject.IsFilePartOfProject(
+            Path.Combine(_directory, "Performance", "PoolList.Generated.cs"), BuildItemMembershipType.Any));
+        Assert.False(GlueState.Self.CurrentMainProject.IsFilePartOfProject(
+            Path.Combine(_directory, "Performance", "IEntityFactory.Generated.cs"), BuildItemMembershipType.Any));
     }
 
     [Fact]
