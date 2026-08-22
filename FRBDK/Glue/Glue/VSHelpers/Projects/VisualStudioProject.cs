@@ -1065,6 +1065,18 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 return;
             }
 
+            SaveEvenIfNotMaintainedByGlue(fileName);
+        }
+
+        /// <summary>
+        /// Writes the project file to disk unconditionally, bypassing the <see cref="IsMaintainedByGlue"/>
+        /// gate <see cref="Save"/> normally enforces. Reserved for actions the user explicitly triggers once
+        /// - e.g. "link to source" swapping an FRB2 project's PackageReference for a ProjectReference - never
+        /// for Glue's own automatic maintenance/codegen writes, which must keep going through <see cref="Save"/>
+        /// so they stay suppressed for FRB2.
+        /// </summary>
+        public void SaveEvenIfNotMaintainedByGlue(string fileName)
+        {
             // this used to save a backup, but doing so
             // changes the mProject's file name. Since the
             // mProject is used to get this project's file name,
