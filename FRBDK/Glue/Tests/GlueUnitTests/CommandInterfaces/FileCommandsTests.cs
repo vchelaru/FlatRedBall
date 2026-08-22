@@ -18,4 +18,20 @@ public class FileCommandsTests
         startInfo.UseShellExecute.ShouldBeTrue();
         startInfo.FileName.ShouldBe(@"E:\Content\ResonatorAnimation.achx");
     }
+
+    // GitHub issue #2176: a user profile folder containing a space (e.g. "Vic Personal") broke
+    // "open in Gum" because the file path was passed via ProcessStartInfo's raw Arguments string,
+    // which splits on whitespace before the child process ever sees it.
+    [Fact]
+    public void CreateResolvedAppStartInfo_KeepsFileNameAsOneArgument_EvenWithSpaces()
+    {
+        var startInfo = FileCommands.CreateResolvedAppStartInfo(
+            @"C:\Users\Vic Personal\Documents\GitHub\Gum\Gum\bin\Debug\Gum.exe",
+            @"C:\Users\Vic Personal\Documents\FlatRedBallProjects\FRB_2_10\FRB_2_10.Common\Content\FrbEditor\GumProject\GumProject.gumx");
+
+        startInfo.FileName.ShouldBe(@"C:\Users\Vic Personal\Documents\GitHub\Gum\Gum\bin\Debug\Gum.exe");
+        startInfo.ArgumentList.Count.ShouldBe(1);
+        startInfo.ArgumentList[0].ShouldBe(
+            @"C:\Users\Vic Personal\Documents\FlatRedBallProjects\FRB_2_10\FRB_2_10.Common\Content\FrbEditor\GumProject\GumProject.gumx");
+    }
 }

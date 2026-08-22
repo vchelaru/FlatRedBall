@@ -583,7 +583,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         FilePath absoluteExe = TryToGetFilePathFromExtension(textExtension);
                         if ((absoluteExe != "") && absoluteExe?.Exists() == true)
                         {
-                            Process.Start(new ProcessStartInfo(absoluteExe.FullPath, fileName));
+                            Process.Start(CreateResolvedAppStartInfo(absoluteExe.FullPath, fileName));
                             return;
                         }
 
@@ -663,6 +663,22 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             UseShellExecute = true,
             Verb = "openas"
         };
+
+        /// <summary>
+        /// GitHub issue #2176: builds the launch info for opening <paramref name="fileName"/> in a
+        /// resolved-by-extension app (e.g. Gum.exe for .gumx). Uses ArgumentList rather than the
+        /// ProcessStartInfo(fileName, arguments) two-arg constructor, which passes arguments as a raw
+        /// unquoted command-line string - a fileName containing a space (a "Vic Personal"-style user
+        /// profile folder) then splits into two argv tokens on the child process's side, which for Gum
+        /// surfaced as it trying to resolve the second token as a path relative to its own exe
+        /// directory. ArgumentList quotes/escapes each entry correctly regardless of content.
+        /// </summary>
+        internal static ProcessStartInfo CreateResolvedAppStartInfo(string exeFileName, string fileName)
+        {
+            var startInfo = new ProcessStartInfo(exeFileName);
+            startInfo.ArgumentList.Add(fileName);
+            return startInfo;
+        }
 
         private FilePath TryToGetFilePathFromExtension(string textExtension)
         {
