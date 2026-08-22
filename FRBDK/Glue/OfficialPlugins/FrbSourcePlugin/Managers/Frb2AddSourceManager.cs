@@ -65,6 +65,19 @@ internal class Frb2AddSourceManager
     /// has. It is still added to the solution, matching that sample, so it shows up in Solution
     /// Explorer instead of being invisible; that's cosmetic, not required for the build to work, so a
     /// missing/renamed AnimationChain.Common project does not fail the whole link.
+    ///
+    /// The game's .csproj is read and saved through a standalone <see cref="Project"/> loaded
+    /// straight from disk into its own <see cref="ProjectCollection"/> - never through
+    /// <paramref name="frb2Project"/>'s own shared, already-loaded MSBuild project. Other Glue
+    /// subsystems (e.g. MainCompilerPlugin's live-edit setup) call ordinary project-mutation methods
+    /// like AddNugetIfNotAdded against that shared object during a normal session; those writes are
+    /// meant to be silently dropped for an FRB2 project (VisualStudioProject.Save no-ops when
+    /// !IsMaintainedByGlue) but MSBuild's Project.Save writes the object's *entire* current state, not
+    /// a diff - so saving through the shared object would also flush whatever unrelated pending edits
+    /// happened to be sitting in memory, onto a .csproj this action is supposed to be the only thing
+    /// touching. A previous version of this method did exactly that and leaked an inline-versioned
+    /// Newtonsoft.Json PackageReference onto a project using central package management, breaking
+    /// restore (NU1008).
     /// </remarks>
     internal GeneralResponse LinkFrb2ProjectToSource(Frb2Project frb2Project, string engineCsprojFullPath)
     {
@@ -73,15 +86,6 @@ internal class Frb2AddSourceManager
             return GeneralResponse.UnsuccessfulWith(
                 $"Could not find FlatRedBall2 source at {engineCsprojFullPath}.");
         }
-
-        var engineProjectNameNoExtension = FileManager.RemoveExtension(FileManager.RemovePath(engineCsprojFullPath));
-
-        var packageReferences = frb2Project.EvaluatedItems
-            .Where(item => item.ItemType == "PackageReference" &&
-                FlatRedBall.Glue.VSHelpers.Projects.Frb2ProjectDetector.IsFrb2Package(item.EvaluatedInclude))
-            .ToList();
-
-        var alreadyReferencedAsSource = frb2Project.HasProjectReference(engineProjectNameNoExtension);
 
         var slnFilePath = GlueState.Self.SlnFileForProject(frb2Project);
         var existingSln = VSSolution.FromFile(slnFilePath);
@@ -104,6 +108,18 @@ internal class Frb2AddSourceManager
             VSSolution.AddExistingProjectWithDotNet(slnFilePath, new FilePath(animationChainCsproj), out _, out _);
         }
 
+        using var projectCollection = new Microsoft.Build.Evaluation.ProjectCollection();
+        var standaloneGameProject = new Microsoft.Build.Evaluation.Project(
+            frb2Project.FullFileName.FullPath, null, null, projectCollection);
+
+        var packageReferences = standaloneGameProject.GetItems("PackageReference")
+            .Where(item => Frb2ProjectDetector.IsFrb2Package(item.EvaluatedInclude))
+            .ToList();
+
+        var engineCsprojFileName = FileManager.RemovePath(engineCsprojFullPath);
+        var alreadyReferencedAsSource = standaloneGameProject.GetItems("ProjectReference")
+            .Any(item => item.EvaluatedInclude.Contains(engineCsprojFileName, StringComparison.OrdinalIgnoreCase));
+
         if (packageReferences.Count == 0 && alreadyReferencedAsSource)
         {
             // Already linked - nothing left to change on the game project itself.
@@ -112,15 +128,17 @@ internal class Frb2AddSourceManager
 
         foreach (var packageReference in packageReferences)
         {
-            frb2Project.RemoveItem(packageReference);
+            standaloneGameProject.RemoveItem(packageReference);
         }
 
         if (!alreadyReferencedAsSource)
         {
-            frb2Project.AddProjectReference(engineCsprojFullPath);
+            var relativeEnginePath = new FilePath(engineCsprojFullPath)
+                .RelativeTo(frb2Project.FullFileName.GetDirectoryContainingThis());
+            standaloneGameProject.AddItem("ProjectReference", relativeEnginePath);
         }
 
-        frb2Project.SaveEvenIfNotMaintainedByGlue(frb2Project.FullFileName.FullPath);
+        standaloneGameProject.Save();
 
         return GeneralResponse.SuccessfulResponse;
     }

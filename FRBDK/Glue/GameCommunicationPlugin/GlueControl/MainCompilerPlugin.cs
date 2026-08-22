@@ -19,6 +19,7 @@ using FlatRedBall.Glue.IO;
 using Newtonsoft.Json;
 using CompilerLibrary.Models;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.VSHelpers.Projects;
 using FlatRedBall.IO;
 using OfficialPlugins.Compiler.ViewModels;
 using OfficialPlugins.Compiler.Managers;
@@ -962,6 +963,18 @@ namespace GameCommunicationPlugin.GlueControl
 
         private static void AddNewtonsoft()
         {
+            // Newtonsoft.Json here exists for FRB1 live edit's JSON command-sending
+            // (GlueControlManager/GlueCallsCodeGenerator), none of which FRB2 generates - it has its
+            // own hot-reload mechanism instead. Adding it anyway is at best dead weight; on a project
+            // Glue does not maintain the .csproj for (Frb2Project.IsMaintainedByGlue is false) it also
+            // sits as an unsaved pending edit on the shared in-memory project for the rest of the
+            // session, which is exactly the kind of foreign edit GitHub issue #2167 hit when an
+            // unrelated save flushed it to disk.
+            if (GlueState.Self.CurrentMainProject is Frb2Project)
+            {
+                return;
+            }
+
             GlueCommands.Self.ProjectCommands.AddNugetIfNotAdded("Newtonsoft.Json", "13.0.3");
         }
 

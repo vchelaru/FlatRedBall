@@ -197,8 +197,12 @@ public class Frb2SourceLinkingTests
 
         Assert.True(secondResponse.Succeeded, secondResponse.Message);
 
-        var projectReferenceCount = frb2Project.EvaluatedItems
-            .Count(item => item.ItemType == "ProjectReference" && item.EvaluatedInclude.Contains("FlatRedBall2.csproj"));
+        // Not frb2Project.EvaluatedItems: LinkFrb2ProjectToSource saves through a standalone MSBuild
+        // Project loaded fresh from disk (see its remarks for why), so Glue's own shared in-memory
+        // project object for this game is never refreshed and stays stale after the call. The saved
+        // file on disk is the actual thing under test.
+        var projectReferenceCount = System.Text.RegularExpressions.Regex.Matches(
+            File.ReadAllText(commonCsproj), "<ProjectReference[^>]*FlatRedBall2\\.csproj").Count;
         Assert.Equal(1, projectReferenceCount);
 
         Assert.Equal(1, ReadSlnx(temp.Root).ReferencedProjects
