@@ -121,6 +121,128 @@ public class EditModeActivityGateTests
         clickResponse.Data.SelectedObjectNames.ShouldBe(new[] { "TestObjectA" });
     }
 
+    /// <summary>
+    /// Reproduces issue #2183: the #2154 fix above made IsGameOrGlueActive depend solely on
+    /// IsParentGlueFocused (GetForegroundWindow() == glueProcess.MainWindowHandle) while embedded. But
+    /// the embedded game window is reparented via a raw SetParent with no WS_CHILD style fixup
+    /// (GameHostView.xaml.cs::EmbedHwnd), so Windows still lets it take OS foreground on its own when
+    /// clicked - GetForegroundWindow() then returns the game's own window, not Glue's. That made
+    /// click-select, deselect, and middle-mouse camera pan all silently stop working while embedded,
+    /// since they're all gated behind IsGameOrGlueActive. SetEmbeddedFocusTestOverrideDto simulates that
+    /// exact OS state (foreground owned by the game itself, not matching Glue's main window) since the
+    /// LiveGameProcess harness can't fake real OS focus/window ownership.
+    /// </summary>
+    [StaFact]
+    public async Task ClickWhileEmbeddedAndForegroundOwnedByGameItself_IsProcessed()
+    {
+        GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
+
+        using var game = await LiveGameProcess.StartAsync(
+            "Samples/EditorTest1",
+            csprojRelativeToProjectRoot: "EditorTest1/EditorTest1.csproj",
+            exeRelativeToProjectRoot: "EditorTest1/bin/Debug/net9.0/EditorTest1.exe",
+            afterLoadBeforeEmbed: AddTestObjectToGameScreen);
+
+        var screen = ObjectFinder.Self.GetScreenSave("GameScreen");
+
+        var loadScreenResponse = await game.Send(new SelectObjectDto
+        {
+            ElementNameGlue = "Screens\\GameScreen",
+            ScreenSave = screen,
+        });
+        loadScreenResponse.Succeeded.ShouldBeTrue(loadScreenResponse.Message);
+
+        var editModeResponse = await game.Send(new SetEditMode
+        {
+            IsInEditMode = true,
+            AbsoluteGlueProjectFilePath = System.IO.Path.Combine(game.ProjectRoot, "EditorTest1", "EditorTest1.gluj"),
+        });
+        editModeResponse.Succeeded.ShouldBeTrue(editModeResponse.Message);
+        await Task.Delay(1000);
+
+        var borderlessResponse = await game.Send(new SetBorderlessDto { IsBorderless = true });
+        borderlessResponse.Succeeded.ShouldBeTrue(borderlessResponse.Message);
+
+        // Simulates the real embedded state: a real Glue process exists, but OS foreground is owned by
+        // the game's own reparented window instead of matching Glue's MainWindowHandle.
+        var overrideResponse = await game.Send(new SetEmbeddedFocusTestOverrideDto
+        {
+            GlueProcessExists = true,
+            ForegroundMatchesGlueMainWindow = false,
+            ForegroundOwnedByThisGame = true,
+        });
+        overrideResponse.Succeeded.ShouldBeTrue(overrideResponse.Message);
+
+        var clickResponse = await game.Send<SimulateClickSelectRespectingActivityGateResponse>(
+            new SimulateClickSelectRespectingActivityGateDto
+            {
+                ObjectName = "TestObjectA",
+                AdditiveModifierDown = false,
+            });
+
+        clickResponse.Succeeded.ShouldBeTrue(clickResponse.Message);
+        clickResponse.Data.WasProcessed.ShouldBeTrue(
+            "a click on the embedded game panel should be processed even though OS foreground is owned " +
+            "by the game's own reparented window rather than exactly matching Glue's MainWindowHandle (issue #2183)");
+        clickResponse.Data.SelectedObjectNames.ShouldBe(new[] { "TestObjectA" });
+    }
+
+    /// <summary>
+    /// Regression guard for the #2183 fix: it must not reopen #2154. When some unrelated window (neither
+    /// Glue's nor the embedded game's own) is truly in the foreground, clicks must stay ignored.
+    /// </summary>
+    [StaFact]
+    public async Task ClickWhileEmbeddedAndForegroundOwnedByUnrelatedWindow_IsIgnored()
+    {
+        GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
+
+        using var game = await LiveGameProcess.StartAsync(
+            "Samples/EditorTest1",
+            csprojRelativeToProjectRoot: "EditorTest1/EditorTest1.csproj",
+            exeRelativeToProjectRoot: "EditorTest1/bin/Debug/net9.0/EditorTest1.exe",
+            afterLoadBeforeEmbed: AddTestObjectToGameScreen);
+
+        var screen = ObjectFinder.Self.GetScreenSave("GameScreen");
+
+        var loadScreenResponse = await game.Send(new SelectObjectDto
+        {
+            ElementNameGlue = "Screens\\GameScreen",
+            ScreenSave = screen,
+        });
+        loadScreenResponse.Succeeded.ShouldBeTrue(loadScreenResponse.Message);
+
+        var editModeResponse = await game.Send(new SetEditMode
+        {
+            IsInEditMode = true,
+            AbsoluteGlueProjectFilePath = System.IO.Path.Combine(game.ProjectRoot, "EditorTest1", "EditorTest1.gluj"),
+        });
+        editModeResponse.Succeeded.ShouldBeTrue(editModeResponse.Message);
+        await Task.Delay(1000);
+
+        var borderlessResponse = await game.Send(new SetBorderlessDto { IsBorderless = true });
+        borderlessResponse.Succeeded.ShouldBeTrue(borderlessResponse.Message);
+
+        var overrideResponse = await game.Send(new SetEmbeddedFocusTestOverrideDto
+        {
+            GlueProcessExists = true,
+            ForegroundMatchesGlueMainWindow = false,
+            ForegroundOwnedByThisGame = false,
+        });
+        overrideResponse.Succeeded.ShouldBeTrue(overrideResponse.Message);
+
+        var clickResponse = await game.Send<SimulateClickSelectRespectingActivityGateResponse>(
+            new SimulateClickSelectRespectingActivityGateDto
+            {
+                ObjectName = "TestObjectA",
+                AdditiveModifierDown = false,
+            });
+
+        clickResponse.Succeeded.ShouldBeTrue(clickResponse.Message);
+        clickResponse.Data.WasProcessed.ShouldBeFalse(
+            "a click should still be ignored when OS foreground belongs to neither Glue nor the embedded game (issue #2154 must stay fixed)");
+        clickResponse.Data.SelectedObjectNames.ShouldBeEmpty();
+    }
+
     static async Task AddTestObjectToGameScreen()
     {
         var gameScreen = ObjectFinder.Self.GetScreenSave("GameScreen");
