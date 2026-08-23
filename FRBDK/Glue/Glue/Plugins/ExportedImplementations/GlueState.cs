@@ -409,11 +409,20 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
                         return withoutExtension + extension;
                     }
 
+                    var nameOnly = FileManager.RemovePath(withoutExtension.FullPath);
+
+                    // FRB2's Common project is named "<ProjectName>.Common.csproj" (paralleling
+                    // .Desktop/.Android/...), but there's only one .gluj for the whole game, so drop
+                    // the suffix rather than naming it "<ProjectName>.Common.gluj".
+                    if (CurrentMainProject is Frb2Project && nameOnly.EndsWith(".Common"))
+                    {
+                        nameOnly = nameOnly.Substring(0, nameOnly.Length - ".Common".Length);
+                    }
+
                     // Same file name, different folder - see ProjectBase.GlueProjectSubdirectory. The
                     // Screens/Entities JSON follows automatically: every writer derives its directory
                     // from this path.
-                    return CurrentMainProject.Directory + subdirectory +
-                        FileManager.RemovePath(withoutExtension.FullPath) + extension;
+                    return CurrentMainProject.Directory + subdirectory + nameOnly + extension;
                 }
             }
 
