@@ -151,6 +151,33 @@ public class OrphanedGeneratedCompileItemReconciliationTests
     }
 
     [Fact]
+    public void RemoveOrphanedGeneratedCompileItems_ShouldKeep_KnownNonElementOwnedPerformanceFiles_EvenThoughFileIsMissing()
+    {
+        // GitHub issue #2170: Performance/PoolList.Generated.cs and Performance/IEntityFactory.Generated.cs
+        // are written once by FactoryElementCodeGenerator.AddGeneratedPerformanceTypes, never owned by a
+        // Screen/Entity, so they always look orphaned to this check whenever the backing file happens to be
+        // missing - they must survive regardless.
+        var project = TestVisualStudioProjectFactory.CreateInNewTempDirectory(out var directory);
+        try
+        {
+            project.AddCodeBuildItem(@"Performance\PoolList.Generated.cs");
+            project.AddCodeBuildItem(@"Performance\IEntityFactory.Generated.cs");
+
+            var removed = project.RemoveOrphanedGeneratedCompileItems(new List<GlueElement>());
+
+            removed.ShouldBeEmpty();
+            project.IsFilePartOfProject(@"Performance\PoolList.Generated.cs", BuildItemMembershipType.CompileOrContentPipeline)
+                .ShouldBeTrue();
+            project.IsFilePartOfProject(@"Performance\IEntityFactory.Generated.cs", BuildItemMembershipType.CompileOrContentPipeline)
+                .ShouldBeTrue();
+        }
+        finally
+        {
+            Directory.Delete(directory, recursive: true);
+        }
+    }
+
+    [Fact]
     public void RemoveOrphanedGeneratedCompileItems_ShouldRemove_MultipleOrphanedEntries_AndKeepTheRest()
     {
         var project = TestVisualStudioProjectFactory.CreateInNewTempDirectory(out var directory);

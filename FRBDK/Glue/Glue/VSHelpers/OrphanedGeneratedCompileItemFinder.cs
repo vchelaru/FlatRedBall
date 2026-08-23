@@ -26,6 +26,24 @@ namespace FlatRedBall.Glue.VSHelpers
     /// </summary>
     public static class OrphanedGeneratedCompileItemFinder
     {
+        /// <summary>
+        /// Top-level folders a Screen/Entity's owned generated files can ever live under - see
+        /// <see cref="FlatRedBall.Glue.Elements.DeletionPlanner.GetOwnedGeneratedRelativePaths"/> (element
+        /// names are always "Screens\..."/"Entities\...", and factories always live under "Factories\").
+        /// Reconciliation is scoped to only these folders - see GitHub issue #2170 - because the ownership
+        /// model only understands Screen/Entity ownership: a ".Generated.cs" written by some other generator
+        /// into any other folder (e.g. Performance\PoolList.Generated.cs, written once by
+        /// FactoryElementCodeGenerator.AddGeneratedPerformanceTypes) will never appear "owned" and would
+        /// otherwise look orphaned - and get removed - on any load where its backing file happens to be
+        /// missing when this check runs.
+        /// </summary>
+        static readonly HashSet<string> ElementOwnedGeneratedFolders = new(StringComparer.OrdinalIgnoreCase)
+        {
+            "Screens",
+            "Entities",
+            "Factories",
+        };
+
         public static bool IsGlueGeneratedFileName(string fileName)
         {
             if (string.IsNullOrEmpty(fileName))
@@ -61,12 +79,16 @@ namespace FlatRedBall.Glue.VSHelpers
                     continue;
                 }
 
-                var fileName = item.UnevaluatedInclude
-                    .Replace('\\', '/')
-                    .Split('/')
-                    .Last();
+                var segments = item.UnevaluatedInclude.Replace('\\', '/').Split('/');
+                var fileName = segments.Last();
 
                 if (!IsGlueGeneratedFileName(fileName))
+                {
+                    continue;
+                }
+
+                var topFolder = segments.Length > 1 ? segments[0] : string.Empty;
+                if (!ElementOwnedGeneratedFolders.Contains(topFolder))
                 {
                     continue;
                 }
