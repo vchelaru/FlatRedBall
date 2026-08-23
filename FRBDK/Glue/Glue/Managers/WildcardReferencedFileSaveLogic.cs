@@ -74,6 +74,11 @@ public class WildcardReferencedFileSaveLogic
         }
 
         ConcurrentBag<ReferencedFileSave> newRfses = new();
+        // Errors are buffered rather than reported with GlueCommands.Self.PrintError from inside the
+        // Parallel.ForEach body: PrintError synchronously marshals onto the UI thread, and this method
+        // runs on the UI thread itself (synchronously, during project load), so a worker thread's
+        // PrintError call would deadlock waiting for a UI thread that's blocked waiting on this loop.
+        ConcurrentBag<string> errors = new();
 
         //foreach (var wildcardRfs in wildcardRfses)
         Parallel.ForEach(wildcardRfses, wildcardRfs =>
@@ -87,7 +92,7 @@ public class WildcardReferencedFileSaveLogic
             }
             catch (DirectoryNotFoundException ex)
             {
-                GlueCommands.Self.PrintError($"Error processing wildcard pattern {wildcardRfs.Name}:\n{ex}");
+                errors.Add($"Error processing wildcard pattern {wildcardRfs.Name}:\n{ex}");
             }
 
             foreach (var filePathForPossibleRfs in files)
@@ -102,6 +107,11 @@ public class WildcardReferencedFileSaveLogic
                 }
             }
         });
+
+        foreach (var error in errors)
+        {
+            _glueCommands.PrintError(error);
+        }
 
         // Parallelization causes files to arrive at the list at random times causing sort changes
         // every time startup is run and this causing noise in GlobalContent.Generated.cs.

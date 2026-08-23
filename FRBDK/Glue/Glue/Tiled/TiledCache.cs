@@ -116,29 +116,42 @@ namespace FlatRedBall.Glue.Tiled
 
             List<string> tmxErrors = new List<string>();
 
-            Parallel.ForEach(tmxFiles, fileName =>
+            // Loading the full TMX cache should not require every referenced tsx to actually exist on disk -
+            // a missing/broken tileset reference is reported per-file below, not an uncaught exception. This
+            // matches every other production TiledMapSave.FromFile call site (TmxCreationManager,
+            // FileReferenceManager, TmxCodeGenerator), which all set this false around the call.
+            var oldShouldLoadValuesFromSource = Tileset.ShouldLoadValuesFromSource;
+            Tileset.ShouldLoadValuesFromSource = false;
+            try
             {
-                if (!CachedTiledMapSaves.ContainsKey(fileName) && fileName.Exists())
+                Parallel.ForEach(tmxFiles, fileName =>
                 {
-                    TiledMapSave tms = null;
-
-                    try
+                    if (!CachedTiledMapSaves.ContainsKey(fileName) && fileName.Exists())
                     {
-                        tms = TiledMapSave.FromFile(fileName.FullPath);
-                    }
-                    catch (Exception e) 
-                    {
-                        tmxErrors.Add($"Could not load TMX file {fileName} because of error: {e.ToString()}");
-                    }
-                    if(tms != null)
-                    {
-                        CachedTiledMapSave cachedTiledMapSave = CreateCachedTiledMapSave(fileName, tms);
+                        TiledMapSave tms = null;
 
-                        dictionary[fileName] = cachedTiledMapSave;
-                    }
+                        try
+                        {
+                            tms = TiledMapSave.FromFile(fileName.FullPath);
+                        }
+                        catch (Exception e)
+                        {
+                            tmxErrors.Add($"Could not load TMX file {fileName} because of error: {e.ToString()}");
+                        }
+                        if(tms != null)
+                        {
+                            CachedTiledMapSave cachedTiledMapSave = CreateCachedTiledMapSave(fileName, tms);
 
-                }
-            });
+                            dictionary[fileName] = cachedTiledMapSave;
+                        }
+
+                    }
+                });
+            }
+            finally
+            {
+                Tileset.ShouldLoadValuesFromSource = oldShouldLoadValuesFromSource;
+            }
 
             foreach (var error in tmxErrors)
             {
@@ -200,7 +213,16 @@ namespace FlatRedBall.Glue.Tiled
             {
                 if (filePath.Exists())
                 {
-                    tms = TiledMapSave.FromFile(filePath.FullPath);
+                    var oldShouldLoadValuesFromSource = Tileset.ShouldLoadValuesFromSource;
+                    Tileset.ShouldLoadValuesFromSource = false;
+                    try
+                    {
+                        tms = TiledMapSave.FromFile(filePath.FullPath);
+                    }
+                    finally
+                    {
+                        Tileset.ShouldLoadValuesFromSource = oldShouldLoadValuesFromSource;
+                    }
 
                     CachedTiledMapSaves[filePath] = CreateCachedTiledMapSave(filePath, tms);
                 }
