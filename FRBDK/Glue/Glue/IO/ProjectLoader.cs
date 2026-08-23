@@ -455,7 +455,9 @@ namespace FlatRedBall.Glue.IO
         /// referenced in the .csproj, producing CS2001 the next time the project builds. Codegen above has
         /// just run, so any file a live element still owns has been (re)created - anything still missing
         /// and unclaimed by a current element is a leftover from an incomplete cleanup, not a fresh
-        /// checkout waiting on codegen.
+        /// checkout waiting on codegen. Also covers Gum Forms-generated files (GitHub issue #2185), whose
+        /// ownership GumPlugin reports back through the plugin call below since core Glue has no ownership
+        /// model for Gum elements.
         /// </summary>
         static void RemoveOrphanedGeneratedCsprojEntries()
         {
@@ -468,7 +470,10 @@ namespace FlatRedBall.Glue.IO
             var allElements = ObjectFinder.Self.GlueProject.Screens.Cast<GlueElement>()
                 .Concat(ObjectFinder.Self.GlueProject.Entities);
 
-            var removed = mainProject.RemoveOrphanedGeneratedCompileItems(allElements);
+            var formsOwnedRelativePaths =
+                PluginManager.CallPluginMethod("Gum Plugin", "GetFormsGeneratedRelativePaths") as IEnumerable<string>;
+
+            var removed = mainProject.RemoveOrphanedGeneratedCompileItems(allElements, formsOwnedRelativePaths);
 
             if (removed.Count > 0)
             {

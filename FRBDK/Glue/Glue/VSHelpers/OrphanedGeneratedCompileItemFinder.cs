@@ -27,12 +27,14 @@ namespace FlatRedBall.Glue.VSHelpers
     public static class OrphanedGeneratedCompileItemFinder
     {
         /// <summary>
-        /// Top-level folders a Screen/Entity's owned generated files can ever live under - see
-        /// <see cref="FlatRedBall.Glue.Elements.DeletionPlanner.GetOwnedGeneratedRelativePaths"/> (element
-        /// names are always "Screens\..."/"Entities\...", and factories always live under "Factories\").
-        /// Reconciliation is scoped to only these folders - see GitHub issue #2170 - because the ownership
-        /// model only understands Screen/Entity ownership: a ".Generated.cs" written by some other generator
-        /// into any other folder (e.g. Performance\PoolList.Generated.cs, written once by
+        /// Top-level folders a Screen/Entity's or a Gum element's owned generated files can ever live under -
+        /// see <see cref="FlatRedBall.Glue.Elements.DeletionPlanner.GetOwnedGeneratedRelativePaths"/> (element
+        /// names are always "Screens\..."/"Entities\...", factories always live under "Factories\", and Gum
+        /// Forms code always lives under "Forms\" - see GumPlugin's
+        /// CodeGeneratorManager.GetFormsGeneratedRelativePaths, GitHub issue #2185). Reconciliation is scoped
+        /// to only these folders - see GitHub issue #2170 - because the
+        /// ownership model doesn't understand every generator's output: a ".Generated.cs" written by some
+        /// other generator into any other folder (e.g. Performance\PoolList.Generated.cs, written once by
         /// FactoryElementCodeGenerator.AddGeneratedPerformanceTypes) will never appear "owned" and would
         /// otherwise look orphaned - and get removed - on any load where its backing file happens to be
         /// missing when this check runs.
@@ -42,6 +44,7 @@ namespace FlatRedBall.Glue.VSHelpers
             "Screens",
             "Entities",
             "Factories",
+            "Forms",
         };
 
         public static bool IsGlueGeneratedFileName(string fileName)

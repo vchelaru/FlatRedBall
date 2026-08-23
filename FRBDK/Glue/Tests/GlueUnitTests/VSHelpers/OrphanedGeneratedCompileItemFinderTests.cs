@@ -10,8 +10,8 @@ namespace GlueUnitTests.VSHelpers;
 /// its ".Generated.cs" (or similar) still referenced in the .csproj, producing CS2001 on the next build.
 /// These pin the pure decision logic - which candidate &lt;Compile Include&gt; entries are safe to treat as
 /// orphaned - independent of any real project or Glue bootstrap. Also covers GitHub issue #2170: candidates
-/// are scoped to the Screens/Entities/Factories folders, since the ownership model only understands
-/// Screen/Entity ownership.
+/// are scoped to the Screens/Entities/Factories/Forms folders, since the ownership model only understands
+/// Screen/Entity ownership plus (as of GitHub issue #2185) whatever GumPlugin reports owning Forms code.
 /// </summary>
 public class OrphanedGeneratedCompileItemFinderTests
 {
@@ -88,6 +88,17 @@ public class OrphanedGeneratedCompileItemFinderTests
         var result = Find(items);
 
         result.ShouldBe(new[] { @"Factories\MyEntityFactory.Generated.cs" });
+    }
+
+    [Fact]
+    public void FindOrphanedIncludes_ShouldRemove_OrphanedFormsGeneratedCs()
+    {
+        // GitHub issue #2185: Forms\...Forms.Generated.cs is scoped in the same way as Screens/Entities/Factories.
+        var items = new[] { Item(@"Forms\Screens\WrapUpScreenGumForms.Generated.cs") };
+
+        var result = Find(items);
+
+        result.ShouldBe(new[] { @"Forms\Screens\WrapUpScreenGumForms.Generated.cs" });
     }
 
     [Fact]
@@ -197,6 +208,20 @@ public class OrphanedGeneratedCompileItemFinderTests
         var items = new[] { Item(include) };
 
         var result = Find(items);
+
+        result.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void FindOrphanedIncludes_ShouldKeep_FormsGeneratedCsOwnedByALiveGumElement_EvenIfMissingOnDisk()
+    {
+        // GitHub issue #2185: a fresh checkout where Forms\...Forms.Generated.cs is gitignored and hasn't
+        // been regenerated yet, but the owning Gum element (reported by GumPlugin, not any GlueElement) is
+        // still live - the entry must survive, same tolerance as Screens/Entities.
+        var include = @"Forms\Components\EndgameDemoForms.Generated.cs";
+        var items = new[] { Item(include) };
+
+        var result = Find(items, ownedRelativePaths: new HashSet<string> { include });
 
         result.ShouldBeEmpty();
     }

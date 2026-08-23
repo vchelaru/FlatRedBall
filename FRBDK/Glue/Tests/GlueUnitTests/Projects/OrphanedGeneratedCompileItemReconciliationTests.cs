@@ -13,8 +13,8 @@ namespace GlueUnitTests.Projects;
 /// its ".Generated.cs" still referenced in the .csproj, producing CS2001 on the next build. These pin
 /// <see cref="VisualStudioProject.RemoveOrphanedGeneratedCompileItems"/> - the load-time reconciliation
 /// pass - against a real, MSBuild-backed project (via <see cref="TestVisualStudioProjectFactory"/>), no
-/// full Glue bootstrap needed since the method only takes an explicit element list and touches the project
-/// it's called on.
+/// full Glue bootstrap needed since the method only takes an explicit element list (plus, as of GitHub
+/// issue #2185, an explicit extra-owned-paths list for Forms code) and touches the project it's called on.
 /// </summary>
 public class OrphanedGeneratedCompileItemReconciliationTests
 {
@@ -170,6 +170,51 @@ public class OrphanedGeneratedCompileItemReconciliationTests
                 .ShouldBeTrue();
             project.IsFilePartOfProject(@"Performance\IEntityFactory.Generated.cs", BuildItemMembershipType.CompileOrContentPipeline)
                 .ShouldBeTrue();
+        }
+        finally
+        {
+            Directory.Delete(directory, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void RemoveOrphanedGeneratedCompileItems_ShouldKeep_FormsEntryOwnedViaAdditionalOwnedRelativePaths_EvenThoughFileIsMissing()
+    {
+        // GitHub issue #2185: Forms\...Forms.Generated.cs is owned by a Gum element, not any GlueElement, so
+        // its ownership arrives through additionalOwnedRelativePaths (what GumPlugin reports) instead of
+        // ownerElements.
+        var project = TestVisualStudioProjectFactory.CreateInNewTempDirectory(out var directory);
+        try
+        {
+            project.AddCodeBuildItem(@"Forms\Components\EndgameDemoForms.Generated.cs");
+
+            var removed = project.RemoveOrphanedGeneratedCompileItems(
+                new List<GlueElement>(),
+                new List<string> { "Forms/Components/EndgameDemoForms.Generated.cs" });
+
+            removed.ShouldBeEmpty();
+            project.IsFilePartOfProject(@"Forms\Components\EndgameDemoForms.Generated.cs", BuildItemMembershipType.CompileOrContentPipeline)
+                .ShouldBeTrue();
+        }
+        finally
+        {
+            Directory.Delete(directory, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void RemoveOrphanedGeneratedCompileItems_ShouldRemove_OrphanedFormsEntry_WhenNotInAdditionalOwnedRelativePaths()
+    {
+        var project = TestVisualStudioProjectFactory.CreateInNewTempDirectory(out var directory);
+        try
+        {
+            project.AddCodeBuildItem(@"Forms\Screens\WrapUpScreenGumForms.Generated.cs");
+
+            var removed = project.RemoveOrphanedGeneratedCompileItems(new List<GlueElement>(), new List<string>());
+
+            removed.ShouldBe(new[] { @"Forms\Screens\WrapUpScreenGumForms.Generated.cs" });
+            project.IsFilePartOfProject(@"Forms\Screens\WrapUpScreenGumForms.Generated.cs", BuildItemMembershipType.CompileOrContentPipeline)
+                .ShouldBeFalse();
         }
         finally
         {

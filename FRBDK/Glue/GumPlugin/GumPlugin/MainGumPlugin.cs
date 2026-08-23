@@ -262,6 +262,11 @@ public class MainGumPlugin : PluginBase
 
     public bool HasGum() => AppState.Self.GumProjectSave != null;
 
+    // Called via PluginManager.CallPluginMethod("Gum Plugin", "GetFormsGeneratedRelativePaths") - see
+    // ProjectLoader.RemoveOrphanedGeneratedCsprojEntries (GitHub issue #2185).
+    public List<string> GetFormsGeneratedRelativePaths() =>
+        CodeGeneratorManager.Self.GetFormsGeneratedRelativePaths().ToList();
+
     private void HandleFileRemoved(GlueElement container, ReferencedFileSave file)
     {
         if (file.Name.EndsWith(".gumx"))
