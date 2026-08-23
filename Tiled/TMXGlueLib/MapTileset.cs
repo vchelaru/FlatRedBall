@@ -78,6 +78,15 @@ namespace TMXGlueLib
 
         public static bool ShouldLoadValuesFromSource = true;
 
+        /// <summary>
+        /// Whether a missing/unreadable shared tsx file should throw a FileNotFoundException (the default,
+        /// existing behavior - some callers want to surface this as a real error) or be tolerated by leaving
+        /// this one Tileset's values (Tiles, Images, etc.) at their defaults and continuing. Only consulted
+        /// when <see cref="ShouldLoadValuesFromSource"/> is true - unlike that flag, this does not skip
+        /// loading every tileset, only degrades the specific one whose source could not be found.
+        /// </summary>
+        public static bool ShouldThrowOnMissingSource = true;
+
         [XmlAttribute("source")]
         public string Source
         {
@@ -323,8 +332,15 @@ namespace TMXGlueLib
                 }
                 catch (FileNotFoundException)
                 {
+                    if (!ShouldThrowOnMissingSource)
+                    {
+                        // Leave this Tileset's values (Tiles, Images, etc.) at their defaults and move on -
+                        // one map can reference several tilesets, and a caller that opted into this should
+                        // still get everything from the tilesets that did load.
+                        return;
+                    }
 
-                    string message = "Could not find the shared tsx file \n" + fileAttemptedToLoad + 
+                    string message = "Could not find the shared tsx file \n" + fileAttemptedToLoad +
                         "\nIf this is a relative file name, then the loader will use " +
                         "the FileManager's RelativeDirectory to make the file absolute.  Therefore, be sure to set the FileManger's RelativeDirectory to the file represented by " +
                         "this fileset before setting this property if setting this property manually.\n\nIf you are loading this TMX in a tool and you do not want to recursively" +

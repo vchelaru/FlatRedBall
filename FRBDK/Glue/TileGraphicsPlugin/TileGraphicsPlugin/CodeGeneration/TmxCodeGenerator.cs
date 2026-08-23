@@ -61,9 +61,15 @@ namespace TileGraphicsPlugin.CodeGeneration
             if(absoluteFile.Exists())
             {
                 var oldShouldLoadFromSource = Tileset.ShouldLoadValuesFromSource;
+                var oldShouldThrowOnMissingSource = Tileset.ShouldThrowOnMissingSource;
                 //Tileset.ShouldLoadValuesFromSource = false;
                 // we need this to be true so we get the tileset info:
                 Tileset.ShouldLoadValuesFromSource = true;
+                // A map can reference several tilesets - one having a moved/deleted shared tsx shouldn't
+                // abort field generation for objects tied to the other, still-valid tilesets. Only the
+                // affected Tileset degrades to its default (empty) Tiles/Images; TiledMapSave.FromFile
+                // still returns normally.
+                Tileset.ShouldThrowOnMissingSource = false;
 
                 try
                 {
@@ -88,7 +94,10 @@ namespace TileGraphicsPlugin.CodeGeneration
                                     else
                                     {
                                         var tileset = tiledMapSave.Tilesets.FirstOrDefault(possibleTileset => possibleTileset.Firstgid <= item.gid);
-                                        var foundTile = tileset?.Tiles.First(tile => tile.id + tileset.Firstgid == item.gid);
+                                        // FirstOrDefault, not First: a tileset that failed to load (missing tsx)
+                                        // has no Tiles, and even a loaded tileset may have no <tile> entry for
+                                        // this gid - either way that's "no class for this object", not a crash.
+                                        var foundTile = tileset?.Tiles.FirstOrDefault(tile => tile.id + tileset.Firstgid == item.gid);
                                         className = foundTile?.Class;
                                     }
                                     var entity = ObjectFinder.Self.GetEntitySaveUnqualified(className);
@@ -107,7 +116,11 @@ namespace TileGraphicsPlugin.CodeGeneration
                 {
                     // do nothing - this will be handled elsewhere by the file tracking error system
                 }
-                Tileset.ShouldLoadValuesFromSource = oldShouldLoadFromSource;
+                finally
+                {
+                    Tileset.ShouldLoadValuesFromSource = oldShouldLoadFromSource;
+                    Tileset.ShouldThrowOnMissingSource = oldShouldThrowOnMissingSource;
+                }
             }
         }
 
@@ -298,9 +311,15 @@ namespace TileGraphicsPlugin.CodeGeneration
             if (absoluteFile.Exists())
             {
                 var oldShouldLoadFromSource = Tileset.ShouldLoadValuesFromSource;
+                var oldShouldThrowOnMissingSource = Tileset.ShouldThrowOnMissingSource;
                 //Tileset.ShouldLoadValuesFromSource = false;
                 // we need this to be true so we get the tileset info:
                 Tileset.ShouldLoadValuesFromSource = true;
+                // A map can reference several tilesets - one having a moved/deleted shared tsx shouldn't
+                // abort field generation for objects tied to the other, still-valid tilesets. Only the
+                // affected Tileset degrades to its default (empty) Tiles/Images; TiledMapSave.FromFile
+                // still returns normally.
+                Tileset.ShouldThrowOnMissingSource = false;
 
                 try
                 {
@@ -323,10 +342,13 @@ namespace TileGraphicsPlugin.CodeGeneration
                                     }
                                     else
                                     {
-                                        var tileset = tiledMapSave.Tilesets.First(possibleTileset => possibleTileset.Firstgid <= item.gid);
-                                        var foundTile = tileset.Tiles.First(tile => tile.id + tileset.Firstgid == item.gid);
+                                        var tileset = tiledMapSave.Tilesets.FirstOrDefault(possibleTileset => possibleTileset.Firstgid <= item.gid);
+                                        // FirstOrDefault, not First: a tileset that failed to load (missing tsx)
+                                        // has no Tiles, and even a loaded tileset may have no <tile> entry for
+                                        // this gid - either way that's "no class for this object", not a crash.
+                                        var foundTile = tileset?.Tiles.FirstOrDefault(tile => tile.id + tileset.Firstgid == item.gid);
 
-                                        className = foundTile.Class;
+                                        className = foundTile?.Class;
                                     }
                                     var entity = ObjectFinder.Self.GetEntitySaveUnqualified(className);
 
@@ -345,7 +367,11 @@ namespace TileGraphicsPlugin.CodeGeneration
                 {
                     // do nothing - this will be handled elsewhere by the file tracking error system
                 }
-                Tileset.ShouldLoadValuesFromSource = oldShouldLoadFromSource;
+                finally
+                {
+                    Tileset.ShouldLoadValuesFromSource = oldShouldLoadFromSource;
+                    Tileset.ShouldThrowOnMissingSource = oldShouldThrowOnMissingSource;
+                }
 
             }
         }
