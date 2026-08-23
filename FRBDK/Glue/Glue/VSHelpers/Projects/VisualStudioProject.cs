@@ -1248,10 +1248,11 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         /// so "missing on disk" plus "unowned" together are a safe signal the entry is a leftover from a
         /// delete/rename that didn't clean up the csproj (a merge, a manual edit, an older Glue version).
         /// Never touches wildcard or conditional (platform-specific) entries, or hand-authored files - only
-        /// Glue's own generated-file naming is a candidate. Also never touches the handful of generated files
-        /// that are known to never be Screen/Entity-owned (e.g. Performance/PoolList.Generated.cs - see GitHub
-        /// issue #2170); the ownership model only understands Screen/Entity ownership, so those would always
-        /// look orphaned to it. Returns the removed entries' Include values.
+        /// Glue's own generated-file naming is a candidate. Also scoped to only the Screens/Entities/Factories
+        /// folders a Screen/Entity's generated files can ever live under - see GitHub issue #2170; the
+        /// ownership model only understands Screen/Entity ownership, so a ".Generated.cs" some other generator
+        /// wrote elsewhere (e.g. Performance/PoolList.Generated.cs) would always look orphaned to it. Returns
+        /// the removed entries' Include values.
         /// </summary>
         public List<string> RemoveOrphanedGeneratedCompileItems(IEnumerable<GlueElement> ownerElements)
         {

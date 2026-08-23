@@ -27,16 +27,21 @@ namespace FlatRedBall.Glue.VSHelpers
     public static class OrphanedGeneratedCompileItemFinder
     {
         /// <summary>
-        /// Includes (relative to the project directory, compared with '/' as the separator) of Glue-generated
-        /// files that are never owned by any Screen/Entity - see GitHub issue #2170. Written once by
-        /// FactoryElementCodeGenerator.AddGeneratedPerformanceTypes, so the Screen/Entity ownership model has
-        /// no way to recognize them as owned; without this exclusion they'd look orphaned - and get removed -
-        /// on any load where the backing file happens to be missing when this check runs.
+        /// Top-level folders a Screen/Entity's owned generated files can ever live under - see
+        /// <see cref="FlatRedBall.Glue.Elements.DeletionPlanner.GetOwnedGeneratedRelativePaths"/> (element
+        /// names are always "Screens\..."/"Entities\...", and factories always live under "Factories\").
+        /// Reconciliation is scoped to only these folders - see GitHub issue #2170 - because the ownership
+        /// model only understands Screen/Entity ownership: a ".Generated.cs" written by some other generator
+        /// into any other folder (e.g. Performance\PoolList.Generated.cs, written once by
+        /// FactoryElementCodeGenerator.AddGeneratedPerformanceTypes) will never appear "owned" and would
+        /// otherwise look orphaned - and get removed - on any load where its backing file happens to be
+        /// missing when this check runs.
         /// </summary>
-        static readonly HashSet<string> KnownNonElementOwnedGeneratedIncludes = new(StringComparer.OrdinalIgnoreCase)
+        static readonly HashSet<string> ElementOwnedGeneratedFolders = new(StringComparer.OrdinalIgnoreCase)
         {
-            "Performance/PoolList.Generated.cs",
-            "Performance/IEntityFactory.Generated.cs",
+            "Screens",
+            "Entities",
+            "Factories",
         };
 
         public static bool IsGlueGeneratedFileName(string fileName)
@@ -74,17 +79,16 @@ namespace FlatRedBall.Glue.VSHelpers
                     continue;
                 }
 
-                var fileName = item.UnevaluatedInclude
-                    .Replace('\\', '/')
-                    .Split('/')
-                    .Last();
+                var segments = item.UnevaluatedInclude.Replace('\\', '/').Split('/');
+                var fileName = segments.Last();
 
                 if (!IsGlueGeneratedFileName(fileName))
                 {
                     continue;
                 }
 
-                if (KnownNonElementOwnedGeneratedIncludes.Contains(item.UnevaluatedInclude.Replace('\\', '/')))
+                var topFolder = segments.Length > 1 ? segments[0] : string.Empty;
+                if (!ElementOwnedGeneratedFolders.Contains(topFolder))
                 {
                     continue;
                 }

@@ -9,7 +9,9 @@ namespace GlueUnitTests.VSHelpers;
 /// GitHub issue #2103: a Screen/Entity deleted or renamed outside Glue's own delete/rename flow can leave
 /// its ".Generated.cs" (or similar) still referenced in the .csproj, producing CS2001 on the next build.
 /// These pin the pure decision logic - which candidate &lt;Compile Include&gt; entries are safe to treat as
-/// orphaned - independent of any real project or Glue bootstrap.
+/// orphaned - independent of any real project or Glue bootstrap. Also covers GitHub issue #2170: candidates
+/// are scoped to the Screens/Entities/Factories folders, since the ownership model only understands
+/// Screen/Entity ownership.
 /// </summary>
 public class OrphanedGeneratedCompileItemFinderTests
 {
@@ -171,11 +173,27 @@ public class OrphanedGeneratedCompileItemFinderTests
     [InlineData(@"Performance\PoolList.Generated.cs")]
     [InlineData(@"Performance\IEntityFactory.Generated.cs")]
     [InlineData("Performance/PoolList.Generated.cs")]
-    public void FindOrphanedIncludes_ShouldKeep_KnownNonElementOwnedGeneratedFiles_EvenIfMissingOnDisk(string include)
+    public void FindOrphanedIncludes_ShouldKeep_PerformanceGeneratedFiles_EvenIfMissingOnDisk(string include)
     {
         // GitHub issue #2170: these are written once by
         // FactoryElementCodeGenerator.AddGeneratedPerformanceTypes, not owned by any Screen/Entity, so the
-        // ownership model always sees them as unowned - they must be excluded regardless of file existence.
+        // ownership model always sees them as unowned - they must survive regardless of file existence.
+        var items = new[] { Item(include) };
+
+        var result = Find(items);
+
+        result.ShouldBeEmpty();
+    }
+
+    [Theory]
+    [InlineData(@"SomeOtherFolder\Whatever.Generated.cs")]
+    [InlineData("RootLevel.Generated.cs")]
+    public void FindOrphanedIncludes_ShouldKeep_AnyGeneratedFileOutsideScreensEntitiesFactories_EvenIfMissingOnDisk(string include)
+    {
+        // GitHub issue #2170: reconciliation is scoped to only the Screens/Entities/Factories folders a
+        // Screen/Entity's generated files can ever live under - not a list of specific known filenames - so
+        // it can't misfire on some future generator's own ".Generated.cs" written anywhere else, the same way
+        // it did for Performance/PoolList.Generated.cs.
         var items = new[] { Item(include) };
 
         var result = Find(items);
