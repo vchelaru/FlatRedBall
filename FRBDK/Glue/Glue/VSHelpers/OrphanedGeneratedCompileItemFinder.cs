@@ -26,6 +26,19 @@ namespace FlatRedBall.Glue.VSHelpers
     /// </summary>
     public static class OrphanedGeneratedCompileItemFinder
     {
+        /// <summary>
+        /// Includes (relative to the project directory, compared with '/' as the separator) of Glue-generated
+        /// files that are never owned by any Screen/Entity - see GitHub issue #2170. Written once by
+        /// FactoryElementCodeGenerator.AddGeneratedPerformanceTypes, so the Screen/Entity ownership model has
+        /// no way to recognize them as owned; without this exclusion they'd look orphaned - and get removed -
+        /// on any load where the backing file happens to be missing when this check runs.
+        /// </summary>
+        static readonly HashSet<string> KnownNonElementOwnedGeneratedIncludes = new(StringComparer.OrdinalIgnoreCase)
+        {
+            "Performance/PoolList.Generated.cs",
+            "Performance/IEntityFactory.Generated.cs",
+        };
+
         public static bool IsGlueGeneratedFileName(string fileName)
         {
             if (string.IsNullOrEmpty(fileName))
@@ -67,6 +80,11 @@ namespace FlatRedBall.Glue.VSHelpers
                     .Last();
 
                 if (!IsGlueGeneratedFileName(fileName))
+                {
+                    continue;
+                }
+
+                if (KnownNonElementOwnedGeneratedIncludes.Contains(item.UnevaluatedInclude.Replace('\\', '/')))
                 {
                     continue;
                 }

@@ -167,6 +167,22 @@ public class OrphanedGeneratedCompileItemFinderTests
         result.ShouldBeEmpty();
     }
 
+    [Theory]
+    [InlineData(@"Performance\PoolList.Generated.cs")]
+    [InlineData(@"Performance\IEntityFactory.Generated.cs")]
+    [InlineData("Performance/PoolList.Generated.cs")]
+    public void FindOrphanedIncludes_ShouldKeep_KnownNonElementOwnedGeneratedFiles_EvenIfMissingOnDisk(string include)
+    {
+        // GitHub issue #2170: these are written once by
+        // FactoryElementCodeGenerator.AddGeneratedPerformanceTypes, not owned by any Screen/Entity, so the
+        // ownership model always sees them as unowned - they must be excluded regardless of file existence.
+        var items = new[] { Item(include) };
+
+        var result = Find(items);
+
+        result.ShouldBeEmpty();
+    }
+
     [Fact]
     public void FindOrphanedIncludes_ShouldKeep_WhenOwnershipMatchIgnoresNothingButExactPath()
     {
