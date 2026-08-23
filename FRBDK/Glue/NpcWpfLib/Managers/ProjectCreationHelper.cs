@@ -229,6 +229,8 @@ public static class ProjectCreationHelper
             return false;
         }
 
+        RemoveFrb2DefaultGameScreen(templateInfo, viewModel.ProjectName, unpackDirectory);
+
         if (viewModel.OpenSlnFolderAfterCreation)
         {
             System.Diagnostics.Process.Start(
@@ -238,6 +240,39 @@ public static class ProjectCreationHelper
         System.Console.Out.WriteLine(unpackDirectory);
 
         return true;
+    }
+
+    /// <summary>
+    /// FlatRedBall 2's nuget-packaged template id - the one explicit signal this is really the FRB2
+    /// template and not some other, currently-hypothetical dotnet-new-based entry that might get added
+    /// to <see cref="Npc.Data.EmptyTemplates"/> later. Deliberately not inferred from
+    /// "this is the only DotnetNewProjectInfo today".
+    /// </summary>
+    const string Frb2TemplatePackageId = "FlatRedBall2.Templates";
+
+    /// <summary>
+    /// The frb2-desktop template ships a hardcoded Screens/GameScreen.cs "Hello from FlatRedBall 2"
+    /// starter screen so a bare `dotnet new` + F5 shows something before Glue is ever involved. Once
+    /// Glue opens the project, Game1.cs is rewritten to load Glue's .gluj instead of that class (see
+    /// Frb2Game1InitializeUpdater), so the file becomes dead code from that point on. Strip it here so a
+    /// project made through Glue doesn't carry it - and only this one file: no other Screens/ content,
+    /// no wildcard, no folder deletion.
+    /// </summary>
+    static void RemoveFrb2DefaultGameScreen(DotnetNewProjectInfo templateInfo, string projectName, string unpackDirectory)
+    {
+        if (templateInfo.TemplatePackageId != Frb2TemplatePackageId)
+        {
+            return;
+        }
+
+        var openedProject = GetProjectToOpen(templateInfo, projectName, unpackDirectory);
+        var gameScreenPath = Path.Combine(
+            Path.GetDirectoryName(openedProject) ?? unpackDirectory, "Screens", "GameScreen.cs");
+
+        if (File.Exists(gameScreenPath))
+        {
+            File.Delete(gameScreenPath);
+        }
     }
 
     /// <summary>
