@@ -371,6 +371,47 @@ public class Frb2ProjectLoadTests
     }
 
     [StaFact]
+    public async Task LoadingAnFrb2ProjectForTheFirstTime_RewritesGame1ToLoadTheGluj()
+    {
+        // FRB2 generates no code, so the template's Game1.cs hardcodes FlatRedBallService.Default
+        // .Initialize<GameScreen>(this) - it has to be swapped for a call that loads Glue's .gluj
+        // instead, and the only safe moment to do that automatically is the very first load, before
+        // any .gluj exists and while Game1.cs is still whatever the template shipped.
+        GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
+
+        using var temp = new TempDir("Frb2Game1Rewrite_");
+        var csprojPath = WriteFrb2Project(temp.Root);
+
+        await GoldProject.LoadInGlueAsync(csprojPath);
+
+        var game1Contents = File.ReadAllText(Path.Combine(temp.Root, "Game1.cs"));
+        Assert.DoesNotContain(Frb2ProjectFixture.DefaultInitializeCall, game1Contents);
+        Assert.Contains(
+            $"FlatRedBallService.Default.Initialize(this, \"Content/FrbEditor/{ProjectName}.gluj\");",
+            game1Contents);
+    }
+
+    [StaFact]
+    public async Task ReloadingAnFrb2Project_DoesNotTouchGame1Again()
+    {
+        // The rewrite only fires the moment the .gluj is created. A user who reverts the Initialize
+        // call back to Initialize<GameScreen>(this) after that point has made a deliberate choice Glue
+        // must not silently overwrite on every later load.
+        GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
+
+        using var temp = new TempDir("Frb2Game1NoReRewrite_");
+        var csprojPath = WriteFrb2Project(temp.Root);
+        await GoldProject.LoadInGlueAsync(csprojPath);
+
+        var game1Path = Path.Combine(temp.Root, "Game1.cs");
+        File.WriteAllText(game1Path, Frb2ProjectFixture.DefaultInitializeCall);
+
+        await GoldProject.LoadInGlueAsync(csprojPath);
+
+        Assert.Equal(Frb2ProjectFixture.DefaultInitializeCall, File.ReadAllText(game1Path));
+    }
+
+    [StaFact]
     public async Task AddEntity_OnAnFrb2Project_WritesTheGlej_WithoutClaimingACodeFileExists()
     {
         // AddEntity is a separate method with its own copy of AddScreen's create-code-file logic, so it

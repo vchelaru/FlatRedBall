@@ -261,6 +261,14 @@ public class CodeGeneratorManager : Singleton<CodeGeneratorManager>
 
     public async Task GenerateDerivedGueRuntimesAsync(bool forceReload = false, GenerationVerbosity generationVerbosity = GenerationVerbosity.Minimal)
     {
+        // FRB2 has no generated Screen/Entity classes to reference these runtime types from, and every
+        // file this would write is already suppressed by CodeWritePolicy - so this is pure wasted work
+        // and misleading "Generating Gum ..." log spam on every load, not a correctness fix.
+        if (!CodeWritePolicy.WritesCodeForCurrentProject)
+        {
+            return;
+        }
+
         await TaskManager.Self.AddAsync(() =>
         {
             try
@@ -714,6 +722,13 @@ public class CodeGeneratorManager : Singleton<CodeGeneratorManager>
 
     public async Task GenerateAllBehaviors(GenerationVerbosity verbosity = GenerationVerbosity.Minimal)
     {
+        // See the matching early-out in GenerateDerivedGueRuntimesAsync - same reasoning applies to
+        // behavior runtime code.
+        if (!CodeWritePolicy.WritesCodeForCurrentProject)
+        {
+            return;
+        }
+
         await TaskManager.Self.AddAsync(() =>
         {
             try

@@ -20,6 +20,16 @@ internal static class Frb2ProjectFixture
     public const string HandWrittenCodeFile = "Game1.cs";
 
     /// <summary>
+    /// The one line the FRB2 template hardcodes and Glue has to rewrite for the game to load Glue's
+    /// project instead - see <see cref="FlatRedBall.Glue.VSHelpers.Projects.Frb2Game1InitializeUpdater"/>.
+    /// </summary>
+    public const string DefaultInitializeCall = "FlatRedBallService.Default.Initialize<GameScreen>(this);";
+
+    static string Game1Contents(string projectName) =>
+        "namespace " + projectName + ";\npublic class Game1\n{\n    void Initialize()\n    {\n        " +
+        DefaultInitializeCall + "\n    }\n}\n";
+
+    /// <summary>
     /// A single-project FRB2 game referencing the engine by source. Returns the .csproj path.
     /// </summary>
     public static string Write(string root)
@@ -38,8 +48,7 @@ internal static class Frb2ProjectFixture
   </ItemGroup>
 </Project>");
 
-        File.WriteAllText(Path.Combine(root, HandWrittenCodeFile),
-            "namespace " + ProjectName + ";\npublic class Game1\n{\n}\n");
+        File.WriteAllText(Path.Combine(root, HandWrittenCodeFile), Game1Contents(ProjectName));
 
         // A .slnx, not a .sln, because that is what the real FRB2 sample ships and what a solution
         // created in a recent Visual Studio looks like. ProjectSyncer.LocateSolution throws when it
@@ -84,8 +93,7 @@ internal static class Frb2ProjectFixture
   </ItemGroup>
 </Project>");
 
-        File.WriteAllText(Path.Combine(commonDirectory, HandWrittenCodeFile),
-            "namespace " + ProjectName + ";\npublic class Game1\n{\n}\n");
+        File.WriteAllText(Path.Combine(commonDirectory, HandWrittenCodeFile), Game1Contents(ProjectName));
 
         File.WriteAllText(Path.Combine(desktopDirectory, ProjectName + ".Desktop.csproj"), $@"<Project Sdk=""Microsoft.NET.Sdk"">
   <PropertyGroup>

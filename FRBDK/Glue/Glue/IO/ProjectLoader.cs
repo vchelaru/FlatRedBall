@@ -189,6 +189,20 @@ namespace FlatRedBall.Glue.IO
                     ProjectManager.FindGameClass();
                     GluxCommands.Self.SaveProjectAndElementsImmediately();
 
+                    // FRB2 generates no code, so the one line telling the game to load Glue's project
+                    // instead of its template GameScreen has to be written into Game1.cs by hand. This is
+                    // the only safe point to do that automatically - the .gluj/.glux did not exist a
+                    // moment ago, so Game1.cs is still whatever the template shipped.
+                    if (GlueState.Self.CurrentMainProject is Frb2Project frb2Project)
+                    {
+                        var game1FilePath = frb2Project.Directory + "Game1.cs";
+                        var glueProjectContentRelativePath = frb2Project.GlueProjectSubdirectory +
+                            FileManager.RemovePath(glueProjectFile.FullPath);
+
+                        Frb2Game1InitializeUpdater.TryUpdateGame1ToLoadGlueProject(
+                            game1FilePath, glueProjectContentRelativePath);
+                    }
+
                     // no need to do this - will do it in PerformLoadGlux:
                     //PluginManager.ReactToLoadedGlux(ProjectManager.GlueProjectSave, glueProjectFile);
                     //shouldSaveGlux = true;
