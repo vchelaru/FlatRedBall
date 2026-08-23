@@ -48,8 +48,9 @@ public class Frb2ProjectLoadTests
 
         Assert.IsType<Frb2Project>(GlueState.Self.CurrentMainProject);
         Assert.True(File.Exists(Path.Combine(
-                Path.GetDirectoryName(commonCsproj)!, "Content", "FrbEditor", ProjectName + ".Common.gluj")),
-            "The .gluj should land under the Common project's Content/FrbEditor/.");
+                Path.GetDirectoryName(commonCsproj)!, "Content", "FrbEditor", ProjectName + ".gluj")),
+            "The .gluj should land under the Common project's Content/FrbEditor/, named after the " +
+            "game rather than carrying the Common project's own \".Common\" suffix.");
 
         // Same contract as a source-referencing FRB2 game: no generated code anywhere.
         Assert.Empty(Directory.GetFiles(temp.Root, "*.cs", SearchOption.AllDirectories)
