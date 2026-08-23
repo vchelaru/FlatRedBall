@@ -1,26 +1,27 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using GameCommunicationPlugin.GlueControl.Views;
+using GameCommunicationPlugin.GlueControl.CommandSending;
 using Shouldly;
 using Xunit;
 
 namespace GlueUnitTests.GameCommunicationPlugin;
 
 /// <summary>
-/// The retry budget for the SetBorderlessDto sent when the game is embedded in the Game tab
-/// (issue #2048). The game reports itself as not ready for the window between its socket connecting
-/// and GlueControlManager being constructed, so the budget has to outlast that gap or the game keeps
-/// its window frame for the rest of the session.
+/// The retry budget for a DTO sent while the game might still be mid-startup - originally added for
+/// SetBorderlessDto (issue #2048), also used for the initial SetEditMode send (issue #2174). The game
+/// reports itself as not connected, or connected but not ready, for the window between its process
+/// starting and GlueControlManager being constructed, so the budget has to outlast that gap or the
+/// command is silently dropped.
 /// </summary>
-public class BorderlessRetryPolicyTests
+public class GameReadinessRetryPolicyTests
 {
     [Fact]
     public async Task TryRepeatedlyAsync_ShouldStopAtFirstSuccess()
     {
         var attempts = 0;
 
-        var succeeded = await BorderlessRetryPolicy.TryRepeatedlyAsync(
+        var succeeded = await GameReadinessRetryPolicy.TryRepeatedlyAsync(
             attemptAsync: () => { attempts++; return Task.FromResult(true); },
             delayAsync: _ => Task.CompletedTask);
 
@@ -33,7 +34,7 @@ public class BorderlessRetryPolicyTests
     {
         var attempts = 0;
 
-        var succeeded = await BorderlessRetryPolicy.TryRepeatedlyAsync(
+        var succeeded = await GameReadinessRetryPolicy.TryRepeatedlyAsync(
             attemptAsync: () => { attempts++; return Task.FromResult(attempts == 4); },
             delayAsync: _ => Task.CompletedTask);
 
@@ -46,7 +47,7 @@ public class BorderlessRetryPolicyTests
     {
         var attempts = 0;
 
-        var succeeded = await BorderlessRetryPolicy.TryRepeatedlyAsync(
+        var succeeded = await GameReadinessRetryPolicy.TryRepeatedlyAsync(
             attemptAsync: () => { attempts++; return Task.FromResult(false); },
             delayAsync: _ => Task.CompletedTask,
             maxAttempts: 5);
@@ -60,7 +61,7 @@ public class BorderlessRetryPolicyTests
     {
         var delays = new List<int>();
 
-        await BorderlessRetryPolicy.TryRepeatedlyAsync(
+        await GameReadinessRetryPolicy.TryRepeatedlyAsync(
             attemptAsync: () => Task.FromResult(false),
             delayAsync: milliseconds => { delays.Add(milliseconds); return Task.CompletedTask; },
             maxAttempts: 3,
@@ -78,6 +79,27 @@ public class BorderlessRetryPolicyTests
         // connects immediately) and GlueControlManager (which is what actually handles the DTO) -
         // CameraSetup.SetupCamera sits between them, and graphics-device setup is what swings on a
         // cold GPU driver load. The original 90ms budget lost that race often enough to be reported.
-        BorderlessRetryPolicy.TotalBudgetMilliseconds.ShouldBeGreaterThanOrEqualTo(1000);
+        GameReadinessRetryPolicy.TotalBudgetMilliseconds.ShouldBeGreaterThanOrEqualTo(1000);
+    }
+
+    /// <summary>
+    /// Pins issue #2174's root cause directly: the default call (no injected delay) must actually pass
+    /// wall-clock time between attempts, not just call attemptAsync() repeatedly in a tight loop. A
+    /// caller racing the game's startup (CommandSender's SetEditMode retry) depends on real time
+    /// elapsing for the game to become ready - a loop with no delay retries 5 times before the game's
+    /// socket has even had a chance to connect.
+    /// </summary>
+    [Fact]
+    public async Task TryRepeatedlyAsync_WithNoInjectedDelay_ActuallyWaitsBetweenAttempts()
+    {
+        var attempts = 0;
+
+        var succeeded = await GameReadinessRetryPolicy.TryRepeatedlyAsync(
+            attemptAsync: () => { attempts++; return Task.FromResult(attempts == 3); },
+            maxAttempts: 5,
+            millisecondsBetweenAttempts: 20);
+
+        succeeded.ShouldBeTrue();
+        attempts.ShouldBe(3);
     }
 }

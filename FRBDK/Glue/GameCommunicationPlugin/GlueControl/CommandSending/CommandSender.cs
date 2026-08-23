@@ -183,12 +183,23 @@ namespace GameCommunicationPlugin.GlueControl.CommandSending
 
                 lastStartedSend = text;
 
-                int triesLeft = importance  == SendImportance.RetryOnFailure ? 5 : 1;
                 GeneralResponse<string> result = GeneralResponse<string>.UnsuccessfulResponse;
 
-                while(result.Succeeded == false && triesLeft > 0)
+                if (importance == SendImportance.RetryOnFailure)
                 {
-                    triesLeft--;
+                    // A single attempt races the game's own startup (see GameReadinessRetryPolicy) -
+                    // the game can report itself as not connected, or not yet ready to dispatch the
+                    // command, for up to a second or so after its window first appears. Retrying
+                    // without waiting between attempts loses that race every time, since the condition
+                    // that makes the next attempt succeed hasn't had time to change.
+                    await GameReadinessRetryPolicy.TryRepeatedlyAsync(async () =>
+                    {
+                        result = await SendCommandNoSemaphore(text, isImportant, shouldPrint, waitForResponse);
+                        return result.Succeeded;
+                    });
+                }
+                else
+                {
                     result = await SendCommandNoSemaphore(text, isImportant, shouldPrint, waitForResponse);
                 }
 

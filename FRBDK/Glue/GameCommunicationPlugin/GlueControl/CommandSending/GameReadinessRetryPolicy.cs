@@ -1,17 +1,19 @@
 using System;
 using System.Threading.Tasks;
 
-namespace GameCommunicationPlugin.GlueControl.Views
+namespace GameCommunicationPlugin.GlueControl.CommandSending
 {
     /// <summary>
-    /// Retry budget for the SetBorderlessDto that strips the game window's frame when it's embedded
-    /// in the Game tab (issue #2048). Runner_GameStarted fires as soon as the game process has a
-    /// window handle, but the DTO is only actually handled once the game's Initialize has gotten as
-    /// far as constructing GlueControlManager - until then the socket is connected yet
-    /// GlueControlManager.Self is null, so the receive loop reports itself as not ready and the
-    /// command is dropped. Retrying past that gap is the whole point of this type.
+    /// Retry budget for a DTO sent while the game might still be mid-startup (originally added for
+    /// SetBorderlessDto, issue #2048; also used for the initial SetEditMode send, issue #2174).
+    /// Runner_GameStarted fires as soon as the game process has a window handle - which can be before
+    /// GameConnectionManager has even connected the socket - and the DTO is only actually handled once
+    /// the game's Initialize has gotten as far as constructing GlueControlManager. Until then either the
+    /// socket isn't connected yet, or it is but GlueControlManager.Self is null and the receive loop
+    /// reports itself as not ready, so the command is dropped either way. Retrying past that gap is the
+    /// whole point of this type.
     /// </summary>
-    public static class BorderlessRetryPolicy
+    public static class GameReadinessRetryPolicy
     {
         public const int MaxAttempts = 40;
 
