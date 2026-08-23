@@ -14,8 +14,8 @@ namespace Npc.Managers;
 public interface IDotnetNewService
 {
     /// <summary>
-    /// Installs <paramref name="templatePackageId"/> if the CLI does not already have it, then runs the
-    /// template into <paramref name="outputDirectory"/>.
+    /// Installs/updates <paramref name="templatePackageId"/> to whatever the latest published version
+    /// is, then runs the template into <paramref name="outputDirectory"/>.
     /// </summary>
     Task<GeneralResponse> CreateProjectAsync(
         string templatePackageId, string templateShortName, string projectName, string outputDirectory);
@@ -28,20 +28,18 @@ public class DotnetNewService : IDotnetNewService
     public async Task<GeneralResponse> CreateProjectAsync(
         string templatePackageId, string templateShortName, string projectName, string outputDirectory)
     {
-        var probe = await RunAsync($"new {templateShortName} --help");
+        // Always install rather than probing "is it already there" first: `dotnet new install` on an
+        // already-installed package checks nuget and updates to the latest version, but skipping it
+        // once any version was ever installed meant Glue kept silently reusing whatever stale template
+        // (and stale engine version it referenced) happened to be cached locally.
+        var install = await RunAsync($"new install {templatePackageId}");
 
-        if (probe.ExitCode != 0)
+        if (install.ExitCode != 0)
         {
-            // Not installed, or no SDK at all - the install attempt below distinguishes them.
-            var install = await RunAsync($"new install {templatePackageId}");
-
-            if (install.ExitCode != 0)
-            {
-                return GeneralResponse.UnsuccessfulWith(
-                    $"Could not install the {templatePackageId} template package. FlatRedBall 2 projects " +
-                    $"are created by the dotnet CLI, so the .NET SDK has to be installed and on the PATH, " +
-                    $"and this first install needs internet access.\n\n{install.Output}");
-            }
+            return GeneralResponse.UnsuccessfulWith(
+                $"Could not install the {templatePackageId} template package. FlatRedBall 2 projects " +
+                $"are created by the dotnet CLI, so the .NET SDK has to be installed and on the PATH, " +
+                $"and this needs internet access.\n\n{install.Output}");
         }
 
         var create = await RunAsync(

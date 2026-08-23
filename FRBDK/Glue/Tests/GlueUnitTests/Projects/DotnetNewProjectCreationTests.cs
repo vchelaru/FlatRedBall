@@ -121,6 +121,32 @@ public class DotnetNewProjectCreationTests : IDisposable
     }
 
     [Fact]
+    public async Task CreatingAnFrb2Project_RemovesTheTemplatesDefaultGameScreen()
+    {
+        // The template ships Screens/GameScreen.cs (a "Hello from FlatRedBall 2" starter screen) under
+        // the .Common project so a bare `dotnet new` + F5 shows something. Once Glue rewrites Game1.cs
+        // to load the .gluj instead, that class is never referenced again - a Glue-made project should
+        // not carry it.
+        _service.OnCreate = (name, directory) =>
+        {
+            var commonDirectory = Path.Combine(directory, name + ".Common");
+            Directory.CreateDirectory(Path.Combine(commonDirectory, "Screens"));
+            File.WriteAllText(Path.Combine(commonDirectory, name + ".Common.csproj"), "<Project />");
+            File.WriteAllText(Path.Combine(commonDirectory, "Screens", "GameScreen.cs"), "// starter screen");
+            File.WriteAllText(Path.Combine(commonDirectory, "Game1.cs"), "// Game1");
+        };
+
+        await ProjectCreationHelper.MakeNewProject(MakeViewModel("StripMe"));
+
+        var commonDirectory = Path.Combine(_service.Calls[0].OutputDirectory, "StripMe.Common");
+        File.Exists(Path.Combine(commonDirectory, "Screens", "GameScreen.cs")).ShouldBeFalse();
+
+        // Nothing else the template wrote should be touched.
+        File.Exists(Path.Combine(commonDirectory, "Game1.cs")).ShouldBeTrue();
+        File.Exists(Path.Combine(commonDirectory, "StripMe.Common.csproj")).ShouldBeTrue();
+    }
+
+    [Fact]
     public void GlueIsToldToOpenTheCommonProject_NotTheLauncher()
     {
         // `dotnet new frb2-desktop` produces two projects and only .Common is the game.

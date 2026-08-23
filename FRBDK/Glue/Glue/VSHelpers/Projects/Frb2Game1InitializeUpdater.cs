@@ -23,6 +23,15 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             @"FlatRedBallService\.Default\.Initialize\s*<\s*GameScreen\s*>\s*\(\s*this\s*\)\s*;",
             RegexOptions.Compiled);
 
+        /// <summary>
+        /// The template's only using of the namespace GameScreen.cs lived in - there solely to bring
+        /// GameScreen into scope for the call <see cref="DefaultInitializeCall"/> matches. Once that
+        /// call is rewritten (and <c>ProjectCreationHelper.RemoveFrb2DefaultGameScreen</c> has deleted
+        /// Screens/GameScreen.cs itself, at this same first-load moment), the using is dead.
+        /// </summary>
+        static readonly Regex ScreensNamespaceUsing = new Regex(
+            @"^[ \t]*using\s+[\w.]+\.Screens\s*;\s*\r?\n", RegexOptions.Compiled | RegexOptions.Multiline);
+
         /// <param name="game1FilePath">Full path to Game1.cs.</param>
         /// <param name="glueProjectContentRelativePath">
         /// The .gluj's path relative to the content root, e.g. "Content/FrbEditor/MyGame.Common.gluj".
@@ -44,6 +53,8 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
             var updated = DefaultInitializeCall.Replace(contents,
                 $"FlatRedBallService.Default.Initialize(this, \"{glueProjectContentRelativePath}\");");
+
+            updated = ScreensNamespaceUsing.Replace(updated, "", 1);
 
             File.WriteAllText(game1FilePath, updated);
 

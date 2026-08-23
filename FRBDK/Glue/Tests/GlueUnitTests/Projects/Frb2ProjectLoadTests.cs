@@ -390,6 +390,11 @@ public class Frb2ProjectLoadTests
         Assert.Contains(
             $"FlatRedBallService.Default.Initialize(this, \"Content/FrbEditor/{ProjectName}.gluj\");",
             game1Contents);
+
+        // Screens/GameScreen.cs is gone (deleted at project creation, not by this rewrite - see
+        // ProjectCreationHelperTests), so the using that only existed to bring GameScreen into scope
+        // must go too, or it's a dangling reference to a namespace with nothing left in it.
+        Assert.DoesNotContain(Frb2ProjectFixture.ScreensNamespaceUsing(ProjectName), game1Contents);
     }
 
     [StaFact]

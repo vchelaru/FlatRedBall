@@ -25,8 +25,15 @@ internal static class Frb2ProjectFixture
     /// </summary>
     public const string DefaultInitializeCall = "FlatRedBallService.Default.Initialize<GameScreen>(this);";
 
+    /// <summary>
+    /// The template's using for the namespace Screens/GameScreen.cs lives in - there solely to bring
+    /// GameScreen into scope for <see cref="DefaultInitializeCall"/>, and dead once that call and the
+    /// file are both gone.
+    /// </summary>
+    public static string ScreensNamespaceUsing(string projectName) => $"using {projectName}.Screens;";
+
     static string Game1Contents(string projectName) =>
-        "namespace " + projectName + ";\npublic class Game1\n{\n    void Initialize()\n    {\n        " +
+        ScreensNamespaceUsing(projectName) + "\n\nnamespace " + projectName + ";\npublic class Game1\n{\n    void Initialize()\n    {\n        " +
         DefaultInitializeCall + "\n    }\n}\n";
 
     /// <summary>
