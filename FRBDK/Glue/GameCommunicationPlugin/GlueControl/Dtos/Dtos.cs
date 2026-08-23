@@ -583,6 +583,23 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
     }
     #endregion
 
+    #region SetEmbeddedFocusTestOverrideDto
+
+    /// <summary>
+    /// Test-only (issue #2183): forces GlueControl.Editing.EmbeddedWindowLogic.IsParentGlueFocused
+    /// (Embedded) to a synthetic result instead of inspecting real OS focus/process state, which the
+    /// LiveGameProcess harness can't fake (no real "GlueFormsCore" process, no way to move real OS
+    /// foreground). Send with ClearOverride=true to go back to the real (production) check.
+    /// </summary>
+    public class SetEmbeddedFocusTestOverrideDto
+    {
+        public bool ClearOverride { get; set; }
+        public bool GlueProcessExists { get; set; }
+        public bool ForegroundMatchesGlueMainWindow { get; set; }
+        public bool ForegroundOwnedByThisGame { get; set; }
+    }
+    #endregion
+
     #region ForceGameResolution
     public class ForceGameResolution
     {

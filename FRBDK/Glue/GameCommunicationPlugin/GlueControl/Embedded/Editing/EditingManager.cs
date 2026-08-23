@@ -1492,28 +1492,69 @@ namespace GlueControl.Editing
         static System.Diagnostics.Process glueProcess;
         public static bool IsGlueShowingModalWindow { get; set; }
 
+        /// <summary>
+        /// Test-only: when set, IsParentGlueFocused uses these values instead of calling
+        /// GetForegroundWindow()/GetWindowThreadProcessId() and inspecting a real "GlueFormsCore"
+        /// process. There's no way to spin up a real Glue process (or fake OS focus/window ownership)
+        /// from the LiveGameProcess test harness, so this is how issue #2183's fix
+        /// (foregroundOwnedByThisGame) gets pinned by a deterministic test. Set via
+        /// SetEmbeddedFocusTestOverrideDto.
+        /// </summary>
+        internal static (bool glueProcessExists, bool foregroundMatchesGlueMainWindow, bool foregroundOwnedByThisGame)? TestOverride;
+
+        /// <summary>
+        /// Pure decision logic, split out of IsParentGlueFocused so it can be exercised with synthetic
+        /// inputs (see TestOverride) instead of only through real OS focus/process state.
+        /// </summary>
+        internal static bool ComputeIsFocused(bool isEmbedded, bool isModalWindowOpen, bool glueProcessExists,
+            bool foregroundMatchesGlueMainWindow, bool foregroundOwnedByThisGame)
+        {
+            if (!glueProcessExists)
+            {
+                return false;
+            }
+
+            return isEmbedded
+                && (foregroundMatchesGlueMainWindow || foregroundOwnedByThisGame)
+                && !isModalWindowOpen;
+        }
+
         public static bool IsParentGlueFocused
         {
             get
             {
+                if (TestOverride is { } testOverride)
+                {
+                    return ComputeIsFocused(IsEmbedded, IsGlueShowingModalWindow,
+                        testOverride.glueProcessExists, testOverride.foregroundMatchesGlueMainWindow,
+                        testOverride.foregroundOwnedByThisGame);
+                }
+
                 if (DateTime.Now - lastUpdate > TimeSpan.FromSeconds(5))
                 {
                     lastUpdate = DateTime.Now;
                     RefreshGlueProcess();
                 }
 
-                if (glueProcess == null)
+                var glueProcessExists = glueProcess != null;
+                var fg = GetForegroundWindow();
+                var foregroundMatchesGlueMainWindow = glueProcessExists && glueProcess.MainWindowHandle == fg;
+
+                // The embedded game window is reparented into Glue via a raw SetParent (no WS_CHILD style
+                // fixup), so Windows still lets it take OS foreground/activation on its own when clicked -
+                // GetForegroundWindow() then returns the game's own window, not Glue's. When embedded,
+                // that IS Glue's UI from the user's perspective, so treat it as focused too (issue #2183 -
+                // this was masked for years by the old `|| Game.IsActive` fallback that #2154's fix
+                // removed).
+                var foregroundOwnedByThisGame = false;
+                if (glueProcessExists && !foregroundMatchesGlueMainWindow)
                 {
-                    return false;
-                }
-                else
-                {
-                    return IsEmbedded
-                        && glueProcess?.MainWindowHandle == GetForegroundWindow()
-                        && !IsGlueShowingModalWindow
-                        ;
+                    GetWindowThreadProcessId(fg, out var fgOwnerPid);
+                    foregroundOwnedByThisGame = fgOwnerPid == (uint)System.Diagnostics.Process.GetCurrentProcess().Id;
                 }
 
+                return ComputeIsFocused(IsEmbedded, IsGlueShowingModalWindow, glueProcessExists,
+                    foregroundMatchesGlueMainWindow, foregroundOwnedByThisGame);
             }
         }
 
@@ -1523,8 +1564,12 @@ namespace GlueControl.Editing
         [System.Runtime.InteropServices.DllImport("user32.dll")]
         static extern IntPtr GetForegroundWindow();
 
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
+
 #else
         static IntPtr GetForegroundWindow() => IntPtr.Zero;
+        static uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId) { processId = 0; return 0; }
 
 
 #endif

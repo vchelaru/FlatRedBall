@@ -1640,6 +1640,17 @@ namespace GlueControl
 
         #endregion
 
+        #region SetEmbeddedFocusTestOverrideDto
+
+        private static void HandleDto(SetEmbeddedFocusTestOverrideDto dto)
+        {
+            EmbeddedWindowLogic.TestOverride = dto.ClearOverride
+                ? ((bool, bool, bool)?)null
+                : (dto.GlueProcessExists, dto.ForegroundMatchesGlueMainWindow, dto.ForegroundOwnedByThisGame);
+        }
+
+        #endregion
+
         #region ForceGameResolution
 
         private static void HandleDto(ForceGameResolution dto)
