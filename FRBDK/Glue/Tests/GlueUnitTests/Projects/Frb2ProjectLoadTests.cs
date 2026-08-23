@@ -164,6 +164,27 @@ public class Frb2ProjectLoadTests
         Assert.Empty(GlueTestBootstrap.RecordedDialogMessages);
     }
 
+    [StaFact]
+    public async Task AddScreen_OnAnFrb2ProjectWithoutCodeGeneration_DoesNotWarnAboutAFileTheTemplateShipped()
+    {
+        // Reproduces a wizard-created FRB2 platformer project: the FRB2 template ships its own
+        // Screens/GameScreen.cs on disk before Glue ever adds the screen. With code generation off,
+        // Glue never reads or writes that file (CodeWritePolicy.GeneratesFrb2Code is false), so its
+        // mere presence on disk is not Glue's concern and must not prompt the "already exists" warning.
+        GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
+
+        using var temp = new TempDir("Frb2TemplateShippedScreen_");
+        await GoldProject.LoadInGlueAsync(WriteFrb2Project(temp.Root));
+
+        var screenFile = Path.Combine(temp.Root, "Screens", "GameScreen.cs");
+        Directory.CreateDirectory(Path.GetDirectoryName(screenFile)!);
+        File.WriteAllText(screenFile, "// shipped by the FRB2 template\n");
+
+        await GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen("GameScreen");
+
+        Assert.Empty(GlueTestBootstrap.RecordedDialogMessages);
+    }
+
     // A real 1x1 PNG, so anything that reads image headers gets a valid file rather than a stub.
     const string OnePixelPngBase64 =
         "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";

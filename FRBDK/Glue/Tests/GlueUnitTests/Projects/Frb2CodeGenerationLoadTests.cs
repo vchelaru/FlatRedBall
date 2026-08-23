@@ -86,6 +86,29 @@ public class Frb2CodeGenerationLoadTests
     }
 
     [StaFact]
+    public async Task AddScreen_WhenCodeGenerationIsAlreadyOn_StillWarnsAboutAPreexistingCustomCodeFile()
+    {
+        // The sibling test in Frb2ProjectLoadTests pins the opted-out default: no warning, because
+        // Glue never touches this file. Once opted in, Glue's generated accessors pair with this exact
+        // file, so a pre-existing one still deserves the same warning FRB1 gives - losing it would
+        // silently accept whatever the user already had there.
+        GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
+
+        using var temp = new TempDir("Frb2PreexistingScreenGenOn_");
+        await GoldProject.LoadInGlueAsync(Frb2ProjectFixture.Write(temp.Root));
+        GlueState.Self.CurrentGlueProject.GenerateCode = true;
+
+        var screenFile = Path.Combine(temp.Root, "Screens", "GameScreen.cs");
+        Directory.CreateDirectory(Path.GetDirectoryName(screenFile)!);
+        File.WriteAllText(screenFile, "// hand-written customization\n");
+
+        await GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen("GameScreen");
+
+        Assert.Single(GlueTestBootstrap.RecordedDialogMessages);
+        Assert.Contains("GameScreen.cs", GlueTestBootstrap.RecordedDialogMessages[0]);
+    }
+
+    [StaFact]
     public async Task OptingIn_DoesNotMakeGlueOwnTheCsproj()
     {
         // Opting into generated accessors says nothing about who maintains the project file. FRB2's
