@@ -607,7 +607,7 @@ internal static class GlueTestBootstrap
                     containerCodeGenerator,
                     nineSliceCodeGenerator,
                     polygonCodeGenerator);
-                GumPlugin.CodeGeneration.StateCodeGenerator.Self.Initialize(textCodeGenerator, containerCodeGenerator);
+                GumPlugin.CodeGeneration.StateCodeGenerator.Self.Initialize(textCodeGenerator, containerCodeGenerator, nineSliceCodeGenerator);
             }
         }
 

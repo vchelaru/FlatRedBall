@@ -27,6 +27,7 @@ public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
     public static Dictionary<string, string> VariableNamesToReplaceForStates = new Dictionary<string, string>();
     private TextCodeGenerator _textCodeGenerator;
     private ContainerCodeGenerator _containerCodeGenerator;
+    private NineSliceCodeGenerator _nineSliceCodeGenerator;
 
     #endregion
 
@@ -59,10 +60,11 @@ public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
         VariableNamesToReplaceForStates.Add("Height Units", "HeightUnits");
     }
 
-    public void Initialize(TextCodeGenerator textCodeGenerator, ContainerCodeGenerator containerCodeGenerator)
+    public void Initialize(TextCodeGenerator textCodeGenerator, ContainerCodeGenerator containerCodeGenerator, NineSliceCodeGenerator nineSliceCodeGenerator)
     {
         _textCodeGenerator = textCodeGenerator;
         _containerCodeGenerator = containerCodeGenerator;
+        _nineSliceCodeGenerator = nineSliceCodeGenerator;
     }
 
     public StateCodeGenerator()
@@ -120,6 +122,7 @@ public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
         //mVariableNamesToSkipForStates.Add("State");
 
         _containerCodeGenerator.AddTypeSpecificVariableNamesToSkipForStates(typeSpecificVariableNamesToSkipForStates);
+        _nineSliceCodeGenerator.AddTypeSpecificVariableNamesToSkipForStates(typeSpecificVariableNamesToSkipForStates);
 
         // Mirrors the property-pipeline exclusion in StandardsCodeGenerator.RefreshVariableNamesToSkipForProperties -
         // Gum's "Rectangle"/"Circle" standard elements now define a fill/stroke/gradient/dropshadow/blend
@@ -220,17 +223,12 @@ public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
             Skip("IsTilingMiddleSections");
         }
 
-        // Mirrors the property-pipeline gate in NineSliceCodeGenerator.HasNineSliceAnimate. "Animate"
-        // only exists on NineSlice, so a global skip here is fine (same precedent as StackSpacing/
-        // IsTilingMiddleSections above) - older projects don't have a NineSlice with this variable.
-        if (version >= (int)GluxVersions.GumNineSliceHasAnimate)
-        {
-            Include("Animate");
-        }
-        else
-        {
-            Skip("Animate");
-        }
+        // NOT a global skip: unlike StackSpacing/IsTilingMiddleSections above, "Animate" is not unique to
+        // NineSlice - Sprite has had its own, much older "Animate" variable since long before
+        // GumNineSliceHasAnimate existed (SpriteCodeGenerator/Sprite.gutx). Gating the name globally here
+        // silently suppressed Sprite's Animate state assignment too, for any Sprite instance nested inside
+        // a Component, below this version. The NineSlice-only version gate now lives in
+        // NineSliceCodeGenerator.AddTypeSpecificVariableNamesToSkipForStates instead.
 
         if (version >= (int)GluxVersions.GumTextHasIsBold)
         {
