@@ -70,21 +70,43 @@ public class CodeGeneratorManager : Singleton<CodeGeneratorManager>
     public FilePath CustomRuntimeCodeLocationFor(ElementSave gumElement) => GumRuntimesFolder + gumElement.Name + "Runtime.cs";
     public FilePath GeneratedRuntimeCodeLocationFor(ElementSave gumElement) =>
         GumRuntimesFolder + gumElement.Name + "Runtime.Generated.cs";
-    public FilePath CustomFormsCodeLocationFor(ElementSave gumElement)
-    {
-        var subfolder = gumElement is Gum.DataTypes.ScreenSave ? "Screens/"
-        : gumElement is ComponentSave ? "Components/"
-        : "Standard/";
-        return FormsFolder + subfolder + gumElement.Name + "Forms.cs";
-    }
-
-    public FilePath GeneratedFormsCodeLocationFor(ElementSave gumElement)
-    {
-        var subfolder = gumElement is Gum.DataTypes.ScreenSave ? "Screens/"
+    static string FormsSubfolderFor(ElementSave gumElement) =>
+        gumElement is Gum.DataTypes.ScreenSave ? "Screens/"
         : gumElement is ComponentSave ? "Components/"
         : "Standard/";
 
-        return FormsFolder + subfolder + gumElement.Name + "Forms.Generated.cs";
+    public FilePath CustomFormsCodeLocationFor(ElementSave gumElement) =>
+        FormsFolder + FormsSubfolderFor(gumElement) + gumElement.Name + "Forms.cs";
+
+    public FilePath GeneratedFormsCodeLocationFor(ElementSave gumElement) =>
+        FormsFolder + FormsSubfolderFor(gumElement) + gumElement.Name + "Forms.Generated.cs";
+
+    /// <summary>
+    /// The "Forms/..." relative paths every current Screen/Component in the loaded Gum project owns for its
+    /// generated Forms code - used by Glue's load-time orphaned-csproj-entry reconciliation (GitHub issue
+    /// #2185) so a Forms-generated file that hasn't been regenerated yet isn't mistaken for an orphan.
+    /// Yielded unconditionally (not gated on whether that element's generated Forms code is actually
+    /// non-empty) - same tolerance <see cref="FlatRedBall.Glue.Elements.DeletionPlanner.GetOwnedGeneratedRelativePaths"/>
+    /// already applies to Screen/Entity factory paths, since over-claiming ownership only risks leaving a
+    /// stray csproj entry in place, never deleting a file that's still owned.
+    /// </summary>
+    public IEnumerable<string> GetFormsGeneratedRelativePaths()
+    {
+        var gumProject = ObjectFinder.Self.GumProjectSave;
+        if (gumProject == null)
+        {
+            yield break;
+        }
+
+        foreach (var screen in gumProject.Screens)
+        {
+            yield return "Forms/" + FormsSubfolderFor(screen) + screen.Name + "Forms.Generated.cs";
+        }
+
+        foreach (var component in gumProject.Components)
+        {
+            yield return "Forms/" + FormsSubfolderFor(component) + component.Name + "Forms.Generated.cs";
+        }
     }
 
     FilePath GumBehaviorsFolder => GumRuntimesFolder + @"Behaviors\";

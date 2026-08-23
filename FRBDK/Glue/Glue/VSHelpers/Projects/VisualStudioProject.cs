@@ -1242,19 +1242,26 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         /// <summary>
         /// Removes &lt;Compile Include&gt; entries for Glue-generated files (".Generated.cs",
-        /// ".Generated.Event.cs", factories) whose backing file no longer exists on disk and which no
-        /// element in <paramref name="ownerElements"/> currently owns - see GitHub issue #2103. Run at
+        /// ".Generated.Event.cs", factories, Gum Forms code) whose backing file no longer exists on disk and
+        /// which no element in <paramref name="ownerElements"/> or path in
+        /// <paramref name="additionalOwnedRelativePaths"/> currently owns - see GitHub issue #2103. Run at
         /// project load, after codegen has had a chance to (re)create any file a live element still owns,
         /// so "missing on disk" plus "unowned" together are a safe signal the entry is a leftover from a
         /// delete/rename that didn't clean up the csproj (a merge, a manual edit, an older Glue version).
         /// Never touches wildcard or conditional (platform-specific) entries, or hand-authored files - only
-        /// Glue's own generated-file naming is a candidate. Also scoped to only the Screens/Entities/Factories
-        /// folders a Screen/Entity's generated files can ever live under - see GitHub issue #2170; the
-        /// ownership model only understands Screen/Entity ownership, so a ".Generated.cs" some other generator
-        /// wrote elsewhere (e.g. Performance/PoolList.Generated.cs) would always look orphaned to it. Returns
-        /// the removed entries' Include values.
+        /// Glue's own generated-file naming is a candidate. Also scoped to only the
+        /// Screens/Entities/Factories/Forms folders those generated files can ever live under - see GitHub
+        /// issue #2170; the <paramref name="ownerElements"/> ownership model only understands Screen/Entity
+        /// ownership, so a ".Generated.cs" some other generator wrote elsewhere (e.g.
+        /// Performance/PoolList.Generated.cs) would always look orphaned to it.
+        /// <paramref name="additionalOwnedRelativePaths"/> exists for ownership sources outside that model -
+        /// currently just GumPlugin's Forms-generated paths, since Forms files are owned by Gum elements in
+        /// the .gumx, not by any GlueElement (GitHub issue #2185). Returns the removed entries' Include
+        /// values.
         /// </summary>
-        public List<string> RemoveOrphanedGeneratedCompileItems(IEnumerable<GlueElement> ownerElements)
+        public List<string> RemoveOrphanedGeneratedCompileItems(
+            IEnumerable<GlueElement> ownerElements,
+            IEnumerable<string> additionalOwnedRelativePaths = null)
         {
             var ownedRelativePaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             foreach (var element in ownerElements ?? Enumerable.Empty<GlueElement>())
@@ -1263,6 +1270,11 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 {
                     ownedRelativePaths.Add(relativePath.Replace('/', '\\'));
                 }
+            }
+
+            foreach (var relativePath in additionalOwnedRelativePaths ?? Enumerable.Empty<string>())
+            {
+                ownedRelativePaths.Add(relativePath.Replace('/', '\\'));
             }
 
             var candidates = EvaluatedItems
