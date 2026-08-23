@@ -258,6 +258,57 @@ public class GumStandardElementCodegenSweepTests : IDisposable
     }
 
     [Fact]
+    public void GenerateEverythingFor_ComponentWithSpriteInstance_BelowNineSliceAnimateGate_ShouldStillAssignSpriteAnimate()
+    {
+        // The bug the two NineSlice tests above didn't catch: the "Animate" skip that fixed NineSlice's
+        // state pipeline (RefreshVariableNamesToSkipBasedOnGlueVersion) was added as a GLOBAL skip keyed
+        // only on the variable name "Animate" - but Sprite has its own, much older "Animate" variable
+        // (SpriteCodeGenerator/Sprite.gutx) that has nothing to do with NineSlice's newer one. Below
+        // GluxVersions.GumNineSliceHasAnimate, that global skip silently suppressed Sprite's "Animate"
+        // state assignment too - for a Sprite *instance nested inside a Component* specifically (a
+        // top-level Screen object's Default state is applied through a different, non-codegen'd
+        // reflection path, so it was unaffected - see the gum-integration skill). Real-world symptom: a
+        // HealthSprite.Animate=true set in a component's Default state never reached the generated code,
+        // so the sprite's AnimationChainLogic.Animate stayed at its default (false) and the .achx
+        // animation never played, even though the identical Sprite worked fine as a top-level Screen
+        // object.
+        FlatRedBall.Glue.Elements.ObjectFinder.Self.GlueProject.FileVersion = 0;
+        GlueTestBootstrap.EnsureGumPluginStandardElementsInitialized();
+        GlueTestBootstrap.EnsureGumPluginCodeGeneratorsInitialized();
+
+        var gumProject = Gum.Managers.ObjectFinder.Self.GumProjectSave;
+
+        var containerStandard = new StandardElementSave { Name = "Container" };
+        containerStandard.Initialize(Gum.Managers.StandardElementsManager.Self.GetDefaultStateFor("Container"));
+        gumProject.StandardElements.Add(containerStandard);
+
+        var spriteStandard = new StandardElementSave { Name = "Sprite" };
+        spriteStandard.Initialize(Gum.Managers.StandardElementsManager.Self.GetDefaultStateFor("Sprite"));
+        gumProject.StandardElements.Add(spriteStandard);
+
+        var component = new ComponentSave { Name = "PlayerStatus", BaseType = "Container" };
+        component.Instances.Add(new InstanceSave { Name = "HealthSprite", BaseType = "Sprite" });
+
+        var defaultState = new Gum.DataTypes.Variables.StateSave { Name = "Default" };
+        component.States.Add(defaultState);
+        defaultState.Variables.Add(new Gum.DataTypes.Variables.VariableSave
+        {
+            SetsValue = true,
+            Name = "HealthSprite.Animate",
+            Type = "bool",
+            Value = true
+        });
+
+        component.Initialize(defaultState);
+        gumProject.Components.Add(component);
+
+        var generatedSource = GueDerivingClassCodeGenerator.Self.GenerateCodeFor(component);
+
+        generatedSource.ShouldNotBeNullOrWhiteSpace();
+        generatedSource.ShouldContain("HealthSprite.Animate = true;");
+    }
+
+    [Fact]
     public void GenerateStandardElementSaveCodeFor_Sprite_BelowRenderTargetTextureSourceGate_ShouldNotGenerateIt()
     {
         // Below GluxVersions.GumHasIRenderTargetTextureReferencer, SpriteCodeGenerator itself generates

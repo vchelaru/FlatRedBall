@@ -114,7 +114,7 @@ public class MainGumPlugin : PluginBase
             containerCodeGenerator,
             nineSliceCodeGenerator,
             polygonCodeGenerator);
-        StateCodeGenerator.Self.Initialize(textCodeGenerator, containerCodeGenerator);
+        StateCodeGenerator.Self.Initialize(textCodeGenerator, containerCodeGenerator, nineSliceCodeGenerator);
     }
 
     private void AssignEvents()

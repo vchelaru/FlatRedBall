@@ -118,4 +118,22 @@ public class NineSliceCodeGenerator
             variablesToIgnore.Add("IsTilingMiddleSections");
         }
     }
+
+    // Mirrors AddTypeSpecificVariableNamesToSkipForProperties above, but for the state pipeline
+    // (StateCodeGenerator). "Animate" must be skipped here PER-TYPE, keyed on "NineSlice" specifically -
+    // not as a global variable-name skip - because Sprite has its own, much older "Animate" variable
+    // (SpriteCodeGenerator/Sprite.gutx) that is unrelated to NineSlice's and must never be gated by
+    // GumNineSliceHasAnimate. A global skip previously suppressed Sprite's Animate state assignment too,
+    // for any Sprite instance nested inside a Component, on any project below that version.
+    internal void AddTypeSpecificVariableNamesToSkipForStates(Dictionary<string, List<string>> typeSpecificVariableNamesToSkipForStates)
+    {
+        var variablesToSkip = new List<string>();
+
+        if (!HasNineSliceAnimate)
+        {
+            variablesToSkip.Add("Animate");
+        }
+
+        typeSpecificVariableNamesToSkipForStates["NineSlice"] = variablesToSkip;
+    }
 }
