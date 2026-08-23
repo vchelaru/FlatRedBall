@@ -109,6 +109,32 @@ namespace GlueUnitTests.GameCommunicationPlugin
             response.Message.ShouldContain("not ready");
         }
 
+        /// <summary>
+        /// Pins issue #2174: MainCompilerPlugin sends the initial SetEditMode with
+        /// SendImportance.RetryOnFailure specifically to outlast the game's own startup, where
+        /// Runner_GameStarted can fire before the game's socket has even connected. A retry loop that
+        /// doesn't actually wait between attempts burns through its whole budget before that real time
+        /// has a chance to pass, so it fails exactly the race it exists to survive. The fake game here
+        /// only becomes ready after real wall-clock time elapses, so this only passes if retrying
+        /// actually waits between attempts.
+        /// </summary>
+        [Fact]
+        public async Task TypedSend_WithRetryOnFailure_WaitsForTheGameToBecomeReady()
+        {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+
+            using var fixture = await ConnectAsync(_ =>
+                stopwatch.ElapsedMilliseconds < 200
+                    ? GameConnectionManager.NotReadyPayload
+                    : "{\"Succeeded\":true,\"Message\":\"ready now\"}");
+
+            var response = await fixture.Sender.Send<GeneralCommandResponse>(
+                new SetEditMode(), SendImportance.RetryOnFailure);
+
+            response.Succeeded.ShouldBeTrue(
+                "retrying with real delays between attempts must eventually catch the game becoming ready");
+        }
+
         [Fact]
         public async Task TypedSend_WhenTheGameNeverAnswers_ReportsFailure()
         {

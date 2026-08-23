@@ -45,6 +45,9 @@ namespace GlueUnitTests.GameCommunicationPlugin
             message.ShouldNotBeNull();
             message.ShouldContain("Edit");
             message.ShouldContain("not ready to handle commands");
+            // Sent with SendImportance.RetryOnFailure, so reaching this message means the whole retry
+            // budget was exhausted, not just one unlucky attempt - worth saying so for diagnostics.
+            message.ShouldContain("retried for up to");
         }
 
         [Fact]

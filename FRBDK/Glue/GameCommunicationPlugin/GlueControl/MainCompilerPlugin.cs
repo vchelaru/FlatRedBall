@@ -912,6 +912,10 @@ namespace GameCommunicationPlugin.GlueControl
                     ? "Game sent back no response"
                     : $"Game sent back the following message: {response.Message}";
 
+                // This is sent with SendImportance.RetryOnFailure, so getting here means the game never
+                // became ready within the whole retry budget - not just a single unlucky attempt.
+                message += $"\n(retried for up to {GameReadinessRetryPolicy.TotalBudgetMilliseconds}ms)";
+
                 return message;
             }
 

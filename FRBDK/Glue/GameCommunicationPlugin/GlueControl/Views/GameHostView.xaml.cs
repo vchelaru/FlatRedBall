@@ -160,7 +160,7 @@ namespace OfficialPlugins.GameHost.Views
         {
             var dto = new GameCommunicationPlugin.GlueControl.Dtos.SetBorderlessDto { IsBorderless = true };
 
-            var succeeded = await BorderlessRetryPolicy.TryRepeatedlyAsync(async () =>
+            var succeeded = await GameReadinessRetryPolicy.TryRepeatedlyAsync(async () =>
             {
                 var sendResponse = await CommandSender.Self.Send(dto);
 
@@ -174,7 +174,7 @@ namespace OfficialPlugins.GameHost.Views
             if (!succeeded)
             {
                 GlueCommands.Self.PrintOutput(
-                    $"Failed to make the game window borderless after {BorderlessRetryPolicy.TotalBudgetMilliseconds}ms, " +
+                    $"Failed to make the game window borderless after {GameReadinessRetryPolicy.TotalBudgetMilliseconds}ms, " +
                     "so it will stay embedded with its own title bar and won't be resized to fit the Game tab. " +
                     "Restarting the game usually fixes this - please report it (with this message) at " +
                     "https://github.com/vchelaru/FlatRedBall/issues/2048 if it keeps happening.");
