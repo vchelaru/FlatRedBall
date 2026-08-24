@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using Microsoft.Xna.Framework;
+using OfficialPlugins.Common.Controls;
 using OfficialPlugins.PointEditingPlugin.Views;
 using System;
 using System.ComponentModel;
@@ -17,11 +18,32 @@ namespace OfficialPlugins.PointEditingPlugin
     {
         PointEditingViewModel ViewModel => DataContext as PointEditingViewModel;
 
+        readonly LabelDragScrubber xDragScrubber;
+        readonly LabelDragScrubber yDragScrubber;
+
         public PointEditControl()
         {
             InitializeComponent();
 
             DataContextChanged += HandleDataContextChanged;
+
+            xDragScrubber = new LabelDragScrubber(XLabel, this, () => ViewModel?.SelectedPoint?.X ?? 0, v => SetSelectedPointComponent(isX: true, v));
+            yDragScrubber = new LabelDragScrubber(YLabel, this, () => ViewModel?.SelectedPoint?.Y ?? 0, v => SetSelectedPointComponent(isX: false, v));
+        }
+
+        void SetSelectedPointComponent(bool isX, float value)
+        {
+            if (ViewModel?.SelectedPoint == null) return;
+
+            int index = ListBox.SelectedIndex;
+            if (index == -1) return;
+
+            var vector = ViewModel.SelectedPoint.Value;
+            if (isX) vector.X = value;
+            else vector.Y = value;
+
+            ViewModel.Points[index] = vector;
+            ViewModel.SelectedPoint = vector;
         }
 
         private void HandleDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)

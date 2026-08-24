@@ -23,7 +23,7 @@
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <TextBlock x:Name="XLabel" VerticalAlignment="Center" Margin="0,0,3,0" Cursor="SizeWE" MouseDown="Label_MouseDown" MouseMove="Label_MouseMove" MouseUp="Label_MouseUp">X:</TextBlock>
+            <TextBlock x:Name="XLabel" VerticalAlignment="Center" Margin="0,0,3,0">X:</TextBlock>
             <TextBox x:Name="XTextBox" Grid.Column="1" Text="{Binding X}"  GotFocus="TextBox_GotFocus" KeyUp="TextBox_KeyEnterUpdate" MouseWheel="TextBox_MouseWheel"></TextBox>
         </Grid>
         <Grid Grid.Column="2" Margin="14,0,0,0">
@@ -31,7 +31,7 @@
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <TextBlock x:Name="YLabel" VerticalAlignment="Center"  Margin="0,0,3,0" Cursor="SizeWE" MouseDown="Label_MouseDown" MouseMove="Label_MouseMove" MouseUp="Label_MouseUp">Y:</TextBlock>
+            <TextBlock x:Name="YLabel" VerticalAlignment="Center"  Margin="0,0,3,0">Y:</TextBlock>
             <TextBox x:Name="YTextBox" Grid.Column="1" Text="{Binding Y}" GotFocus="TextBox_GotFocus" KeyUp="TextBox_KeyEnterUpdate"  MouseWheel="TextBox_MouseWheel"></TextBox>
         </Grid>
         <Grid Grid.Column="3" Margin="14,0,0,0" Visibility="{Binding AngleVisibility}">
@@ -39,7 +39,7 @@
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <TextBlock x:Name="AngleLabel" VerticalAlignment="Center" Margin="0,0,3,0" Text="Angle:" Cursor="SizeWE" MouseDown="Label_MouseDown" MouseMove="Label_MouseMove" MouseUp="Label_MouseUp" />
+            <TextBlock x:Name="AngleLabel" VerticalAlignment="Center" Margin="0,0,3,0" Text="Angle:" />
             <TextBox x:Name="AngleTextBox" Grid.Column="1" Text="{Binding Angle}" GotFocus="TextBox_GotFocus" KeyUp="TextBox_KeyEnterUpdate"  MouseWheel="TextBox_MouseWheel"></TextBox>
         </Grid>
 
