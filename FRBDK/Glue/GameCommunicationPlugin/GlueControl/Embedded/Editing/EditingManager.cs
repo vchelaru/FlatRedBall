@@ -289,6 +289,8 @@ namespace GlueControl.Editing
             MeasurementMarker = new MeasurementMarker();
 
             Guides = new Guides();
+
+            ObjectSelected += EmbeddedDiagnosticsLogger.LogSelectionChanged;
         }
 
         #endregion
@@ -490,6 +492,23 @@ namespace GlueControl.Editing
                 else if(mouse.AnyButtonPushed())
                 {
                     wasPushedInWindow = mouse.IsInGameWindow();
+                }
+
+                if (EmbeddedDiagnosticsLogger.IsEnabled)
+                {
+                    // Read here (rather than only inside DoGrabLogic/the camera-pan block below) so a
+                    // click or pan attempt is logged even when the focus gate is closed and those blocks
+                    // never run - that silently-blocked case is exactly what issue #2183 needed to see.
+                    if (mouse.ButtonPushed(Mouse.MouseButtons.LeftButton))
+                    {
+                        var shouldTreatAsPush = ComputeShouldTreatAsPush(mouse.IsInGameWindow(), true,
+                            mouse.ButtonDown(Mouse.MouseButtons.LeftButton), wasGameOrGlueActive, IsGameOrGlueActive);
+                        EmbeddedDiagnosticsLogger.LogClickAttempt("Left", itemsOver.FirstOrDefault()?.Name, shouldTreatAsPush);
+                    }
+                    if (mouse.ButtonPushed(Mouse.MouseButtons.MiddleButton))
+                    {
+                        EmbeddedDiagnosticsLogger.LogClickAttempt("Middle", null, IsGameOrGlueActive);
+                    }
                 }
 
                 // Vic says - not sure how much should be inside the IsActive check
@@ -707,6 +726,8 @@ namespace GlueControl.Editing
                 buttonDown,
                 wasGameOrGlueActiveLastFrame,
                 IsGameOrGlueActive);
+
+            EmbeddedDiagnosticsLogger.LogClickAttempt("Left", objectName, shouldTreatAsPush);
 
             if (shouldTreatAsPush)
             {
@@ -1582,39 +1603,65 @@ namespace GlueControl.Editing
         {
             get
             {
-                if (TestOverride is { } testOverride)
-                {
-                    return ComputeIsFocused(IsEmbedded, IsGlueShowingModalWindow,
-                        testOverride.glueProcessExists, testOverride.foregroundMatchesGlueMainWindow,
-                        testOverride.foregroundOwnedByThisGame);
-                }
-
-                if (DateTime.Now - lastUpdate > TimeSpan.FromSeconds(5))
-                {
-                    lastUpdate = DateTime.Now;
-                    RefreshGlueProcess();
-                }
-
-                var glueProcessExists = glueProcess != null;
-                var fg = GetForegroundWindow();
-                var foregroundMatchesGlueMainWindow = glueProcessExists && glueProcess.MainWindowHandle == fg;
-
-                // The embedded game window is reparented into Glue via a raw SetParent (no WS_CHILD style
-                // fixup), so Windows still lets it take OS foreground/activation on its own when clicked -
-                // GetForegroundWindow() then returns the game's own window, not Glue's. When embedded,
-                // that IS Glue's UI from the user's perspective, so treat it as focused too (issue #2183 -
-                // this was masked for years by the old `|| Game.IsActive` fallback that #2154's fix
-                // removed).
-                var foregroundOwnedByThisGame = false;
-                if (glueProcessExists && !foregroundMatchesGlueMainWindow)
-                {
-                    GetWindowThreadProcessId(fg, out var fgOwnerPid);
-                    foregroundOwnedByThisGame = fgOwnerPid == (uint)System.Diagnostics.Process.GetCurrentProcess().Id;
-                }
-
-                return ComputeIsFocused(IsEmbedded, IsGlueShowingModalWindow, glueProcessExists,
-                    foregroundMatchesGlueMainWindow, foregroundOwnedByThisGame);
+                var raw = GetRawFocusInputs();
+                return ComputeIsFocused(IsEmbedded, IsGlueShowingModalWindow,
+                    raw.glueProcessExists, raw.foregroundMatchesGlueMainWindow, raw.foregroundOwnedByThisGame);
             }
+        }
+
+        /// <summary>
+        /// The raw, real OS/process inputs behind IsParentGlueFocused, split out so EmbeddedDiagnosticsLogger
+        /// (issue #2196) can report them without duplicating this logic. Respects TestOverride the same way
+        /// IsParentGlueFocused itself does.
+        /// </summary>
+        internal static (bool glueProcessExists, bool foregroundMatchesGlueMainWindow, bool foregroundOwnedByThisGame) GetRawFocusInputs()
+        {
+            if (TestOverride is { } testOverride)
+            {
+                return testOverride;
+            }
+
+            if (DateTime.Now - lastUpdate > TimeSpan.FromSeconds(5))
+            {
+                lastUpdate = DateTime.Now;
+                RefreshGlueProcess();
+            }
+
+            var glueProcessExists = glueProcess != null;
+            var fg = GetForegroundWindow();
+            var foregroundMatchesGlueMainWindow = glueProcessExists && glueProcess.MainWindowHandle == fg;
+
+            // The embedded game window is reparented into Glue via a raw SetParent (no WS_CHILD style
+            // fixup), so Windows still lets it take OS foreground/activation on its own when clicked -
+            // GetForegroundWindow() then returns the game's own window, not Glue's. When embedded,
+            // that IS Glue's UI from the user's perspective, so treat it as focused too (issue #2183 -
+            // this was masked for years by the old `|| Game.IsActive` fallback that #2154's fix
+            // removed).
+            var foregroundOwnedByThisGame = false;
+            if (glueProcessExists && !foregroundMatchesGlueMainWindow)
+            {
+                GetWindowThreadProcessId(fg, out var fgOwnerPid);
+                foregroundOwnedByThisGame = fgOwnerPid == (uint)System.Diagnostics.Process.GetCurrentProcess().Id;
+            }
+
+            return (glueProcessExists, foregroundMatchesGlueMainWindow, foregroundOwnedByThisGame);
+        }
+
+        /// <summary>
+        /// Diagnostics-only (issue #2196): every input to IsParentGlueFocused plus the result, formatted for
+        /// EmbeddedDiagnosticsLogger so a per-machine gate misfire like #2183 can be read back from a log
+        /// instead of only reproduced locally.
+        /// </summary>
+        internal static string DescribeFocusState()
+        {
+            var raw = GetRawFocusInputs();
+            var isFocused = ComputeIsFocused(IsEmbedded, IsGlueShowingModalWindow,
+                raw.glueProcessExists, raw.foregroundMatchesGlueMainWindow, raw.foregroundOwnedByThisGame);
+
+            return $"isEmbedded={IsEmbedded} glueProcessExists={raw.glueProcessExists} " +
+                $"foregroundMatchesGlueMainWindow={raw.foregroundMatchesGlueMainWindow} " +
+                $"foregroundOwnedByThisGame={raw.foregroundOwnedByThisGame} " +
+                $"isModalWindowOpen={IsGlueShowingModalWindow} isParentGlueFocused={isFocused}";
         }
 
 #if WINDOWS
@@ -1649,5 +1696,79 @@ namespace GlueControl.Editing
         }
     }
 
+    /// <summary>
+    /// Opt-in, event-driven log of embedded-game/Glue interaction (issue #2196): click attempts (with the
+    /// focus-gate values that decided whether they were processed) and selection changes. Added because
+    /// issue #2183 - a per-machine focus-gate misfire that silently broke click-select and middle-mouse
+    /// pan - took far longer to diagnose than it should have, since nothing recorded what the gate was
+    /// actually seeing on the affected machine.
+    /// </summary>
+    internal static class EmbeddedDiagnosticsLogger
+    {
+        public static bool IsEnabled { get; private set; }
 
+        static string logFilePath;
+
+        public static string Enable()
+        {
+            logFilePath = BuildLogFilePath();
+            IsEnabled = true;
+            AppendLine("Embedded diagnostics on.");
+            return logFilePath;
+        }
+
+        public static void Disable()
+        {
+            if (IsEnabled)
+            {
+                AppendLine("Embedded diagnostics off.");
+            }
+            IsEnabled = false;
+        }
+
+        public static void LogClickAttempt(string button, string itemOverName, bool wasProcessed)
+        {
+            if (!IsEnabled)
+            {
+                return;
+            }
+
+            AppendLine($"Click ({button}) itemOver={itemOverName ?? "<none>"} processed={wasProcessed} " +
+                EmbeddedWindowLogic.DescribeFocusState());
+        }
+
+        public static void LogSelectionChanged(List<INameable> items)
+        {
+            if (!IsEnabled)
+            {
+                return;
+            }
+
+            var names = string.Join(", ", items.Select(item => item?.Name ?? "<null>"));
+            AppendLine($"Selection changed: [{names}]");
+        }
+
+        static void AppendLine(string message)
+        {
+            try
+            {
+                System.IO.File.AppendAllText(logFilePath, $"{DateTime.UtcNow:O} {message}{Environment.NewLine}");
+            }
+            catch
+            {
+                // Diagnostics must never be the thing that breaks the embedded game.
+            }
+        }
+
+        static string BuildLogFilePath()
+        {
+            var directory = System.IO.Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "FlatRedBall", "Glue", "Diagnostics");
+
+            System.IO.Directory.CreateDirectory(directory);
+
+            return System.IO.Path.Combine(directory, $"communication-{DateTime.Now:yyyyMMdd-HHmmss}.log");
+        }
+    }
 }

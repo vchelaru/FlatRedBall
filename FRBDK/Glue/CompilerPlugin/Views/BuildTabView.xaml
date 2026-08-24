@@ -33,13 +33,13 @@
                 <Button Click="HandleCancelBuildButtonClick" Content="Cancel Build"></Button>
             </StackPanel>
 
-            <CheckBox Content="Resource diagnostics" VerticalAlignment="Center" Margin="6,0,0,0"
-                      IsChecked="{Binding IsResourceDiagnosticsChecked}">
+            <CheckBox Content="Embedded diagnostics" VerticalAlignment="Center" Margin="6,0,0,0"
+                      IsChecked="{Binding IsEmbeddedDiagnosticsChecked}">
                 <CheckBox.ToolTip>
                     <TextBlock>
-                        Samples this editor's USER/GDI object counts, handle and thread counts, and how long<LineBreak/>
-                        the UI thread has been unresponsive. Every sample is written to a log file, and new<LineBreak/>
-                        peaks and UI stalls are printed here. Use this when diagnosing a hang or a leak.
+                        Logs click attempts (with the focus-gate values that decided whether they were<LineBreak/>
+                        processed) and selection changes from the embedded game window to a file. Use this<LineBreak/>
+                        when click-select or middle-mouse pan silently does nothing on a specific machine.
                     </TextBlock>
                 </CheckBox.ToolTip>
             </CheckBox>

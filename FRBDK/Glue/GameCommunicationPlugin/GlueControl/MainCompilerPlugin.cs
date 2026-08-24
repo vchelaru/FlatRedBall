@@ -1246,6 +1246,12 @@ namespace GameCommunicationPlugin.GlueControl
 
                     break;
 
+                case "BuildTab_EmbeddedDiagnosticsChanged":
+                    var isEnabled = bool.Parse(payload);
+                    Task.Run(() => CommandSender.Self.Send(new SetEmbeddedDiagnosticsEnabledDto { IsEnabled = isEnabled }));
+
+                    break;
+
                 //case "GlueControl_SelectObject":
 
                 //    _commandReceiver.HandleSelectObject(JsonConvert.DeserializeObject<SelectObjectDto>(payload));

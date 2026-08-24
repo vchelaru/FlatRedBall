@@ -75,7 +75,6 @@ namespace CompilerPlugin
         private Compiler _compiler;
         private Runner _runner;
         private CompilerViewModel _compilerViewModel;
-        private ResourceDiagnosticsManager _resourceDiagnosticsManager;
 
         FlatRedBall.IO.FilePath BuildSettingsUserFilePath => GlueState.Self.ProjectSpecificSettingsFolder + "BuildSettings.user.json";
 
@@ -90,8 +89,12 @@ namespace CompilerPlugin
                     //CommandSender.CancelConnect();
                     break;
 
-                case nameof(CompilerViewModel.IsResourceDiagnosticsChecked):
-                    _resourceDiagnosticsManager.SetEnabled(_compilerViewModel.IsResourceDiagnosticsChecked);
+                case nameof(CompilerViewModel.IsEmbeddedDiagnosticsChecked):
+                    // GameCommunicationPlugin owns the running embedded game session (CommandSender), so
+                    // this hands off over the cross-plugin event bus rather than reaching in directly -
+                    // same pattern MainCompilerPlugin.HandleEvent already uses for "Runner_GameStarted".
+                    ReactToPluginEvent("BuildTab_EmbeddedDiagnosticsChanged",
+                        _compilerViewModel.IsEmbeddedDiagnosticsChecked.ToString());
                     break;
             }
         }
@@ -126,7 +129,6 @@ namespace CompilerPlugin
             MainControl = new BuildTabView();
             MainControl.DataContext = _compilerViewModel;
             _compilerViewModel.Configuration = "Debug";
-            _resourceDiagnosticsManager = new ResourceDiagnosticsManager(MainControl.PrintOutput);
             _compilerViewModel.PropertyChanged += HandleCompilerViewModelPropertyChanged;
 
             buildTab = CreateTab(MainControl, "Build", TabLocation.Bottom);
