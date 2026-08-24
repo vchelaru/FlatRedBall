@@ -35,5 +35,27 @@ namespace OfficialPlugins.PointEditingPlugin
         public bool IsMoveDownEnabled => SelectedIndex < Points.Count - 1;
 
         public PointEditingViewModel() => Points = new ObservableCollection<Vector2>();
+
+        public void MoveSelectedPointUp()
+        {
+            if (IsMoveUpEnabled)
+            {
+                var oldSelectedIndex = SelectedIndex;
+                var newSelectedIndex = SelectedIndex - 1;
+                Points.Move(oldSelectedIndex, newSelectedIndex);
+                SelectedIndex = newSelectedIndex;
+            }
+        }
+
+        public void MoveSelectedPointDown()
+        {
+            if (IsMoveDownEnabled)
+            {
+                var oldSelectedIndex = SelectedIndex;
+                var newSelectedIndex = SelectedIndex + 1;
+                Points.Move(oldSelectedIndex, newSelectedIndex);
+                SelectedIndex = newSelectedIndex;
+            }
+        }
     }
 }

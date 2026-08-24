@@ -252,21 +252,9 @@ namespace OfficialPlugins.PointEditingPlugin
             ListBox.SelectedIndex = ListBox.Items.Count - 1;
         }
 
-        private void MovePointUp(object sender, RoutedEventArgs e)
-        {
-            var oldSelectedIndex = ViewModel.SelectedIndex;
-            var newSelectedIndex = ViewModel.SelectedIndex - 1;
-            ViewModel.Points.Move(oldSelectedIndex, newSelectedIndex);
-            ViewModel.SelectedIndex = newSelectedIndex;
-        }
+        private void MovePointUp(object sender, RoutedEventArgs e) => ViewModel.MoveSelectedPointUp();
 
-        private void MovePointDown(object sender, RoutedEventArgs e)
-        {
-            var oldSelectedIndex = ViewModel.SelectedIndex;
-            var newSelectedIndex = ViewModel.SelectedIndex + 1;
-            ViewModel.Points.Move(oldSelectedIndex, newSelectedIndex);
-            ViewModel.SelectedIndex = newSelectedIndex;
-        }
+        private void MovePointDown(object sender, RoutedEventArgs e) => ViewModel.MoveSelectedPointDown();
 
         private void ResizePolygon(object sender, RoutedEventArgs e)
         {
