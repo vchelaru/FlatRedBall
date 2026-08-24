@@ -243,6 +243,99 @@ public class EditModeActivityGateTests
         clickResponse.Data.SelectedObjectNames.ShouldBeEmpty();
     }
 
+    /// <summary>
+    /// Reproduces issue #2187: dragging an object in the embedded game fails on the first attempt after
+    /// Glue's own UI (e.g. the property grid) had focus, requiring a throwaway click before a real
+    /// click+drag works. Root cause: EditingManager.DoGrabLogic's fallback for "mouse already held down
+    /// on the frame the activity gate reopens" was computed from FlatRedBallServices.Game.IsActive,
+    /// which is stuck true for the whole embedded session (the reparented game window never gets a real
+    /// deactivate notification) - so the fallback was permanently dead. A press that starts while the
+    /// gate is closed and is still held when the gate opens (button down, but not a fresh ButtonPushed)
+    /// must still register as a grab.
+    /// </summary>
+    [StaFact]
+    public async Task GrabHeldAcrossFocusGateOpening_IsProcessed()
+    {
+        GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
+
+        using var game = await LiveGameProcess.StartAsync(
+            "Samples/EditorTest1",
+            csprojRelativeToProjectRoot: "EditorTest1/EditorTest1.csproj",
+            exeRelativeToProjectRoot: "EditorTest1/bin/Debug/net9.0/EditorTest1.exe",
+            afterLoadBeforeEmbed: AddTestObjectToGameScreen);
+
+        var screen = ObjectFinder.Self.GetScreenSave("GameScreen");
+
+        var loadScreenResponse = await game.Send(new SelectObjectDto
+        {
+            ElementNameGlue = "Screens\\GameScreen",
+            ScreenSave = screen,
+        });
+        loadScreenResponse.Succeeded.ShouldBeTrue(loadScreenResponse.Message);
+
+        var editModeResponse = await game.Send(new SetEditMode
+        {
+            IsInEditMode = true,
+            AbsoluteGlueProjectFilePath = System.IO.Path.Combine(game.ProjectRoot, "EditorTest1", "EditorTest1.gluj"),
+        });
+        editModeResponse.Succeeded.ShouldBeTrue(editModeResponse.Message);
+        await Task.Delay(1000);
+
+        var borderlessResponse = await game.Send(new SetBorderlessDto { IsBorderless = true });
+        borderlessResponse.Succeeded.ShouldBeTrue(borderlessResponse.Message);
+
+        // Simulate: the mouse button goes down on the object while the gate is still closed (Glue's UI
+        // still has real OS focus) - a real click on an unfocused embedded window is correctly ignored,
+        // same as issue #2154.
+        var overrideGateClosed = await game.Send(new SetEmbeddedFocusTestOverrideDto
+        {
+            GlueProcessExists = true,
+            ForegroundMatchesGlueMainWindow = false,
+            ForegroundOwnedByThisGame = false,
+        });
+        overrideGateClosed.Succeeded.ShouldBeTrue(overrideGateClosed.Message);
+
+        var pushWhileGateClosed = await game.Send<SimulateGrabAcrossFocusGateResponse>(
+            new SimulateGrabAcrossFocusGateDto
+            {
+                ObjectName = "TestObjectA",
+                ButtonPushed = true,
+                ButtonDown = true,
+                WasGameOrGlueActiveLastFrame = false,
+                AdditiveModifierDown = false,
+            });
+        pushWhileGateClosed.Succeeded.ShouldBeTrue(pushWhileGateClosed.Message);
+        pushWhileGateClosed.Data.WasProcessed.ShouldBeFalse(
+            "a press that starts while the window is unfocused should still be ignored (issue #2154 must stay fixed)");
+
+        // OS foreground now transfers to the embedded game's own reparented window (the click that
+        // brought it back) - the gate opens. The button is still down from the same continuous gesture,
+        // so this is ButtonDown without a fresh ButtonPushed - exactly like a real held mouse-drag that
+        // straddles the focus transition.
+        var overrideGateOpen = await game.Send(new SetEmbeddedFocusTestOverrideDto
+        {
+            GlueProcessExists = true,
+            ForegroundMatchesGlueMainWindow = false,
+            ForegroundOwnedByThisGame = true,
+        });
+        overrideGateOpen.Succeeded.ShouldBeTrue(overrideGateOpen.Message);
+
+        var heldDownAsGateOpens = await game.Send<SimulateGrabAcrossFocusGateResponse>(
+            new SimulateGrabAcrossFocusGateDto
+            {
+                ObjectName = "TestObjectA",
+                ButtonPushed = false,
+                ButtonDown = true,
+                WasGameOrGlueActiveLastFrame = false,
+                AdditiveModifierDown = false,
+            });
+        heldDownAsGateOpens.Succeeded.ShouldBeTrue(heldDownAsGateOpens.Message);
+        heldDownAsGateOpens.Data.WasProcessed.ShouldBeTrue(
+            "a mouse button held down through the moment the activity gate opens should still be treated " +
+            "as a grab, or the drag is lost until an entirely separate click (issue #2187)");
+        heldDownAsGateOpens.Data.SelectedObjectNames.ShouldBe(new[] { "TestObjectA" });
+    }
+
     static async Task AddTestObjectToGameScreen()
     {
         var gameScreen = ObjectFinder.Self.GetScreenSave("GameScreen");
