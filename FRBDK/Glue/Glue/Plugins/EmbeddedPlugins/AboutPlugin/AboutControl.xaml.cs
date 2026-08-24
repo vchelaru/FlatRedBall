@@ -24,5 +24,15 @@ namespace GlueFormsCore.Controls
         {
             ViewModel.DoInstallDailyBuild();
         }
+
+        private void FrbSourceButton_Click(object sender, RoutedEventArgs e)
+        {
+            ViewModel.DoFrbSourceButtonClicked();
+        }
+
+        private void GumSourceButton_Click(object sender, RoutedEventArgs e)
+        {
+            ViewModel.DoGumSourceButtonClicked();
+        }
     }
 }

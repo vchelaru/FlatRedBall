@@ -2,6 +2,7 @@
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.VSHelpers.Projects;
 using FlatRedBall.IO;
 using GlueFormsCore.Controls;
 using Microsoft.Build.Evaluation;
@@ -24,6 +25,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AboutPlugin
     {
         PluginTab tab;
         AboutViewModel aboutViewModel;
+        bool hasCheckedSourceStatus;
 
         public override void StartUp()
         {
@@ -59,9 +61,42 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AboutPlugin
                 tab = CreateTab(view, "About");
             }
             RefreshAboutViewModel(GlueState.Self.CurrentGlueProject);
+            CheckSourceStatusIfFirstShow();
 
             tab.Show();
             tab.Focus();
+        }
+
+        private void CheckSourceStatusIfFirstShow()
+        {
+            if (hasCheckedSourceStatus)
+            {
+                return;
+            }
+
+            var mainProject = GlueState.Self.CurrentMainProject;
+
+            string frbRoot = null;
+            string gumRoot = null;
+
+            if (mainProject is Frb2Project frb2Project)
+            {
+                SourceRepoLocator.TryGetFrb2SourceRoot(frb2Project, out frbRoot);
+            }
+            else if (mainProject != null)
+            {
+                SourceRepoLocator.TryGetFrb1SourceRoots(mainProject, out frbRoot, out gumRoot);
+            }
+
+            if (frbRoot == null)
+            {
+                // No project loaded yet, or not linked to source - nothing to check yet. Leave
+                // hasCheckedSourceStatus false so this runs again next time the tab is shown.
+                return;
+            }
+
+            hasCheckedSourceStatus = true;
+            aboutViewModel.InitializeSourceStatus(frbRoot, gumRoot);
         }
 
         private void RefreshAboutViewModel(GlueProjectSave glueProject)
