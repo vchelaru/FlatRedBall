@@ -24,7 +24,6 @@
                 Visibility="{Binding WhileStoppedViewVisibility}"
                 BuildClicked="HandleCompileClick"
                 PackageClicked="WhileStoppedView_PackageClicked"
-                MSBuildSettingsClicked="HandleMSBuildSettingsClicked"
                 >
             </views:WhileStoppedView>
 
@@ -43,6 +42,14 @@
                     </TextBlock>
                 </CheckBox.ToolTip>
             </CheckBox>
+
+            <Button VerticalAlignment="Center" Margin="12,0,0,0" Click="HandleMSBuildSettingsButtonClick"
+                    Content="{materialDesign:PackIcon Cog}" Style="{DynamicResource ToolIcon}"
+                    Visibility="{Binding WhileStoppedViewVisibility}">
+                <Button.ToolTip>
+                    <TextBlock>Build Settings</TextBlock>
+                </Button.ToolTip>
+            </Button>
 
         </WrapPanel>
 

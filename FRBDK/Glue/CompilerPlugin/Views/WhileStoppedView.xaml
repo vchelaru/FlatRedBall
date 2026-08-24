@@ -28,11 +28,8 @@
         </ToolTip>
       </Button.ToolTip>
     </Button>
-    <ComboBox IsEditable="True" Margin="4,0" Width="150" 
+    <ComboBox IsEditable="True" Margin="4,0" Width="150"
                   ItemsSource="{Binding AvailableConfigurations}"
                  Text="{Binding Configuration}"></ComboBox>
-    <CheckBox VerticalAlignment="Center" VerticalContentAlignment="Center" IsChecked="{Binding IsPrintMsBuildCommandChecked}" Content="Print MSBuild Command" Margin="4,0"></CheckBox>
-    <Button VerticalAlignment="Top" Height="24" Click="MSBuildSettingsButtonClicked" Margin="4,0" Content="{materialDesign:PackIcon Cog}" Style="{DynamicResource ToolIcon}">
-    </Button>
   </StackPanel>
 </UserControl>

@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.Plugins;
+﻿using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using System;
 using System.ComponentModel.Composition;
@@ -61,6 +62,35 @@ namespace CompilerPlugin
             _compiler.BuildSettingsUser = BuildSettingsUser;
             _compilerViewModel.HasLoadedGlux = true;
             _compilerViewModel.HasDoneNugetRestore = false;
+
+            if (_compiler.ShouldWarmUpMsBuildServer)
+            {
+                QueueMsBuildServerWarmUp();
+            }
+        }
+
+        // Runs as a real TaskManager task (not a bare fire-and-forget Task) so it occupies the FIFO
+        // queue and shows up in "Tasks remaining" - the whole point of warming up is user-visible,
+        // background work, not something that should look like nothing is happening.
+        private void QueueMsBuildServerWarmUp()
+        {
+            _ = TaskManager.Self.AddAsync(WarmUpMsBuildServerAsync, "Warming up MSBuild Server",
+                TaskExecutionPreference.Fifo, doOnUiThread: true);
+        }
+
+        private async Task WarmUpMsBuildServerAsync()
+        {
+            var result = await _compiler.Compile(
+                (value) => HandleOutput(value),
+                (value) => ReactToPluginEvent("Compiler_Output_Error", value),
+                !_compilerViewModel.HasDoneNugetRestore,
+                _compilerViewModel.Configuration,
+                _compilerViewModel.IsPrintMsBuildCommandChecked);
+
+            if (result.Succeeded)
+            {
+                _compilerViewModel.HasDoneNugetRestore = true;
+            }
         }
 
         private void HandleGluxUnLoaded()
@@ -97,6 +127,15 @@ namespace CompilerPlugin
                         _compilerViewModel.IsEmbeddedDiagnosticsChecked.ToString());
                     break;
             }
+        }
+
+        private void SaveBuildSettings()
+        {
+            GlueCommands.Self.TryMultipleTimes(() =>
+            {
+                var textToSave = JsonConvert.SerializeObject(BuildSettingsUser);
+                System.IO.File.WriteAllText(BuildSettingsUserFilePath.FullPath, textToSave);
+            });
         }
 
         #endregion
@@ -193,6 +232,7 @@ namespace CompilerPlugin
                 var view = new BuildSettingsWindow();
                 view.DataContext = viewModel;
                 viewModel.SetFrom(BuildSettingsUser);
+                var wasUsingMsBuildServer = BuildSettingsUser.UseMsBuildServer;
 
                 var results = view.ShowDialog();
 
@@ -201,11 +241,12 @@ namespace CompilerPlugin
                     // apply VM:
                     viewModel.ApplyTo(BuildSettingsUser);
 
-                    GlueCommands.Self.TryMultipleTimes(() =>
+                    SaveBuildSettings();
+
+                    if (Compiler.ShouldWarmUpOnSettingsChange(wasUsingMsBuildServer, BuildSettingsUser.UseMsBuildServer))
                     {
-                        var textToSave = JsonConvert.SerializeObject(BuildSettingsUser);
-                        System.IO.File.WriteAllText(BuildSettingsUserFilePath.FullPath, textToSave);
-                    });
+                        QueueMsBuildServerWarmUp();
+                    }
                 }
             };
         }
