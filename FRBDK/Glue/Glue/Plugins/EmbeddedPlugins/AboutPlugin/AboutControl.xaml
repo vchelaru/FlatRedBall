@@ -26,6 +26,8 @@
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
             </Grid.RowDefinitions>
 
             <Label Content="FlatRedBall Editor Version" />
@@ -57,7 +59,17 @@
             <Label Grid.Row="6" Content="DLL version" />
             <Label Grid.Row="6" Grid.Column="1" Content="{Binding DllSyntaxVersionToShow}" />
 
+            <Label Grid.Row="7" Content="FlatRedBall Source" Visibility="{Binding FrbSourceRowVisibility}" />
+            <StackPanel Orientation="Horizontal" Grid.Row="7" Grid.Column="1" Visibility="{Binding FrbSourceRowVisibility}">
+                <Label Content="{Binding FrbSourceStatusText}" />
+                <Button Content="{Binding FrbSourceButtonText}" IsEnabled="{Binding IsFrbSourceButtonEnabled}" Click="FrbSourceButton_Click" Margin="5,0,0,0" />
+            </StackPanel>
 
+            <Label Grid.Row="8" Content="Gum Source" Visibility="{Binding GumSourceRowVisibility}" />
+            <StackPanel Orientation="Horizontal" Grid.Row="8" Grid.Column="1" Visibility="{Binding GumSourceRowVisibility}">
+                <Label Content="{Binding GumSourceStatusText}" />
+                <Button Content="{Binding GumSourceButtonText}" IsEnabled="{Binding IsGumSourceButtonEnabled}" Click="GumSourceButton_Click" Margin="5,0,0,0" />
+            </StackPanel>
 
         </Grid>
     </Grid>

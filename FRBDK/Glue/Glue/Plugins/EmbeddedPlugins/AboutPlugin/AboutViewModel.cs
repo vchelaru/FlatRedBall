@@ -17,6 +17,14 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AboutPlugin
 {
     public class AboutViewModel : ViewModel
     {
+        public AboutViewModel()
+        {
+            // Get<Visibility>() otherwise defaults to Visibility.Visible (enum value 0), which would
+            // show an empty source-status row before InitializeSourceStatus ever runs.
+            FrbSourceRowVisibility = Visibility.Collapsed;
+            GumSourceRowVisibility = Visibility.Collapsed;
+        }
+
         public string CopyrightText
         {
             get => Get<string>();
@@ -156,6 +164,161 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AboutPlugin
             get => Get<string>();
             set => Set(value);
         }
+
+        #region Source Repo Status (FRB/Gum)
+
+        string _frbSourceRoot;
+        string _gumSourceRoot;
+
+        public Visibility FrbSourceRowVisibility
+        {
+            get => Get<Visibility>();
+            set => Set(value);
+        }
+
+        public Visibility GumSourceRowVisibility
+        {
+            get => Get<Visibility>();
+            set => Set(value);
+        }
+
+        public string FrbSourceStatusText
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string GumSourceStatusText
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string FrbSourceButtonText
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string GumSourceButtonText
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public bool IsFrbSourceButtonEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool IsGumSourceButtonEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        /// <summary>
+        /// Kicks off an FRB/Gum source-status check. Called every time the About tab is shown; the
+        /// per-row Refresh/Pull Latest button lets the user re-check again without closing and
+        /// reopening the tab.
+        /// </summary>
+        internal void InitializeSourceStatus(string frbSourceRoot, string gumSourceRoot)
+        {
+            _frbSourceRoot = frbSourceRoot;
+            _gumSourceRoot = gumSourceRoot;
+
+            FrbSourceRowVisibility = frbSourceRoot != null ? Visibility.Visible : Visibility.Collapsed;
+            GumSourceRowVisibility = gumSourceRoot != null ? Visibility.Visible : Visibility.Collapsed;
+
+            if (frbSourceRoot != null)
+            {
+                _ = RefreshSourceStatusAsync(isFrb: true);
+            }
+
+            if (gumSourceRoot != null)
+            {
+                _ = RefreshSourceStatusAsync(isFrb: false);
+            }
+        }
+
+        internal async void DoFrbSourceButtonClicked() => await HandleSourceButtonClickedAsync(isFrb: true);
+
+        internal async void DoGumSourceButtonClicked() => await HandleSourceButtonClickedAsync(isFrb: false);
+
+        async System.Threading.Tasks.Task HandleSourceButtonClickedAsync(bool isFrb)
+        {
+            if ((isFrb ? FrbSourceButtonText : GumSourceButtonText) == "Pull Latest")
+            {
+                await PullSourceAsync(isFrb);
+            }
+            else
+            {
+                await RefreshSourceStatusAsync(isFrb);
+            }
+        }
+
+        async System.Threading.Tasks.Task RefreshSourceStatusAsync(bool isFrb)
+        {
+            var root = isFrb ? _frbSourceRoot : _gumSourceRoot;
+
+            SetSourceButtonEnabled(isFrb, false);
+            SetSourceStatusText(isFrb, "Checking...");
+
+            var result = await GitRepoStatusChecker.CheckStatusAsync(root);
+
+            if (!result.Succeeded)
+            {
+                SetSourceStatusText(isFrb, $"Unable to check ({result.ErrorMessage})");
+                SetSourceButtonText(isFrb, "Refresh");
+            }
+            else if (result.CommitsBehind == 0)
+            {
+                SetSourceStatusText(isFrb, "Up to date");
+                SetSourceButtonText(isFrb, "Refresh");
+            }
+            else
+            {
+                SetSourceStatusText(isFrb, result.CommitsBehind == 1 ? "1 commit behind" : $"{result.CommitsBehind} commits behind");
+                SetSourceButtonText(isFrb, "Pull Latest");
+            }
+
+            SetSourceButtonEnabled(isFrb, true);
+        }
+
+        async System.Threading.Tasks.Task PullSourceAsync(bool isFrb)
+        {
+            var root = isFrb ? _frbSourceRoot : _gumSourceRoot;
+
+            SetSourceButtonEnabled(isFrb, false);
+            SetSourceStatusText(isFrb, "Pulling...");
+
+            var result = await GitRepoStatusChecker.PullAsync(root);
+
+            if (!result.Succeeded)
+            {
+                GlueCommands.Self.DialogCommands.ShowMessageBox($"Failed to pull latest:\n{result.ErrorMessage}");
+            }
+
+            await RefreshSourceStatusAsync(isFrb);
+        }
+
+        void SetSourceStatusText(bool isFrb, string text)
+        {
+            if (isFrb) FrbSourceStatusText = text; else GumSourceStatusText = text;
+        }
+
+        void SetSourceButtonText(bool isFrb, string text)
+        {
+            if (isFrb) FrbSourceButtonText = text; else GumSourceButtonText = text;
+        }
+
+        void SetSourceButtonEnabled(bool isFrb, bool enabled)
+        {
+            if (isFrb) IsFrbSourceButtonEnabled = enabled; else IsGumSourceButtonEnabled = enabled;
+        }
+
+        #endregion
 
         internal async void DoInstallUpdate()
         {

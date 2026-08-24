@@ -2,6 +2,7 @@
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.VSHelpers.Projects;
 using FlatRedBall.IO;
 using GlueFormsCore.Controls;
 using Microsoft.Build.Evaluation;
@@ -59,9 +60,34 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AboutPlugin
                 tab = CreateTab(view, "About");
             }
             RefreshAboutViewModel(GlueState.Self.CurrentGlueProject);
+            CheckSourceStatus();
 
             tab.Show();
             tab.Focus();
+        }
+
+        /// <summary>
+        /// Re-checks FRB/Gum source status against the current project every time the About tab is
+        /// shown (not on the passive project-load refresh in StartUp) - the row's Refresh/Pull Latest
+        /// button exists for re-checking without closing and reopening the tab, not as the only trigger.
+        /// </summary>
+        private void CheckSourceStatus()
+        {
+            var mainProject = GlueState.Self.CurrentMainProject;
+
+            string frbRoot = null;
+            string gumRoot = null;
+
+            if (mainProject is Frb2Project frb2Project)
+            {
+                SourceRepoLocator.TryGetFrb2SourceRoot(frb2Project, out frbRoot);
+            }
+            else if (mainProject != null)
+            {
+                SourceRepoLocator.TryGetFrb1SourceRoots(mainProject, out frbRoot, out gumRoot);
+            }
+
+            aboutViewModel.InitializeSourceStatus(frbRoot, gumRoot);
         }
 
         private void RefreshAboutViewModel(GlueProjectSave glueProject)
