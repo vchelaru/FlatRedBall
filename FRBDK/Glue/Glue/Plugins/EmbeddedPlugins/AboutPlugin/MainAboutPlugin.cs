@@ -25,7 +25,6 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AboutPlugin
     {
         PluginTab tab;
         AboutViewModel aboutViewModel;
-        bool hasCheckedSourceStatus;
 
         public override void StartUp()
         {
@@ -61,19 +60,19 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AboutPlugin
                 tab = CreateTab(view, "About");
             }
             RefreshAboutViewModel(GlueState.Self.CurrentGlueProject);
-            CheckSourceStatusIfFirstShow();
+            CheckSourceStatus();
 
             tab.Show();
             tab.Focus();
         }
 
-        private void CheckSourceStatusIfFirstShow()
+        /// <summary>
+        /// Re-checks FRB/Gum source status against the current project every time the About tab is
+        /// shown (not on the passive project-load refresh in StartUp) - the row's Refresh/Pull Latest
+        /// button exists for re-checking without closing and reopening the tab, not as the only trigger.
+        /// </summary>
+        private void CheckSourceStatus()
         {
-            if (hasCheckedSourceStatus)
-            {
-                return;
-            }
-
             var mainProject = GlueState.Self.CurrentMainProject;
 
             string frbRoot = null;
@@ -88,14 +87,6 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AboutPlugin
                 SourceRepoLocator.TryGetFrb1SourceRoots(mainProject, out frbRoot, out gumRoot);
             }
 
-            if (frbRoot == null)
-            {
-                // No project loaded yet, or not linked to source - nothing to check yet. Leave
-                // hasCheckedSourceStatus false so this runs again next time the tab is shown.
-                return;
-            }
-
-            hasCheckedSourceStatus = true;
             aboutViewModel.InitializeSourceStatus(frbRoot, gumRoot);
         }
 

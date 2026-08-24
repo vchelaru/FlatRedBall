@@ -219,9 +219,9 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AboutPlugin
         }
 
         /// <summary>
-        /// Kicks off the initial FRB/Gum source-status check. Intended to be called once, the first
-        /// time the About tab is shown for a source-linked project - subsequent re-checks go through
-        /// the per-row Refresh/Pull Latest button instead.
+        /// Kicks off an FRB/Gum source-status check. Called every time the About tab is shown; the
+        /// per-row Refresh/Pull Latest button lets the user re-check again without closing and
+        /// reopening the tab.
         /// </summary>
         internal void InitializeSourceStatus(string frbSourceRoot, string gumSourceRoot)
         {
