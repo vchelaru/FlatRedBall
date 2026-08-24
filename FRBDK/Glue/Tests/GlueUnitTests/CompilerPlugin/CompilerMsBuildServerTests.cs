@@ -61,5 +61,17 @@ namespace GlueUnitTests.CompilerPlugin
             CreateCompiler(useMsBuildServer: false).ShouldWarmUpMsBuildServer.ShouldBeFalse();
             CreateCompiler(useMsBuildServer: null).ShouldWarmUpMsBuildServer.ShouldBeFalse();
         }
+
+        [Theory]
+        [InlineData(false, true, true)]   // turning it on mid-session should warm up
+        [InlineData(true, true, false)]   // already on, OK clicked again - don't refire
+        [InlineData(true, false, false)]  // turning it off - nothing to warm up
+        [InlineData(false, false, false)] // stayed off
+        public void ShouldWarmUpOnSettingsChange_OnlyFiresOnOffToOnTransition(
+            bool wasUsingMsBuildServer, bool isUsingMsBuildServerNow, bool expected)
+        {
+            Compiler.ShouldWarmUpOnSettingsChange(wasUsingMsBuildServer, isUsingMsBuildServerNow)
+                .ShouldBe(expected);
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.Plugins;
+﻿using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using System;
 using System.ComponentModel.Composition;
@@ -64,8 +65,17 @@ namespace CompilerPlugin
 
             if (_compiler.ShouldWarmUpMsBuildServer)
             {
-                _ = WarmUpMsBuildServerAsync();
+                QueueMsBuildServerWarmUp();
             }
+        }
+
+        // Runs as a real TaskManager task (not a bare fire-and-forget Task) so it occupies the FIFO
+        // queue and shows up in "Tasks remaining" - the whole point of warming up is user-visible,
+        // background work, not something that should look like nothing is happening.
+        private void QueueMsBuildServerWarmUp()
+        {
+            _ = TaskManager.Self.AddAsync(WarmUpMsBuildServerAsync, "Warming up MSBuild Server",
+                TaskExecutionPreference.Fifo, doOnUiThread: true);
         }
 
         private async Task WarmUpMsBuildServerAsync()
@@ -222,6 +232,7 @@ namespace CompilerPlugin
                 var view = new BuildSettingsWindow();
                 view.DataContext = viewModel;
                 viewModel.SetFrom(BuildSettingsUser);
+                var wasUsingMsBuildServer = BuildSettingsUser.UseMsBuildServer;
 
                 var results = view.ShowDialog();
 
@@ -231,6 +242,11 @@ namespace CompilerPlugin
                     viewModel.ApplyTo(BuildSettingsUser);
 
                     SaveBuildSettings();
+
+                    if (Compiler.ShouldWarmUpOnSettingsChange(wasUsingMsBuildServer, BuildSettingsUser.UseMsBuildServer))
+                    {
+                        QueueMsBuildServerWarmUp();
+                    }
                 }
             };
         }
