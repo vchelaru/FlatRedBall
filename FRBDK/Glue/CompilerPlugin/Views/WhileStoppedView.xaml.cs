@@ -23,7 +23,6 @@ namespace CompilerPlugin.Views
         public event Action BuildClicked;
         public event Action PackageClicked;
         //public event Action BuildContentClicked;
-        public event Action MSBuildSettingsClicked;
 
         public WhileStoppedView()
         {
@@ -33,16 +32,6 @@ namespace CompilerPlugin.Views
         private void HandleCompileClick(object sender, RoutedEventArgs e)
         {
             BuildClicked?.Invoke();
-        }
-
-        private void MSBuildSettingsButtonClicked(object sender, RenderingEventArgs e)
-        {
-            MSBuildSettingsClicked?.Invoke();
-        }
-
-        private void MSBuildSettingsButtonClicked(object sender, RoutedEventArgs e)
-        {
-            MSBuildSettingsClicked?.Invoke();
         }
 
         private void HandlePackageClicked(object sender, RoutedEventArgs e)

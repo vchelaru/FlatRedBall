@@ -119,6 +119,15 @@ namespace CompilerPlugin
             }
         }
 
+        private void SaveBuildSettings()
+        {
+            GlueCommands.Self.TryMultipleTimes(() =>
+            {
+                var textToSave = JsonConvert.SerializeObject(BuildSettingsUser);
+                System.IO.File.WriteAllText(BuildSettingsUserFilePath.FullPath, textToSave);
+            });
+        }
+
         #endregion
 
         #region Private Methods
@@ -221,11 +230,7 @@ namespace CompilerPlugin
                     // apply VM:
                     viewModel.ApplyTo(BuildSettingsUser);
 
-                    GlueCommands.Self.TryMultipleTimes(() =>
-                    {
-                        var textToSave = JsonConvert.SerializeObject(BuildSettingsUser);
-                        System.IO.File.WriteAllText(BuildSettingsUserFilePath.FullPath, textToSave);
-                    });
+                    SaveBuildSettings();
                 }
             };
         }

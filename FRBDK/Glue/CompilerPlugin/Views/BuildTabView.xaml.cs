@@ -88,7 +88,7 @@ namespace CompilerPlugin.Views
             RunClicked?.Invoke(this, null);
         }
 
-        private void HandleMSBuildSettingsClicked()
+        private void HandleMSBuildSettingsButtonClick(object sender, RoutedEventArgs e)
         {
             MSBuildSettingsClicked?.Invoke();
         }
