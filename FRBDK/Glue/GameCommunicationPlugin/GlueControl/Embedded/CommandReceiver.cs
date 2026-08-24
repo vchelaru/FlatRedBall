@@ -938,6 +938,21 @@ namespace GlueControl
             };
         }
 
+        private static object HandleDto(GlueControl.Dtos.SimulateGrabAcrossFocusGateDto dto)
+        {
+            var editingManager = Editing.EditingManager.Self;
+
+            var wasProcessed = editingManager.SimulateGrabAcrossFocusGateForTesting(
+                dto.ObjectName, dto.ButtonPushed, dto.ButtonDown, dto.WasGameOrGlueActiveLastFrame,
+                dto.AdditiveModifierDown);
+
+            return new GlueControl.Dtos.SimulateGrabAcrossFocusGateResponse
+            {
+                WasProcessed = wasProcessed,
+                SelectedObjectNames = editingManager.ItemsSelected.Select(item => item.Name).ToList()
+            };
+        }
+
         #endregion
 
         #endregion

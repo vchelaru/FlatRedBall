@@ -249,6 +249,11 @@ namespace GlueControl.Editing
 
         bool wasGameActive;
 
+        // Tracks IsGameOrGlueActive (not FlatRedBallServices.Game.IsActive - see DoGrabLogic) so a
+        // click that returns focus to the embedded game can still be detected as "the gate just opened"
+        // even when the game is embedded and Game.IsActive is stuck true. See issue #2187.
+        bool wasGameOrGlueActive;
+
         bool wasPushedInWindow;
 
         public bool IsEmbeddedInActiveGlue => EmbeddedWindowLogic.IsParentGlueFocused;
@@ -581,6 +586,7 @@ namespace GlueControl.Editing
             }
 
             wasGameActive = FlatRedBallServices.Game.IsActive;
+            wasGameOrGlueActive = IsGameOrGlueActive;
 
 #endif
         }
@@ -640,15 +646,13 @@ namespace GlueControl.Editing
 
             }
 
-            var shouldTreatAsPush = false;
+            var shouldTreatAsPush = ComputeShouldTreatAsPush(
+                mouse.IsInGameWindow(),
+                mouse.ButtonPushed(Mouse.MouseButtons.LeftButton),
+                mouse.ButtonDown(Mouse.MouseButtons.LeftButton),
+                wasGameOrGlueActive,
+                IsGameOrGlueActive);
 
-            if (mouse.IsInGameWindow())
-            {
-                var didWindowActivate = !wasGameActive && FlatRedBallServices.Game.IsActive;
-
-                shouldTreatAsPush = mouse.ButtonPushed(Mouse.MouseButtons.LeftButton) ||
-                    (mouse.ButtonDown(Mouse.MouseButtons.LeftButton) && didWindowActivate);
-            }
             if (shouldTreatAsPush)
             {
                 var itemOver = itemsOver.FirstOrDefault();
@@ -656,6 +660,61 @@ namespace GlueControl.Editing
 
                 PerformClickSelection(itemOver, additiveModifierDown);
             }
+        }
+
+        /// <summary>
+        /// Core of DoGrabLogic's push-vs-drag-continuation decision, split out so it can be exercised
+        /// with synthetic inputs (mirrors EmbeddedWindowLogic.ComputeIsFocused from issue #2183). A real
+        /// click that returns OS focus to the embedded game can land on the same frame the game/Glue
+        /// activity gate (isGameOrGlueActiveThisFrame) opens, in which case Mouse.ButtonPushed may never
+        /// report a fresh down-transition for it - only ButtonDown - so "the gate just opened while the
+        /// button is held down" must also count as a push, or that gesture is lost until an entirely
+        /// separate click. This used to be computed from FlatRedBallServices.Game.IsActive, which is
+        /// stuck true for the whole embedded session (the reparented game window never gets a real
+        /// deactivate notification), making the fallback permanently dead. See issue #2187.
+        /// </summary>
+        internal static bool ComputeShouldTreatAsPush(bool isInGameWindow, bool buttonPushed, bool buttonDown,
+            bool wasGameOrGlueActiveLastFrame, bool isGameOrGlueActiveThisFrame)
+        {
+            if (!isInGameWindow)
+            {
+                return false;
+            }
+
+            var didWindowActivate = !wasGameOrGlueActiveLastFrame && isGameOrGlueActiveThisFrame;
+
+            return buttonPushed || (buttonDown && didWindowActivate);
+        }
+
+        /// <summary>
+        /// Test-only: mirrors DoGrabLogic's push decision (ComputeShouldTreatAsPush) with synthetic
+        /// button state instead of real Mouse.ButtonPushed/ButtonDown, which LiveGameProcess can't fake
+        /// (no real hardware mouse in that headless host). wasGameOrGlueActiveLastFrame is likewise
+        /// passed in directly rather than read from the live wasGameOrGlueActive field - the real
+        /// embedded game process keeps running its own Update() loop between DTO round-trips, which
+        /// would otherwise race this test's own "last frame" state and silently clobber it. Driven by
+        /// SimulateGrabAcrossFocusGateDto (issue #2187).
+        /// </summary>
+        internal bool SimulateGrabAcrossFocusGateForTesting(string objectName, bool buttonPushed, bool buttonDown,
+            bool wasGameOrGlueActiveLastFrame, bool additiveModifierDown)
+        {
+            // Mirrors Update(): DoGrabLogic is only ever called from inside `if (IsGameOrGlueActive)`, so
+            // that outer gate has to be re-applied here too - ComputeShouldTreatAsPush alone only models
+            // DoGrabLogic's own body, not the gate its caller already enforces.
+            var shouldTreatAsPush = IsGameOrGlueActive && ComputeShouldTreatAsPush(
+                isInGameWindow: true,
+                buttonPushed,
+                buttonDown,
+                wasGameOrGlueActiveLastFrame,
+                IsGameOrGlueActive);
+
+            if (shouldTreatAsPush)
+            {
+                var itemOver = string.IsNullOrEmpty(objectName) ? null : GetObjectByName(objectName);
+                PerformClickSelection(itemOver, additiveModifierDown);
+            }
+
+            return shouldTreatAsPush;
         }
 
         /// <summary>

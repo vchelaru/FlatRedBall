@@ -328,6 +328,38 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
     }
     #endregion
 
+    #region SimulateGrabAcrossFocusGate
+
+    /// <summary>
+    /// Test-only: drives EditingManager.SimulateGrabAcrossFocusGateForTesting with synthetic mouse
+    /// button state, since LiveGameProcess can't fake real hardware mouse button transitions. Exists to
+    /// pin issue #2187 - a click that returns OS focus to the embedded game can land on the same frame
+    /// the activity gate opens, in which case ButtonPushed is never observed for it (only ButtonDown).
+    /// </summary>
+    public class SimulateGrabAcrossFocusGateDto
+    {
+        /// <summary>InstanceName of the NamedObjectSave under the cursor, or null/empty for empty space.</summary>
+        public string ObjectName { get; set; }
+        public bool ButtonPushed { get; set; }
+        public bool ButtonDown { get; set; }
+        /// <summary>
+        /// Passed in explicitly rather than read from the live game's own state - the embedded game
+        /// process keeps ticking its own Update() loop between DTO round-trips, which would otherwise
+        /// race a "was the gate open last frame" flag read off the live instance.
+        /// </summary>
+        public bool WasGameOrGlueActiveLastFrame { get; set; }
+        public bool AdditiveModifierDown { get; set; }
+    }
+    #endregion
+
+    #region SimulateGrabAcrossFocusGateResponse
+    public class SimulateGrabAcrossFocusGateResponse
+    {
+        public bool WasProcessed { get; set; }
+        public List<string> SelectedObjectNames { get; set; }
+    }
+    #endregion
+
     #region GetCameraSave
     public class GetCameraSave
     {
