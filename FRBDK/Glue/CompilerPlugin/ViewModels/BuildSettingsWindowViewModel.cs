@@ -14,14 +14,22 @@ namespace CompilerPlugin.ViewModels
             set => Set(value);
         }
 
+        public bool UseMsBuildServer
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public void SetFrom(BuildSettingsUser buildSettingsUser)
         {
             CustomMsBuildLocation = buildSettingsUser.CustomMsBuildLocation;
+            UseMsBuildServer = buildSettingsUser.UseMsBuildServer;
         }
 
         public void ApplyTo(BuildSettingsUser buildSettingsUser)
         {
             buildSettingsUser.CustomMsBuildLocation = CustomMsBuildLocation;
+            buildSettingsUser.UseMsBuildServer = UseMsBuildServer;
         }
     }
 }

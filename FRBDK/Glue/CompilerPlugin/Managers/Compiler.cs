@@ -97,6 +97,10 @@ namespace CompilerPlugin.Managers
 
         public BuildSettingsUser BuildSettingsUser { get; set; }
 
+        // Gates the background warm-up build fired on project load (CompilerPlugin.HandleGluxLoaded) -
+        // only worth doing when the setting that makes MSBuild Server actually get used is on.
+        public bool ShouldWarmUpMsBuildServer => BuildSettingsUser?.UseMsBuildServer == true;
+
         FilePath msBuildLocation;
         private CompilerViewModel _compilerViewModel;
 
@@ -470,7 +474,9 @@ namespace CompilerPlugin.Managers
         }
 
 
-        private static Process CreateProcess(string executable, string arguments)
+        // internal (not private) so GlueUnitTests can pin the env var behavior below without spawning
+        // a real process - CreateProcess only builds the ProcessStartInfo, it never calls Start().
+        internal Process CreateProcess(string executable, string arguments)
         {
             Process process = new Process();
 
@@ -482,6 +488,12 @@ namespace CompilerPlugin.Managers
             process.StartInfo.RedirectStandardOutput = true;
             process.StartInfo.CreateNoWindow = true;
 
+            if (BuildSettingsUser?.UseMsBuildServer == true)
+            {
+                // Scoped to this child process's environment block only - does not affect Glue's own
+                // process, sibling processes, or any other tool's `dotnet`/`msbuild` invocations.
+                process.StartInfo.EnvironmentVariables["DOTNET_CLI_USE_MSBUILD_SERVER"] = "1";
+            }
 
             return process;
         }

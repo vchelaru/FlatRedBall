@@ -61,6 +61,26 @@ namespace CompilerPlugin
             _compiler.BuildSettingsUser = BuildSettingsUser;
             _compilerViewModel.HasLoadedGlux = true;
             _compilerViewModel.HasDoneNugetRestore = false;
+
+            if (_compiler.ShouldWarmUpMsBuildServer)
+            {
+                _ = WarmUpMsBuildServerAsync();
+            }
+        }
+
+        private async Task WarmUpMsBuildServerAsync()
+        {
+            var result = await _compiler.Compile(
+                (value) => HandleOutput(value),
+                (value) => ReactToPluginEvent("Compiler_Output_Error", value),
+                !_compilerViewModel.HasDoneNugetRestore,
+                _compilerViewModel.Configuration,
+                _compilerViewModel.IsPrintMsBuildCommandChecked);
+
+            if (result.Succeeded)
+            {
+                _compilerViewModel.HasDoneNugetRestore = true;
+            }
         }
 
         private void HandleGluxUnLoaded()
