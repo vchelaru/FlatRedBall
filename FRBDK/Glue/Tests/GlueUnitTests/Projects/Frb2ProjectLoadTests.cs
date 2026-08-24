@@ -81,6 +81,39 @@ public class Frb2ProjectLoadTests
     }
 
     [StaFact]
+    public async Task LoadingATemplateCreatedFrb2Project_ResolvesTheDesktopLauncher()
+    {
+        // Runner/Compiler build and run GlueState.Self.CurrentFrb2LauncherProjectFileName instead of
+        // the loaded Common project - Common has no OutputType of its own, so pressing Play used to
+        // build a DLL and never launch anything (#2188).
+        GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
+
+        using var temp = new TempDir("Frb2LauncherResolve_");
+        var commonCsproj = WriteTemplateShapedFrb2Project(temp.Root);
+
+        await GoldProject.LoadInGlueAsync(commonCsproj);
+
+        var launcher = GlueState.Self.CurrentFrb2LauncherProjectFileName;
+
+        Assert.NotNull(launcher);
+        Assert.Equal(ProjectName + ".Desktop.csproj", Path.GetFileName(launcher.FullPath));
+    }
+
+    [StaFact]
+    public async Task LoadingASingleProjectFrb2Game_HasNoLauncherToResolve()
+    {
+        // The source-linked, single-project layout Frb2ProjectFixture.Write produces has nothing
+        // separate to build/run - CurrentMainProject itself is the runnable project, so there is no
+        // launcher redirect to make.
+        GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
+
+        using var temp = new TempDir("Frb2LauncherNone_");
+        await GoldProject.LoadInGlueAsync(WriteFrb2Project(temp.Root));
+
+        Assert.Null(GlueState.Self.CurrentFrb2LauncherProjectFileName);
+    }
+
+    [StaFact]
     public async Task LoadingAnFrb2Project_CreatesTheGluj_AndWritesNothingElse()
     {
         // The full game-project plugin set, not just the embedded ones: which plugins are registered is

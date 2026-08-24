@@ -110,6 +110,30 @@ namespace FlatRedBall.Glue.VSHelpers
                 : null;
         }
 
+        /// <summary>
+        /// The FRB2 launcher project (Desktop today) that plays <paramref name="frb2GameCsprojPath"/>,
+        /// found among everything <paramref name="solutionFileName"/> references. Null when the game
+        /// project isn't FRB2, nothing in the solution references it, or more than one thing does -
+        /// see <see cref="Frb2ProjectDetector.FindFrb2LauncherProjectFor"/>.
+        /// </summary>
+        public static string FindFrb2LauncherProject(string solutionFileName, string frb2GameCsprojPath)
+        {
+            if (string.IsNullOrEmpty(solutionFileName) || string.IsNullOrEmpty(frb2GameCsprojPath))
+            {
+                return null;
+            }
+
+            var solution = VSSolution.FromFile(solutionFileName);
+            var solutionDirectory = FileManager.GetDirectory(solutionFileName);
+
+            var candidates = solution.ReferencedProjects
+                .Where(item => FileManager.GetExtension(item.Name) == "csproj")
+                .Select(item => AbsolutePathOf(item.Name, solutionDirectory))
+                .Where(item => item != null);
+
+            return Frb2ProjectDetector.FindFrb2LauncherProjectFor(frb2GameCsprojPath, candidates);
+        }
+
         static string ResolveFromSolution(string solutionFileName)
         {
             var solution = VSSolution.FromFile(solutionFileName);

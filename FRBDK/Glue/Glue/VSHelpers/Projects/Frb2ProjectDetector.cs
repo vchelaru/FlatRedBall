@@ -132,6 +132,89 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             return null;
         }
 
+        /// <summary>
+        /// The project among <paramref name="candidateCsprojPaths"/> that launches the FRB2 game at
+        /// <paramref name="frb2GameCsprojPath"/> - the one that references it directly and builds an
+        /// executable. `dotnet new frb2-desktop` names this MyGame.Desktop; MyGame.Common has no
+        /// <c>OutputType</c> of its own and nothing to run, which is why pressing Play on it alone
+        /// silently builds a DLL and never launches anything (#2188).
+        /// </summary>
+        /// <remarks>
+        /// One hop only, matching <see cref="FindFrb2GameProjectFor"/>: a launcher referencing the
+        /// game through an intermediate project is not a shape the template produces. Ambiguous when
+        /// more than one candidate qualifies - there is no way to guess which platform the user wants
+        /// to run, so the caller gets null rather than a wrong guess.
+        /// </remarks>
+        public static string FindFrb2LauncherProjectFor(string frb2GameCsprojPath, IEnumerable<string> candidateCsprojPaths)
+        {
+            if (string.IsNullOrEmpty(frb2GameCsprojPath) || !File.Exists(frb2GameCsprojPath) || candidateCsprojPaths == null)
+            {
+                return null;
+            }
+
+            var gameFullPath = Path.GetFullPath(frb2GameCsprojPath);
+
+            var launchers = candidateCsprojPaths
+                .Where(path => !string.IsNullOrEmpty(path) && File.Exists(path))
+                .Select(Path.GetFullPath)
+                .Where(path => !string.Equals(path, gameFullPath, StringComparison.OrdinalIgnoreCase))
+                .Where(path => IsExecutableReferencing(path, gameFullPath))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+
+            return launchers.Length == 1 ? launchers[0] : null;
+        }
+
+        static bool IsExecutableReferencing(string csprojPath, string gameFullPath)
+        {
+            var items = ReadProjectItems(csprojPath);
+
+            var directory = Path.GetDirectoryName(csprojPath);
+
+            var referencesGame = items
+                .Where(item => item.ItemType == "ProjectReference" && !string.IsNullOrEmpty(item.Include))
+                .Any(item => ResolvesToGame(directory, item.Include, gameFullPath));
+
+            if (!referencesGame)
+            {
+                return false;
+            }
+
+            var outputType = ReadOutputType(csprojPath);
+
+            return string.Equals(outputType, "Exe", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(outputType, "WinExe", StringComparison.OrdinalIgnoreCase);
+        }
+
+        static bool ResolvesToGame(string directory, string include, string gameFullPath)
+        {
+            try
+            {
+                var resolved = Path.GetFullPath(
+                    Path.Combine(directory, include.Replace('\\', Path.DirectorySeparatorChar)));
+                return string.Equals(resolved, gameFullPath, StringComparison.OrdinalIgnoreCase);
+            }
+            catch (ArgumentException)
+            {
+                return false;
+            }
+        }
+
+        static string ReadOutputType(string csprojPath)
+        {
+            try
+            {
+                return System.Xml.Linq.XDocument.Load(csprojPath)
+                    .Descendants()
+                    .FirstOrDefault(element => element.Name.LocalName == "OutputType")
+                    ?.Value;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
         static IEnumerable<ProjectItemInfo> ReadProjectItems(string csprojPath)
         {
             try

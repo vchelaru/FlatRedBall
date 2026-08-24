@@ -346,12 +346,58 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
                 {
                     CurrentCodeProjectFileName = value.FullFileName;
                 }
+                // Invalidate - Runner re-reads this every few seconds while polling for the game
+                // process, so it can't re-walk the solution and every referenced .csproj each time.
+                _currentFrb2LauncherProjectFileNameCache = null;
+                _hasCachedCurrentFrb2LauncherProjectFileName = false;
             }
         }
 
         public VisualStudioProject CurrentMainContentProject { get { return ProjectManager.ContentProject; } }
 
         public FilePath CurrentSlnFileName => SlnFileForProject(CurrentMainProject);
+
+        bool _hasCachedCurrentFrb2LauncherProjectFileName;
+        FilePath _currentFrb2LauncherProjectFileNameCache;
+
+        /// <summary>
+        /// The FRB2 launcher project (Desktop today) that actually builds/runs
+        /// <see cref="CurrentMainProject"/> - Glue edits Common, but Common alone has no
+        /// <c>OutputType</c> and nothing to run (#2188). Null for non-FRB2 projects, or when the
+        /// launcher can't be found or is ambiguous - see
+        /// <see cref="VSHelpers.ProjectFileResolver.FindFrb2LauncherProject"/>.
+        /// </summary>
+        /// <remarks>
+        /// Cached per <see cref="CurrentMainProject"/>: Runner polls this every few seconds while
+        /// watching for the game process, and re-parsing the solution plus every referenced .csproj
+        /// that often would be wasteful disk I/O for a value that cannot change without a project
+        /// reload.
+        /// </remarks>
+        public FilePath CurrentFrb2LauncherProjectFileName
+        {
+            get
+            {
+                if (_hasCachedCurrentFrb2LauncherProjectFileName)
+                {
+                    return _currentFrb2LauncherProjectFileNameCache;
+                }
+
+                FilePath result = null;
+
+                if (CurrentMainProject is Frb2Project && CurrentSlnFileName != null)
+                {
+                    var launcherPath = VSHelpers.ProjectFileResolver.FindFrb2LauncherProject(
+                        CurrentSlnFileName.FullPath, CurrentMainProject.FullFileName.FullPath);
+
+                    result = launcherPath == null ? null : new FilePath(launcherPath);
+                }
+
+                _currentFrb2LauncherProjectFileNameCache = result;
+                _hasCachedCurrentFrb2LauncherProjectFileName = true;
+
+                return result;
+            }
+        }
 
         public FilePath SlnFileForProject(VisualStudioProject vsproject)
         {

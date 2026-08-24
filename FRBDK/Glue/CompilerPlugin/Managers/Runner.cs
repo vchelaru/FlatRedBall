@@ -265,7 +265,7 @@ namespace CompilerPlugin.Managers
                 .OrderBy(item => item.ProcessName)
                 .ToArray();
 
-            var projectName = GlueState.Self.CurrentMainProject?.ExecutableName?.ToLowerInvariant();
+            var projectName = GetExecutableName(_compilerViewModel.Configuration)?.ToLowerInvariant();
 
             var found = processes
                 .Where(item => item.ProcessName.ToLowerInvariant() == projectName &&
@@ -458,14 +458,29 @@ namespace CompilerPlugin.Managers
             {
                 return null;
             }
-            else
-            {
-                var executableName = project.ExecutableName;
-                var outputDirectory = project.GetOutputDirectory();
-                var exeLocation = outputDirectory + executableName + ".exe";
 
-                return exeLocation;
+            var launcherProjectFileName = GlueState.Self.CurrentFrb2LauncherProjectFileName;
+            if (launcherProjectFileName != null)
+            {
+                // FRB2: Common (CurrentMainProject) has no OutputType of its own - the launcher
+                // (e.g. Desktop) is what actually builds and runs the game (#2188).
+                return Frb2LauncherProjectInfo.TryGet(launcherProjectFileName.FullPath, configuration)?.ExeLocation;
             }
+
+            var executableName = project.ExecutableName;
+            var outputDirectory = project.GetOutputDirectory();
+            return outputDirectory + executableName + ".exe";
+        }
+
+        private static string GetExecutableName(string configuration)
+        {
+            var launcherProjectFileName = GlueState.Self.CurrentFrb2LauncherProjectFileName;
+            if (launcherProjectFileName != null)
+            {
+                return Frb2LauncherProjectInfo.TryGet(launcherProjectFileName.FullPath, configuration)?.ExecutableName;
+            }
+
+            return GlueState.Self.CurrentMainProject?.ExecutableName;
         }
 
         private async Task<ToolsUtilities.GeneralResponse<Process>> StartProcess(bool preventFocus, string runArguments, string exeLocation)

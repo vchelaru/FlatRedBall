@@ -178,7 +178,12 @@ namespace CompilerPlugin.Managers
                 //}
 
                 //do we actually want to do this ?
-                var projectFileName = GlueState.Self.CurrentMainProject?.FullFileName;
+                // FRB2 games are split into Common (what Glue edits, and has no OutputType of its
+                // own) and a launcher like Desktop that actually builds/runs the game (#2188) -
+                // build the launcher when one is found, which pulls Common in as its own
+                // ProjectReference dependency.
+                var launcherProjectFileName = GlueState.Self.CurrentFrb2LauncherProjectFileName;
+                var projectFileName = launcherProjectFileName ?? GlueState.Self.CurrentMainProject?.FullFileName;
 
 
                 if (shouldCompile && projectFileName != null)
@@ -230,7 +235,6 @@ namespace CompilerPlugin.Managers
                             string startOutput = "Build started at " + DateTime.Now.ToLongTimeString();
                             string endOutput = "Build succeeded";
 
-                            var outputDirectory = GlueState.Self.CurrentMainProject.GetOutputDirectory();
                             // For info on parameters:
                             // https://msdn.microsoft.com/en-us/library/ms164311.aspx?f=255&MSPPError=-2147217396
                             // \m uses multiple cores
@@ -241,10 +245,22 @@ namespace CompilerPlugin.Managers
 
                                 $"/p:XNAContentPipelineTargetPlatform=\"Windows\" " +
                                 $"/p:XNAContentPipelineTargetProfile=\"HiDef\" " +
-                                $"/p:OutDir=\"{outputDirectory}\" " +
                                 "/m " +
                                 "/nologo " +
                                 "/verbosity:minimal";
+
+                            if (launcherProjectFileName == null)
+                            {
+                                // Building Common directly (FRB1, or an FRB2 project without a
+                                // resolvable launcher) - pin OutDir so the output lands exactly where
+                                // Runner expects it.
+                                var outputDirectory = GlueState.Self.CurrentMainProject.GetOutputDirectory();
+                                arguments += $" /p:OutDir=\"{outputDirectory}\"";
+                            }
+                            // else: building the FRB2 launcher - let it and the Common project it
+                            // references each build to their own default output directories, same as
+                            // `dotnet build` would. Forcing a single OutDir here would collide the two
+                            // projects' outputs together.
 
                             if (printMsBuildCommand)
                             {
