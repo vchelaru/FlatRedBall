@@ -1655,6 +1655,24 @@ namespace GlueControl
 
         #endregion
 
+        #region SetEmbeddedDiagnosticsEnabledDto
+
+        private static object HandleDto(SetEmbeddedDiagnosticsEnabledDto dto)
+        {
+            var logFilePath = dto.IsEnabled
+                ? EmbeddedDiagnosticsLogger.Enable()
+                : null;
+
+            if (!dto.IsEnabled)
+            {
+                EmbeddedDiagnosticsLogger.Disable();
+            }
+
+            return new SetEmbeddedDiagnosticsEnabledResponse { LogFilePath = logFilePath };
+        }
+
+        #endregion
+
         #region SetEmbeddedFocusTestOverrideDto
 
         private static void HandleDto(SetEmbeddedFocusTestOverrideDto dto)

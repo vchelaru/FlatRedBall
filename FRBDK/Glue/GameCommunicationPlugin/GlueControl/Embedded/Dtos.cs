@@ -600,6 +600,27 @@ namespace GlueControl.Dtos
     }
     #endregion
 
+    #region SetEmbeddedDiagnosticsEnabledDto
+
+    /// <summary>
+    /// Toggles EmbeddedDiagnosticsLogger (issue #2196): event-driven logging of click attempts (with the
+    /// focus-gate values that decided whether they were processed) and selection changes, written to a
+    /// file so a per-machine gate misfire like #2183 can be diagnosed from what a user sends back instead
+    /// of only from a local repro.
+    /// </summary>
+    public class SetEmbeddedDiagnosticsEnabledDto
+    {
+        public bool IsEnabled { get; set; }
+    }
+    #endregion
+
+    #region SetEmbeddedDiagnosticsEnabledResponse
+    public class SetEmbeddedDiagnosticsEnabledResponse
+    {
+        public string LogFilePath { get; set; }
+    }
+    #endregion
+
     #region SetEmbeddedFocusTestOverrideDto
 
     /// <summary>

@@ -336,6 +336,113 @@ public class EditModeActivityGateTests
         heldDownAsGateOpens.Data.SelectedObjectNames.ShouldBe(new[] { "TestObjectA" });
     }
 
+    /// <summary>
+    /// Issue #2196: diagnoses issue #2183-style bugs (a focus-gate misfire that varies by machine and
+    /// doesn't reproduce locally) by logging what the gate actually saw. Opt-in via
+    /// SetEmbeddedDiagnosticsEnabledDto - drives both a blocked click (gate closed) and a processed one
+    /// (gate open) through SimulateGrabAcrossFocusGateDto, the same seam GrabHeldAcrossFocusGateOpening_IsProcessed
+    /// above uses, and asserts the resulting log file records the gate snapshot and the selection change.
+    /// </summary>
+    [StaFact]
+    public async Task EmbeddedDiagnostics_LogsBlockedClickGateSnapshotAndSelectionChange()
+    {
+        GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
+
+        using var game = await LiveGameProcess.StartAsync(
+            "Samples/EditorTest1",
+            csprojRelativeToProjectRoot: "EditorTest1/EditorTest1.csproj",
+            exeRelativeToProjectRoot: "EditorTest1/bin/Debug/net9.0/EditorTest1.exe",
+            afterLoadBeforeEmbed: AddTestObjectToGameScreen);
+
+        var screen = ObjectFinder.Self.GetScreenSave("GameScreen");
+
+        var loadScreenResponse = await game.Send(new SelectObjectDto
+        {
+            ElementNameGlue = "Screens\\GameScreen",
+            ScreenSave = screen,
+        });
+        loadScreenResponse.Succeeded.ShouldBeTrue(loadScreenResponse.Message);
+
+        var editModeResponse = await game.Send(new SetEditMode
+        {
+            IsInEditMode = true,
+            AbsoluteGlueProjectFilePath = System.IO.Path.Combine(game.ProjectRoot, "EditorTest1", "EditorTest1.gluj"),
+        });
+        editModeResponse.Succeeded.ShouldBeTrue(editModeResponse.Message);
+        await Task.Delay(1000);
+
+        var borderlessResponse = await game.Send(new SetBorderlessDto { IsBorderless = true });
+        borderlessResponse.Succeeded.ShouldBeTrue(borderlessResponse.Message);
+
+        var enableResponse = await game.Send<SetEmbeddedDiagnosticsEnabledResponse>(
+            new SetEmbeddedDiagnosticsEnabledDto { IsEnabled = true });
+        enableResponse.Succeeded.ShouldBeTrue(enableResponse.Message);
+        var logFilePath = enableResponse.Data.LogFilePath;
+
+        try
+        {
+            var overrideGateClosed = await game.Send(new SetEmbeddedFocusTestOverrideDto
+            {
+                GlueProcessExists = true,
+                ForegroundMatchesGlueMainWindow = false,
+                ForegroundOwnedByThisGame = false,
+            });
+            overrideGateClosed.Succeeded.ShouldBeTrue(overrideGateClosed.Message);
+
+            var blockedClick = await game.Send<SimulateGrabAcrossFocusGateResponse>(
+                new SimulateGrabAcrossFocusGateDto
+                {
+                    ObjectName = "TestObjectA",
+                    ButtonPushed = true,
+                    ButtonDown = true,
+                    WasGameOrGlueActiveLastFrame = false,
+                    AdditiveModifierDown = false,
+                });
+            blockedClick.Succeeded.ShouldBeTrue(blockedClick.Message);
+            blockedClick.Data.WasProcessed.ShouldBeFalse();
+
+            var overrideGateOpen = await game.Send(new SetEmbeddedFocusTestOverrideDto
+            {
+                GlueProcessExists = true,
+                ForegroundMatchesGlueMainWindow = false,
+                ForegroundOwnedByThisGame = true,
+            });
+            overrideGateOpen.Succeeded.ShouldBeTrue(overrideGateOpen.Message);
+
+            var processedClick = await game.Send<SimulateGrabAcrossFocusGateResponse>(
+                new SimulateGrabAcrossFocusGateDto
+                {
+                    ObjectName = "TestObjectA",
+                    ButtonPushed = true,
+                    ButtonDown = true,
+                    WasGameOrGlueActiveLastFrame = false,
+                    AdditiveModifierDown = false,
+                });
+            processedClick.Succeeded.ShouldBeTrue(processedClick.Message);
+            processedClick.Data.WasProcessed.ShouldBeTrue();
+
+            var disableResponse = await game.Send(new SetEmbeddedDiagnosticsEnabledDto { IsEnabled = false });
+            disableResponse.Succeeded.ShouldBeTrue(disableResponse.Message);
+
+            var logContents = System.IO.File.ReadAllText(logFilePath);
+
+            // The blocked click (gate closed) must be logged, not just the ones that succeed - that's
+            // exactly the case a user's machine-specific gate misfire needs to be read back from (#2183).
+            logContents.ShouldContain("processed=False");
+            logContents.ShouldContain("foregroundOwnedByThisGame=False");
+            logContents.ShouldContain("processed=True");
+            logContents.ShouldContain("foregroundOwnedByThisGame=True");
+            logContents.ShouldContain("Selection changed: [TestObjectA]");
+        }
+        finally
+        {
+            if (System.IO.File.Exists(logFilePath))
+            {
+                System.IO.File.Delete(logFilePath);
+            }
+        }
+    }
+
     static async Task AddTestObjectToGameScreen()
     {
         var gameScreen = ObjectFinder.Self.GetScreenSave("GameScreen");

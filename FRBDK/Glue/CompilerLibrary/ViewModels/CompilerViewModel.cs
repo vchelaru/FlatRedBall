@@ -419,10 +419,12 @@ namespace CompilerLibrary.ViewModels
         }
 
         /// <summary>
-        /// Whether to sample the editor's window-system resource usage and UI thread responsiveness.
-        /// Off by default - this is for diagnosing hangs and leaks, not for everyday use.
+        /// Whether to log embedded game/Glue communication - click attempts (with the focus-gate values
+        /// that decided whether they were processed) and selection changes - to a file. Off by default;
+        /// this is for diagnosing a per-machine issue like #2183 (silent click/select failures) from what
+        /// a user sends back, not for everyday use.
         /// </summary>
-        public bool IsResourceDiagnosticsChecked
+        public bool IsEmbeddedDiagnosticsChecked
         {
             get => Get<bool>();
             set => Set(value);
