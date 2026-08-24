@@ -248,6 +248,42 @@ namespace GumPlugin.Managers
                                 await GlueCommands.Self.ProjectCommands.TryAddCodeFileToProjectAsync(newCodeFileName, saveOnAdd:true);
                             }
 
+                            // Same copy-and-rename for the paired Forms code-behind - previously only the
+                            // GumRuntimes file was migrated, leaving the old XForms.cs behind with no
+                            // defining Generated.cs once regeneration stopped targeting the old name
+                            // (CS0759 - GitHub issue #2195).
+                            var newFormsCodeFileName = GetCustomFormsCodeFileFor(elementType, exportedEvent.NewName);
+                            var oldFormsCodeFileName = GetCustomFormsCodeFileFor(elementType, exportedEvent.OldName);
+
+                            if (oldFormsCodeFileName.Exists())
+                            {
+                                GlueCommands.Self.TryMultipleTimes(() =>
+                                {
+                                    System.IO.File.Copy(oldFormsCodeFileName.FullPath, newFormsCodeFileName.FullPath, overwrite: true);
+
+                                    var formsContents = System.IO.File.ReadAllText(newFormsCodeFileName.FullPath);
+                                    RefactorManager.Self.RenameClassInCode(
+                                        oldFormsCodeFileName.NoPathNoExtension,
+                                        newFormsCodeFileName.NoPathNoExtension,
+                                        ref formsContents);
+
+                                    var oldFormsNamespace = FormsClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(exportedEvent.OldName, elementType, prefixGlobal: false);
+                                    var newFormsNamespace = FormsClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(exportedEvent.NewName, elementType, prefixGlobal: false);
+
+                                    if (oldFormsNamespace != newFormsNamespace)
+                                    {
+                                        RefactorManager.Self.RenameNamespaceInCode(
+                                            oldFormsNamespace,
+                                            newFormsNamespace,
+                                            ref formsContents);
+                                    }
+
+                                    FlatRedBall.IO.FileManager.SaveText(formsContents, newFormsCodeFileName.FullPath);
+                                });
+
+                                await GlueCommands.Self.ProjectCommands.TryAddCodeFileToProjectAsync(newFormsCodeFileName, saveOnAdd:true);
+                            }
+
                             var allNoses = FlatRedBall.Glue.Elements.ObjectFinder.Self.GetAllNamedObjects().ToArray();
 
                             var prefix = GlueState.Self.ProjectNamespace + ".GumRuntimes.";
@@ -300,6 +336,15 @@ namespace GumPlugin.Managers
         static FilePath GetCustomCodeFileFor(string elementName) =>
             $"{GlueState.Self.CurrentGlueProjectDirectory}GumRuntimes/{elementName}Runtime.cs";
 
+        // Forms code lives under Forms/Screens or Forms/Components - "elementType" here is already
+        // Gum's own "Screens"/"Components" string (see ExportedEvent.ElementType), matching
+        // CodeGeneratorManager.FormsSubfolderFor's mapping for those two element kinds.
+        static FilePath GetCustomFormsCodeFileFor(string elementType, string elementName) =>
+            $"{GlueState.Self.CurrentGlueProjectDirectory}Forms/{elementType}/{elementName}Forms.cs";
+
+        static FilePath GetGeneratedFormsCodeFileFor(string elementType, string elementName) =>
+            $"{GlueState.Self.CurrentGlueProjectDirectory}Forms/{elementType}/{elementName}Forms.Generated.cs";
+
         private static void RemoveGumFilesFromProject(string elementType, string oldName)
         {
             switch (elementType)
@@ -311,10 +356,17 @@ namespace GumPlugin.Managers
                     var generatedFile =
                         $"{GlueState.Self.CurrentGlueProjectDirectory}GumRuntimes/{oldName}Runtime.Generated.cs";
 
+                    // ...and the paired Forms code, which used to be left behind here - see GitHub issue #2195.
+                    var customFormsFileToRemove = GetCustomFormsCodeFileFor(elementType, oldName);
+                    var generatedFormsFile = GetGeneratedFormsCodeFileFor(elementType, oldName);
+
                     TaskManager.Self.Add(() =>
                     {
                         GlueCommands.Self.ProjectCommands.RemoveFromProjects(customFileToRemove, false);
                         GlueCommands.Self.ProjectCommands.RemoveFromProjects(generatedFile, true);
+
+                        GlueCommands.Self.ProjectCommands.RemoveFromProjects(customFormsFileToRemove, false);
+                        GlueCommands.Self.ProjectCommands.RemoveFromProjects(generatedFormsFile, true);
 
                     },
                     $"Removing Gum object {oldName}");
