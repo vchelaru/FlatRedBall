@@ -97,16 +97,6 @@ namespace CompilerPlugin.Managers
 
         public BuildSettingsUser BuildSettingsUser { get; set; }
 
-        // Gates the background warm-up build fired on project load (CompilerPlugin.HandleGluxLoaded) -
-        // only worth doing when the setting that makes MSBuild Server actually get used is on.
-        public bool ShouldWarmUpMsBuildServer => BuildSettingsUser?.UseMsBuildServer == true;
-
-        // Gates the background warm-up build fired when the Build Settings dialog is closed
-        // (CompilerPlugin's MSBuildSettingsClicked handler) - only worth doing on the OFF -> ON
-        // transition, not every OK click while it's already on (or off).
-        internal static bool ShouldWarmUpOnSettingsChange(bool wasUsingMsBuildServer, bool isUsingMsBuildServerNow) =>
-            !wasUsingMsBuildServer && isUsingMsBuildServerNow;
-
         FilePath msBuildLocation;
         private CompilerViewModel _compilerViewModel;
 
