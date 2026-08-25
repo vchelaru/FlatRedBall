@@ -67,7 +67,16 @@ public class DailyBuildUpdateLauncherTests
         script.ShouldContain("function Write-UpdateLog");
         script.ShouldContain("function Get-LockingProcesses");
         script.ShouldContain("Restart Manager lock owners");
+        script.ShouldContain("Waiting for Glue process to exit");
+        script.ShouldContain("Glue process has exited");
+        script.ShouldContain("Starting remove attempt $attempt");
         script.ShouldContain("Remove attempt $attempt failed");
+        script.ShouldContain("Remove attempt $attempt succeeded");
+        script.ShouldContain("Starting move attempt $attempt");
+        script.ShouldContain("Move attempt $attempt succeeded");
+        script.ShouldContain("Starting replacement application");
+        script.ShouldContain("Replacement application started");
+        script.ShouldContain("Update helper reached fallback");
         script.ShouldContain("Diagnostics: $logPath");
     }
 
