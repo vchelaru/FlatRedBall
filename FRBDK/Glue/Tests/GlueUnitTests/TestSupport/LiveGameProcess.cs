@@ -32,6 +32,14 @@ namespace GlueUnitTests.TestSupport;
 /// </summary>
 internal sealed class LiveGameProcess : IDisposable
 {
+    /// <summary>
+    /// Set to "1" on the launched process's environment - read by <c>EditorTest1.Game1.Initialize</c> right
+    /// after <c>FlatRedBallServices.InitializeFlatRedBall</c> creates the real (still hidden) SDL window, to
+    /// position it off the combined virtual desktop before it's ever shown. See that call site's comment for
+    /// why this is the only point where setting <c>Window.Position</c> actually sticks.
+    /// </summary>
+    internal const string OffscreenWindowEnvironmentVariable = "FRB_LIVE_GAME_TEST_OFFSCREEN";
+
     readonly TempDir project;
     readonly System.Diagnostics.Process process;
     readonly GameJsonCommunicationPlugin.Common.GameConnectionManager connectionManager;
@@ -141,6 +149,7 @@ internal sealed class LiveGameProcess : IDisposable
                     RedirectStandardOutput = true,
                 }
             };
+            process.StartInfo.Environment[OffscreenWindowEnvironmentVariable] = "1";
             // Async, event-based capture rather than ReadToEnd(): this process is long-lived (killed by
             // Dispose, not naturally exiting), so a blocking read would never return - see NestedDotnetCli's
             // doc comment for the same deadlock shape with dotnet build's child MSBuild nodes. This is what
