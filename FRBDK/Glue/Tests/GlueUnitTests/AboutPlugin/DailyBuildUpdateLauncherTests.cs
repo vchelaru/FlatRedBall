@@ -31,4 +31,22 @@ public class DailyBuildUpdateLauncherTests
         script.ShouldContain("Start-Process -FilePath $restartPath");
         script.ShouldContain("catch");
     }
+
+    [Fact]
+    public void CreateStartInfo_ShouldWriteLockDiagnosticsWhenReplacementFails()
+    {
+        var startInfo = DailyBuildUpdateLauncher.CreateStartInfo(
+            glueProcessId: 42,
+            installDirectory: @"C:\Glue Daily",
+            stagedDirectory: @"C:\Glue Daily.updating",
+            applicationPath: @"C:\Glue Daily\GlueFormsCore.exe");
+
+        var script = startInfo.ArgumentList.Last();
+        script.ShouldContain("GlueDailyBuildUpdate.log");
+        script.ShouldContain("function Write-UpdateLog");
+        script.ShouldContain("function Get-LockingProcesses");
+        script.ShouldContain("Restart Manager lock owners");
+        script.ShouldContain("Remove attempt $attempt failed");
+        script.ShouldContain("Diagnostics: $logPath");
+    }
 }
