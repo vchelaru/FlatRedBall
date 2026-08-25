@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.IO;
 
 namespace GlueFormsCore.Plugins.EmbeddedPlugins.AboutPlugin;
 
@@ -105,7 +106,8 @@ internal static class DailyBuildUpdateLauncher
         {
             CreateNoWindow = true,
             UseShellExecute = false,
-            WindowStyle = ProcessWindowStyle.Hidden
+            WindowStyle = ProcessWindowStyle.Hidden,
+            WorkingDirectory = Path.GetDirectoryName(installDirectory) ?? Path.GetTempPath()
         };
 
         startInfo.ArgumentList.Add("-NoProfile");

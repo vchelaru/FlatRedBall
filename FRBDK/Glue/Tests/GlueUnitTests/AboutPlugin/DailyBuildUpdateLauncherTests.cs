@@ -1,5 +1,6 @@
 using GlueFormsCore.Plugins.EmbeddedPlugins.AboutPlugin;
 using Shouldly;
+using System.IO;
 
 namespace GlueUnitTests.AboutPlugin;
 
@@ -16,6 +17,7 @@ public class DailyBuildUpdateLauncherTests
 
         startInfo.FileName.ShouldBe("powershell.exe");
         startInfo.CreateNoWindow.ShouldBeTrue();
+        startInfo.WorkingDirectory.ShouldBe(Path.GetDirectoryName(@"C:\Glue Daily"));
         startInfo.ArgumentList.ShouldContain("-Command");
 
         var script = startInfo.ArgumentList.Last();
