@@ -650,6 +650,7 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
         public bool GlueProcessExists { get; set; }
         public bool ForegroundMatchesGlueMainWindow { get; set; }
         public bool ForegroundOwnedByThisGame { get; set; }
+        public bool CursorOverOwnWindow { get; set; }
     }
     #endregion
 

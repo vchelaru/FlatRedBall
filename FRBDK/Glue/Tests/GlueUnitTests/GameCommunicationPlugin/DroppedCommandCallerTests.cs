@@ -31,6 +31,32 @@ namespace GlueUnitTests.GameCommunicationPlugin
         }
 
         /// <summary>
+        /// The #2203 symptom: the game replies successfully (a well-formed, non-empty payload) but that
+        /// payload itself says Succeeded=false (e.g. no current Screen to restart). The transport wrapper's
+        /// own Succeeded only reflects the round-trip, not this - so this has to be read from response.Data
+        /// or the game's real diagnostic message never reaches the user and edit mode silently no-ops.
+        /// </summary>
+        [Fact]
+        public void SetEditMode_WhenTheGameRepliedButRefused_SaysSoAndRepeatsTheGamesMessage()
+        {
+            var response = new GeneralResponse<GeneralCommandResponse>
+            {
+                Succeeded = true,
+                Data = new GeneralCommandResponse
+                {
+                    Succeeded = false,
+                    Message = "The ScreenManager.CurrentScreen is null, so the screen cannot be restarted."
+                }
+            };
+
+            var message = MainCompilerPlugin.GetSetEditModeFailureMessage(response, PlayOrEdit.Edit, isConnected: true);
+
+            message.ShouldNotBeNull();
+            message.ShouldContain("Edit");
+            message.ShouldContain("CurrentScreen is null");
+        }
+
+        /// <summary>
         /// The symptom from the issue: a dropped command answered with an empty payload read as success,
         /// so edit mode silently did not get set and nothing was printed.
         /// </summary>
@@ -66,7 +92,11 @@ namespace GlueUnitTests.GameCommunicationPlugin
         [Fact]
         public void SetEditMode_WhenTheGameIsNotConnected_SaysSo()
         {
-            var response = new GeneralResponse<GeneralCommandResponse> { Succeeded = true };
+            var response = new GeneralResponse<GeneralCommandResponse>
+            {
+                Succeeded = true,
+                Data = new GeneralCommandResponse { Succeeded = true }
+            };
 
             var message = MainCompilerPlugin.GetSetEditModeFailureMessage(response, PlayOrEdit.Edit, isConnected: false);
 

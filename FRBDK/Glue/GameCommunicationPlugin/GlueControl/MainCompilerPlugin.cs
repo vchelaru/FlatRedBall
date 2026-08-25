@@ -904,13 +904,19 @@ namespace GameCommunicationPlugin.GlueControl
             PlayOrEdit playOrEdit,
             bool isConnected)
         {
-            if (response?.Succeeded != true)
+            // response.Succeeded only reflects the transport round-trip (a well-formed reply was received
+            // and deserialized) - the game can still reply with a full, valid Succeeded=false payload (e.g.
+            // "there's no current Screen to restart") that this has to check separately via response.Data,
+            // or that message never reaches the user - see issue #2203.
+            if (response?.Data?.Succeeded != true)
             {
                 var message = $"Failed to set game/edit mode to {playOrEdit}\n";
 
-                message += response == null
-                    ? "Game sent back no response"
-                    : $"Game sent back the following message: {response.Message}";
+                message += response?.Data != null
+                    ? $"Game sent back the following message: {response.Data.Message}"
+                    : response == null
+                        ? "Game sent back no response"
+                        : $"Game sent back the following message: {response.Message}";
 
                 // This is sent with SendImportance.RetryOnFailure, so getting here means the game never
                 // became ready within the whole retry budget - not just a single unlucky attempt.
@@ -1228,6 +1234,14 @@ namespace GameCommunicationPlugin.GlueControl
                             MoveGameToHost();
                         }
 
+                        // EmbeddedDiagnosticsLogger.IsEnabled is per-process state on the game side, and
+                        // BuildTab_EmbeddedDiagnosticsChanged only sends this DTO when the checkbox itself
+                        // is toggled - so a freshly-launched game never learns the checkbox was already
+                        // checked from an earlier run, and clicks silently go unlogged with no error.
+                        if (CompilerViewModel.IsEmbeddedDiagnosticsChecked)
+                        {
+                            await CommandSender.Self.Send(new SetEmbeddedDiagnosticsEnabledDto { IsEnabled = true });
+                        }
 
                         if (CompilerViewModel.PlayOrEdit == PlayOrEdit.Edit)
                         {

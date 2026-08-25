@@ -244,6 +244,133 @@ public class EditModeActivityGateTests
     }
 
     /// <summary>
+    /// Reproduces the #2203 investigation's real-machine finding: on the affected machine,
+    /// GetForegroundWindow() returned IntPtr.Zero - not Glue's window, not the game's own window, no
+    /// window at all - on every single click while embedded, even though the click was clearly landing on
+    /// the embedded panel. The fix is a direct spatial hit-test (WindowFromPoint at the cursor) instead of
+    /// trusting OS foreground/activation state, so a click physically over our own window is recognized
+    /// even when GetForegroundWindow() can't identify anything. This test simulates the outcome of that
+    /// hit-test via TestOverride rather than moving a real cursor.
+    /// </summary>
+    [StaFact]
+    public async Task ClickWhileEmbeddedAndCursorOverOwnWindow_IsProcessed()
+    {
+        GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
+
+        using var game = await LiveGameProcess.StartAsync(
+            "Samples/EditorTest1",
+            csprojRelativeToProjectRoot: "EditorTest1/EditorTest1.csproj",
+            exeRelativeToProjectRoot: "EditorTest1/bin/Debug/net9.0/EditorTest1.exe",
+            afterLoadBeforeEmbed: AddTestObjectToGameScreen);
+
+        var screen = ObjectFinder.Self.GetScreenSave("GameScreen");
+
+        var loadScreenResponse = await game.Send(new SelectObjectDto
+        {
+            ElementNameGlue = "Screens\\GameScreen",
+            ScreenSave = screen,
+        });
+        loadScreenResponse.Succeeded.ShouldBeTrue(loadScreenResponse.Message);
+
+        var editModeResponse = await game.Send(new SetEditMode
+        {
+            IsInEditMode = true,
+            AbsoluteGlueProjectFilePath = System.IO.Path.Combine(game.ProjectRoot, "EditorTest1", "EditorTest1.gluj"),
+        });
+        editModeResponse.Succeeded.ShouldBeTrue(editModeResponse.Message);
+        await Task.Delay(1000);
+
+        var borderlessResponse = await game.Send(new SetBorderlessDto { IsBorderless = true });
+        borderlessResponse.Succeeded.ShouldBeTrue(borderlessResponse.Message);
+
+        var overrideResponse = await game.Send(new SetEmbeddedFocusTestOverrideDto
+        {
+            GlueProcessExists = true,
+            ForegroundMatchesGlueMainWindow = false,
+            ForegroundOwnedByThisGame = false,
+            CursorOverOwnWindow = true,
+        });
+        overrideResponse.Succeeded.ShouldBeTrue(overrideResponse.Message);
+
+        var clickResponse = await game.Send<SimulateClickSelectRespectingActivityGateResponse>(
+            new SimulateClickSelectRespectingActivityGateDto
+            {
+                ObjectName = "TestObjectA",
+                AdditiveModifierDown = false,
+            });
+
+        clickResponse.Succeeded.ShouldBeTrue(clickResponse.Message);
+        clickResponse.Data.WasProcessed.ShouldBeTrue(
+            "a click should be processed when the cursor is physically over our own window, even though " +
+            "GetForegroundWindow() couldn't identify any window at all (issue #2203)");
+        clickResponse.Data.SelectedObjectNames.ShouldBe(new[] { "TestObjectA" });
+    }
+
+    /// <summary>
+    /// Regression guard for the #2203 fix: it must not reopen #2154. The earlier "treat unidentified
+    /// foreground as focused" approach was rejected specifically because this scenario - glueProcessExists
+    /// true, foreground belongs to neither Glue nor the game, AND the cursor is not over our own window
+    /// either (e.g. it's a lock screen, a UAC prompt, or the user genuinely alt-tabbed away) - must still
+    /// block the click. This is the same override values as
+    /// ClickWhileEmbeddedAndForegroundOwnedByUnrelatedWindow_IsIgnored above (CursorOverOwnWindow's default
+    /// is false), kept as its own explicit test so a future change to the default doesn't silently drop
+    /// this guarantee.
+    /// </summary>
+    [StaFact]
+    public async Task ClickWhileEmbeddedAndCursorNotOverOwnWindowEither_IsIgnored()
+    {
+        GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
+
+        using var game = await LiveGameProcess.StartAsync(
+            "Samples/EditorTest1",
+            csprojRelativeToProjectRoot: "EditorTest1/EditorTest1.csproj",
+            exeRelativeToProjectRoot: "EditorTest1/bin/Debug/net9.0/EditorTest1.exe",
+            afterLoadBeforeEmbed: AddTestObjectToGameScreen);
+
+        var screen = ObjectFinder.Self.GetScreenSave("GameScreen");
+
+        var loadScreenResponse = await game.Send(new SelectObjectDto
+        {
+            ElementNameGlue = "Screens\\GameScreen",
+            ScreenSave = screen,
+        });
+        loadScreenResponse.Succeeded.ShouldBeTrue(loadScreenResponse.Message);
+
+        var editModeResponse = await game.Send(new SetEditMode
+        {
+            IsInEditMode = true,
+            AbsoluteGlueProjectFilePath = System.IO.Path.Combine(game.ProjectRoot, "EditorTest1", "EditorTest1.gluj"),
+        });
+        editModeResponse.Succeeded.ShouldBeTrue(editModeResponse.Message);
+        await Task.Delay(1000);
+
+        var borderlessResponse = await game.Send(new SetBorderlessDto { IsBorderless = true });
+        borderlessResponse.Succeeded.ShouldBeTrue(borderlessResponse.Message);
+
+        var overrideResponse = await game.Send(new SetEmbeddedFocusTestOverrideDto
+        {
+            GlueProcessExists = true,
+            ForegroundMatchesGlueMainWindow = false,
+            ForegroundOwnedByThisGame = false,
+            CursorOverOwnWindow = false,
+        });
+        overrideResponse.Succeeded.ShouldBeTrue(overrideResponse.Message);
+
+        var clickResponse = await game.Send<SimulateClickSelectRespectingActivityGateResponse>(
+            new SimulateClickSelectRespectingActivityGateDto
+            {
+                ObjectName = "TestObjectA",
+                AdditiveModifierDown = false,
+            });
+
+        clickResponse.Succeeded.ShouldBeTrue(clickResponse.Message);
+        clickResponse.Data.WasProcessed.ShouldBeFalse(
+            "a click must stay ignored when neither the foreground window nor the cursor position identify " +
+            "our own window - the #2203 fix must not reopen #2154");
+        clickResponse.Data.SelectedObjectNames.ShouldBeEmpty();
+    }
+
+    /// <summary>
     /// Reproduces issue #2187: dragging an object in the embedded game fails on the first attempt after
     /// Glue's own UI (e.g. the property grid) had focus, requiring a throwaway click before a real
     /// click+drag works. Root cause: EditingManager.DoGrabLogic's fallback for "mouse already held down
