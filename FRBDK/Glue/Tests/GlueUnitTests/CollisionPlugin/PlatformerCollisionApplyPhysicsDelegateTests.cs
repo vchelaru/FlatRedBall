@@ -116,11 +116,17 @@ public class PlatformerCollisionApplyPhysicsDelegateTests : IDisposable
         CollisionCodeGenerator.GenerateInitializeCodeFor(gameScreen, relationshipNos, codeBlock);
         var generatedCode = codeBlock.ToString();
 
+        generatedCode.ShouldContain("temp.ArePhysicsAppliedAutomatically");
         generatedCode.ShouldContain("temp.ApplyPhysics");
     }
 
+    // The "Automatically Apply Physics" checkbox (ArePhysicsAppliedAutomatically) previously did nothing
+    // for platformer relationships: DelegateCollisionRelationship's DoCollisions() never calls
+    // DoCollisionPhysicsInner, the only place that property was consulted. Projects on this version (but
+    // below the newer ApplyPhysics-delegate gate) now get the checkbox honored, without needing the
+    // delegate feature from #942.
     [Fact]
-    public async Task GenerateInitializeCodeFor_ShouldFallBackToAlwaysApplyingPhysics_WhenFileVersionPredatesTheDelegate()
+    public async Task GenerateInitializeCodeFor_ShouldHonorAutomaticallyApplyPhysicsCheckbox_WhenFileVersionSupportsManualPhysicsButPredatesTheDelegate()
     {
         var (gameScreen, relationshipNos) = await CreatePlatformerSolidCollisionRelationship();
 
@@ -130,6 +136,22 @@ public class PlatformerCollisionApplyPhysicsDelegateTests : IDisposable
         CollisionCodeGenerator.GenerateInitializeCodeFor(gameScreen, relationshipNos, codeBlock);
         var generatedCode = codeBlock.ToString();
 
+        generatedCode.ShouldContain("temp.ArePhysicsAppliedAutomatically");
+        generatedCode.ShouldNotContain("ApplyPhysics");
+    }
+
+    [Fact]
+    public async Task GenerateInitializeCodeFor_ShouldFallBackToAlwaysApplyingPhysics_WhenFileVersionPredatesManualPhysics()
+    {
+        var (gameScreen, relationshipNos) = await CreatePlatformerSolidCollisionRelationship();
+
+        ObjectFinder.Self.GlueProject.FileVersion = (int)GlueProjectSave.GluxVersions.CollisionRelationshipManualPhysics - 1;
+
+        var codeBlock = new CodeBlockBase();
+        CollisionCodeGenerator.GenerateInitializeCodeFor(gameScreen, relationshipNos, codeBlock);
+        var generatedCode = codeBlock.ToString();
+
+        generatedCode.ShouldNotContain("ArePhysicsAppliedAutomatically");
         generatedCode.ShouldNotContain("ApplyPhysics");
         generatedCode.ShouldContain("first.CollideAgainst(second, false);");
     }

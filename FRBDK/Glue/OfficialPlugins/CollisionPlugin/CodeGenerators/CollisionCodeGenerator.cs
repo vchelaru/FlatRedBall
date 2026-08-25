@@ -534,13 +534,30 @@ namespace OfficialPlugins.CollisionPlugin
             var isCloud = (collisionType == CollisionType.PlatformerCloudCollision).ToString().ToLowerInvariant();
             string whatToCollideAgainst = "second";
 
-            // temp.ApplyPhysics lets game code decide, per collision, whether platformer physics is applied;
-            // unset (the default) falls back to physics always being applied, same as before this existed.
+            // The "Automatically Apply Physics" checkbox (ArePhysicsAppliedAutomatically) previously did
+            // nothing for platformer relationships - it's only consulted by DoCollisionPhysicsInner, which
+            // Delegate*Relationship (what platformer uses) never calls. temp.ApplyPhysics additionally lets
+            // game code decide per-collision. Neither referenced (old behavior: physics always applied)
+            // unless the project's FileVersion supports it.
+            var supportsManualPhysics = GlueState.Self.CurrentGlueProject.FileVersion >=
+                (int)GlueProjectSave.GluxVersions.CollisionRelationshipManualPhysics;
             var supportsApplyPhysicsDelegate = GlueState.Self.CurrentGlueProject.FileVersion >=
                 (int)GlueProjectSave.GluxVersions.PlatformerCollisionSupportsApplyPhysicsDelegate;
-            var applyPhysicsArg = supportsApplyPhysicsDelegate
-                ? ", temp.ApplyPhysics == null ? (System.Func<bool>)null : (System.Func<bool>)(() => temp.ApplyPhysics(first, second))"
-                : "";
+
+            var applyPhysicsArg = "";
+            if (supportsManualPhysics || supportsApplyPhysicsDelegate)
+            {
+                var conditions = new List<string>();
+                if (supportsManualPhysics)
+                {
+                    conditions.Add("temp.ArePhysicsAppliedAutomatically");
+                }
+                if (supportsApplyPhysicsDelegate)
+                {
+                    conditions.Add("(temp.ApplyPhysics == null || temp.ApplyPhysics(first, second))");
+                }
+                applyPhysicsArg = $", () => {string.Join(" && ", conditions)}";
+            }
 
             if (!isFirstList && isSecondList)
             {
