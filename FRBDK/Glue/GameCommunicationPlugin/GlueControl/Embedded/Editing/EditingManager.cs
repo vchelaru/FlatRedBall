@@ -1647,28 +1647,24 @@ namespace GlueControl.Editing
                 foregroundOwnedByThisGame = fgOwnerPid == (uint)System.Diagnostics.Process.GetCurrentProcess().Id;
             }
 
-            // Observed on a real user machine (issue #2203 investigation, 2026-08-24): every single click
-            // on the embedded panel had GetForegroundWindow() return IntPtr.Zero - not Glue's window, not
-            // the game's own window, no window at all - so neither check above ever passed and clicks were
-            // silently dropped. GetForegroundWindow()/activation state is evidently unreliable for this
-            // reparented-via-SetParent window on some machines. WindowFromPoint at the actual cursor
-            // position is a direct spatial hit-test instead - it answers "is the user's cursor physically
-            // over our own window right now," independent of OS activation/foreground state, so it isn't
-            // subject to the same race/quirk. Only probed as a last resort (like foregroundOwnedByThisGame
-            // above), not as a blanket "foreground is unknown -> assume focused" - that was tried first and
-            // a regression test (ClickWhileEmbeddedAndForegroundOwnedByUnrelatedWindow_IsIgnored) caught
-            // that it could also mask a genuine focus loss to an unrelated window (re-opening #2154).
-            var cursorOverOwnWindow = false;
-            if (glueProcessExists && !foregroundMatchesGlueMainWindow && !foregroundOwnedByThisGame
-                && GetCursorPos(out var cursorPos))
-            {
-                var windowUnderCursor = WindowFromPoint(cursorPos);
-                if (windowUnderCursor != IntPtr.Zero)
-                {
-                    GetWindowThreadProcessId(windowUnderCursor, out var cursorWindowOwnerPid);
-                    cursorOverOwnWindow = cursorWindowOwnerPid == (uint)System.Diagnostics.Process.GetCurrentProcess().Id;
-                }
-            }
+            // Observed on a real user machine (issue #2203/#2205 investigation, 2026-08-24/25): every
+            // single click on the embedded panel had GetForegroundWindow() return IntPtr.Zero - not Glue's
+            // window, not the game's own window, no window at all - so neither check above ever passed and
+            // clicks were silently dropped. A follow-up attempt using WindowFromPoint at the raw cursor
+            // position failed too - GetCursorPos() itself returned false with Win32 error 87
+            // (ERROR_INVALID_PARAMETER) on that machine, so the OS focus/cursor APIs are evidently
+            // unreliable here in more than one way, not just GetForegroundWindow(). FlatRedBall.Input.Mouse
+            // already tracks the cursor's game-window-relative position through MonoGame's own input
+            // pipeline (not these Win32 calls) for entirely unrelated purposes elsewhere in this class -
+            // IsInGameWindow() is a pure bounds check against that position, explicitly documented as valid
+            // "even if the game window does not have focus." Reusing it here sidesteps the unreliable APIs
+            // entirely instead of chasing another one. Only probed as a last resort (like
+            // foregroundOwnedByThisGame above), not as a blanket "foreground is unknown -> assume focused" -
+            // that was tried first and a regression test
+            // (ClickWhileEmbeddedAndForegroundOwnedByUnrelatedWindow_IsIgnored) caught that it could also
+            // mask a genuine focus loss to an unrelated window (re-opening #2154).
+            var cursorOverOwnWindow = glueProcessExists && !foregroundMatchesGlueMainWindow && !foregroundOwnedByThisGame
+                && FlatRedBall.Input.InputManager.Mouse.IsInGameWindow();
 
             return (glueProcessExists, foregroundMatchesGlueMainWindow, foregroundOwnedByThisGame, cursorOverOwnWindow);
         }
@@ -1719,9 +1715,28 @@ namespace GlueControl.Editing
 
                 var glueMainWindowHandle = glueProcess?.MainWindowHandle ?? IntPtr.Zero;
 
+                var cursorPosResult = GetCursorPos(out var cursorPos);
+                var getCursorPosError = cursorPosResult ? 0 : System.Runtime.InteropServices.Marshal.GetLastWin32Error();
+                var windowUnderCursor = cursorPosResult ? WindowFromPoint(cursorPos) : IntPtr.Zero;
+                uint cursorWindowOwnerPid = 0;
+                string cursorWindowProcessName = "<none>";
+                if (windowUnderCursor != IntPtr.Zero)
+                {
+                    GetWindowThreadProcessId(windowUnderCursor, out cursorWindowOwnerPid);
+                    try
+                    {
+                        cursorWindowProcessName = System.Diagnostics.Process.GetProcessById((int)cursorWindowOwnerPid).ProcessName;
+                    }
+                    catch { /* process may have exited between the two calls, or be inaccessible */ }
+                }
+
                 return $"fgHwnd={fg} fgOwnerPid={fgOwnerPid} fgProcessName={fgProcessName} " +
                     $"glueProcessId={glueProcess?.Id} glueMainWindowHandle={glueMainWindowHandle} " +
-                    $"thisProcessId={System.Diagnostics.Process.GetCurrentProcess().Id}";
+                    $"thisProcessId={System.Diagnostics.Process.GetCurrentProcess().Id} " +
+                    $"getCursorPosSucceeded={cursorPosResult} getCursorPosError={getCursorPosError} " +
+                    $"cursorPos=({cursorPos.X},{cursorPos.Y}) " +
+                    $"windowUnderCursor={windowUnderCursor} windowUnderCursorOwnerPid={cursorWindowOwnerPid} " +
+                    $"windowUnderCursorProcessName={cursorWindowProcessName}";
             }
             catch (Exception ex)
             {
@@ -1738,7 +1753,7 @@ namespace GlueControl.Editing
         [System.Runtime.InteropServices.DllImport("user32.dll")]
         static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
 
-        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        [System.Runtime.InteropServices.DllImport("user32.dll", SetLastError = true)]
         static extern bool GetCursorPos(out Win32Point point);
 
         [System.Runtime.InteropServices.DllImport("user32.dll")]
