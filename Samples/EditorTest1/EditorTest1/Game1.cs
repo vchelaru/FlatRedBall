@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.InteropServices;
 
 using FlatRedBall;
 using FlatRedBall.Graphics;
@@ -54,6 +55,21 @@ namespace EditorTest1
 
             FlatRedBallServices.InitializeFlatRedBall(this, graphics);
 
+            // Set by LiveGameProcess (GlueUnitTests) before launching this exe repeatedly to drive live-edit
+            // tests. The window is still hidden here - MonoGame's SdlGameWindow.CreateWindow (invoked as
+            // part of InitializeFlatRedBall's resolution setup, above) destroys and recreates the SDL
+            // window centered but hidden; nothing calls Sdl.Window.Show until Game.Run()'s loop actually
+            // starts, after Initialize()/LoadContent() finish - so repositioning it here moves it off the
+            // combined virtual desktop before it's ever painted. Setting Window.Position any earlier (e.g.
+            // in Program.cs before Run()) does not work: that CreateWindow() call above would destroy the
+            // already-positioned window and recreate a fresh centered one, discarding it.
+            if (Environment.GetEnvironmentVariable("FRB_LIVE_GAME_TEST_OFFSCREEN") == "1")
+            {
+                var offscreenX = NativeMethods.GetSystemMetrics(NativeMethods.SM_XVIRTUALSCREEN)
+                    + NativeMethods.GetSystemMetrics(NativeMethods.SM_CXVIRTUALSCREEN);
+                Window.Position = new Point(offscreenX, Window.Position.Y);
+            }
+
             GeneratedInitialize();
 
             base.Initialize();
@@ -79,6 +95,15 @@ namespace EditorTest1
             GeneratedDraw(gameTime);
 
             base.Draw(gameTime);
+        }
+
+        static class NativeMethods
+        {
+            public const int SM_XVIRTUALSCREEN = 76;
+            public const int SM_CXVIRTUALSCREEN = 78;
+
+            [DllImport("user32.dll")]
+            public static extern int GetSystemMetrics(int nIndex);
         }
     }
 }
