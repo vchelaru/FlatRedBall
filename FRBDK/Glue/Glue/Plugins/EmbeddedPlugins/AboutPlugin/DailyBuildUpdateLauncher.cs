@@ -49,13 +49,12 @@ internal static class DailyBuildUpdateLauncher
             "using System;",
             "using System.Collections.Generic;",
             "using System.Runtime.InteropServices;",
-            "using System.Runtime.InteropServices.ComTypes;",
             "",
             "[StructLayout(LayoutKind.Sequential)]",
             "public struct GlueUpdateRmUniqueProcess",
             "{",
             "    public int ProcessId;",
-            "    public FILETIME ProcessStartTime;",
+            "    public System.Runtime.InteropServices.ComTypes.FILETIME ProcessStartTime;",
             "}",
             "",
             "[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]",
@@ -242,12 +241,14 @@ internal static class DailyBuildUpdateLauncher
             "}"
         });
 
+        var helperWorkingDirectory = Path.GetDirectoryName(Path.TrimEndingDirectorySeparator(installDirectory)) ?? Path.GetTempPath();
+
         var startInfo = new ProcessStartInfo("powershell.exe")
         {
             CreateNoWindow = true,
             UseShellExecute = false,
             WindowStyle = ProcessWindowStyle.Hidden,
-            WorkingDirectory = Path.GetDirectoryName(installDirectory) ?? Path.GetTempPath()
+            WorkingDirectory = helperWorkingDirectory
         };
 
         startInfo.ArgumentList.Add("-NoProfile");

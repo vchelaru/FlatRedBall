@@ -55,6 +55,18 @@ public class DailyBuildUpdateLauncherTests
     }
 
     [Fact]
+    public void CreateStartInfo_ShouldUseTheInstallDirectoryParentWhenThePathEndsInASlash()
+    {
+        var startInfo = DailyBuildUpdateLauncher.CreateStartInfo(
+            glueProcessId: 42,
+            installDirectory: @"C:\Glue\Debug\",
+            stagedDirectory: @"C:\Glue\Debug.updating",
+            applicationPath: @"C:\Glue\Debug\GlueFormsCore.exe");
+
+        startInfo.WorkingDirectory.ShouldBe(@"C:\Glue");
+    }
+
+    [Fact]
     public void CreateStartInfo_ShouldWriteLockDiagnosticsWhenReplacementFails()
     {
         var startInfo = DailyBuildUpdateLauncher.CreateStartInfo(
