@@ -25,6 +25,7 @@ public class DailyBuildUpdateLauncherTests
         script.ShouldContain("Start-Process -FilePath $applicationPath");
         script.ShouldContain("$stagedApplicationPath = Join-Path -Path $stagedDirectory -ChildPath 'GlueFormsCore.exe'");
         script.ShouldContain("$restartPath = $stagedApplicationPath");
+        script.ShouldContain("$title = 'Glue update installed'");
         script.ShouldContain("Start-Process -FilePath $restartPath");
         script.ShouldContain("catch");
     }
