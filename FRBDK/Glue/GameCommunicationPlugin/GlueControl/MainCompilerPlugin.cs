@@ -1234,6 +1234,14 @@ namespace GameCommunicationPlugin.GlueControl
                             MoveGameToHost();
                         }
 
+                        // EmbeddedDiagnosticsLogger.IsEnabled is per-process state on the game side, and
+                        // BuildTab_EmbeddedDiagnosticsChanged only sends this DTO when the checkbox itself
+                        // is toggled - so a freshly-launched game never learns the checkbox was already
+                        // checked from an earlier run, and clicks silently go unlogged with no error.
+                        if (CompilerViewModel.IsEmbeddedDiagnosticsChecked)
+                        {
+                            await CommandSender.Self.Send(new SetEmbeddedDiagnosticsEnabledDto { IsEnabled = true });
+                        }
 
                         if (CompilerViewModel.PlayOrEdit == PlayOrEdit.Edit)
                         {
