@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -391,13 +392,32 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AboutPlugin
                 var currentExeLocation = System.Reflection.Assembly.GetEntryAssembly().Location;
                 var directory = FlatRedBall.IO.FileManager.GetDirectory(currentExeLocation);
 
-                var command = @"timeout /T 3 /NOBREAK & ";
-                command += $"rd \"{directory}\" /S /Q & ";
-                command += $"powershell -Command \"Expand-Archive -Path '{destination}' -DestinationPath '{directory}'\" & ";
-                command += $"cd \"{directory}\" & ";
-                command += $"\"{directory}\\GlueFormsCore.exe\"";
-                var processStartInfo = new ProcessStartInfo("cmd.exe");
-                processStartInfo.Arguments = "/K " + command;
+                var stagedDirectory = directory.TrimEnd('\\', '/') + ".updating";
+
+                try
+                {
+                    await System.Threading.Tasks.Task.Run(() =>
+                    {
+                        if (Directory.Exists(stagedDirectory))
+                        {
+                            Directory.Delete(stagedDirectory, recursive: true);
+                        }
+
+                        ZipFile.ExtractToDirectory(destination, stagedDirectory, overwriteFiles: true);
+                    });
+                }
+                catch (Exception ex)
+                {
+                    GlueCommands.Self.DialogCommands.ShowMessageBox($"Could not prepare the daily-build update:\n{ex.Message}");
+                    return;
+                }
+
+                var applicationPath = Path.Combine(directory, "GlueFormsCore.exe");
+                var processStartInfo = DailyBuildUpdateLauncher.CreateStartInfo(
+                    Environment.ProcessId,
+                    directory,
+                    stagedDirectory,
+                    applicationPath);
 
                 Process.Start(processStartInfo);
 
