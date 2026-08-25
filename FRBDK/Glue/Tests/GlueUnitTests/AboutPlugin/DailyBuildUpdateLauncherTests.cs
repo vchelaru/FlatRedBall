@@ -23,6 +23,9 @@ public class DailyBuildUpdateLauncherTests
         script.ShouldContain("Remove-Item -LiteralPath $installDirectory -Recurse -Force -ErrorAction Stop");
         script.ShouldContain("Move-Item -LiteralPath $stagedDirectory -Destination $installDirectory -ErrorAction Stop");
         script.ShouldContain("Start-Process -FilePath $applicationPath");
+        script.ShouldContain("$stagedApplicationPath = Join-Path -Path $stagedDirectory -ChildPath 'GlueFormsCore.exe'");
+        script.ShouldContain("$restartPath = $stagedApplicationPath");
+        script.ShouldContain("Start-Process -FilePath $restartPath");
         script.ShouldContain("catch");
     }
 }
