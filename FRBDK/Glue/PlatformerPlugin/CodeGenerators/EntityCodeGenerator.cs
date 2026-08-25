@@ -804,14 +804,14 @@ namespace FlatRedBall.PlatformerPlugin.Generators
         /// <summary>
         /// Performs a standard solid collision against an ICollidable.
         /// </summary>
-        public bool CollideAgainst(FlatRedBall.Math.Geometry.ICollidable collidable, bool isCloudCollision = false)
+        public bool CollideAgainst(FlatRedBall.Math.Geometry.ICollidable collidable, bool isCloudCollision = false, System.Func<bool> shouldApplyPhysics = null)
         {
-            return CollideAgainst(collidable.Collision, isCloudCollision);
+            return CollideAgainst(collidable.Collision, isCloudCollision, shouldApplyPhysics);
         }
 
-        public bool CollideAgainst(FlatRedBall.Math.Geometry.ICollidable collidable, FlatRedBall.Math.Geometry.AxisAlignedRectangle thisSubcollision, bool isCloudCollision = false)
+        public bool CollideAgainst(FlatRedBall.Math.Geometry.ICollidable collidable, FlatRedBall.Math.Geometry.AxisAlignedRectangle thisSubcollision, bool isCloudCollision = false, System.Func<bool> shouldApplyPhysics = null)
         {
-            return CollideAgainst(collidable.Collision, thisSubcollision, isCloudCollision);
+            return CollideAgainst(collidable.Collision, thisSubcollision, isCloudCollision, shouldApplyPhysics);
         }
 
         /// <summary>
@@ -837,7 +837,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
         /// </summary>
         /// <param name=""shapeCollection"">The ShapeCollection to collide against.</param>
         /// <param name=""isCloudCollision"">Whether to perform solid or cloud collisions.</param>
-        public bool CollideAgainst(FlatRedBall.Math.Geometry.ShapeCollection shapeCollection, bool isCloudCollision)
+        public bool CollideAgainst(FlatRedBall.Math.Geometry.ShapeCollection shapeCollection, bool isCloudCollision, System.Func<bool> shouldApplyPhysics = null)
         {
             return CollideAgainst(() =>
             {
@@ -848,11 +848,11 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                 if (shapeCollection.LastCollisionPolygons.Count > 0) lastCollided = shapeCollection.LastCollisionPolygons[0];
                 // do we care about other shapes?
                 return (collided, lastCollided);
-            }, isCloudCollision);
+            }, isCloudCollision, shouldApplyPhysics: shouldApplyPhysics);
         }
 
 
-        public bool CollideAgainst(FlatRedBall.Math.Geometry.ShapeCollection shapeCollection, FlatRedBall.Math.Geometry.AxisAlignedRectangle thisRect, bool isCloudCollision)
+        public bool CollideAgainst(FlatRedBall.Math.Geometry.ShapeCollection shapeCollection, FlatRedBall.Math.Geometry.AxisAlignedRectangle thisRect, bool isCloudCollision, System.Func<bool> shouldApplyPhysics = null)
         {
             return CollideAgainst(() =>
             {
@@ -863,7 +863,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                 if (shapeCollection.LastCollisionPolygons.Count > 0) lastCollided = shapeCollection.LastCollisionPolygons[0];
                 // do we care about other shapes?
                 return (collided, lastCollided);
-            }, isCloudCollision);
+            }, isCloudCollision, shouldApplyPhysics: shouldApplyPhysics);
         }
 
         /// <summary>
@@ -874,7 +874,8 @@ namespace FlatRedBall.PlatformerPlugin.Generators
         /// </summary>
         /// <param name=""collisionFunction"">The collision function to execute.</param>
         /// <param name=""isCloudCollision"">Whether to perform cloud collision (only check when moving down)</param>
-        public bool CollideAgainst(System.Func<(bool, PositionedObject)> collisionFunction, bool isCloudCollision, string objectName = null)
+        /// <param name=""shouldApplyPhysics"">Optional. If provided and a collision occurs, this is called to decide whether physics (reposition, landing, grounded state) is applied for that collision. If null, physics is always applied on collision.</param>
+        public bool CollideAgainst(System.Func<(bool, PositionedObject)> collisionFunction, bool isCloudCollision, string objectName = null, System.Func<bool> shouldApplyPhysics = null)
         {
             Microsoft.Xna.Framework.Vector3 positionBeforeCollision = this.Position;
             Microsoft.Xna.Framework.Vector3 velocityBeforeCollision = this.Velocity;
@@ -966,6 +967,11 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
                             shouldApplyCollision = yReposition < (-thisYDistanceMovedThisFrame + otherYDistanceMovedThisFrame);
                         }
+                    }
+
+                    if (shouldApplyCollision && shouldApplyPhysics != null)
+                    {
+                        shouldApplyCollision = shouldApplyPhysics();
                     }
 
                     if (shouldApplyCollision)
@@ -1128,12 +1134,12 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             return (didCollideInternal, null);
         }
 
-        public bool CollideAgainst(FlatRedBall.TileCollisions.TileShapeCollection shapeCollection, bool isCloudCollision = false)
+        public bool CollideAgainst(FlatRedBall.TileCollisions.TileShapeCollection shapeCollection, bool isCloudCollision = false, System.Func<bool> shouldApplyPhysics = null)
         {
             var positionBefore = this.Position;
             var velocityBefore = this.Velocity;
 
-            var collided = CollideAgainst(() => DoCollisionWithShapeCollectionConsideringCornerLanding(shapeCollection, isCloudCollision), isCloudCollision, shapeCollection.Name);
+            var collided = CollideAgainst(() => DoCollisionWithShapeCollectionConsideringCornerLanding(shapeCollection, isCloudCollision), isCloudCollision, shapeCollection.Name, shouldApplyPhysics);
 
             if(collided)
             {
@@ -1256,13 +1262,13 @@ namespace FlatRedBall.PlatformerPlugin.Generators
         }
 
 
-        public bool CollideAgainst(FlatRedBall.TileCollisions.TileShapeCollection shapeCollection, FlatRedBall.Math.Geometry.AxisAlignedRectangle thisCollision, bool isCloudCollision = false)
+        public bool CollideAgainst(FlatRedBall.TileCollisions.TileShapeCollection shapeCollection, FlatRedBall.Math.Geometry.AxisAlignedRectangle thisCollision, bool isCloudCollision = false, System.Func<bool> shouldApplyPhysics = null)
         {
             return CollideAgainst(() =>
             {
                 var didCollide = shapeCollection.CollideAgainstSolid(thisCollision);
                 return (didCollide, null);
-            }, isCloudCollision, shapeCollection.Name);
+            }, isCloudCollision, shapeCollection.Name, shouldApplyPhysics);
         }
 
 ");

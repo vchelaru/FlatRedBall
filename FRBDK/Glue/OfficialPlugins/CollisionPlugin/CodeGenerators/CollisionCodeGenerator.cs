@@ -534,11 +534,19 @@ namespace OfficialPlugins.CollisionPlugin
             var isCloud = (collisionType == CollisionType.PlatformerCloudCollision).ToString().ToLowerInvariant();
             string whatToCollideAgainst = "second";
 
+            // temp.ApplyPhysics lets game code decide, per collision, whether platformer physics is applied;
+            // unset (the default) falls back to physics always being applied, same as before this existed.
+            var supportsApplyPhysicsDelegate = GlueState.Self.CurrentGlueProject.FileVersion >=
+                (int)GlueProjectSave.GluxVersions.PlatformerCollisionSupportsApplyPhysicsDelegate;
+            var applyPhysicsArg = supportsApplyPhysicsDelegate
+                ? ", temp.ApplyPhysics == null ? (System.Func<bool>)null : (System.Func<bool>)(() => temp.ApplyPhysics(first, second))"
+                : "";
+
             if (!isFirstList && isSecondList)
             {
                 if (collisionType == CollisionType.PlatformerCloudCollision || collisionType == CollisionType.PlatformerSolidCollision)
                 {
-                    block.Line($"return first.CollideAgainst({whatToCollideAgainst}, {isCloud});");
+                    block.Line($"return first.CollideAgainst({whatToCollideAgainst}, {isCloud}{applyPhysicsArg});");
                 }
                 else
                 {
@@ -546,11 +554,11 @@ namespace OfficialPlugins.CollisionPlugin
                     if (firstSubCollision == null)
                     {
                         // it's an icollidable probably
-                        block.Line($"return first.CollideAgainst({whatToCollideAgainst}.Collision, {isCloud});");
+                        block.Line($"return first.CollideAgainst({whatToCollideAgainst}.Collision, {isCloud}{applyPhysicsArg});");
                     }
                     else
                     {
-                        block.Line($"return first.CollideAgainst({whatToCollideAgainst}.Collision, first.{firstSubCollision}, {isCloud});");
+                        block.Line($"return first.CollideAgainst({whatToCollideAgainst}.Collision, first.{firstSubCollision}, {isCloud}{applyPhysicsArg});");
                     }
 
                 }
@@ -560,12 +568,12 @@ namespace OfficialPlugins.CollisionPlugin
                 if (firstSubCollision == null)
                 {
                     // assume it's a shape collection
-                    block.Line($"return first.CollideAgainst({whatToCollideAgainst}, {isCloud});");
+                    block.Line($"return first.CollideAgainst({whatToCollideAgainst}, {isCloud}{applyPhysicsArg});");
                 }
                 else
                 {
                     // assume it's a shape collection
-                    block.Line($"return first.CollideAgainst({whatToCollideAgainst}, first.{firstSubCollision}, {isCloud});");
+                    block.Line($"return first.CollideAgainst({whatToCollideAgainst}, first.{firstSubCollision}, {isCloud}{applyPhysicsArg});");
                 }
             }
 

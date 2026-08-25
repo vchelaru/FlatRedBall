@@ -904,6 +904,10 @@ namespace FlatRedBall.Math.Collision
     {
         public Func<First, Second, bool> CollisionFunction { get; set; }
 
+        // Used by platformer collision relationships to decide, per collision, whether physics should be
+        // applied. Null (the default) means physics is always applied - unchanged from prior behavior.
+        public Func<First, Second, bool> ApplyPhysics { get; set; }
+
         public Action<First, Second> CollisionOccurred;
 
 
@@ -955,6 +959,10 @@ namespace FlatRedBall.Math.Collision
         PositionedObjectList<SecondCollidableT> list;
 
         public Func<First, SecondCollidableT, bool> CollisionFunction { get; set; }
+
+        // Used by platformer collision relationships to decide, per collision, whether physics should be
+        // applied. Null (the default) means physics is always applied - unchanged from prior behavior.
+        public Func<First, SecondCollidableT, bool> ApplyPhysics { get; set; }
 
         public override object FirstAsObject => singleObject;
         public override object SecondAsObject => list;
@@ -1024,6 +1032,10 @@ namespace FlatRedBall.Math.Collision
         Second singleObject;
 
         public Func<FirstCollidableT, Second, bool> CollisionFunction { get; set; }
+
+        // Used by platformer collision relationships to decide, per collision, whether physics should be
+        // applied. Null (the default) means physics is always applied - unchanged from prior behavior.
+        public Func<FirstCollidableT, Second, bool> ApplyPhysics { get; set; }
 
         public override object FirstAsObject => list;
 
@@ -1954,6 +1966,10 @@ namespace FlatRedBall.Math.Collision
         public LoopDirection LoopDirection { get; set; }
 
         public Func<FirstCollidableT, SecondCollidableT, bool> CollisionFunction { get; set; }
+
+        // Used by platformer collision relationships to decide, per collision, whether physics should be
+        // applied. Null (the default) means physics is always applied - unchanged from prior behavior.
+        public Func<FirstCollidableT, SecondCollidableT, bool> ApplyPhysics { get; set; }
 
         public Action<FirstCollidableT, SecondCollidableT> CollisionOccurred;
 
