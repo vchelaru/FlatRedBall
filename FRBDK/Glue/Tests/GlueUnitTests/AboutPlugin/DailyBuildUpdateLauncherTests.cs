@@ -49,4 +49,18 @@ public class DailyBuildUpdateLauncherTests
         script.ShouldContain("Remove attempt $attempt failed");
         script.ShouldContain("Diagnostics: $logPath");
     }
+
+    [Fact]
+    public void CreateStartInfo_ShouldCatchLogInitializationFailures()
+    {
+        var startInfo = DailyBuildUpdateLauncher.CreateStartInfo(
+            glueProcessId: 42,
+            installDirectory: @"C:\Glue Daily",
+            stagedDirectory: @"C:\Glue Daily.updating",
+            applicationPath: @"C:\Glue Daily\GlueFormsCore.exe");
+
+        var script = startInfo.ArgumentList.Last();
+        script.IndexOf("try", StringComparison.Ordinal).ShouldBeLessThan(
+            script.IndexOf("New-Item -ItemType Directory -Path $logDirectory -Force", StringComparison.Ordinal));
+    }
 }
