@@ -213,6 +213,13 @@ namespace FlatRedBall.Glue.SaveClasses
             // reference away from).
             AnimationChainListHasReplaceValues = 69,
 
+            // August 25, 2026 - Platformer collision relationships (PlatformerSolidCollision/
+            // PlatformerCloudCollision) generate a CollisionFunction that references the relationship's
+            // new ApplyPhysics delegate (Func<First,Second,bool>), letting user code decide per-collision
+            // whether platformer physics is applied. Gated because ApplyPhysics is a new engine-side
+            // property on the Delegate*Relationship classes.
+            PlatformerCollisionSupportsApplyPhysicsDelegate = 70,
+
             // Stop! If adding an entry here, modify SyntaxVersionAttribute on FlatRedBallServices
             // and LatestVersion down below
             // and update the docs
@@ -222,7 +229,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.AnimationChainListHasReplaceValues;
+        public const int LatestVersion = (int)GluxVersions.PlatformerCollisionSupportsApplyPhysicsDelegate;
 
         public int FileVersion { get; set; }
 

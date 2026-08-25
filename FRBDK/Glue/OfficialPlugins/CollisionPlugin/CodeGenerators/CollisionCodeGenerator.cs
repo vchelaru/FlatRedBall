@@ -534,11 +534,36 @@ namespace OfficialPlugins.CollisionPlugin
             var isCloud = (collisionType == CollisionType.PlatformerCloudCollision).ToString().ToLowerInvariant();
             string whatToCollideAgainst = "second";
 
+            // The "Automatically Apply Physics" checkbox (ArePhysicsAppliedAutomatically) previously did
+            // nothing for platformer relationships - it's only consulted by DoCollisionPhysicsInner, which
+            // Delegate*Relationship (what platformer uses) never calls. temp.ApplyPhysics additionally lets
+            // game code decide per-collision. Neither referenced (old behavior: physics always applied)
+            // unless the project's FileVersion supports it.
+            var supportsManualPhysics = GlueState.Self.CurrentGlueProject.FileVersion >=
+                (int)GlueProjectSave.GluxVersions.CollisionRelationshipManualPhysics;
+            var supportsApplyPhysicsDelegate = GlueState.Self.CurrentGlueProject.FileVersion >=
+                (int)GlueProjectSave.GluxVersions.PlatformerCollisionSupportsApplyPhysicsDelegate;
+
+            var applyPhysicsArg = "";
+            if (supportsManualPhysics || supportsApplyPhysicsDelegate)
+            {
+                var conditions = new List<string>();
+                if (supportsManualPhysics)
+                {
+                    conditions.Add("temp.ArePhysicsAppliedAutomatically");
+                }
+                if (supportsApplyPhysicsDelegate)
+                {
+                    conditions.Add("(temp.ApplyPhysics == null || temp.ApplyPhysics(first, second))");
+                }
+                applyPhysicsArg = $", () => {string.Join(" && ", conditions)}";
+            }
+
             if (!isFirstList && isSecondList)
             {
                 if (collisionType == CollisionType.PlatformerCloudCollision || collisionType == CollisionType.PlatformerSolidCollision)
                 {
-                    block.Line($"return first.CollideAgainst({whatToCollideAgainst}, {isCloud});");
+                    block.Line($"return first.CollideAgainst({whatToCollideAgainst}, {isCloud}{applyPhysicsArg});");
                 }
                 else
                 {
@@ -546,11 +571,11 @@ namespace OfficialPlugins.CollisionPlugin
                     if (firstSubCollision == null)
                     {
                         // it's an icollidable probably
-                        block.Line($"return first.CollideAgainst({whatToCollideAgainst}.Collision, {isCloud});");
+                        block.Line($"return first.CollideAgainst({whatToCollideAgainst}.Collision, {isCloud}{applyPhysicsArg});");
                     }
                     else
                     {
-                        block.Line($"return first.CollideAgainst({whatToCollideAgainst}.Collision, first.{firstSubCollision}, {isCloud});");
+                        block.Line($"return first.CollideAgainst({whatToCollideAgainst}.Collision, first.{firstSubCollision}, {isCloud}{applyPhysicsArg});");
                     }
 
                 }
@@ -560,12 +585,12 @@ namespace OfficialPlugins.CollisionPlugin
                 if (firstSubCollision == null)
                 {
                     // assume it's a shape collection
-                    block.Line($"return first.CollideAgainst({whatToCollideAgainst}, {isCloud});");
+                    block.Line($"return first.CollideAgainst({whatToCollideAgainst}, {isCloud}{applyPhysicsArg});");
                 }
                 else
                 {
                     // assume it's a shape collection
-                    block.Line($"return first.CollideAgainst({whatToCollideAgainst}, first.{firstSubCollision}, {isCloud});");
+                    block.Line($"return first.CollideAgainst({whatToCollideAgainst}, first.{firstSubCollision}, {isCloud}{applyPhysicsArg});");
                 }
             }
 
