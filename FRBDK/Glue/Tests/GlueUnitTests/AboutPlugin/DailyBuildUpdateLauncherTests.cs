@@ -1,5 +1,6 @@
 using GlueFormsCore.Plugins.EmbeddedPlugins.AboutPlugin;
 using Shouldly;
+using System.Diagnostics;
 using System.IO;
 
 namespace GlueUnitTests.AboutPlugin;
@@ -92,5 +93,35 @@ public class DailyBuildUpdateLauncherTests
         var script = startInfo.ArgumentList.Last();
         script.IndexOf("try", StringComparison.Ordinal).ShouldBeLessThan(
             script.IndexOf("New-Item -ItemType Directory -Path $logDirectory -Force", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void CreateStartInfo_ShouldCreateAParsablePowerShellScript()
+    {
+        var script = DailyBuildUpdateLauncher.CreateStartInfo(
+            glueProcessId: 42,
+            installDirectory: @"C:\Glue Daily",
+            stagedDirectory: @"C:\Glue Daily.updating",
+            applicationPath: @"C:\Glue Daily\GlueFormsCore.exe").ArgumentList.Last();
+
+        var startInfo = new ProcessStartInfo("powershell.exe")
+        {
+            UseShellExecute = false,
+            RedirectStandardInput = true,
+            RedirectStandardError = true,
+            RedirectStandardOutput = true,
+        };
+        startInfo.ArgumentList.Add("-NoProfile");
+        startInfo.ArgumentList.Add("-NonInteractive");
+        startInfo.ArgumentList.Add("-Command");
+        startInfo.ArgumentList.Add("$ErrorActionPreference = 'Stop'; $script = [Console]::In.ReadToEnd(); [ScriptBlock]::Create($script) | Out-Null");
+
+        using var process = Process.Start(startInfo)!;
+        process.StandardInput.Write(script);
+        process.StandardInput.Close();
+        process.WaitForExit(10_000).ShouldBeTrue();
+
+        var output = process.StandardOutput.ReadToEnd() + process.StandardError.ReadToEnd();
+        process.ExitCode.ShouldBe(0, output);
     }
 }

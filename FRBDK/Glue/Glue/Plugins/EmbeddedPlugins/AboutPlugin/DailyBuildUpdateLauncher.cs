@@ -126,7 +126,7 @@ internal static class DailyBuildUpdateLauncher
             "        }",
             "",
             "        $candidateFiles = @(Get-ChildItem -LiteralPath $directory -File -Force -Recurse | Select-Object -First 128 -ExpandProperty FullName)",
-            "        Write-UpdateLog \"Restart Manager lock owners for $directory:\"",
+            "        Write-UpdateLog \"Restart Manager lock owners for ${directory}:\"",
             "        if ($candidateFiles.Count -eq 0)",
             "        {",
             "            Write-UpdateLog 'No files remained to inspect.'",
