@@ -419,9 +419,31 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AboutPlugin
                     stagedDirectory,
                     applicationPath);
 
-                Process.Start(processStartInfo);
+                var logPath = DailyBuildUpdateDiagnostics.GetLogPath();
+                DailyBuildUpdateDiagnostics.TryAppend(
+                    logPath,
+                    $"Glue is starting the update helper. GluePid={Environment.ProcessId} InstallDirectory={directory} HelperWorkingDirectory={processStartInfo.WorkingDirectory}");
 
-                GlueCommands.Self.CloseGlue();
+                try
+                {
+                    var helperProcess = Process.Start(processStartInfo);
+                    if (helperProcess is null)
+                    {
+                        throw new InvalidOperationException("Windows did not start the daily-build update helper.");
+                    }
+
+                    DailyBuildUpdateDiagnostics.TryAppend(
+                        logPath,
+                        $"Glue started the update helper. HelperPid={helperProcess.Id}");
+
+                    GlueCommands.Self.CloseGlue();
+                }
+                catch (Exception ex)
+                {
+                    DailyBuildUpdateDiagnostics.TryAppend(logPath, $"Glue could not start the update helper: {ex}");
+                    GlueCommands.Self.DialogCommands.ShowMessageBox(
+                        $"Glue could not start the daily-build update helper. Glue will remain open.\n\n{ex.Message}\n\nDiagnostics: {logPath}");
+                }
             }
         }
 

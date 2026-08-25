@@ -7,6 +7,27 @@ namespace GlueUnitTests.AboutPlugin;
 public class DailyBuildUpdateLauncherTests
 {
     [Fact]
+    public void DailyBuildUpdateDiagnostics_ShouldPersistAnEntry()
+    {
+        var logPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString(), "updater.log");
+
+        try
+        {
+            DailyBuildUpdateDiagnostics.Append(logPath, "Starting updater helper");
+
+            File.ReadAllText(logPath).ShouldContain("Starting updater helper");
+        }
+        finally
+        {
+            var directory = Path.GetDirectoryName(logPath)!;
+            if (Directory.Exists(directory))
+            {
+                Directory.Delete(directory, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
     public void CreateStartInfo_ShouldWaitForGlueAndAbortTheInstallWhenAFileRemainsLocked()
     {
         var startInfo = DailyBuildUpdateLauncher.CreateStartInfo(
