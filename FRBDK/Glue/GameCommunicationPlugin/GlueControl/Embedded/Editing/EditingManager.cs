@@ -1653,20 +1653,91 @@ namespace GlueControl.Editing
             // clicks were silently dropped. A follow-up attempt using WindowFromPoint at the raw cursor
             // position failed too - GetCursorPos() itself returned false with Win32 error 87
             // (ERROR_INVALID_PARAMETER) on that machine, so the OS focus/cursor APIs are evidently
-            // unreliable here in more than one way, not just GetForegroundWindow(). FlatRedBall.Input.Mouse
-            // already tracks the cursor's game-window-relative position through MonoGame's own input
-            // pipeline (not these Win32 calls) for entirely unrelated purposes elsewhere in this class -
-            // IsInGameWindow() is a pure bounds check against that position, explicitly documented as valid
-            // "even if the game window does not have focus." Reusing it here sidesteps the unreliable APIs
-            // entirely instead of chasing another one. Only probed as a last resort (like
-            // foregroundOwnedByThisGame above), not as a blanket "foreground is unknown -> assume focused" -
-            // that was tried first and a regression test
-            // (ClickWhileEmbeddedAndForegroundOwnedByUnrelatedWindow_IsIgnored) caught that it could also
-            // mask a genuine focus loss to an unrelated window (re-opening #2154).
-            var cursorOverOwnWindow = glueProcessExists && !foregroundMatchesGlueMainWindow && !foregroundOwnedByThisGame
-                && FlatRedBall.Input.InputManager.Mouse.IsInGameWindow();
+            // unreliable here in more than one way, not just GetForegroundWindow(). The fix that shipped
+            // used FlatRedBall.Input.Mouse.IsInGameWindow() instead - a pure bounds check against the
+            // client-relative position MonoGame's own input pipeline already tracks (not these Win32
+            // calls), valid "even if the game window does not have focus."
+            //
+            // Follow-up (#2205 continued): a bounds check alone can't detect occlusion. If another real
+            // window is drawn on top of the embedded game at the cursor's position (dragged over it, or
+            // any overlapping window), IsInGameWindow() still says "inside my bounds" - it has no Z-order
+            // awareness - so the game kept reporting clicks/hovers meant for the window on top of it.
+            // Fixed by adding a topmost check: convert the already-reliable client-relative mouse position
+            // to screen coordinates via ClientToScreen on our OWN window handle (not GetCursorPos, which
+            // is the API that failed above), then WindowFromPoint at that screen position to find out who
+            // is ACTUALLY topmost there. Deliberately fails CLOSED (cursorOverOwnWindow stays false) if
+            // ClientToScreen fails or WindowFromPoint resolves to nothing/another process - same "when in
+            // doubt, block" philosophy as #2154. Only probed as a last resort (like foregroundOwnedByThisGame
+            // above), not as a blanket "foreground is unknown -> assume focused" - that was tried first and
+            // a regression test (ClickWhileEmbeddedAndForegroundOwnedByUnrelatedWindow_IsIgnored) caught
+            // that it could also mask a genuine focus loss to an unrelated window (re-opening #2154).
+            // Not gated on glueProcessExists here (unlike the two checks above) - ComputeIsFocused already
+            // requires it independently for the final gate result, so gating it here too would only be a
+            // micro-optimization (skip the Win32 calls when Glue clearly isn't running at all).
+            var cursorOverOwnWindow = false;
+            if (!foregroundMatchesGlueMainWindow && !foregroundOwnedByThisGame)
+            {
+                var diagnostics = ComputeCursorOverOwnWindowDiagnostics();
+                cursorOverOwnWindow = diagnostics.mouseInGameWindow && ComputeCursorOverOwnWindow(
+                    diagnostics.clientToScreenSucceeded, diagnostics.topmostWindowAtCursor,
+                    diagnostics.topmostWindowOwnerPid, diagnostics.thisProcessId);
+            }
 
             return (glueProcessExists, foregroundMatchesGlueMainWindow, foregroundOwnedByThisGame, cursorOverOwnWindow);
+        }
+
+        /// <summary>
+        /// Runs the raw Win32 half of the occlusion check (issue #2205 follow-up: client-relative mouse
+        /// position -> screen coordinates -> topmost window there), separated from ComputeCursorOverOwnWindow's
+        /// pure decision logic below so each half stays simple. Only reaches the actual Win32 calls when
+        /// FlatRedBall.Input.Mouse.IsInGameWindow() is true.
+        /// </summary>
+        internal static (bool mouseInGameWindow, int mouseX, int mouseY, bool clientToScreenSucceeded,
+            IntPtr topmostWindowAtCursor, uint topmostWindowOwnerPid, uint thisProcessId) ComputeCursorOverOwnWindowDiagnostics()
+        {
+            var mouseInGameWindow = FlatRedBall.Input.InputManager.Mouse.IsInGameWindow();
+            var mouseX = FlatRedBall.Input.InputManager.Mouse.X;
+            var mouseY = FlatRedBall.Input.InputManager.Mouse.Y;
+            var thisProcessId = (uint)System.Diagnostics.Process.GetCurrentProcess().Id;
+
+            var clientToScreenSucceeded = false;
+            var topmostWindowAtCursor = IntPtr.Zero;
+            uint topmostWindowOwnerPid = 0;
+
+            if (mouseInGameWindow)
+            {
+                var gameWindowHandle = FlatRedBallServices.Game.Window.Handle;
+                var clientPoint = new Win32Point { X = mouseX, Y = mouseY };
+                clientToScreenSucceeded = ClientToScreen(gameWindowHandle, ref clientPoint);
+                topmostWindowAtCursor = clientToScreenSucceeded ? WindowFromPoint(clientPoint) : IntPtr.Zero;
+                if (topmostWindowAtCursor != IntPtr.Zero)
+                {
+                    GetWindowThreadProcessId(topmostWindowAtCursor, out topmostWindowOwnerPid);
+                }
+            }
+
+            return (mouseInGameWindow, mouseX, mouseY, clientToScreenSucceeded, topmostWindowAtCursor,
+                topmostWindowOwnerPid, thisProcessId);
+        }
+
+        /// <summary>
+        /// Pure decision logic behind the occlusion check in GetRawFocusInputs, split out of the raw Win32
+        /// orchestration above (ComputeCursorOverOwnWindowDiagnostics) the same way ComputeIsFocused is
+        /// split from GetRawFocusInputs. Only called after the cursor is already confirmed within our own
+        /// window's bounds (FlatRedBall.Input.Mouse.IsInGameWindow()); this is specifically the
+        /// topmost/occlusion half. Fails closed (false) whenever the outcome can't be positively confirmed,
+        /// matching #2154's "when in doubt, block" philosophy - a missing/ambiguous signal must never be
+        /// read as "we're on top."
+        /// </summary>
+        internal static bool ComputeCursorOverOwnWindow(bool clientToScreenSucceeded, IntPtr topmostWindowAtCursor,
+            uint topmostWindowOwnerPid, uint thisProcessId)
+        {
+            if (!clientToScreenSucceeded || topmostWindowAtCursor == IntPtr.Zero)
+            {
+                return false;
+            }
+
+            return topmostWindowOwnerPid == thisProcessId;
         }
 
         /// <summary>
@@ -1759,11 +1830,15 @@ namespace GlueControl.Editing
         [System.Runtime.InteropServices.DllImport("user32.dll")]
         static extern IntPtr WindowFromPoint(Win32Point point);
 
+        [System.Runtime.InteropServices.DllImport("user32.dll", SetLastError = true)]
+        static extern bool ClientToScreen(IntPtr hWnd, ref Win32Point point);
+
 #else
         static IntPtr GetForegroundWindow() => IntPtr.Zero;
         static uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId) { processId = 0; return 0; }
         static bool GetCursorPos(out Win32Point point) { point = default; return false; }
         static IntPtr WindowFromPoint(Win32Point point) => IntPtr.Zero;
+        static bool ClientToScreen(IntPtr hWnd, ref Win32Point point) => false;
 
 #endif
 
