@@ -217,7 +217,7 @@ internal static class GlueTestBootstrap
     ///    seam is *not* covered by ShowGui - several production paths call DialogService directly - so
     ///    without it a load that hits an error path pops a real modal and wedges the run.
     ///  - <see cref="MainGlueWindow"/>.<c>SetMsBuildEnvironmentVariable</c>, Glue's real SDK discovery. It
-    ///    points MSBUILD_EXE_PATH at a pre-7 SDK; without it <c>Microsoft.Build.Evaluation.Project</c> cannot
+    ///    points MSBUILD_EXE_PATH at an installed SDK; without it <c>Microsoft.Build.Evaluation.Project</c> cannot
     ///    resolve the SDK imports of any SDK-style .csproj ("The SDK
     ///    'Microsoft.NET.SDK.WorkloadAutoImportPropsLocator' specified could not be found"), which is what
     ///    previously forced <see cref="TestVisualStudioProjectFactory"/> to use a bare non-SDK-style project.
@@ -352,7 +352,7 @@ internal static class GlueTestBootstrap
     };
 
     /// <summary>
-    /// Points MSBUILD_EXE_PATH at a pre-7 SDK by running Glue.exe's own discovery, unless it is already set.
+    /// Points MSBUILD_EXE_PATH at an installed SDK by running Glue.exe's own discovery, unless it is already set.
     ///
     /// Called before every gold-project load rather than once per process on purpose: production clears this
     /// variable around its own nested dotnet invocations (CompilerPlugin's Compiler.cs, SyncedProjects'
