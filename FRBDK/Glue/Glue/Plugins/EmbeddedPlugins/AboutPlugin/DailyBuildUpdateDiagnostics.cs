@@ -5,6 +5,8 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AboutPlugin;
 
 internal static class DailyBuildUpdateDiagnostics
 {
+    const long MaximumLogLengthInBytes = 1_048_576;
+
     internal static string GetLogPath()
     {
         return Path.Combine(
@@ -22,6 +24,12 @@ internal static class DailyBuildUpdateDiagnostics
         }
 
         Directory.CreateDirectory(directory);
+
+        if (File.Exists(logPath) && new FileInfo(logPath).Length > MaximumLogLengthInBytes)
+        {
+            File.WriteAllText(logPath, string.Empty);
+        }
+
         File.AppendAllText(logPath, $"{DateTimeOffset.Now:O} {message}{Environment.NewLine}");
     }
 

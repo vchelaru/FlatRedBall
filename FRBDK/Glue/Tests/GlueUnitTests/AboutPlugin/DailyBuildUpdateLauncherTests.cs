@@ -29,6 +29,31 @@ public class DailyBuildUpdateLauncherTests
     }
 
     [Fact]
+    public void DailyBuildUpdateDiagnostics_ShouldRotateAnOversizedLog()
+    {
+        var logPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString(), "updater.log");
+
+        try
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(logPath)!);
+            File.WriteAllText(logPath, new string('x', 1_048_577));
+
+            DailyBuildUpdateDiagnostics.Append(logPath, "New update attempt");
+
+            File.ReadAllText(logPath).ShouldContain("New update attempt");
+            new FileInfo(logPath).Length.ShouldBeLessThan(1_024);
+        }
+        finally
+        {
+            var directory = Path.GetDirectoryName(logPath)!;
+            if (Directory.Exists(directory))
+            {
+                Directory.Delete(directory, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
     public void CreateStartInfo_ShouldWaitForGlueAndAbortTheInstallWhenAFileRemainsLocked()
     {
         var startInfo = DailyBuildUpdateLauncher.CreateStartInfo(
