@@ -654,6 +654,30 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
     }
     #endregion
 
+    #region TestComputeCursorOverOwnWindowDto
+
+    /// <summary>
+    /// Test-only (issue #2205): drives GlueControl.Editing.EmbeddedWindowLogic.ComputeCursorOverOwnWindow
+    /// (Embedded) with synthetic Win32-call outcomes instead of a real ClientToScreen/WindowFromPoint
+    /// round trip against a real overlapping window - moving the real OS cursor precisely enough for that
+    /// turned out to be unreliable on multi-monitor setups (see issue #2205 discussion), so this pins the
+    /// decision logic (fails closed on ClientToScreen failure, fails closed on no window found, true/false
+    /// on owner PID match) directly instead.
+    /// </summary>
+    public class TestComputeCursorOverOwnWindowDto
+    {
+        public bool ClientToScreenSucceeded { get; set; }
+        public bool TopmostWindowFound { get; set; }
+        public uint TopmostWindowOwnerPid { get; set; }
+        public uint ThisProcessId { get; set; }
+    }
+
+    public class TestComputeCursorOverOwnWindowResponse
+    {
+        public bool Result { get; set; }
+    }
+    #endregion
+
     #region ForceGameResolution
     public class ForceGameResolution
     {

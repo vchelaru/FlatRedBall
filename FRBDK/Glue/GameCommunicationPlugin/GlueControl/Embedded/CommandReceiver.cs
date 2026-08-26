@@ -1685,6 +1685,18 @@ namespace GlueControl
 
         #endregion
 
+        #region TestComputeCursorOverOwnWindowDto
+
+        private static TestComputeCursorOverOwnWindowResponse HandleDto(TestComputeCursorOverOwnWindowDto dto)
+        {
+            var topmostWindowAtCursor = dto.TopmostWindowFound ? new IntPtr(1) : IntPtr.Zero;
+            var result = EmbeddedWindowLogic.ComputeCursorOverOwnWindow(
+                dto.ClientToScreenSucceeded, topmostWindowAtCursor, dto.TopmostWindowOwnerPid, dto.ThisProcessId);
+            return new TestComputeCursorOverOwnWindowResponse { Result = result };
+        }
+
+        #endregion
+
         #region ForceGameResolution
 
         private static void HandleDto(ForceGameResolution dto)

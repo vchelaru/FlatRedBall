@@ -570,6 +570,75 @@ public class EditModeActivityGateTests
         }
     }
 
+    /// <summary>
+    /// Pins EmbeddedWindowLogic.ComputeCursorOverOwnWindow's decision table directly, via synthetic Win32-
+    /// call outcomes (TestComputeCursorOverOwnWindowDto) rather than a real ClientToScreen/WindowFromPoint
+    /// round trip against a real overlapping window - moving the real OS cursor precisely enough for that
+    /// proved unreliable on a multi-monitor dev machine (issue #2205 discussion), so this is the regression
+    /// coverage that actually shipped for the occlusion fix instead. One process, four cases: covers both
+    /// fail-closed paths (no ClientToScreen result, no window found at the cursor) and both PID-match
+    /// outcomes (occluded by another window vs. genuinely on top).
+    /// </summary>
+    [StaFact]
+    public async Task ComputeCursorOverOwnWindow_DecisionTable()
+    {
+        GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
+
+        using var game = await LiveGameProcess.StartAsync(
+            "Samples/EditorTest1",
+            csprojRelativeToProjectRoot: "EditorTest1/EditorTest1.csproj",
+            exeRelativeToProjectRoot: "EditorTest1/bin/Debug/net9.0/EditorTest1.exe");
+
+        var clientToScreenFailed = await game.Send<TestComputeCursorOverOwnWindowResponse>(
+            new TestComputeCursorOverOwnWindowDto
+            {
+                ClientToScreenSucceeded = false,
+                TopmostWindowFound = true,
+                TopmostWindowOwnerPid = 123,
+                ThisProcessId = 123,
+            });
+        clientToScreenFailed.Succeeded.ShouldBeTrue(clientToScreenFailed.Message);
+        clientToScreenFailed.Data.Result.ShouldBeFalse(
+            "a failed ClientToScreen call must fail closed even if the (unusable) window/PID inputs would otherwise match");
+
+        var noWindowFound = await game.Send<TestComputeCursorOverOwnWindowResponse>(
+            new TestComputeCursorOverOwnWindowDto
+            {
+                ClientToScreenSucceeded = true,
+                TopmostWindowFound = false,
+                TopmostWindowOwnerPid = 123,
+                ThisProcessId = 123,
+            });
+        noWindowFound.Succeeded.ShouldBeTrue(noWindowFound.Message);
+        noWindowFound.Data.Result.ShouldBeFalse(
+            "no window found at the cursor position (e.g. the desktop background) must fail closed");
+
+        var occludedByAnotherProcess = await game.Send<TestComputeCursorOverOwnWindowResponse>(
+            new TestComputeCursorOverOwnWindowDto
+            {
+                ClientToScreenSucceeded = true,
+                TopmostWindowFound = true,
+                TopmostWindowOwnerPid = 456,
+                ThisProcessId = 123,
+            });
+        occludedByAnotherProcess.Succeeded.ShouldBeTrue(occludedByAnotherProcess.Message);
+        occludedByAnotherProcess.Data.Result.ShouldBeFalse(
+            "a real window belonging to a different process is topmost at the cursor - this is the exact " +
+            "occlusion scenario from the #2205 follow-up report and must not be detected as our own window");
+
+        var genuinelyOnTop = await game.Send<TestComputeCursorOverOwnWindowResponse>(
+            new TestComputeCursorOverOwnWindowDto
+            {
+                ClientToScreenSucceeded = true,
+                TopmostWindowFound = true,
+                TopmostWindowOwnerPid = 123,
+                ThisProcessId = 123,
+            });
+        genuinelyOnTop.Succeeded.ShouldBeTrue(genuinelyOnTop.Message);
+        genuinelyOnTop.Data.Result.ShouldBeTrue(
+            "the topmost window at the cursor belongs to our own process - nothing is occluding us");
+    }
+
     static async Task AddTestObjectToGameScreen()
     {
         var gameScreen = ObjectFinder.Self.GetScreenSave("GameScreen");
