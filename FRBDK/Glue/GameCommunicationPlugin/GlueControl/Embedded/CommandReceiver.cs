@@ -1689,26 +1689,11 @@ namespace GlueControl
 
         #endregion
 
-        #region SetEmbeddedFocusTestOverrideDto
+        #region SetEmbeddedInputAllowedDto
 
-        private static void HandleDto(SetEmbeddedFocusTestOverrideDto dto)
+        private static void HandleDto(SetEmbeddedInputAllowedDto dto)
         {
-            EmbeddedWindowLogic.TestOverride = dto.ClearOverride
-                ? ((bool, bool, bool, bool)?)null
-                : (dto.GlueProcessExists, dto.ForegroundMatchesGlueMainWindow, dto.ForegroundOwnedByThisGame,
-                    dto.CursorOverOwnWindow);
-        }
-
-        #endregion
-
-        #region TestComputeCursorOverOwnWindowDto
-
-        private static TestComputeCursorOverOwnWindowResponse HandleDto(TestComputeCursorOverOwnWindowDto dto)
-        {
-            var topmostWindowAtCursor = dto.TopmostWindowFound ? new IntPtr(1) : IntPtr.Zero;
-            var result = EmbeddedWindowLogic.ComputeCursorOverOwnWindow(
-                dto.ClientToScreenSucceeded, topmostWindowAtCursor, dto.TopmostWindowOwnerPid, dto.ThisProcessId);
-            return new TestComputeCursorOverOwnWindowResponse { Result = result };
+            EmbeddedWindowLogic.IsInputAllowedFromGlue = dto.IsAllowed;
         }
 
         #endregion

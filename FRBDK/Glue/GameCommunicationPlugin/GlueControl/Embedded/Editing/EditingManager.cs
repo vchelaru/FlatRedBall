@@ -1562,307 +1562,56 @@ namespace GlueControl.Editing
     }
 
 
+    /// <summary>
+    /// Decides whether the embedded game should act on mouse input.
+    ///
+    /// Deliberately contains NO Win32 calls, and this is load-bearing. Everything under
+    /// GlueControl/Embedded is &lt;Compile Remove&gt;d from GameCommunicationPlugin.csproj and compiles
+    /// inside the USER'S game project instead, whose DefineConstants are MONOGAME;DESKTOP_GL;MONOGAME_381
+    /// - never WINDOWS. The `#if WINDOWS` P/Invoke block this class used to carry was therefore dead in
+    /// every real project and in the LiveGameProcess harness: GetForegroundWindow() always returned
+    /// IntPtr.Zero, ClientToScreen() always returned false, GetCursorPos() always returned false. That is
+    /// what actually broke issues #2183, #2205 and #2214 in turn, and why each one was diagnosed as "the
+    /// OS focus APIs are unreliable on that machine" - the APIs were never being called at all.
+    /// EmbeddedCodePlatformDefineTests now fails the build if a `#if WINDOWS` comes back here.
+    ///
+    /// "Is the user interacting with the embedded panel, and is anything covering it?" is answered in
+    /// Glue's own process - a genuinely Windows-only WPF/WinForms assembly where those APIs really do
+    /// work - by EmbeddedInputAllowedLogic, and pushed here as SetEmbeddedInputAllowedDto.
+    /// </summary>
     internal class EmbeddedWindowLogic
     {
-
-        static DateTime lastUpdate;
-
         public static bool IsEmbedded { get; set; }
 
-        static System.Diagnostics.Process glueProcess;
         public static bool IsGlueShowingModalWindow { get; set; }
 
         /// <summary>
-        /// Test-only: when set, IsParentGlueFocused uses these values instead of calling
-        /// GetForegroundWindow()/GetWindowThreadProcessId() and inspecting a real "GlueFormsCore"
-        /// process. There's no way to spin up a real Glue process (or fake OS focus/window ownership)
-        /// from the LiveGameProcess test harness, so this is how issue #2183's fix
-        /// (foregroundOwnedByThisGame) gets pinned by a deterministic test. Set via
-        /// SetEmbeddedFocusTestOverrideDto.
+        /// Pushed from Glue (SetEmbeddedInputAllowedDto) whenever it changes: true while the embedded
+        /// game window is the topmost window under the cursor AND Glue's application is the active one.
+        ///
+        /// This is the SLOW-changing half of the gate - it only moves when the user alt-tabs, or drags
+        /// another window over the panel. The fast-changing half (where the cursor is right now) stays
+        /// in the game as FlatRedBall.Input.Mouse.IsInGameWindow(), which is per-frame accurate and
+        /// needs no OS call, so a slightly stale push can never make a click land at wrong coordinates.
+        ///
+        /// Starts false so a game that never hears from Glue fails closed (issue #2154's "when in doubt,
+        /// block"); Glue pushes the current value as part of embedding, so there is no gap in practice.
         /// </summary>
-        internal static (bool glueProcessExists, bool foregroundMatchesGlueMainWindow, bool foregroundOwnedByThisGame,
-            bool cursorOverOwnWindow)? TestOverride;
+        public static bool IsInputAllowedFromGlue { get; set; }
+
+        internal static bool ComputeIsFocused(bool isEmbedded, bool isModalWindowOpen, bool isInputAllowedFromGlue) =>
+            isEmbedded && isInputAllowedFromGlue && !isModalWindowOpen;
+
+        public static bool IsParentGlueFocused =>
+            ComputeIsFocused(IsEmbedded, IsGlueShowingModalWindow, IsInputAllowedFromGlue);
 
         /// <summary>
-        /// Pure decision logic, split out of IsParentGlueFocused so it can be exercised with synthetic
-        /// inputs (see TestOverride) instead of only through real OS focus/process state.
+        /// Every input to IsParentGlueFocused plus the result, for EmbeddedDiagnosticsLogger (issue
+        /// #2196) so a gate misfire can be read back from a log instead of only reproduced locally.
         /// </summary>
-        internal static bool ComputeIsFocused(bool isEmbedded, bool isModalWindowOpen, bool glueProcessExists,
-            bool foregroundMatchesGlueMainWindow, bool foregroundOwnedByThisGame, bool cursorOverOwnWindow)
-        {
-            if (!glueProcessExists)
-            {
-                return false;
-            }
-
-            return isEmbedded
-                && (foregroundMatchesGlueMainWindow || foregroundOwnedByThisGame || cursorOverOwnWindow)
-                && !isModalWindowOpen;
-        }
-
-        public static bool IsParentGlueFocused
-        {
-            get
-            {
-                var raw = GetRawFocusInputs();
-                return ComputeIsFocused(IsEmbedded, IsGlueShowingModalWindow,
-                    raw.glueProcessExists, raw.foregroundMatchesGlueMainWindow, raw.foregroundOwnedByThisGame,
-                    raw.cursorOverOwnWindow);
-            }
-        }
-
-        /// <summary>
-        /// The raw, real OS/process inputs behind IsParentGlueFocused, split out so EmbeddedDiagnosticsLogger
-        /// (issue #2196) can report them without duplicating this logic. Respects TestOverride the same way
-        /// IsParentGlueFocused itself does.
-        /// </summary>
-        internal static (bool glueProcessExists, bool foregroundMatchesGlueMainWindow, bool foregroundOwnedByThisGame,
-            bool cursorOverOwnWindow) GetRawFocusInputs()
-        {
-            if (TestOverride is { } testOverride)
-            {
-                return testOverride;
-            }
-
-            if (DateTime.Now - lastUpdate > TimeSpan.FromSeconds(5))
-            {
-                lastUpdate = DateTime.Now;
-                RefreshGlueProcess();
-            }
-
-            var glueProcessExists = glueProcess != null;
-            var fg = GetForegroundWindow();
-            var foregroundMatchesGlueMainWindow = glueProcessExists && glueProcess.MainWindowHandle == fg;
-
-            // The embedded game window is reparented into Glue via a raw SetParent (no WS_CHILD style
-            // fixup), so Windows still lets it take OS foreground/activation on its own when clicked -
-            // GetForegroundWindow() then returns the game's own window, not Glue's. When embedded,
-            // that IS Glue's UI from the user's perspective, so treat it as focused too (issue #2183 -
-            // this was masked for years by the old `|| Game.IsActive` fallback that #2154's fix
-            // removed).
-            var foregroundOwnedByThisGame = false;
-            if (glueProcessExists && !foregroundMatchesGlueMainWindow)
-            {
-                GetWindowThreadProcessId(fg, out var fgOwnerPid);
-                foregroundOwnedByThisGame = fgOwnerPid == (uint)System.Diagnostics.Process.GetCurrentProcess().Id;
-            }
-
-            // Observed on a real user machine (issue #2203/#2205 investigation, 2026-08-24/25): every
-            // single click on the embedded panel had GetForegroundWindow() return IntPtr.Zero - not Glue's
-            // window, not the game's own window, no window at all - so neither check above ever passed and
-            // clicks were silently dropped. A follow-up attempt using WindowFromPoint at the raw cursor
-            // position failed too - GetCursorPos() itself returned false with Win32 error 87
-            // (ERROR_INVALID_PARAMETER) on that machine, so the OS focus/cursor APIs are evidently
-            // unreliable here in more than one way, not just GetForegroundWindow(). The fix that shipped
-            // used FlatRedBall.Input.Mouse.IsInGameWindow() instead - a pure bounds check against the
-            // client-relative position MonoGame's own input pipeline already tracks (not these Win32
-            // calls), valid "even if the game window does not have focus."
-            //
-            // Follow-up (#2205 continued): a bounds check alone can't detect occlusion. If another real
-            // window is drawn on top of the embedded game at the cursor's position (dragged over it, or
-            // any overlapping window), IsInGameWindow() still says "inside my bounds" - it has no Z-order
-            // awareness - so the game kept reporting clicks/hovers meant for the window on top of it.
-            // Fixed by adding a topmost check: convert the already-reliable client-relative mouse position
-            // to screen coordinates via ClientToScreen on our OWN window handle (not GetCursorPos, which
-            // is the API that failed above), then WindowFromPoint at that screen position to find out who
-            // is ACTUALLY topmost there. Deliberately fails CLOSED (cursorOverOwnWindow stays false) if
-            // ClientToScreen fails or WindowFromPoint resolves to nothing/another process - same "when in
-            // doubt, block" philosophy as #2154. Only probed as a last resort (like foregroundOwnedByThisGame
-            // above), not as a blanket "foreground is unknown -> assume focused" - that was tried first and
-            // a regression test (ClickWhileEmbeddedAndForegroundOwnedByUnrelatedWindow_IsIgnored) caught
-            // that it could also mask a genuine focus loss to an unrelated window (re-opening #2154).
-            // Not gated on glueProcessExists here (unlike the two checks above) - ComputeIsFocused already
-            // requires it independently for the final gate result, so gating it here too would only be a
-            // micro-optimization (skip the Win32 calls when Glue clearly isn't running at all).
-            var cursorOverOwnWindow = false;
-            if (!foregroundMatchesGlueMainWindow && !foregroundOwnedByThisGame)
-            {
-                var diagnostics = ComputeCursorOverOwnWindowDiagnostics();
-                cursorOverOwnWindow = diagnostics.mouseInGameWindow && ComputeCursorOverOwnWindow(
-                    diagnostics.clientToScreenSucceeded, diagnostics.topmostWindowAtCursor,
-                    diagnostics.topmostWindowOwnerPid, diagnostics.thisProcessId);
-            }
-
-            return (glueProcessExists, foregroundMatchesGlueMainWindow, foregroundOwnedByThisGame, cursorOverOwnWindow);
-        }
-
-        /// <summary>
-        /// Runs the raw Win32 half of the occlusion check (issue #2205 follow-up: client-relative mouse
-        /// position -> screen coordinates -> topmost window there), separated from ComputeCursorOverOwnWindow's
-        /// pure decision logic below so each half stays simple. Only reaches the actual Win32 calls when
-        /// FlatRedBall.Input.Mouse.IsInGameWindow() is true.
-        /// </summary>
-        internal static (bool mouseInGameWindow, int mouseX, int mouseY, bool clientToScreenSucceeded,
-            IntPtr topmostWindowAtCursor, uint topmostWindowOwnerPid, uint thisProcessId) ComputeCursorOverOwnWindowDiagnostics()
-        {
-            var mouseInGameWindow = FlatRedBall.Input.InputManager.Mouse.IsInGameWindow();
-            var mouseX = FlatRedBall.Input.InputManager.Mouse.X;
-            var mouseY = FlatRedBall.Input.InputManager.Mouse.Y;
-            var thisProcessId = (uint)System.Diagnostics.Process.GetCurrentProcess().Id;
-
-            var clientToScreenSucceeded = false;
-            var topmostWindowAtCursor = IntPtr.Zero;
-            uint topmostWindowOwnerPid = 0;
-
-            if (mouseInGameWindow)
-            {
-                var gameWindowHandle = FlatRedBallServices.Game.Window.Handle;
-                var clientPoint = new Win32Point { X = mouseX, Y = mouseY };
-                clientToScreenSucceeded = ClientToScreen(gameWindowHandle, ref clientPoint);
-                topmostWindowAtCursor = clientToScreenSucceeded ? WindowFromPoint(clientPoint) : IntPtr.Zero;
-                if (topmostWindowAtCursor != IntPtr.Zero)
-                {
-                    GetWindowThreadProcessId(topmostWindowAtCursor, out topmostWindowOwnerPid);
-                }
-            }
-
-            return (mouseInGameWindow, mouseX, mouseY, clientToScreenSucceeded, topmostWindowAtCursor,
-                topmostWindowOwnerPid, thisProcessId);
-        }
-
-        /// <summary>
-        /// Pure decision logic behind the occlusion check in GetRawFocusInputs, split out of the raw Win32
-        /// orchestration above (ComputeCursorOverOwnWindowDiagnostics) the same way ComputeIsFocused is
-        /// split from GetRawFocusInputs. Only called after the cursor is already confirmed within our own
-        /// window's bounds (FlatRedBall.Input.Mouse.IsInGameWindow()); this is specifically the
-        /// topmost/occlusion half. Fails closed (false) whenever the outcome can't be positively confirmed,
-        /// matching #2154's "when in doubt, block" philosophy - a missing/ambiguous signal must never be
-        /// read as "we're on top."
-        /// </summary>
-        internal static bool ComputeCursorOverOwnWindow(bool clientToScreenSucceeded, IntPtr topmostWindowAtCursor,
-            uint topmostWindowOwnerPid, uint thisProcessId)
-        {
-            if (!clientToScreenSucceeded || topmostWindowAtCursor == IntPtr.Zero)
-            {
-                return false;
-            }
-
-            return topmostWindowOwnerPid == thisProcessId;
-        }
-
-        /// <summary>
-        /// Diagnostics-only (issue #2196): every input to IsParentGlueFocused plus the result, formatted for
-        /// EmbeddedDiagnosticsLogger so a per-machine gate misfire like #2183 can be read back from a log
-        /// instead of only reproduced locally.
-        /// </summary>
-        internal static string DescribeFocusState()
-        {
-            var raw = GetRawFocusInputs();
-            var isFocused = ComputeIsFocused(IsEmbedded, IsGlueShowingModalWindow,
-                raw.glueProcessExists, raw.foregroundMatchesGlueMainWindow, raw.foregroundOwnedByThisGame,
-                raw.cursorOverOwnWindow);
-
-            return $"isEmbedded={IsEmbedded} glueProcessExists={raw.glueProcessExists} " +
-                $"foregroundMatchesGlueMainWindow={raw.foregroundMatchesGlueMainWindow} " +
-                $"foregroundOwnedByThisGame={raw.foregroundOwnedByThisGame} " +
-                $"cursorOverOwnWindow={raw.cursorOverOwnWindow} " +
-                $"isModalWindowOpen={IsGlueShowingModalWindow} isParentGlueFocused={isFocused} " +
-                DescribeRawWindowIdentity();
-        }
-
-        /// <summary>
-        /// Temporary, extra-verbose diagnostics (not part of ComputeIsFocused's inputs) for the #2196 log:
-        /// when both foregroundMatchesGlueMainWindow and foregroundOwnedByThisGame come back false, this
-        /// says WHOSE window actually has OS foreground instead of leaving that a mystery.
-        /// </summary>
-        static string DescribeRawWindowIdentity()
-        {
-            if (TestOverride != null)
-            {
-                return "";
-            }
-
-            try
-            {
-                var fg = GetForegroundWindow();
-                GetWindowThreadProcessId(fg, out var fgOwnerPid);
-
-                string fgProcessName = "<unknown>";
-                try
-                {
-                    fgProcessName = System.Diagnostics.Process.GetProcessById((int)fgOwnerPid).ProcessName;
-                }
-                catch { /* process may have exited between the two calls, or be inaccessible */ }
-
-                var glueMainWindowHandle = glueProcess?.MainWindowHandle ?? IntPtr.Zero;
-
-                var cursorPosResult = GetCursorPos(out var cursorPos);
-                var getCursorPosError = cursorPosResult ? 0 : System.Runtime.InteropServices.Marshal.GetLastWin32Error();
-                var windowUnderCursor = cursorPosResult ? WindowFromPoint(cursorPos) : IntPtr.Zero;
-                uint cursorWindowOwnerPid = 0;
-                string cursorWindowProcessName = "<none>";
-                if (windowUnderCursor != IntPtr.Zero)
-                {
-                    GetWindowThreadProcessId(windowUnderCursor, out cursorWindowOwnerPid);
-                    try
-                    {
-                        cursorWindowProcessName = System.Diagnostics.Process.GetProcessById((int)cursorWindowOwnerPid).ProcessName;
-                    }
-                    catch { /* process may have exited between the two calls, or be inaccessible */ }
-                }
-
-                return $"fgHwnd={fg} fgOwnerPid={fgOwnerPid} fgProcessName={fgProcessName} " +
-                    $"glueProcessId={glueProcess?.Id} glueMainWindowHandle={glueMainWindowHandle} " +
-                    $"thisProcessId={System.Diagnostics.Process.GetCurrentProcess().Id} " +
-                    $"getCursorPosSucceeded={cursorPosResult} getCursorPosError={getCursorPosError} " +
-                    $"cursorPos=({cursorPos.X},{cursorPos.Y}) " +
-                    $"windowUnderCursor={windowUnderCursor} windowUnderCursorOwnerPid={cursorWindowOwnerPid} " +
-                    $"windowUnderCursorProcessName={cursorWindowProcessName}";
-            }
-            catch (Exception ex)
-            {
-                return $"<DescribeRawWindowIdentity threw: {ex.Message}>";
-            }
-        }
-
-#if WINDOWS
-
-
-        [System.Runtime.InteropServices.DllImport("user32.dll")]
-        static extern IntPtr GetForegroundWindow();
-
-        [System.Runtime.InteropServices.DllImport("user32.dll")]
-        static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
-
-        [System.Runtime.InteropServices.DllImport("user32.dll", SetLastError = true)]
-        static extern bool GetCursorPos(out Win32Point point);
-
-        [System.Runtime.InteropServices.DllImport("user32.dll")]
-        static extern IntPtr WindowFromPoint(Win32Point point);
-
-        [System.Runtime.InteropServices.DllImport("user32.dll", SetLastError = true)]
-        static extern bool ClientToScreen(IntPtr hWnd, ref Win32Point point);
-
-#else
-        static IntPtr GetForegroundWindow() => IntPtr.Zero;
-        static uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId) { processId = 0; return 0; }
-        static bool GetCursorPos(out Win32Point point) { point = default; return false; }
-        static IntPtr WindowFromPoint(Win32Point point) => IntPtr.Zero;
-        static bool ClientToScreen(IntPtr hWnd, ref Win32Point point) => false;
-
-#endif
-
-        [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
-        struct Win32Point
-        {
-            public int X;
-            public int Y;
-        }
-        private static void RefreshGlueProcess()
-        {
-            glueProcess = null;
-
-            var processes = System.Diagnostics.Process.GetProcesses();
-            // see if the foreground window is Glue:
-            foreach (var process in processes)
-            {
-                if (process.ProcessName == "GlueFormsCore")
-                {
-                    glueProcess = process;
-                    break;
-                }
-            }
-        }
+        internal static string DescribeFocusState() =>
+            $"isEmbedded={IsEmbedded} isInputAllowedFromGlue={IsInputAllowedFromGlue} " +
+            $"isModalWindowOpen={IsGlueShowingModalWindow} isParentGlueFocused={IsParentGlueFocused}";
     }
 
     /// <summary>

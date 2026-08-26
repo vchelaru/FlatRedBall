@@ -100,6 +100,8 @@ namespace GameCommunicationPlugin.GlueControl
 
         ModalReportingService _modalReportingService;
 
+        EmbeddedInputAllowedService _embeddedInputAllowedService;
+
         #endregion
 
         #region Startup
@@ -119,6 +121,13 @@ namespace GameCommunicationPlugin.GlueControl
             _modalReportingService = new ModalReportingService(
                 (System.ComponentModel.ISynchronizeInvoke)MainGlueWindow.Self, GlueCommands.Self.DialogCommands, CommandSender.Self);
             _modalReportingService.Initialize();
+
+            // The lambda defers reading gameHostView until the first timer tick, so this doesn't depend
+            // on CreateBuildControl having run yet.
+            _embeddedInputAllowedService = new EmbeddedInputAllowedService(
+                (System.ComponentModel.ISynchronizeInvoke)MainGlueWindow.Self, CommandSender.Self,
+                () => gameHostView?.EmbeddedGameWindowHandle ?? IntPtr.Zero);
+            _embeddedInputAllowedService.Initialize();
 
             CreateBuildControl();
 

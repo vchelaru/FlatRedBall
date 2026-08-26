@@ -636,45 +636,23 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
     }
     #endregion
 
-    #region SetEmbeddedFocusTestOverrideDto
+    #region SetEmbeddedInputAllowedDto
 
     /// <summary>
-    /// Test-only (issue #2183): forces GlueControl.Editing.EmbeddedWindowLogic.IsParentGlueFocused
-    /// (Embedded) to a synthetic result instead of inspecting real OS focus/process state, which the
-    /// LiveGameProcess harness can't fake (no real "GlueFormsCore" process, no way to move real OS
-    /// foreground). Send with ClearOverride=true to go back to the real (production) check.
+    /// Pushed from Glue to the embedded game whenever the answer changes: may the game act on mouse
+    /// input right now? True while the embedded game window is the topmost window under the cursor and
+    /// Glue's application is the active one.
+    ///
+    /// Glue owns this decision because Glue is a real Windows-only WPF/WinForms process where
+    /// GetForegroundWindow/GetCursorPos/WindowFromPoint actually work. The same calls inside the game
+    /// were compile-time stubs for years - GlueControl/Embedded compiles into the user's game project,
+    /// which never defines WINDOWS - which is what made issues #2183, #2205 and #2214 look like
+    /// per-machine OS flakiness. See EmbeddedInputAllowedLogic (Glue side) and EmbeddedWindowLogic
+    /// (game side).
     /// </summary>
-    public class SetEmbeddedFocusTestOverrideDto
+    public class SetEmbeddedInputAllowedDto
     {
-        public bool ClearOverride { get; set; }
-        public bool GlueProcessExists { get; set; }
-        public bool ForegroundMatchesGlueMainWindow { get; set; }
-        public bool ForegroundOwnedByThisGame { get; set; }
-        public bool CursorOverOwnWindow { get; set; }
-    }
-    #endregion
-
-    #region TestComputeCursorOverOwnWindowDto
-
-    /// <summary>
-    /// Test-only (issue #2205): drives GlueControl.Editing.EmbeddedWindowLogic.ComputeCursorOverOwnWindow
-    /// (Embedded) with synthetic Win32-call outcomes instead of a real ClientToScreen/WindowFromPoint
-    /// round trip against a real overlapping window - moving the real OS cursor precisely enough for that
-    /// turned out to be unreliable on multi-monitor setups (see issue #2205 discussion), so this pins the
-    /// decision logic (fails closed on ClientToScreen failure, fails closed on no window found, true/false
-    /// on owner PID match) directly instead.
-    /// </summary>
-    public class TestComputeCursorOverOwnWindowDto
-    {
-        public bool ClientToScreenSucceeded { get; set; }
-        public bool TopmostWindowFound { get; set; }
-        public uint TopmostWindowOwnerPid { get; set; }
-        public uint ThisProcessId { get; set; }
-    }
-
-    public class TestComputeCursorOverOwnWindowResponse
-    {
-        public bool Result { get; set; }
+        public bool IsAllowed { get; set; }
     }
     #endregion
 
