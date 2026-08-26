@@ -1021,8 +1021,15 @@ namespace FlatRedBall.Content
 				}
 				else
 				{
-					throw new ArgumentException("The content manager " + mName + " does not contain the argument " +
-						"assetToUnload, or the file has been loaded from XNB and cannot be unloaded without disposing the content manager.  " +
+					string assetIdentifier = typeof(T).Name;
+					if (assetToUnload is Microsoft.Xna.Framework.Graphics.GraphicsResource graphicsResource &&
+						!string.IsNullOrEmpty(graphicsResource.Name))
+					{
+						assetIdentifier += " \"" + graphicsResource.Name + "\"";
+					}
+
+					throw new ArgumentException("The content manager " + mName + " does not contain the " +
+						assetIdentifier + " passed as assetToUnload, or the file has been loaded from XNB and cannot be unloaded without disposing the content manager.  " +
 						"Check the " +
 						"contentManagerName and verify that it is a contentManager that has loaded this asset.");
 				}

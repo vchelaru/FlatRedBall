@@ -1041,10 +1041,17 @@ namespace FlatRedBall.Glue.CodeGeneration
                     var newlyLoadedVariable = $"newlyLoaded{instanceName}";
 
                     codeBlock.Line($"var cm = FlatRedBall.FlatRedBallServices.GetContentManagerByName(\"Global\");");
-                    codeBlock.Line($"cm.UnloadAsset({instanceName});");
+                    // A shared-static file is often reloaded through more than one static field pointing at
+                    // the same underlying disposable (one per Entity that declares it shared-static, plus
+                    // GlobalContent's own field) - whichever reload runs first already unloads/disposes it,
+                    // so every later one finds it no longer tracked and UnloadAsset throws ArgumentException.
+                    // Guard with IsAssetLoadedByReference instead of assuming this is the only holder.
+                    codeBlock.If($"cm.IsAssetLoadedByReference({instanceName})")
+                        .Line($"cm.UnloadAsset({instanceName});");
                     codeBlock.Line($"var {newlyLoadedVariable} = FlatRedBall.FlatRedBallServices.Load<FlatRedBall.Graphics.Animation.AnimationChainList>(\"{fileToLoad}\");");
                     codeBlock.Line($"{instanceName}.ReplaceValues({newlyLoadedVariable});");
-                    codeBlock.Line($"cm.UnloadAsset({newlyLoadedVariable});");
+                    codeBlock.If($"cm.IsAssetLoadedByReference({newlyLoadedVariable})")
+                        .Line($"cm.UnloadAsset({newlyLoadedVariable});");
                     codeBlock.Line($"cm.AddDisposable(\"{fileToLoad}\", {instanceName});");
                 }
                 else if (ati?.CustomReloadFunc != null)
@@ -1151,7 +1158,12 @@ namespace FlatRedBall.Glue.CodeGeneration
                             var innerBlock = codeBlock.Block();
 
                             innerBlock.Line("var cm = FlatRedBall.FlatRedBallServices.GetContentManagerByName(\"Global\");");
-                            innerBlock.Line($"cm.UnloadAsset({referencedFile.GetInstanceName()});");
+                            // See the matching guard/comment in GetReload's AnimationChainList branch above -
+                            // a shared-static file can be reloaded through more than one static field pointing
+                            // at the same underlying disposable, and whichever reload runs first already
+                            // unloads it, leaving every later one's UnloadAsset call throwing ArgumentException.
+                            innerBlock.If($"cm.IsAssetLoadedByReference({referencedFile.GetInstanceName()})")
+                                .Line($"cm.UnloadAsset({referencedFile.GetInstanceName()});");
 
                             string code =
                                 $"{referencedFile.GetInstanceName()} = " +
