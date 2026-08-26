@@ -89,6 +89,12 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AboutPlugin
             set => Set(value);
         }
 
+        public Version LatestDailyBuildVersion
+        {
+            get => Get<Version>();
+            set => Set(value);
+        }
+
         [DependsOn(nameof(LatestDailyBuildOnline))]
         public string LatestDailyBuildText => LatestDailyBuildOnline?.ToString("yyyy.M.d HH:mm") ?? "--";
 
@@ -103,7 +109,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AboutPlugin
             set => Set(value);
         }
 
-        [DependsOn(nameof(LatestDailyBuildOnline))]
+        [DependsOn(nameof(LatestDailyBuildVersion))]
         [DependsOn(nameof(Version))]
         [DependsOn(nameof(IsDownloadingDailyBuild))]
         public Visibility DailyBuildDownloadButtonVisibility
@@ -114,7 +120,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AboutPlugin
                 {
                     return Visibility.Collapsed;
                 }
-                else if (LatestDailyBuildOnline is { } latest && Version.TryParse(latest.ToString("yyyy.M.d"), out var latestDailyVersion))
+                else if (LatestDailyBuildVersion is { } latestDailyVersion)
                 {
                     return latestDailyVersion > Version ? Visibility.Visible : Visibility.Collapsed;
                 }
@@ -476,6 +482,22 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AboutPlugin
             }
         }
 
+        internal void OpenDailyBuildUpdateLog()
+        {
+            var logPath = DailyBuildUpdateDiagnostics.GetLogPath();
+            var target = DailyBuildUpdateDiagnostics.GetLogOpenTarget(logPath, File.Exists);
+
+            if (target != logPath)
+            {
+                Directory.CreateDirectory(target);
+            }
+
+            Process.Start(new ProcessStartInfo(target)
+            {
+                UseShellExecute = true
+            });
+        }
+
         private static async System.Threading.Tasks.Task<bool> DownloadWithProgress(
             string location,
             string destination,
@@ -615,9 +637,10 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AboutPlugin
                     response.Content.Headers.TryGetValues("Last-Modified", out values))
                 {
                     var lastModified = values.FirstOrDefault();
-                    if (DateTime.TryParse(lastModified, out var dateTime))
+                    if (DateTimeOffset.TryParse(lastModified, out var dateTime))
                     {
-                        LatestDailyBuildOnline = dateTime.ToLocalTime();
+                        LatestDailyBuildOnline = dateTime.LocalDateTime;
+                        LatestDailyBuildVersion = DailyBuildVersionLogic.GetLatestVersion(dateTime);
                     }
                 }
             }

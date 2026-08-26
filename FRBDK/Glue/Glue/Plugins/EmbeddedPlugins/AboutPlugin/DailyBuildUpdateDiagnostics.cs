@@ -15,6 +15,14 @@ internal static class DailyBuildUpdateDiagnostics
             "GlueDailyBuildUpdate.log");
     }
 
+    internal static string GetLogOpenTarget(string logPath, Func<string, bool> fileExists)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(logPath);
+        ArgumentNullException.ThrowIfNull(fileExists);
+
+        return fileExists(logPath) ? logPath : Path.GetDirectoryName(logPath)!;
+    }
+
     internal static void Append(string logPath, string message)
     {
         var directory = Path.GetDirectoryName(logPath);

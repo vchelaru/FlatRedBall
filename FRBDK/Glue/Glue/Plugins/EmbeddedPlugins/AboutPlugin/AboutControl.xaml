@@ -44,6 +44,7 @@
             <StackPanel Orientation="Vertical" Grid.Row="2" Grid.Column="1">
                 <Label Content="{Binding LatestDailyBuildText}"></Label>
                 <Button Visibility="{Binding DailyBuildDownloadButtonVisibility}" Click="InstallDailyBuild_Click" Content="Install Daily Build" />
+                <Button Click="OpenDailyBuildUpdateLog_Click" Content="Open Daily Build Update Log" />
                 <Label Content="{Binding DailyBuildDownloadStatusText}"></Label>
             </StackPanel>
 
