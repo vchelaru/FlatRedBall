@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -329,7 +330,11 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AboutPlugin
                 var location = "https://files.flatredball.com/content/FrbXnaTemplates/DailyBuild/FRBDK.zip";
                 var destination = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "FRBDK.zip");
 
-                var succeeded = await DownloadWithProgress(location, destination, status => DownloadStatusText = status);
+                var succeeded = await DownloadWithProgress(
+                    location,
+                    destination,
+                    status => DownloadStatusText = status,
+                    _ => { });
 
                 IsDownloading = false;
 
@@ -373,13 +378,37 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AboutPlugin
             var result = DialogService.ShowConfirm("This will download the latest daily build and install it. This will overwrite the current install. Daily builds are unstable and not officially supported - are you sure you want to do this?");
             if (result == DialogButton.Yes)
             {
+                var logPath = DailyBuildUpdateDiagnostics.GetLogPath();
+                Action<string> trace = message => DailyBuildUpdateDiagnostics.TryAppend(logPath, message);
+                trace($"Daily-build update confirmed. GluePid={Environment.ProcessId}");
+
                 IsDownloadingDailyBuild = true;
                 var location = "https://github.com/vchelaru/FlatRedBall/releases/download/glue-daily/GlueDailyBuild.zip";
                 var destination = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "GlueDailyBuild.zip");
 
-                var succeeded = await DownloadWithProgress(location, destination, status => DailyBuildDownloadStatusText = status);
+                bool succeeded;
+                try
+                {
+                    trace($"Starting download. Url={location} Destination={destination}");
+                    succeeded = await DownloadWithProgress(
+                        location,
+                        destination,
+                        status => DailyBuildDownloadStatusText = status,
+                        trace);
+                }
+                catch (Exception ex)
+                {
+                    trace($"Download threw an exception: {ex}");
+                    GlueCommands.Self.DialogCommands.ShowMessageBox(
+                        $"Glue could not download the daily build.\n\n{ex.Message}\n\nDiagnostics: {logPath}");
+                    return;
+                }
+                finally
+                {
+                    IsDownloadingDailyBuild = false;
+                }
 
-                IsDownloadingDailyBuild = false;
+                trace($"Download completed. Succeeded={succeeded}");
 
                 if (!succeeded)
                 {
@@ -391,32 +420,81 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AboutPlugin
                 var currentExeLocation = System.Reflection.Assembly.GetEntryAssembly().Location;
                 var directory = FlatRedBall.IO.FileManager.GetDirectory(currentExeLocation);
 
-                var command = @"timeout /T 3 /NOBREAK & ";
-                command += $"rd \"{directory}\" /S /Q & ";
-                command += $"powershell -Command \"Expand-Archive -Path '{destination}' -DestinationPath '{directory}'\" & ";
-                command += $"cd \"{directory}\" & ";
-                command += $"\"{directory}\\GlueFormsCore.exe\"";
-                var processStartInfo = new ProcessStartInfo("cmd.exe");
-                processStartInfo.Arguments = "/K " + command;
+                var stagedDirectory = directory.TrimEnd('\\', '/') + ".updating";
+                trace($"Preparing staging directory. Executable={currentExeLocation} InstallDirectory={directory} StagedDirectory={stagedDirectory}");
 
-                Process.Start(processStartInfo);
+                try
+                {
+                    await System.Threading.Tasks.Task.Run(() =>
+                    {
+                        if (Directory.Exists(stagedDirectory))
+                        {
+                            trace("Removing previous staged directory.");
+                            Directory.Delete(stagedDirectory, recursive: true);
+                        }
 
-                GlueCommands.Self.CloseGlue();
+                        trace("Extracting daily-build archive into staging directory.");
+                        ZipFile.ExtractToDirectory(destination, stagedDirectory, overwriteFiles: true);
+                        trace("Staging extraction completed.");
+                    });
+                }
+                catch (Exception ex)
+                {
+                    trace($"Staging failed: {ex}");
+                    GlueCommands.Self.DialogCommands.ShowMessageBox($"Could not prepare the daily-build update:\n{ex.Message}");
+                    return;
+                }
+
+                var applicationPath = Path.Combine(directory, "GlueFormsCore.exe");
+                var processStartInfo = DailyBuildUpdateLauncher.CreateStartInfo(
+                    Environment.ProcessId,
+                    directory,
+                    stagedDirectory,
+                    applicationPath);
+
+                trace($"Starting update helper. FileName={processStartInfo.FileName} WorkingDirectory={processStartInfo.WorkingDirectory} ArgumentCount={processStartInfo.ArgumentList.Count} CommandLength={processStartInfo.ArgumentList.Last().Length}");
+
+                try
+                {
+                    var helperProcess = Process.Start(processStartInfo);
+                    if (helperProcess is null)
+                    {
+                        throw new InvalidOperationException("Windows did not start the daily-build update helper.");
+                    }
+
+                    trace($"Update helper started. HelperPid={helperProcess.Id}");
+
+                    trace("Requesting Glue shutdown.");
+                    GlueCommands.Self.CloseGlue();
+                }
+                catch (Exception ex)
+                {
+                    trace($"Glue could not start the update helper: {ex}");
+                    GlueCommands.Self.DialogCommands.ShowMessageBox(
+                        $"Glue could not start the daily-build update helper. Glue will remain open.\n\n{ex.Message}\n\nDiagnostics: {logPath}");
+                }
             }
         }
 
-        private static async System.Threading.Tasks.Task<bool> DownloadWithProgress(string location, string destination, Action<string> reportStatus)
+        private static async System.Threading.Tasks.Task<bool> DownloadWithProgress(
+            string location,
+            string destination,
+            Action<string> reportStatus,
+            Action<string> trace)
         {
             using var client = new HttpClient();
             var response = await client.GetAsync(location, HttpCompletionOption.ResponseHeadersRead);
+            trace($"Download response received. StatusCode={(int)response.StatusCode} {response.StatusCode}");
 
             if (!response.IsSuccessStatusCode)
             {
                 Console.WriteLine("Error: " + response.StatusCode);
+                trace("Download response was unsuccessful.");
                 return false;
             }
 
             var contentLength = response.Content.Headers.ContentLength;
+            trace($"Download content length: {contentLength?.ToString() ?? "unknown"}");
 
             using (var stream = await response.Content.ReadAsStreamAsync())
             using (var outputStream = System.IO.File.OpenWrite(destination))
@@ -434,6 +512,8 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AboutPlugin
 
                     reportStatus($"{ToMem(totalBytesRead)} / {ToMem(contentLength)}\n{percentage:0.0}%");
                 }
+
+                trace($"Download stream completed. BytesWritten={totalBytesRead}");
             }
 
             return true;
