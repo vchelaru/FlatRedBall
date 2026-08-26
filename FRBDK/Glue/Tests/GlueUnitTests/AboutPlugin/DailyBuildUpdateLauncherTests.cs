@@ -141,24 +141,35 @@ public class DailyBuildUpdateLauncherTests
             stagedDirectory: @"C:\Glue Daily.updating",
             applicationPath: @"C:\Glue Daily\GlueFormsCore.exe").ArgumentList.Last();
 
-        var startInfo = new ProcessStartInfo("powershell.exe")
+        var temporaryDirectory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        var scriptPath = Path.Combine(temporaryDirectory, "DailyBuildUpdate.ps1");
+
+        try
         {
-            UseShellExecute = false,
-            RedirectStandardInput = true,
-            RedirectStandardError = true,
-            RedirectStandardOutput = true,
-        };
-        startInfo.ArgumentList.Add("-NoProfile");
-        startInfo.ArgumentList.Add("-NonInteractive");
-        startInfo.ArgumentList.Add("-Command");
-        startInfo.ArgumentList.Add("$ErrorActionPreference = 'Stop'; $script = [Console]::In.ReadToEnd(); [ScriptBlock]::Create($script) | Out-Null");
+            Directory.CreateDirectory(temporaryDirectory);
+            File.WriteAllText(scriptPath, script);
 
-        using var process = Process.Start(startInfo)!;
-        process.StandardInput.Write(script);
-        process.StandardInput.Close();
-        process.WaitForExit(10_000).ShouldBeTrue();
+            var startInfo = new ProcessStartInfo("powershell.exe")
+            {
+                UseShellExecute = false,
+                CreateNoWindow = true,
+            };
+            startInfo.ArgumentList.Add("-NoProfile");
+            startInfo.ArgumentList.Add("-NonInteractive");
+            startInfo.ArgumentList.Add("-Command");
+            startInfo.ArgumentList.Add(
+                $"$ErrorActionPreference = 'Stop'; [ScriptBlock]::Create([IO.File]::ReadAllText('{scriptPath.Replace("'", "''")}')) | Out-Null");
 
-        var output = process.StandardOutput.ReadToEnd() + process.StandardError.ReadToEnd();
-        process.ExitCode.ShouldBe(0, output);
+            using var process = Process.Start(startInfo)!;
+            process.WaitForExit(10_000).ShouldBeTrue();
+            process.ExitCode.ShouldBe(0);
+        }
+        finally
+        {
+            if (Directory.Exists(temporaryDirectory))
+            {
+                Directory.Delete(temporaryDirectory, recursive: true);
+            }
+        }
     }
 }
