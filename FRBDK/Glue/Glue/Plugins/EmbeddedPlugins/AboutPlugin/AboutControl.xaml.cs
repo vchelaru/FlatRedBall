@@ -25,6 +25,11 @@ namespace GlueFormsCore.Controls
             ViewModel.DoInstallDailyBuild();
         }
 
+        private void OpenDailyBuildUpdateLog_Click(object sender, RoutedEventArgs e)
+        {
+            ViewModel.OpenDailyBuildUpdateLog();
+        }
+
         private void FrbSourceButton_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.DoFrbSourceButtonClicked();

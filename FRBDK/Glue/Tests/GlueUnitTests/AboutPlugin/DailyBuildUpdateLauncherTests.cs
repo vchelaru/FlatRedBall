@@ -2,11 +2,54 @@ using GlueFormsCore.Plugins.EmbeddedPlugins.AboutPlugin;
 using Shouldly;
 using System.Diagnostics;
 using System.IO;
+using System.Windows;
 
 namespace GlueUnitTests.AboutPlugin;
 
 public class DailyBuildUpdateLauncherTests
 {
+    [Fact]
+    public void GetLatestVersion_ShouldUseTheUtcBuildDateRegardlessOfTheViewerTimezone()
+    {
+        var utcBuildTime = new DateTimeOffset(2026, 8, 26, 16, 0, 0, TimeSpan.Zero);
+        var result = DailyBuildVersionLogic.GetLatestVersion(utcBuildTime);
+
+        result.ShouldBe(new Version(2026, 8, 26));
+    }
+
+    [Fact]
+    public void DailyBuildDownloadButton_ShouldBeHiddenWhenTheUtcDailyBuildMatchesTheInstalledVersion()
+    {
+        var viewModel = new AboutViewModel
+        {
+            Version = new Version(2026, 8, 26),
+            LatestDailyBuildVersion = DailyBuildVersionLogic.GetLatestVersion(
+                new DateTimeOffset(2026, 8, 26, 16, 0, 0, TimeSpan.Zero))
+        };
+
+        viewModel.DailyBuildDownloadButtonVisibility.ShouldBe(Visibility.Collapsed);
+    }
+
+    [Fact]
+    public void GetLogOpenTarget_ShouldUseTheLogWhenItExists()
+    {
+        var logPath = Path.Combine(Path.GetTempPath(), "FlatRedBall", "GlueDailyBuildUpdate.log");
+
+        var target = DailyBuildUpdateDiagnostics.GetLogOpenTarget(logPath, _ => true);
+
+        target.ShouldBe(logPath);
+    }
+
+    [Fact]
+    public void GetLogOpenTarget_ShouldUseTheLogDirectoryWhenNoLogExists()
+    {
+        var logPath = Path.Combine(Path.GetTempPath(), "FlatRedBall", "GlueDailyBuildUpdate.log");
+
+        var target = DailyBuildUpdateDiagnostics.GetLogOpenTarget(logPath, _ => false);
+
+        target.ShouldBe(Path.GetDirectoryName(logPath));
+    }
+
     [Fact]
     public void DailyBuildUpdateDiagnostics_ShouldPersistAnEntry()
     {
