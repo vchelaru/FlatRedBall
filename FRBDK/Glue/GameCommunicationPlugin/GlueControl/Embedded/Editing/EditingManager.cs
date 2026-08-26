@@ -491,7 +491,12 @@ namespace GlueControl.Editing
                 }
                 else if(mouse.AnyButtonPushed())
                 {
-                    wasPushedInWindow = mouse.IsInGameWindow();
+                    // IsInGameWindow() alone is a client-bounds check with no Z-order awareness, so a
+                    // press that landed on a window sitting ON TOP of the embedded panel still counts as
+                    // "in the window" by bounds. IsGameOrGlueActive is what carries Glue's answer about
+                    // who is actually topmost there, so a gesture only counts as ours if both hold at
+                    // the moment of the press.
+                    wasPushedInWindow = mouse.IsInGameWindow() && IsGameOrGlueActive;
                 }
 
                 if (EmbeddedDiagnosticsLogger.IsEnabled)
@@ -575,12 +580,18 @@ namespace GlueControl.Editing
 
                 UpdateMarkers(didChangeItemOver);
 
-                // The measurement marker responds to right-drags, but unlike the left-button logic above
-                // it isn't inside the IsGameOrGlueActive block, and it doesn't check focus itself. Edit mode
-                // sets Cursor.RequiresGameWindowInFocus = false (the game window is reparented into Glue so it
-                // never gets normal focus), so without this check a right-drag anywhere on screen would draw
-                // the measurement overlay even with Glue behind another window.
-                if (IsGameOrGlueActive && (mouse.IsInGameWindow() || wasPushedInWindow))
+                // The measurement marker responds to right-drags and doesn't check focus itself: edit mode
+                // sets Cursor.RequiresGameWindowInFocus = false (the game window is reparented into Glue so
+                // it never gets normal focus), so Cursor.SecondaryDown stays true for the whole drag no
+                // matter what is on top. It therefore has to be gated here.
+                //
+                // Gate on where the gesture STARTED, not on where the cursor is each frame - the same
+                // push-time decision DoGrabLogic makes via ComputeShouldTreatAsPush. Re-testing per frame
+                // got this wrong in both directions: a right-drag begun on a window covering the panel
+                // started measuring the moment the drag crossed onto a visible part of the game, and a
+                // measure legitimately begun on the game stopped drawing as soon as the cursor left the
+                // window's bounds.
+                if (wasPushedInWindow)
                 {
                     UpdateMeasurementMarker();
                 }
