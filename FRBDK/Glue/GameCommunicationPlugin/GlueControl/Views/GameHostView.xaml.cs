@@ -243,6 +243,13 @@ namespace OfficialPlugins.GameHost.Views
             }
         }
 
+        /// <summary>
+        /// The embedded game's window handle while a game is actually embedded and running,
+        /// IntPtr.Zero otherwise. EmbeddedInputAllowedService polls this to decide whether the game
+        /// window is the topmost window under the cursor.
+        /// </summary>
+        public IntPtr EmbeddedGameWindowHandle => IsGameEmbeddedAndRunning ? gameHandle : IntPtr.Zero;
+
         private bool IsGameEmbeddedAndRunning =>
             ViewModel.IsRunning &&
             ViewModel.IsGenerateGlueControlManagerInGame1Checked &&
