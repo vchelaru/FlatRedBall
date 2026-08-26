@@ -1481,8 +1481,22 @@ namespace GlueControl
         }
 
 
-        private static async void HandleDto(Dtos.ForceReloadFileDto dto)
+        private static void HandleDto(Dtos.ForceReloadFileDto dto)
         {
+            // This method must never yield the calling thread (no async/await). It is only ever invoked
+            // already marshaled onto the primary thread (see GlueControlManager.ApplySetMessage), and the
+            // retry loop below disposes/reassigns live textures - if a retry ever resumed on a thread-pool
+            // thread instead (which an `await` here would risk, since a typical MonoGame app installs no
+            // SynchronizationContext), it would race the main thread's Draw() and could dispose a texture
+            // out from under a Sprite that's mid-render, surfacing as a confusing deep
+            // ObjectDisposedException in RenderBreak rather than here.
+            if (!FlatRedBallServices.IsThreadPrimary())
+            {
+                throw new System.InvalidOperationException(
+                    "HandleDto(ForceReloadFileDto) must run on the primary thread - it reloads and disposes " +
+                    "live textures, which races the renderer if done from another thread.");
+            }
+
             var gameType = FlatRedBallServices.Game.GetType();
             var gameAssembly = gameType.Assembly;
             var namespacePrefix = gameType.FullName.Split('.').First();
@@ -1528,7 +1542,9 @@ namespace GlueControl
                     {
                         numberOfFailures++;
 
-                        await Task.Delay(250);
+                        // Deliberately a blocking sleep, not `await Task.Delay` - see the note at the top of
+                        // this method about staying on the primary thread through every retry.
+                        System.Threading.Thread.Sleep(250);
                     }
                 }
             }
