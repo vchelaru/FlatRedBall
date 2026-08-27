@@ -484,6 +484,12 @@ namespace CompilerPlugin.Managers
             process.StartInfo.RedirectStandardOutput = true;
             process.StartInfo.CreateNoWindow = true;
 
+            // Scoped to this child process's environment block only - forces plain-text MSBuild
+            // output regardless of the invoking machine's SDK default. Without this, newer SDKs'
+            // live-progress terminal logger (cursor-hide/move escape sequences) gets captured as
+            // literal text by our redirected StandardOutput and dumped into the Build tab.
+            process.StartInfo.EnvironmentVariables["MSBUILDTERMINALLOGGER"] = "off";
+
             if (BuildSettingsUser?.UseMsBuildServer == true)
             {
                 // Scoped to this child process's environment block only - does not affect Glue's own
