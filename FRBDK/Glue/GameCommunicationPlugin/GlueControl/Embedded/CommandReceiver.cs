@@ -1513,7 +1513,15 @@ namespace GlueControl
                     // invoke the ReloadFile method:
                     var reloadMethod = elementType.GetMethod("Reload");
 
-                    var field = elementType.GetField(dto.StrippedFileName);
+                    // Shared-static ReferencedFileSave fields are protected static by default (Glue only
+                    // makes them public when HasPublicProperty is checked) - GetField(name) with no
+                    // BindingFlags only searches public members, so it silently returned null for the
+                    // common case, this reflection-based reload was skipped, and the entity's own static
+                    // field kept pointing at the disposed texture until the game restarted. NonPublic finds
+                    // protected/private fields; FlattenHierarchy finds one declared on a base entity class.
+                    var field = elementType.GetField(dto.StrippedFileName,
+                        System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic |
+                        System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.FlattenHierarchy);
 
                     var fileObjectReference = field?.GetValue(null);
 
