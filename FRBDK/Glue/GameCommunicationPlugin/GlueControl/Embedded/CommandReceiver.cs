@@ -1527,7 +1527,19 @@ namespace GlueControl
 
                     if (reloadMethod != null && fileObjectReference != null)
                     {
-                        reloadMethod.Invoke(null, new object[] { fileObjectReference });
+                        // Glue only tells the game to reload after it believes the changed file has
+                        // finished copying to the build folder (see RefreshManager.HandleFileChanged's
+                        // CopyToBuildFolderTaskIdFor wait), but that belief can be wrong on a slow disk /
+                        // antivirus-scanned drive - the copy can complete while the source is still being
+                        // written by the editing tool (e.g. ProMotion NG), producing a truncated file that
+                        // fails to decode ("This image format is not supported" from the image loader).
+                        // RetryOnTransientReloadFailure below retries exactly that case; a failure here
+                        // must not silently abort the whole loop (which would also skip every later
+                        // element AND the GlobalContent.Reload call further down) - log which element/file
+                        // failed and move on to the next one.
+                        RetryOnTransientReloadFailure(
+                            () => reloadMethod.Invoke(null, new object[] { fileObjectReference }),
+                            $"{element}.{dto.StrippedFileName}");
                     }
                 }
 
@@ -1537,24 +1549,7 @@ namespace GlueControl
 
             if (file != null)
             {
-                int numberOfTimesToTry = 10;
-                int numberOfFailures = 0;
-                while (numberOfFailures < numberOfTimesToTry)
-                {
-                    try
-                    {
-                        GlobalContent.Reload(file);
-                        break;
-                    }
-                    catch (InvalidOperationException)
-                    {
-                        numberOfFailures++;
-
-                        // Deliberately a blocking sleep, not `await Task.Delay` - see the note at the top of
-                        // this method about staying on the primary thread through every retry.
-                        System.Threading.Thread.Sleep(250);
-                    }
-                }
+                RetryOnTransientReloadFailure(() => GlobalContent.Reload(file), $"GlobalContent.{dto.StrippedFileName}");
             }
 
 
@@ -1562,8 +1557,57 @@ namespace GlueControl
             if (dto.IsLocalizationDatabase)
             {
                 FlatRedBall.Localization.LocalizationManager.ClearDatabase();
-                // assume this uses commas, not tabs. 
+                // assume this uses commas, not tabs.
                 FlatRedBall.Localization.LocalizationManager.AddDatabase(dto.FileRelativeToProject, ',');
+            }
+        }
+
+        // Retries a reload action against the "file hasn't actually finished copying yet" race: Glue only
+        // sends a reload command after it believes the changed file finished copying to the build folder,
+        // but that copy can complete while the source is still being written by the editing tool, on a slow
+        // disk or under antivirus scanning - the copy then contains a truncated file. Loading it throws
+        // InvalidOperationException (directly from GlobalContent.Reload, or wrapped in
+        // TargetInvocationException when called through reflection.Invoke, as the per-Entity reload above
+        // is). Every attempt and the final outcome is logged with `label` (e.g. "EntityName.FileName") so a
+        // future occurrence pinpoints exactly what was being reloaded, instead of only a bare exception
+        // several call frames removed from the actual file.
+        private static void RetryOnTransientReloadFailure(Action action, string label)
+        {
+            const int maxAttempts = 10;
+            for (var attempt = 1; attempt <= maxAttempts; attempt++)
+            {
+                try
+                {
+                    action();
+                    if (attempt > 1)
+                    {
+                        System.Console.WriteLine($"[ReloadRetry] {label} succeeded on attempt {attempt}/{maxAttempts}.");
+                    }
+                    return;
+                }
+                catch (Exception ex) when (
+                    ex is InvalidOperationException ||
+                    (ex is System.Reflection.TargetInvocationException tie && tie.InnerException is InvalidOperationException))
+                {
+                    var actual = (ex as System.Reflection.TargetInvocationException)?.InnerException ?? ex;
+
+                    if (attempt == maxAttempts)
+                    {
+                        System.Console.WriteLine(
+                            $"[ReloadRetry] File \"{label}\" changed on disk, reloading, but got exception on " +
+                            $"attempt {attempt}/{maxAttempts} - giving up: {actual.GetType().Name}: {actual.Message}");
+                        return;
+                    }
+
+                    System.Console.WriteLine(
+                        $"[ReloadRetry] File \"{label}\" changed on disk, reloading, but got exception on " +
+                        $"attempt {attempt}/{maxAttempts}: {actual.GetType().Name}: {actual.Message}. Retrying in 250ms.");
+
+                    // Deliberately a blocking sleep, not `await Task.Delay` - see the note at the top of
+                    // HandleDto(Dtos.ForceReloadFileDto) about staying on the primary thread through every
+                    // retry (a resumed-on-a-thread-pool-thread continuation would race the renderer).
+                    System.Threading.Thread.Sleep(250);
+                }
             }
         }
 

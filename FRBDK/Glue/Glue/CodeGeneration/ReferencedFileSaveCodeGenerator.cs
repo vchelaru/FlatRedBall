@@ -1157,18 +1157,47 @@ namespace FlatRedBall.Glue.CodeGeneration
                         {
                             var innerBlock = codeBlock.Block();
 
+                            var instanceName = referencedFile.GetInstanceName();
+                            var previousVariable = $"previous{instanceName}";
+                            var wasTrackedVariable = $"wasTracked{instanceName}";
+
                             innerBlock.Line("var cm = FlatRedBall.FlatRedBallServices.GetContentManagerByName(\"Global\");");
+                            innerBlock.Line($"var {previousVariable} = {instanceName};");
                             // See the matching guard/comment in GetReload's AnimationChainList branch above -
                             // a shared-static file can be reloaded through more than one static field pointing
                             // at the same underlying disposable, and whichever reload runs first already
                             // unloads it, leaving every later one's UnloadAsset call throwing ArgumentException.
-                            innerBlock.If($"cm.IsAssetLoadedByReference({referencedFile.GetInstanceName()})")
-                                .Line($"cm.UnloadAsset({referencedFile.GetInstanceName()});");
+                            innerBlock.Line($"var {wasTrackedVariable} = cm.IsAssetLoadedByReference({previousVariable});");
 
-                            string code =
-                                $"{referencedFile.GetInstanceName()} = " +
-                                $"FlatRedBall.FlatRedBallServices.Load<{ati.QualifiedRuntimeTypeName.QualifiedType}>(\"{fileName}\");";
-                            innerBlock.Line(code);
+                            // Load can throw (e.g. the file on disk is mid-write or genuinely malformed -
+                            // see GitHub issue reproduced against CrankyChibiCthulhu's ChibiCthulhuTiles.png).
+                            // The previous instance must stay alive and tracked until the replacement has
+                            // actually loaded: disposing it first (the old unconditional UnloadAsset-then-Load
+                            // order) left every Sprite/holder still referencing it pointing at a disposed
+                            // object the moment Load failed, regardless of how many times the caller retries -
+                            // a single failed reload permanently corrupted the shared asset until restart.
+                            // For a disposable asset, evict it from the cache without disposing it (so Load
+                            // is forced to hit disk again instead of returning the still-cached previous
+                            // instance) and only Dispose() it after the replacement is confirmed loaded; on
+                            // failure, re-track it so the asset isn't orphaned. A non-disposable asset can
+                            // still be unloaded up front - UnloadAsset never disposes those, so there's
+                            // nothing to protect.
+                            var evictIf = innerBlock.If($"{wasTrackedVariable} && {previousVariable} is System.IDisposable");
+                            evictIf.Line($"cm.RemoveDisposable((System.IDisposable){previousVariable});");
+                            evictIf.End()
+                                .ElseIf($"{wasTrackedVariable}")
+                                .Line($"cm.UnloadAsset({previousVariable});");
+
+                            var tryBlock = innerBlock.Try();
+                            tryBlock.Line(
+                                $"{instanceName} = FlatRedBall.FlatRedBallServices.Load<{ati.QualifiedRuntimeTypeName.QualifiedType}>(\"{fileName}\");");
+                            tryBlock.If($"{previousVariable} is System.IDisposable")
+                                .Line($"((System.IDisposable){previousVariable}).Dispose();");
+
+                            var catchBlock = tryBlock.End().Catch("System.Exception");
+                            catchBlock.If($"{wasTrackedVariable} && {previousVariable} is System.IDisposable")
+                                .Line($"cm.AddDisposable(\"{fileName}\", (System.IDisposable){previousVariable});");
+                            catchBlock.Line("throw;");
                         }
                     }
                     else if(referencedFile.IsCsvOrTreatedAsCsv)
