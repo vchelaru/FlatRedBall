@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.SaveClasses;
 
@@ -6,6 +8,7 @@ namespace OfficialPlugins.VariableDisplay
     public enum VariablePanelMode
     {
         NamedObject,
+        MultipleNamedObjects,
         Element,
         ReferencedFile,
         Empty
@@ -13,6 +16,32 @@ namespace OfficialPlugins.VariableDisplay
 
     public static class VariablePanelModeLogic
     {
+        /// <summary>
+        /// Overload considering the full multi-selection. Falls back to the single-object
+        /// DetermineMode when 0 or 1 objects are selected, so existing single-select behavior
+        /// (including its tests) is untouched.
+        /// </summary>
+        public static VariablePanelMode DetermineMode(
+            IReadOnlyList<NamedObjectSave> currentNamedObjectSaves,
+            GlueElement currentElement,
+            StateSave currentStateSave,
+            StateSaveCategory currentStateSaveCategory,
+            ITreeNode selectedTreeNode,
+            ReferencedFileSave currentReferencedFileSave)
+        {
+            if (currentNamedObjectSaves != null && currentNamedObjectSaves.Count > 1)
+            {
+                // Lists never have properties to show, and a list has none of its own to multi-edit
+                // either, so if any selected object is a list, fall back to Empty:
+                return currentNamedObjectSaves.Any(item => item.IsList)
+                    ? VariablePanelMode.Empty
+                    : VariablePanelMode.MultipleNamedObjects;
+            }
+
+            return DetermineMode(currentNamedObjectSaves?.FirstOrDefault(), currentElement, currentStateSave,
+                currentStateSaveCategory, selectedTreeNode, currentReferencedFileSave);
+        }
+
         public static VariablePanelMode DetermineMode(
             NamedObjectSave currentNamedObjectSave,
             GlueElement currentElement,

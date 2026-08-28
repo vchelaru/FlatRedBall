@@ -111,11 +111,11 @@ namespace OfficialPlugins.VariableDisplay
 
         private void HandleItemSelect(ITreeNode selectedTreeNode)
         {
-            var nos = GlueState.Self.CurrentNamedObjectSave;
+            var namedObjectSaves = GlueState.Self.CurrentNamedObjectSaves;
             var element = GlueState.Self.CurrentElement;
 
             var mode = VariablePanelModeLogic.DetermineMode(
-                nos,
+                namedObjectSaves,
                 element,
                 GlueState.Self.CurrentStateSave,
                 GlueState.Self.CurrentStateSaveCategory,
@@ -125,7 +125,10 @@ namespace OfficialPlugins.VariableDisplay
             switch (mode)
             {
                 case VariablePanelMode.NamedObject:
-                    HandleNamedObjectSelect(nos, element);
+                    HandleNamedObjectSelect(namedObjectSaves.FirstOrDefault(), element);
+                    break;
+                case VariablePanelMode.MultipleNamedObjects:
+                    HandleMultipleNamedObjectsSelect(namedObjectSaves, element);
                     break;
                 case VariablePanelMode.Element:
                     ShowVariablesForCurrentElement();
@@ -143,6 +146,19 @@ namespace OfficialPlugins.VariableDisplay
                     settingsTab?.Hide();
                     break;
             }
+        }
+
+        private void HandleMultipleNamedObjectsSelect(IReadOnlyList<NamedObjectSave> namedObjects, GlueElement currentElement)
+        {
+            AddOrShowVariableGrid();
+            // Multi-select editing doesn't support adding a new custom variable - it's unclear
+            // which of the selected objects it would be added to:
+            variableViewModel.CanAddVariable = false;
+            variableViewModel.HasNoVariablesToShow = false;
+            VariableGrid.Visibility = System.Windows.Visibility.Visible;
+
+            NamedObjectVariableShowingLogic.UpdateShownVariablesForMultipleObjects(
+                VariableGrid.DataUiGrid, namedObjects, currentElement);
         }
 
         private void ShowPropertiesForReferencedFileSave(ReferencedFileSave referencedFileSave)
