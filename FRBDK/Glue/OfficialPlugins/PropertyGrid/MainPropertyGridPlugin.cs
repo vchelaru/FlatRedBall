@@ -96,17 +96,11 @@ namespace OfficialPlugins.VariableDisplay
 
         public void RefreshVariables()
         {
-            var nos = GlueState.Self.CurrentNamedObjectSave;
-            var element = GlueState.Self.CurrentElement;
-            if (nos != null)
-            {
-                HandleNamedObjectSelect(nos, element);
-            }
-            else if(element != null)
-            {
-                ShowVariablesForCurrentElement();
-            }
-            //RefreshLogic.RefreshGrid(variableGrid.DataUiGrid);
+            // This used to duplicate HandleItemSelect's single-object-only branch (nos != null,
+            // element != null), which ignored multi-select entirely. Since this is called after every
+            // full-commit variable set (GlueCommands.RefreshCommands.RefreshVariables), that collapsed
+            // a multi-object selection back down to a single object the moment the first edit committed:
+            HandleItemSelect(GlueState.Self.CurrentTreeNode);
         }
 
         private void HandleItemSelect(ITreeNode selectedTreeNode)
