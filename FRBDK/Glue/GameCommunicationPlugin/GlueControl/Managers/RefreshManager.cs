@@ -202,6 +202,14 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                     var shouldCopy = false;
                     shouldCopy = containerNames.Any() || GlueCommands.Self.FileCommands.IsContent(fileName);
 
+                    // Set right after a ForceReloadFileDto actually gets sent below - its handler already
+                    // reloads GlobalContent's own copy of the file (see the game-side HandleDto), so a
+                    // ReloadGlobalContentDto sent afterward for the same change is redundant. See
+                    // ShouldSendReloadGlobalContentDto for why sending it anyway is more than redundant -
+                    // it disposes the texture ForceReloadFileDto just loaded without telling any Entity
+                    // holder, which is the CrankyChibiCthulhu ObjectDisposedException crash.
+                    var forceReloadFileDtoWasSent = false;
+
                     if (shouldCopy && ViewModel.IsRunning)
                     {
                         // Right now we'll assume the screen owns this file, although it is possible that it's
@@ -248,6 +256,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
                                 dto.StrippedFileName = fileName.NoPathNoExtension;
                                 await CommandSender.Self.Send(dto);
+                                forceReloadFileDtoWasSent = true;
 
                                 // Typically localization is applied in custom code, so we can't
                                 // apply these changes without reloading the screen
@@ -287,14 +296,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                     }
                     var isContentPipeline = firstRfs?.UseContentPipeline == true || firstRfs?.GetAssetTypeInfo()?.MustBeAddedToContentPipeline == true;
                     // the game should reload only after copying the file
-                    if (isGlobalContent &&
-                        // if it's using the content pipeline, it can't be reloaded individually. FRB Will throw an exception:
-                        !isContentPipeline
-                        // Why do we check if the CustomReloadFunc != null?
-                        // If a file (like PNG) changes and it's in global content,
-                        // then we want to reload global content
-                        //&& firstRfs.GetAssetTypeInfo().CustomReloadFunc != null
-                        )
+                    if (ShouldSendReloadGlobalContentDto(isGlobalContent, isContentPipeline, forceReloadFileDtoWasSent))
                     {
                         printOutput($"Waiting for Glue to copy reload global file {strippedName}");
 
@@ -355,6 +357,28 @@ namespace GameCommunicationPlugin.GlueControl.Managers
         internal static ReferencedFileSave SelectGlobalReferencedFile(
             IEnumerable<ReferencedFileSave> referencedFiles, ReferencedFileSave fallback) =>
             referencedFiles.FirstOrDefault(item => item.GetContainer() == null) ?? fallback;
+
+        /// <summary>
+        /// Whether HandleFileChanged should send a ReloadGlobalContentDto in addition to whatever it already
+        /// sent. When a ForceReloadFileDto was already sent (png/csv), its game-side handler
+        /// (HandleDto(Dtos.ForceReloadFileDto)) already reloads GlobalContent's own copy of the file at the
+        /// end, on top of reloading every Entity's own shared-static copy. A ReloadGlobalContentDto sent
+        /// afterward for the same change is not just redundant: its handler
+        /// (HandleDto(Dtos.ReloadGlobalContentDto)) *only* calls GlobalContent.Reload(...) - it disposes the
+        /// texture the ForceReloadFileDto reload just loaded and assigned to GlobalContent's field, and
+        /// loads a replacement, but has no knowledge of the Entity types ForceReloadFileDto also just
+        /// updated. Every Entity's static field still holds the now-disposed instance; nothing ever tells
+        /// those Entity types to reload again. A Sprite built later from one of those stale fields (e.g. a
+        /// boss dynamically adding a child sprite) then crashes with ObjectDisposedException - reproduced
+        /// against CrankyChibiCthulhu's ChibiCthulhuTiles.png, which is both global content and separately
+        /// IsSharedStatic on several Entities, matching the shape #2211/#2212 already fixed one bug in.
+        /// </summary>
+        internal static bool ShouldSendReloadGlobalContentDto(
+            bool isGlobalContent, bool isContentPipeline, bool forceReloadFileDtoWasSent) =>
+            isGlobalContent &&
+            // if it's using the content pipeline, it can't be reloaded individually. FRB Will throw an exception:
+            !isContentPipeline &&
+            !forceReloadFileDtoWasSent;
 
         private bool GetIfShouldReactToFileChange(FilePath filePath)
         {

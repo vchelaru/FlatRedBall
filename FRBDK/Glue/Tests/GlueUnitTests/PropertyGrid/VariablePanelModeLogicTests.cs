@@ -173,4 +173,66 @@ public class VariablePanelModeLogicTests
 
         mode.ShouldBe(VariablePanelMode.Empty);
     }
+
+    // GitHub issue #2221: ctrl+click multi-select already worked, but the Variables tab only ever
+    // showed/edited a single object. The overload taking the full CurrentNamedObjectSaves list is
+    // what routes 2+ selected objects to the multi-select display instead of the single-object one.
+    [Fact]
+    public void DetermineMode_ShouldReturnMultipleNamedObjects_WhenTwoNonListObjectsSelected()
+    {
+        var nos1 = new NamedObjectSave { SourceType = SourceType.FlatRedBallType, SourceClassType = "Sprite" };
+        var nos2 = new NamedObjectSave { SourceType = SourceType.FlatRedBallType, SourceClassType = "Sprite" };
+
+        var mode = VariablePanelModeLogic.DetermineMode(
+            currentNamedObjectSaves: new List<NamedObjectSave> { nos1, nos2 },
+            currentElement: null,
+            currentStateSave: null,
+            currentStateSaveCategory: null,
+            selectedTreeNode: null,
+            currentReferencedFileSave: null);
+
+        mode.ShouldBe(VariablePanelMode.MultipleNamedObjects);
+    }
+
+    [Fact]
+    public void DetermineMode_ShouldReturnEmpty_WhenMultiSelectIncludesAList()
+    {
+        var nos1 = new NamedObjectSave { SourceType = SourceType.FlatRedBallType, SourceClassType = "Sprite" };
+        var listNos = new NamedObjectSave { SourceType = SourceType.FlatRedBallType, SourceClassType = "PositionedObjectList<T>" };
+
+        var mode = VariablePanelModeLogic.DetermineMode(
+            currentNamedObjectSaves: new List<NamedObjectSave> { nos1, listNos },
+            currentElement: null,
+            currentStateSave: null,
+            currentStateSaveCategory: null,
+            selectedTreeNode: null,
+            currentReferencedFileSave: null);
+
+        mode.ShouldBe(VariablePanelMode.Empty);
+    }
+
+    [Fact]
+    public void DetermineMode_MultiSelectOverload_ShouldFallBackToSingleObjectBehavior_WhenOneOrZeroSelected()
+    {
+        var nos = new NamedObjectSave { SourceType = SourceType.FlatRedBallType, SourceClassType = "Sprite" };
+
+        var oneSelected = VariablePanelModeLogic.DetermineMode(
+            currentNamedObjectSaves: new List<NamedObjectSave> { nos },
+            currentElement: null,
+            currentStateSave: null,
+            currentStateSaveCategory: null,
+            selectedTreeNode: null,
+            currentReferencedFileSave: null);
+
+        var noneSelected = VariablePanelModeLogic.DetermineMode(
+            currentNamedObjectSaves: new List<NamedObjectSave>(),
+            currentElement: null,
+            currentStateSave: null,
+            currentStateSaveCategory: null,
+            selectedTreeNode: null,
+            currentReferencedFileSave: null);
+
+        oneSelected.ShouldBe(VariablePanelMode.NamedObject);
+        noneSelected.ShouldBe(VariablePanelMode.Empty);
+    }
 }

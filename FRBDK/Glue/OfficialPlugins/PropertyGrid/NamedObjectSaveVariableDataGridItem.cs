@@ -51,6 +51,16 @@ namespace OfficialPlugins.PropertyGrid
 
         public bool IsFile { get; set; }
 
+        /// <summary>
+        /// When non-null, HandleVariableSet adds its computed assignment to this list instead of
+        /// independently saving/generating code/recording undo via GluxCommands.SetVariableOn. Set by
+        /// the multi-select wiring (see NamedObjectVariableShowingLogic.WireUpBatchedMultiSet) so that
+        /// editing a property shared by several selected NamedObjectSaves applies to all of them
+        /// through a single batched GluxCommands.SetVariableOnList call - one undo entry and one
+        /// codegen/save pass - instead of one independent SetVariableOn call per selected object.
+        /// </summary>
+        public List<FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces.NosVariableAssignment> MultiSetBatchTarget { get; set; }
+
         Type cachedMemberType = null;
         Type MemberType
         {
@@ -306,6 +316,20 @@ namespace OfficialPlugins.PropertyGrid
                     }
                 }
                 IsDefault = makeDefault;
+
+                if (MultiSetBatchTarget != null)
+                {
+                    // Part of a multi-select edit: defer the actual save/codegen/undo to the batched
+                    // SetVariableOnList call the multi-select wiring makes once every selected object's
+                    // value has been added here (see NamedObjectVariableShowingLogic.WireUpBatchedMultiSet).
+                    MultiSetBatchTarget.Add(new FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces.NosVariableAssignment
+                    {
+                        NamedObjectSave = NamedObjectSave,
+                        VariableName = NameOnInstance,
+                        Value = value
+                    });
+                    return;
+                }
 
                 // If we ignore the next refresh, then AnimationChains won't update when the user
                 // picks an AnimationChainList from a combo box:

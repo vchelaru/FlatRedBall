@@ -82,7 +82,53 @@ public class SharedStaticTextureReloadCodegenTests : IDisposable
 
         // Before the fix, this was an unconditional "cm.UnloadAsset(ChibiCthulhuTiles);" - fine the first
         // time any holder of the shared texture reloads it, but every later holder's call throws
-        // ArgumentException once the first one has already unloaded/disposed it.
-        Assert.Contains("if (cm.IsAssetLoadedByReference(ChibiCthulhuTiles))", generatedCode);
+        // ArgumentException once the first one has already unloaded/disposed it. Guarded via a captured
+        // "was it tracked" flag now (see GetReload_ForSharedStaticTexture_DoesNotDisposePreviousInstanceUntilLoadSucceeds
+        // for why disposal itself moved past the Load call).
+        Assert.Contains("cm.IsAssetLoadedByReference(previousChibiCthulhuTiles)", generatedCode);
+    }
+
+    [Fact]
+    public void GetReload_ForSharedStaticTexture_DoesNotDisposePreviousInstanceUntilLoadSucceeds()
+    {
+        // Reproduces the field-confirmed crash: a live-edit PNG save races the editing tool still writing
+        // the file (worse on a slower machine), so Load<Texture2D> throws (observed:
+        // "InvalidOperationException: This image format is not supported"). Before this fix, the previous
+        // texture was disposed via UnloadAsset BEFORE the Load call - so a failed Load left every Sprite
+        // still referencing the previous (now-disposed) instance permanently broken, no matter how many
+        // times the caller retries. The previous instance must stay alive and tracked until the replacement
+        // has actually loaded.
+        var rfs = new ReferencedFileSave
+        {
+            Name = "GlobalContent/ChibiCthulhuTiles.png",
+            LoadedAtRuntime = true,
+            IsSharedStatic = true,
+        };
+
+        var codeBlock = new CodeBlockBase();
+        ReferencedFileSaveCodeGenerator.GetReload(rfs, container: null, codeBlock, LoadType.MaintainInstance);
+        var generatedCode = codeBlock.ToString();
+
+        // The previous instance is captured before anything else touches the field...
+        Assert.Contains("var previousChibiCthulhuTiles = ChibiCthulhuTiles;", generatedCode);
+        // ...evicted from the cache WITHOUT disposing it (forces Load to hit disk instead of returning the
+        // still-cached previous instance, but keeps the object itself alive)...
+        Assert.Contains("cm.RemoveDisposable((System.IDisposable)previousChibiCthulhuTiles);", generatedCode);
+        // ...the Load call and the actual Dispose() of the previous instance are both inside the try, with
+        // Dispose() only reachable after Load succeeds...
+        var loadIndex = generatedCode.IndexOf("FlatRedBall.FlatRedBallServices.Load<", StringComparison.Ordinal);
+        var disposeIndex = generatedCode.IndexOf("((System.IDisposable)previousChibiCthulhuTiles).Dispose();", StringComparison.Ordinal);
+        Assert.True(loadIndex >= 0 && disposeIndex > loadIndex,
+            "Dispose() of the previous instance must appear after the Load call, not before it.");
+        // ...and on failure, the previous (still-alive, undisposed) instance is re-registered under the same
+        // key the Load call used (not hardcoding Glue's path-casing/prefix rules here) rather than left
+        // orphaned, then the exception is rethrown rather than swallowed.
+        var loadCallStart = generatedCode.IndexOf("FlatRedBall.FlatRedBallServices.Load<", StringComparison.Ordinal);
+        var quoteStart = generatedCode.IndexOf('"', loadCallStart);
+        var quoteEnd = generatedCode.IndexOf('"', quoteStart + 1);
+        var loadedFileName = generatedCode.Substring(quoteStart, quoteEnd - quoteStart + 1);
+        Assert.Contains("catch(System.Exception)", generatedCode);
+        Assert.Contains($"cm.AddDisposable({loadedFileName}, (System.IDisposable)previousChibiCthulhuTiles);", generatedCode);
+        Assert.Contains("throw;", generatedCode);
     }
 }
