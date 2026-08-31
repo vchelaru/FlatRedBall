@@ -28,7 +28,6 @@ using Microsoft.Xna.Framework.Audio;
 using System.Windows.Forms.Integration;
 using GlueFormsCore.Controls;
 using System.Diagnostics;
-using System.Text.RegularExpressions;
 using System.Linq;
 using Newtonsoft.Json;
 using System.Threading;
@@ -36,6 +35,7 @@ using System.IO;
 using System.ServiceModel.Channels;
 using System.Windows.Media;
 using FlatRedBall.Glue.Themes;
+using FlatRedBall.Glue.VSHelpers;
 using System.Reflection;
 using Wpf = System.Windows;
 
@@ -66,7 +66,7 @@ public partial class MainGlueWindow : Form, IMainGlueWindow
     #endregion
     
     // internal (not private) so a headless test host can run the same real SDK-discovery Glue.exe runs -
-    // without MSBUILD_EXE_PATH pointed at a pre-7 SDK, Microsoft.Build.Evaluation.Project can't resolve
+    // without MSBUILD_EXE_PATH pointed at a usable SDK, Microsoft.Build.Evaluation.Project can't resolve
     // the SDK imports in any SDK-style .csproj, so no real game project can be loaded.
     internal static void SetMsBuildEnvironmentVariable()
     {
@@ -147,55 +147,29 @@ public partial class MainGlueWindow : Form, IMainGlueWindow
             return;
         }
 
-        var sdkPaths = Regex.Matches(output, "([0-9]+)[.]([0-9]+)[.]([0-9]+) \\[(.*)\\]")
-            .OfType<Match>()
-            // https://stackoverflow.com/questions/75702346/why-does-the-presence-of-net-7-0-2-sdk-cause-the-sdk-resolver-microsoft-dotnet?noredirect=1#comment133550210_75702346
-            // "7.0." instead of "7.0.201"
-            //.Where(item => item.Value.StartsWith("7.0.") == false)
-            .Where(m => int.Parse(m.Groups[1].Value) < 7)
-            .OrderByDescending(m => int.Parse(m.Groups[1].Value))
-            .ThenByDescending(m => int.Parse(m.Groups[2].Value))
-            .ThenByDescending(m => int.Parse(m.Groups[3].Value))
-            .Select(m => System.IO.Path.Combine(m.Groups[4].Value, m.Groups[1].Value + "." + m.Groups[2].Value + "." + m.Groups[3].Value, "MSBuild.dll"))
-            .ToArray();
+        // Newest first, capped at the runtime this process is running on - see MsBuildSdkSelector for why.
+        // This used to prefer the newest pre-.NET-7 SDK, which is now a bug rather than a workaround: a
+        // machine with no .NET 6 SDK installed falls back to a .NET 3.x SDK whose resolver cannot resolve
+        // a modern SDK-style project at all ("The SDK 'Microsoft.NET.SDK.WorkloadAutoImportPropsLocator'
+        // specified could not be found"), and a machine with no pre-7 SDK at all gets nothing. GitHub
+        // issue #2218.
+        var sdkPaths = MsBuildSdkSelector.GetMsBuildPathsNewestFirst(output, Environment.Version.Major);
 
-        //Useful for debugging query above
-        //var allSdks = sdkPaths.Aggregate((a, b) => a + "," + b);
-        //MessageBox.Show(allSdks);
+        var sdkPath = sdkPaths.FirstOrDefault(File.Exists);
 
-        if (sdkPaths.Any())
+        if (sdkPath == null)
         {
-            string sdkPath = null;
-
-            foreach (var path in sdkPaths)
-            {
-                if (File.Exists(path))
-                {
-                    sdkPath = path;
-                    break;
-                }
-            }
-
-            //sdkPaths.FirstOrDefault(item => item.Contains("sdk\\6."));
-            if (String.IsNullOrEmpty(sdkPath))
-            {
-                //    sdkPath = sdkPaths.Last();
-
-                var message = String.Format(Localization.Texts.ErrorCouldNotFindNetSix, output);
-                GlueCommands.Self.PrintOutput(message);
-                DialogService.ShowMessage(message);
-            }
-            else
-            {
-                Environment.SetEnvironmentVariable("MSBUILD_EXE_PATH", sdkPath);
-                GlueCommands.Self.PrintOutput($"Using MSBUILD from {sdkPath}");
-            }
+            var message = $"Could not find an installed .NET SDK that Glue can load projects with. " +
+                $"Glue runs on .NET {Environment.Version.Major}, so it needs an SDK no newer than that " +
+                $"- installing the .NET {Environment.Version.Major} SDK will fix this. " +
+                $"dotnet --list-sdks output: {output}";
+            GlueCommands.Self.PrintOutput(message);
+            DialogService.ShowMessage(message);
         }
         else
         {
-            var message = String.Format(Localization.Texts.ErrorCouldNotFindNetSix, output);
-            GlueCommands.Self.PrintOutput(message);
-            DialogService.ShowMessage(message);
+            Environment.SetEnvironmentVariable("MSBUILD_EXE_PATH", sdkPath);
+            GlueCommands.Self.PrintOutput($"Using MSBUILD from {sdkPath}");
         }
     }
 

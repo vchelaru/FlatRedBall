@@ -74,7 +74,7 @@ internal static class NestedDotnetCli
         }
 
         // GlueTestBootstrap.EnsureHeadlessProjectLoadReady runs Glue's real SetMsBuildEnvironmentVariable,
-        // which points MSBUILD_EXE_PATH at a pre-7 SDK so Microsoft.Build.Evaluation can resolve SDK-style
+        // which points MSBUILD_EXE_PATH at an installed SDK so Microsoft.Build.Evaluation can resolve SDK-style
         // .csproj files in-process. A child dotnet CLI must not inherit that - it pins the child to that old
         // MSBuild and breaks the build. Production clears it around its own nested invocations for exactly
         // this reason (see CompilerPlugin's Compiler.cs and SyncedProjects' ProjectListEntry.xaml.cs).
