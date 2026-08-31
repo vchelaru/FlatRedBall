@@ -81,6 +81,14 @@ Bad (boilerplate, padded):
 description: Reference guide for FlatRedBall's sprite animation system. Load this when working on animation behavior, AnimationChains, AnimationFrame, .achx files, Sprite.AnimationChains, or UpdateToCurrentAnimationFrame.
 ```
 
+## Plain Language
+
+Write skills in plain English. Short sentences, small words, no jargon, no invented hyphenated terms. Don't open a sentence with a heavy qualifier or dramatic emphasis. Assume the reader has no special vocabulary — use a technical term only when the topic actually needs it, and prefer the term this codebase already uses over a fancier synonym.
+
+❌ "This skill delivers a robust, developer-focused deep-dive into the nuanced, multi-faceted intricacies of undo state."
+
+✅ "This skill explains how undo state works and where it breaks."
+
 ## Include
 
 - Architecture: how major pieces fit together and why.
