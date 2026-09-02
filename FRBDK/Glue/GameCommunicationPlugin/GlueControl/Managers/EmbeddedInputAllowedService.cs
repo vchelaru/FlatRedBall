@@ -54,8 +54,26 @@ class EmbeddedInputAllowedService
 
     bool? lastAcknowledged = null;
     bool isSending = false;
+    bool isBlockedByUiInteraction = false;
 
-    private async void UpdateTimer(object sender, ElapsedEventArgs e)
+    /// <summary>
+    /// Forces input blocked for the duration of a Glue-side drag gesture (e.g. resizing a panel with a
+    /// <see cref="System.Windows.Controls.GridSplitter"/>) that isn't itself a window the Z-order check
+    /// in <see cref="ReadIsAllowed"/> can see. While such a gesture is live, the embedded game's real OS
+    /// window can be mid-resize and transiently still cover the cursor, which would otherwise read as
+    /// "the game is topmost" and let the drag reach the game as a click (#2226). Checks immediately
+    /// rather than waiting for the next poll tick, since a fast drag can otherwise slip through the
+    /// 100ms gap between polls.
+    /// </summary>
+    public void SetBlockedByUiInteraction(bool isBlocked)
+    {
+        isBlockedByUiInteraction = isBlocked;
+        _ = CheckAndSendIfChanged();
+    }
+
+    private async void UpdateTimer(object sender, ElapsedEventArgs e) => await CheckAndSendIfChanged();
+
+    private async System.Threading.Tasks.Task CheckAndSendIfChanged()
     {
         if (!_commandSender.IsConnected)
         {
@@ -73,7 +91,7 @@ class EmbeddedInputAllowedService
             return;
         }
 
-        var isAllowed = ReadIsAllowed(_getEmbeddedGameWindowHandle());
+        var isAllowed = ReadIsAllowed(_getEmbeddedGameWindowHandle(), isBlockedByUiInteraction);
 
         if (lastAcknowledged == isAllowed)
         {
@@ -114,8 +132,19 @@ class EmbeddedInputAllowedService
     /// version of this feature had thorough tests of its decision logic and none of its Win32 calls,
     /// which is precisely why nobody noticed the calls weren't happening.
     /// </summary>
-    internal static bool ReadIsAllowed(IntPtr embeddedGameWindowHandle)
+    /// <param name="isBlockedByUiInteraction">
+    /// True while a Glue-side drag gesture (e.g. a splitter resize, see <see cref="SetBlockedByUiInteraction"/>)
+    /// is in progress. Short-circuits to false without consulting the Win32 Z-order check, since that
+    /// check can't distinguish "the game is genuinely topmost" from "the game's window is mid-resize and
+    /// transiently still covers the cursor" (#2226).
+    /// </param>
+    internal static bool ReadIsAllowed(IntPtr embeddedGameWindowHandle, bool isBlockedByUiInteraction)
     {
+        if (isBlockedByUiInteraction)
+        {
+            return false;
+        }
+
         var cursorPositionKnown = GetCursorPos(out var cursorPosition);
         var topmostWindowAtCursor = cursorPositionKnown ? WindowFromPoint(cursorPosition) : IntPtr.Zero;
 

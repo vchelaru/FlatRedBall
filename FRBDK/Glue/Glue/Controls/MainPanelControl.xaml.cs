@@ -37,6 +37,15 @@ namespace GlueFormsCore.Controls
 
         public static MainPanelControl Self { get; private set; }
 
+        /// <summary>
+        /// Raised when any of the panel-resize GridSplitters starts/stops dragging - true for start,
+        /// false for stop. Lets a plugin (see GameCommunicationPlugin's EmbeddedInputAllowedService)
+        /// block embedded-game input for the duration, since the splitter drag resizes the embedded
+        /// game's real OS window live, and its bounds can transiently still cover the cursor mid-resize
+        /// in a way that would otherwise look like the game is legitimately topmost (#2226).
+        /// </summary>
+        public static event Action<bool> SplitterDragChanged;
+
         #endregion
 
         public MainPanelControl()
@@ -339,5 +348,11 @@ namespace GlueFormsCore.Controls
                 tab.OnMouseEvent(e);
             }
         }
+
+        private void GridSplitter_DragStarted(object sender, DragStartedEventArgs e) =>
+            SplitterDragChanged?.Invoke(true);
+
+        private void GridSplitter_DragCompleted(object sender, DragCompletedEventArgs e) =>
+            SplitterDragChanged?.Invoke(false);
     }
 }
