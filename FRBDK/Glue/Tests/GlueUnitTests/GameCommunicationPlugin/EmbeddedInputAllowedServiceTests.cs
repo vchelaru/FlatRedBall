@@ -65,7 +65,7 @@ public class EmbeddedInputAllowedServiceTests
 
     [Fact]
     public void ReadIsAllowed_NoEmbeddedGame_IsFalse() =>
-        EmbeddedInputAllowedService.ReadIsAllowed(IntPtr.Zero).ShouldBeFalse();
+        EmbeddedInputAllowedService.ReadIsAllowed(IntPtr.Zero, isBlockedByUiInteraction: false).ShouldBeFalse();
 
     /// <summary>
     /// The real thing: a real window, the real cursor, real GetCursorPos/WindowFromPoint. Proves the OS
@@ -106,15 +106,22 @@ public class EmbeddedInputAllowedServiceTests
             SetCursorPos(centerX, centerY).ShouldBeTrue();
             PumpDispatcher();
 
-            EmbeddedInputAllowedService.ReadIsAllowed(handle).ShouldBeTrue(
+            EmbeddedInputAllowedService.ReadIsAllowed(handle, isBlockedByUiInteraction: false).ShouldBeTrue(
                 "the cursor is over the window and nothing covers it, so input belongs to it");
+
+            // A splitter drag (or other blocking UI interaction) in progress must win even though the
+            // window genuinely is topmost under the cursor - this is what a resizing embedded game
+            // window looks like mid-drag (#2226), and no amount of Win32 Z-order truth should let a
+            // drag gesture reach the game.
+            EmbeddedInputAllowedService.ReadIsAllowed(handle, isBlockedByUiInteraction: true).ShouldBeFalse(
+                "a blocking UI interaction (e.g. a splitter drag) is in progress, so input must not reach the game");
 
             // Move the cursor off the window (its top-left corner is at least 100px in from the screen
             // edge, so this lands outside it) and the same call must flip.
             SetCursorPos(rect.Left - 50, rect.Top - 50).ShouldBeTrue();
             PumpDispatcher();
 
-            EmbeddedInputAllowedService.ReadIsAllowed(handle).ShouldBeFalse(
+            EmbeddedInputAllowedService.ReadIsAllowed(handle, isBlockedByUiInteraction: false).ShouldBeFalse(
                 "the cursor is no longer over the window, so a click there isn't the window's");
         }
         finally
