@@ -2099,14 +2099,32 @@ namespace FlatRedBall
             }
             else if (CurrentChain != null && CurrentChain.Count > 1)
             {
+                double totalChainTime = 0;
+                for (int i = 0; i < CurrentChain.Count; i++)
+                {
+                    totalChainTime += CurrentChain[i].FrameLength;
+                }
+
+                if (totalChainTime <= 0)
+                {
+                    // Every frame has 0 (or negative) length, so there's no way to advance
+                    // through the animation based on time. Avoid an infinite loop below.
+                    mCurrentFrameIndex = 0;
+                    mTimeIntoAnimation = 0;
+                    return;
+                }
+
+                // Bound the number of loop iterations to the number of frames by wrapping
+                // timeIntoAnimation into a single pass through the chain up front.
+                timeIntoAnimation %= totalChainTime;
+
                 int frameIndex = 0;
-                while (timeIntoAnimation >= 0)
+                for (int i = 0; i < CurrentChain.Count; i++)
                 {
                     double frameTime = CurrentChain[frameIndex].FrameLength;
 
                     if (timeIntoAnimation < frameTime)
                     {
-
                         break;
                     }
                     else
