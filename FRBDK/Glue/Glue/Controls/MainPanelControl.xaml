@@ -63,9 +63,7 @@
             HorizontalAlignment="Stretch"
             VerticalAlignment="Center"
             Background="Transparent"
-            Visibility="{Binding TopSplitterVisibility}"
-            DragStarted="GridSplitter_DragStarted"
-            DragCompleted="GridSplitter_DragCompleted" />
+            Visibility="{Binding TopSplitterVisibility}" />
 
             <Grid Grid.Row="2" x:Name="CenterGrid">
                 <Grid.ColumnDefinitions>
@@ -92,9 +90,7 @@
                           HorizontalAlignment="Center"
                           VerticalAlignment="Stretch"
                           Grid.Column="1"
-                          Background="Transparent"
-                          DragStarted="GridSplitter_DragStarted"
-                          DragCompleted="GridSplitter_DragCompleted"/>
+                          Background="Transparent"/>
                 <TabControl x:Name="CenterTabControl" 
                         Grid.Column="2" 
                         Style="{StaticResource MainTabControl.Style}"
@@ -107,9 +103,7 @@
                           HorizontalAlignment="Center"
                           VerticalAlignment="Stretch"
                           Background="Transparent"
-                          Visibility="{Binding RightSplitterVisibility}"
-                          DragStarted="GridSplitter_DragStarted"
-                          DragCompleted="GridSplitter_DragCompleted" />
+                          Visibility="{Binding RightSplitterVisibility}" />
                 <TabControl x:Name="RightTabControl" 
                         Grid.Column="4" 
                         Style="{StaticResource MainTabControl.Style}"
@@ -124,9 +118,7 @@
                       VerticalAlignment="Center"
                       Grid.Row="3"
                       Background="Transparent"
-                      Visibility="{Binding BottomSplitterVisibility}"
-                      DragStarted="GridSplitter_DragStarted"
-                      DragCompleted="GridSplitter_DragCompleted"/>
+                      Visibility="{Binding BottomSplitterVisibility}"/>
 
             <TabControl Grid.Row="4" 
                     x:Name="BottomTabControl" 

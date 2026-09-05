@@ -23,6 +23,10 @@ namespace GameCommunicationPlugin.GlueControl.Managers;
 /// That single check is Z-order-aware (so a window dragged over the panel blocks the game - #2154,
 /// #2214) and activation-independent (so the first click that returns focus to Glue still lands -
 /// #2183, #2187), which is exactly the pair the old heuristics kept trading against each other.
+///
+/// Z-order alone can't answer one thing, though: who a gesture already in progress belongs to. A drag
+/// that starts anywhere in Glue and passes over the game reads as "the game is topmost" at every
+/// instant it is. <see cref="GlueMouseGestureWatcher"/> supplies that missing half (#2226).
 /// </summary>
 class EmbeddedInputAllowedService
 {
@@ -39,8 +43,18 @@ class EmbeddedInputAllowedService
         _getEmbeddedGameWindowHandle = getEmbeddedGameWindowHandle;
     }
 
+    readonly GlueMouseGestureWatcher _gestureWatcher = new();
+
     public void Initialize()
     {
+        // Watches Glue's own message loop, so any mouse gesture that starts on any Glue surface blocks
+        // the game for its duration - no per-control wiring, and nothing the user does inside the game
+        // (a separate process) reaches it. Re-check immediately when a gesture starts or ends rather
+        // than waiting for the next tick: a splitter drag resizes the embedded game window live, so its
+        // edge can slide under the cursor well inside one poll interval.
+        System.Windows.Forms.Application.AddMessageFilter(_gestureWatcher);
+        _gestureWatcher.GestureChanged += () => _ = CheckAndSendIfChanged();
+
         // Occlusion and app switching change on human timescales (dragging a window off the panel,
         // alt-tabbing), not per-frame, so this doesn't need to keep up with the mouse. The game
         // combines this with its own per-frame FlatRedBall.Input.Mouse.IsInGameWindow() for the
@@ -54,24 +68,13 @@ class EmbeddedInputAllowedService
 
     bool? lastAcknowledged = null;
     bool isSending = false;
-    bool isBlockedByUiInteraction = false;
 
-    /// <summary>
-    /// Forces input blocked for the duration of a Glue-side drag gesture (e.g. resizing a panel with a
-    /// <see cref="System.Windows.Controls.GridSplitter"/>) that isn't itself a window the Z-order check
-    /// in <see cref="ReadIsAllowed"/> can see. While such a gesture is live, the embedded game's real OS
-    /// window can be mid-resize and transiently still cover the cursor, which would otherwise read as
-    /// "the game is topmost" and let the drag reach the game as a click (#2226). Checks immediately
-    /// rather than waiting for the next poll tick, since a fast drag can otherwise slip through the
-    /// 100ms gap between polls.
-    /// </summary>
-    public void SetBlockedByUiInteraction(bool isBlocked)
+    private async void UpdateTimer(object sender, ElapsedEventArgs e)
     {
-        isBlockedByUiInteraction = isBlocked;
-        _ = CheckAndSendIfChanged();
+        // Ends a gesture whose button-up Glue never saw because it happened over the game's window.
+        _gestureWatcher.Refresh();
+        await CheckAndSendIfChanged();
     }
-
-    private async void UpdateTimer(object sender, ElapsedEventArgs e) => await CheckAndSendIfChanged();
 
     private async System.Threading.Tasks.Task CheckAndSendIfChanged()
     {
@@ -91,7 +94,7 @@ class EmbeddedInputAllowedService
             return;
         }
 
-        var isAllowed = ReadIsAllowed(_getEmbeddedGameWindowHandle(), isBlockedByUiInteraction);
+        var isAllowed = ReadIsAllowed(_getEmbeddedGameWindowHandle(), _gestureWatcher.IsGestureInProgress);
 
         if (lastAcknowledged == isAllowed)
         {
@@ -132,19 +135,12 @@ class EmbeddedInputAllowedService
     /// version of this feature had thorough tests of its decision logic and none of its Win32 calls,
     /// which is precisely why nobody noticed the calls weren't happening.
     /// </summary>
-    /// <param name="isBlockedByUiInteraction">
-    /// True while a Glue-side drag gesture (e.g. a splitter resize, see <see cref="SetBlockedByUiInteraction"/>)
-    /// is in progress. Short-circuits to false without consulting the Win32 Z-order check, since that
-    /// check can't distinguish "the game is genuinely topmost" from "the game's window is mid-resize and
-    /// transiently still covers the cursor" (#2226).
+    /// <param name="isGlueGestureInProgress">
+    /// True while a mouse gesture that started on a Glue surface is still held down - see
+    /// <see cref="GlueMouseGestureWatcher"/>.
     /// </param>
-    internal static bool ReadIsAllowed(IntPtr embeddedGameWindowHandle, bool isBlockedByUiInteraction)
+    internal static bool ReadIsAllowed(IntPtr embeddedGameWindowHandle, bool isGlueGestureInProgress)
     {
-        if (isBlockedByUiInteraction)
-        {
-            return false;
-        }
-
         var cursorPositionKnown = GetCursorPos(out var cursorPosition);
         var topmostWindowAtCursor = cursorPositionKnown ? WindowFromPoint(cursorPosition) : IntPtr.Zero;
 
@@ -155,7 +151,7 @@ class EmbeddedInputAllowedService
                 IsChild(embeddedGameWindowHandle, topmostWindowAtCursor));
 
         return ComputeIsAllowed(embeddedGameWindowHandle, cursorPositionKnown, topmostWindowAtCursor,
-            topmostBelongsToEmbeddedGame);
+            topmostBelongsToEmbeddedGame, isGlueGestureInProgress);
     }
 
     /// <summary>
@@ -169,10 +165,22 @@ class EmbeddedInputAllowedService
     /// Whether that topmost window is the embedded game window or a child of it. SDL/MonoGame uses a
     /// single HWND today, but a child is still the game as far as this question goes.
     /// </param>
+    /// <param name="isGlueGestureInProgress">
+    /// Whether a mouse gesture that started on a Glue surface is still held down. It wins over the
+    /// Z-order answer, which can't tell "the game is genuinely topmost under the cursor" from "the user
+    /// is dragging out of Glue and happens to be over the game right now" - and, while a splitter drag
+    /// resizes the game window live, can't tell it from "the game's window is mid-resize and transiently
+    /// still covers the cursor" either (#2226).
+    /// </param>
     internal static bool ComputeIsAllowed(IntPtr embeddedGameWindowHandle, bool cursorPositionKnown,
-        IntPtr topmostWindowAtCursor, bool topmostBelongsToEmbeddedGame)
+        IntPtr topmostWindowAtCursor, bool topmostBelongsToEmbeddedGame, bool isGlueGestureInProgress)
     {
         if (embeddedGameWindowHandle == IntPtr.Zero)
+        {
+            return false;
+        }
+
+        if (isGlueGestureInProgress)
         {
             return false;
         }

@@ -26,7 +26,7 @@ public class EmbeddedInputAllowedServiceTests
     public void ComputeIsAllowed_NoEmbeddedGame_IsFalse()
     {
         EmbeddedInputAllowedService.ComputeIsAllowed(IntPtr.Zero, cursorPositionKnown: true,
-            topmostWindowAtCursor: new IntPtr(1), topmostBelongsToEmbeddedGame: true)
+            topmostWindowAtCursor: new IntPtr(1), topmostBelongsToEmbeddedGame: true, isGlueGestureInProgress: false)
             .ShouldBeFalse("no game is embedded, so there is nothing for a click to reach");
     }
 
@@ -34,7 +34,7 @@ public class EmbeddedInputAllowedServiceTests
     public void ComputeIsAllowed_CursorPositionUnknown_FailsClosed()
     {
         EmbeddedInputAllowedService.ComputeIsAllowed(new IntPtr(1), cursorPositionKnown: false,
-            topmostWindowAtCursor: new IntPtr(1), topmostBelongsToEmbeddedGame: true)
+            topmostWindowAtCursor: new IntPtr(1), topmostBelongsToEmbeddedGame: true, isGlueGestureInProgress: false)
             .ShouldBeFalse("GetCursorPos failed, so the answer can't be confirmed and must fail closed (#2154)");
     }
 
@@ -42,7 +42,7 @@ public class EmbeddedInputAllowedServiceTests
     public void ComputeIsAllowed_NoWindowAtCursor_FailsClosed()
     {
         EmbeddedInputAllowedService.ComputeIsAllowed(new IntPtr(1), cursorPositionKnown: true,
-            topmostWindowAtCursor: IntPtr.Zero, topmostBelongsToEmbeddedGame: false)
+            topmostWindowAtCursor: IntPtr.Zero, topmostBelongsToEmbeddedGame: false, isGlueGestureInProgress: false)
             .ShouldBeFalse("nothing is drawn at the cursor (e.g. off-screen), so fail closed");
     }
 
@@ -50,7 +50,7 @@ public class EmbeddedInputAllowedServiceTests
     public void ComputeIsAllowed_AnotherWindowIsTopmost_IsFalse()
     {
         EmbeddedInputAllowedService.ComputeIsAllowed(new IntPtr(1), cursorPositionKnown: true,
-            topmostWindowAtCursor: new IntPtr(2), topmostBelongsToEmbeddedGame: false)
+            topmostWindowAtCursor: new IntPtr(2), topmostBelongsToEmbeddedGame: false, isGlueGestureInProgress: false)
             .ShouldBeFalse("something else is drawn over the embedded game at the cursor - the click is " +
                 "that window's, not the game's (#2154, #2214)");
     }
@@ -59,13 +59,23 @@ public class EmbeddedInputAllowedServiceTests
     public void ComputeIsAllowed_EmbeddedGameIsTopmost_IsTrue()
     {
         EmbeddedInputAllowedService.ComputeIsAllowed(new IntPtr(1), cursorPositionKnown: true,
-            topmostWindowAtCursor: new IntPtr(1), topmostBelongsToEmbeddedGame: true)
+            topmostWindowAtCursor: new IntPtr(1), topmostBelongsToEmbeddedGame: true, isGlueGestureInProgress: false)
             .ShouldBeTrue("the game window is what the OS reports as topmost under the cursor");
     }
 
     [Fact]
+    public void ComputeIsAllowed_GlueGestureInProgress_IsFalse()
+    {
+        EmbeddedInputAllowedService.ComputeIsAllowed(new IntPtr(1), cursorPositionKnown: true,
+            topmostWindowAtCursor: new IntPtr(1), topmostBelongsToEmbeddedGame: true,
+            isGlueGestureInProgress: true)
+            .ShouldBeFalse("the drag over the game started somewhere in Glue, so it is Glue's - dragging " +
+                "a tree node onto the Game tab, or a splitter that is resizing the game window (#2226)");
+    }
+
+    [Fact]
     public void ReadIsAllowed_NoEmbeddedGame_IsFalse() =>
-        EmbeddedInputAllowedService.ReadIsAllowed(IntPtr.Zero, isBlockedByUiInteraction: false).ShouldBeFalse();
+        EmbeddedInputAllowedService.ReadIsAllowed(IntPtr.Zero, isGlueGestureInProgress: false).ShouldBeFalse();
 
     /// <summary>
     /// The real thing: a real window, the real cursor, real GetCursorPos/WindowFromPoint. Proves the OS
@@ -106,22 +116,23 @@ public class EmbeddedInputAllowedServiceTests
             SetCursorPos(centerX, centerY).ShouldBeTrue();
             PumpDispatcher();
 
-            EmbeddedInputAllowedService.ReadIsAllowed(handle, isBlockedByUiInteraction: false).ShouldBeTrue(
+            EmbeddedInputAllowedService.ReadIsAllowed(handle, isGlueGestureInProgress: false).ShouldBeTrue(
                 "the cursor is over the window and nothing covers it, so input belongs to it");
 
-            // A splitter drag (or other blocking UI interaction) in progress must win even though the
-            // window genuinely is topmost under the cursor - this is what a resizing embedded game
-            // window looks like mid-drag (#2226), and no amount of Win32 Z-order truth should let a
-            // drag gesture reach the game.
-            EmbeddedInputAllowedService.ReadIsAllowed(handle, isBlockedByUiInteraction: true).ShouldBeFalse(
-                "a blocking UI interaction (e.g. a splitter drag) is in progress, so input must not reach the game");
+            // A gesture that started in Glue must win even though the window genuinely is topmost under
+            // the cursor - that is exactly what dragging a tree node over the Game tab, or resizing a
+            // panel whose splitter is shrinking the game window, looks like to the Z-order check
+            // (#2226). No amount of Win32 truth about who is on top should let such a drag reach the
+            // game.
+            EmbeddedInputAllowedService.ReadIsAllowed(handle, isGlueGestureInProgress: true).ShouldBeFalse(
+                "a gesture that started on a Glue surface is still held down, so input must not reach the game");
 
             // Move the cursor off the window (its top-left corner is at least 100px in from the screen
             // edge, so this lands outside it) and the same call must flip.
             SetCursorPos(rect.Left - 50, rect.Top - 50).ShouldBeTrue();
             PumpDispatcher();
 
-            EmbeddedInputAllowedService.ReadIsAllowed(handle, isBlockedByUiInteraction: false).ShouldBeFalse(
+            EmbeddedInputAllowedService.ReadIsAllowed(handle, isGlueGestureInProgress: false).ShouldBeFalse(
                 "the cursor is no longer over the window, so a click there isn't the window's");
         }
         finally
