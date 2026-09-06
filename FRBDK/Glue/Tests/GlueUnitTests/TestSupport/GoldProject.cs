@@ -247,7 +247,7 @@ internal static class GoldProject
         }
     }
 
-    static string FindRepoRoot()
+    internal static string FindRepoRoot()
     {
         var directory = new DirectoryInfo(AppContext.BaseDirectory);
         while (directory != null)
