@@ -37,7 +37,7 @@ public async Task MyTest()
 
 `StartAsync` (default `refreshLiveEditCodeFromSource: true`) loads the copied project into Glue and calls
 `GoldProject.EmbedLiveEditCode()` before building, so the test exercises the CURRENT branch's
-`Embedded/*.cs`, not whatever was checked in. See `LiveGameProcessTests.cs` for the two existing tests.
+`Embedded/*.cs`, not whatever was checked in. See `LiveGameProcessTests.cs` for worked examples.
 
 ## Adding a new drive/observe method
 
@@ -81,7 +81,13 @@ routed to `CommandReceiver.Receive`/`HandleDto(SelectObjectDto)` etc.
 
 ## CI
 
-Tagged `Category=LiveGame`, excluded from both `Category!=BuildSmoke` and `Category=BuildSmoke` CI filters
-(see `pr-tests.yml`/`glue.yml`) - it opens a real MonoGame DesktopGL window, and GitHub-hosted Windows
-runners aren't guaranteed a display/GPU context. Developer-machine-only:
-`dotnet test ... --filter "Category=LiveGame"`.
+Tagged `Category=LiveGame` and run by its own step in `pr-tests.yml`, ahead of the slower build smoke test.
+`glue.yml` still excludes it, since that workflow publishes releases and should not wait on a game window.
+Locally: `dotnet test ... --filter "Category=LiveGame"`.
+
+**Landmine — the runners have no GPU.** `opengl32.dll` resolves to Windows' generic OpenGL 1.1, which has
+no framebuffer objects, so MonoGame's `GraphicsDevice` throws `NoSuitableGraphicsDeviceException` and the
+game dies before it can connect. `pr-tests.yml`'s "Install Mesa llvmpipe" step downloads a software GL and
+points `FRB_LIVE_GAME_TEST_GL_RUNTIME` at it; `LiveGameProcess` copies those DLLs next to each game, since
+Windows resolves `opengl32.dll` from the exe's own directory ahead of System32. Every game runs from its
+own temp directory, so CI cannot stage them at a fixed path.

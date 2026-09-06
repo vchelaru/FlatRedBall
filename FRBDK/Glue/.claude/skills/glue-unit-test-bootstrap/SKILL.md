@@ -141,15 +141,19 @@ dotnet test FRBDK/Glue/Tests/GlueUnitTests/GlueUnitTests.csproj -p:SolutionDir="
 Rough orders of magnitude on a warm dev machine, so "is it stuck or just slow?" is answerable without
 guessing. All with `--no-build` after a successful build:
 
-| Run | Roughly |
-| --- | --- |
-| Warm incremental build of `GlueUnitTests.csproj` | ~40s (a real build is most of a full run's wall clock) |
-| `--filter "Category!=BuildSmoke"` (~280 tests) | ~25s |
-| `--filter "Category=BuildSmoke"` (~10 tests) | ~60s |
+| Run | Tests | On a CI runner |
+| --- | --- | --- |
+| Warm incremental build of `GlueUnitTests.csproj` | | ~40s (a real build is most of a full run's wall clock) |
+| `--filter "Category!=BuildSmoke&Category!=LiveGame"` | 827 | ~100s |
+| `--filter "Category=LiveGame"` | 17 | ~210s |
+| `--filter "Category=BuildSmoke"` | 69 | ~570s |
 
-A BuildSmoke run sitting at 5+ minutes is not a slow build. Check whether the child `dotnet build` has
-already exited while `testhost` is still alive — that is the signature of the pipe hang below, not of work
-in progress.
+BuildSmoke is slow by nature - every test copies a sample project to a temp directory and loads it through
+a real headless editor, and `AssemblyInfo.cs` disables parallelization assembly-wide because Glue's
+singletons are shared. A dev machine beats these numbers, so treat them as the ceiling rather than a target.
+
+Wall clock alone will not tell you a run is wedged. The signature is the child `dotnet build` having
+already exited while `testhost` is still alive - that is the pipe hang below, not work in progress.
 
 ## Landmine — every nested `dotnet` call must go through `NestedDotnetCli`
 
@@ -202,18 +206,22 @@ Then re-run with `--no-build` when nothing was recompiled since the last success
 `GumRuntimeMemberContractTests`, `GumGeneratedCodeCompilesTests`, and the `*CreationSmokeTests` classes are
 tagged `[Trait("Category", "BuildSmoke")]` because they shell out to real `dotnet build`/`dotnet test`
 child processes (building the whole engine or a scaffolded project) instead of just exercising codegen
-in-memory. `pr-tests.yml`/`glue.yml` deliberately run them as a separate `Category=BuildSmoke` step, and
-run everything else with `--filter "Category!=BuildSmoke"`.
+in-memory. `pr-tests.yml` deliberately runs them as their own step, `Category=LiveGame` as another, and
+everything else with `--filter "Category!=BuildSmoke&Category!=LiveGame"`.
+
+`Category=LiveGame` behaves the same way and costs more: each of those tests builds and launches a real
+game process (see [glue-live-game-testing](../glue-live-game-testing/SKILL.md)).
 
 A filter like `--filter "FullyQualifiedName~GumPlugin"` does not know about that split — it matches
 BuildSmoke tests in the same namespace right along with the fast ones. Run several of those together and
 each spawns its own nested `dotnet`/`testhost`/`VBCSCompiler` tree; a handful of them running serially is
 enough to make the machine crawl and a run that should take seconds look hung for many minutes.
 
-Always AND in `Category!=BuildSmoke` unless you specifically intend to run the slow build-smoke suite:
+Always AND in `Category!=BuildSmoke&Category!=LiveGame` unless you specifically intend to run one of the
+slow suites:
 
 ```
-dotnet test FRBDK/Glue/Tests/GlueUnitTests/GlueUnitTests.csproj -p:SolutionDir="<repo>\FRBDK\Glue\\" --filter "FullyQualifiedName~GumPlugin&Category!=BuildSmoke"
+dotnet test FRBDK/Glue/Tests/GlueUnitTests/GlueUnitTests.csproj -p:SolutionDir="<repo>\FRBDK\Glue\\" --filter "FullyQualifiedName~GumPlugin&Category!=BuildSmoke&Category!=LiveGame"
 ```
 
 ## Deep dive

@@ -88,7 +88,7 @@ glue.yml's build matrix only runs `Debug` (Release is commented out).
 
 ## What can be CI-gated (landmine)
 
-`*.Generated.cs` is gitignored repo-wide, with `Samples/BeefballKni` the only `!`-exception. Any project that depends on Glue codegen therefore **cannot build from a clean checkout** — including `Tests/TestProjectDesktopNet6` (the checklist's "Automated Test Project") and every sample but BeefballKni. Locally they build fine off untracked generated files already on disk, so adding one to a workflow produces a green local run and a red CI run.
+`*.Generated.cs` is gitignored repo-wide, with `Samples/BeefballKni` and `Samples/EditorTest1` the only `!`-exceptions. Any project that depends on Glue codegen therefore **cannot build from a clean checkout** — including `Tests/TestProjectDesktopNet6` (the checklist's "Automated Test Project") and every sample but BeefballKni. Locally they build fine off untracked generated files already on disk, so adding one to a workflow produces a green local run and a red CI run.
 
 The split this forces: `pr-tests.yml` gates what a clean checkout can build (Glue, `Tests/EngineUnitTests`, Forms under `DebugAutoBuild`); `scripts/Test-DownstreamBuilds.ps1` covers what needs a developer's machine (codegen-dependent projects plus the sibling game checkouts).
 
