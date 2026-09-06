@@ -60,6 +60,12 @@ Landmines: constructing an entity needs `FlatRedBall.FlatRedBallServices.Initial
 (null headless) — use the `(contentManagerName, addToManagers: false)` overload; a CSV-generated custom
 class emits public fields, not properties.
 
+A tile map's *data* needs no GraphicsDevice: `TiledMapSave.FromFile` plus
+`ReducedTileMapInfo.FromTiledMapSave` yield layer names, map dimensions, per-layer tileset image paths and
+every tile position headlessly. Only `LayeredTileMap`'s per-layer texture load
+(`TextureContentLoader.LoadTexture2D`, which throws when `Renderer.Graphics` is null) needs one — assert on
+the reduced info when a test cares which map loaded rather than how it rasterizes.
+
 ## Related skills
 
 - `gluj-versions` — the `GluxVersions` enum, `FileVersion` gating, and the version-bump checklist. This skill assumes that context; don't restate it here.
