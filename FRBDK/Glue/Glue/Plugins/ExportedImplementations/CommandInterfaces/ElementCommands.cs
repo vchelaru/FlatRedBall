@@ -422,6 +422,11 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
                 // etc).
                 if (File.Exists(absoluteOldFile))
                 {
+                    // A rename that also moves the element into a subfolder - which is what dragging it
+                    // onto a folder in the tree does, see DragDropManager.MoveElementToDirectory - can
+                    // name a directory that does not exist yet. File.Move does not create one, so the
+                    // rename threw part-way through, after the .glsj/.glej had already been moved.
+                    Directory.CreateDirectory(FileManager.GetDirectory(absoluteNewFile));
                     File.Move(absoluteOldFile, absoluteNewFile);
                 }
 

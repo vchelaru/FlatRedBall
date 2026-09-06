@@ -2411,6 +2411,14 @@ namespace FlatRedBallAddOns.Entities
     /// <returns>Stack of file paths.</returns>
     public static List<FilePath> GetAllCodeFilesFor(IElement element)
     {
+        // Both halves of this - the directory to enumerate and the names the enumerated files are
+        // matched against - have to hang off the same root, and that root is the Glue project's own
+        // directory, since element.Name ("Screens\GameScreen") is relative to it. For FRB1 the .gluj
+        // sits beside the .csproj so FileManager.RelativeDirectory would agree; for FRB2 the .gluj is
+        // three levels down under Content/FrbEditor/, and matching against the .csproj's folder gave
+        // every file a "Content\FrbEditor\" prefix that no element name starts with - so this returned
+        // nothing at all and a rename left the old .cs pair orphaned. See GitHub issue #2060.
+        string glueProjectDirectory = GlueState.Self.CurrentGlueProjectDirectory;
         string directory = FileManager.GetDirectory(GlueCommands.Self.GetAbsoluteFileName(element.Name + "/", false));
 
 
@@ -2420,7 +2428,7 @@ namespace FlatRedBallAddOns.Entities
         for (int i = foundCsFiles.Count - 1; i > -1; i--)
         {
             FilePath file = foundCsFiles[i];
-            string relativeFile = FileManager.MakeRelative(file.Original).Replace('/', '\\');
+            string relativeFile = FileManager.MakeRelative(file.Original, glueProjectDirectory).Replace('/', '\\');
             bool isValid = relativeFile.StartsWith(element.Name) && relativeFile[element.Name.Length] == '.';
 
             if (!isValid)
