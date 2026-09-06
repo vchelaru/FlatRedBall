@@ -40,6 +40,16 @@ internal sealed class LiveGameProcess : IDisposable
     /// </summary>
     internal const string OffscreenWindowEnvironmentVariable = "FRB_LIVE_GAME_TEST_OFFSCREEN";
 
+    /// <summary>
+    /// Set to a directory of OpenGL runtime DLLs (Mesa's llvmpipe build) to have them copied next to the
+    /// game before it launches. A GPU-less CI runner resolves opengl32.dll to Windows' generic software
+    /// implementation, which is OpenGL 1.1 and has no framebuffer objects, so MonoGame's GraphicsDevice
+    /// throws NoSuitableGraphicsDeviceException and the game dies before it can connect back. Windows
+    /// resolves opengl32.dll from the exe's own directory ahead of System32, so Mesa's copy sitting there
+    /// overrides the system one. Left unset on a developer machine, where the real driver already works.
+    /// </summary>
+    internal const string GraphicsRuntimeDirectoryEnvironmentVariable = "FRB_LIVE_GAME_TEST_GL_RUNTIME";
+
     readonly TempDir project;
     readonly System.Diagnostics.Process process;
     readonly GameJsonCommunicationPlugin.Common.GameConnectionManager connectionManager;
@@ -139,6 +149,8 @@ internal sealed class LiveGameProcess : IDisposable
             GameJsonCommunicationPlugin.Common.GameConnectionManager.Self = connectionManager;
 
             var exePath = Path.Combine(project.Root, exeRelativeToProjectRoot);
+            CopySuppliedGraphicsRuntimeNextToGame(Path.GetDirectoryName(exePath)!);
+
             var capturedStandardOutput = new ConcurrentQueue<string>();
             var capturedStandardError = new ConcurrentQueue<string>();
             var process = new System.Diagnostics.Process
@@ -237,6 +249,33 @@ internal sealed class LiveGameProcess : IDisposable
     /// this is the only way to observe that from outside the process.
     /// </summary>
     public IReadOnlyList<string> GetCapturedStandardOutputLines() => capturedStandardOutput.ToArray();
+
+    /// <summary>
+    /// Copies the GL runtime named by <see cref="GraphicsRuntimeDirectoryEnvironmentVariable"/>, if any,
+    /// into the directory the game is about to launch from. Each test builds its game into its own temp
+    /// directory, so CI cannot stage these DLLs itself the way it can for an in-process test host.
+    /// </summary>
+    static void CopySuppliedGraphicsRuntimeNextToGame(string exeDirectory)
+    {
+        var runtimeDirectory = Environment.GetEnvironmentVariable(GraphicsRuntimeDirectoryEnvironmentVariable);
+        if (string.IsNullOrEmpty(runtimeDirectory))
+        {
+            return;
+        }
+
+        // Failing loudly rather than launching anyway: a game left on the system's OpenGL 1.1 dies with a
+        // NoSuitableGraphicsDeviceException that says nothing about the DLLs having gone missing.
+        if (!Directory.Exists(runtimeDirectory))
+        {
+            throw new DirectoryNotFoundException(
+                $"{GraphicsRuntimeDirectoryEnvironmentVariable} is set to \"{runtimeDirectory}\", which does not exist.");
+        }
+
+        foreach (var dll in Directory.GetFiles(runtimeDirectory, "*.dll"))
+        {
+            File.Copy(dll, Path.Combine(exeDirectory, Path.GetFileName(dll)), overwrite: true);
+        }
+    }
 
     /// <summary>
     /// Formats whatever the game printed before it died, for a <see cref="StartAsync"/> failure message.

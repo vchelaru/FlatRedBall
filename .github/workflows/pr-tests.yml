@@ -49,11 +49,49 @@ jobs:
     - name: Run unit tests
       run: dotnet test 'FlatRedBall\FRBDK\Glue\Glue with All.sln' -c Debug --filter "Category!=BuildSmoke&Category!=LiveGame" --blame-hang-timeout 10m
 
+    # The runners have no GPU, so opengl32.dll resolves to Windows' generic OpenGL 1.1, which has no
+    # framebuffer objects - MonoGame's GraphicsDevice refuses to initialize on it and the game dies at
+    # startup. Mesa's llvmpipe is a software rasterizer that provides a modern GL; Windows resolves
+    # opengl32.dll from the exe's own directory before System32, so dropping Mesa's build next to the game
+    # overrides the system one. Same approach the Gum repo uses for its raylib and MonoGame suites.
+    #
+    # LiveGameProcess builds each game into its own temp directory, so it does the copying itself from the
+    # directory named here rather than this step staging the DLLs at a fixed path.
+    - name: Install Mesa llvmpipe (software GL, no GPU on the runner)
+      shell: pwsh
+      run: |
+        $ErrorActionPreference = "Stop"
+        $ProgressPreference = "SilentlyContinue"   # Invoke-WebRequest is far faster without progress rendering
+        $ver = "26.1.2"                            # pinned pal1000/mesa-dist-win release
+        $asset = "mesa3d-$ver-release-msvc.7z"
+        $url = "https://github.com/pal1000/mesa-dist-win/releases/download/$ver/$asset"
+        $archive = Join-Path $env:RUNNER_TEMP $asset
+        $extract = Join-Path $env:RUNNER_TEMP "mesa"
+        # Retried because this feeds a blocking test step, and a transient GitHub releases hiccup should
+        # not red the job on the first attempt.
+        for ($i = 1; $i -le 3; $i++) {
+          try { Write-Host "Downloading $url (attempt $i)"; Invoke-WebRequest -Uri $url -OutFile $archive; break }
+          catch {
+            if ($i -eq 3) { throw }
+            Write-Host "Download failed: $($_.Exception.Message). Retrying in $(5 * $i)s..."
+            Start-Sleep -Seconds (5 * $i)
+          }
+        }
+        7z x $archive "-o$extract" -y -bso0 -bsp0
+        $opengl = Get-ChildItem -Path $extract -Recurse -Filter opengl32.dll |
+                  Where-Object { $_.FullName -match '\\x64\\' } | Select-Object -First 1
+        if (-not $opengl) { Write-Error "x64 opengl32.dll not found in Mesa archive"; exit 1 }
+        "FRB_LIVE_GAME_TEST_GL_RUNTIME=$($opengl.Directory.FullName)" |
+          Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        Write-Host "Mesa GL runtime at $($opengl.Directory.FullName)"
+
     # Category=LiveGame builds Samples/EditorTest1, launches its real .exe, and drives it over the live-edit
     # socket protocol (see LiveGameProcess.cs), so it needs a real MonoGame DesktopGL window. Its own step,
     # not folded into the run above, so a wedged game process is attributed here. Around three minutes, and
     # ahead of the smoke test below so a failure here shows up without waiting out the slowest step.
     - name: Run live game tests
+      env:
+        GALLIUM_DRIVER: llvmpipe   # force Mesa's software rasterizer, inherited by the game processes
       run: dotnet test 'FlatRedBall\FRBDK\Glue\Glue with All.sln' -c Debug --filter "Category=LiveGame" --blame-hang-timeout 15m
 
     # Slowest step in the job by far: 69 tests, each copying a sample project out of the repo and loading it
