@@ -9,7 +9,41 @@
     <Window.Resources>
         <Style x:Key="myStyle" TargetType="Button">
             <Setter Property="Background" Value="#71AA34" />
-            
+
+        </Style>
+
+        <!-- A platform row: a short name over a muted detail line. The engine version is not on the
+             row because the group header above it already carries that. The closed ComboBox draws no
+             group header though, so the trigger below swaps in the fully qualified name and drops the
+             detail line whenever this template renders outside a ComboBoxItem - which is exactly the
+             selection box. -->
+        <DataTemplate x:Key="PlatformItemTemplate">
+            <StackPanel Margin="0,1">
+                <TextBlock x:Name="NameText" Text="{Binding FriendlyName}" />
+                <TextBlock x:Name="DetailsText" Text="{Binding Details}" FontSize="10" Opacity="0.6" />
+            </StackPanel>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding Details}" Value="{x:Null}">
+                    <Setter TargetName="DetailsText" Property="Visibility" Value="Collapsed" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type ComboBoxItem}}}" Value="{x:Null}">
+                    <Setter TargetName="NameText" Property="Text" Value="{Binding QualifiedFriendlyName}" />
+                    <Setter TargetName="DetailsText" Property="Visibility" Value="Collapsed" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+
+        <Style x:Key="PlatformGroupStyle" TargetType="GroupItem">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="GroupItem">
+                        <StackPanel>
+                            <TextBlock Text="{Binding Name}" FontWeight="Bold" Margin="4,6,0,2" />
+                            <ItemsPresenter Margin="10,0,0,0" />
+                        </StackPanel>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
     </Window.Resources>
     <Grid Margin="12,24,12,12">
@@ -40,7 +74,16 @@
                      KeyDown="TextBox_KeyDown"></TextBox>
 
             <TextBlock FontWeight="Bold" Grid.Column="0" Grid.Row="1" Margin="0,0,16,10" Text="Platform:" />
-            <ComboBox VerticalAlignment="Top"  ItemsSource="{Binding AvailableProjects, Mode=OneWay}" SelectedItem="{Binding SelectedProject}" Grid.Column="1" Grid.Row="1"></ComboBox>
+            <ComboBox VerticalAlignment="Top"
+                      x:Name="PlatformComboBox" x:FieldModifier="public"
+                      ItemsSource="{Binding GroupedProjects, Mode=OneWay}"
+                      SelectedItem="{Binding SelectedProject}"
+                      ItemTemplate="{StaticResource PlatformItemTemplate}"
+                      Grid.Column="1" Grid.Row="1">
+                <ComboBox.GroupStyle>
+                    <GroupStyle ContainerStyle="{StaticResource PlatformGroupStyle}" />
+                </ComboBox.GroupStyle>
+            </ComboBox>
 
             <TextBlock FontWeight="Bold" Grid.Column="0" Grid.Row="2" Margin="0,0,16,10" Text="Use local copy if available:" />
             <CheckBox IsChecked="{Binding UseLocalCopy}" Grid.Column="1" Grid.Row="2">
