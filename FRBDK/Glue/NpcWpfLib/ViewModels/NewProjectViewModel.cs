@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Text;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Media;
 using ToolsUtilities;
 
@@ -153,6 +155,28 @@ namespace Npc.ViewModels
             get;
             private set;
         } = new ObservableCollection<PlatformProjectInfo>();
+
+        ICollectionView groupedProjects;
+
+        /// <summary>
+        /// <see cref="AvailableProjects"/> grouped by <see cref="PlatformProjectInfo.Category"/>, so the
+        /// platform dropdown gets a header per engine version. Built on first use rather than in the
+        /// constructor because a CollectionView binds to the thread that creates it, and the headless
+        /// tests that construct this view model have no UI thread to bind to.
+        /// </summary>
+        public ICollectionView GroupedProjects
+        {
+            get
+            {
+                if (groupedProjects == null)
+                {
+                    groupedProjects = CollectionViewSource.GetDefaultView(AvailableProjects);
+                    groupedProjects.GroupDescriptions.Add(
+                        new PropertyGroupDescription(nameof(PlatformProjectInfo.Category)));
+                }
+                return groupedProjects;
+            }
+        }
 
         public PlatformProjectInfo SelectedProject
         {

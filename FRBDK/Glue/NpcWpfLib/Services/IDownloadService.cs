@@ -20,7 +20,7 @@ public class WpfDownloadService : IDownloadService
     {
         var urs = new UpdaterRuntimeSettings();
         urs.FileToDownload = fileToDownload;
-        urs.FormTitle = "Downloading " + viewModel.SelectedProject.FriendlyName;
+        urs.FormTitle = "Downloading " + viewModel.SelectedProject.QualifiedFriendlyName;
 
         urs.LocationToSaveFile = destinationZip;
 
