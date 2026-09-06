@@ -56,3 +56,10 @@ ever constructed, which permanently fixes that one singleton instance's `SyncTas
 thread first touched it — no later toggle of `TaskManager.SynchronousMode` (e.g. in
 `TaskManagerSynchronousModeTests`) un-fixes it, so nested calls always look "in task" there regardless of
 what the real threaded model would do.
+
+## An awaited task holds the whole queue
+
+`DoTaskManagerLoop` awaits `RunTask(...)` before its next `taskQueue.TryTake`, so a task keeps its slot
+across every `await` inside it and nothing else is dequeued until it completes. I/O awaited from inside
+a task — `GameCommunicationPlugin`'s socket round trips, each with a 10-second ceiling — stalls all
+queued project work for its full duration.
