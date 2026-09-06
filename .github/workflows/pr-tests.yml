@@ -74,3 +74,10 @@ jobs:
     # reference, so a broken one survives every other check in this file.
     - name: Build Forms under the Glue live-edit configuration
       run: dotnet build 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGLNet6.sln' -c DebugAutoBuild
+
+    # The only sample built here. It exists to demonstrate IDrawableBatch against a third-party
+    # library (MonoGame.Extended), so it is the one sample whose value depends on still compiling
+    # against both the current engine and a package version we do not control. The rest of
+    # Samples\ is unbuilt by CI.
+    - name: Build the MonoGame.Extended particle sample
+      run: dotnet build 'FlatRedBall\Samples\MonoGameExtendedParticles\MonoGameExtendedParticles.sln' -c Debug

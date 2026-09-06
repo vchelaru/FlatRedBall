@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <!-- MonoGame.Extended 6.x ships net8.0 only, so this sample cannot also target
+         net6.0 the way the other code-only samples do. -->
+    <TargetFramework>net8.0</TargetFramework>
+    <RollForward>Major</RollForward>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- MonoGame.Extended 6.1.1 is compiled against MonoGame 3.8.5 and binds to that exact
+         assembly version at runtime, so this sample pins 3.8.5.1 rather than the 3.8.4.1 the
+         engine project references. NuGet unifies the two to 3.8.5.1 for the app, which
+         FlatRedBall runs on fine. Pinning 3.8.4.1 here instead builds cleanly and then throws
+         FileNotFoundException for MonoGame.Framework 3.8.5.0 on the first particle call. -->
+    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.5.1" />
+    <PackageReference Include="MonoGame.Extended" Version="6.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\FlatRedBallDesktopGLNet6\FlatRedBallDesktopGLNet6.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- FlatRedBallServices.InitializeFlatRedBall loads this at startup. Every FlatRedBall
+         project ships a copy; this one came from the DesktopGL template. -->
+    <None Update="Content\Shader.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
