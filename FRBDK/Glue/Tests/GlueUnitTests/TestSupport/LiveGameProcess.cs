@@ -40,6 +40,16 @@ internal sealed class LiveGameProcess : IDisposable
     /// </summary>
     internal const string OffscreenWindowEnvironmentVariable = "FRB_LIVE_GAME_TEST_OFFSCREEN";
 
+    /// <summary>
+    /// Set to a directory of OpenGL runtime DLLs (Mesa's llvmpipe build) to have them copied next to the
+    /// game before it launches. A GPU-less CI runner resolves opengl32.dll to Windows' generic software
+    /// implementation, which is OpenGL 1.1 and has no framebuffer objects, so MonoGame's GraphicsDevice
+    /// throws NoSuitableGraphicsDeviceException and the game dies before it can connect back. Windows
+    /// resolves opengl32.dll from the exe's own directory ahead of System32, so Mesa's copy sitting there
+    /// overrides the system one. Left unset on a developer machine, where the real driver already works.
+    /// </summary>
+    internal const string GraphicsRuntimeDirectoryEnvironmentVariable = "FRB_LIVE_GAME_TEST_GL_RUNTIME";
+
     readonly TempDir project;
     readonly System.Diagnostics.Process process;
     readonly GameJsonCommunicationPlugin.Common.GameConnectionManager connectionManager;
@@ -139,7 +149,10 @@ internal sealed class LiveGameProcess : IDisposable
             GameJsonCommunicationPlugin.Common.GameConnectionManager.Self = connectionManager;
 
             var exePath = Path.Combine(project.Root, exeRelativeToProjectRoot);
+            CopySuppliedGraphicsRuntimeNextToGame(Path.GetDirectoryName(exePath)!);
+
             var capturedStandardOutput = new ConcurrentQueue<string>();
+            var capturedStandardError = new ConcurrentQueue<string>();
             var process = new System.Diagnostics.Process
             {
                 StartInfo = new System.Diagnostics.ProcessStartInfo(exePath)
@@ -147,6 +160,7 @@ internal sealed class LiveGameProcess : IDisposable
                     UseShellExecute = false,
                     WorkingDirectory = Path.GetDirectoryName(exePath),
                     RedirectStandardOutput = true,
+                    RedirectStandardError = true,
                 }
             };
             process.StartInfo.Environment[OffscreenWindowEnvironmentVariable] = "1";
@@ -164,17 +178,32 @@ internal sealed class LiveGameProcess : IDisposable
                     capturedStandardOutput.Enqueue(e.Data);
                 }
             };
+            // stderr is where an unhandled exception in the game lands, and that is the only account of why
+            // a startup crash happened - the exit code on its own is just 0xE0434352, "managed exception".
+            process.ErrorDataReceived += (_, e) =>
+            {
+                if (e.Data != null)
+                {
+                    capturedStandardError.Enqueue(e.Data);
+                }
+            };
             process.Start();
             process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
 
             var deadline = DateTime.UtcNow + (connectTimeout ?? TimeSpan.FromSeconds(20));
             while (!connectionManager.IsConnected && DateTime.UtcNow < deadline)
             {
                 if (process.HasExited)
                 {
+                    // WaitForExit() with no timeout also waits for the async output handlers to drain, so the
+                    // crash output is all in the queues by the time it is read. The overload taking a
+                    // timeout does not, and returns with the interesting lines still unread.
+                    process.WaitForExit();
                     connectionManager.Dispose();
                     throw new InvalidOperationException(
-                        $"{exePath} exited before connecting (exit code {process.ExitCode}).");
+                        $"{exePath} exited before connecting (exit code {process.ExitCode})." +
+                        DescribeCapturedOutput(capturedStandardOutput, capturedStandardError));
                 }
                 await Task.Delay(100);
             }
@@ -184,7 +213,8 @@ internal sealed class LiveGameProcess : IDisposable
                 try { process.Kill(entireProcessTree: true); } catch { }
                 connectionManager.Dispose();
                 throw new InvalidOperationException(
-                    $"{exePath} did not connect back to Glue on port {port} within {(connectTimeout ?? TimeSpan.FromSeconds(20)).TotalSeconds:0}s.");
+                    $"{exePath} did not connect back to Glue on port {port} within {(connectTimeout ?? TimeSpan.FromSeconds(20)).TotalSeconds:0}s." +
+                    DescribeCapturedOutput(capturedStandardOutput, capturedStandardError));
             }
 
             // Wired up so the real CommandSender can be used exactly as Glue uses it - see
@@ -219,6 +249,57 @@ internal sealed class LiveGameProcess : IDisposable
     /// this is the only way to observe that from outside the process.
     /// </summary>
     public IReadOnlyList<string> GetCapturedStandardOutputLines() => capturedStandardOutput.ToArray();
+
+    /// <summary>
+    /// Copies the GL runtime named by <see cref="GraphicsRuntimeDirectoryEnvironmentVariable"/>, if any,
+    /// into the directory the game is about to launch from. Each test builds its game into its own temp
+    /// directory, so CI cannot stage these DLLs itself the way it can for an in-process test host.
+    /// </summary>
+    static void CopySuppliedGraphicsRuntimeNextToGame(string exeDirectory)
+    {
+        var runtimeDirectory = Environment.GetEnvironmentVariable(GraphicsRuntimeDirectoryEnvironmentVariable);
+        if (string.IsNullOrEmpty(runtimeDirectory))
+        {
+            return;
+        }
+
+        // Failing loudly rather than launching anyway: a game left on the system's OpenGL 1.1 dies with a
+        // NoSuitableGraphicsDeviceException that says nothing about the DLLs having gone missing.
+        if (!Directory.Exists(runtimeDirectory))
+        {
+            throw new DirectoryNotFoundException(
+                $"{GraphicsRuntimeDirectoryEnvironmentVariable} is set to \"{runtimeDirectory}\", which does not exist.");
+        }
+
+        foreach (var dll in Directory.GetFiles(runtimeDirectory, "*.dll"))
+        {
+            File.Copy(dll, Path.Combine(exeDirectory, Path.GetFileName(dll)), overwrite: true);
+        }
+    }
+
+    /// <summary>
+    /// Formats whatever the game printed before it died, for a <see cref="StartAsync"/> failure message.
+    /// Without it the only evidence is an exit code, and a game that throws on startup reports the same
+    /// 0xE0434352 ("managed exception") whatever the cause.
+    /// </summary>
+    static string DescribeCapturedOutput(
+        ConcurrentQueue<string> standardOutput, ConcurrentQueue<string> standardError)
+    {
+        var result = new System.Text.StringBuilder();
+
+        foreach (var (name, lines) in new[]
+                 {
+                     ("stderr", standardError.ToArray()),
+                     ("stdout", standardOutput.ToArray()),
+                 })
+        {
+            result.Append(Environment.NewLine).Append(Environment.NewLine).Append(name).Append(':')
+                .Append(Environment.NewLine)
+                .Append(lines.Length == 0 ? "<empty>" : string.Join(Environment.NewLine, lines));
+        }
+
+        return result.ToString();
+    }
 
     /// <summary>
     /// Sends any DTO over the real CommandSender, for tests that care about what the running game answers

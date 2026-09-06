@@ -407,9 +407,9 @@ public class EditModeActivityGateTests
             // The blocked click (gate closed) must be logged, not just the ones that succeed - that's
             // exactly the case a user's machine-specific gate misfire needs to be read back from (#2183).
             logContents.ShouldContain("processed=False");
-            logContents.ShouldContain("foregroundOwnedByThisGame=False");
+            logContents.ShouldContain("isInputAllowedFromGlue=False isModalWindowOpen=False isParentGlueFocused=False");
             logContents.ShouldContain("processed=True");
-            logContents.ShouldContain("foregroundOwnedByThisGame=True");
+            logContents.ShouldContain("isInputAllowedFromGlue=True isModalWindowOpen=False isParentGlueFocused=True");
             logContents.ShouldContain("Selection changed: [TestObjectA]");
         }
         finally

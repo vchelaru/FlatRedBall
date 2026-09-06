@@ -82,7 +82,8 @@ jobs:
     - name: Run new-project build smoke test
       run: dotnet test 'FlatRedBall\FRBDK\Glue\Glue with All.sln' -c ${{ matrix.configuration }} --filter "Category=BuildSmoke"
 
-    # Category=LiveGame launches a real MonoGame DesktopGL window - see pr-tests.yml for why it's excluded.
+    # Category=LiveGame stays excluded here on purpose: pr-tests.yml runs it on every PR, and this workflow
+    # publishes releases over FTP, which should not wait on a real game window.
 
     - name: Zip and upload FRBDK
       if: ${{ github.event.inputs.PublishTarget == 'ftp-frbdk' }}

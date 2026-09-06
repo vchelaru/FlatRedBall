@@ -196,6 +196,7 @@ public class DailyBuildUpdateLauncherTests
             {
                 UseShellExecute = false,
                 CreateNoWindow = true,
+                RedirectStandardError = true,
             };
             startInfo.ArgumentList.Add("-NoProfile");
             startInfo.ArgumentList.Add("-NonInteractive");
@@ -204,8 +205,17 @@ public class DailyBuildUpdateLauncherTests
                 $"$ErrorActionPreference = 'Stop'; [ScriptBlock]::Create([IO.File]::ReadAllText('{scriptPath.Replace("'", "''")}')) | Out-Null");
 
             using var process = Process.Start(startInfo)!;
-            process.WaitForExit(10_000).ShouldBeTrue();
-            process.ExitCode.ShouldBe(0);
+
+            // A wedge detector, not a performance assertion - same reasoning as
+            // NestedDotnetCli.DefaultTimeout. Parsing the script takes milliseconds, but starting a cold
+            // powershell.exe on a loaded CI runner has gone past ten seconds on its own, which failed this
+            // test with nothing wrong with the script.
+            process.WaitForExit((int)TimeSpan.FromMinutes(2).TotalMilliseconds)
+                .ShouldBeTrue("powershell.exe did not finish parsing the generated script within 2 minutes");
+
+            // Without this the failure reads "expected 0 but was 1", which says a script somewhere failed
+            // to parse but not which line PowerShell objected to.
+            process.ExitCode.ShouldBe(0, process.StandardError.ReadToEnd());
         }
         finally
         {
