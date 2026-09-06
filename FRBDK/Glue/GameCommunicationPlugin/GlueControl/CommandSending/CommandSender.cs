@@ -49,7 +49,11 @@ namespace GameCommunicationPlugin.GlueControl.CommandSending
             }
         }
 
-        public static CommandSender Self { get; private set; }
+        /// <summary>
+        /// The process-wide sender. The setter is for tests only, which swap in a subclass that answers
+        /// without a game running; production code never reassigns it.
+        /// </summary>
+        public static CommandSender Self { get; internal set; }
 
         GameJsonCommunicationPlugin.Common.GameConnectionManager connectionManager;
         /// <summary>
@@ -84,7 +88,7 @@ namespace GameCommunicationPlugin.GlueControl.CommandSending
             return await SendCommand($"{dtoTypeName}:{serialized}", importance, waitForResponse:waitForResponse);
         }
 
-        public async Task<ToolsUtilities.GeneralResponse<T>> Send<T>(object dto, SendImportance importance = SendImportance.Normal)
+        public virtual async Task<ToolsUtilities.GeneralResponse<T>> Send<T>(object dto, SendImportance importance = SendImportance.Normal)
         {
 
             var sendResponse = await Send(dto, importance);
@@ -316,14 +320,19 @@ namespace GameCommunicationPlugin.GlueControl.CommandSending
             }
         }
 
-        internal async Task<Vector3> GetCameraPosition()
+        /// <summary>
+        /// The game's camera position, or null if the game did not answer. Callers use the position to
+        /// decide where to put a new object, so "the game is gone" has to be distinguishable from "the
+        /// camera is at the origin" - otherwise a dead game silently positions new objects at 0,0.
+        /// </summary>
+        internal virtual async Task<Vector3?> GetCameraPosition()
         {
             var sendResponse = await Send(new Dtos.GetCameraPosition());
             var cameraPositionAsString = sendResponse.Succeeded ? sendResponse.Data : String.Empty;
 
             if(string.IsNullOrEmpty(cameraPositionAsString))
             {
-                return Vector3.Zero;
+                return null;
             }
             else
             {
