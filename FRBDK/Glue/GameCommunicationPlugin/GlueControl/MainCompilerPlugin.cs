@@ -128,8 +128,6 @@ namespace GameCommunicationPlugin.GlueControl
                 (System.ComponentModel.ISynchronizeInvoke)MainGlueWindow.Self, CommandSender.Self,
                 () => gameHostView?.EmbeddedGameWindowHandle ?? IntPtr.Zero);
             _embeddedInputAllowedService.Initialize();
-            GlueFormsCore.Controls.MainPanelControl.SplitterDragChanged +=
-                _embeddedInputAllowedService.SetBlockedByUiInteraction;
 
             CreateBuildControl();
 

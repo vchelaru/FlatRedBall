@@ -131,6 +131,7 @@
     <Compile Include="GlueControl\Dtos\Dtos.cs" />
     <Compile Include="GlueControl\Dtos\GeneratePreviewDto.cs" />
     <Compile Include="GlueControl\Managers\EmbeddedInputAllowedService.cs" />
+    <Compile Include="GlueControl\Managers\GlueMouseGestureWatcher.cs" />
     <Compile Include="GlueControl\Managers\ModalReportingService.cs" />
     <EmbeddedResource Include="GlueControl\Embedded\CommandReplayLogic.cs" />
     <Compile Include="GlueControl\MainCompilerPlugin.cs" />
