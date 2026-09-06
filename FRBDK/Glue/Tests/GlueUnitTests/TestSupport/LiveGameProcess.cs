@@ -140,6 +140,7 @@ internal sealed class LiveGameProcess : IDisposable
 
             var exePath = Path.Combine(project.Root, exeRelativeToProjectRoot);
             var capturedStandardOutput = new ConcurrentQueue<string>();
+            var capturedStandardError = new ConcurrentQueue<string>();
             var process = new System.Diagnostics.Process
             {
                 StartInfo = new System.Diagnostics.ProcessStartInfo(exePath)
@@ -147,6 +148,7 @@ internal sealed class LiveGameProcess : IDisposable
                     UseShellExecute = false,
                     WorkingDirectory = Path.GetDirectoryName(exePath),
                     RedirectStandardOutput = true,
+                    RedirectStandardError = true,
                 }
             };
             process.StartInfo.Environment[OffscreenWindowEnvironmentVariable] = "1";
@@ -164,17 +166,32 @@ internal sealed class LiveGameProcess : IDisposable
                     capturedStandardOutput.Enqueue(e.Data);
                 }
             };
+            // stderr is where an unhandled exception in the game lands, and that is the only account of why
+            // a startup crash happened - the exit code on its own is just 0xE0434352, "managed exception".
+            process.ErrorDataReceived += (_, e) =>
+            {
+                if (e.Data != null)
+                {
+                    capturedStandardError.Enqueue(e.Data);
+                }
+            };
             process.Start();
             process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
 
             var deadline = DateTime.UtcNow + (connectTimeout ?? TimeSpan.FromSeconds(20));
             while (!connectionManager.IsConnected && DateTime.UtcNow < deadline)
             {
                 if (process.HasExited)
                 {
+                    // WaitForExit() with no timeout also waits for the async output handlers to drain, so the
+                    // crash output is all in the queues by the time it is read. The overload taking a
+                    // timeout does not, and returns with the interesting lines still unread.
+                    process.WaitForExit();
                     connectionManager.Dispose();
                     throw new InvalidOperationException(
-                        $"{exePath} exited before connecting (exit code {process.ExitCode}).");
+                        $"{exePath} exited before connecting (exit code {process.ExitCode})." +
+                        DescribeCapturedOutput(capturedStandardOutput, capturedStandardError));
                 }
                 await Task.Delay(100);
             }
@@ -184,7 +201,8 @@ internal sealed class LiveGameProcess : IDisposable
                 try { process.Kill(entireProcessTree: true); } catch { }
                 connectionManager.Dispose();
                 throw new InvalidOperationException(
-                    $"{exePath} did not connect back to Glue on port {port} within {(connectTimeout ?? TimeSpan.FromSeconds(20)).TotalSeconds:0}s.");
+                    $"{exePath} did not connect back to Glue on port {port} within {(connectTimeout ?? TimeSpan.FromSeconds(20)).TotalSeconds:0}s." +
+                    DescribeCapturedOutput(capturedStandardOutput, capturedStandardError));
             }
 
             // Wired up so the real CommandSender can be used exactly as Glue uses it - see
@@ -219,6 +237,30 @@ internal sealed class LiveGameProcess : IDisposable
     /// this is the only way to observe that from outside the process.
     /// </summary>
     public IReadOnlyList<string> GetCapturedStandardOutputLines() => capturedStandardOutput.ToArray();
+
+    /// <summary>
+    /// Formats whatever the game printed before it died, for a <see cref="StartAsync"/> failure message.
+    /// Without it the only evidence is an exit code, and a game that throws on startup reports the same
+    /// 0xE0434352 ("managed exception") whatever the cause.
+    /// </summary>
+    static string DescribeCapturedOutput(
+        ConcurrentQueue<string> standardOutput, ConcurrentQueue<string> standardError)
+    {
+        var result = new System.Text.StringBuilder();
+
+        foreach (var (name, lines) in new[]
+                 {
+                     ("stderr", standardError.ToArray()),
+                     ("stdout", standardOutput.ToArray()),
+                 })
+        {
+            result.Append(Environment.NewLine).Append(Environment.NewLine).Append(name).Append(':')
+                .Append(Environment.NewLine)
+                .Append(lines.Length == 0 ? "<empty>" : string.Join(Environment.NewLine, lines));
+        }
+
+        return result.ToString();
+    }
 
     /// <summary>
     /// Sends any DTO over the real CommandSender, for tests that care about what the running game answers
