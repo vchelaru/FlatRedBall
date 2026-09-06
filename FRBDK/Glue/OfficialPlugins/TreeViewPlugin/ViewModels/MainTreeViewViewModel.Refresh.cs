@@ -88,6 +88,16 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
                             var newParentTreeNode = GetTreeNodeByRelativePath(desiredFolderForElement);
 
+                            if (newParentTreeNode == null)
+                            {
+                                // Folder nodes are built from Directory.GetDirectories, which otherwise
+                                // only runs on project load - so a rename that names a folder which does
+                                // not exist yet (typing "NewFolder/Ball" into the inline rename creates
+                                // it) has nowhere to move the element to. Re-scan before giving up.
+                                RefreshDirectoryNodes();
+                                newParentTreeNode = GetTreeNodeByRelativePath(desiredFolderForElement);
+                            }
+
                             // on a rename, the parent node hasn't yet been renamed yet, so let's tolerate nulls:
                             if(newParentTreeNode != null)
                             {
