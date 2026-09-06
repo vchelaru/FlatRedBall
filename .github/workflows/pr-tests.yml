@@ -43,9 +43,11 @@ jobs:
 
     # Run via the .sln so $(SolutionDir) is defined (OfficialPlugins has a post-build step that needs it).
     #
-    # --blame-hang-timeout is a backstop, not an expectation: these suites run in well under a minute each
-    # (see issue #1969), so a test sitting for 10 minutes is wedged and should fail the job rather than sit
-    # there until the runner's own limit kills it with no attribution. It also names the test that hung.
+    # --blame-hang-timeout is a backstop, not an expectation. No single test here runs for minutes (the
+    # whole 827-test run below takes about 100s, and the slower steps are slow because of how many tests
+    # they have, not how long any one of them takes), so a test sitting for the timeout is wedged and
+    # should fail the job rather than sit there until the runner's own limit kills it with no
+    # attribution. It also names the test that hung. See issue #1969.
     - name: Run unit tests
       run: dotnet test 'FlatRedBall\FRBDK\Glue\Glue with All.sln' -c Debug --filter "Category!=BuildSmoke&Category!=LiveGame" --blame-hang-timeout 10m
 
