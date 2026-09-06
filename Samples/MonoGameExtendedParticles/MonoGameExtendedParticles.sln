@@ -1,0 +1,48 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoGameExtendedParticles", "MonoGameExtendedParticles\MonoGameExtendedParticles.csproj", "{34258B76-C0FF-4981-82A4-61A2B33DE0E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlatRedBallDesktopGLNet6", "..\..\Engines\FlatRedBallXNA\FlatRedBallDesktopGLNet6\FlatRedBallDesktopGLNet6.csproj", "{F072AF21-7284-4C92-8C98-788D18C9F78E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{34258B76-C0FF-4981-82A4-61A2B33DE0E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{34258B76-C0FF-4981-82A4-61A2B33DE0E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{34258B76-C0FF-4981-82A4-61A2B33DE0E8}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{34258B76-C0FF-4981-82A4-61A2B33DE0E8}.Debug|x64.Build.0 = Debug|Any CPU
+		{34258B76-C0FF-4981-82A4-61A2B33DE0E8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{34258B76-C0FF-4981-82A4-61A2B33DE0E8}.Debug|x86.Build.0 = Debug|Any CPU
+		{34258B76-C0FF-4981-82A4-61A2B33DE0E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{34258B76-C0FF-4981-82A4-61A2B33DE0E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{34258B76-C0FF-4981-82A4-61A2B33DE0E8}.Release|x64.ActiveCfg = Release|Any CPU
+		{34258B76-C0FF-4981-82A4-61A2B33DE0E8}.Release|x64.Build.0 = Release|Any CPU
+		{34258B76-C0FF-4981-82A4-61A2B33DE0E8}.Release|x86.ActiveCfg = Release|Any CPU
+		{34258B76-C0FF-4981-82A4-61A2B33DE0E8}.Release|x86.Build.0 = Release|Any CPU
+		{F072AF21-7284-4C92-8C98-788D18C9F78E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F072AF21-7284-4C92-8C98-788D18C9F78E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F072AF21-7284-4C92-8C98-788D18C9F78E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F072AF21-7284-4C92-8C98-788D18C9F78E}.Debug|x64.Build.0 = Debug|Any CPU
+		{F072AF21-7284-4C92-8C98-788D18C9F78E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F072AF21-7284-4C92-8C98-788D18C9F78E}.Debug|x86.Build.0 = Debug|Any CPU
+		{F072AF21-7284-4C92-8C98-788D18C9F78E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F072AF21-7284-4C92-8C98-788D18C9F78E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F072AF21-7284-4C92-8C98-788D18C9F78E}.Release|x64.ActiveCfg = Release|Any CPU
+		{F072AF21-7284-4C92-8C98-788D18C9F78E}.Release|x64.Build.0 = Release|Any CPU
+		{F072AF21-7284-4C92-8C98-788D18C9F78E}.Release|x86.ActiveCfg = Release|Any CPU
+		{F072AF21-7284-4C92-8C98-788D18C9F78E}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
