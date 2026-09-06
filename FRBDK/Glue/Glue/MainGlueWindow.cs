@@ -28,7 +28,7 @@ using Microsoft.Xna.Framework.Audio;
 using System.Windows.Forms.Integration;
 using GlueFormsCore.Controls;
 using System.Diagnostics;
-using System.Text.RegularExpressions;
+using FlatRedBall.Glue.VSHelpers;
 using System.Linq;
 using Newtonsoft.Json;
 using System.Threading;
@@ -66,27 +66,14 @@ public partial class MainGlueWindow : Form, IMainGlueWindow
     #endregion
     
     // internal (not private) so a headless test host can run the same real SDK-discovery Glue.exe runs -
-    // without MSBUILD_EXE_PATH pointed at a pre-7 SDK, Microsoft.Build.Evaluation.Project can't resolve
-    // the SDK imports in any SDK-style .csproj, so no real game project can be loaded.
+    // without MSBUILD_EXE_PATH pointed at an SDK whose MSBuild matches the one Glue loads,
+    // Microsoft.Build.Evaluation.Project can't resolve the SDK imports in any SDK-style .csproj, so no real
+    // game project can be loaded. MsBuildSdkSelector documents which SDKs qualify and why.
     internal static void SetMsBuildEnvironmentVariable()
     {
-        // August 21, 2023
-        // At some point in 
-        // the past, loading
-        // .NET 6.0 projects in
-        // Glue failed. It seemed
-        // to happen on machines which
-        // only had .NET 7 installed. At
-        // one point I had a Github issue which
-        // discussed this but I can't find it anymore.
-        // This problem does not occur for older (.NET 4.7)
-        // projects, so this is only needed when loading .NET
-        // 6 projects. However, this code is run 1 time when Glue
-        // first starts up. At this point we don't know what kind of 
-        // project will be loaded. In fact, one project could get loaded
-        // then a different one could get loaded. Also, .NET 4.7 is old, and
-        // fewer and fewer projects using .NET 4.7 exist, so over time this will
-        // be for all projects. Therefore, just do the check always.
+        // This only matters for SDK-style (.NET 6 and up) projects - older .NET 4.7 projects evaluate
+        // without it. But this runs once at startup, before we know which kind of project will be loaded
+        // (and one session can load several), so just always do the check.
         var startInfo = new ProcessStartInfo("dotnet", "--list-sdks")
         {
             RedirectStandardOutput = true
@@ -139,7 +126,10 @@ public partial class MainGlueWindow : Form, IMainGlueWindow
 
         if (String.IsNullOrEmpty(output))
         {
-            var message = String.Format(Localization.Texts.ErrorCouldNotFindNetSix, output) + Localization.Texts.ErrorDotnetMultipleIssue;
+            var message = NoUsableSdkMessage(output) +
+                "You may have multiple installations of .NET on your machine. More info here: " +
+                "https://stackoverflow.com/questions/65692530/why-dotnet-list-sdks-does-not-show-installed-sdks-on-windows-10. " +
+                "Press CTRL+C on this popup to copy the text so you can paste it in an external editor and open that URL.";
 
             GlueCommands.Self.PrintOutput(message);
 
@@ -147,57 +137,27 @@ public partial class MainGlueWindow : Form, IMainGlueWindow
             return;
         }
 
-        var sdkPaths = Regex.Matches(output, "([0-9]+)[.]([0-9]+)[.]([0-9]+) \\[(.*)\\]")
-            .OfType<Match>()
-            // https://stackoverflow.com/questions/75702346/why-does-the-presence-of-net-7-0-2-sdk-cause-the-sdk-resolver-microsoft-dotnet?noredirect=1#comment133550210_75702346
-            // "7.0." instead of "7.0.201"
-            //.Where(item => item.Value.StartsWith("7.0.") == false)
-            .Where(m => int.Parse(m.Groups[1].Value) < 7)
-            .OrderByDescending(m => int.Parse(m.Groups[1].Value))
-            .ThenByDescending(m => int.Parse(m.Groups[2].Value))
-            .ThenByDescending(m => int.Parse(m.Groups[3].Value))
-            .Select(m => System.IO.Path.Combine(m.Groups[4].Value, m.Groups[1].Value + "." + m.Groups[2].Value + "." + m.Groups[3].Value, "MSBuild.dll"))
-            .ToArray();
+        var sdkPaths = MsBuildSdkSelector.GetUsableMsBuildPathsNewestFirst(output,
+            MsBuildSdkSelector.EngineVersion, MsBuildSdkSelector.GetMsBuildVersionOrNull);
 
-        //Useful for debugging query above
-        //var allSdks = sdkPaths.Aggregate((a, b) => a + "," + b);
-        //MessageBox.Show(allSdks);
-
-        if (sdkPaths.Any())
+        if (sdkPaths.Count > 0)
         {
-            string sdkPath = null;
-
-            foreach (var path in sdkPaths)
-            {
-                if (File.Exists(path))
-                {
-                    sdkPath = path;
-                    break;
-                }
-            }
-
-            //sdkPaths.FirstOrDefault(item => item.Contains("sdk\\6."));
-            if (String.IsNullOrEmpty(sdkPath))
-            {
-                //    sdkPath = sdkPaths.Last();
-
-                var message = String.Format(Localization.Texts.ErrorCouldNotFindNetSix, output);
-                GlueCommands.Self.PrintOutput(message);
-                DialogService.ShowMessage(message);
-            }
-            else
-            {
-                Environment.SetEnvironmentVariable("MSBUILD_EXE_PATH", sdkPath);
-                GlueCommands.Self.PrintOutput($"Using MSBUILD from {sdkPath}");
-            }
+            var sdkPath = sdkPaths[0];
+            Environment.SetEnvironmentVariable("MSBUILD_EXE_PATH", sdkPath);
+            GlueCommands.Self.PrintOutput($"Using MSBUILD from {sdkPath}");
         }
         else
         {
-            var message = String.Format(Localization.Texts.ErrorCouldNotFindNetSix, output);
+            var message = NoUsableSdkMessage(output);
             GlueCommands.Self.PrintOutput(message);
             DialogService.ShowMessage(message);
         }
     }
+
+    static string NoUsableSdkMessage(string dotnetListSdksOutput) =>
+        $"Could not find an installed .NET SDK whose MSBuild is compatible with the one Glue uses " +
+        $"({MsBuildSdkSelector.EngineVersion}). Glue may not be able to load projects. We recommend " +
+        $"installing the .NET 6 SDK. dotnet --list-sdks output: {dotnetListSdksOutput}";
 
     public MainGlueWindow()
     {
