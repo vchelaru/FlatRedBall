@@ -25,9 +25,15 @@ namespace GlueUnitTests.EntityInputMovementPlugin;
 ///
 /// Builds a synthetic 3-tile ladder column via the real TileShapeCollection.AddCollisionAtWorld API
 /// (the same method TileShapeCollectionLayeredTileMapExtensions.AddCollisionFrom uses per tile) rather
-/// than loading the real Level1Map.tmx through LayeredTileMap - that path needs a GraphicsDevice to
-/// load tileset textures, which a headless test process doesn't have. The synthetic column is real
-/// engine geometry, just not sourced from the shipped map file.
+/// than loading the real Level1Map.tmx through LayeredTileMap. The synthetic column is real engine
+/// geometry, just not sourced from the shipped map file.
+///
+/// Only the texture half of a tile map needs a GraphicsDevice, not the map itself: LayeredTileMap's
+/// per-layer MapDrawableBatch calls FlatRedBallServices.Load&lt;Texture2D&gt;, which throws when
+/// Renderer.Graphics is null (see TextureContentLoader.LoadTexture2D). Everything upstream of that -
+/// TiledMapSave.FromFile and ReducedTileMapInfo.FromTiledMapSave, which carry layer names, map
+/// dimensions, per-layer tileset image paths and every tile's position - loads fine headlessly, and is
+/// the right level to assert on when a test cares about map *content* rather than tile rendering.
 /// </summary>
 [Trait("Category", "BuildSmoke")]
 public class LadderTopOfLadderYTests
@@ -59,8 +65,8 @@ public class LadderTopOfLadderYTests
 
         // A real TileShapeCollection, built the same way production code adds tiles one at a time
         // (TileShapeCollectionLayeredTileMapExtensions.AddCollisionFrom calls AddCollisionAtWorld per
-        // tile) - just without going through a LayeredTileMap loaded from the .tmx, which needs a
-        // GraphicsDevice this headless test process doesn't have.
+        // tile) - just without going through a LayeredTileMap, whose tileset texture load needs a
+        // GraphicsDevice this headless test process doesn't have (see this class's doc comment).
         var ladderCollision = Activator.CreateInstance(tileShapeCollectionType!);
         const float gridSize = 16f; // matches Level1Map.tmx's tilewidth/tileheight
         tileShapeCollectionType!.GetProperty("GridSize")!.SetValue(ladderCollision, gridSize);
