@@ -73,8 +73,10 @@ FRB1-only output into a project that cannot compile it. `GenerateCodeCommands` t
 nested `.csproj` item and honour the FRB1 write-gate, neither of which applies — FRB2's SDK-style project
 already globs `**/*.cs`. Both halves resolve through `IFileCommands.GetGeneratedCodeFilePath` /
 `GetCustomCodeFilePath`, which are rooted at `CurrentGlueProjectDirectory` (the `.gluj`'s folder).
-Composing either from `FileManager.RelativeDirectory` instead is identical for FRB1 and splits the pair
-across directories for FRB2.
+`FileManager.RelativeDirectory` (the `.csproj`'s folder) is the wrong root in both directions: composing
+a path from it splits the pair across directories, and making a path relative to it prefixes
+`Content\FrbEditor\` onto a name that is supposed to match `element.Name`. Both read as correct for FRB1,
+where the two roots are the same directory.
 
 The tree view's Code/Events nodes still key off `WritesCodeForCurrentProject`, so an opted-in project's
 generated files show up on disk but not in Glue's Explorer tree.
