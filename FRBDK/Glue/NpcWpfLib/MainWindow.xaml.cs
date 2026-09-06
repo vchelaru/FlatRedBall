@@ -71,7 +71,13 @@ namespace Npc
                             var folder = dialog.SelectedPath;
 
                             var project = new PlatformProjectInfo();
-                            project.FriendlyName = "Local Project";
+                            // The folder name reads as the row and the full path as the muted line
+                            // under it - picking two local templates whose folders sit in different
+                            // places used to give two rows of near-identical long paths.
+                            project.Category = PlatformProjectInfo.OtherCategory;
+                            var folderName = FileManager.RemovePath(folder.TrimEnd('\\', '/'));
+                            project.FriendlyName = string.IsNullOrEmpty(folderName) ? folder : folderName;
+                            project.Details = folder;
                             project.LocalSourceFile = folder;
                             // assume true:
                             project.SupportedInGlue = true;
