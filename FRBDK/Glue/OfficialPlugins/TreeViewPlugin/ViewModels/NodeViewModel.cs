@@ -62,6 +62,8 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         public static BitmapImage EventIcon;
         public static BitmapImage FileIcon;
         public static BitmapImage FileIconWildcard;
+        public static BitmapImage FileIconLink;
+        public static BitmapImage FileIconWildcardLink;
         public static BitmapImage FolderClosedIcon;
         public static BitmapImage FolderOpenIcon;
         public static BitmapImage LayersIcon;
@@ -72,6 +74,31 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         public static BitmapImage TileShapeCollectionIcon;
         public static BitmapImage VariableIcon;
         public static BitmapImage VariableIconDerived;
+
+        /// <summary>
+        /// The tree view icon for a file, badged for whether it was created by a wildcard and whether it
+        /// points outside its container's own content folder (GitHub issue #2108). Every place that shows
+        /// a ReferencedFileSave node goes through here so the badges can't drift apart.
+        /// </summary>
+        public static BitmapImage GetIconFor(ReferencedFileSave referencedFileSave) =>
+            GetIconFor(referencedFileSave, referencedFileSave?.GetIsLinkedOutsideContainerFolder() == true);
+
+        /// <summary>
+        /// GetIconFor for a caller that already knows the file's container (null for global content), so
+        /// the link check doesn't pay for an ObjectFinder search to rediscover it.
+        /// </summary>
+        public static BitmapImage GetIconFor(ReferencedFileSave referencedFileSave, GlueElement container) =>
+            GetIconFor(referencedFileSave, referencedFileSave?.GetIsLinkedOutsideContainerFolder(container) == true);
+
+        private static BitmapImage GetIconFor(ReferencedFileSave referencedFileSave, bool isLink)
+        {
+            if (referencedFileSave?.IsCreatedByWildcard == true)
+            {
+                return isLink ? FileIconWildcardLink : FileIconWildcard;
+            }
+
+            return isLink ? FileIconLink : FileIcon;
+        }
 
         public static BitmapImage FromSource(string source)
         {
@@ -88,6 +115,8 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             if (source == EventIcon.UriSource.OriginalString) return EventIcon;
             if (source == FileIcon.UriSource.OriginalString) return FileIcon;
             if (source == FileIconWildcard.UriSource.OriginalString) return FileIconWildcard;
+            if (source == FileIconLink.UriSource.OriginalString) return FileIconLink;
+            if (source == FileIconWildcardLink.UriSource.OriginalString) return FileIconWildcardLink;
             if (source == FolderClosedIcon.UriSource.OriginalString) return FolderClosedIcon;
             if (source == FolderOpenIcon.UriSource.OriginalString) return FolderOpenIcon;
             if (source == LayersIcon.UriSource.OriginalString) return LayersIcon;
@@ -256,6 +285,8 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             EventIcon = LoadIcon("icon_event");
             FileIcon = LoadIcon("icon_file_standard");
             FileIconWildcard = LoadIcon("icon_file_wildcard");
+            FileIconLink = LoadIcon("icon_file_link");
+            FileIconWildcardLink = LoadIcon("icon_file_wildcard_link");
             FolderClosedIcon = LoadIcon("icon_folder");
             FolderOpenIcon = LoadIcon("icon_folder_open");
             LayersIcon = LoadIcon("icon_layers");

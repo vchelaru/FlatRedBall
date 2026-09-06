@@ -58,9 +58,6 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                         nodeToAddTo = this;
                     }
                     nodeForFile = new NodeViewModel( TreeNodeType.ReferencedFileSaveNode, nodeToAddTo);
-                    nodeForFile.ImageSource = file.IsCreatedByWildcard
-                        ? NodeViewModel.FileIconWildcard
-                        : NodeViewModel.FileIcon;
                     nodeForFile.IsEditable = true;
 
                     nodeForFile.Tag = file;
@@ -113,6 +110,10 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                         nodeForFile.Text = newText;
                     }
                 }
+
+                // Set outside the new-node branch: whether a file counts as linked can change while the
+                // node already exists (moving the file, or renaming its owning element).
+                nodeForFile.ImageSource = NodeViewModel.GetIconFor(file, glueElement);
             }
             #endregion
 

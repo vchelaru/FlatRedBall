@@ -741,6 +741,11 @@ public partial class MainTreeViewControl : UserControl, ITreeViewDisplay
                     // Don't show wildcard, since this could change
                     imageSource = NodeViewModel.FileIcon;
                 }
+                if (imageSource == NodeViewModel.FileIconWildcardLink)
+                {
+                    // Same as above - drop the wildcard badge but keep the link badge
+                    imageSource = NodeViewModel.FileIconLink;
+                }
 
                 bookmark.ImageSource = imageSource.UriSource.OriginalString;
 

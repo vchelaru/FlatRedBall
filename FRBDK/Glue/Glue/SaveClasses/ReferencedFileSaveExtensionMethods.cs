@@ -314,6 +314,49 @@ namespace FlatRedBall.Glue.SaveClasses
             instance.GetContainerType() == SaveClasses.ContainerType.Screen;
 
         /// <summary>
+        /// Whether the file lives outside the content folder owned by its container - a Screen or Entity
+        /// file that isn't under that element's own folder, or a global file that isn't under GlobalContent.
+        /// Such a file is a reference to content that lives somewhere else (another element's folder,
+        /// GlobalContent, or loose in the Content folder), so the tree view marks it with a link icon.
+        /// </summary>
+        public static bool GetIsLinkedOutsideContainerFolder(this ReferencedFileSave instance) =>
+            GetIsFileOutsideContainerFolder(instance?.Name, instance?.GetContainer()?.Name);
+
+        /// <summary>
+        /// GetIsLinkedOutsideContainerFolder for a caller that already knows the container (null for global
+        /// content), so it doesn't pay for an ObjectFinder search to rediscover it.
+        /// </summary>
+        public static bool GetIsLinkedOutsideContainerFolder(this ReferencedFileSave instance, GlueElement container) =>
+            GetIsFileOutsideContainerFolder(instance?.Name, container?.Name);
+
+        /// <summary>
+        /// The container-folder comparison behind GetIsLinkedOutsideContainerFolder, split out so it can be
+        /// tested and called without an ObjectFinder lookup.
+        /// </summary>
+        /// <param name="referencedFileName">The ReferencedFileSave's Name - a path relative to the content
+        /// project, like "Entities/Player/PlayerSheet.png".</param>
+        /// <param name="containerName">The owning GlueElement's Name, like "Entities\Player", or null for
+        /// global content.</param>
+        public static bool GetIsFileOutsideContainerFolder(string referencedFileName, string containerName)
+        {
+            if (string.IsNullOrWhiteSpace(referencedFileName))
+            {
+                return false;
+            }
+
+            // Element names use backslashes ("Entities\Player") while file names use forward slashes, and
+            // an element's content folder is its name - see ElementCommands.GetFullPathContentDirectory.
+            var containerFolder = string.IsNullOrWhiteSpace(containerName)
+                ? "GlobalContent"
+                : containerName;
+
+            containerFolder = containerFolder.Replace('\\', '/').TrimEnd('/') + "/";
+
+            return !referencedFileName.Replace('\\', '/')
+                .StartsWith(containerFolder, StringComparison.OrdinalIgnoreCase);
+        }
+
+        /// <summary>
         /// Returns the associated AssetTypeInfo for the ReferencedFileSave. If the ReferencedFileSave
         /// specifies a runtime type, then this will return the AssetTypeInfo for that runtime type. Otherwise
         /// the AssetTypeInfo for the extension will be returned.

@@ -219,10 +219,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             NodeViewModel NodeFor(ReferencedFileSave rfs)
             {
                 var nodeForFile = new NodeViewModel(TreeNodeType.ReferencedFileSaveNode);
-                nodeForFile.ImageSource =
-                    rfs.IsCreatedByWildcard
-                        ? NodeViewModel.FileIconWildcard
-                        : NodeViewModel.FileIcon;
+                nodeForFile.ImageSource = NodeViewModel.GetIconFor(rfs);
                 nodeForFile.Tag = rfs;
                 nodeForFile.Text = rfs.ToString();
                 return nodeForFile;
