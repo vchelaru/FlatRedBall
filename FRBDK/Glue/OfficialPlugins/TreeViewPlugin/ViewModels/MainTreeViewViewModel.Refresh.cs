@@ -212,10 +212,8 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 string textToSet = FileManager.RemovePath(rfs.Name);
                 nodeForFile.Text = textToSet;
                 nodeForFile.IsEditable = true;
-                nodeForFile.ImageSource =
-                    rfs.IsCreatedByWildcard
-                    ? NodeViewModel.FileIconWildcard
-                    : NodeViewModel.FileIcon;
+                // These are GlueProject.GlobalFiles, so the container is global content (null) by definition.
+                nodeForFile.ImageSource = NodeViewModel.GetIconFor(rfs, null);
 
 
             }
