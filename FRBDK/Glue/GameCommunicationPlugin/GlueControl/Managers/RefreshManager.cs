@@ -535,13 +535,25 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
         internal async Task HandleNewObjectList(List<NamedObjectSave> newObjectList)
         {
-            var shouldSkipPositioning = NextPositionValues?.SkipPositioningForNextGroup == true;
-            if(NextPositionValues != null)
-            {
-                NextPositionValues = null;
-            }
+            // Read once and clear: this is a hand-off from whoever caused the add (a drop on the game
+            // window, a paste), and it only applies to this group.
+            var positionValues = NextPositionValues;
+            NextPositionValues = null;
+
             if (ViewModel.IsRunning && ViewModel.IsEditChecked)
             {
+                // Position before sending, so the object is created where it belongs instead of being
+                // created at the origin and moved by a second command that may never be sent.
+                if (positionValues?.SkipPositioningForNextGroup != true)
+                {
+                    var firstPositionedObject = newObjectList.FirstOrDefault(ShouldPositionNewObjectAtCamera);
+
+                    if (firstPositionedObject != null)
+                    {
+                        await ApplyNewObjectPosition(firstPositionedObject, positionValues?.ForcedNextObjectPosition);
+                    }
+                }
+
                 var list = new Dtos.AddObjectDtoList();
 
                 foreach (var newObject in newObjectList)
@@ -558,18 +570,6 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 if (restartReason != null)
                 {
                     CreateStopAndRestartTask(restartReason);
-                }
-                else
-                {
-                    if(!shouldSkipPositioning)
-                    {
-                        var firstPositionedObject = newObjectList.FirstOrDefault(ShouldPositionNewObjectAtCamera);
-
-                        if (firstPositionedObject != null)
-                        {
-                            await AdjustNewObjectToCameraPosition(firstPositionedObject, NextPositionValues?.ForcedNextObjectPosition);
-                        }
-                    }
                 }
             }
         }
@@ -655,61 +655,61 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 assetTypeInfo != AvailableAssetTypes.CommonAtis?.Camera;
         }
 
-        private async Task AdjustNewObjectToCameraPosition(NamedObjectSave newNamedObject, Vector2? forcedNextObjectPosition)
+        /// <summary>
+        /// Writes the position a newly added object should have onto the object itself, so that the
+        /// position is part of the object's creation rather than a separate command sent afterwards.
+        /// </summary>
+        /// <remarks>
+        /// Assigning the variables here instead of through GluxCommands.SetVariableOnAsync is deliberate:
+        /// that would notify plugins, which sends the game a second command setting a variable on an
+        /// object it is being told to create in the same breath. The AddObjectDto carries the whole
+        /// NamedObjectSave and the game applies its InstructionSaves on creation, so one message is enough.
+        /// </remarks>
+        private async Task ApplyNewObjectPosition(NamedObjectSave newNamedObject, Vector2? forcedPosition)
         {
-            Vector2 newPosition = Vector2.Zero;
+            var element = ObjectFinder.Self.GetElementContaining(newNamedObject);
+            var newPosition = forcedPosition;
 
-            if (forcedNextObjectPosition != null)
+            if (newPosition == null && element is ScreenSave)
             {
-                newPosition = forcedNextObjectPosition.Value;
-                forcedNextObjectPosition = null;
-            }
-            else
-            {
-                if (GlueState.Self.CurrentScreenSave != null)
+                // Only objects in a Screen go to the camera. One added to an Entity is positioned relative
+                // to that Entity, where the origin is the right place for it.
+                var cameraPosition = await CommandSender.Self.GetCameraPosition();
+
+                if (cameraPosition != null)
                 {
-                    newPosition = await GetNewNosPositionFromCamera(newNamedObject);
+                    newPosition = GetNonOverlappingPosition(
+                        new Vector2(cameraPosition.Value.X, cameraPosition.Value.Y), newNamedObject);
                 }
             }
 
-
-            bool didSetValue = false;
-            var gluxCommands = GlueCommands.Self.GluxCommands;
-
-            if (newPosition.X != 0)
+            if (newPosition == null)
             {
-                await gluxCommands.SetVariableOnAsync(newNamedObject, "X", newPosition.X, false, updateUi: false);
-                didSetValue = true;
-            }
-            if (newPosition.Y != 0)
-            {
-                await gluxCommands.SetVariableOnAsync(newNamedObject, "Y", newPosition.Y, false, updateUi: false);
-
-                didSetValue = true;
+                // Either the game never answered, or this object is not one that gets positioned. Writing
+                // 0,0 anyway would put a variable assignment on the object that the user never asked for,
+                // and codegen would then emit it.
+                return;
             }
 
+            newNamedObject.SetVariable("X", newPosition.Value.X);
+            newNamedObject.SetVariable("Y", newPosition.Value.Y);
 
-
-            if (didSetValue)
+            // Saving is the caller's job - whatever added this object persists it, and the position is now
+            // part of the object rather than a change made to it afterwards. Code generation is not, because
+            // GluxCommands.AddNewNamedObjectToAsync generates before it raises the event that reaches here.
+            if (element != null)
             {
-                GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
-                GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
-                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
             }
         }
 
-        private async Task<Vector2> GetNewNosPositionFromCamera(NamedObjectSave newNamedObject)
+        /// <summary>
+        /// Moves the desired position to the right until it is clear of the objects already sitting next to
+        /// the new one, so that adding several objects in a row does not stack them all in one spot.
+        /// </summary>
+        private static Vector2 GetNonOverlappingPosition(Vector2 desiredPosition, NamedObjectSave newNamedObject)
         {
-            // If it's in a screen, then we position the object on the camera:
-
-            var cameraPosition = Microsoft.Xna.Framework.Vector3.Zero;
-
-            cameraPosition = await CommandSender.Self.GetCameraPosition();
-
-            var gluxCommands = GlueCommands.Self.GluxCommands;
-
-
-            Vector2 newPosition = new Vector2(cameraPosition.X, cameraPosition.Y);
+            Vector2 newPosition = desiredPosition;
 
             var element = ObjectFinder.Self.GetElementContaining(newNamedObject);
 
