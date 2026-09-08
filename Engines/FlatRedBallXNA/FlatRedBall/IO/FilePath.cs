@@ -291,9 +291,15 @@ namespace FlatRedBall.IO
         public bool IsRelativeTo(FilePath otherFilePath) => FileManager.IsRelativeTo(this.FullPath, otherFilePath.FullPath);
 
 
+        /// <summary>
+        /// Returns this file expressed relative to otherFilePath, with case preserved - matching FullPath
+        /// and StandardizedCaseSensitive rather than the deliberately-lower-cased Standardized. Case is
+        /// a property of the path, not of whatever the process-wide FileManager.PreserveCase flag happens
+        /// to be when this is called.
+        /// </summary>
         public string RelativeTo(FilePath otherFilePath)
         {
-            return FileManager.MakeRelative(this.FullPath, otherFilePath.FullPath);
+            return FileManager.MakeRelative(this.FullPath, otherFilePath.FullPath, preserveCase: true);
         }
 
     }

@@ -212,7 +212,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             ///////////////////End Early Out//////////////////////////////
             lock (this)
             {
-                string relativeFileName = FileManager.MakeRelative(absoluteFile, this.Directory);
+                string relativeFileName = MakeRelativeForProject(absoluteFile, this.Directory);
 
                 ProjectItem buildItem = null;
 
@@ -242,7 +242,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 //}
 
 
-                string itemInclude = FileManager.MakeRelative(absoluteFile, this.Directory);
+                string itemInclude = MakeRelativeForProject(absoluteFile, this.Directory);
 
                 itemInclude = ProcessInclude(itemInclude);
 
@@ -336,7 +336,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
                     if (path != null)
                     {
-                        linkValue = ContentDirectory + FileManager.MakeRelative(absoluteFile, path);
+                        linkValue = ContentDirectory + MakeRelativeForProject(absoluteFile, path);
                         linkValue = FileManager.RemoveDotDotSlash(linkValue);
                         linkValue = ProcessInclude(linkValue);
 
@@ -430,7 +430,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 }
                 else if (SaveAsRelativeSyncedProject)
                 {
-                    fileName = FileManager.MakeRelative(
+                    fileName = MakeRelativeForProject(
                         sourceProjectBase.FullFileName.GetDirectoryContainingThis().FullPath,
                         FullFileName.GetDirectoryContainingThis().FullPath) + bi.UnevaluatedInclude;
                 }
@@ -497,7 +497,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             {
                 if (!FileManager.IsRelative(fileName))
                 {
-                    fileName = FileManager.MakeRelative(fileName, this.Directory);
+                    fileName = MakeRelativeForProject(fileName, this.Directory);
                 }
 
                 string fleNameFixedSlashes = fileName.Replace('/', '\\');
@@ -512,7 +512,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
                 if (!FileManager.IsRelative(fileName) && !isSyncedProject)
                 {
-                    fileName = FileManager.MakeRelative(fileName,
+                    fileName = MakeRelativeForProject(fileName,
                                                         FileManager.GetDirectory(this.FullFileName.FullPath));
                 }
 
@@ -991,7 +991,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         public override void UpdateContentFile(string sourceFileName)
         {
-            string relativeFileName = FileManager.MakeRelative(sourceFileName, this.Directory);
+            string relativeFileName = MakeRelativeForProject(sourceFileName, this.Directory);
             if (!IsFilePartOfProject(relativeFileName, BuildItemMembershipType.Content))
             {
                 AddContentBuildItem(sourceFileName);
@@ -1021,7 +1021,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 string sourceDirectory = FileManager.GetDirectory(sourceFileName);
                 string relativeFile;
 
-                relativeFile = FileManager.MakeRelative(sourceFileName, sourceDirectory);
+                relativeFile = MakeRelativeForProject(sourceFileName, sourceDirectory);
                 CopyFileToProjectRelativeLocation(sourceFileName, relativeDirectory + relativeFile);
 
                 foreach (var file in listOfReferencedFiles)

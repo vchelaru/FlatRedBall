@@ -233,6 +233,25 @@ namespace FlatRedBall.Glue.IO
             return exportedFile;
         }
 
+        /// <summary>
+        /// Standardizes slashes on every path and drops duplicates, comparing case-insensitively. An
+        /// element can reach the same file twice - a .scnx referencing a .achx which is also referenced
+        /// directly - and the two references need not agree on case or slash direction.
+        /// </summary>
+        internal static void StandardizeAndRemoveDuplicatePaths(List<string> allFiles)
+        {
+            for (var i = 0; i < allFiles.Count; i++)
+            {
+                allFiles[i] = FileManager.Standardize(allFiles[i], null, makeAbsolute: false, preserveCase: true);
+            }
+
+            // Compare case-insensitively rather than lower-casing the entries first. Lower-casing them
+            // meant flipping the process-wide FileManager.PreserveCase off and back on around this loop,
+            // which every other thread's path handling reads, and which stayed off for the rest of the
+            // session if anything in between threw (GitHub issue #1757).
+            StringFunctions.RemoveDuplicates(allFiles, ignoreCase: true);
+        }
+
         private static void PerformExport(GlueElement element, GlueProjectSave glueProjectSave, bool openDirectory, string absoluteXml, string absoluteZip, bool copyExternals)
         {
             AddCustomClasses(element, glueProjectSave);
@@ -276,23 +295,7 @@ namespace FlatRedBall.Glue.IO
                 allFiles.AddRange(extraToAdd.Select(item => item.Standardized));
             }
 
-            // Don't preserve case here.  The code below
-            // for RemoveDuplicates is case-sensitive, so we
-            // want all entries to be lower-case.
-            bool wasPreservingCase = FileManager.PreserveCase;
-            FileManager.PreserveCase = false;
-            for (var i = 0; i < allFiles.Count; i++)
-            {
-                allFiles[i] = FileManager.Standardize(allFiles[i]);
-            }
-            FileManager.PreserveCase = wasPreservingCase;
-
-            // There may be duplicate entries here.
-            // For example, an Entity may include a .scnx
-            // which references a .achx, and it may also include
-            // the .achx itself.  In that case, the .achx will appear
-            // twice.
-            StringFunctions.RemoveDuplicates(allFiles);
+            StandardizeAndRemoveDuplicatePaths(allFiles);
 
             //using var zip = new ZipFile();
 

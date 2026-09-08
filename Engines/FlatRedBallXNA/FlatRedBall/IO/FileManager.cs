@@ -1089,12 +1089,21 @@ namespace FlatRedBall.IO
         }
 
 
-        public static string MakeRelative(string pathToMakeRelative, string pathToMakeRelativeTo)
+        public static string MakeRelative(string pathToMakeRelative, string pathToMakeRelativeTo) =>
+            MakeRelative(pathToMakeRelative, pathToMakeRelativeTo, PreserveCase);
+
+        /// <summary>
+        /// Returns pathToMakeRelative expressed relative to pathToMakeRelativeTo. The two paths are always
+        /// compared case-insensitively; preserveCase controls only the case of the returned string. That
+        /// lets a caller which writes the result somewhere case matters - a project file, a save file -
+        /// opt out of the process-wide PreserveCase flag rather than inheriting whatever it happens to be.
+        /// </summary>
+        public static string MakeRelative(string pathToMakeRelative, string pathToMakeRelativeTo, bool preserveCase)
         {
             if (string.IsNullOrEmpty(pathToMakeRelative) == false)
             {
-                pathToMakeRelative = FileManager.Standardize(pathToMakeRelative);
-                pathToMakeRelativeTo = FileManager.Standardize(pathToMakeRelativeTo);
+                pathToMakeRelative = FileManager.Standardize(pathToMakeRelative, RelativeDirectory, true, preserveCase);
+                pathToMakeRelativeTo = FileManager.Standardize(pathToMakeRelativeTo, RelativeDirectory, true, preserveCase);
                 if (!pathToMakeRelativeTo.EndsWith("/"))
                 {
                     pathToMakeRelativeTo += "/";
@@ -1494,7 +1503,14 @@ namespace FlatRedBall.IO
             }
         }
 
-        public static string Standardize(string fileNameToFix, string? relativePath, bool makeAbsolute)
+        public static string Standardize(string fileNameToFix, string? relativePath, bool makeAbsolute) =>
+            Standardize(fileNameToFix, relativePath, makeAbsolute, PreserveCase);
+
+        /// <summary>
+        /// Standardizes slashes, and optionally makes the path absolute. preserveCase overrides the
+        /// process-wide PreserveCase flag for this one call.
+        /// </summary>
+        public static string Standardize(string fileNameToFix, string? relativePath, bool makeAbsolute, bool preserveCase)
         {
             if (fileNameToFix == null)
                 return string.Empty;
@@ -1523,7 +1539,7 @@ namespace FlatRedBall.IO
             fileNameToFix = fileNameToFix.Replace("//", "/");
 
 #if !ANDROID && !IOS
-            if (!PreserveCase)
+            if (!preserveCase)
             {
                 fileNameToFix = fileNameToFix.ToLowerInvariant();
             }

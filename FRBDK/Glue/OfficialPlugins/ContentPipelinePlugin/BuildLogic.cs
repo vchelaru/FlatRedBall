@@ -553,8 +553,6 @@ namespace OfficialPlugins.MonoGameContent
 
 
 
-            var relativeToContent = FileManager.MakeRelative(rfsFilePath.FullPath, contentDirectory);
-
             ContentItem contentItem;
             contentItem = GetContentItem(rfsFilePath.FullPath, project, createEvenIfProjectTypeNotSupported: false);
 
@@ -579,21 +577,8 @@ namespace OfficialPlugins.MonoGameContent
                             PerformBuild(contentItem, project, rebuild);
                         }
 
-                        string relativeToAddNoExtension =
-                            FileManager.RemoveExtension(relativeToContent);
-
-                        string absoluteToAddNoExtension = destinationDirectory +
-                            FileManager.RemovePath(FileManager.RemoveExtension(relativeToContent));
-
-                        foreach (var extension in contentItem.GetBuiltExtensions())
-                        {
-                            toReturn.Add(absoluteToAddNoExtension + "." + extension);
-                            AddFileToProjectIfNotAlreadyIncluded(project,
-                                absoluteToAddNoExtension + "." + extension,
-                                relativeToAddNoExtension + "." + extension,
-                                saveProjectAfterAdd);
-
-                        }
+                        toReturn.AddRange(AddBuiltXnbReferences(project, rfsFilePath, contentDirectory,
+                            destinationDirectory, contentItem.GetBuiltExtensions(), saveProjectAfterAdd));
                     }
                 },
                 "Building MonoGame Content " + rfsFilePath);
@@ -882,6 +867,40 @@ namespace OfficialPlugins.MonoGameContent
                 return extension == "png";
             }
             return false;
+        }
+
+        /// <summary>
+        /// Adds project references for the files that building sourceFile produces (its XNB, plus any
+        /// sibling output like a .wma), and returns their absolute paths. Split out of
+        /// TryAddXnbReferencesAndBuild so the Include and Link this writes into the project can be
+        /// covered without running MGCB.
+        /// </summary>
+        internal List<FilePath> AddBuiltXnbReferences(VisualStudioProject project, FilePath sourceFile,
+            FilePath contentDirectory, string destinationDirectory, IEnumerable<string> builtExtensions,
+            bool saveProjectAfterAdd)
+        {
+            var addedFiles = new List<FilePath>();
+
+            // RelativeTo, not FileManager.MakeRelative: this string becomes the Include and Link of a
+            // project item, where case has to match what is on disk. MakeRelative lower-cases whenever the
+            // process-wide FileManager.PreserveCase flag is off (issue #1757).
+            var relativeToContent = sourceFile.RelativeTo(contentDirectory);
+
+            string relativeToAddNoExtension = FileManager.RemoveExtension(relativeToContent);
+
+            string absoluteToAddNoExtension = destinationDirectory +
+                FileManager.RemovePath(FileManager.RemoveExtension(relativeToContent));
+
+            foreach (var extension in builtExtensions)
+            {
+                addedFiles.Add(absoluteToAddNoExtension + "." + extension);
+                AddFileToProjectIfNotAlreadyIncluded(project,
+                    absoluteToAddNoExtension + "." + extension,
+                    relativeToAddNoExtension + "." + extension,
+                    saveProjectAfterAdd);
+            }
+
+            return addedFiles;
         }
 
         private void AddFileToProjectIfNotAlreadyIncluded(VisualStudioProject project, string absoluteFile, string link, bool saveProjectAfterAdd)

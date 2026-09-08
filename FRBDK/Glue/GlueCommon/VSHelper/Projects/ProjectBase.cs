@@ -254,13 +254,23 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         public abstract bool RemoveItem(string itemName);
 
+        /// <summary>
+        /// FileManager.MakeRelative for a path that is about to be written into a project file - an
+        /// Include, a Link, a Name - or used to find a file on disk. Always case-preserving, because that
+        /// case has to match what is on disk and must not depend on whatever the process-wide
+        /// FileManager.PreserveCase flag happens to be at the time (GitHub issue #1757). Comparisons are
+        /// case-insensitive either way, so this only affects the case of the result.
+        /// </summary>
+        protected internal static string MakeRelativeForProject(string path, string relativeTo) =>
+            FileManager.MakeRelative(path, relativeTo, preserveCase: true);
+
         public string StandardizeItemName(string itemName)
         {
             itemName = itemName.Replace("/", "\\");
 
             if (!FileManager.IsRelative(itemName))
             {
-                itemName = FileManager.MakeRelative(itemName, this.Directory);
+                itemName = MakeRelativeForProject(itemName, this.Directory);
                 itemName = itemName.Replace("/", "\\");
             }
 
