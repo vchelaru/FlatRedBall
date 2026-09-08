@@ -1716,7 +1716,7 @@ namespace FlatRedBall.TileGraphics
         /// <summary>
         /// Rebuilds the entire vertex buffer from the original (pre-infinite-scroll) tiles captured
         /// by CaptureOriginalInfiniteScrollTiles, baking enough repeated copies along whichever axes
-        /// are currently enabled to cover the camera's current view (see InfiniteScrollWindow -
+        /// are currently enabled to cover the camera's current view (see GetInfiniteScrollCopyCount -
         /// UpdateInfiniteScrollRecycling keeps that coverage as the camera moves). Runs from scratch
         /// every time either axis is (re)enabled so enabling X then Y (or vice versa, or both at
         /// once) always produces the correct combined grid.
@@ -1730,10 +1730,10 @@ namespace FlatRedBall.TileGraphics
             }
 
             int columns = InfiniteScrollX
-                ? FlatRedBall.Graphics.InfiniteScrollWindow.GetRequiredCopyCount(GetCameraViewSpanX(), mInfiniteScrollPeriodX)
+                ? GetInfiniteScrollCopyCount(GetCameraViewSpanX(), mInfiniteScrollPeriodX)
                 : 1;
             int rows = InfiniteScrollY
-                ? FlatRedBall.Graphics.InfiniteScrollWindow.GetRequiredCopyCount(GetCameraViewSpanY(), mInfiniteScrollPeriodY)
+                ? GetInfiniteScrollCopyCount(GetCameraViewSpanY(), mInfiniteScrollPeriodY)
                 : 1;
 
             int originalTileCount = mInfiniteScrollOriginalTileCount;
@@ -1855,6 +1855,90 @@ namespace FlatRedBall.TileGraphics
         }
 
         /// <summary>
+        /// How many copies are needed to always be able to fully cover a view of the given span,
+        /// with at least one spare copy on each side so a copy can be recycled before it is needed.
+        /// </summary>
+        static int GetInfiniteScrollCopyCount(float viewSpan, float periodLength)
+        {
+            if (periodLength <= 0)
+            {
+                return 1;
+            }
+            if (viewSpan <= 0)
+            {
+                return 3;
+            }
+            return System.Math.Max(3, (int)System.Math.Ceiling(viewSpan / periodLength) + 2);
+        }
+
+        /// <summary>
+        /// Checks whether a single baked infinite-scroll copy has scrolled entirely outside the
+        /// required visible range and, if so, recycles it (reassigns its period index) to become
+        /// the next copy needed at the opposite edge of the window, keeping the occupied period
+        /// indices a contiguous run around wherever the camera currently is.
+        /// </summary>
+        /// <param name="currentPeriodIndex">The copy's current period index.</param>
+        /// <param name="periodLength">The world-space length of one period. Must be positive.</param>
+        /// <param name="requiredMinLocal">The minimum local coordinate that must remain covered.</param>
+        /// <param name="requiredMaxLocal">The maximum local coordinate that must remain covered.</param>
+        /// <param name="minPeriodIndex">The window's current lowest occupied period index. Updated in place.</param>
+        /// <param name="maxPeriodIndex">The window's current highest occupied period index. Updated in place.</param>
+        /// <param name="newPeriodIndex">The copy's period index after this call.</param>
+        /// <returns>True if the copy was recycled (its period index changed).</returns>
+        static bool TryRecycleInfiniteScrollSlot(
+            int currentPeriodIndex,
+            float periodLength,
+            float requiredMinLocal,
+            float requiredMaxLocal,
+            ref int minPeriodIndex,
+            ref int maxPeriodIndex,
+            out int newPeriodIndex)
+        {
+            newPeriodIndex = currentPeriodIndex;
+
+            if (periodLength <= 0)
+            {
+                return false;
+            }
+
+            float slotMin = currentPeriodIndex * periodLength;
+            float slotMax = slotMin + periodLength;
+
+            if (slotMax < requiredMinLocal)
+            {
+                // Fully before the required range - recycle to become the new highest copy.
+                // Normally that's just one period past the current highest copy, but if the
+                // required range has jumped far away (e.g. the camera teleported), crawling
+                // forward one period per recycle would take many frames to catch up, so jump
+                // straight to where the copy is actually needed instead.
+                int neededIndex = (int)System.Math.Floor(requiredMinLocal / periodLength);
+                newPeriodIndex = System.Math.Max(maxPeriodIndex + 1, neededIndex);
+                maxPeriodIndex = newPeriodIndex;
+                if (currentPeriodIndex == minPeriodIndex)
+                {
+                    minPeriodIndex++;
+                }
+                return true;
+            }
+
+            if (slotMin > requiredMaxLocal)
+            {
+                // Fully after the required range - recycle to become the new lowest copy,
+                // jumping straight there if the required range is far below the current window.
+                int neededIndex = (int)System.Math.Floor(requiredMaxLocal / periodLength);
+                newPeriodIndex = System.Math.Min(minPeriodIndex - 1, neededIndex);
+                minPeriodIndex = newPeriodIndex;
+                if (currentPeriodIndex == maxPeriodIndex)
+                {
+                    maxPeriodIndex--;
+                }
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Recycles baked infinite-scroll copies that have scrolled entirely outside the camera's
         /// current view, moving each one to become the next copy needed at the opposite edge of the
         /// window. This must run after this.X/this.Y reflect the current frame's position (i.e.
@@ -1871,7 +1955,7 @@ namespace FlatRedBall.TileGraphics
                 for (int column = 0; column < mInfiniteScrollColumns; column++)
                 {
                     int currentIndex = mInfiniteScrollColumnPeriodIndex[column];
-                    if (FlatRedBall.Graphics.InfiniteScrollWindow.TryRecycleSlot(
+                    if (TryRecycleInfiniteScrollSlot(
                             currentIndex, mInfiniteScrollPeriodX,
                             requiredMinLocal, requiredMaxLocal,
                             ref mInfiniteScrollMinColumnPeriodIndex, ref mInfiniteScrollMaxColumnPeriodIndex,
@@ -1892,7 +1976,7 @@ namespace FlatRedBall.TileGraphics
                 for (int row = 0; row < mInfiniteScrollRows; row++)
                 {
                     int currentIndex = mInfiniteScrollRowPeriodIndex[row];
-                    if (FlatRedBall.Graphics.InfiniteScrollWindow.TryRecycleSlot(
+                    if (TryRecycleInfiniteScrollSlot(
                             currentIndex, mInfiniteScrollPeriodY,
                             requiredMinLocal, requiredMaxLocal,
                             ref mInfiniteScrollMinRowPeriodIndex, ref mInfiniteScrollMaxRowPeriodIndex,
