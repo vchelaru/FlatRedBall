@@ -175,6 +175,12 @@ test's premise is even true. When the budget is meant to bound something *after*
 `StartupGate` (see `NestedDotnetCli.Run`): it waits untimed until the gate opens and only then starts the
 clock. See GitHub issue #1992.
 
+## Landmine — Shouldly's string `ShouldContain` ignores case
+
+`someString.ShouldContain("Expected")` passes against `"expected"`; Shouldly defaults string containment
+to `Case.Insensitive`. A test asserting that a path or generated line keeps its capitalization must pass
+`Case.Sensitive`, or it stays green while the code lower-cases.
+
 ## Standing rule — clear stragglers after an *interrupted* run
 
 A `dotnet test`/`dotnet build` that is cancelled or killed mid-flight leaves its tree (`dotnet`, MSBuild
