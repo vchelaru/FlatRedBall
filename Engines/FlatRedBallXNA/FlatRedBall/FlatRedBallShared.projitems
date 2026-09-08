@@ -115,6 +115,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\CustomEffectManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\HslColor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\IDrawableBatch.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\InfiniteScrollWindow.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\GenericEffect.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\GraphicalEmumerations.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\GraphicsOptions.cs" />

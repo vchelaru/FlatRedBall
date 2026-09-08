@@ -281,6 +281,31 @@ namespace FlatRedBall.TileGraphics
 
         public TextureFilter? TextureFilter { get; set; } = null;
 
+        /// <summary>
+        /// Whether this layer's content repeats seamlessly along X as the camera scrolls, so the
+        /// layer always fills the view regardless of how far the camera has traveled. Set via
+        /// FromReducedLayer (the "InfiniteScrollX" custom Tiled property); not meant to be toggled
+        /// at runtime since doing so would require re-baking the vertex buffer.
+        /// </summary>
+        public bool InfiniteScrollX { get; private set; }
+
+        /// <summary>
+        /// The Y equivalent of <see cref="InfiniteScrollX"/>.
+        /// </summary>
+        public bool InfiniteScrollY { get; private set; }
+
+        float mInfiniteScrollPeriodX;
+        float mInfiniteScrollPeriodY;
+        int mInfiniteScrollColumns = 1;
+        int mInfiniteScrollRows = 1;
+        int mInfiniteScrollQuadsPerSlot;
+        int[] mInfiniteScrollColumnPeriodIndex;
+        int[] mInfiniteScrollRowPeriodIndex;
+        int mInfiniteScrollMinColumnPeriodIndex;
+        int mInfiniteScrollMaxColumnPeriodIndex;
+        int mInfiniteScrollMinRowPeriodIndex;
+        int mInfiniteScrollMaxRowPeriodIndex;
+
         #endregion
 
         #region Constructor / Initialization
@@ -501,7 +526,22 @@ namespace FlatRedBall.TileGraphics
                 texture = FlatRedBallServices.Load<Texture2D>(textureName, contentManagerName);
             }
 
-            MapDrawableBatch toReturn = new MapDrawableBatch(reducedLayerInfo.Quads.Count, tileDimensionWidth, tileDimensionHeight, texture);
+            bool infiniteScrollX = reducedLayerInfo.InfiniteScrollX;
+            bool infiniteScrollY = reducedLayerInfo.InfiniteScrollY;
+            float infiniteScrollPeriodX = rtmi.NumberCellsWide * tileDimensionWidth;
+            float infiniteScrollPeriodY = rtmi.NumberCellsTall * tileDimensionHeight;
+
+            int columns = infiniteScrollX
+                ? FlatRedBall.Graphics.InfiniteScrollWindow.GetRequiredCopyCount(GetCameraViewSpanX(), infiniteScrollPeriodX)
+                : 1;
+            int rows = infiniteScrollY
+                ? FlatRedBall.Graphics.InfiniteScrollWindow.GetRequiredCopyCount(GetCameraViewSpanY(), infiniteScrollPeriodY)
+                : 1;
+
+            int quadsPerSlot = reducedLayerInfo.Quads.Count;
+            int totalSlots = columns * rows;
+
+            MapDrawableBatch toReturn = new MapDrawableBatch(quadsPerSlot * totalSlots, tileDimensionWidth, tileDimensionHeight, texture);
 
             toReturn.Name = reducedLayerInfo.Name;
 
@@ -526,117 +566,171 @@ namespace FlatRedBall.TileGraphics
                 toReturn.mSortAxis = SortAxis.Y;
             }
 
-            var quadLength = quads.Length;
-            for (int i = 0; i < quadLength; i++)
+            if (infiniteScrollX || infiniteScrollY)
             {
-                var quad = quads[i];
+                // Infinite-scroll recycling (see UpdateInfiniteScrollRecycling) rewrites individual
+                // baked copies' vertex positions independently, which does not preserve the single
+                // global sort order GetRenderingIndexValues relies on for its binary-search draw-range
+                // culling. These layers always draw their full (small, bounded) vertex buffer instead.
+                toReturn.mSortAxis = SortAxis.None;
+            }
 
-                Vector2 tileDimensions = new Vector2(quadWidth, quadHeight);
-                if (quad.OverridingWidth != null)
+            int minColumnPeriodIndex = -(columns / 2);
+            int minRowPeriodIndex = -(rows / 2);
+
+            var quadLength = quads.Length;
+            for (int slotIndex = 0; slotIndex < totalSlots; slotIndex++)
+            {
+                int column = slotIndex % columns;
+                int row = slotIndex / columns;
+
+                int columnPeriodIndex = minColumnPeriodIndex + column;
+                int rowPeriodIndex = minRowPeriodIndex + row;
+
+                float slotOffsetX = columnPeriodIndex * infiniteScrollPeriodX;
+                float slotOffsetY = rowPeriodIndex * infiniteScrollPeriodY;
+
+                for (int i = 0; i < quadLength; i++)
                 {
-                    tileDimensions.X = quad.OverridingWidth.Value;
+                    var quad = quads[i];
+
+                    Vector2 tileDimensions = new Vector2(quadWidth, quadHeight);
+                    if (quad.OverridingWidth != null)
+                    {
+                        tileDimensions.X = quad.OverridingWidth.Value;
+                    }
+                    if (quad.OverridingHeight != null)
+                    {
+                        tileDimensions.Y = quad.OverridingHeight.Value;
+                    }
+                    position.X = quad.LeftQuadCoordinate + slotOffsetX;
+                    position.Y = quad.BottomQuadCoordinate + slotOffsetY;
+
+                    // The Z of the quad should be relative to this layer, not absolute Z values.
+                    // A multi-layer map will offset the individual layer Z values, the quads should have a Z of 0.
+                    // position.Z = reducedLayerInfo.Z;
+
+
+                    var textureValues = new Vector4();
+
+                    // The purpose of CoordinateAdjustment is to bring the texture values "in", to reduce the chance of adjacent
+                    // tiles drawing on a given tile quad. If we don't do this, we can get slivers of adjacent colors appearing, causing
+                    // lines or grid patterns.
+                    // To bring the values "in" we have to consider rotated quads.
+                    textureValues.X = CoordinateAdjustment + (float)quad.LeftTexturePixel / (float)texture.Width; // Left
+                    textureValues.Y = -CoordinateAdjustment + (float)(quad.LeftTexturePixel + tileDimensionWidth) / (float)texture.Width; // Right
+                    textureValues.Z = CoordinateAdjustment + (float)quad.TopTexturePixel / (float)texture.Height; // Top
+                    textureValues.W = -CoordinateAdjustment + (float)(quad.TopTexturePixel + tileDimensionHeight) / (float)texture.Height; // Bottom
+
+                    // pad before doing any rotations/flipping
+                    // Update 6/28/2025
+                    // Why are we doing additional
+                    // padding here? Why not just respect
+                    // the CoordianteAdjustment?
+                    // If CoordianteAdjustment needs
+                    // to be tied to the resolution of the
+                    // texture, then there should be a Units value.
+                    //const bool pad = true;
+                    //float amountToAddX = .0000001f;
+                    //float amountToAddY = .0000001f;
+                    //if (texture != null)
+                    //{
+                    //    amountToAddX = .037f / texture.Width;
+                    //    amountToAddY = .037f / texture.Height;
+                    //}
+                    //if (pad)
+                    //{
+                    //    textureValues.X += amountToAddX; // Left
+                    //    textureValues.Y -= amountToAddX; // Right
+                    //    textureValues.Z += amountToAddY; // Top
+                    //    textureValues.W -= amountToAddY; // Bottom
+                    //}
+
+                    if ((quad.FlipFlags & TMXGlueLib.DataTypes.ReducedQuadInfo.FlippedHorizontallyFlag) == TMXGlueLib.DataTypes.ReducedQuadInfo.FlippedHorizontallyFlag)
+                    {
+                        var temp = textureValues.Y;
+                        textureValues.Y = textureValues.X;
+                        textureValues.X = temp;
+                    }
+
+                    if ((quad.FlipFlags & TMXGlueLib.DataTypes.ReducedQuadInfo.FlippedVerticallyFlag) == TMXGlueLib.DataTypes.ReducedQuadInfo.FlippedVerticallyFlag)
+                    {
+                        var temp = textureValues.Z;
+                        textureValues.Z = textureValues.W;
+                        textureValues.W = temp;
+                    }
+
+                    int tileIndex = toReturn.AddTile(position, tileDimensions,
+                        //quad.LeftTexturePixel, quad.TopTexturePixel, quad.LeftTexturePixel + tileDimensionWidth, quad.TopTexturePixel + tileDimensionHeight);
+                        textureValues);
+
+                    toReturn.FlipFlagArray[tileIndex] = quad.FlipFlags;
+
+                    if ((quad.FlipFlags & TMXGlueLib.DataTypes.ReducedQuadInfo.FlippedDiagonallyFlag) == TMXGlueLib.DataTypes.ReducedQuadInfo.FlippedDiagonallyFlag)
+                    {
+                        toReturn.ApplyDiagonalFlip(tileIndex);
+                    }
+
+                    // This was moved to outside of this conversion, to support shaps
+                    //if (quad.QuadSpecificProperties != null)
+                    //{
+                    //    var listToAdd = quad.QuadSpecificProperties.ToList();
+                    //    listToAdd.Add(new NamedValue { Name = "Name", Value = quad.Name });
+                    //    owner.Properties.Add(quad.Name, listToAdd);
+                    //}
+                    if (quad.RotationDegrees != 0)
+                    {
+                        // Tiled rotates clockwise :(
+                        var rotationRadians = -MathHelper.ToRadians(quad.RotationDegrees);
+
+                        Vector3 bottomLeftPos = toReturn.Vertices[tileIndex * 4].Position;
+
+                        Vector3 vertPos = toReturn.Vertices[tileIndex * 4 + 1].Position;
+                        MathFunctions.RotatePointAroundPoint(bottomLeftPos, ref vertPos, rotationRadians);
+                        toReturn.Vertices[tileIndex * 4 + 1].Position = vertPos;
+
+                        vertPos = toReturn.Vertices[tileIndex * 4 + 2].Position;
+                        MathFunctions.RotatePointAroundPoint(bottomLeftPos, ref vertPos, rotationRadians);
+                        toReturn.Vertices[tileIndex * 4 + 2].Position = vertPos;
+
+                        vertPos = toReturn.Vertices[tileIndex * 4 + 3].Position;
+                        MathFunctions.RotatePointAroundPoint(bottomLeftPos, ref vertPos, rotationRadians);
+                        toReturn.Vertices[tileIndex * 4 + 3].Position = vertPos;
+
+                    }
+
+                    toReturn.RegisterName(quad.Name, tileIndex);
                 }
-                if (quad.OverridingHeight != null)
+            }
+
+            toReturn.mInfiniteScrollQuadsPerSlot = quadsPerSlot;
+            toReturn.mInfiniteScrollColumns = columns;
+            toReturn.mInfiniteScrollRows = rows;
+
+            if (infiniteScrollX)
+            {
+                toReturn.InfiniteScrollX = true;
+                toReturn.mInfiniteScrollPeriodX = infiniteScrollPeriodX;
+                toReturn.mInfiniteScrollColumnPeriodIndex = new int[columns];
+                for (int c = 0; c < columns; c++)
                 {
-                    tileDimensions.Y = quad.OverridingHeight.Value;
+                    toReturn.mInfiniteScrollColumnPeriodIndex[c] = minColumnPeriodIndex + c;
                 }
-                position.X = quad.LeftQuadCoordinate;
-                position.Y = quad.BottomQuadCoordinate;
+                toReturn.mInfiniteScrollMinColumnPeriodIndex = minColumnPeriodIndex;
+                toReturn.mInfiniteScrollMaxColumnPeriodIndex = minColumnPeriodIndex + columns - 1;
+            }
 
-                // The Z of the quad should be relative to this layer, not absolute Z values.
-                // A multi-layer map will offset the individual layer Z values, the quads should have a Z of 0.
-                // position.Z = reducedLayerInfo.Z;
-
-
-                var textureValues = new Vector4();
-
-                // The purpose of CoordinateAdjustment is to bring the texture values "in", to reduce the chance of adjacent
-                // tiles drawing on a given tile quad. If we don't do this, we can get slivers of adjacent colors appearing, causing
-                // lines or grid patterns.
-                // To bring the values "in" we have to consider rotated quads. 
-                textureValues.X = CoordinateAdjustment + (float)quad.LeftTexturePixel / (float)texture.Width; // Left
-                textureValues.Y = -CoordinateAdjustment + (float)(quad.LeftTexturePixel + tileDimensionWidth) / (float)texture.Width; // Right
-                textureValues.Z = CoordinateAdjustment + (float)quad.TopTexturePixel / (float)texture.Height; // Top
-                textureValues.W = -CoordinateAdjustment + (float)(quad.TopTexturePixel + tileDimensionHeight) / (float)texture.Height; // Bottom
-
-                // pad before doing any rotations/flipping
-                // Update 6/28/2025
-                // Why are we doing additional
-                // padding here? Why not just respect
-                // the CoordianteAdjustment?
-                // If CoordianteAdjustment needs
-                // to be tied to the resolution of the
-                // texture, then there should be a Units value.
-                //const bool pad = true;
-                //float amountToAddX = .0000001f;
-                //float amountToAddY = .0000001f;
-                //if (texture != null)
-                //{
-                //    amountToAddX = .037f / texture.Width;
-                //    amountToAddY = .037f / texture.Height;
-                //}
-                //if (pad)
-                //{
-                //    textureValues.X += amountToAddX; // Left
-                //    textureValues.Y -= amountToAddX; // Right
-                //    textureValues.Z += amountToAddY; // Top
-                //    textureValues.W -= amountToAddY; // Bottom
-                //}
-
-                if ((quad.FlipFlags & TMXGlueLib.DataTypes.ReducedQuadInfo.FlippedHorizontallyFlag) == TMXGlueLib.DataTypes.ReducedQuadInfo.FlippedHorizontallyFlag)
+            if (infiniteScrollY)
+            {
+                toReturn.InfiniteScrollY = true;
+                toReturn.mInfiniteScrollPeriodY = infiniteScrollPeriodY;
+                toReturn.mInfiniteScrollRowPeriodIndex = new int[rows];
+                for (int r = 0; r < rows; r++)
                 {
-                    var temp = textureValues.Y;
-                    textureValues.Y = textureValues.X;
-                    textureValues.X = temp;
+                    toReturn.mInfiniteScrollRowPeriodIndex[r] = minRowPeriodIndex + r;
                 }
-
-                if ((quad.FlipFlags & TMXGlueLib.DataTypes.ReducedQuadInfo.FlippedVerticallyFlag) == TMXGlueLib.DataTypes.ReducedQuadInfo.FlippedVerticallyFlag)
-                {
-                    var temp = textureValues.Z;
-                    textureValues.Z = textureValues.W;
-                    textureValues.W = temp;
-                }
-
-                toReturn.FlipFlagArray[i] = quad.FlipFlags;
-
-                int tileIndex = toReturn.AddTile(position, tileDimensions,
-                    //quad.LeftTexturePixel, quad.TopTexturePixel, quad.LeftTexturePixel + tileDimensionWidth, quad.TopTexturePixel + tileDimensionHeight);
-                    textureValues);
-
-                if ((quad.FlipFlags & TMXGlueLib.DataTypes.ReducedQuadInfo.FlippedDiagonallyFlag) == TMXGlueLib.DataTypes.ReducedQuadInfo.FlippedDiagonallyFlag)
-                {
-                    toReturn.ApplyDiagonalFlip(tileIndex);
-                }
-
-                // This was moved to outside of this conversion, to support shaps
-                //if (quad.QuadSpecificProperties != null)
-                //{
-                //    var listToAdd = quad.QuadSpecificProperties.ToList();
-                //    listToAdd.Add(new NamedValue { Name = "Name", Value = quad.Name });
-                //    owner.Properties.Add(quad.Name, listToAdd);
-                //}
-                if (quad.RotationDegrees != 0)
-                {
-                    // Tiled rotates clockwise :(
-                    var rotationRadians = -MathHelper.ToRadians(quad.RotationDegrees);
-
-                    Vector3 bottomLeftPos = toReturn.Vertices[tileIndex * 4].Position;
-
-                    Vector3 vertPos = toReturn.Vertices[tileIndex * 4 + 1].Position;
-                    MathFunctions.RotatePointAroundPoint(bottomLeftPos, ref vertPos, rotationRadians);
-                    toReturn.Vertices[tileIndex * 4 + 1].Position = vertPos;
-
-                    vertPos = toReturn.Vertices[tileIndex * 4 + 2].Position;
-                    MathFunctions.RotatePointAroundPoint(bottomLeftPos, ref vertPos, rotationRadians);
-                    toReturn.Vertices[tileIndex * 4 + 2].Position = vertPos;
-
-                    vertPos = toReturn.Vertices[tileIndex * 4 + 3].Position;
-                    MathFunctions.RotatePointAroundPoint(bottomLeftPos, ref vertPos, rotationRadians);
-                    toReturn.Vertices[tileIndex * 4 + 3].Position = vertPos;
-
-                }
-
-                toReturn.RegisterName(quad.Name, tileIndex);
+                toReturn.mInfiniteScrollMinRowPeriodIndex = minRowPeriodIndex;
+                toReturn.mInfiniteScrollMaxRowPeriodIndex = minRowPeriodIndex + rows - 1;
             }
 
             toReturn.ParallaxMultiplierX = reducedLayerInfo.ParallaxMultiplierX;
@@ -648,6 +742,26 @@ namespace FlatRedBall.TileGraphics
             toReturn.OffsetY = -reducedLayerInfo.OffsetY;
 
             return toReturn;
+        }
+
+        static float GetCameraViewSpanX()
+        {
+            var camera = Camera.Main;
+            if (camera == null)
+            {
+                return 0;
+            }
+            return camera.AbsoluteRightXEdgeAt(0) - camera.AbsoluteLeftXEdgeAt(0);
+        }
+
+        static float GetCameraViewSpanY()
+        {
+            var camera = Camera.Main;
+            if (camera == null)
+            {
+                return 0;
+            }
+            return camera.AbsoluteTopYEdgeAt(0) - camera.AbsoluteBottomYEdgeAt(0);
         }
 
         public void Paste(Sprite sprite)
@@ -1157,6 +1271,11 @@ namespace FlatRedBall.TileGraphics
 
             ForceUpdateDependencies();
 
+            if (InfiniteScrollX || InfiniteScrollY)
+            {
+                UpdateInfiniteScrollRecycling(camera);
+            }
+
             int firstVertIndex;
             int lastVertIndex;
             int indexStart;
@@ -1579,6 +1698,89 @@ namespace FlatRedBall.TileGraphics
 
             this.RelativeX += OffsetX;
             this.RelativeY += OffsetY;
+        }
+
+        /// <summary>
+        /// Recycles baked infinite-scroll copies that have scrolled entirely outside the camera's
+        /// current view, moving each one to become the next copy needed at the opposite edge of the
+        /// window. This must run after this.X/this.Y reflect the current frame's position (i.e.
+        /// after ForceUpdateDependencies), since the required visible range is computed relative to
+        /// the object's absolute position, matching GetRenderingIndexValues.
+        /// </summary>
+        private void UpdateInfiniteScrollRecycling(Camera camera)
+        {
+            if (InfiniteScrollX)
+            {
+                float requiredMinLocal = camera.AbsoluteLeftXEdgeAt(this.Z) - this.X;
+                float requiredMaxLocal = camera.AbsoluteRightXEdgeAt(this.Z) - this.X;
+
+                for (int column = 0; column < mInfiniteScrollColumns; column++)
+                {
+                    int currentIndex = mInfiniteScrollColumnPeriodIndex[column];
+                    if (FlatRedBall.Graphics.InfiniteScrollWindow.TryRecycleSlot(
+                            currentIndex, mInfiniteScrollPeriodX,
+                            requiredMinLocal, requiredMaxLocal,
+                            ref mInfiniteScrollMinColumnPeriodIndex, ref mInfiniteScrollMaxColumnPeriodIndex,
+                            out int newIndex))
+                    {
+                        mInfiniteScrollColumnPeriodIndex[column] = newIndex;
+                        float deltaX = (newIndex - currentIndex) * mInfiniteScrollPeriodX;
+                        ShiftInfiniteScrollColumn(column, deltaX);
+                    }
+                }
+            }
+
+            if (InfiniteScrollY)
+            {
+                float requiredMinLocal = camera.AbsoluteBottomYEdgeAt(this.Z) - this.Y;
+                float requiredMaxLocal = camera.AbsoluteTopYEdgeAt(this.Z) - this.Y;
+
+                for (int row = 0; row < mInfiniteScrollRows; row++)
+                {
+                    int currentIndex = mInfiniteScrollRowPeriodIndex[row];
+                    if (FlatRedBall.Graphics.InfiniteScrollWindow.TryRecycleSlot(
+                            currentIndex, mInfiniteScrollPeriodY,
+                            requiredMinLocal, requiredMaxLocal,
+                            ref mInfiniteScrollMinRowPeriodIndex, ref mInfiniteScrollMaxRowPeriodIndex,
+                            out int newIndex))
+                    {
+                        mInfiniteScrollRowPeriodIndex[row] = newIndex;
+                        float deltaY = (newIndex - currentIndex) * mInfiniteScrollPeriodY;
+                        ShiftInfiniteScrollRow(row, deltaY);
+                    }
+                }
+            }
+        }
+
+        private void ShiftInfiniteScrollColumn(int column, float deltaX)
+        {
+            for (int row = 0; row < mInfiniteScrollRows; row++)
+            {
+                ShiftInfiniteScrollSlot(row, column, deltaX, 0f);
+            }
+        }
+
+        private void ShiftInfiniteScrollRow(int row, float deltaY)
+        {
+            for (int column = 0; column < mInfiniteScrollColumns; column++)
+            {
+                ShiftInfiniteScrollSlot(row, column, 0f, deltaY);
+            }
+        }
+
+        private void ShiftInfiniteScrollSlot(int row, int column, float deltaX, float deltaY)
+        {
+            int slotIndex = row * mInfiniteScrollColumns + column;
+            int vertexStart = slotIndex * mInfiniteScrollQuadsPerSlot * 4;
+            int vertexCountExclusive = vertexStart + mInfiniteScrollQuadsPerSlot * 4;
+
+            for (int v = vertexStart; v < vertexCountExclusive; v++)
+            {
+                var vertexPosition = mVertices[v].Position;
+                vertexPosition.X += deltaX;
+                vertexPosition.Y += deltaY;
+                mVertices[v].Position = vertexPosition;
+            }
         }
 
         public static float? NativeCameraWidth;
