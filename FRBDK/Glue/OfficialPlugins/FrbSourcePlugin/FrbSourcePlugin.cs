@@ -67,6 +67,11 @@ namespace PluginTestbed.GlobalContentManagerPlugins
 
         public override string FriendlyName => "FRB Source";
 
+        // Test-only seam: the dropdown itself is a WinForms ToolStripMenuItem, so tests assert on the
+        // project names it currently lists rather than reaching into WinForms internals.
+        internal IEnumerable<string> LinkToSourceDropDownProjectNames =>
+            _linkToSourceMenuItem.DropDownItems.Cast<ToolStripItem>().Select(item => item.Text);
+
         #endregion
 
         public FrbSourcePlugin()
@@ -82,6 +87,7 @@ namespace PluginTestbed.GlobalContentManagerPlugins
 
             this.ReactToLoadedGlux -= HandleGluxLoaded;
             this.ReactToUnloadedGlux -= HandleGluxUnloaded;
+            this.ReactToLoadedSyncedProject -= HandleSyncedProjectLoaded;
 
             return true;
         }
@@ -89,19 +95,25 @@ namespace PluginTestbed.GlobalContentManagerPlugins
         public override void StartUp()
         {
             _linkToSourceMenuItem = this.AddMenuItemTo(
-                "Link Game to FRB Source", 
-                (Action)null, 
+                "Link Game to FRB Source",
+                (Action)null,
                 "Project");
 
             _linkToSourceMenuItem.Enabled = false;
 
             this.ReactToLoadedGlux += HandleGluxLoaded;
             this.ReactToUnloadedGlux += HandleGluxUnloaded;
+            this.ReactToLoadedSyncedProject += HandleSyncedProjectLoaded;
         }
 
         private void HandleGluxUnloaded()
         {
             _linkToSourceMenuItem.Enabled = false;
+            RefreshLinkToSourceItems();
+        }
+
+        private void HandleSyncedProjectLoaded(ProjectBase syncedProject)
+        {
             RefreshLinkToSourceItems();
         }
 
