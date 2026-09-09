@@ -54,17 +54,32 @@ internal sealed class LiveGameProcess : IDisposable
     readonly System.Diagnostics.Process process;
     readonly GameJsonCommunicationPlugin.Common.GameConnectionManager connectionManager;
     readonly ConcurrentQueue<string> capturedStandardOutput;
+    readonly ConcurrentQueue<string> capturedStandardError;
+
+    /// <summary>
+    /// Response timeout for every command a LiveGame test sends after the process has connected -
+    /// see <see cref="Send"/>/<see cref="Send{T}"/>. Deliberately well above
+    /// GameConnectionManager's interactive-editor default of 10 seconds (unchanged there - a real
+    /// user wants a dead game reported quickly): a test's first command routinely drives real work
+    /// (e.g. loading a Screen's content) on a freshly-launched, cold-JIT'd game, on CI rendering
+    /// through Mesa's llvmpipe software GL rather than a GPU - see issue #2244, where that combination
+    /// took long enough to blow through the 10-second default and fail with "No response received"
+    /// though the same test passed on a re-run of the same commit.
+    /// </summary>
+    const double CommandResponseTimeoutInSeconds = 30;
 
     public string ProjectRoot => project.Root;
 
     LiveGameProcess(TempDir project, System.Diagnostics.Process process,
         GameJsonCommunicationPlugin.Common.GameConnectionManager connectionManager,
-        ConcurrentQueue<string> capturedStandardOutput)
+        ConcurrentQueue<string> capturedStandardOutput,
+        ConcurrentQueue<string> capturedStandardError)
     {
         this.project = project;
         this.process = process;
         this.connectionManager = connectionManager;
         this.capturedStandardOutput = capturedStandardOutput;
+        this.capturedStandardError = capturedStandardError;
     }
 
     /// <summary>
@@ -144,7 +159,8 @@ internal sealed class LiveGameProcess : IDisposable
             // Glue-side accepts twice, byte 1 for glue->game, byte 2 for game->glue).
             var connectionManager = new GameJsonCommunicationPlugin.Common.GameConnectionManager((_, __) => { })
             {
-                Port = port
+                Port = port,
+                TimeoutInSeconds = CommandResponseTimeoutInSeconds
             };
             GameJsonCommunicationPlugin.Common.GameConnectionManager.Self = connectionManager;
 
@@ -222,7 +238,7 @@ internal sealed class LiveGameProcess : IDisposable
             // IsPrintEditorToGameCheckboxChecked defaults false, so this only needs to exist.
             CommandSender.Self.CompilerViewModel = CompilerViewModel.Self;
 
-            return new LiveGameProcess(project, process, connectionManager, capturedStandardOutput);
+            return new LiveGameProcess(project, process, connectionManager, capturedStandardOutput, capturedStandardError);
         }
         catch
         {
@@ -305,14 +321,38 @@ internal sealed class LiveGameProcess : IDisposable
     /// Sends any DTO over the real CommandSender, for tests that care about what the running game answers
     /// rather than about a particular editor gesture.
     /// </summary>
-    public Task<GeneralResponse<string>> Send(object dto) => CommandSender.Self.Send(dto);
+    public async Task<GeneralResponse<string>> Send(object dto)
+    {
+        var response = await CommandSender.Self.Send(dto);
+        AppendCapturedOutputOnFailure(response);
+        return response;
+    }
 
     /// <summary>
     /// Same as <see cref="Send"/>, but deserializes the game's raw JSON reply into <typeparamref name="T"/>
     /// - see <see cref="CommandSender.Send{T}"/> - for tests that need the handler's typed return value
     /// rather than just success/failure.
     /// </summary>
-    public Task<GeneralResponse<T>> Send<T>(object dto) => CommandSender.Self.Send<T>(dto);
+    public async Task<GeneralResponse<T>> Send<T>(object dto)
+    {
+        var response = await CommandSender.Self.Send<T>(dto);
+        AppendCapturedOutputOnFailure(response);
+        return response;
+    }
+
+    /// <summary>
+    /// A failed Send (e.g. the timeout described by <see cref="CommandResponseTimeoutInSeconds"/>
+    /// elapsing) otherwise gives no way to tell "the game hung" from "the game crashed" from outside
+    /// the process - appending what it printed is the only account of which, same rationale as
+    /// <see cref="DescribeCapturedOutput"/>'s use in <see cref="StartAsync"/>.
+    /// </summary>
+    void AppendCapturedOutputOnFailure<T>(GeneralResponse<T> response)
+    {
+        if (response?.Succeeded == false)
+        {
+            response.Message += DescribeCapturedOutput(capturedStandardOutput, capturedStandardError);
+        }
+    }
 
     /// <summary>
     /// Sends the same SelectObjectDto Glue sends when the user clicks an entity in the tree, over the real
