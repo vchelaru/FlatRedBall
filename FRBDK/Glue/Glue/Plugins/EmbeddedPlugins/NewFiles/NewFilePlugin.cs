@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using FlatRedBall.Content.AnimationChain;
 using FlatRedBall.Glue.Elements;
+using FlatRedBall.Graphics;
 using FlatRedBall.IO;
 using System.ComponentModel.Composition;
 using FlatRedBall.Glue.Controls;
@@ -242,7 +244,7 @@ T_Paused,Paused,En Pausa,Pausiert
             }
             else if (assetTypeInfo.SaveType != null)
             {
-                object saveInstance = Activator.CreateInstance(assetTypeInfo.SaveType);
+                object saveInstance = CreateSaveInstance(assetTypeInfo.SaveType);
                 FileManager.XmlSerialize(assetTypeInfo.SaveType, saveInstance, createdFile);
             }
             else if(assetTypeInfo.QualifiedSaveTypeName != null)
@@ -260,6 +262,27 @@ T_Paused,Paused,En Pausa,Pausiert
             {
                 FileManager.SaveText(null, createdFile);
             }
+        }
+
+        /// <summary>
+        /// Creates the default (blank) save-class instance written for a brand-new file. Most types
+        /// just need their plain default constructor, but <see cref="AnimationChainListSave"/> has no
+        /// frames yet to interpret as UV or pixel, so it's created explicitly in the pixel format -
+        /// the format the AnimationEditor expects and won't warn about. This does NOT change
+        /// <see cref="AnimationChainListSave.CoordinateType"/>'s own class default, which other
+        /// callers (e.g. the Aseprite importer) rely on staying UV when they fill in real UV data
+        /// without setting the property themselves.
+        /// </summary>
+        internal static object CreateSaveInstance(Type saveType)
+        {
+            object saveInstance = Activator.CreateInstance(saveType);
+
+            if (saveInstance is AnimationChainListSave animationChainListSave)
+            {
+                animationChainListSave.CoordinateType = TextureCoordinateType.Pixel;
+            }
+
+            return saveInstance;
         }
 
         private bool TryGetTemplateFileForAti(AssetTypeInfo assetTypeInfo, out string availableFile)
