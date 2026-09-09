@@ -429,33 +429,13 @@ public class GlueCommands : IGlueCommands
         }
         if (settingsFileLocation != null)
         {
-            GlueSettingsSave settingsSave = null;
+            var settingsSave = TryLoadSettingsFromFile(settingsFileLocation, out Exception loadError);
 
-            var didErrorOccur = false;
-
-            try
+            if (loadError != null)
             {
-                if (settingsFileLocation.Extension == "json")
-                {
-                    var text = System.IO.File.ReadAllText(settingsFileLocation.FullPath);
-                    settingsSave = JsonConvert.DeserializeObject<GlueSettingsSave>(text);
-                }
-                else
-                {
-                    settingsSave = FileManager.XmlDeserialize<GlueSettingsSave>(settingsFileLocation.FullPath);
-                }
-                settingsSave.FixAllTypes();
+                PrintError($"Error loading your settings file which is located at\n\n{settingsFileLocation}\n\nError details:\n\n{loadError}");
+                settingsSave = new GlueSettingsSave();
             }
-            catch (Exception e)
-            {
-                var errorLoadingSettings = global::Localization.Texts.ErrorLoadingSettings;
-                var errorDetails = global::Localization.Texts.ErrorDetails;
-                FlatRedBall.Glue.Controls.DialogService.ShowMessage($"{errorLoadingSettings}\n\n{settingsFileLocation}\n\n{errorDetails}\n\n{e}");
-                didErrorOccur = true;
-            }
-
-            // But what do we do if something bad did happen?
-            if (didErrorOccur) return;
 
             GlueState.Self.GlueSettingsSave = settingsSave;
 
@@ -487,6 +467,31 @@ public class GlueCommands : IGlueCommands
         else
         {
             GlueState.Self.GlueSettingsSave.Save();
+        }
+    }
+
+    internal static GlueSettingsSave TryLoadSettingsFromFile(FilePath settingsFileLocation, out Exception error)
+    {
+        error = null;
+        try
+        {
+            GlueSettingsSave settingsSave;
+            if (settingsFileLocation.Extension == "json")
+            {
+                var text = System.IO.File.ReadAllText(settingsFileLocation.FullPath);
+                settingsSave = JsonConvert.DeserializeObject<GlueSettingsSave>(text);
+            }
+            else
+            {
+                settingsSave = FileManager.XmlDeserialize<GlueSettingsSave>(settingsFileLocation.FullPath);
+            }
+            settingsSave.FixAllTypes();
+            return settingsSave;
+        }
+        catch (Exception e)
+        {
+            error = e;
+            return null;
         }
     }
 
