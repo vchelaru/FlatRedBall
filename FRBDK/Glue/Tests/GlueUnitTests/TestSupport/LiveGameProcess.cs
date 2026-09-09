@@ -54,17 +54,35 @@ internal sealed class LiveGameProcess : IDisposable
     readonly System.Diagnostics.Process process;
     readonly GameJsonCommunicationPlugin.Common.GameConnectionManager connectionManager;
     readonly ConcurrentQueue<string> capturedStandardOutput;
+    readonly ConcurrentQueue<string> capturedStandardError;
+    readonly ConcurrentQueue<string> connectionDiagnosticLog;
+
+    /// <summary>
+    /// Response timeout for every command a LiveGame test sends after the process has connected -
+    /// see <see cref="Send"/>/<see cref="Send{T}"/>. Deliberately well above
+    /// GameConnectionManager's interactive-editor default of 10 seconds (unchanged there - a real
+    /// user wants a dead game reported quickly): a test's first command routinely drives real work
+    /// (e.g. loading a Screen's content) on a freshly-launched, cold-JIT'd game, on CI rendering
+    /// through Mesa's llvmpipe software GL rather than a GPU - see issue #2244, where that combination
+    /// took long enough to blow through the 10-second default and fail with "No response received"
+    /// though the same test passed on a re-run of the same commit.
+    /// </summary>
+    const double CommandResponseTimeoutInSeconds = 30;
 
     public string ProjectRoot => project.Root;
 
     LiveGameProcess(TempDir project, System.Diagnostics.Process process,
         GameJsonCommunicationPlugin.Common.GameConnectionManager connectionManager,
-        ConcurrentQueue<string> capturedStandardOutput)
+        ConcurrentQueue<string> capturedStandardOutput,
+        ConcurrentQueue<string> capturedStandardError,
+        ConcurrentQueue<string> connectionDiagnosticLog)
     {
         this.project = project;
         this.process = process;
         this.connectionManager = connectionManager;
         this.capturedStandardOutput = capturedStandardOutput;
+        this.capturedStandardError = capturedStandardError;
+        this.connectionDiagnosticLog = connectionDiagnosticLog;
     }
 
     /// <summary>
@@ -142,9 +160,17 @@ internal sealed class LiveGameProcess : IDisposable
             // Glue-side of the protocol: listens, and completes the two-socket handshake the game's
             // GlueCommunication.GameConnectionManager initiates on startup (see GameConnectionManager.cs -
             // Glue-side accepts twice, byte 1 for glue->game, byte 2 for game->glue).
+            var connectionDiagnosticLog = new ConcurrentQueue<string>();
             var connectionManager = new GameJsonCommunicationPlugin.Common.GameConnectionManager((_, __) => { })
             {
-                Port = port
+                Port = port,
+                TimeoutInSeconds = CommandResponseTimeoutInSeconds,
+                // Records every connect/reset transition with a wall-clock timestamp - if a Send times out
+                // because the socket was silently torn down and re-listened mid-request (rather than the
+                // game genuinely being slow to reply), this is the only place that would show it; the
+                // default LogAction only reaches Debug.WriteLine and a WPF-only plugin host, neither of
+                // which this headless test process has.
+                LogAction = message => connectionDiagnosticLog.Enqueue($"{DateTime.UtcNow:HH:mm:ss.fff} {message}")
             };
             GameJsonCommunicationPlugin.Common.GameConnectionManager.Self = connectionManager;
 
@@ -222,7 +248,7 @@ internal sealed class LiveGameProcess : IDisposable
             // IsPrintEditorToGameCheckboxChecked defaults false, so this only needs to exist.
             CommandSender.Self.CompilerViewModel = CompilerViewModel.Self;
 
-            return new LiveGameProcess(project, process, connectionManager, capturedStandardOutput);
+            return new LiveGameProcess(project, process, connectionManager, capturedStandardOutput, capturedStandardError, connectionDiagnosticLog);
         }
         catch
         {
@@ -305,14 +331,48 @@ internal sealed class LiveGameProcess : IDisposable
     /// Sends any DTO over the real CommandSender, for tests that care about what the running game answers
     /// rather than about a particular editor gesture.
     /// </summary>
-    public Task<GeneralResponse<string>> Send(object dto) => CommandSender.Self.Send(dto);
+    public async Task<GeneralResponse<string>> Send(object dto)
+    {
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        var response = await CommandSender.Self.Send(dto);
+        AppendDiagnosticsOnFailure(response, stopwatch.Elapsed);
+        return response;
+    }
 
     /// <summary>
     /// Same as <see cref="Send"/>, but deserializes the game's raw JSON reply into <typeparamref name="T"/>
     /// - see <see cref="CommandSender.Send{T}"/> - for tests that need the handler's typed return value
     /// rather than just success/failure.
     /// </summary>
-    public Task<GeneralResponse<T>> Send<T>(object dto) => CommandSender.Self.Send<T>(dto);
+    public async Task<GeneralResponse<T>> Send<T>(object dto)
+    {
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        var response = await CommandSender.Self.Send<T>(dto);
+        AppendDiagnosticsOnFailure(response, stopwatch.Elapsed);
+        return response;
+    }
+
+    /// <summary>
+    /// A failed Send (e.g. the timeout described by <see cref="CommandResponseTimeoutInSeconds"/>
+    /// elapsing) otherwise gives no way to tell "the game hung" from "the game crashed" from outside
+    /// the process - appending what it printed is the only account of which, same rationale as
+    /// <see cref="DescribeCapturedOutput"/>'s use in <see cref="StartAsync"/>. The elapsed time and
+    /// IsConnected snapshot separate "the request legitimately took the whole timeout" from "the
+    /// socket was torn down mid-request and this failed fast" - see #2244, where the failure message
+    /// alone ("No response received") could not tell those apart.
+    /// </summary>
+    void AppendDiagnosticsOnFailure<T>(GeneralResponse<T> response, TimeSpan elapsed)
+    {
+        if (response?.Succeeded == false)
+        {
+            response.Message +=
+                $"{Environment.NewLine}{Environment.NewLine}Send took {elapsed.TotalSeconds:0.00}s " +
+                $"(configured timeout {CommandResponseTimeoutInSeconds:0}s), IsConnected={connectionManager.IsConnected}." +
+                $"{Environment.NewLine}{Environment.NewLine}connection log:{Environment.NewLine}" +
+                (connectionDiagnosticLog.IsEmpty ? "<empty>" : string.Join(Environment.NewLine, connectionDiagnosticLog)) +
+                DescribeCapturedOutput(capturedStandardOutput, capturedStandardError);
+        }
+    }
 
     /// <summary>
     /// Sends the same SelectObjectDto Glue sends when the user clicks an entity in the tree, over the real
