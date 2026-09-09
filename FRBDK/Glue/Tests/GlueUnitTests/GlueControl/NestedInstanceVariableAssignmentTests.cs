@@ -268,7 +268,11 @@ public class NestedInstanceVariableAssignmentTests : IDisposable
                 public class GlueState
                 {
                     public static GlueState Self { get; } = new GlueState();
-                    public object CurrentElement { get; set; }
+                    // Real production type (GlueControl.Managers.GlueState, see Editing_Managers_GlueState's
+                    // GenerationOptions in GlueControlCodeGenerator) - VariableAssignmentLogic.TryQualifyFromRfs
+                    // calls the GlueElement-typed extension method GetReferencedFileSaveRecursively on this,
+                    // which a plain `object` stub can't satisfy.
+                    public GlueControl.Models.GlueElement CurrentElement { get; set; }
                 }
             }
             """ + Environment.NewLine);
