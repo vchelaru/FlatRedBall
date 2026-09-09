@@ -130,7 +130,10 @@ namespace FlatRedBall.Screens
         #endregion
 
         static Exception GlueViewLoadException;
-		
+
+        // Raised once per LoadScreen attempt (not every frame) so callers can report the exception elsewhere.
+        public static Action<Exception> ScreenLoadExceptionOccurred;
+
 		public static Action<string> RehydrateAction
 		{
 			get;
@@ -501,6 +504,7 @@ namespace FlatRedBall.Screens
                     {
                         // I guess do nothing?
                         GlueViewLoadException = e;
+                        ScreenLoadExceptionOccurred?.Invoke(e);
                     }
 
                 }

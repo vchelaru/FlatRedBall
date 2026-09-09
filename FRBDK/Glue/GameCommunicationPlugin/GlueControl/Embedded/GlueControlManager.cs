@@ -69,7 +69,13 @@ namespace GlueControl
             FlatRedBallServices.AddManager(EditingManager);
             EditingManager.PropertyChanged += HandlePropertyChanged;
             EditingManager.ObjectSelected += HandleObjectsSelected;
+            FlatRedBall.Screens.ScreenManager.ScreenLoadExceptionOccurred += HandleScreenLoadException;
             //listener = new TcpListener(IPAddress.Any, port);
+        }
+
+        private void HandleScreenLoadException(Exception e)
+        {
+            _ = SendToGlue(new Dtos.ScreenLoadExceptionDto { Exception = e.ToString() });
         }
 
         //public void Start()

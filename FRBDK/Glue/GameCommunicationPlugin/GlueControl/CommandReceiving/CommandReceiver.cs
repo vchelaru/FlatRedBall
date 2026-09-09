@@ -790,6 +790,15 @@ namespace OfficialPlugins.Compiler.CommandReceiving
 
         #endregion
 
+        #region ScreenLoadExceptionDto
+
+        private void HandleDto(ScreenLoadExceptionDto dto)
+        {
+            GlueCommands.Self.PrintError("Exception thrown loading screen in game:\n" + dto.Exception);
+        }
+
+        #endregion
+
         #region Glue/XXXX/CommandDto
 
         private async Task<string> HandleDto(GlueCommandDto dto) => await HandleFacadeCommand(GlueCommands.Self, dto);

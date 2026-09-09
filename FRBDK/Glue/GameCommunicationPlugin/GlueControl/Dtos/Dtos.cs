@@ -204,6 +204,15 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
 
     #endregion
 
+    #region ScreenLoadExceptionDto
+
+    public class ScreenLoadExceptionDto
+    {
+        public string Exception { get; set; }
+    }
+
+    #endregion
+
     #region GetCameraPosition
     public class GetCameraPosition
     {
