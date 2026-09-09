@@ -313,14 +313,12 @@ namespace FlatRedBall.TileGraphics
 
         float mInfiniteScrollPeriodX;
         float mInfiniteScrollPeriodY;
+        float mInfiniteScrollOriginalMinX;
+        float mInfiniteScrollOriginalMinY;
         int mInfiniteScrollColumns = 1;
         int mInfiniteScrollRows = 1;
         int[] mInfiniteScrollColumnPeriodIndex;
         int[] mInfiniteScrollRowPeriodIndex;
-        int mInfiniteScrollMinColumnPeriodIndex;
-        int mInfiniteScrollMaxColumnPeriodIndex;
-        int mInfiniteScrollMinRowPeriodIndex;
-        int mInfiniteScrollMaxRowPeriodIndex;
 
         #endregion
 
@@ -1246,7 +1244,7 @@ namespace FlatRedBall.TileGraphics
                     // whenever the graphics device is lost. Also, this would not work if tiles are animated
                     // since those change their texture coordiantes. We can be more intelligent about this, though
                     // but for now this is not even close to the slowest part of the engine so we'll leave it as is.
-                    if(indices32Bit != null)
+                    if (indices32Bit != null)
                     {
                         FlatRedBallServices.GraphicsDevice.DrawUserIndexedPrimitives<VertexType>(
                             PrimitiveType.TriangleList,
@@ -1693,6 +1691,11 @@ namespace FlatRedBall.TileGraphics
             }
             mInfiniteScrollPeriodX = maxX - minX;
             mInfiniteScrollPeriodY = maxY - minY;
+            // The authored content's own min corner anchors period index 0 - it can land anywhere
+            // (e.g. entirely negative), so any conversion between a world position and a period
+            // index must be measured from this anchor, never from 0.
+            mInfiniteScrollOriginalMinX = minX;
+            mInfiniteScrollOriginalMinY = minY;
         }
 
         void AllocateInfiniteScrollBuffers(int totalTiles)
@@ -1817,8 +1820,6 @@ namespace FlatRedBall.TileGraphics
                 {
                     mInfiniteScrollColumnPeriodIndex[c] = minColumnPeriodIndex + c;
                 }
-                mInfiniteScrollMinColumnPeriodIndex = minColumnPeriodIndex;
-                mInfiniteScrollMaxColumnPeriodIndex = minColumnPeriodIndex + columns - 1;
             }
 
             if (InfiniteScrollY)
@@ -1829,8 +1830,6 @@ namespace FlatRedBall.TileGraphics
                 {
                     mInfiniteScrollRowPeriodIndex[r] = minRowPeriodIndex + r;
                 }
-                mInfiniteScrollMinRowPeriodIndex = minRowPeriodIndex;
-                mInfiniteScrollMaxRowPeriodIndex = minRowPeriodIndex + rows - 1;
             }
         }
 
@@ -1856,7 +1855,11 @@ namespace FlatRedBall.TileGraphics
 
         /// <summary>
         /// How many copies are needed to always be able to fully cover a view of the given span,
-        /// with at least one spare copy on each side so a copy can be recycled before it is needed.
+        /// with two spare copies beyond what's strictly needed - one to relocate to a newly-exposed
+        /// low edge and one for a newly-exposed high edge, in case both happen in the same frame (see
+        /// RecycleInfiniteScrollAxis, which only ever relocates a copy to fill an index the view
+        /// actually needs and has no other copy covering, rather than recycling on any distance-based
+        /// heuristic).
         /// </summary>
         static int GetInfiniteScrollCopyCount(float viewSpan, float periodLength)
         {
@@ -1872,78 +1875,18 @@ namespace FlatRedBall.TileGraphics
         }
 
         /// <summary>
-        /// Checks whether a single baked infinite-scroll copy has scrolled entirely outside the
-        /// required visible range and, if so, recycles it (reassigns its period index) to become
-        /// the next copy needed at the opposite edge of the window, keeping the occupied period
-        /// indices a contiguous run around wherever the camera currently is.
-        /// </summary>
-        /// <param name="currentPeriodIndex">The copy's current period index.</param>
-        /// <param name="periodLength">The world-space length of one period. Must be positive.</param>
-        /// <param name="requiredMinLocal">The minimum local coordinate that must remain covered.</param>
-        /// <param name="requiredMaxLocal">The maximum local coordinate that must remain covered.</param>
-        /// <param name="minPeriodIndex">The window's current lowest occupied period index. Updated in place.</param>
-        /// <param name="maxPeriodIndex">The window's current highest occupied period index. Updated in place.</param>
-        /// <param name="newPeriodIndex">The copy's period index after this call.</param>
-        /// <returns>True if the copy was recycled (its period index changed).</returns>
-        static bool TryRecycleInfiniteScrollSlot(
-            int currentPeriodIndex,
-            float periodLength,
-            float requiredMinLocal,
-            float requiredMaxLocal,
-            ref int minPeriodIndex,
-            ref int maxPeriodIndex,
-            out int newPeriodIndex)
-        {
-            newPeriodIndex = currentPeriodIndex;
-
-            if (periodLength <= 0)
-            {
-                return false;
-            }
-
-            float slotMin = currentPeriodIndex * periodLength;
-            float slotMax = slotMin + periodLength;
-
-            if (slotMax < requiredMinLocal)
-            {
-                // Fully before the required range - recycle to become the new highest copy.
-                // Normally that's just one period past the current highest copy, but if the
-                // required range has jumped far away (e.g. the camera teleported), crawling
-                // forward one period per recycle would take many frames to catch up, so jump
-                // straight to where the copy is actually needed instead.
-                int neededIndex = (int)System.Math.Floor(requiredMinLocal / periodLength);
-                newPeriodIndex = System.Math.Max(maxPeriodIndex + 1, neededIndex);
-                maxPeriodIndex = newPeriodIndex;
-                if (currentPeriodIndex == minPeriodIndex)
-                {
-                    minPeriodIndex++;
-                }
-                return true;
-            }
-
-            if (slotMin > requiredMaxLocal)
-            {
-                // Fully after the required range - recycle to become the new lowest copy,
-                // jumping straight there if the required range is far below the current window.
-                int neededIndex = (int)System.Math.Floor(requiredMaxLocal / periodLength);
-                newPeriodIndex = System.Math.Min(minPeriodIndex - 1, neededIndex);
-                minPeriodIndex = newPeriodIndex;
-                if (currentPeriodIndex == maxPeriodIndex)
-                {
-                    maxPeriodIndex--;
-                }
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Recycles baked infinite-scroll copies that have scrolled entirely outside the camera's
-        /// current view, moving each one to become the next copy needed at the opposite edge of the
-        /// window. This must run after this.X/this.Y reflect the current frame's position (i.e.
-        /// after ForceUpdateDependencies), since the required visible range is computed relative to
-        /// the object's absolute position, matching GetRenderingIndexValues.
+        /// Recycles baked infinite-scroll copies so the period indices actually needed to cover the
+        /// camera's current view are always present. Rather than asking each slot in isolation "am I
+        /// still needed" (which can't tell a slot that's genuinely stale apart from one that's simply
+        /// not needed *yet* but is about to be - both look identical from that slot's own point of
+        /// view, and treating them the same way caused two spare slots to endlessly swap places),
+        /// this computes the exact lowest and highest period index the view requires and, only when
+        /// one of those two indices has no slot covering it, reassigns the most surplus slot (the one
+        /// farthest from where it's needed) to fill that gap. A slot untouched by this is never
+        /// touched, so already-correct placements can't be disturbed by drift elsewhere.
+        /// This must run after this.X/this.Y reflect the current frame's position (i.e. after
+        /// ForceUpdateDependencies), since the required visible range is computed relative to the
+        /// object's absolute position, matching GetRenderingIndexValues.
         /// </summary>
         private void UpdateInfiniteScrollRecycling(Camera camera)
         {
@@ -1951,43 +1894,90 @@ namespace FlatRedBall.TileGraphics
             {
                 float requiredMinLocal = camera.AbsoluteLeftXEdgeAt(this.Z) - this.X;
                 float requiredMaxLocal = camera.AbsoluteRightXEdgeAt(this.Z) - this.X;
-
-                for (int column = 0; column < mInfiniteScrollColumns; column++)
-                {
-                    int currentIndex = mInfiniteScrollColumnPeriodIndex[column];
-                    if (TryRecycleInfiniteScrollSlot(
-                            currentIndex, mInfiniteScrollPeriodX,
-                            requiredMinLocal, requiredMaxLocal,
-                            ref mInfiniteScrollMinColumnPeriodIndex, ref mInfiniteScrollMaxColumnPeriodIndex,
-                            out int newIndex))
-                    {
-                        mInfiniteScrollColumnPeriodIndex[column] = newIndex;
-                        float deltaX = (newIndex - currentIndex) * mInfiniteScrollPeriodX;
-                        ShiftInfiniteScrollColumn(column, deltaX);
-                    }
-                }
+                RecycleInfiniteScrollAxis(
+                    mInfiniteScrollColumnPeriodIndex, mInfiniteScrollPeriodX, mInfiniteScrollOriginalMinX,
+                    requiredMinLocal, requiredMaxLocal, isColumn: true);
             }
 
             if (InfiniteScrollY)
             {
                 float requiredMinLocal = camera.AbsoluteBottomYEdgeAt(this.Z) - this.Y;
                 float requiredMaxLocal = camera.AbsoluteTopYEdgeAt(this.Z) - this.Y;
-
-                for (int row = 0; row < mInfiniteScrollRows; row++)
-                {
-                    int currentIndex = mInfiniteScrollRowPeriodIndex[row];
-                    if (TryRecycleInfiniteScrollSlot(
-                            currentIndex, mInfiniteScrollPeriodY,
-                            requiredMinLocal, requiredMaxLocal,
-                            ref mInfiniteScrollMinRowPeriodIndex, ref mInfiniteScrollMaxRowPeriodIndex,
-                            out int newIndex))
-                    {
-                        mInfiniteScrollRowPeriodIndex[row] = newIndex;
-                        float deltaY = (newIndex - currentIndex) * mInfiniteScrollPeriodY;
-                        ShiftInfiniteScrollRow(row, deltaY);
-                    }
-                }
+                RecycleInfiniteScrollAxis(
+                    mInfiniteScrollRowPeriodIndex, mInfiniteScrollPeriodY, mInfiniteScrollOriginalMinY,
+                    requiredMinLocal, requiredMaxLocal, isColumn: false);
             }
+        }
+
+        private void RecycleInfiniteScrollAxis(
+            int[] periodIndices, float periodLength, float originalMin,
+            float requiredMinLocal, float requiredMaxLocal, bool isColumn)
+        {
+            if (periodLength <= 0 || periodIndices == null || periodIndices.Length == 0)
+            {
+                return;
+            }
+
+            // Period index k's actual span is [originalMin + k*period, originalMin + (k+1)*period) -
+            // the authored content's own min corner anchors index 0, and that anchor can land
+            // anywhere (including entirely negative), so converting a world position to the period
+            // index that covers it must be measured from this anchor, never from a bare 0.
+            int neededMinIndex = (int)System.Math.Floor((requiredMinLocal - originalMin) / periodLength);
+            int neededMaxIndex = (int)System.Math.Floor((requiredMaxLocal - originalMin) / periodLength);
+
+            bool minCovered = false;
+            bool maxCovered = false;
+            foreach (var index in periodIndices)
+            {
+                if (index == neededMinIndex) minCovered = true;
+                if (index == neededMaxIndex) maxCovered = true;
+            }
+
+            if (!minCovered)
+            {
+                RelocateInfiniteScrollSlot(periodIndices, IndexOfMax(periodIndices), neededMinIndex, periodLength, isColumn);
+            }
+
+            if (!maxCovered)
+            {
+                RelocateInfiniteScrollSlot(periodIndices, IndexOfMin(periodIndices), neededMaxIndex, periodLength, isColumn);
+            }
+        }
+
+        private void RelocateInfiniteScrollSlot(int[] periodIndices, int slot, int newPeriodIndex, float periodLength, bool isColumn)
+        {
+            int oldPeriodIndex = periodIndices[slot];
+            periodIndices[slot] = newPeriodIndex;
+            float delta = (newPeriodIndex - oldPeriodIndex) * periodLength;
+
+            if (isColumn)
+            {
+                ShiftInfiniteScrollColumn(slot, delta);
+            }
+            else
+            {
+                ShiftInfiniteScrollRow(slot, delta);
+            }
+        }
+
+        static int IndexOfMin(int[] values)
+        {
+            int minIndex = 0;
+            for (int i = 1; i < values.Length; i++)
+            {
+                if (values[i] < values[minIndex]) minIndex = i;
+            }
+            return minIndex;
+        }
+
+        static int IndexOfMax(int[] values)
+        {
+            int maxIndex = 0;
+            for (int i = 1; i < values.Length; i++)
+            {
+                if (values[i] > values[maxIndex]) maxIndex = i;
+            }
+            return maxIndex;
         }
 
         private void ShiftInfiniteScrollColumn(int column, float deltaX)
