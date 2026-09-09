@@ -232,6 +232,38 @@ namespace FlatRedBall.Glue.Parsing
                     }
                     value = "new System.Collections.Generic.List<string> { " + innerInstantiation + "}";
                 }
+                else if(objectToParse is List<float> floatList)
+                {
+                    string innerInstantiation = String.Empty;
+
+                    var isFirst = true;
+                    foreach(var item in floatList)
+                    {
+                        if(!isFirst)
+                        {
+                            innerInstantiation += ", ";
+                        }
+                        innerInstantiation += $"{item.ToString(CultureInfo.InvariantCulture.NumberFormat)}f";
+                        isFirst = false;
+                    }
+                    value = "new System.Collections.Generic.List<float> { " + innerInstantiation + "}";
+                }
+                else if(objectToParse is List<int> intList)
+                {
+                    string innerInstantiation = String.Empty;
+
+                    var isFirst = true;
+                    foreach(var item in intList)
+                    {
+                        if(!isFirst)
+                        {
+                            innerInstantiation += ", ";
+                        }
+                        innerInstantiation += item.ToString(CultureInfo.InvariantCulture.NumberFormat);
+                        isFirst = false;
+                    }
+                    value = "new System.Collections.Generic.List<int> { " + innerInstantiation + "}";
+                }
                 else if(objectToParse is List<Vector2> vectorList)
                 {
                     if (outputType == typeof(List<FlatRedBall.Math.Geometry.Point>))

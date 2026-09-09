@@ -322,6 +322,20 @@ namespace FlatRedBall.Glue.SaveClasses
                     variableValue = newList;
                 }
             }
+            else if(type == "List<float>")
+            {
+                if (variableValue is Newtonsoft.Json.Linq.JArray jArray)
+                {
+                    variableValue = jArray.Select(item => item.ToObject<float>()).ToList();
+                }
+            }
+            else if(type == "List<int>")
+            {
+                if (variableValue is Newtonsoft.Json.Linq.JArray jArray)
+                {
+                    variableValue = jArray.Select(item => item.ToObject<int>()).ToList();
+                }
+            }
             else if(type == "List<string>")
             {
                 if (variableValue is Newtonsoft.Json.Linq.JArray jArray)
