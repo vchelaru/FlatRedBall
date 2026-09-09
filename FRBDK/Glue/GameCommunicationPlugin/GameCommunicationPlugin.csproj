@@ -44,6 +44,7 @@
     <Compile Remove="GlueControl\Embedded\Editing\CopyPasteManager.cs" />
     <Compile Remove="GlueControl\Embedded\Editing\EditingManager.cs" />
     <Compile Remove="GlueControl\Embedded\Editing\EditorVisuals.cs" />
+    <Compile Remove="GlueControl\Embedded\Editing\EditorVisualsTileShapeCollection.cs" />
     <Compile Remove="GlueControl\Embedded\Editing\Guides.cs" />
     <Compile Remove="GlueControl\Embedded\Editing\Managers\GenerateCodeCommands.cs" />
     <Compile Remove="GlueControl\Embedded\Editing\Managers\GlueCommands.cs" />
@@ -176,6 +177,7 @@
     <EmbeddedResource Include="GlueControl\Embedded\Editing\CopyPasteManager.cs" />
     <EmbeddedResource Include="GlueControl\Embedded\Editing\EditingManager.cs" />
     <EmbeddedResource Include="GlueControl\Embedded\Editing\EditorVisuals.cs" />
+    <EmbeddedResource Include="GlueControl\Embedded\Editing\EditorVisualsTileShapeCollection.cs" />
     <EmbeddedResource Include="GlueControl\Embedded\Editing\Guides.cs" />
     <EmbeddedResource Include="GlueControl\Embedded\Editing\Managers\GenerateCodeCommands.cs" />
     <EmbeddedResource Include="GlueControl\Embedded\Editing\Managers\GlueCommands.cs" />
