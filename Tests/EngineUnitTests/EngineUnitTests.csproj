@@ -31,6 +31,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Compiled directly from Glue's embedded-code source (verbatim-copied into every generated
+         game project as GlueControl/Editing/*.Generated.cs) so tests exercise the real code. -->
+    <Compile Include="..\..\FRBDK\Glue\GameCommunicationPlugin\GlueControl\Embedded\Editing\EditorVisuals.cs">
+      <Link>GlueControl\Editing\EditorVisuals.cs</Link>
+    </Compile>
+    <Compile Include="..\..\FRBDK\Glue\GameCommunicationPlugin\GlueControl\Embedded\Editing\Visuals\Arrow.cs">
+      <Link>GlueControl\Editing\Visuals\Arrow.cs</Link>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
     <Using Include="Xunit" />
   </ItemGroup>
 

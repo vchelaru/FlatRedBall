@@ -247,6 +247,12 @@ public class GoldProjectCompileTests
         generated.ShouldContain("Beefball/GlueControl/Editing/EditingManager.Generated.cs");
         generated.ShouldContain("Beefball/GlueControl/Screens/EntityViewingScreen.Generated.cs");
         generated.ShouldContain("Beefball/GlueControl/CommandReceiver.Generated.cs");
+        // EditorVisualsTileShapeCollection.cs (issue #1729) is a partial-class split off EditorVisuals.cs
+        // purely so EngineUnitTests could compile the rest of that class without the TileCollisions add-on -
+        // without this, a mistake in EmbeddedCodeManager's file list or the csproj's Compile/EmbeddedResource
+        // entries would drop the split method from every generated game silently, since it isn't otherwise
+        // referenced from generated Screen/Entity code.
+        generated.ShouldContain("Beefball/GlueControl/Editing/EditorVisualsTileShapeCollection.Generated.cs");
 
         // Beefball has no .gumx, its gluj is FileVersion 42, and it references prebuilt engine DLLs rather
         // than engine source. So this test compiles the *legacy* half of the embedded closure: the #else

@@ -57,7 +57,11 @@ namespace GlueControl.Editing.Visuals
         {
             MainLine = new Line();
 
-            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == false)
+            // Editor visuals are suppressed in release builds (EditorVisuals.ShowEditorVisuals) - don't
+            // register any lines with the ShapeManager in that case, even though this constructor can
+            // also be called directly (bypassing EditorVisuals.Arrow's own early-return) as the "screen
+            // is cleaning up" dummy return value.
+            if (EditorVisuals.ShowEditorVisuals && FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == false)
             {
                 ShapeManager.AddToLayer(MainLine, layer);
                 if (firstArrow)

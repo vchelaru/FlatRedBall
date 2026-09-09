@@ -19,7 +19,7 @@ namespace GlueControl.Editing
     /// when the game is running or markers and other indicators in edit mode. All calls must be made every frame for the objects
     /// to appear.
     /// </summary>
-    public class EditorVisuals : FlatRedBall.Managers.IManager
+    public partial class EditorVisuals : FlatRedBall.Managers.IManager
     {
         #region Fields/Properties
 
@@ -48,6 +48,16 @@ namespace GlueControl.Editing
 
         public static Layer DefaultLayer { get; set; }
 
+        // Editor visuals (markers, selection handles, debug arrows) are only useful while running
+        // under Glue's live-edit control, which itself is DEBUG-only (see Game1.Generated.cs). A
+        // published Release build should never spend render/manager overhead on them. This is a
+        // settable property (not a bare #if) so tests can flip it without needing a Release build.
+#if DEBUG
+        public static bool ShowEditorVisuals { get; set; } = true;
+#else
+        public static bool ShowEditorVisuals { get; set; } = false;
+#endif
+
         #endregion
 
         static EditorVisuals()
@@ -65,8 +75,9 @@ namespace GlueControl.Editing
             }
             Color textColor = color ?? Color.White;
 
-            // This screen is cleaning up, so don't make anymore objects:
-            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
+            // Editor visuals are suppressed (see ShowEditorVisuals), or this screen is cleaning up,
+            // so don't make anymore objects:
+            if (!ShowEditorVisuals || FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
             {
                 return new FlatRedBall.Graphics.Text();
             }
@@ -104,8 +115,9 @@ namespace GlueControl.Editing
             }
             Color lineColor = color ?? Color.White;
 
-            // This screen is cleaning up, so don't make anymore objects:
-            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
+            // Editor visuals are suppressed (see ShowEditorVisuals), or this screen is cleaning up,
+            // so don't make anymore objects:
+            if (!ShowEditorVisuals || FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
             {
                 var tempLine = new Line();
                 tempLine.Name = "Temp line returned when screen is transitioning";
@@ -149,8 +161,9 @@ namespace GlueControl.Editing
                 point2.Z = 0;
             }
 
-            // This screen is cleaning up, so don't make anymore objects:
-            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
+            // Editor visuals are suppressed (see ShowEditorVisuals), or this screen is cleaning up,
+            // so don't make anymore objects:
+            if (!ShowEditorVisuals || FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
             {
                 return new Arrow(DefaultLayer);
             }
@@ -196,8 +209,9 @@ namespace GlueControl.Editing
                 position.Z = 0;
             }
 
-            // This screen is cleaning up, so don't make anymore objects:
-            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
+            // Editor visuals are suppressed (see ShowEditorVisuals), or this screen is cleaning up,
+            // so don't make anymore objects:
+            if (!ShowEditorVisuals || FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
             {
                 return new Sprite();
             }
@@ -278,8 +292,9 @@ namespace GlueControl.Editing
 
             Color rectColor = color ?? Color.White;
 
-            // This screen is cleaning up, so don't make anymore objects:
-            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
+            // Editor visuals are suppressed (see ShowEditorVisuals), or this screen is cleaning up,
+            // so don't make anymore objects:
+            if (!ShowEditorVisuals || FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
             {
                 return new AxisAlignedRectangle();
             }
@@ -314,8 +329,9 @@ namespace GlueControl.Editing
 
             Color circleColor = color ?? Color.White;
 
-            // This screen is cleaning up, so don't make any more objects:
-            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
+            // Editor visuals are suppressed (see ShowEditorVisuals), or this screen is cleaning up,
+            // so don't make any more objects:
+            if (!ShowEditorVisuals || FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
             {
                 return new FlatRedBall.Math.Geometry.Circle();
             }
@@ -349,8 +365,9 @@ namespace GlueControl.Editing
 
             Color polygonColor = color ?? Color.White;
 
-            // This screen is cleaning up, so don't make anymore objects:
-            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
+            // Editor visuals are suppressed (see ShowEditorVisuals), or this screen is cleaning up,
+            // so don't make anymore objects:
+            if (!ShowEditorVisuals || FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
             {
                 return new Polygon();
             }
@@ -374,7 +391,7 @@ namespace GlueControl.Editing
             return polygon;
         }
 
-        public static Polygon DrawPath(Path path, Vector3 startingPosition, bool includeOffsetArrow = false)
+        public static Polygon DrawPath(FlatRedBall.Math.Paths.Path path, Vector3 startingPosition, bool includeOffsetArrow = false)
         {
 
             var pathPolygon = Polygon(startingPosition);
@@ -403,13 +420,10 @@ namespace GlueControl.Editing
 
         #endregion
 
-        public static void DrawRepositionDirections(FlatRedBall.TileCollisions.TileShapeCollection tileShapeCollection)
-        {
-            foreach (var rectangle in tileShapeCollection.Rectangles)
-            {
-                DrawRepositionDirections(rectangle);
-            }
-        }
+        // DrawRepositionDirections(TileShapeCollection) lives in EditorVisualsTileShapeCollection.cs -
+        // it's the only member of this class that depends on the FlatRedBall.TileCollisions add-on,
+        // and keeping it in its own file lets code (e.g. EngineUnitTests) compile the rest of this
+        // class without that add-on's shared source.
 
         public static void DrawRepositionDirections(AxisAlignedRectangle rectangle)
         {
@@ -442,7 +456,7 @@ namespace GlueControl.Editing
             }
         }
 
-        public static List<FlatRedBall.Math.Geometry.Point> GetPoints(Path pathInstance, bool flipHorizontally)
+        public static List<FlatRedBall.Math.Geometry.Point> GetPoints(FlatRedBall.Math.Paths.Path pathInstance, bool flipHorizontally)
         {
             var points = new List<FlatRedBall.Math.Geometry.Point>();
 
