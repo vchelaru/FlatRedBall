@@ -281,6 +281,45 @@ namespace FlatRedBall.TileGraphics
 
         public TextureFilter? TextureFilter { get; set; } = null;
 
+        bool mInfiniteScrollX;
+        /// <summary>
+        /// Makes this layer repeat seamlessly along X as the camera scrolls, so it always fills the
+        /// view regardless of the camera's position or how the layer's authored size compares to
+        /// the viewport. Set this to true after the layer's tiles have been added (e.g. after
+        /// loading from Tiled - see the "InfiniteScrollX" custom Tiled property - or after building
+        /// the layer entirely in code). Setting it back to false is not supported.
+        /// </summary>
+        public bool InfiniteScrollX
+        {
+            get => mInfiniteScrollX;
+            set => SetInfiniteScroll(ref mInfiniteScrollX, value, nameof(InfiniteScrollX));
+        }
+
+        bool mInfiniteScrollY;
+        /// <summary>
+        /// The Y equivalent of <see cref="InfiniteScrollX"/>.
+        /// </summary>
+        public bool InfiniteScrollY
+        {
+            get => mInfiniteScrollY;
+            set => SetInfiniteScroll(ref mInfiniteScrollY, value, nameof(InfiniteScrollY));
+        }
+
+        bool mInfiniteScrollBaked;
+        VertexType[] mInfiniteScrollOriginalVertices;
+        byte[] mInfiniteScrollOriginalFlipFlags;
+        int mInfiniteScrollOriginalTileCount;
+        Dictionary<string, List<int>> mInfiniteScrollOriginalNamedIndexes;
+
+        float mInfiniteScrollPeriodX;
+        float mInfiniteScrollPeriodY;
+        float mInfiniteScrollOriginalMinX;
+        float mInfiniteScrollOriginalMinY;
+        int mInfiniteScrollColumns = 1;
+        int mInfiniteScrollRows = 1;
+        int[] mInfiniteScrollColumnPeriodIndex;
+        int[] mInfiniteScrollRowPeriodIndex;
+
         #endregion
 
         #region Constructor / Initialization
@@ -553,7 +592,7 @@ namespace FlatRedBall.TileGraphics
                 // The purpose of CoordinateAdjustment is to bring the texture values "in", to reduce the chance of adjacent
                 // tiles drawing on a given tile quad. If we don't do this, we can get slivers of adjacent colors appearing, causing
                 // lines or grid patterns.
-                // To bring the values "in" we have to consider rotated quads. 
+                // To bring the values "in" we have to consider rotated quads.
                 textureValues.X = CoordinateAdjustment + (float)quad.LeftTexturePixel / (float)texture.Width; // Left
                 textureValues.Y = -CoordinateAdjustment + (float)(quad.LeftTexturePixel + tileDimensionWidth) / (float)texture.Width; // Right
                 textureValues.Z = CoordinateAdjustment + (float)quad.TopTexturePixel / (float)texture.Height; // Top
@@ -597,11 +636,11 @@ namespace FlatRedBall.TileGraphics
                     textureValues.W = temp;
                 }
 
-                toReturn.FlipFlagArray[i] = quad.FlipFlags;
-
                 int tileIndex = toReturn.AddTile(position, tileDimensions,
                     //quad.LeftTexturePixel, quad.TopTexturePixel, quad.LeftTexturePixel + tileDimensionWidth, quad.TopTexturePixel + tileDimensionHeight);
                     textureValues);
+
+                toReturn.FlipFlagArray[tileIndex] = quad.FlipFlags;
 
                 if ((quad.FlipFlags & TMXGlueLib.DataTypes.ReducedQuadInfo.FlippedDiagonallyFlag) == TMXGlueLib.DataTypes.ReducedQuadInfo.FlippedDiagonallyFlag)
                 {
@@ -646,6 +685,16 @@ namespace FlatRedBall.TileGraphics
             toReturn.OffsetX = reducedLayerInfo.OffsetX;
             // FRB has positive Y up
             toReturn.OffsetY = -reducedLayerInfo.OffsetY;
+
+            // These just call the same code-first InfiniteScrollX/Y properties any game code can set.
+            if (reducedLayerInfo.InfiniteScrollX)
+            {
+                toReturn.InfiniteScrollX = true;
+            }
+            if (reducedLayerInfo.InfiniteScrollY)
+            {
+                toReturn.InfiniteScrollY = true;
+            }
 
             return toReturn;
         }
@@ -1157,6 +1206,11 @@ namespace FlatRedBall.TileGraphics
 
             ForceUpdateDependencies();
 
+            if (InfiniteScrollX || InfiniteScrollY)
+            {
+                UpdateInfiniteScrollRecycling(camera);
+            }
+
             int firstVertIndex;
             int lastVertIndex;
             int indexStart;
@@ -1190,7 +1244,7 @@ namespace FlatRedBall.TileGraphics
                     // whenever the graphics device is lost. Also, this would not work if tiles are animated
                     // since those change their texture coordiantes. We can be more intelligent about this, though
                     // but for now this is not even close to the slowest part of the engine so we'll leave it as is.
-                    if(indices32Bit != null)
+                    if (indices32Bit != null)
                     {
                         FlatRedBallServices.GraphicsDevice.DrawUserIndexedPrimitives<VertexType>(
                             PrimitiveType.TriangleList,
@@ -1579,6 +1633,382 @@ namespace FlatRedBall.TileGraphics
 
             this.RelativeX += OffsetX;
             this.RelativeY += OffsetY;
+        }
+
+        void SetInfiniteScroll(ref bool field, bool value, string propertyName)
+        {
+            if (value == field)
+            {
+                return;
+            }
+            if (!value)
+            {
+                throw new NotSupportedException(
+                    $"Disabling {propertyName} after it has been enabled is not supported.");
+            }
+            if (mCurrentNumberOfTiles == 0)
+            {
+                throw new InvalidOperationException(
+                    $"{propertyName} must be set after this layer's tiles have been added.");
+            }
+
+            field = value;
+            RebuildInfiniteScrollGeometry();
+        }
+
+        /// <summary>
+        /// The first time InfiniteScrollX/Y is enabled, this snapshots the layer's tiles as they
+        /// exist at that moment - positions, UVs, flip flags, and names - so later rebuilds (e.g.
+        /// enabling the other axis too) always start from this original, unduplicated content
+        /// rather than from whatever's already been baked. The period is the content's own
+        /// bounding box, not any map-wide grid size, so this works for a layer built entirely in
+        /// code with no Tiled/map context at all.
+        /// </summary>
+        void CaptureOriginalInfiniteScrollTiles()
+        {
+            mInfiniteScrollOriginalTileCount = mCurrentNumberOfTiles;
+
+            mInfiniteScrollOriginalVertices = new VertexType[mCurrentNumberOfTiles * 4];
+            Array.Copy(mVertices, mInfiniteScrollOriginalVertices, mInfiniteScrollOriginalVertices.Length);
+
+            mInfiniteScrollOriginalFlipFlags = new byte[mCurrentNumberOfTiles];
+            Array.Copy(FlipFlagArray, mInfiniteScrollOriginalFlipFlags, mCurrentNumberOfTiles);
+
+            mInfiniteScrollOriginalNamedIndexes = new Dictionary<string, List<int>>();
+            foreach (var kvp in mNamedTileOrderedIndexes)
+            {
+                mInfiniteScrollOriginalNamedIndexes[kvp.Key] = new List<int>(kvp.Value);
+            }
+
+            float minX = float.MaxValue, maxX = float.MinValue;
+            float minY = float.MaxValue, maxY = float.MinValue;
+            foreach (var vertex in mInfiniteScrollOriginalVertices)
+            {
+                minX = System.Math.Min(minX, vertex.Position.X);
+                maxX = System.Math.Max(maxX, vertex.Position.X);
+                minY = System.Math.Min(minY, vertex.Position.Y);
+                maxY = System.Math.Max(maxY, vertex.Position.Y);
+            }
+            mInfiniteScrollPeriodX = maxX - minX;
+            mInfiniteScrollPeriodY = maxY - minY;
+            // The authored content's own min corner anchors period index 0 - it can land anywhere
+            // (e.g. entirely negative), so any conversion between a world position and a period
+            // index must be measured from this anchor, never from 0.
+            mInfiniteScrollOriginalMinX = minX;
+            mInfiniteScrollOriginalMinY = minY;
+        }
+
+        void AllocateInfiniteScrollBuffers(int totalTiles)
+        {
+            mVertices = new VertexType[4 * totalTiles];
+            FlipFlagArray = new byte[totalTiles];
+
+            var indexCount = 6 * totalTiles;
+            if (indexCount < short.MaxValue)
+            {
+                indices16Bit = new short[indexCount];
+                indices32Bit = null;
+            }
+            else
+            {
+                indices32Bit = new int[indexCount];
+                indices16Bit = null;
+            }
+        }
+
+        /// <summary>
+        /// Rebuilds the entire vertex buffer from the original (pre-infinite-scroll) tiles captured
+        /// by CaptureOriginalInfiniteScrollTiles, baking enough repeated copies along whichever axes
+        /// are currently enabled to cover the camera's current view (see GetInfiniteScrollCopyCount -
+        /// UpdateInfiniteScrollRecycling keeps that coverage as the camera moves). Runs from scratch
+        /// every time either axis is (re)enabled so enabling X then Y (or vice versa, or both at
+        /// once) always produces the correct combined grid.
+        /// </summary>
+        void RebuildInfiniteScrollGeometry()
+        {
+            if (!mInfiniteScrollBaked)
+            {
+                CaptureOriginalInfiniteScrollTiles();
+                mInfiniteScrollBaked = true;
+            }
+
+            int columns = InfiniteScrollX
+                ? GetInfiniteScrollCopyCount(GetCameraViewSpanX(), mInfiniteScrollPeriodX)
+                : 1;
+            int rows = InfiniteScrollY
+                ? GetInfiniteScrollCopyCount(GetCameraViewSpanY(), mInfiniteScrollPeriodY)
+                : 1;
+
+            int originalTileCount = mInfiniteScrollOriginalTileCount;
+            int totalSlots = columns * rows;
+
+            AllocateInfiniteScrollBuffers(originalTileCount * totalSlots);
+            mCurrentNumberOfTiles = 0;
+            mNamedTileOrderedIndexes.Clear();
+
+            int minColumnPeriodIndex = -(columns / 2);
+            int minRowPeriodIndex = -(rows / 2);
+
+            for (int slotIndex = 0; slotIndex < totalSlots; slotIndex++)
+            {
+                int column = slotIndex % columns;
+                int row = slotIndex / columns;
+
+                float slotOffsetX = (minColumnPeriodIndex + column) * mInfiniteScrollPeriodX;
+                float slotOffsetY = (minRowPeriodIndex + row) * mInfiniteScrollPeriodY;
+
+                for (int originalIndex = 0; originalIndex < originalTileCount; originalIndex++)
+                {
+                    int newTileIndex = mCurrentNumberOfTiles;
+                    int newVertexStart = newTileIndex * 4;
+                    int newIndexStart = newTileIndex * 6;
+                    int originalVertexStart = originalIndex * 4;
+
+                    for (int v = 0; v < 4; v++)
+                    {
+                        var originalVertex = mInfiniteScrollOriginalVertices[originalVertexStart + v];
+                        var newPosition = originalVertex.Position;
+                        newPosition.X += slotOffsetX;
+                        newPosition.Y += slotOffsetY;
+                        mVertices[newVertexStart + v] = new VertexType(newPosition, originalVertex.TextureCoordinate);
+                    }
+
+                    if (indices32Bit != null)
+                    {
+                        indices32Bit[newIndexStart + 0] = newVertexStart + 0;
+                        indices32Bit[newIndexStart + 1] = newVertexStart + 1;
+                        indices32Bit[newIndexStart + 2] = newVertexStart + 2;
+                        indices32Bit[newIndexStart + 3] = newVertexStart + 0;
+                        indices32Bit[newIndexStart + 4] = newVertexStart + 2;
+                        indices32Bit[newIndexStart + 5] = newVertexStart + 3;
+                    }
+                    else
+                    {
+                        indices16Bit[newIndexStart + 0] = (short)(newVertexStart + 0);
+                        indices16Bit[newIndexStart + 1] = (short)(newVertexStart + 1);
+                        indices16Bit[newIndexStart + 2] = (short)(newVertexStart + 2);
+                        indices16Bit[newIndexStart + 3] = (short)(newVertexStart + 0);
+                        indices16Bit[newIndexStart + 4] = (short)(newVertexStart + 2);
+                        indices16Bit[newIndexStart + 5] = (short)(newVertexStart + 3);
+                    }
+
+                    FlipFlagArray[newTileIndex] = mInfiniteScrollOriginalFlipFlags[originalIndex];
+
+                    foreach (var kvp in mInfiniteScrollOriginalNamedIndexes)
+                    {
+                        if (kvp.Value.Contains(originalIndex))
+                        {
+                            RegisterName(kvp.Key, newTileIndex);
+                        }
+                    }
+
+                    mCurrentNumberOfTiles++;
+                }
+            }
+
+            // Recycling (see UpdateInfiniteScrollRecycling) rewrites individual baked copies'
+            // vertex positions independently, which does not preserve the single global sort order
+            // GetRenderingIndexValues relies on for its binary-search draw-range culling. These
+            // layers always draw their full (small, bounded) vertex buffer instead.
+            mSortAxis = SortAxis.None;
+
+            if (InfiniteScrollX)
+            {
+                mInfiniteScrollColumns = columns;
+                mInfiniteScrollColumnPeriodIndex = new int[columns];
+                for (int c = 0; c < columns; c++)
+                {
+                    mInfiniteScrollColumnPeriodIndex[c] = minColumnPeriodIndex + c;
+                }
+            }
+
+            if (InfiniteScrollY)
+            {
+                mInfiniteScrollRows = rows;
+                mInfiniteScrollRowPeriodIndex = new int[rows];
+                for (int r = 0; r < rows; r++)
+                {
+                    mInfiniteScrollRowPeriodIndex[r] = minRowPeriodIndex + r;
+                }
+            }
+        }
+
+        static float GetCameraViewSpanX()
+        {
+            var camera = Camera.Main;
+            if (camera == null)
+            {
+                return 0;
+            }
+            return camera.AbsoluteRightXEdgeAt(0) - camera.AbsoluteLeftXEdgeAt(0);
+        }
+
+        static float GetCameraViewSpanY()
+        {
+            var camera = Camera.Main;
+            if (camera == null)
+            {
+                return 0;
+            }
+            return camera.AbsoluteTopYEdgeAt(0) - camera.AbsoluteBottomYEdgeAt(0);
+        }
+
+        /// <summary>
+        /// How many copies are needed to always be able to fully cover a view of the given span,
+        /// with two spare copies beyond what's strictly needed - one to relocate to a newly-exposed
+        /// low edge and one for a newly-exposed high edge, in case both happen in the same frame (see
+        /// RecycleInfiniteScrollAxis, which only ever relocates a copy to fill an index the view
+        /// actually needs and has no other copy covering, rather than recycling on any distance-based
+        /// heuristic).
+        /// </summary>
+        static int GetInfiniteScrollCopyCount(float viewSpan, float periodLength)
+        {
+            if (periodLength <= 0)
+            {
+                return 1;
+            }
+            if (viewSpan <= 0)
+            {
+                return 3;
+            }
+            return System.Math.Max(3, (int)System.Math.Ceiling(viewSpan / periodLength) + 2);
+        }
+
+        /// <summary>
+        /// Recycles baked infinite-scroll copies so the period indices actually needed to cover the
+        /// camera's current view are always present. Rather than asking each slot in isolation "am I
+        /// still needed" (which can't tell a slot that's genuinely stale apart from one that's simply
+        /// not needed *yet* but is about to be - both look identical from that slot's own point of
+        /// view, and treating them the same way caused two spare slots to endlessly swap places),
+        /// this computes the exact lowest and highest period index the view requires and, only when
+        /// one of those two indices has no slot covering it, reassigns the most surplus slot (the one
+        /// farthest from where it's needed) to fill that gap. A slot untouched by this is never
+        /// touched, so already-correct placements can't be disturbed by drift elsewhere.
+        /// This must run after this.X/this.Y reflect the current frame's position (i.e. after
+        /// ForceUpdateDependencies), since the required visible range is computed relative to the
+        /// object's absolute position, matching GetRenderingIndexValues.
+        /// </summary>
+        private void UpdateInfiniteScrollRecycling(Camera camera)
+        {
+            if (InfiniteScrollX)
+            {
+                float requiredMinLocal = camera.AbsoluteLeftXEdgeAt(this.Z) - this.X;
+                float requiredMaxLocal = camera.AbsoluteRightXEdgeAt(this.Z) - this.X;
+                RecycleInfiniteScrollAxis(
+                    mInfiniteScrollColumnPeriodIndex, mInfiniteScrollPeriodX, mInfiniteScrollOriginalMinX,
+                    requiredMinLocal, requiredMaxLocal, isColumn: true);
+            }
+
+            if (InfiniteScrollY)
+            {
+                float requiredMinLocal = camera.AbsoluteBottomYEdgeAt(this.Z) - this.Y;
+                float requiredMaxLocal = camera.AbsoluteTopYEdgeAt(this.Z) - this.Y;
+                RecycleInfiniteScrollAxis(
+                    mInfiniteScrollRowPeriodIndex, mInfiniteScrollPeriodY, mInfiniteScrollOriginalMinY,
+                    requiredMinLocal, requiredMaxLocal, isColumn: false);
+            }
+        }
+
+        private void RecycleInfiniteScrollAxis(
+            int[] periodIndices, float periodLength, float originalMin,
+            float requiredMinLocal, float requiredMaxLocal, bool isColumn)
+        {
+            if (periodLength <= 0 || periodIndices == null || periodIndices.Length == 0)
+            {
+                return;
+            }
+
+            // Period index k's actual span is [originalMin + k*period, originalMin + (k+1)*period) -
+            // the authored content's own min corner anchors index 0, and that anchor can land
+            // anywhere (including entirely negative), so converting a world position to the period
+            // index that covers it must be measured from this anchor, never from a bare 0.
+            int neededMinIndex = (int)System.Math.Floor((requiredMinLocal - originalMin) / periodLength);
+            int neededMaxIndex = (int)System.Math.Floor((requiredMaxLocal - originalMin) / periodLength);
+
+            bool minCovered = false;
+            bool maxCovered = false;
+            foreach (var index in periodIndices)
+            {
+                if (index == neededMinIndex) minCovered = true;
+                if (index == neededMaxIndex) maxCovered = true;
+            }
+
+            if (!minCovered)
+            {
+                RelocateInfiniteScrollSlot(periodIndices, IndexOfMax(periodIndices), neededMinIndex, periodLength, isColumn);
+            }
+
+            if (!maxCovered)
+            {
+                RelocateInfiniteScrollSlot(periodIndices, IndexOfMin(periodIndices), neededMaxIndex, periodLength, isColumn);
+            }
+        }
+
+        private void RelocateInfiniteScrollSlot(int[] periodIndices, int slot, int newPeriodIndex, float periodLength, bool isColumn)
+        {
+            int oldPeriodIndex = periodIndices[slot];
+            periodIndices[slot] = newPeriodIndex;
+            float delta = (newPeriodIndex - oldPeriodIndex) * periodLength;
+
+            if (isColumn)
+            {
+                ShiftInfiniteScrollColumn(slot, delta);
+            }
+            else
+            {
+                ShiftInfiniteScrollRow(slot, delta);
+            }
+        }
+
+        static int IndexOfMin(int[] values)
+        {
+            int minIndex = 0;
+            for (int i = 1; i < values.Length; i++)
+            {
+                if (values[i] < values[minIndex]) minIndex = i;
+            }
+            return minIndex;
+        }
+
+        static int IndexOfMax(int[] values)
+        {
+            int maxIndex = 0;
+            for (int i = 1; i < values.Length; i++)
+            {
+                if (values[i] > values[maxIndex]) maxIndex = i;
+            }
+            return maxIndex;
+        }
+
+        private void ShiftInfiniteScrollColumn(int column, float deltaX)
+        {
+            for (int row = 0; row < mInfiniteScrollRows; row++)
+            {
+                ShiftInfiniteScrollSlot(row, column, deltaX, 0f);
+            }
+        }
+
+        private void ShiftInfiniteScrollRow(int row, float deltaY)
+        {
+            for (int column = 0; column < mInfiniteScrollColumns; column++)
+            {
+                ShiftInfiniteScrollSlot(row, column, 0f, deltaY);
+            }
+        }
+
+        private void ShiftInfiniteScrollSlot(int row, int column, float deltaX, float deltaY)
+        {
+            int slotIndex = row * mInfiniteScrollColumns + column;
+            int vertexStart = slotIndex * mInfiniteScrollOriginalTileCount * 4;
+            int vertexCountExclusive = vertexStart + mInfiniteScrollOriginalTileCount * 4;
+
+            for (int v = vertexStart; v < vertexCountExclusive; v++)
+            {
+                var vertexPosition = mVertices[v].Position;
+                vertexPosition.X += deltaX;
+                vertexPosition.Y += deltaY;
+                mVertices[v].Position = vertexPosition;
+            }
         }
 
         public static float? NativeCameraWidth;

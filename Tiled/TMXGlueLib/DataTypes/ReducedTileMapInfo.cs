@@ -116,6 +116,10 @@ namespace TMXGlueLib.DataTypes
         public float OffsetX = 0;
         public float OffsetY = 0;
 
+        // Version 4:
+        public bool InfiniteScrollX = false;
+        public bool InfiniteScrollY = false;
+
         public static ReducedLayerInfo ReadFrom(BinaryReader reader, int version)
         {
             ReducedLayerInfo toReturn = new ReducedLayerInfo();
@@ -145,6 +149,12 @@ namespace TMXGlueLib.DataTypes
 
                 toReturn.CameraOffsetX = reader.ReadSingle();
                 toReturn.CameraOffsetY = reader.ReadSingle();
+            }
+
+            if (version >= 4)
+            {
+                toReturn.InfiniteScrollX = reader.ReadBoolean();
+                toReturn.InfiniteScrollY = reader.ReadBoolean();
             }
 
             return toReturn;
@@ -178,6 +188,12 @@ namespace TMXGlueLib.DataTypes
 
                 writer.Write(CameraOffsetX);
                 writer.Write(CameraOffsetY);
+            }
+
+            if (version >= 4)
+            {
+                writer.Write(InfiniteScrollX);
+                writer.Write(InfiniteScrollY);
             }
         }
 
@@ -215,7 +231,8 @@ namespace TMXGlueLib.DataTypes
         //  int NumberCellsWide;
         //  int NumberCellsTall;
         // Version 3 added parallax
-        public int VersionNumber = 3;
+        // Version 4 added InfiniteScrollX/InfiniteScrollY
+        public int VersionNumber = 4;
 
         public int NumberCellsWide;
         public int NumberCellsTall;

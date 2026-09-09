@@ -202,6 +202,20 @@ namespace TMXGlueLib.DataTypes
                 int tileWidth = tileSet?.Tilewidth ?? tiledMapSave.tilewidth;
                 int tileHeight = tileSet?.Tileheight ?? tiledMapSave.tileheight;
 
+                bool infiniteScrollX = false;
+                bool infiniteScrollY = false;
+                if (tiledLayer is MapLayer infiniteScrollLayer)
+                {
+                    if (infiniteScrollLayer.PropertyDictionary.TryGetValue("InfiniteScrollX", out string infiniteScrollXValue))
+                    {
+                        bool.TryParse(infiniteScrollXValue, out infiniteScrollX);
+                    }
+                    if (infiniteScrollLayer.PropertyDictionary.TryGetValue("InfiniteScrollY", out string infiniteScrollYValue))
+                    {
+                        bool.TryParse(infiniteScrollYValue, out infiniteScrollY);
+                    }
+                }
+
                 reducedLayerInfo = new ReducedLayerInfo
                 {
                     Z = i,
@@ -213,6 +227,8 @@ namespace TMXGlueLib.DataTypes
                     ParallaxMultiplierY = tiledLayer.ParallaxY,
                     OffsetX = tiledLayer.OffsetX,
                     OffsetY = tiledLayer.OffsetY,
+                    InfiniteScrollX = infiniteScrollX,
+                    InfiniteScrollY = infiniteScrollY,
                 };
 
                 reducedTileMapInfo.Layers.Add(reducedLayerInfo);
