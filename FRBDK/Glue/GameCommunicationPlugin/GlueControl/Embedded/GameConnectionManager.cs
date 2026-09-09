@@ -27,6 +27,16 @@ namespace GlueCommunication
         /// </summary>
         public const string NotReadyPayload = "__GlueControlNotReady__";
 
+        /// <summary>
+        /// Gates the receive/dispatch timing below to LiveGameProcess-launched test runs only - this file
+        /// is embedded into every real live-edit game, and printing a line per command to a real user's
+        /// console on every edit would be noise nobody asked for. Must stay identical to
+        /// LiveGameProcess.OffscreenWindowEnvironmentVariable - same cross-compile-boundary constraint as
+        /// NotReadyPayload above, since this file cannot reference the test assembly.
+        /// </summary>
+        static readonly bool IsLiveGameTestDiagnosticsEnabled =
+            Environment.GetEnvironmentVariable("FRB_LIVE_GAME_TEST_OFFSCREEN") == "1";
+
         #region private
         private Object _lock = new Object();
         private IPAddress _addr;
@@ -145,6 +155,20 @@ namespace GlueCommunication
                         {
                             var glueControlManager = GlueControl.GlueControlManager.Self;
 
+                            // Diagnostic for #2244 (LiveGame tests timing out waiting for a response):
+                            // stdout is captured by LiveGameProcess and surfaced on a failed Send, so a
+                            // command that never gets this far (game hung before receiving it) prints
+                            // nothing here, while one that arrives but is slow to process shows exactly
+                            // how long. Payload is truncated - it can carry a full EntitySave/ScreenSave.
+                            var diagnosticStopwatch = IsLiveGameTestDiagnosticsEnabled
+                                ? System.Diagnostics.Stopwatch.StartNew()
+                                : null;
+                            if (IsLiveGameTestDiagnosticsEnabled)
+                            {
+                                var preview = packet.Payload?.Length > 60 ? packet.Payload.Substring(0, 60) + "..." : packet.Payload;
+                                Console.WriteLine($"[LiveGameTest] {DateTime.UtcNow:HH:mm:ss.fff} received '{preview}', GlueControlManager.Self is {(glueControlManager == null ? "null" : "set")}");
+                            }
+
                             // Sockets connect before Game1.Initialize constructs GlueControlManager, so
                             // there is a window where a command arrives with nothing able to dispatch it.
                             // Saying so explicitly is the only way Glue can tell that apart from the empty
@@ -152,6 +176,11 @@ namespace GlueCommunication
                             var returnValue = glueControlManager != null
                                 ? await glueControlManager.ProcessMessage(packet.Payload)
                                 : NotReadyPayload;
+
+                            if (IsLiveGameTestDiagnosticsEnabled)
+                            {
+                                Console.WriteLine($"[LiveGameTest] {DateTime.UtcNow:HH:mm:ss.fff} responded after {diagnosticStopwatch.Elapsed.TotalSeconds:0.00}s");
+                            }
 
                             var sendBytes = returnValue != null
                                 ? Encoding.ASCII.GetBytes(returnValue)

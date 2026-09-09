@@ -55,6 +55,7 @@ internal sealed class LiveGameProcess : IDisposable
     readonly GameJsonCommunicationPlugin.Common.GameConnectionManager connectionManager;
     readonly ConcurrentQueue<string> capturedStandardOutput;
     readonly ConcurrentQueue<string> capturedStandardError;
+    readonly ConcurrentQueue<string> connectionDiagnosticLog;
 
     /// <summary>
     /// Response timeout for every command a LiveGame test sends after the process has connected -
@@ -73,13 +74,15 @@ internal sealed class LiveGameProcess : IDisposable
     LiveGameProcess(TempDir project, System.Diagnostics.Process process,
         GameJsonCommunicationPlugin.Common.GameConnectionManager connectionManager,
         ConcurrentQueue<string> capturedStandardOutput,
-        ConcurrentQueue<string> capturedStandardError)
+        ConcurrentQueue<string> capturedStandardError,
+        ConcurrentQueue<string> connectionDiagnosticLog)
     {
         this.project = project;
         this.process = process;
         this.connectionManager = connectionManager;
         this.capturedStandardOutput = capturedStandardOutput;
         this.capturedStandardError = capturedStandardError;
+        this.connectionDiagnosticLog = connectionDiagnosticLog;
     }
 
     /// <summary>
@@ -157,10 +160,17 @@ internal sealed class LiveGameProcess : IDisposable
             // Glue-side of the protocol: listens, and completes the two-socket handshake the game's
             // GlueCommunication.GameConnectionManager initiates on startup (see GameConnectionManager.cs -
             // Glue-side accepts twice, byte 1 for glue->game, byte 2 for game->glue).
+            var connectionDiagnosticLog = new ConcurrentQueue<string>();
             var connectionManager = new GameJsonCommunicationPlugin.Common.GameConnectionManager((_, __) => { })
             {
                 Port = port,
-                TimeoutInSeconds = CommandResponseTimeoutInSeconds
+                TimeoutInSeconds = CommandResponseTimeoutInSeconds,
+                // Records every connect/reset transition with a wall-clock timestamp - if a Send times out
+                // because the socket was silently torn down and re-listened mid-request (rather than the
+                // game genuinely being slow to reply), this is the only place that would show it; the
+                // default LogAction only reaches Debug.WriteLine and a WPF-only plugin host, neither of
+                // which this headless test process has.
+                LogAction = message => connectionDiagnosticLog.Enqueue($"{DateTime.UtcNow:HH:mm:ss.fff} {message}")
             };
             GameJsonCommunicationPlugin.Common.GameConnectionManager.Self = connectionManager;
 
@@ -238,7 +248,7 @@ internal sealed class LiveGameProcess : IDisposable
             // IsPrintEditorToGameCheckboxChecked defaults false, so this only needs to exist.
             CommandSender.Self.CompilerViewModel = CompilerViewModel.Self;
 
-            return new LiveGameProcess(project, process, connectionManager, capturedStandardOutput, capturedStandardError);
+            return new LiveGameProcess(project, process, connectionManager, capturedStandardOutput, capturedStandardError, connectionDiagnosticLog);
         }
         catch
         {
@@ -323,8 +333,9 @@ internal sealed class LiveGameProcess : IDisposable
     /// </summary>
     public async Task<GeneralResponse<string>> Send(object dto)
     {
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
         var response = await CommandSender.Self.Send(dto);
-        AppendCapturedOutputOnFailure(response);
+        AppendDiagnosticsOnFailure(response, stopwatch.Elapsed);
         return response;
     }
 
@@ -335,8 +346,9 @@ internal sealed class LiveGameProcess : IDisposable
     /// </summary>
     public async Task<GeneralResponse<T>> Send<T>(object dto)
     {
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
         var response = await CommandSender.Self.Send<T>(dto);
-        AppendCapturedOutputOnFailure(response);
+        AppendDiagnosticsOnFailure(response, stopwatch.Elapsed);
         return response;
     }
 
@@ -344,13 +356,21 @@ internal sealed class LiveGameProcess : IDisposable
     /// A failed Send (e.g. the timeout described by <see cref="CommandResponseTimeoutInSeconds"/>
     /// elapsing) otherwise gives no way to tell "the game hung" from "the game crashed" from outside
     /// the process - appending what it printed is the only account of which, same rationale as
-    /// <see cref="DescribeCapturedOutput"/>'s use in <see cref="StartAsync"/>.
+    /// <see cref="DescribeCapturedOutput"/>'s use in <see cref="StartAsync"/>. The elapsed time and
+    /// IsConnected snapshot separate "the request legitimately took the whole timeout" from "the
+    /// socket was torn down mid-request and this failed fast" - see #2244, where the failure message
+    /// alone ("No response received") could not tell those apart.
     /// </summary>
-    void AppendCapturedOutputOnFailure<T>(GeneralResponse<T> response)
+    void AppendDiagnosticsOnFailure<T>(GeneralResponse<T> response, TimeSpan elapsed)
     {
         if (response?.Succeeded == false)
         {
-            response.Message += DescribeCapturedOutput(capturedStandardOutput, capturedStandardError);
+            response.Message +=
+                $"{Environment.NewLine}{Environment.NewLine}Send took {elapsed.TotalSeconds:0.00}s " +
+                $"(configured timeout {CommandResponseTimeoutInSeconds:0}s), IsConnected={connectionManager.IsConnected}." +
+                $"{Environment.NewLine}{Environment.NewLine}connection log:{Environment.NewLine}" +
+                (connectionDiagnosticLog.IsEmpty ? "<empty>" : string.Join(Environment.NewLine, connectionDiagnosticLog)) +
+                DescribeCapturedOutput(capturedStandardOutput, capturedStandardError);
         }
     }
 
