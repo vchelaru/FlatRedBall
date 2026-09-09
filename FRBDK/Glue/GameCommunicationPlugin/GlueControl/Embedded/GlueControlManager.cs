@@ -69,7 +69,9 @@ namespace GlueControl
             FlatRedBallServices.AddManager(EditingManager);
             EditingManager.PropertyChanged += HandlePropertyChanged;
             EditingManager.ObjectSelected += HandleObjectsSelected;
+#if ScreenManagerHasScreenLoadExceptionOccurred || REFERENCES_FRB_SOURCE
             FlatRedBall.Screens.ScreenManager.ScreenLoadExceptionOccurred += HandleScreenLoadException;
+#endif
             //listener = new TcpListener(IPAddress.Any, port);
         }
 

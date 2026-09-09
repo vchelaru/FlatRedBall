@@ -219,6 +219,10 @@ namespace FlatRedBall.Glue.SaveClasses
             // whether platformer physics is applied. Gated because ApplyPhysics is a new engine-side
             // property on the Delegate*Relationship classes.
             PlatformerCollisionSupportsApplyPhysicsDelegate = 70,
+            // September 9, 2026 - shipped alongside version 70 but missed being gated. Added retroactively
+            // at the same version: ScreenManager.ScreenLoadExceptionOccurred is a new engine-side event that
+            // GlueControlManager.cs (embedded) subscribes to.
+            ScreenManagerHasScreenLoadExceptionOccurred = 70,
 
             // Stop! If adding an entry here, modify SyntaxVersionAttribute on FlatRedBallServices
             // and LatestVersion down below
