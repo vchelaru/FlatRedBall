@@ -1636,9 +1636,9 @@ namespace GlueControl.Editing
 
         private static string TryQualifyFromRfs(string variableValue)
         {
-            var currentScreen = GlueControl.Managers.GlueState.Self.CurrentElement as GlueControl.Models.ScreenSave;
+            var currentElement = GlueControl.Managers.GlueState.Self.CurrentElement;
 
-            var rfs = currentScreen.GetReferencedFileSaveRecursively(variableValue);
+            var rfs = currentElement?.GetReferencedFileSaveRecursively(variableValue);
 
             if (rfs != null)
             {
