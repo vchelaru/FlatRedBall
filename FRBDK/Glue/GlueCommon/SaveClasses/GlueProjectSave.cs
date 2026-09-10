@@ -224,12 +224,6 @@ namespace FlatRedBall.Glue.SaveClasses
             // GlueControlManager.cs (embedded) subscribes to.
             ScreenManagerHasScreenLoadExceptionOccurred = 70,
 
-            // September 9, 2026 - int/float CustomVariables can now be lists (List<int>/List<float>),
-            // matching the existing List<string> support. Gated to JSON-saved projects because the
-            // underlying crash this avoids is in XmlSerializer's handling of a non-string list stored
-            // in CustomVariable.DefaultValue (an object-typed member).
-            NumericListCustomVariablesSupported = 71,
-
             // Stop! If adding an entry here, modify SyntaxVersionAttribute on FlatRedBallServices
             // and LatestVersion down below
             // and update the docs
@@ -239,7 +233,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.NumericListCustomVariablesSupported;
+        public const int LatestVersion = (int)GluxVersions.PlatformerCollisionSupportsApplyPhysicsDelegate;
 
         public int FileVersion { get; set; }
 

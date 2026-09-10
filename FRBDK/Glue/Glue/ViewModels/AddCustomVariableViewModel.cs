@@ -353,7 +353,7 @@ public class AddCustomVariableViewModel : ViewModel
         // the project is guaranteed to save as JSON, which sidesteps that crash entirely.
         || ((SelectedNewType == "float" || SelectedNewType == "int") &&
             GlueState.Self.CurrentGlueProject.FileVersion >=
-                (int)GlueProjectSave.GluxVersions.NumericListCustomVariablesSupported);
+                (int)GlueProjectSave.GluxVersions.GlueSavedToJson);
 
     [DependsOn(nameof(CanBeList))]
     public Visibility ListCheckBoxVisibility => CanBeList

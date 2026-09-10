@@ -34,7 +34,7 @@ public class AddCustomVariableViewModelCanBeListTests : IDisposable
     public void CanBeList_ShouldBeFalse_ForNumericType_WhenProjectIsBelowVersion(string type)
     {
         ObjectFinder.Self.GlueProject.FileVersion =
-            (int)GlueProjectSave.GluxVersions.NumericListCustomVariablesSupported - 1;
+            (int)GlueProjectSave.GluxVersions.GlueSavedToJson - 1;
         var viewModel = new AddCustomVariableViewModel(new ScreenSave { Name = "Screens/GameScreen/GameScreen" })
         {
             SelectedNewType = type
@@ -49,7 +49,7 @@ public class AddCustomVariableViewModelCanBeListTests : IDisposable
     public void CanBeList_ShouldBeTrue_ForNumericType_WhenProjectIsAtOrAboveVersion(string type)
     {
         ObjectFinder.Self.GlueProject.FileVersion =
-            (int)GlueProjectSave.GluxVersions.NumericListCustomVariablesSupported;
+            (int)GlueProjectSave.GluxVersions.GlueSavedToJson;
         var viewModel = new AddCustomVariableViewModel(new ScreenSave { Name = "Screens/GameScreen/GameScreen" })
         {
             SelectedNewType = type
@@ -62,7 +62,7 @@ public class AddCustomVariableViewModelCanBeListTests : IDisposable
     public void CanBeList_ShouldBeTrue_ForString_RegardlessOfVersion()
     {
         ObjectFinder.Self.GlueProject.FileVersion =
-            (int)GlueProjectSave.GluxVersions.NumericListCustomVariablesSupported - 1;
+            (int)GlueProjectSave.GluxVersions.GlueSavedToJson - 1;
         var viewModel = new AddCustomVariableViewModel(new ScreenSave { Name = "Screens/GameScreen/GameScreen" })
         {
             SelectedNewType = "string"
