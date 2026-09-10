@@ -346,30 +346,14 @@ public class AddCustomVariableViewModel : ViewModel
     [DependsOn(nameof(SelectedNewType))]
     public bool CanBeList =>
         SelectedNewType == "string"
-        // Adding this causes something to crash during XML serialization.
-        // I can't figure out why List<string> serializes okay, but List<float> doesn't.
-        // Serializing a List<string> serializes as shown here:
-        /*
-         *     
-<CustomVariable>
-  <Properties>
-    <PropertySave>
-      <Name>Type</Name>
-      <ValueAsString>List&lt;string&gt;</ValueAsString>
-      <Type>String</Type>
-    </PropertySave>
-  </Properties>
-  <Name>StringList</Name>
-  <DefaultValue xsi:type="ArrayOfString">
-    <string>String2</string>
-    <string>String1</string>
-    <string>3</string>
-  </DefaultValue>
-  <SetByDerived>true</SetByDerived>
-</CustomVariable>
-         */
-        //|| SelectedNewType == "float"
-        ;
+        // int/float lists crash XmlSerializer on .glux (XML) projects - CustomVariable.DefaultValue
+        // is object-typed, and XmlSerializer can only emit a concrete list type there if that type
+        // is already declared as a known type elsewhere in the save-class graph, which List<string>
+        // is (Tags, VariablesToReset, etc.) and List<float>/List<int> aren't. Only allow them once
+        // the project is guaranteed to save as JSON, which sidesteps that crash entirely.
+        || ((SelectedNewType == "float" || SelectedNewType == "int") &&
+            GlueState.Self.CurrentGlueProject.FileVersion >=
+                (int)GlueProjectSave.GluxVersions.GlueSavedToJson);
 
     [DependsOn(nameof(CanBeList))]
     public Visibility ListCheckBoxVisibility => CanBeList
