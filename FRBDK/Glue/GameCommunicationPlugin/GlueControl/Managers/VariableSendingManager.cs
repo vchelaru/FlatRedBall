@@ -654,7 +654,14 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                     && type != "Nullable<String>"
                     )
                 {
-                    value = TypeManager.GetDefaultForType(type);
+                    // Only primitives have a known default. Anything else (BitmapFont, Layer, an entity type)
+                    // is a reference type whose cleared value is null, which is what leaving value null sends.
+                    // Throwing here would surface as an unhandled exception in RefreshManager's async void
+                    // handlers and take Glue down (issue #2266).
+                    if (TypeManager.TryGetDefaultForType(type, out string defaultValue))
+                    {
+                        value = defaultValue;
+                    }
                 }
             }
         }

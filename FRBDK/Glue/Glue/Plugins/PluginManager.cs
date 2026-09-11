@@ -2311,7 +2311,7 @@ public class PluginManager : PluginManagerBase
 
     #endregion
 
-    internal static bool TryHandleException(Exception exception)
+    internal static bool TryHandleException(Exception exception, string crashLogPath = null)
     {
         bool wasHandled = false;
 
@@ -2330,8 +2330,9 @@ public class PluginManager : PluginManagerBase
                     // We're going to blame this plugin for the error
                     DialogService.ShowMessage($"A plugin has had an error.\n" +
                         $"Shutting down the plugin {plugin.Name} version {plugin.Plugin.Version} at file location\n{plugin.AssemblyLocation}\n\n" +
-                        $"Additional information:\n\n" + 
-                        exception.ToString());
+                        $"Additional information:\n\n" +
+                        exception.ToString() +
+                        (crashLogPath != null ? $"\n\nWritten to {crashLogPath}" : ""));
 
                     wasHandled = true;
 
