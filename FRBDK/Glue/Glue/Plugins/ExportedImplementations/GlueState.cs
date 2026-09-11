@@ -47,6 +47,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
         }
         public List<ITreeNode> CurrentTreeNodes = new List<ITreeNode>();
 
+        /// <summary>
+        /// The selected objects themselves (an element, a NamedObjectSave, a state, ...), in selection
+        /// order. This is the selection; CurrentTreeNodes is only the tree view's rendering of it and
+        /// can be shorter (or empty, with no tree). An entry is null for a tagless tree node.
+        /// </summary>
+        public List<object> SelectedTags = new List<object>();
+
         public GlueElement CurrentElement;
         public EntitySave CurrentEntitySave;
         public ScreenSave CurrentScreenSave;
@@ -101,130 +108,69 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             }
         }
 
+        // Every Current* setter below selects by model object. The selection lives here, not in the
+        // tree view: a tree node (when a tree exists) is looked up so the tree view and other
+        // ITreeNode-based plugins can follow, but the snapshot is derived from the object itself, so
+        // selection behaves the same with no tree at all (unit tests). See GitHub issue #2268.
+
         public GlueElement CurrentElement
         {
             get => snapshot.CurrentElement;
-            set
-            {
-                var treeNode = GlueState.Self.Find.TreeNodeByTag(value);
-
-                CurrentTreeNode = treeNode;
-            }
-
+            set => SelectTag(value);
         }
 
         public EntitySave CurrentEntitySave
         {
             get => snapshot.CurrentEntitySave;
-            set => CurrentElement = value; 
+            set => CurrentElement = value;
         }
 
         public ScreenSave CurrentScreenSave
         {
             get => snapshot.CurrentScreenSave;
-            set
-            {
-                CurrentTreeNode = GlueState.Self.Find.TreeNodeByTag(value);
-            }
+            set => CurrentElement = value;
         }
 
         public ReferencedFileSave CurrentReferencedFileSave
         {
             get => snapshot.CurrentReferencedFileSave;
-            set
-            {
-                CurrentTreeNode = GlueState.Self.Find.TreeNodeByTag(value);
-            }
+            set => SelectTag(value);
         }
 
         public NamedObjectSave CurrentNamedObjectSave
         {
             get => snapshot.CurrentNamedObjectSave;
-            set
-            {
-                if (value == null)
-                {
-                    CurrentTreeNode = null;
-                }
-                else
-                {
-                    CurrentTreeNode =  GlueState.Self.Find.TreeNodeByTag(value);
-                }
-            }
+            set => SelectTag(value);
         }
 
         public IReadOnlyList<NamedObjectSave> CurrentNamedObjectSaves
         {
             get => snapshot.CurrentNamedObjectSaves;
-            set
-            {
-                if( value == null || value.Count == 0)
-                {
-                    CurrentTreeNode = null;
-                }
-                else
-                {
-                    // A NamedObjectSave the caller couldn't resolve to a tree node (e.g. a selection
-                    // reported by the running game that no longer matches anything in the loaded
-                    // project - see GitHub issue #2149) must be dropped here rather than passed through
-                    // as a null ITreeNode: TakeSnapshot's GetCurrentNamedObjectSavesFromSelection
-                    // dereferences every node's Tag, so a null entry throws mid-snapshot - after
-                    // CurrentElement has already been recomputed (and cleared) but before
-                    // CurrentNamedObjectSaves is, leaving them mismatched.
-                    List<ITreeNode> treeNodes = value
-                        .Select(item => GlueState.Self.Find.TreeNodeByTag(item))
-                        .Where(node => node != null)
-                        .ToList();
-                    CurrentTreeNodes = treeNodes;
-                }
-            }
+            set => SelectTags(value ?? new List<NamedObjectSave>());
         }
 
         public StateSave CurrentStateSave
         {
             get => snapshot.CurrentStateSave;
-            set
-            {
-                var treeNode = GlueState.Self.Find.TreeNodeByTag(value);
-                if (treeNode != null)
-                {
-                    CurrentTreeNode = treeNode;
-                }
-            }
+            set => SelectTag(value);
         }
 
         public StateSaveCategory CurrentStateSaveCategory
         {
             get => snapshot.CurrentStateSaveCategory;
-            set
-            {
-                var treeNode = GlueState.Self.Find.TreeNodeByTag(value);
-                if(treeNode != null)
-                {
-                    CurrentTreeNode = treeNode;
-                }
-            }
+            set => SelectTag(value);
         }
 
         public CustomVariable CurrentCustomVariable
         {
             get => snapshot.CurrentCustomVariable;
-
-            set
-            {
-                CurrentTreeNode = GlueState.Self.Find.TreeNodeByTag(value);
-
-            }
-
+            set => SelectTag(value);
         }
 
         public EventResponseSave CurrentEventResponseSave
         {
             get => snapshot.CurrentEventResponseSave;
-            set
-            {
-                CurrentTreeNode = GlueState.Self.Find.TreeNodeByTag(value);
-            }
+            set => SelectTag(value);
         }
 
         public string[] CurrentFocusedTabs
@@ -721,35 +667,71 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             }
         }
 
+        /// <summary>
+        /// Selection reported by the tree view (or anything else holding real tree nodes). The nodes'
+        /// tags are the selected objects; a node with no tag (a folder, a root node) selects only the
+        /// node.
+        /// </summary>
         private void UpdateToSetTreeNode(IReadOnlyList<ITreeNode> value, bool recordState)
         {
-            var isSame = snapshot?.CurrentTreeNodes.Count == value.Count;
-            if(isSame)
+            var tags = value.Select(item => item.Tag).ToList();
+            UpdateSelection(tags, value, recordState);
+        }
+
+        private void SelectTag(object tag) => SelectTags(tag == null ? new List<object>() : new List<object> { tag });
+
+        /// <summary>
+        /// Selection by model object. Objects that don't belong to the loaded project (a NamedObjectSave
+        /// in no element, say - a selection reported by the running game that no longer matches anything
+        /// loaded, GitHub issue #2149) are dropped, the same as when the tree view had no node for them,
+        /// so an unresolvable selection reads as "nothing selected" rather than a half-updated snapshot.
+        /// </summary>
+        private void SelectTags(IEnumerable<object> tags)
+        {
+            var selectable = tags.Where(IsSelectable).ToList();
+
+            var treeNodes = selectable
+                .Select(tag => Find?.TreeNodeByTag(tag))
+                .Where(node => node != null)
+                .ToList();
+
+            UpdateSelection(selectable, treeNodes, recordState: true);
+        }
+
+        private static bool IsSelectable(object tag)
+        {
+            switch (tag)
             {
-                for(int i = 0; i < value.Count; i++)
-                {
-                    if (value[i] != snapshot.CurrentTreeNodes[i])
-                    {
-                        isSame = false;
-                        break;
-                    }
-                }
+                case null: return false;
+                case GlueElement: return true;
+                case ReferencedFileSave: return true;
+                case NamedObjectSave nos: return nos.GetContainer() != null;
+                case StateSave state: return GetElementContaining(state) != null;
+                case StateSaveCategory category: return GetElementContaining(category) != null;
+                case CustomVariable variable: return GetElementContaining(variable) != null;
+                case EventResponseSave ers: return GetElementContaining(ers) != null;
+                default: return true;
             }
+        }
+
+        private void UpdateSelection(IReadOnlyList<object> tags, IReadOnlyList<ITreeNode> treeNodes, bool recordState)
+        {
+            var isSame = snapshot.SelectedTags.SequenceEqual(tags) && snapshot.CurrentTreeNodes.SequenceEqual(treeNodes);
 
             // Push to the stack for history before taking a snapshot, so that the "old" one is pushed
-            if (!isSame && snapshot?.CurrentTreeNode != null && recordState)
+            if (!isSame && snapshot.CurrentTreeNode != null && recordState)
             {
                 // todo - need to support multi select
                 TreeNodeStackManager.Self.Push(snapshot.CurrentTreeNode);
             }
 
             // Snapshot should come first so everyone can update to the snapshot
-            GlueState.Self.TakeSnapshot(value);
+            TakeSnapshot(tags, treeNodes);
 
             // If we don't check for isSame, then selecting the same tree node will result in double-selects in the game.
             if(!isSame)
             {
-                PluginManager.ReactToItemsSelected(value.ToList());
+                PluginManager.ReactToItemsSelected(treeNodes.ToList());
             }
         }
 
@@ -759,146 +741,60 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             return ObjectFinder.Self.GetAllReferencedFiles();
         }
 
-        void TakeSnapshot(IReadOnlyList<ITreeNode> selectedTreeNodes)
+        /// <summary>
+        /// Derives every Current* value from the selected objects. Only a tagless tree node (a folder or
+        /// root node) needs the tree: its element is whichever element node it sits under.
+        /// </summary>
+        void TakeSnapshot(IReadOnlyList<object> tags, IReadOnlyList<ITreeNode> treeNodes)
         {
-            snapshot.CurrentTreeNodes = selectedTreeNodes.ToList();
-            snapshot.CurrentElement = GetCurrentElementFromSelection();
-            snapshot.CurrentEntitySave = GetCurrentEntitySaveFromSelection();
-            snapshot.CurrentScreenSave = GetCurrentScreenSaveFromSelection();
-            snapshot.CurrentReferencedFileSave = GetCurrentReferencedFileSaveFromSelection();
-            snapshot.CurrentNamedObjectSaves = GetCurrentNamedObjectSavesFromSelection();
-            snapshot.CurrentStateSave = GetCurrentStateSaveFromSelection();
-            snapshot.CurrentStateSaveCategory = GetCurrentStateSaveCategoryFromSelection();
-            snapshot.CurrentCustomVariable = GetCurrentCustomVariableFromSelection();
-            snapshot.CurrentEventResponseSave = GetCurrentEventResponseSaveFromSelection();
+            var first = tags.FirstOrDefault();
+
+            snapshot.SelectedTags = tags.ToList();
+            snapshot.CurrentTreeNodes = treeNodes.ToList();
+            snapshot.CurrentElement = first != null
+                ? GetElementFor(first)
+                : treeNodes.FirstOrDefault()?.GetContainingElementTreeNode()?.Tag as GlueElement;
+            snapshot.CurrentEntitySave = snapshot.CurrentElement as EntitySave;
+            snapshot.CurrentScreenSave = snapshot.CurrentElement as ScreenSave;
+            snapshot.CurrentReferencedFileSave = first as ReferencedFileSave;
+            snapshot.CurrentNamedObjectSaves = tags.OfType<NamedObjectSave>().ToList();
+            snapshot.CurrentStateSave = first as StateSave;
+            snapshot.CurrentStateSaveCategory = first switch
+            {
+                StateSaveCategory category => category,
+                StateSave state => GetCategoryContaining(state),
+                _ => null
+            };
+            snapshot.CurrentCustomVariable = first as CustomVariable;
+            snapshot.CurrentEventResponseSave = first as EventResponseSave;
             snapshot.SelectedSubIndex = null;
+        }
 
-            GlueElement GetCurrentElementFromSelection()
+        private static GlueElement GetElementFor(object tag)
+        {
+            switch (tag)
             {
-                return (GlueElement)GetCurrentEntitySaveFromSelection() ?? GetCurrentScreenSaveFromSelection();
-            }
-            EntitySave GetCurrentEntitySaveFromSelection()
-            {
-                var treeNode = selectedTreeNodes.FirstOrDefault();
-
-                while (treeNode != null)
-                {
-                    if (treeNode.Tag is EntitySave entitySave)
-                    {
-                        return entitySave;
-                    }
-                    else
-                    {
-                        treeNode = treeNode.Parent;
-                    }
-                }
-
-                return null;
-            }
-            ScreenSave GetCurrentScreenSaveFromSelection()
-            {
-
-                var treeNode = selectedTreeNodes.FirstOrDefault();
-
-                while (treeNode != null)
-                {
-                    if (treeNode.Tag is ScreenSave screenSave)
-                    {
-                        return screenSave;
-                    }
-                    else
-                    {
-                        treeNode = treeNode.Parent;
-                    }
-                }
-
-                return null;
-            }
-            ReferencedFileSave GetCurrentReferencedFileSaveFromSelection()
-            {
-                var treeNode = selectedTreeNodes.FirstOrDefault();
-
-                if (treeNode != null && treeNode.Tag != null && treeNode.Tag is ReferencedFileSave rfs)
-                {
-                    return rfs;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            List<NamedObjectSave> GetCurrentNamedObjectSavesFromSelection()
-            {
-                var treeNodes = selectedTreeNodes;
-
-                var noses = treeNodes.Select(item => item.Tag).Where(item => item is NamedObjectSave).Cast<NamedObjectSave>().ToList();
-
-                return noses;
-            }
-            StateSave GetCurrentStateSaveFromSelection()
-            {
-                var treeNode = selectedTreeNodes.FirstOrDefault();
-
-                if (treeNode != null && treeNode.IsStateNode())
-                {
-                    return (StateSave)treeNode.Tag;
-                }
-
-                return null;
-            }
-            StateSaveCategory GetCurrentStateSaveCategoryFromSelection()
-            {
-                var treeNode = selectedTreeNodes.FirstOrDefault();
-
-                if (treeNode != null)
-                {
-                    if (treeNode.IsStateCategoryNode())
-                    {
-                        return (StateSaveCategory)treeNode.Tag;
-                    }
-                    // if the current node is a state, maybe the parent is a category
-                    else if (treeNode.Parent != null && treeNode.Parent.IsStateCategoryNode())
-                    {
-                        return (StateSaveCategory)treeNode.Parent.Tag;
-                    }
-                }
-
-                return null;
-            }
-            CustomVariable GetCurrentCustomVariableFromSelection()
-            {
-                var treeNode = selectedTreeNodes.FirstOrDefault();
-
-                if (treeNode == null)
-                {
-                    return null;
-                }
-                else if (treeNode.IsCustomVariable())
-                {
-                    return (CustomVariable)treeNode.Tag;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            EventResponseSave GetCurrentEventResponseSaveFromSelection()
-            {
-                var treeNode = selectedTreeNodes.FirstOrDefault();
-
-                if (treeNode == null)
-                {
-                    return null;
-                }
-                else if (treeNode.Tag != null && treeNode.Tag is EventResponseSave eventResponse)
-                {
-                    return eventResponse;
-                }
-                else
-                {
-                    return null;
-                }
+                case GlueElement element: return element;
+                case NamedObjectSave nos: return nos.GetContainer();
+                case ReferencedFileSave rfs: return rfs.GetContainer();
+                case StateSave state: return GetElementContaining(state);
+                case StateSaveCategory category: return GetElementContaining(category);
+                case CustomVariable variable: return GetElementContaining(variable);
+                case EventResponseSave ers: return GetElementContaining(ers);
+                default: return null;
             }
         }
+
+        // ObjectFinder's lookups assume a loaded project; with none, nothing is contained anywhere.
+        private static GlueElement GetElementContaining(StateSave state) =>
+            ObjectFinder.Self.GlueProject == null ? null : ObjectFinder.Self.GetElementContaining(state);
+        private static GlueElement GetElementContaining(StateSaveCategory category) =>
+            ObjectFinder.Self.GlueProject == null ? null : ObjectFinder.Self.GetElementContaining(category);
+        private static GlueElement GetElementContaining(CustomVariable variable) =>
+            ObjectFinder.Self.GlueProject == null ? null : ObjectFinder.Self.GetElementContaining(variable);
+        private static StateSaveCategory GetCategoryContaining(StateSave state) =>
+            ObjectFinder.Self.GlueProject == null ? null : ObjectFinder.Self.GetStateSaveCategory(state);
+        private static GlueElement GetElementContaining(EventResponseSave ers) =>
+            ObjectFinder.Self.GlueProject == null ? null : ObjectFinder.Self.GetElementContaining(ers);
     }
 }

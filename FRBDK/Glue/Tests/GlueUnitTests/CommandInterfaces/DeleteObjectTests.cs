@@ -4,7 +4,7 @@ using FlatRedBall.Glue.SaveClasses;
 using GlueUnitTests.TestSupport;
 using Shouldly;
 using System.Collections.Generic;
-using System.Reflection;
+using OfficialPlugins.CollisionPlugin.Managers;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -109,16 +109,34 @@ public class DeleteObjectTests : DeleteDialogTestBase
         screen.NamedObjects.ShouldBeEmpty();
     }
 
-    // GlueState.CurrentNamedObjectSave's setter round-trips through Find.TreeNodeByTag, which FakeFindManager
-    // deliberately doesn't resolve for NamedObjectSave (see FakeFindManager's doc comment) - so this reaches
-    // past the snapshot field directly instead, to mark the object selected without touching real tree/plugin
-    // selection-reaction code that has nothing to do with the bug under test.
-    static void SetCurrentNamedObjectSaveDirectly(NamedObjectSave nos)
+    // GitHub issue #2265, end to end: the tree shows collision relationships under their own folder, so the
+    // successor of a deleted object must be its neighbour in the plain-objects folder even when the flat
+    // NamedObjects list has a relationship right after it. Selection is asserted through GlueState, which
+    // owns it (GitHub issue #2268) - no tree view in this host.
+    [StaFact]
+    public async Task DeletingTheLastPlainObject_ShouldSelectThePreviousPlainObject_NotTheCollisionRelationship()
     {
-        var snapshotField = typeof(GlueState).GetField("snapshot", BindingFlags.NonPublic | BindingFlags.Instance);
-        var snapshot = snapshotField.GetValue(GlueState.Self);
-        var namedObjectSavesField = snapshot.GetType().GetField("CurrentNamedObjectSaves");
-        namedObjectSavesField.SetValue(snapshot, new List<NamedObjectSave> { nos });
+        using var project = await LoadFormsSampleAsync();
+
+        var screen = await GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen("SuccessorScreen");
+        var first = await AddObjectAsync(screen, "FirstSprite");
+        var last = await AddObjectAsync(screen, "LastSprite");
+
+        var relationship = new NamedObjectSave
+        {
+            InstanceName = "SpriteVsSprite",
+            SourceType = SourceType.FlatRedBallType,
+            SourceClassType = AssetTypeInfoManager.Self.CollisionRelationshipAti.QualifiedRuntimeTypeName.QualifiedType
+        };
+        await GlueCommands.Self.GluxCommands.AddNamedObjectToAsync(relationship, screen);
+        screen.NamedObjects.ShouldBe(new[] { first, last, relationship });
+
+        GlueState.Self.CurrentNamedObjectSave = last;
+        AnswerDeleteDialog();
+
+        await GlueCommands.Self.DialogCommands.AskToRemoveObjectAsync(last);
+
+        GlueState.Self.CurrentNamedObjectSave.ShouldBe(first);
     }
 
     // Reported crash (GitHub issue #2142): removal is tasked, so a fast double-removal (e.g. the running
@@ -134,7 +152,7 @@ public class DeleteObjectTests : DeleteDialogTestBase
         var screen = await GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen("AlreadyRemovedScreen");
         var nos = await AddObjectAsync(screen, "DoomedSprite");
 
-        SetCurrentNamedObjectSaveDirectly(nos);
+        GlueState.Self.CurrentNamedObjectSave = nos;
         screen.NamedObjects.Remove(nos);
 
         var gluxCommands = (GluxCommands)GlueCommands.Self.GluxCommands;
