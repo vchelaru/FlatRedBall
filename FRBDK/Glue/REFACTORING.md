@@ -1472,3 +1472,36 @@ builds a real gold project, reflects into the compiled entity, forces `TimeManag
 `ApplyHorizontalInput` directly - reproducing the exact reported `ArgumentException` before the fix, passing
 after. See the `glue-project-codegen` skill's "Runtime-testing generated code" section for the general
 pattern.
+
+### 2026-09-11 — `GlueState` owns the selection; the tree view follows it (issue #2268)
+
+`GlueState`'s `Current*` setters used to resolve the model object to a tree node through
+`Find.TreeNodeByTag` and take the snapshot from the node (walking `Parent` for the element). With no tree
+(unit tests) the assignment was silently dropped, so nothing about selection could be asserted headless;
+`FakeFindManager` grew a `ReferencedFileSave`-only special case to work around it, and #2265's successor
+picker had to be tested in isolation.
+
+Inverted: the setters go through `GlueState.SelectTags`, the snapshot derives every `Current*` value from
+the selected objects (`ObjectFinder` for the containing element/category), and `Find?.TreeNodeByTag` is
+only consulted so the tree view and other `ITreeNode`-based plugins can follow. An object not in the loaded
+project (a `NamedObjectSave` in no element) still reads as "nothing selected", the same answer the tree
+gave when it had no node for it - `GlueStateCurrentNamedObjectSavesTests` (#2149) pins that. A tagless
+tree node (a folder, a root node) is the one case that still needs the tree for its element.
+
+Consequences worth knowing:
+
+- `FakeFindManager.TreeNodeByTag` is back to plain null and `SyntheticTreeNode` is gone; tests set
+  `GlueState.Self.CurrentNamedObjectSave = nos` (or any other `Current*`) and it takes effect.
+  `DeleteObjectTests` now covers #2265 end to end and no longer reaches into the snapshot by reflection.
+- Selection now really dispatches `ReactToItemsSelected` to registered plugins in a test host. The NRE
+  `FakeFindManager`'s old doc comment warned about did not reappear: it came from the synthetic node's null
+  `Parent` leaving `CurrentElement` null, which model-based derivation doesn't do. What did surface is that a
+  plugin building its WPF view on selection needs a UI thread (STA, and the *same* one across tests).
+  `GlueGui.ShowGui` (now public, off in `GlueTestBootstrap.EnsureInitialized`) is the switch: the collision
+  plugin refreshes its view models regardless and only builds `CollidableNamedObjectRelationshipDisplay` /
+  `CollisionRelationshipView` when it is on (`CollisionPluginHeadlessSelectionTests`). Other plugins with
+  the same lazy-view-on-select shape (`MainEntityInputMovementPlugin`, `MainGumPlugin`,
+  `MainTiledPluginClass`) get the same guard when a test first selects something that trips them.
+- `PluginManager.HandleExceptions` swallows a throwing selection handler *and disables the plugin for the
+  rest of the process*, so a test exercising real plugin selection should turn it off (the Wizard tests and
+  `CollisionPluginHeadlessSelectionTests` do) or a failure reads as "the plugin did nothing" from then on.

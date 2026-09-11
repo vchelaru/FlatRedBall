@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.CodeGeneration;
+using FlatRedBall.Glue.AutomatedGlue;
 using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Events;
@@ -39,6 +40,8 @@ namespace OfficialPlugins.CollisionPlugin
         CollidableNamedObjectRelationshipDisplay collidableDisplay;
         CollidableNamedObjectRelationshipViewModel collidableViewModel;
         PluginTab collidableTab;
+
+        internal CollidableNamedObjectRelationshipViewModel CollidableViewModel => collidableViewModel;
 
         public override string FriendlyName => "Collision Plugin";
 
@@ -377,17 +380,16 @@ namespace OfficialPlugins.CollisionPlugin
 
             if (shouldShowControl)
             {
-                if (relationshipControl == null)
+                // The view model refreshes headless too; only the view needs a GUI (see GlueGui.ShowGui).
+                if (relationshipControl == null && GlueGui.ShowGui)
                 {
                     relationshipControl = new CollisionRelationshipView();
                     relationshipPluginTab = this.CreateTab(relationshipControl, "Collision");
-                    
-
                 }
 
                 RefreshViewModelTo(selectedNos);
 
-                relationshipPluginTab.Show();
+                relationshipPluginTab?.Show();
             }
             else
             {
@@ -405,18 +407,21 @@ namespace OfficialPlugins.CollisionPlugin
             {
                 RefreshCollidableViewModelTo(element, selectedNos);
 
-                if (collidableDisplay == null)
+                if (collidableDisplay == null && GlueGui.ShowGui)
                 {
                     collidableDisplay = new CollidableNamedObjectRelationshipDisplay();
                     collidableTab = this.CreateTab(collidableDisplay, "Collision");
 
                     collidableDisplay.DataContext = collidableViewModel;
                 }
-                collidableTab.Show();
+                collidableTab?.Show();
 
-                // not sure why this is required:
-                collidableDisplay.DataContext = null;
-                collidableDisplay.DataContext = collidableViewModel;
+                if (collidableDisplay != null)
+                {
+                    // not sure why this is required:
+                    collidableDisplay.DataContext = null;
+                    collidableDisplay.DataContext = collidableViewModel;
+                }
             }
             else
             {

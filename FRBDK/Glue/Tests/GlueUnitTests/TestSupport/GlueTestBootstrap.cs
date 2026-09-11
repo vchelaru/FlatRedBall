@@ -65,8 +65,9 @@ namespace GlueUnitTests.TestSupport;
 ///    MainGlueWindow.Self - PropertyGrid, HasErrorOccurred, Invoke/BeginInvoke, etc. - gets a harmless
 ///    object instead of NRE-ing.
 ///  - <see cref="GlueState.Find"/> is given a <see cref="FakeFindManager"/> (only ever set by
-///    MainTreeViewPlugin.StartUp, which this test host never runs) so tree-node-resolving setters like
-///    GlueState.CurrentNamedObjectSave don't NRE.
+///    MainTreeViewPlugin.StartUp, which this test host never runs) so code that asks for tree nodes gets
+///    "none" instead of NRE-ing. Selection itself does not need it: GlueState's Current* setters work by
+///    model object (GitHub issue #2268).
 ///  - <see cref="PluginManager.TabControlViewModel"/> is given a real (not fake) <c>TabControlViewModel</c>
 ///    - only ever set by MainPanelControl.xaml.cs's real WPF startup, which this test host never runs.
 ///    It's a plain MVVM view model (ObservableCollection-backed tab containers, no live Dispatcher/message
@@ -193,6 +194,12 @@ internal static class GlueTestBootstrap
             MainGlueWindow.Self ??= new FakeMainGlueWindow();
             GlueState.Self.Find ??= new FakeFindManager();
 
+            // Headless: no dialogs, no load window, and no plugin views. Selection through GlueState runs
+            // every registered plugin's selection handler for real (GitHub issue #2268), and a plugin that
+            // builds its WPF view on selection needs a UI thread this host doesn't have - so plugins skip
+            // the view (not the view model) when this is off, the way MainCollisionPlugin does.
+            GlueGui.ShowGui = false;
+
             if (PluginManager.TabControlViewModel == null)
             {
                 PluginManager.SetTabs(new TabControlViewModel());
@@ -209,10 +216,11 @@ internal static class GlueTestBootstrap
     /// <see cref="FlatRedBall.Glue.IO.ProjectLoader"/>.<c>LoadProject</c> can run a real, checked-in game
     /// project end to end (deserialize the .gluj, dispatch ReactToLoadedGlux to registered plugins, then
     /// GenerateAllCode). Nothing here is a fake - it is the same set-up Glue.exe's own startup performs:
-    ///  - <see cref="GlueGui.ShowGui"/> off, so <c>ProjectLoader.PrepareInitializationWindow</c> skips
-    ///    constructing <c>InitializationWindowWpf</c> (constructing a WPF Window, not just showing it, needs
-    ///    a live WPF app) and every <c>GlueGui.ShowMessageBox</c>/<c>TryShowDialog</c> becomes a no-op rather
-    ///    than a modal dialog on the developer's actual desktop.
+    ///  - <see cref="GlueGui.ShowGui"/> is already off (<see cref="EnsureInitialized"/>), so
+    ///    <c>ProjectLoader.PrepareInitializationWindow</c> skips constructing <c>InitializationWindowWpf</c>
+    ///    (constructing a WPF Window, not just showing it, needs a live WPF app) and every
+    ///    <c>GlueGui.ShowMessageBox</c>/<c>TryShowDialog</c> is a no-op rather than a modal dialog on the
+    ///    developer's actual desktop.
     ///  - <see cref="DialogService.ShowMessageImpl"/> pointed at <see cref="RecordedDialogMessages"/>. That
     ///    seam is *not* covered by ShowGui - several production paths call DialogService directly - so
     ///    without it a load that hits an error path pops a real modal and wedges the run.
@@ -249,7 +257,6 @@ internal static class GlueTestBootstrap
             // first thing a different (STA) test thread calls, so clear this thread's context too.
             SynchronizationContext.SetSynchronizationContext(null);
 
-            GlueGui.ShowGui = false;
             DialogService.ShowMessageImpl = message => RecordedDialogMessages.Add(message);
 
             EnsureMsBuildEnvironmentVariable();
@@ -545,9 +552,16 @@ internal static class GlueTestBootstrap
             }
             _collisionPluginRegisteredWithPluginManager = true;
 
-            PluginManager.RegisterPluginForTesting(new MainCollisionPlugin());
+            RegisteredCollisionPlugin = new MainCollisionPlugin();
+            PluginManager.RegisterPluginForTesting(RegisteredCollisionPlugin);
         }
     }
+
+    /// <summary>
+    /// The instance <see cref="EnsureCollisionPluginRegisteredWithPluginManager"/> registered, for asserting
+    /// on its view models after a selection.
+    /// </summary>
+    public static MainCollisionPlugin RegisteredCollisionPlugin { get; private set; }
 
     /// <summary>
     /// Opt-in, separate from <see cref="EnsureInitialized"/>: registers the Gum Plugin's real

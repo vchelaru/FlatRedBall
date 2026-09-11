@@ -41,13 +41,12 @@ Also process-wide static state a test may need to control alongside the bootstra
 
 - **`ObjectFinder.Self.GlueProject`** — assign a `GlueProjectSave` for anything reaching `ObjectFinder`
   lookups (`GetEntitySaveUnqualified`, `GetAllReferencedFiles`).
-- **`GlueState.Self.CurrentReferencedFileSave`** is settable directly in tests — `FakeFindManager.TreeNodeByTag`
-  hands back a `SyntheticTreeNode` wrapping the tag for this one type, so the setter's real
-  `Find.TreeNodeByTag` round-trip resolves correctly instead of silently discarding the value. Deliberately
-  NOT extended to every tag `GlueState` can resolve (`CurrentNamedObjectSave`, `CurrentElement`, etc.) — see
-  REFACTORING.md's "`FakeFindManager.TreeNodeByTag` now resolves `ReferencedFileSave` tags" entry for why
-  that's unsafe (it wakes up real, previously-dead plugin selection-handling code and hit a pre-existing
-  NRE in `CollidableNamedObjectController`).
+- **`GlueState.Self.Current*` setters work headless.** Selection is by model object, so
+  `CurrentNamedObjectSave = nos` takes effect as long as `nos` is in `ObjectFinder.Self.GlueProject` (an
+  object in no element reads as nothing selected). It really dispatches `ReactToItemsSelected` to registered
+  plugins: set `PluginManager.HandleExceptions = false` in such a test, or a throwing handler is swallowed and
+  the plugin silently disabled for the rest of the run. A plugin that builds its WPF view on selection must
+  gate the view on `GlueGui.ShowGui` (off in the bootstrap); see `MainCollisionPlugin.TryHandleSelectedCollidable`.
 
 Every one of these is process-wide, which is why the whole assembly runs non-parallel — see
 `GlueUnitTests/AssemblyInfo.cs`. So cross-class interleaving isn't a hazard, but leakage still is: a test

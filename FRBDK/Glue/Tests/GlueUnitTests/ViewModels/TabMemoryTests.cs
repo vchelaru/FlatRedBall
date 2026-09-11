@@ -23,8 +23,8 @@ namespace GlueUnitTests.ViewModels;
 /// </summary>
 public class TabMemoryTests
 {
-    // A standalone ITreeNode, not resolved through any real tree - same idea as TestSupport's
-    // SyntheticTreeNode, but not tied to that type's ReferencedFileSave-only constructor.
+    // A standalone ITreeNode, not resolved through any real tree - a tree click on a node GlueState
+    // has never seen.
     private sealed class FakeTreeNode : ITreeNode
     {
         public FakeTreeNode(object tag, string text, TreeNodeType treeNodeType)

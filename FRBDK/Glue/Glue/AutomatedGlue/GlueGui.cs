@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace FlatRedBall.Glue.AutomatedGlue
 {
-    internal static class GlueGui
+    public static class GlueGui
     {
         #region Fields
 
