@@ -17,6 +17,24 @@ namespace OfficialPlugins.SpritePlugin.CodeGenerators
     {
         public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, IElement element)
         {
+            WriteSyncShapesFromAnimationCode(codeBlock, element);
+
+            return codeBlock;
+        }
+
+        // Runs the same code while the game is paused in Glue's live-edit mode, where normal Activity()
+        // (and therefore CustomActivity/this line) does not execute - see ScreenManager.IsInEditMode.
+        // Without this, animation-driven shapes (collision or plain children) never track the current
+        // frame while editing, only once the game is un-paused. The Sprite itself keeps animating in edit
+        // mode regardless (SpriteManager's own per-frame update, not Activity), so this has a visible
+        // effect. Same pattern as EntityPerformancePlugin's VariableActivityCodeGenerator.
+        public override void GenerateActivityEditMode(ICodeBlock codeBlock, GlueElement element)
+        {
+            WriteSyncShapesFromAnimationCode(codeBlock, element);
+        }
+
+        private void WriteSyncShapesFromAnimationCode(ICodeBlock codeBlock, IElement element)
+        {
             var fileVersion = GlueState.Self.CurrentGlueProject.FileVersion;
 
             // Starting with SpriteHasSyncShapesFromAnimation, the same checkbox works on any entity: shapes
@@ -52,8 +70,6 @@ namespace OfficialPlugins.SpritePlugin.CodeGenerators
                     }
                 }
             }
-
-            return codeBlock;
         }
     }
 }

@@ -60,6 +60,13 @@ public class SpriteCodeGeneratorTests : IDisposable
         return codeBlock.ToString();
     }
 
+    static string GenerateActivityEditModeText(EntitySave entity)
+    {
+        ICodeBlock codeBlock = new CodeDocument();
+        new SpriteCodeGenerator().GenerateActivityEditMode(codeBlock, entity);
+        return codeBlock.ToString();
+    }
+
     [Fact]
     public void GenerateActivity_BelowSyncShapesVersion_OnICollidableEntity_CallsSetCollisionFromAnimation()
     {
@@ -137,5 +144,38 @@ public class SpriteCodeGeneratorTests : IDisposable
         SetVariable(sprite, AssetTypeInfoManager.GetCreateMissingShapesDefinition().Name, true);
 
         GenerateActivityText(entity).ShouldContain("SpriteInstance.SyncShapesFromAnimation(this, true);");
+    }
+
+    [Fact]
+    public void GenerateActivityEditMode_AtSyncShapesVersion_AlsoCallsSyncShapesFromAnimation()
+    {
+        // Regression coverage: ScreenManager.IsInEditMode skips normal Activity() entirely, so this call
+        // must also be generated into ActivityEditMode() or shapes never track the animation while paused
+        // in Glue's live-edit mode - see GitHub issue #2256 follow-up.
+        ObjectFinder.Self.GlueProject = new GlueProjectSave
+        {
+            FileVersion = (int)GlueProjectSave.GluxVersions.SpriteHasSyncShapesFromAnimation
+        };
+
+        var entity = new EntitySave { Name = "Entities\\Marker", ImplementsICollidable = false };
+        var sprite = AddSprite(entity, "SpriteInstance");
+        SetVariable(sprite, AssetTypeInfoManager.GetSetCollisionFromAnimationVariableDefinition().Name, true);
+
+        GenerateActivityEditModeText(entity).ShouldContain("SpriteInstance.SyncShapesFromAnimation(this, false);");
+    }
+
+    [Fact]
+    public void GenerateActivityEditMode_BelowSyncShapesVersion_OnICollidableEntity_AlsoCallsSetCollisionFromAnimation()
+    {
+        ObjectFinder.Self.GlueProject = new GlueProjectSave
+        {
+            FileVersion = (int)GlueProjectSave.GluxVersions.SpriteHasSyncShapesFromAnimation - 1
+        };
+
+        var entity = new EntitySave { Name = "Entities\\Enemy", ImplementsICollidable = true };
+        var sprite = AddSprite(entity, "SpriteInstance");
+        SetVariable(sprite, AssetTypeInfoManager.GetSetCollisionFromAnimationVariableDefinition().Name, true);
+
+        GenerateActivityEditModeText(entity).ShouldContain("SpriteInstance.SetCollisionFromAnimation(this, false);");
     }
 }
