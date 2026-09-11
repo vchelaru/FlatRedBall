@@ -49,6 +49,26 @@ namespace OfficialPlugins.SpritePlugin.Managers
                     ati.VariableDefinitions.RemoveAll(item => item.Name == GetSetCollisionFromAnimationVariableDefinition().Name);
                 }
             }
+
+            var shouldHaveAddSyncShapesFromAnimation =
+                GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SpriteHasSyncShapesFromAnimation;
+
+            if(shouldHaveAddSyncShapesFromAnimation)
+            {
+                if(!AlreadyHasAddSyncShapesFromAnimation())
+                {
+                    AddSyncShapesFromAnimation();
+                }
+            }
+            else
+            {
+                if(AlreadyHasAddSyncShapesFromAnimation())
+                {
+                    var ati = AvailableAssetTypes.CommonAtis.Sprite;
+                    ati.VariableDefinitions.RemoveAll(item => item.Name == GetSyncShapesFromAnimationVariableDefinition().Name);
+                    ati.VariableDefinitions.RemoveAll(item => item.Name == GetCreateMissingSyncedShapesDefinition().Name);
+                }
+            }
         }
 
         #region Color (Hex)
@@ -280,6 +300,75 @@ namespace OfficialPlugins.SpritePlugin.Managers
         {
             var ati = AvailableAssetTypes.CommonAtis.Sprite;
             return ati.VariableDefinitions.Any(item => item.Name == GetSetCollisionFromAnimationVariableDefinition().Name);
+        }
+
+        #endregion
+
+        #region SyncShapesFromAnimation
+
+        public static void AddSyncShapesFromAnimation()
+        {
+            var ati = AvailableAssetTypes.CommonAtis.Sprite;
+
+            var variableDefinition =
+                GetSyncShapesFromAnimationVariableDefinition();
+
+            var variableToAddAfter = ati.VariableDefinitions.FirstOrDefault(item => item.Name == GetCreateMissingShapesDefinition().Name)
+                ?? ati.VariableDefinitions.FirstOrDefault(item => item.Name == nameof(Sprite.CurrentChainName));
+            var index = ati.VariableDefinitions.IndexOf(variableToAddAfter);
+            ati.VariableDefinitions.Insert(index + 1, variableDefinition);
+
+            var createNewShapes =
+                GetCreateMissingSyncedShapesDefinition();
+
+            ati.VariableDefinitions.Insert(index + 2, createNewShapes);
+        }
+
+        static VariableDefinition? syncShapesFromAnimationVariableDefinition;
+        const string SyncShapesFromAnimationVariableName = nameof(Sprite.SyncShapesFromAnimation);
+        public static VariableDefinition GetSyncShapesFromAnimationVariableDefinition()
+        {
+            if(syncShapesFromAnimationVariableDefinition == null)
+            {
+                syncShapesFromAnimationVariableDefinition = new VariableDefinition();
+                syncShapesFromAnimationVariableDefinition.Name = SyncShapesFromAnimationVariableName;
+                syncShapesFromAnimationVariableDefinition.Category = "Animation";
+                syncShapesFromAnimationVariableDefinition.DefaultValue = "false";
+                syncShapesFromAnimationVariableDefinition.Type = "bool";
+                syncShapesFromAnimationVariableDefinition.UsesCustomCodeGeneration = true;
+                // Unlike SetCollisionFromAnimation, this works on any entity - it only syncs shapes as
+                // children and never touches Collision, so ICollidable is not required.
+            }
+            return syncShapesFromAnimationVariableDefinition;
+        }
+
+        static VariableDefinition? createMissingSyncedShapesDefinition;
+        public static VariableDefinition GetCreateMissingSyncedShapesDefinition()
+        {
+            if(createMissingSyncedShapesDefinition == null)
+            {
+                createMissingSyncedShapesDefinition = new VariableDefinition();
+                createMissingSyncedShapesDefinition.Name = "CreateMissingSyncedShapes";
+                createMissingSyncedShapesDefinition.Category = "Animation";
+                createMissingSyncedShapesDefinition.DefaultValue = "false";
+                createMissingSyncedShapesDefinition.Type = "bool";
+                createMissingSyncedShapesDefinition.UsesCustomCodeGeneration = true;
+                createMissingSyncedShapesDefinition.IsVariableVisibleInEditor = (element, nos) =>
+                {
+                    // Only show this if the NOS has SyncShapesFromAnimation set to true
+                    var foundVariable = nos.GetCustomVariable(SyncShapesFromAnimationVariableName);
+
+                    return foundVariable != null && foundVariable.Value as bool? == true;
+                };
+            }
+
+            return createMissingSyncedShapesDefinition;
+        }
+
+        static bool AlreadyHasAddSyncShapesFromAnimation()
+        {
+            var ati = AvailableAssetTypes.CommonAtis.Sprite;
+            return ati.VariableDefinitions.Any(item => item.Name == GetSyncShapesFromAnimationVariableDefinition().Name);
         }
 
         #endregion

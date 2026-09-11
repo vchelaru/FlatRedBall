@@ -17,7 +17,14 @@ namespace OfficialPlugins.SpritePlugin.CodeGenerators
     {
         public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, IElement element)
         {
-            if(element.IsICollidableRecursive() && GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SpriteHasSetCollisionFromAnimation)
+            var fileVersion = GlueState.Self.CurrentGlueProject.FileVersion;
+
+            var generatesSetCollisionFromAnimation =
+                element.IsICollidableRecursive() && fileVersion >= (int)GlueProjectSave.GluxVersions.SpriteHasSetCollisionFromAnimation;
+            var generatesSyncShapesFromAnimation =
+                fileVersion >= (int)GlueProjectSave.GluxVersions.SpriteHasSyncShapesFromAnimation;
+
+            if(generatesSetCollisionFromAnimation || generatesSyncShapesFromAnimation)
             {
                 foreach(var nos in element.NamedObjects)
                 {
@@ -25,15 +32,32 @@ namespace OfficialPlugins.SpritePlugin.CodeGenerators
                         nos.SourceType == SourceType.FlatRedBallType && nos.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Sprite;
                     if (isSprite)
                     {
-                        var setsCollision =
-                            nos.GetCustomVariable(AssetTypeInfoManager.GetSetCollisionFromAnimationVariableDefinition().Name)?.Value as bool?;
-
-                        if(setsCollision == true)
+                        if(generatesSetCollisionFromAnimation)
                         {
-                            var createMissingShapes = nos.GetCustomVariable(AssetTypeInfoManager.GetCreateMissingShapesDefinition().Name)?.Value as bool? == true
-                                ? "true" : "false";
+                            var setsCollision =
+                                nos.GetCustomVariable(AssetTypeInfoManager.GetSetCollisionFromAnimationVariableDefinition().Name)?.Value as bool?;
 
-                            codeBlock.Line($"{nos.InstanceName}.SetCollisionFromAnimation(this, {createMissingShapes});");
+                            if(setsCollision == true)
+                            {
+                                var createMissingShapes = nos.GetCustomVariable(AssetTypeInfoManager.GetCreateMissingShapesDefinition().Name)?.Value as bool? == true
+                                    ? "true" : "false";
+
+                                codeBlock.Line($"{nos.InstanceName}.SetCollisionFromAnimation(this, {createMissingShapes});");
+                            }
+                        }
+
+                        if(generatesSyncShapesFromAnimation)
+                        {
+                            var syncsShapes =
+                                nos.GetCustomVariable(AssetTypeInfoManager.GetSyncShapesFromAnimationVariableDefinition().Name)?.Value as bool?;
+
+                            if(syncsShapes == true)
+                            {
+                                var createMissingShapes = nos.GetCustomVariable(AssetTypeInfoManager.GetCreateMissingSyncedShapesDefinition().Name)?.Value as bool? == true
+                                    ? "true" : "false";
+
+                                codeBlock.Line($"{nos.InstanceName}.SyncShapesFromAnimation(this, {createMissingShapes});");
+                            }
                         }
                     }
                 }

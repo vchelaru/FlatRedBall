@@ -2047,6 +2047,22 @@ namespace FlatRedBall
         }
 
         /// <summary>
+        /// Updates named shapes that are children of the argument container to match the shapes in the Sprite's
+        /// current frame. Unlike SetCollisionFromAnimation, this does not require container to be ICollidable and
+        /// never adds shapes to a Collision - it only manages shapes as plain children, so it works for shapes that
+        /// should track the animation (such as a bullet spawn point) without becoming part of collision. If the
+        /// Sprite does not have a frame, or if the frame does not have shapes, then this method makes no changes.
+        /// </summary>
+        /// <param name="container">The PositionedObject whose children are searched for matching shapes, and which
+        /// newly-created shapes are attached to.</param>
+        /// <param name="createMissingShapes">Whether shapes that are part of the animation but not already a child
+        /// of container should be created and attached.</param>
+        public void SyncShapesFromAnimation(PositionedObject container, bool createMissingShapes = false)
+        {
+            CurrentFrame?.ShapeCollectionSave?.SetValuesOn(container, createMissingShapes);
+        }
+
+        /// <summary>
         /// Sets the current AnimationChain by name and keeps the CurrentFrame the same.
         /// </summary>
         /// <remarks>

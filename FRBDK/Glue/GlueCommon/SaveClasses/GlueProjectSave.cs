@@ -224,6 +224,11 @@ namespace FlatRedBall.Glue.SaveClasses
             // GlueControlManager.cs (embedded) subscribes to.
             ScreenManagerHasScreenLoadExceptionOccurred = 70,
 
+            // September 11, 2026 - Sprite.SyncShapesFromAnimation syncs named shapes from the current
+            // animation frame as plain children (never touching Collision membership), so it works on
+            // any entity, not just ICollidable ones. Gated because it's a new engine-side Sprite method.
+            SpriteHasSyncShapesFromAnimation = 72,
+
             // Stop! If adding an entry here, modify SyntaxVersionAttribute on FlatRedBallServices
             // and LatestVersion down below
             // and update the docs
@@ -233,7 +238,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.PlatformerCollisionSupportsApplyPhysicsDelegate;
+        public const int LatestVersion = (int)GluxVersions.SpriteHasSyncShapesFromAnimation;
 
         public int FileVersion { get; set; }
 
