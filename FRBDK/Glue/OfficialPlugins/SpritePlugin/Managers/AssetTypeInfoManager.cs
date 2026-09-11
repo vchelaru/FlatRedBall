@@ -236,6 +236,10 @@ namespace OfficialPlugins.SpritePlugin.Managers
             {
                 setCollisionFromAnimationVariableDefinition = new VariableDefinition();
                 setCollisionFromAnimationVariableDefinition.Name = SetCollisionFromAnimationVariableName;
+                // Display-only - the underlying variable name/storage is unchanged. Since this can now sync
+                // shapes on entities that aren't ICollidable (where nothing is actually added to Collision),
+                // "Set Collision From Animation" alone would be misleading there.
+                setCollisionFromAnimationVariableDefinition.DisplayName = "Set Collision/Shapes From Animation";
                 setCollisionFromAnimationVariableDefinition.Category = "Animation";
                 setCollisionFromAnimationVariableDefinition.DefaultValue = "false";
                 setCollisionFromAnimationVariableDefinition.Type = "bool";

@@ -20,6 +20,13 @@ namespace FlatRedBall.Glue.Elements
     public class VariableDefinition
     {
         public string Name { get; set; }
+
+        /// <summary>
+        /// Overrides the label shown in the property grid. Does not affect Name, which is what's used for
+        /// storage/lookup (CustomVariable.Member, codegen) - null (the default) falls back to the standard
+        /// space-inserted-before-capitals display of Name.
+        /// </summary>
+        public string DisplayName { get; set; }
         public string Type { get; set; }
         /// <summary>
         /// The value of this variable on the backing class implementation.
