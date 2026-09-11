@@ -200,11 +200,11 @@ public class LiveGameProcessTests
     }
 
     // Pins the EmbeddedDiagnosticsLogger extension added for #2261: every DTO the game receives (and its
-    // response, when it sends one back) gets appended to the same per-session communication-*.log the
-    // "Embedded diagnostics" checkbox already produced for clicks/selection - see
-    // CommandReceiver.Receive and EditingManager.cs's EmbeddedDiagnosticsLogger.
+    // response, when it sends one back) is recorded in memory, always on - no enable step needed - and
+    // fetchable at any time via GetEmbeddedDiagnosticsLogDto. See CommandReceiver.Receive and
+    // EditingManager.cs's EmbeddedDiagnosticsLogger.
     [StaFact]
-    public async Task EditorTest1_EmbeddedDiagnostics_LogsDtoTrafficToDisk()
+    public async Task EditorTest1_EmbeddedDiagnostics_RecordsDtoTrafficAlwaysOn()
     {
         GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
 
@@ -213,16 +213,12 @@ public class LiveGameProcessTests
             csprojRelativeToProjectRoot: "EditorTest1/EditorTest1.csproj",
             exeRelativeToProjectRoot: "EditorTest1/bin/Debug/net9.0/EditorTest1.exe");
 
-        var enableResponse = await game.Send<SetEmbeddedDiagnosticsEnabledResponse>(
-            new SetEmbeddedDiagnosticsEnabledDto { IsEnabled = true });
-        enableResponse.Succeeded.ShouldBeTrue(enableResponse.Message);
-        var logFilePath = enableResponse.Data.LogFilePath;
-        logFilePath.ShouldNotBeNullOrEmpty();
-
+        // No enable/opt-in step - the log is already recording from process start.
         var selectResponse = await game.SelectEntity("Entities\\Entity1");
         selectResponse.Succeeded.ShouldBeTrue(selectResponse.Message);
 
-        var logContents = File.ReadAllText(logFilePath);
-        logContents.ShouldContain("Received SelectObjectDto");
+        var logResponse = await game.Send<GetEmbeddedDiagnosticsLogResponse>(new GetEmbeddedDiagnosticsLogDto());
+        logResponse.Succeeded.ShouldBeTrue(logResponse.Message);
+        logResponse.Data.LogText.ShouldContain("Received SelectObjectDto");
     }
 }

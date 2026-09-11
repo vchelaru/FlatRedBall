@@ -88,14 +88,6 @@ namespace CompilerPlugin
                 case nameof(CompilerViewModel.IsRunning):
                     //CommandSender.CancelConnect();
                     break;
-
-                case nameof(CompilerViewModel.IsEmbeddedDiagnosticsChecked):
-                    // GameCommunicationPlugin owns the running embedded game session (CommandSender), so
-                    // this hands off over the cross-plugin event bus rather than reaching in directly -
-                    // same pattern MainCompilerPlugin.HandleEvent already uses for "Runner_GameStarted".
-                    ReactToPluginEvent("BuildTab_EmbeddedDiagnosticsChanged",
-                        _compilerViewModel.IsEmbeddedDiagnosticsChecked.ToString());
-                    break;
             }
         }
 
@@ -196,19 +188,12 @@ namespace CompilerPlugin
                 }
             };
 
-            MainControl.OpenEmbeddedDiagnosticsLogClicked += () =>
+            MainControl.ViewEmbeddedDiagnosticsLogClicked += () =>
             {
-                var logFilePath = _compilerViewModel.EmbeddedDiagnosticsLogFilePath;
-                if (string.IsNullOrEmpty(logFilePath) || !System.IO.File.Exists(logFilePath))
-                {
-                    System.Windows.MessageBox.Show(
-                        "No diagnostics log yet - check \"Embedded diagnostics\" and reconnect to the game first.",
-                        "Open Diagnostics Log");
-                }
-                else
-                {
-                    System.Diagnostics.Process.Start("explorer.exe", "/select," + logFilePath);
-                }
+                // GameCommunicationPlugin owns the running embedded game session (CommandSender), so this
+                // hands off over the cross-plugin event bus rather than reaching in directly - same
+                // pattern MainCompilerPlugin.HandleEvent already uses for "Runner_GameStarted".
+                ReactToPluginEvent("BuildTab_ViewEmbeddedDiagnosticsLog", "");
             };
 
             MainControl.MSBuildSettingsClicked += () =>

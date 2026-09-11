@@ -1243,17 +1243,6 @@ namespace GameCommunicationPlugin.GlueControl
                             MoveGameToHost();
                         }
 
-                        // EmbeddedDiagnosticsLogger.IsEnabled is per-process state on the game side, and
-                        // BuildTab_EmbeddedDiagnosticsChanged only sends this DTO when the checkbox itself
-                        // is toggled - so a freshly-launched game never learns the checkbox was already
-                        // checked from an earlier run, and clicks silently go unlogged with no error.
-                        if (CompilerViewModel.IsEmbeddedDiagnosticsChecked)
-                        {
-                            var diagnosticsResponse = await CommandSender.Self.Send<SetEmbeddedDiagnosticsEnabledResponse>(
-                                new SetEmbeddedDiagnosticsEnabledDto { IsEnabled = true });
-                            CompilerViewModel.EmbeddedDiagnosticsLogFilePath = diagnosticsResponse?.Data?.LogFilePath;
-                        }
-
                         if (CompilerViewModel.PlayOrEdit == PlayOrEdit.Edit)
                         {
                             await ReactToPlayOrEditSet();
@@ -1271,13 +1260,33 @@ namespace GameCommunicationPlugin.GlueControl
 
                     break;
 
-                case "BuildTab_EmbeddedDiagnosticsChanged":
-                    var isEnabled = bool.Parse(payload);
+                case "BuildTab_ViewEmbeddedDiagnosticsLog":
                     Task.Run(async () =>
                     {
-                        var diagnosticsResponse = await CommandSender.Self.Send<SetEmbeddedDiagnosticsEnabledResponse>(
-                            new SetEmbeddedDiagnosticsEnabledDto { IsEnabled = isEnabled });
-                        CompilerViewModel.EmbeddedDiagnosticsLogFilePath = diagnosticsResponse?.Data?.LogFilePath;
+                        var logResponse = await CommandSender.Self.Send<GetEmbeddedDiagnosticsLogResponse>(
+                            new GetEmbeddedDiagnosticsLogDto());
+
+                        if (!logResponse.Succeeded)
+                        {
+                            System.Windows.MessageBox.Show(
+                                $"Could not fetch the diagnostics log - is the game running and connected?\n\n{logResponse.Message}",
+                                "View Diagnostics Log");
+                            return;
+                        }
+
+                        // The log only lives in the game's memory (see EmbeddedDiagnosticsLogger), so
+                        // "view" means write this one snapshot out and open it, not append continuously -
+                        // a fresh file per click rather than a fixed path avoids clobbering one the user
+                        // still has open from an earlier click.
+                        var directory = System.IO.Path.Combine(
+                            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                            "FlatRedBall", "Glue", "Diagnostics");
+                        System.IO.Directory.CreateDirectory(directory);
+                        var filePath = System.IO.Path.Combine(
+                            directory, $"communication-{DateTime.Now:yyyyMMdd-HHmmss}.log");
+                        System.IO.File.WriteAllText(filePath, logResponse.Data?.LogText ?? "");
+
+                        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(filePath) { UseShellExecute = true });
                     });
 
                     break;

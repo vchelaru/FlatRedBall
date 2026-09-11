@@ -418,30 +418,6 @@ namespace CompilerLibrary.ViewModels
             set => Set(value);
         }
 
-        /// <summary>
-        /// Whether to log embedded game/Glue communication - every DTO the game receives and its
-        /// response, click attempts (with the focus-gate values that decided whether they were
-        /// processed), and selection changes - to a file. Off by default; this is for diagnosing a
-        /// hard-to-repro live-edit issue from what a user sends back, not for everyday use.
-        /// </summary>
-        public bool IsEmbeddedDiagnosticsChecked
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
-
-        /// <summary>
-        /// Path to the currently-running game's diagnostics log file, once known - see
-        /// MainCompilerPlugin's "BuildTab_EmbeddedDiagnosticsChanged" handler, which populates this from
-        /// SetEmbeddedDiagnosticsEnabledResponse.LogFilePath. Null until diagnostics have been enabled at
-        /// least once against a connected game.
-        /// </summary>
-        public string EmbeddedDiagnosticsLogFilePath
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
-
         public ObservableCollection<ToolbarEntityAndStateViewModel> ToolbarEntitiesAndStates
         {
             get => Get<ObservableCollection<ToolbarEntityAndStateViewModel>>();

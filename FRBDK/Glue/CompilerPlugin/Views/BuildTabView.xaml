@@ -32,22 +32,16 @@
                 <Button Click="HandleCancelBuildButtonClick" Content="Cancel Build"></Button>
             </StackPanel>
 
-            <CheckBox Content="Embedded diagnostics" VerticalAlignment="Center" Margin="6,0,0,0"
-                      IsChecked="{Binding IsEmbeddedDiagnosticsChecked}">
-                <CheckBox.ToolTip>
-                    <TextBlock>
-                        Logs every DTO the game receives and its response, click attempts (with the<LineBreak/>
-                        focus-gate values that decided whether they were processed), and selection changes<LineBreak/>
-                        from the embedded game window to a file. Use this when a live-edit action silently<LineBreak/>
-                        fails or does nothing, on a specific machine or otherwise.
-                    </TextBlock>
-                </CheckBox.ToolTip>
-            </CheckBox>
-
-            <Button Content="Open Diagnostics Log" VerticalAlignment="Center" Margin="6,0,0,0"
-                    Click="HandleOpenEmbeddedDiagnosticsLogButtonClick">
+            <Button Content="View Diagnostics Log" VerticalAlignment="Center" Margin="6,0,0,0"
+                    Click="HandleViewEmbeddedDiagnosticsLogButtonClick">
                 <Button.ToolTip>
-                    <TextBlock>Opens the current game session's embedded diagnostics log file (see the checkbox above).</TextBlock>
+                    <TextBlock>
+                        Always-on log of every DTO the running game receives and its response, click<LineBreak/>
+                        attempts (with the focus-gate values that decided whether they were processed), and<LineBreak/>
+                        selection changes. Use this when a live-edit action silently fails or does nothing -<LineBreak/>
+                        the game keeps a running history in memory, so this works even if you didn't know<LineBreak/>
+                        to turn anything on beforehand.
+                    </TextBlock>
                 </Button.ToolTip>
             </Button>
 

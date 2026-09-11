@@ -1726,20 +1726,11 @@ namespace GlueControl
 
         #endregion
 
-        #region SetEmbeddedDiagnosticsEnabledDto
+        #region GetEmbeddedDiagnosticsLogDto
 
-        private static object HandleDto(SetEmbeddedDiagnosticsEnabledDto dto)
+        private static object HandleDto(GetEmbeddedDiagnosticsLogDto dto)
         {
-            var logFilePath = dto.IsEnabled
-                ? EmbeddedDiagnosticsLogger.Enable()
-                : null;
-
-            if (!dto.IsEnabled)
-            {
-                EmbeddedDiagnosticsLogger.Disable();
-            }
-
-            return new SetEmbeddedDiagnosticsEnabledResponse { LogFilePath = logFilePath };
+            return new GetEmbeddedDiagnosticsLogResponse { LogText = EmbeddedDiagnosticsLogger.GetLogText() };
         }
 
         #endregion
