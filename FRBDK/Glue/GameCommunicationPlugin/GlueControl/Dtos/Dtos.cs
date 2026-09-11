@@ -624,24 +624,24 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
     }
     #endregion
 
-    #region SetEmbeddedDiagnosticsEnabledDto
+    #region GetEmbeddedDiagnosticsLogDto
 
     /// <summary>
-    /// Toggles EmbeddedDiagnosticsLogger (issue #2196): event-driven logging of click attempts (with the
-    /// focus-gate values that decided whether they were processed) and selection changes, written to a
-    /// file so a per-machine gate misfire like #2183 can be diagnosed from what a user sends back instead
-    /// of only from a local repro.
+    /// Fetches EmbeddedDiagnosticsLogger's current in-memory buffer: every DTO the game has received (and
+    /// its response), click attempts (with the focus-gate values that decided whether they were
+    /// processed), and selection changes. Always-on and capped (see EmbeddedDiagnosticsLogger.Capacity)
+    /// rather than opt-in, so a per-machine issue like #2183/#2261 doesn't need to be predicted in advance
+    /// to be diagnosable from what a user sends back.
     /// </summary>
-    public class SetEmbeddedDiagnosticsEnabledDto
+    public class GetEmbeddedDiagnosticsLogDto
     {
-        public bool IsEnabled { get; set; }
     }
     #endregion
 
-    #region SetEmbeddedDiagnosticsEnabledResponse
-    public class SetEmbeddedDiagnosticsEnabledResponse
+    #region GetEmbeddedDiagnosticsLogResponse
+    public class GetEmbeddedDiagnosticsLogResponse
     {
-        public string LogFilePath { get; set; }
+        public string LogText { get; set; }
     }
     #endregion
 

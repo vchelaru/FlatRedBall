@@ -32,16 +32,18 @@
                 <Button Click="HandleCancelBuildButtonClick" Content="Cancel Build"></Button>
             </StackPanel>
 
-            <CheckBox Content="Embedded diagnostics" VerticalAlignment="Center" Margin="6,0,0,0"
-                      IsChecked="{Binding IsEmbeddedDiagnosticsChecked}">
-                <CheckBox.ToolTip>
+            <Button Content="View Diagnostics Log" VerticalAlignment="Center" Margin="6,0,0,0"
+                    Click="HandleViewEmbeddedDiagnosticsLogButtonClick">
+                <Button.ToolTip>
                     <TextBlock>
-                        Logs click attempts (with the focus-gate values that decided whether they were<LineBreak/>
-                        processed) and selection changes from the embedded game window to a file. Use this<LineBreak/>
-                        when click-select or middle-mouse pan silently does nothing on a specific machine.
+                        Always-on log of every DTO the running game receives and its response, click<LineBreak/>
+                        attempts (with the focus-gate values that decided whether they were processed), and<LineBreak/>
+                        selection changes. Use this when a live-edit action silently fails or does nothing -<LineBreak/>
+                        the game keeps a running history in memory, so this works even if you didn't know<LineBreak/>
+                        to turn anything on beforehand.
                     </TextBlock>
-                </CheckBox.ToolTip>
-            </CheckBox>
+                </Button.ToolTip>
+            </Button>
 
             <Button VerticalAlignment="Center" Margin="12,0,0,0" Click="HandleMSBuildSettingsButtonClick"
                     Content="{materialDesign:PackIcon Cog}" Style="{DynamicResource ToolIcon}"

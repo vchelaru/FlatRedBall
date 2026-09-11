@@ -418,18 +418,6 @@ namespace CompilerLibrary.ViewModels
             set => Set(value);
         }
 
-        /// <summary>
-        /// Whether to log embedded game/Glue communication - click attempts (with the focus-gate values
-        /// that decided whether they were processed) and selection changes - to a file. Off by default;
-        /// this is for diagnosing a per-machine issue like #2183 (silent click/select failures) from what
-        /// a user sends back, not for everyday use.
-        /// </summary>
-        public bool IsEmbeddedDiagnosticsChecked
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
-
         public ObservableCollection<ToolbarEntityAndStateViewModel> ToolbarEntitiesAndStates
         {
             get => Get<ObservableCollection<ToolbarEntityAndStateViewModel>>();

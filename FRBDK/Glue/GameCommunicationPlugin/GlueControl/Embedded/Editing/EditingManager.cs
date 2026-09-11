@@ -499,21 +499,18 @@ namespace GlueControl.Editing
                     wasPushedInWindow = mouse.IsInGameWindow() && IsGameOrGlueActive;
                 }
 
-                if (EmbeddedDiagnosticsLogger.IsEnabled)
+                // Read here (rather than only inside DoGrabLogic/the camera-pan block below) so a click or
+                // pan attempt is logged even when the focus gate is closed and those blocks never run -
+                // that silently-blocked case is exactly what issue #2183 needed to see.
+                if (mouse.ButtonPushed(Mouse.MouseButtons.LeftButton))
                 {
-                    // Read here (rather than only inside DoGrabLogic/the camera-pan block below) so a
-                    // click or pan attempt is logged even when the focus gate is closed and those blocks
-                    // never run - that silently-blocked case is exactly what issue #2183 needed to see.
-                    if (mouse.ButtonPushed(Mouse.MouseButtons.LeftButton))
-                    {
-                        var shouldTreatAsPush = ComputeShouldTreatAsPush(mouse.IsInGameWindow(), true,
-                            mouse.ButtonDown(Mouse.MouseButtons.LeftButton), wasGameOrGlueActive, IsGameOrGlueActive);
-                        EmbeddedDiagnosticsLogger.LogClickAttempt("Left", itemsOver.FirstOrDefault()?.Name, shouldTreatAsPush);
-                    }
-                    if (mouse.ButtonPushed(Mouse.MouseButtons.MiddleButton))
-                    {
-                        EmbeddedDiagnosticsLogger.LogClickAttempt("Middle", null, IsGameOrGlueActive);
-                    }
+                    var shouldTreatAsPush = ComputeShouldTreatAsPush(mouse.IsInGameWindow(), true,
+                        mouse.ButtonDown(Mouse.MouseButtons.LeftButton), wasGameOrGlueActive, IsGameOrGlueActive);
+                    EmbeddedDiagnosticsLogger.LogClickAttempt("Left", itemsOver.FirstOrDefault()?.Name, shouldTreatAsPush);
+                }
+                if (mouse.ButtonPushed(Mouse.MouseButtons.MiddleButton))
+                {
+                    EmbeddedDiagnosticsLogger.LogClickAttempt("Middle", null, IsGameOrGlueActive);
                 }
 
                 // Vic says - not sure how much should be inside the IsActive check
@@ -1626,78 +1623,117 @@ namespace GlueControl.Editing
     }
 
     /// <summary>
-    /// Opt-in, event-driven log of embedded-game/Glue interaction (issue #2196): click attempts (with the
-    /// focus-gate values that decided whether they were processed) and selection changes. Added because
-    /// issue #2183 - a per-machine focus-gate misfire that silently broke click-select and middle-mouse
-    /// pan - took far longer to diagnose than it should have, since nothing recorded what the gate was
-    /// actually seeing on the affected machine.
+    /// Always-on, in-memory log of embedded-game/Glue interaction: every DTO the game receives (and its
+    /// response), click attempts (with the focus-gate values that decided whether they were processed),
+    /// and selection changes. Added because issue #2183 (a per-machine focus-gate misfire) and #2261 (a
+    /// live-edit variable set failing for reasons nobody could pin from a single error line) both took far
+    /// longer to diagnose than they should have, since nothing recorded what led up to the failure. Not
+    /// opt-in: a bug that already happened can't retroactively have logging turned on for it, so this
+    /// always runs and a Glue-side "View Diagnostics Log" button fetches the current buffer on demand
+    /// (see GetEmbeddedDiagnosticsLogDto).
     /// </summary>
     internal static class EmbeddedDiagnosticsLogger
     {
-        public static bool IsEnabled { get; private set; }
+        /// <summary>
+        /// Oldest entries drop once the buffer holds this many, so an hours-long live-edit session doesn't
+        /// grow without bound. Matches the order of magnitude BuildTabView.MaxLinesOfText already uses for
+        /// the same "long session, cap retained history" tradeoff on the Glue side.
+        /// </summary>
+        const int Capacity = 2000;
 
-        static string logFilePath;
-
-        public static string Enable()
-        {
-            logFilePath = BuildLogFilePath();
-            IsEnabled = true;
-            AppendLine("Embedded diagnostics on.");
-            return logFilePath;
-        }
-
-        public static void Disable()
-        {
-            if (IsEnabled)
-            {
-                AppendLine("Embedded diagnostics off.");
-            }
-            IsEnabled = false;
-        }
+        static readonly List<string> entries = new List<string>();
 
         public static void LogClickAttempt(string button, string itemOverName, bool wasProcessed)
         {
-            if (!IsEnabled)
-            {
-                return;
-            }
-
             AppendLine($"Click ({button}) itemOver={itemOverName ?? "<none>"} processed={wasProcessed} " +
                 EmbeddedWindowLogic.DescribeFocusState());
         }
 
         public static void LogSelectionChanged(List<INameable> items)
         {
-            if (!IsEnabled)
-            {
-                return;
-            }
-
             var names = string.Join(", ", items.Select(item => item?.Name ?? "<null>"));
             AppendLine($"Selection changed: [{names}]");
         }
 
-        static void AppendLine(string message)
+        // CommandReceiver.Receive is the single choke point every Glue->game DTO and its response pass
+        // through, so logging there (rather than in each HandleDto overload) covers new DTO types for
+        // free. Skips GetEmbeddedDiagnosticsLogDto itself and its response - logging a fetch of the whole
+        // buffer would re-embed a full copy of the buffer into itself on every view, growing it every time
+        // someone looks at it.
+        public static void LogDtoReceived(string dtoTypeName, object dto)
         {
-            try
+            if (dtoTypeName == nameof(GlueControl.Dtos.GetEmbeddedDiagnosticsLogDto))
             {
-                System.IO.File.AppendAllText(logFilePath, $"{DateTime.UtcNow:O} {message}{Environment.NewLine}");
+                return;
             }
-            catch
+
+            AppendLine($"Received {dtoTypeName}: {Describe(dto)}");
+        }
+
+        public static void LogDtoResponse(string dtoTypeName, object response)
+        {
+            if (dtoTypeName == nameof(GlueControl.Dtos.GetEmbeddedDiagnosticsLogDto))
             {
-                // Diagnostics must never be the thing that breaks the embedded game.
+                return;
+            }
+
+            AppendLine($"Response to {dtoTypeName}: {Describe(response)}");
+        }
+
+        public static void LogUnhandledException(string rawMessage, Exception exception)
+        {
+            AppendLine($"Unhandled exception handling \"{rawMessage}\": {exception}");
+        }
+
+        /// <summary>
+        /// The current buffer, oldest entry first, one per line - what GetEmbeddedDiagnosticsLogDto's
+        /// handler returns to Glue.
+        /// </summary>
+        public static string GetLogText()
+        {
+            lock (entries)
+            {
+                return string.Join(Environment.NewLine, entries);
             }
         }
 
-        static string BuildLogFilePath()
+        static string Describe(object value)
         {
-            var directory = System.IO.Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "FlatRedBall", "Glue", "Diagnostics");
+            if (value == null)
+            {
+                return "<null>";
+            }
 
-            System.IO.Directory.CreateDirectory(directory);
+            // Most DTOs/responses override ToString() with a short human-readable summary (e.g.
+            // GlueVariableSetData -> "VariableName=VariableValue"). Fall back to JSON for the ones that
+            // don't, so a log entry is never just an uninformative type name.
+            var asString = value.ToString();
+            if (asString == value.GetType().FullName || asString == value.GetType().Name)
+            {
+                try
+                {
+                    asString = Newtonsoft.Json.JsonConvert.SerializeObject(value);
+                }
+                catch
+                {
+                    // best effort - keep the ToString() fallback above
+                }
+            }
 
-            return System.IO.Path.Combine(directory, $"communication-{DateTime.Now:yyyyMMdd-HHmmss}.log");
+            return asString;
+        }
+
+        static void AppendLine(string message)
+        {
+            lock (entries)
+            {
+                entries.Add($"{DateTime.UtcNow:O} {message}");
+
+                if (entries.Count > Capacity)
+                {
+                    entries.RemoveRange(0, entries.Count - Capacity);
+                }
+            }
         }
     }
 }

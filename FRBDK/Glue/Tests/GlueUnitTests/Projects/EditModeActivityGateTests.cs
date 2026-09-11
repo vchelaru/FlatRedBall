@@ -326,10 +326,12 @@ public class EditModeActivityGateTests
 
     /// <summary>
     /// Issue #2196: diagnoses issue #2183-style bugs (a focus-gate misfire that varies by machine and
-    /// doesn't reproduce locally) by logging what the gate actually saw. Opt-in via
-    /// SetEmbeddedDiagnosticsEnabledDto - drives both a blocked click (gate closed) and a processed one
-    /// (gate open) through SimulateGrabAcrossFocusGateDto, the same seam GrabHeldAcrossFocusGateOpening_IsProcessed
-    /// above uses, and asserts the resulting log file records the gate snapshot and the selection change.
+    /// doesn't reproduce locally) by logging what the gate actually saw. Always-on (issue #2261 - a
+    /// per-machine bug can't have logging turned on for it after the fact) rather than opt-in - drives
+    /// both a blocked click (gate closed) and a processed one (gate open) through
+    /// SimulateGrabAcrossFocusGateDto, the same seam GrabHeldAcrossFocusGateOpening_IsProcessed above
+    /// uses, then fetches the in-memory buffer via GetEmbeddedDiagnosticsLogDto and asserts it records the
+    /// gate snapshot and the selection change.
     /// </summary>
     [StaFact]
     public async Task EmbeddedDiagnostics_LogsBlockedClickGateSnapshotAndSelectionChange()
@@ -362,63 +364,47 @@ public class EditModeActivityGateTests
         var borderlessResponse = await game.Send(new SetBorderlessDto { IsBorderless = true });
         borderlessResponse.Succeeded.ShouldBeTrue(borderlessResponse.Message);
 
-        var enableResponse = await game.Send<SetEmbeddedDiagnosticsEnabledResponse>(
-            new SetEmbeddedDiagnosticsEnabledDto { IsEnabled = true });
-        enableResponse.Succeeded.ShouldBeTrue(enableResponse.Message);
-        var logFilePath = enableResponse.Data.LogFilePath;
+        var overrideGateClosed = await game.Send(new SetEmbeddedInputAllowedDto { IsAllowed = false });
+        overrideGateClosed.Succeeded.ShouldBeTrue(overrideGateClosed.Message);
 
-        try
-        {
-            var overrideGateClosed = await game.Send(new SetEmbeddedInputAllowedDto { IsAllowed = false });
-            overrideGateClosed.Succeeded.ShouldBeTrue(overrideGateClosed.Message);
-
-            var blockedClick = await game.Send<SimulateGrabAcrossFocusGateResponse>(
-                new SimulateGrabAcrossFocusGateDto
-                {
-                    ObjectName = "TestObjectA",
-                    ButtonPushed = true,
-                    ButtonDown = true,
-                    WasGameOrGlueActiveLastFrame = false,
-                    AdditiveModifierDown = false,
-                });
-            blockedClick.Succeeded.ShouldBeTrue(blockedClick.Message);
-            blockedClick.Data.WasProcessed.ShouldBeFalse();
-
-            var overrideGateOpen = await game.Send(new SetEmbeddedInputAllowedDto { IsAllowed = true });
-            overrideGateOpen.Succeeded.ShouldBeTrue(overrideGateOpen.Message);
-
-            var processedClick = await game.Send<SimulateGrabAcrossFocusGateResponse>(
-                new SimulateGrabAcrossFocusGateDto
-                {
-                    ObjectName = "TestObjectA",
-                    ButtonPushed = true,
-                    ButtonDown = true,
-                    WasGameOrGlueActiveLastFrame = false,
-                    AdditiveModifierDown = false,
-                });
-            processedClick.Succeeded.ShouldBeTrue(processedClick.Message);
-            processedClick.Data.WasProcessed.ShouldBeTrue();
-
-            var disableResponse = await game.Send(new SetEmbeddedDiagnosticsEnabledDto { IsEnabled = false });
-            disableResponse.Succeeded.ShouldBeTrue(disableResponse.Message);
-
-            var logContents = System.IO.File.ReadAllText(logFilePath);
-
-            // The blocked click (gate closed) must be logged, not just the ones that succeed - that's
-            // exactly the case a user's machine-specific gate misfire needs to be read back from (#2183).
-            logContents.ShouldContain("processed=False");
-            logContents.ShouldContain("isInputAllowedFromGlue=False isModalWindowOpen=False isParentGlueFocused=False");
-            logContents.ShouldContain("processed=True");
-            logContents.ShouldContain("isInputAllowedFromGlue=True isModalWindowOpen=False isParentGlueFocused=True");
-            logContents.ShouldContain("Selection changed: [TestObjectA]");
-        }
-        finally
-        {
-            if (System.IO.File.Exists(logFilePath))
+        var blockedClick = await game.Send<SimulateGrabAcrossFocusGateResponse>(
+            new SimulateGrabAcrossFocusGateDto
             {
-                System.IO.File.Delete(logFilePath);
-            }
-        }
+                ObjectName = "TestObjectA",
+                ButtonPushed = true,
+                ButtonDown = true,
+                WasGameOrGlueActiveLastFrame = false,
+                AdditiveModifierDown = false,
+            });
+        blockedClick.Succeeded.ShouldBeTrue(blockedClick.Message);
+        blockedClick.Data.WasProcessed.ShouldBeFalse();
+
+        var overrideGateOpen = await game.Send(new SetEmbeddedInputAllowedDto { IsAllowed = true });
+        overrideGateOpen.Succeeded.ShouldBeTrue(overrideGateOpen.Message);
+
+        var processedClick = await game.Send<SimulateGrabAcrossFocusGateResponse>(
+            new SimulateGrabAcrossFocusGateDto
+            {
+                ObjectName = "TestObjectA",
+                ButtonPushed = true,
+                ButtonDown = true,
+                WasGameOrGlueActiveLastFrame = false,
+                AdditiveModifierDown = false,
+            });
+        processedClick.Succeeded.ShouldBeTrue(processedClick.Message);
+        processedClick.Data.WasProcessed.ShouldBeTrue();
+
+        var logResponse = await game.Send<GetEmbeddedDiagnosticsLogResponse>(new GetEmbeddedDiagnosticsLogDto());
+        logResponse.Succeeded.ShouldBeTrue(logResponse.Message);
+        var logContents = logResponse.Data.LogText;
+
+        // The blocked click (gate closed) must be logged, not just the ones that succeed - that's
+        // exactly the case a user's machine-specific gate misfire needs to be read back from (#2183).
+        logContents.ShouldContain("processed=False");
+        logContents.ShouldContain("isInputAllowedFromGlue=False isModalWindowOpen=False isParentGlueFocused=False");
+        logContents.ShouldContain("processed=True");
+        logContents.ShouldContain("isInputAllowedFromGlue=True isModalWindowOpen=False isParentGlueFocused=True");
+        logContents.ShouldContain("Selection changed: [TestObjectA]");
     }
 
     static async Task AddTestObjectToGameScreen()
