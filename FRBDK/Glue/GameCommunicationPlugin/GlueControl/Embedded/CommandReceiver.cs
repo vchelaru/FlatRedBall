@@ -84,6 +84,7 @@ namespace GlueControl
                     dtoType = typeof(CommandReceiver).Assembly.GetType(possibleQualifiedType);
                 }
                 var dto = JsonConvert.DeserializeObject(dtoSerialized, dtoType);
+                Editing.EmbeddedDiagnosticsLogger.LogDtoReceived(dtoTypeName, dto);
 
                 if (runPredicate == null || runPredicate(dto))
                 {
@@ -91,6 +92,7 @@ namespace GlueControl
 
                     if (response != null)
                     {
+                        Editing.EmbeddedDiagnosticsLogger.LogDtoResponse(dtoTypeName, response);
                         return JsonConvert.SerializeObject(response);
                     }
                 }
@@ -98,6 +100,7 @@ namespace GlueControl
             }
             catch (Exception ex)
             {
+                Editing.EmbeddedDiagnosticsLogger.LogUnhandledException(message, ex);
                 System.Console.WriteLine(ex + "\nWith message:\n" + message);
                 return null;
             }

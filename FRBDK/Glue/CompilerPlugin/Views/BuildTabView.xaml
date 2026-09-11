@@ -36,12 +36,20 @@
                       IsChecked="{Binding IsEmbeddedDiagnosticsChecked}">
                 <CheckBox.ToolTip>
                     <TextBlock>
-                        Logs click attempts (with the focus-gate values that decided whether they were<LineBreak/>
-                        processed) and selection changes from the embedded game window to a file. Use this<LineBreak/>
-                        when click-select or middle-mouse pan silently does nothing on a specific machine.
+                        Logs every DTO the game receives and its response, click attempts (with the<LineBreak/>
+                        focus-gate values that decided whether they were processed), and selection changes<LineBreak/>
+                        from the embedded game window to a file. Use this when a live-edit action silently<LineBreak/>
+                        fails or does nothing, on a specific machine or otherwise.
                     </TextBlock>
                 </CheckBox.ToolTip>
             </CheckBox>
+
+            <Button Content="Open Diagnostics Log" VerticalAlignment="Center" Margin="6,0,0,0"
+                    Click="HandleOpenEmbeddedDiagnosticsLogButtonClick">
+                <Button.ToolTip>
+                    <TextBlock>Opens the current game session's embedded diagnostics log file (see the checkbox above).</TextBlock>
+                </Button.ToolTip>
+            </Button>
 
             <Button VerticalAlignment="Center" Margin="12,0,0,0" Click="HandleMSBuildSettingsButtonClick"
                     Content="{materialDesign:PackIcon Cog}" Style="{DynamicResource ToolIcon}"

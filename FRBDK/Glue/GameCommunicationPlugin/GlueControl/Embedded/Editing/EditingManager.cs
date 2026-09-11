@@ -1677,6 +1677,67 @@ namespace GlueControl.Editing
             AppendLine($"Selection changed: [{names}]");
         }
 
+        // Added for issue #2261: a live-edit variable set failed with "could not find" and nothing
+        // recorded what DTOs led up to it (add/rename/reorder/restart), so there was no way to tell
+        // whether the object was ever really there under that name. CommandReceiver.Receive is the
+        // single choke point every Glue->game DTO and its response pass through, so logging there
+        // (rather than in each HandleDto overload) covers new DTO types for free.
+        public static void LogDtoReceived(string dtoTypeName, object dto)
+        {
+            if (!IsEnabled)
+            {
+                return;
+            }
+
+            AppendLine($"Received {dtoTypeName}: {Describe(dto)}");
+        }
+
+        public static void LogDtoResponse(string dtoTypeName, object response)
+        {
+            if (!IsEnabled)
+            {
+                return;
+            }
+
+            AppendLine($"Response to {dtoTypeName}: {Describe(response)}");
+        }
+
+        public static void LogUnhandledException(string rawMessage, Exception exception)
+        {
+            if (!IsEnabled)
+            {
+                return;
+            }
+
+            AppendLine($"Unhandled exception handling \"{rawMessage}\": {exception}");
+        }
+
+        static string Describe(object value)
+        {
+            if (value == null)
+            {
+                return "<null>";
+            }
+
+            // Most DTOs/responses override ToString() with a short human-readable summary (e.g.
+            // GlueVariableSetData -> "VariableName=VariableValue"). Fall back to JSON for the ones that
+            // don't, so a log entry is never just an uninformative type name.
+            var asString = value.ToString();
+            if (asString == value.GetType().FullName || asString == value.GetType().Name)
+            {
+                try
+                {
+                    asString = Newtonsoft.Json.JsonConvert.SerializeObject(value);
+                }
+                catch
+                {
+                    // best effort - keep the ToString() fallback above
+                }
+            }
+
+            return asString;
+        }
+
         static void AppendLine(string message)
         {
             try

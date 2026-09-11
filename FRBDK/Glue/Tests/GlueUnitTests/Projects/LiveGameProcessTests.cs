@@ -1,4 +1,8 @@
+using System.IO;
 using System.Threading.Tasks;
+using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.SaveClasses;
+using GameCommunicationPlugin.GlueControl.Dtos;
 using GlueUnitTests.TestSupport;
 using Shouldly;
 using Xunit;
@@ -121,5 +125,104 @@ public class LiveGameProcessTests
 
         var output = string.Join("\n", game.GetCapturedStandardOutputLines());
         output.ShouldNotContain("NullReferenceException");
+    }
+
+    // #2261 reports a Sprite added live to an Entity, renamed, reordered, then failing a variable set
+    // with "Could not find an object named Head in EntityViewingScreen". The obvious suspect -
+    // VariableAssignmentLogic's setOnEntity branch only resolving targets via reflection over the
+    // entity's COMPILED members, with no fallback for a live-added child - turned out to be wrong:
+    // Screen.GetInstance (Engines\FlatRedBallXNA\FlatRedBall\Screens\Screen.cs:796-799) already falls
+    // back to searching PositionedObject.Children by name when reflection finds nothing. This test pins
+    // that the base case (add, then set a variable, no rename/reorder) already works, so nobody "fixes"
+    // this lookup again for the wrong reason. The real trigger is still open - see the issue for the
+    // pivot to EmbeddedDiagnosticsLogger DTO logging below, which is what should nail it down next time
+    // it reproduces.
+    [StaFact]
+    public async Task EditorTest1_SettingVariableOnSpriteAddedLiveToEntity_FindsItViaRuntimeChildren()
+    {
+        GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
+
+        using var game = await LiveGameProcess.StartAsync(
+            "Samples/EditorTest1",
+            csprojRelativeToProjectRoot: "EditorTest1/EditorTest1.csproj",
+            exeRelativeToProjectRoot: "EditorTest1/bin/Debug/net9.0/EditorTest1.exe");
+
+        var selectResponse = await game.SelectEntity("Entities\\Entity1");
+        selectResponse.Succeeded.ShouldBeTrue(selectResponse.Message);
+        (await game.GetCurrentScreenName()).ShouldBe("GlueControl.Screens.EntityViewingScreen");
+
+        var entity = ObjectFinder.Self.GetEntitySave("Entities\\Entity1");
+
+        // Same DTO shape as RefreshManager.CreateAddObjectDtoFor - a Sprite added live via the "add
+        // object" flow, exactly like a user dragging a new Sprite onto the entity in Glue while it's
+        // running.
+        var headSprite = new NamedObjectSave
+        {
+            InstanceName = "Head",
+            SourceType = SourceType.FlatRedBallType,
+            SourceClassType = "Sprite",
+            AddToManagers = true,
+        };
+        var addObjectDto = new AddObjectDto
+        {
+            NamedObjectSave = headSprite,
+            ElementNameGlue = "Entities\\Entity1",
+            EntitySave = entity,
+        };
+        addObjectDto.NamedObjectsToUpdate.Add(new NamedObjectWithElementName
+        {
+            NamedObjectSave = headSprite,
+            GlueElementName = "Entities\\Entity1",
+        });
+
+        var addResponse = await game.Send<AddObjectDtoResponse>(addObjectDto);
+        addResponse.Succeeded.ShouldBeTrue(addResponse.Message);
+        addResponse.Data.CreationResponse.Succeeded.ShouldBeTrue("the game should have created the live Sprite");
+
+        // Same DTO shape as VariableSendingManager - setting a variable on the newly-added Sprite,
+        // exactly like the user editing it in the property grid. X rather than CurrentChainName so this
+        // only exercises the lookup, not Sprite's animation-chain validation.
+        var setVariableDto = new GlueVariableSetData
+        {
+            AssignOrRecordOnly = AssignOrRecordOnly.Assign,
+            ElementNameGlue = "Entities\\Entity1",
+            EntitySave = entity,
+            VariableName = "this.Head.X",
+            VariableValue = "5",
+            Type = "float",
+            AbsoluteGlueProjectFilePath = Path.Combine(game.ProjectRoot, "EditorTest1", "EditorTest1.gluj"),
+        };
+
+        var setResponse = await game.Send<GlueVariableSetDataResponse>(setVariableDto);
+        setResponse.Succeeded.ShouldBeTrue(setResponse.Message);
+        setResponse.Data.Exception.ShouldBeNull();
+        setResponse.Data.WasVariableAssigned.ShouldBeTrue();
+    }
+
+    // Pins the EmbeddedDiagnosticsLogger extension added for #2261: every DTO the game receives (and its
+    // response, when it sends one back) gets appended to the same per-session communication-*.log the
+    // "Embedded diagnostics" checkbox already produced for clicks/selection - see
+    // CommandReceiver.Receive and EditingManager.cs's EmbeddedDiagnosticsLogger.
+    [StaFact]
+    public async Task EditorTest1_EmbeddedDiagnostics_LogsDtoTrafficToDisk()
+    {
+        GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
+
+        using var game = await LiveGameProcess.StartAsync(
+            "Samples/EditorTest1",
+            csprojRelativeToProjectRoot: "EditorTest1/EditorTest1.csproj",
+            exeRelativeToProjectRoot: "EditorTest1/bin/Debug/net9.0/EditorTest1.exe");
+
+        var enableResponse = await game.Send<SetEmbeddedDiagnosticsEnabledResponse>(
+            new SetEmbeddedDiagnosticsEnabledDto { IsEnabled = true });
+        enableResponse.Succeeded.ShouldBeTrue(enableResponse.Message);
+        var logFilePath = enableResponse.Data.LogFilePath;
+        logFilePath.ShouldNotBeNullOrEmpty();
+
+        var selectResponse = await game.SelectEntity("Entities\\Entity1");
+        selectResponse.Succeeded.ShouldBeTrue(selectResponse.Message);
+
+        var logContents = File.ReadAllText(logFilePath);
+        logContents.ShouldContain("Received SelectObjectDto");
     }
 }

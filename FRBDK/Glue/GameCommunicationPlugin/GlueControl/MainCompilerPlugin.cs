@@ -1249,7 +1249,9 @@ namespace GameCommunicationPlugin.GlueControl
                         // checked from an earlier run, and clicks silently go unlogged with no error.
                         if (CompilerViewModel.IsEmbeddedDiagnosticsChecked)
                         {
-                            await CommandSender.Self.Send(new SetEmbeddedDiagnosticsEnabledDto { IsEnabled = true });
+                            var diagnosticsResponse = await CommandSender.Self.Send<SetEmbeddedDiagnosticsEnabledResponse>(
+                                new SetEmbeddedDiagnosticsEnabledDto { IsEnabled = true });
+                            CompilerViewModel.EmbeddedDiagnosticsLogFilePath = diagnosticsResponse?.Data?.LogFilePath;
                         }
 
                         if (CompilerViewModel.PlayOrEdit == PlayOrEdit.Edit)
@@ -1271,7 +1273,12 @@ namespace GameCommunicationPlugin.GlueControl
 
                 case "BuildTab_EmbeddedDiagnosticsChanged":
                     var isEnabled = bool.Parse(payload);
-                    Task.Run(() => CommandSender.Self.Send(new SetEmbeddedDiagnosticsEnabledDto { IsEnabled = isEnabled }));
+                    Task.Run(async () =>
+                    {
+                        var diagnosticsResponse = await CommandSender.Self.Send<SetEmbeddedDiagnosticsEnabledResponse>(
+                            new SetEmbeddedDiagnosticsEnabledDto { IsEnabled = isEnabled });
+                        CompilerViewModel.EmbeddedDiagnosticsLogFilePath = diagnosticsResponse?.Data?.LogFilePath;
+                    });
 
                     break;
 

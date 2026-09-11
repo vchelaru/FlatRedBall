@@ -50,6 +50,7 @@ namespace CompilerPlugin.Views
         public event EventHandler RunClicked;
         public event EventHandler CancelBuildClicked;
         public event Action MSBuildSettingsClicked;
+        public event Action OpenEmbeddedDiagnosticsLogClicked;
 
 
         #endregion
@@ -91,6 +92,11 @@ namespace CompilerPlugin.Views
         private void HandleMSBuildSettingsButtonClick(object sender, RoutedEventArgs e)
         {
             MSBuildSettingsClicked?.Invoke();
+        }
+
+        private void HandleOpenEmbeddedDiagnosticsLogButtonClick(object sender, RoutedEventArgs e)
+        {
+            OpenEmbeddedDiagnosticsLogClicked?.Invoke();
         }
 
         /// <summary>

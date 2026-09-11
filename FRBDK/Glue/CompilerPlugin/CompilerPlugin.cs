@@ -196,6 +196,21 @@ namespace CompilerPlugin
                 }
             };
 
+            MainControl.OpenEmbeddedDiagnosticsLogClicked += () =>
+            {
+                var logFilePath = _compilerViewModel.EmbeddedDiagnosticsLogFilePath;
+                if (string.IsNullOrEmpty(logFilePath) || !System.IO.File.Exists(logFilePath))
+                {
+                    System.Windows.MessageBox.Show(
+                        "No diagnostics log yet - check \"Embedded diagnostics\" and reconnect to the game first.",
+                        "Open Diagnostics Log");
+                }
+                else
+                {
+                    System.Diagnostics.Process.Start("explorer.exe", "/select," + logFilePath);
+                }
+            };
+
             MainControl.MSBuildSettingsClicked += () =>
             {
                 var viewModel = new BuildSettingsWindowViewModel();
