@@ -218,7 +218,7 @@ namespace OfficialPlugins.PropertyGrid
 
             UnmodifiedVariableName = NameOnInstance;
             string displayName = StringFunctions.InsertSpacesInCamelCaseString(NameOnInstance);
-            DisplayName = displayName;
+            DisplayName = variableDefinition?.DisplayName ?? displayName;
 
 
             // hack! Certain ColorOperations aren't supported in MonoGame. One day they will be if we ever get the

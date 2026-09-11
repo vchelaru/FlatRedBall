@@ -236,13 +236,24 @@ namespace OfficialPlugins.SpritePlugin.Managers
             {
                 setCollisionFromAnimationVariableDefinition = new VariableDefinition();
                 setCollisionFromAnimationVariableDefinition.Name = SetCollisionFromAnimationVariableName;
+                // Display-only - the underlying variable name/storage is unchanged. Since this can now sync
+                // shapes on entities that aren't ICollidable (where nothing is actually added to Collision),
+                // "Set Collision From Animation" alone would be misleading there.
+                setCollisionFromAnimationVariableDefinition.DisplayName = "Set Collision/Shapes From Animation";
                 setCollisionFromAnimationVariableDefinition.Category = "Animation";
                 setCollisionFromAnimationVariableDefinition.DefaultValue = "false";
                 setCollisionFromAnimationVariableDefinition.Type = "bool";
                 setCollisionFromAnimationVariableDefinition.UsesCustomCodeGeneration = true;
                 setCollisionFromAnimationVariableDefinition.SubtextFunc = (element, nos) =>
                 {
-                    if(element is EntitySave && element.IsICollidableRecursive() == false)
+                    // Starting with SpriteHasSyncShapesFromAnimation, this checkbox works on any entity -
+                    // shapes are synced as children, and only added to Collision if the entity is
+                    // ICollidable. Below that version, it still requires ICollidable since it writes
+                    // directly into Collision.
+                    var fileVersion = GlueState.Self.CurrentGlueProject?.FileVersion ?? 0;
+                    var requiresICollidable = fileVersion < (int)GlueProjectSave.GluxVersions.SpriteHasSyncShapesFromAnimation;
+
+                    if(requiresICollidable && element is EntitySave && element.IsICollidableRecursive() == false)
                     {
                         return $"{element.GetStrippedName()} must be ICollidable or must inherit from an ICollidable entity for animation collisions to be applied automatically.";
                     }

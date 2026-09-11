@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
 using FlatRedBall.Content.Polygon;
@@ -332,6 +333,139 @@ namespace FlatRedBall.Content.Math.Geometry
                 match.RelativeY = polygon.Y;
                 match.RelativeZ = polygon.Z;
                 UpdateAbsoluteToRelativePositions(match);
+            }
+        }
+
+        /// <summary>
+        /// Updates or creates named shapes as children of the argument container, using this shape collection's
+        /// saved data. A shape that already exists as a child (matched by name) only has its values updated - it
+        /// is never added to or removed from a ShapeCollection, so whatever Collision membership it already has is
+        /// left untouched. A newly-created shape is always attached as a child, and is also added to container's
+        /// Collision if container is ICollidable - the same default SetValuesOn(ShapeCollection, ...) already used
+        /// when it was the only overload, just applied automatically instead of requiring the caller to pass
+        /// Collision in directly. This means the same call works whether or not container is ICollidable.
+        /// </summary>
+        /// <param name="container">The PositionedObject whose children are searched for matching shapes, and which
+        /// newly-created shapes are attached to (and added to Collision, if container is ICollidable).</param>
+        /// <param name="createMissingShapes">Whether shapes that are part of this collection but not already a child
+        /// of container should be created and attached.</param>
+        public void SetValuesOn(PositionedObject container, bool createMissingShapes)
+        {
+            var collidable = container as ICollidable;
+
+            for (int i = 0; i < AxisAlignedRectangleSaves.Count; i++)
+            {
+                AxisAlignedRectangleSave rectangle = this.AxisAlignedRectangleSaves[i];
+                AxisAlignedRectangle match = container.Children.OfType<AxisAlignedRectangle>()
+                    .FirstOrDefault(item => item.Name == rectangle.Name);
+
+                if (match == null && createMissingShapes)
+                {
+                    match = new AxisAlignedRectangle { Name = rectangle.Name };
+                    match.AttachTo(container);
+                    collidable?.Collision.AxisAlignedRectangles.Add(match);
+                }
+
+                if (match != null)
+                {
+                    rectangle.SetValuesOn(match);
+                    match.RelativeX = rectangle.X;
+                    match.RelativeY = rectangle.Y;
+                    match.RelativeZ = rectangle.Z;
+                    UpdateAbsoluteToRelativePositions(match);
+                }
+            }
+
+            for (int i = 0; i < CircleSaves.Count; i++)
+            {
+                CircleSave circleSave = this.CircleSaves[i];
+                Circle match = container.Children.OfType<Circle>()
+                    .FirstOrDefault(item => item.Name == circleSave.Name);
+
+                if (match == null && createMissingShapes)
+                {
+                    match = new Circle { Name = circleSave.Name };
+                    match.AttachTo(container);
+                    collidable?.Collision.Circles.Add(match);
+                }
+
+                if (match != null)
+                {
+                    circleSave.SetValuesOn(match);
+                    match.RelativeX = circleSave.X;
+                    match.RelativeY = circleSave.Y;
+                    match.RelativeZ = circleSave.Z;
+                    UpdateAbsoluteToRelativePositions(match);
+                }
+            }
+
+            for (int i = 0; i < AxisAlignedCubeSaves.Count; i++)
+            {
+                AxisAlignedCubeSave cube = this.AxisAlignedCubeSaves[i];
+                AxisAlignedCube match = container.Children.OfType<AxisAlignedCube>()
+                    .FirstOrDefault(item => item.Name == cube.Name);
+
+                if (match == null && createMissingShapes)
+                {
+                    match = new AxisAlignedCube { Name = cube.Name };
+                    match.AttachTo(container);
+                    collidable?.Collision.AxisAlignedCubes.Add(match);
+                }
+
+                if (match != null)
+                {
+                    cube.SetValuesOn(match);
+                    match.RelativeX = cube.X;
+                    match.RelativeY = cube.Y;
+                    match.RelativeZ = cube.Z;
+                    UpdateAbsoluteToRelativePositions(match);
+                }
+            }
+
+            for (int i = 0; i < SphereSaves.Count; i++)
+            {
+                SphereSave sphere = this.SphereSaves[i];
+                Sphere match = container.Children.OfType<Sphere>()
+                    .FirstOrDefault(item => item.Name == sphere.Name);
+
+                if (match == null && createMissingShapes)
+                {
+                    match = new Sphere { Name = sphere.Name };
+                    match.AttachTo(container);
+                    collidable?.Collision.Spheres.Add(match);
+                }
+
+                if (match != null)
+                {
+                    sphere.SetValuesOn(match);
+                    match.RelativeX = sphere.X;
+                    match.RelativeY = sphere.Y;
+                    match.RelativeZ = sphere.Z;
+                    UpdateAbsoluteToRelativePositions(match);
+                }
+            }
+
+            for (int i = 0; i < PolygonSaves.Count; i++)
+            {
+                PolygonSave polygon = this.PolygonSaves[i];
+                FlatRedBall.Math.Geometry.Polygon match = container.Children.OfType<FlatRedBall.Math.Geometry.Polygon>()
+                    .FirstOrDefault(item => item.Name == polygon.Name);
+
+                if (match == null && createMissingShapes)
+                {
+                    match = new FlatRedBall.Math.Geometry.Polygon { Name = polygon.Name };
+                    match.AttachTo(container);
+                    collidable?.Collision.Polygons.Add(match);
+                }
+
+                if (match != null)
+                {
+                    polygon.SetValuesOn(match);
+                    match.RelativeX = polygon.X;
+                    match.RelativeY = polygon.Y;
+                    match.RelativeZ = polygon.Z;
+                    UpdateAbsoluteToRelativePositions(match);
+                }
             }
         }
 

@@ -224,6 +224,15 @@ namespace FlatRedBall.Glue.SaveClasses
             // GlueControlManager.cs (embedded) subscribes to.
             ScreenManagerHasScreenLoadExceptionOccurred = 70,
 
+            // September 11, 2026 - the existing "Set Collision From Animation" checkbox now also works on
+            // non-ICollidable entities. At this version, Glue calls the new Sprite.SyncShapesFromAnimation
+            // instead of Sprite.SetCollisionFromAnimation: an existing shape (matched by name) only has its
+            // values updated - Collision membership is never touched, since that's already controlled by
+            // the shape's own IncludeInICollidable setting - and a newly-created shape is added to Collision
+            // only when the entity is ICollidable, same as the old method's behavior. Gated because it's a
+            // new engine-side Sprite method.
+            SpriteHasSyncShapesFromAnimation = 72,
+
             // Stop! If adding an entry here, modify SyntaxVersionAttribute on FlatRedBallServices
             // and LatestVersion down below
             // and update the docs
@@ -233,7 +242,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.PlatformerCollisionSupportsApplyPhysicsDelegate;
+        public const int LatestVersion = (int)GluxVersions.SpriteHasSyncShapesFromAnimation;
 
         public int FileVersion { get; set; }
 
