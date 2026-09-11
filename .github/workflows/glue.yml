@@ -75,7 +75,7 @@ jobs:
 
     # Run via the .sln so $(SolutionDir) is defined (OfficialPlugins has a post-build step that needs it).
     - name: Run unit tests
-      run: dotnet test 'FlatRedBall\FRBDK\Glue\Glue with All.sln' -c ${{ matrix.configuration }} --filter "Category!=BuildSmoke&Category!=LiveGame"
+      run: dotnet test 'FlatRedBall\FRBDK\Glue\Glue with All.sln' -c ${{ matrix.configuration }} --filter "Category!=BuildSmoke&Category!=LiveGame&Category!=SdkMatrix"
 
     # Slower: creates a project from each template and runs `dotnet build` on it. Needs the net9 SDK
     # (installed above) and network access for the first NuGet restore.
