@@ -1747,6 +1747,29 @@ public class GluxCommands : IGluxCommands
         "Performing object removal logic");
     }
 
+    /// <summary>
+    /// Moves the selection off a just-removed object onto its nearest remaining neighbour in the same tree
+    /// folder, falling back to the list it was in, then to the element. See GitHub issue #2265.
+    /// </summary>
+    private static void SelectSuccessorOf(NamedObjectSave removed, List<NamedObjectSave> remainingSiblings, int indexOfRemoved,
+        NamedObjectSave containerOfRemoved, GlueElement element)
+    {
+        var successor = RemovalSelection.PickSuccessor(remainingSiblings, removed, indexOfRemoved);
+
+        if (successor != null)
+        {
+            GlueState.Self.CurrentNamedObjectSave = successor;
+        }
+        else if (containerOfRemoved != null)
+        {
+            GlueState.Self.CurrentNamedObjectSave = containerOfRemoved;
+        }
+        else
+        {
+            GlueState.Self.CurrentElement = element;
+        }
+    }
+
     private static void GetSelectionInfo(NamedObjectSave namedObjectToRemove, out bool wasSelected, out int indexInChild, out NamedObjectSave containerOfRemoved, out GlueElement element)
     {
         wasSelected = GlueState.Self.CurrentNamedObjectSave == namedObjectToRemove;
@@ -1776,8 +1799,24 @@ public class GluxCommands : IGluxCommands
     public async Task RemoveNamedObjectListAsync(List<NamedObjectSave> namedObjectListToRemove, bool performSaveAndGenerateCode = true,
         bool updateUi = true, List<string> additionalFilesToRemove = null, bool notifyPluginsOfRemoval = true)
     {
-        bool wasSelected =
-            namedObjectListToRemove.Contains(GlueState.Self.CurrentNamedObjectSave);
+        // Captured before anything is removed so the successor can be picked from the trimmed list afterwards
+        var selectedNos = GlueState.Self.CurrentNamedObjectSave;
+        List<NamedObjectSave> selectedSiblings = null;
+        int selectedIndex = -1;
+        NamedObjectSave selectedContainer = null;
+        GlueElement selectedElement = null;
+        if (selectedNos != null && namedObjectListToRemove.Contains(selectedNos))
+        {
+            GetSelectionInfo(selectedNos, out _, out selectedIndex, out selectedContainer, out selectedElement);
+            if (selectedElement != null)
+            {
+                selectedSiblings = selectedContainer?.ContainedObjects ?? selectedElement.NamedObjects;
+                // Siblings ahead of it that are also being removed shift its position in the trimmed list
+                selectedIndex -= namedObjectListToRemove
+                    .Select(item => selectedSiblings.IndexOf(item))
+                    .Count(index => index >= 0 && index < selectedIndex);
+            }
+        }
 
         List<NamedObjectSave> objectsRemovingInludingDerived = new List<NamedObjectSave>();
 
@@ -1838,21 +1877,9 @@ public class GluxCommands : IGluxCommands
         }
 
 
-        if (wasSelected)
+        if (selectedSiblings != null)
         {
-            var owner = ownerHashSet.FirstOrDefault();
-            if (owner != null)
-            {
-                var nos = owner.NamedObjects.FirstOrDefault();
-                if (nos != null)
-                {
-                    GlueState.Self.CurrentNamedObjectSave = nos;
-                }
-                else
-                {
-                    GlueState.Self.CurrentElement = owner;
-                }
-            }
+            SelectSuccessorOf(selectedNos, selectedSiblings, selectedIndex, selectedContainer, selectedElement);
         }
 
         if(notifyPluginsOfRemoval)
@@ -2305,30 +2332,7 @@ public class GluxCommands : IGluxCommands
                     {
                         List<NamedObjectSave> containerList = containerOfRemoved?.ContainedObjects ?? element.NamedObjects;
 
-                        if (containerList.Count == 0)
-                        {
-                            if (containerOfRemoved != null)
-                            {
-                                GlueState.Self.CurrentNamedObjectSave = containerOfRemoved;
-                            }
-                            else
-                            {
-                                // do nothing...
-                            }
-                        }
-                        else
-                        {
-                            if (indexInChild < containerList.Count)
-                            {
-                                GlueState.Self.CurrentNamedObjectSave = containerList[indexInChild];
-                            }
-                            else
-                            {
-                                GlueState.Self.CurrentNamedObjectSave = containerList.LastOrDefault();
-
-                            }
-
-                        }
+                        SelectSuccessorOf(namedObjectToRemove, containerList, indexInChild, containerOfRemoved, element);
                     }
 
                     GlueCommands.Self.DialogCommands.FocusOnTreeView();
