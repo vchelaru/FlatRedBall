@@ -381,7 +381,7 @@ namespace FlatRedBall.Glue.SetVariable
             if (changedMember == "Font" && namedObjectSave.SourceType == SourceType.FlatRedBallType &&
                 namedObjectSave.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Text && namedObjectSave.IsPixelPerfect)
             {
-                ReactToFontSet(namedObjectSave, oldValue);
+                ReactToFontSet(namedObjectSave, element);
             }
 
             PropertyGridHelper.UpdateNamedObjectDisplay();
@@ -681,14 +681,12 @@ namespace FlatRedBall.Glue.SetVariable
 
         }
 
-        private void ReactToFontSet(NamedObjectSave namedObjectSave, object oldValue)
+        private void ReactToFontSet(NamedObjectSave namedObjectSave, GlueElement element)
         {
-            string value = namedObjectSave.GetCustomVariable("Font").Value as string;
+            string value = namedObjectSave.GetCustomVariable("Font")?.Value as string;
 
-            if (!string.IsNullOrEmpty(value))
+            if (!string.IsNullOrEmpty(value) && element != null)
             {
-                IElement element = GlueState.Self.CurrentElement;
-
                 ReferencedFileSave referencedFileSave = element.GetReferencedFileSaveByInstanceNameRecursively(value);
 
 

@@ -219,10 +219,6 @@ namespace FlatRedBall.Glue.SaveClasses
             // whether platformer physics is applied. Gated because ApplyPhysics is a new engine-side
             // property on the Delegate*Relationship classes.
             PlatformerCollisionSupportsApplyPhysicsDelegate = 70,
-            // September 9, 2026 - shipped alongside version 70 but missed being gated. Added retroactively
-            // at the same version: ScreenManager.ScreenLoadExceptionOccurred is a new engine-side event that
-            // GlueControlManager.cs (embedded) subscribes to.
-            ScreenManagerHasScreenLoadExceptionOccurred = 70,
 
             // September 11, 2026 - the existing "Set Collision From Animation" checkbox now also works on
             // non-ICollidable entities. At this version, Glue calls the new Sprite.SyncShapesFromAnimation
@@ -232,6 +228,10 @@ namespace FlatRedBall.Glue.SaveClasses
             // only when the entity is ICollidable, same as the old method's behavior. Gated because it's a
             // new engine-side Sprite method.
             SpriteHasSyncShapesFromAnimation = 72,
+            // ScreenManager.ScreenLoadExceptionOccurred (subscribed to by the embedded GlueControlManager.cs)
+            // landed after the engine's version-70 bump without a bump of its own, so an engine reporting 70
+            // may or may not have it. 72 is the first syntax version guaranteed to.
+            ScreenManagerHasScreenLoadExceptionOccurred = 72,
 
             // Stop! If adding an entry here, modify SyntaxVersionAttribute on FlatRedBallServices
             // and LatestVersion down below

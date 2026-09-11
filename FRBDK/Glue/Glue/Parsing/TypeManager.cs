@@ -788,6 +788,20 @@ namespace FlatRedBall.Glue.Parsing
 
         public static string GetDefaultForType(string type)
         {
+            if (TryGetDefaultForType(type, out string defaultValue))
+            {
+                return defaultValue;
+            }
+            throw new ArgumentException("Could not find the value for type " + type);
+        }
+
+        /// <summary>
+        /// Returns whether <paramref name="type"/> is one of the primitives this class knows the code-string
+        /// default for. Callers that must not fail on an arbitrary type (a BitmapFont, a Layer, any engine
+        /// reference type) use this and decide their own fallback.
+        /// </summary>
+        public static bool TryGetDefaultForType(string type, out string defaultValue)
+        {
             switch (type)
             {
                 case "string":
@@ -797,12 +811,14 @@ namespace FlatRedBall.Glue.Parsing
                 case "String?":
                 case "Nullable<string>":
                 case "Nullable<String>":
-                    return "null";
+                    defaultValue = "null";
+                    return true;
 
                 case "Boolean":
                 case "bool":
                 case "System.Boolean":
-                    return "false";
+                    defaultValue = "false";
+                    return true;
 
                 case "Single":
                 case "float":
@@ -816,7 +832,8 @@ namespace FlatRedBall.Glue.Parsing
                 case "Decimal":
                 case "System.Decimal":
 
-                    return "0";
+                    defaultValue = "0";
+                    return true;
                 case "Int16":
 
                 case "Int32":
@@ -829,10 +846,11 @@ namespace FlatRedBall.Glue.Parsing
 
                 case "byte":
                 case "Byte":
-                    
+
                 case "ColorOperation":
 
-                    return "0";
+                    defaultValue = "0";
+                    return true;
                 case "float?":
                 case "int?":
                 case "long?":
@@ -841,9 +859,11 @@ namespace FlatRedBall.Glue.Parsing
                 case "bool?":
                 case "Nullable<Boolean>":
                 case "Nullable<Int32>":
-                    return "null";
+                    defaultValue = "null";
+                    return true;
                 default:
-                    throw new ArgumentException("Could not find the value for type " + type);
+                    defaultValue = null;
+                    return false;
             }
         }
 

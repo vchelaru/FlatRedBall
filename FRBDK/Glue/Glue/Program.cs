@@ -71,10 +71,15 @@ static class Program
 
     private static void HandleExceptionsUnified(object objectToPrint)
     {
-        bool wasPluginError = PluginManager.TryHandleException(objectToPrint as Exception);
+        // An exception escaping an async void handler ends the process no matter what runs here, so the
+        // file is the only record that survives. Write it first.
+        var crashLogPath = FlatRedBall.Glue.Diagnostics.CrashLog.Write(objectToPrint);
+
+        bool wasPluginError = PluginManager.TryHandleException(objectToPrint as Exception, crashLogPath);
         if (!wasPluginError)
         {
-            GlueCommands.Self.PrintError(objectToPrint?.ToString());
+            GlueCommands.Self.PrintError(objectToPrint?.ToString() +
+                (crashLogPath != null ? $"{Environment.NewLine}Written to {crashLogPath}" : ""));
         }
     }
 
