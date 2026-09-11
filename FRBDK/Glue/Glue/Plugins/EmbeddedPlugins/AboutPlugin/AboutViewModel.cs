@@ -447,7 +447,8 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AboutPlugin
                 catch (Exception ex)
                 {
                     trace($"Staging failed: {ex}");
-                    GlueCommands.Self.DialogCommands.ShowMessageBox($"Could not prepare the daily-build update:\n{ex.Message}");
+                    GlueCommands.Self.DialogCommands.ShowMessageBox(
+                        $"Could not prepare the daily-build update:\n{ex.Message}\n\nDiagnostics: {logPath}");
                     return;
                 }
 
