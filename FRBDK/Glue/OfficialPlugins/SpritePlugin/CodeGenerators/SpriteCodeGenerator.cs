@@ -19,12 +19,18 @@ namespace OfficialPlugins.SpritePlugin.CodeGenerators
         {
             var fileVersion = GlueState.Self.CurrentGlueProject.FileVersion;
 
-            var generatesSetCollisionFromAnimation =
-                element.IsICollidableRecursive() && fileVersion >= (int)GlueProjectSave.GluxVersions.SpriteHasSetCollisionFromAnimation;
-            var generatesSyncShapesFromAnimation =
-                fileVersion >= (int)GlueProjectSave.GluxVersions.SpriteHasSyncShapesFromAnimation;
+            // Starting with SpriteHasSyncShapesFromAnimation, the same checkbox works on any entity: shapes
+            // are synced as children via Sprite.SyncShapesFromAnimation, which only adds a newly-created
+            // shape to Collision when the container is ICollidable. Below that version, the checkbox still
+            // requires ICollidable and calls the older Sprite.SetCollisionFromAnimation, which writes
+            // directly into Collision - unchanged for projects that haven't upgraded.
+            var usesSyncShapesFromAnimation = fileVersion >= (int)GlueProjectSave.GluxVersions.SpriteHasSyncShapesFromAnimation;
+            var usesSetCollisionFromAnimation =
+                !usesSyncShapesFromAnimation &&
+                element.IsICollidableRecursive() &&
+                fileVersion >= (int)GlueProjectSave.GluxVersions.SpriteHasSetCollisionFromAnimation;
 
-            if(generatesSetCollisionFromAnimation || generatesSyncShapesFromAnimation)
+            if(usesSyncShapesFromAnimation || usesSetCollisionFromAnimation)
             {
                 foreach(var nos in element.NamedObjects)
                 {
@@ -32,32 +38,16 @@ namespace OfficialPlugins.SpritePlugin.CodeGenerators
                         nos.SourceType == SourceType.FlatRedBallType && nos.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Sprite;
                     if (isSprite)
                     {
-                        if(generatesSetCollisionFromAnimation)
+                        var setsCollision =
+                            nos.GetCustomVariable(AssetTypeInfoManager.GetSetCollisionFromAnimationVariableDefinition().Name)?.Value as bool?;
+
+                        if(setsCollision == true)
                         {
-                            var setsCollision =
-                                nos.GetCustomVariable(AssetTypeInfoManager.GetSetCollisionFromAnimationVariableDefinition().Name)?.Value as bool?;
+                            var createMissingShapes = nos.GetCustomVariable(AssetTypeInfoManager.GetCreateMissingShapesDefinition().Name)?.Value as bool? == true
+                                ? "true" : "false";
 
-                            if(setsCollision == true)
-                            {
-                                var createMissingShapes = nos.GetCustomVariable(AssetTypeInfoManager.GetCreateMissingShapesDefinition().Name)?.Value as bool? == true
-                                    ? "true" : "false";
-
-                                codeBlock.Line($"{nos.InstanceName}.SetCollisionFromAnimation(this, {createMissingShapes});");
-                            }
-                        }
-
-                        if(generatesSyncShapesFromAnimation)
-                        {
-                            var syncsShapes =
-                                nos.GetCustomVariable(AssetTypeInfoManager.GetSyncShapesFromAnimationVariableDefinition().Name)?.Value as bool?;
-
-                            if(syncsShapes == true)
-                            {
-                                var createMissingShapes = nos.GetCustomVariable(AssetTypeInfoManager.GetCreateMissingSyncedShapesDefinition().Name)?.Value as bool? == true
-                                    ? "true" : "false";
-
-                                codeBlock.Line($"{nos.InstanceName}.SyncShapesFromAnimation(this, {createMissingShapes});");
-                            }
+                            var methodName = usesSyncShapesFromAnimation ? "SyncShapesFromAnimation" : "SetCollisionFromAnimation";
+                            codeBlock.Line($"{nos.InstanceName}.{methodName}(this, {createMissingShapes});");
                         }
                     }
                 }

@@ -338,18 +338,21 @@ namespace FlatRedBall.Content.Math.Geometry
 
         /// <summary>
         /// Updates or creates named shapes as children of the argument container, using this shape collection's
-        /// saved data. Unlike the ShapeCollection overload, this never adds shapes to any ShapeCollection (such as
-        /// an ICollidable's Collision) - it only manages the child/parent (AttachTo) relationship, so it can be used
-        /// on any entity whether or not it's ICollidable. A shape that already exists as a child (matched by name)
-        /// only has its values updated; it is never added to or removed from anything else, so whatever membership
-        /// it already has (e.g. also being part of Collision) is left untouched.
+        /// saved data. A shape that already exists as a child (matched by name) only has its values updated - it
+        /// is never added to or removed from a ShapeCollection, so whatever Collision membership it already has is
+        /// left untouched. A newly-created shape is always attached as a child, and is also added to container's
+        /// Collision if container is ICollidable - the same default SetValuesOn(ShapeCollection, ...) already used
+        /// when it was the only overload, just applied automatically instead of requiring the caller to pass
+        /// Collision in directly. This means the same call works whether or not container is ICollidable.
         /// </summary>
         /// <param name="container">The PositionedObject whose children are searched for matching shapes, and which
-        /// newly-created shapes are attached to.</param>
+        /// newly-created shapes are attached to (and added to Collision, if container is ICollidable).</param>
         /// <param name="createMissingShapes">Whether shapes that are part of this collection but not already a child
         /// of container should be created and attached.</param>
         public void SetValuesOn(PositionedObject container, bool createMissingShapes)
         {
+            var collidable = container as ICollidable;
+
             for (int i = 0; i < AxisAlignedRectangleSaves.Count; i++)
             {
                 AxisAlignedRectangleSave rectangle = this.AxisAlignedRectangleSaves[i];
@@ -360,6 +363,7 @@ namespace FlatRedBall.Content.Math.Geometry
                 {
                     match = new AxisAlignedRectangle { Name = rectangle.Name };
                     match.AttachTo(container);
+                    collidable?.Collision.AxisAlignedRectangles.Add(match);
                 }
 
                 if (match != null)
@@ -382,6 +386,7 @@ namespace FlatRedBall.Content.Math.Geometry
                 {
                     match = new Circle { Name = circleSave.Name };
                     match.AttachTo(container);
+                    collidable?.Collision.Circles.Add(match);
                 }
 
                 if (match != null)
@@ -404,6 +409,7 @@ namespace FlatRedBall.Content.Math.Geometry
                 {
                     match = new AxisAlignedCube { Name = cube.Name };
                     match.AttachTo(container);
+                    collidable?.Collision.AxisAlignedCubes.Add(match);
                 }
 
                 if (match != null)
@@ -426,6 +432,7 @@ namespace FlatRedBall.Content.Math.Geometry
                 {
                     match = new Sphere { Name = sphere.Name };
                     match.AttachTo(container);
+                    collidable?.Collision.Spheres.Add(match);
                 }
 
                 if (match != null)
@@ -448,6 +455,7 @@ namespace FlatRedBall.Content.Math.Geometry
                 {
                     match = new FlatRedBall.Math.Geometry.Polygon { Name = polygon.Name };
                     match.AttachTo(container);
+                    collidable?.Collision.Polygons.Add(match);
                 }
 
                 if (match != null)

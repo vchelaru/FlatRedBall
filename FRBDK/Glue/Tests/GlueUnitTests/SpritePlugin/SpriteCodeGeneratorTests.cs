@@ -10,9 +10,12 @@ using System;
 
 namespace GlueUnitTests.SpritePlugin;
 
-// GitHub issue #2256: SyncShapesFromAnimation lets a Sprite sync named shapes from its current animation
-// frame as plain children, without requiring the container to be ICollidable (unlike the older
-// SetCollisionFromAnimation, which stays ICollidable-gated since it writes into Collision).
+// GitHub issue #2256: the existing SetCollisionFromAnimation checkbox is repurposed (not duplicated) so
+// it also works on non-ICollidable entities. Below SpriteHasSyncShapesFromAnimation it still requires
+// ICollidable and calls the older Sprite.SetCollisionFromAnimation (writes directly into Collision), so
+// existing projects that haven't upgraded their FileVersion see no change. At or above that version, the
+// same checkbox instead calls Sprite.SyncShapesFromAnimation, which works on any entity and only adds a
+// newly-created shape to Collision when the entity is ICollidable.
 [Collection(nameof(TaskManagerSequentialCollection))]
 public class SpriteCodeGeneratorTests : IDisposable
 {
@@ -50,26 +53,45 @@ public class SpriteCodeGeneratorTests : IDisposable
         });
     }
 
+    static string GenerateActivityText(EntitySave entity)
+    {
+        ICodeBlock codeBlock = new CodeDocument();
+        new SpriteCodeGenerator().GenerateActivity(codeBlock, entity);
+        return codeBlock.ToString();
+    }
+
     [Fact]
-    public void GenerateActivity_ShouldGenerateSyncShapesFromAnimation_OnNonICollidableEntity()
+    public void GenerateActivity_BelowSyncShapesVersion_OnICollidableEntity_CallsSetCollisionFromAnimation()
     {
         ObjectFinder.Self.GlueProject = new GlueProjectSave
         {
-            FileVersion = (int)GlueProjectSave.GluxVersions.SpriteHasSyncShapesFromAnimation
+            FileVersion = (int)GlueProjectSave.GluxVersions.SpriteHasSyncShapesFromAnimation - 1
+        };
+
+        var entity = new EntitySave { Name = "Entities\\Enemy", ImplementsICollidable = true };
+        var sprite = AddSprite(entity, "SpriteInstance");
+        SetVariable(sprite, AssetTypeInfoManager.GetSetCollisionFromAnimationVariableDefinition().Name, true);
+
+        GenerateActivityText(entity).ShouldContain("SpriteInstance.SetCollisionFromAnimation(this, false);");
+    }
+
+    [Fact]
+    public void GenerateActivity_BelowSyncShapesVersion_OnNonICollidableEntity_GeneratesNothing()
+    {
+        ObjectFinder.Self.GlueProject = new GlueProjectSave
+        {
+            FileVersion = (int)GlueProjectSave.GluxVersions.SpriteHasSyncShapesFromAnimation - 1
         };
 
         var entity = new EntitySave { Name = "Entities\\Marker", ImplementsICollidable = false };
         var sprite = AddSprite(entity, "SpriteInstance");
-        SetVariable(sprite, AssetTypeInfoManager.GetSyncShapesFromAnimationVariableDefinition().Name, true);
+        SetVariable(sprite, AssetTypeInfoManager.GetSetCollisionFromAnimationVariableDefinition().Name, true);
 
-        ICodeBlock codeBlock = new CodeDocument();
-        new SpriteCodeGenerator().GenerateActivity(codeBlock, entity);
-
-        codeBlock.ToString().ShouldContain("SpriteInstance.SyncShapesFromAnimation(this, false);");
+        GenerateActivityText(entity).Trim().ShouldBeEmpty();
     }
 
     [Fact]
-    public void GenerateActivity_ShouldNotGenerateSetCollisionFromAnimation_OnNonICollidableEntity()
+    public void GenerateActivity_AtSyncShapesVersion_OnNonICollidableEntity_CallsSyncShapesFromAnimation()
     {
         ObjectFinder.Self.GlueProject = new GlueProjectSave
         {
@@ -80,51 +102,11 @@ public class SpriteCodeGeneratorTests : IDisposable
         var sprite = AddSprite(entity, "SpriteInstance");
         SetVariable(sprite, AssetTypeInfoManager.GetSetCollisionFromAnimationVariableDefinition().Name, true);
 
-        ICodeBlock codeBlock = new CodeDocument();
-        new SpriteCodeGenerator().GenerateActivity(codeBlock, entity);
-
-        codeBlock.ToString().ShouldNotContain("SetCollisionFromAnimation");
+        GenerateActivityText(entity).ShouldContain("SpriteInstance.SyncShapesFromAnimation(this, false);");
     }
 
     [Fact]
-    public void GenerateActivity_ShouldNotGenerateSyncShapesFromAnimation_WhenFileVersionIsBelowThreshold()
-    {
-        ObjectFinder.Self.GlueProject = new GlueProjectSave
-        {
-            FileVersion = (int)GlueProjectSave.GluxVersions.SpriteHasSyncShapesFromAnimation - 1
-        };
-
-        var entity = new EntitySave { Name = "Entities\\Marker", ImplementsICollidable = false };
-        var sprite = AddSprite(entity, "SpriteInstance");
-        SetVariable(sprite, AssetTypeInfoManager.GetSyncShapesFromAnimationVariableDefinition().Name, true);
-
-        ICodeBlock codeBlock = new CodeDocument();
-        new SpriteCodeGenerator().GenerateActivity(codeBlock, entity);
-
-        codeBlock.ToString().ShouldNotContain("SyncShapesFromAnimation");
-    }
-
-    [Fact]
-    public void GenerateActivity_ShouldPassCreateMissingSyncedShapesFlag_WhenTrue()
-    {
-        ObjectFinder.Self.GlueProject = new GlueProjectSave
-        {
-            FileVersion = (int)GlueProjectSave.GluxVersions.SpriteHasSyncShapesFromAnimation
-        };
-
-        var entity = new EntitySave { Name = "Entities\\Marker", ImplementsICollidable = false };
-        var sprite = AddSprite(entity, "SpriteInstance");
-        SetVariable(sprite, AssetTypeInfoManager.GetSyncShapesFromAnimationVariableDefinition().Name, true);
-        SetVariable(sprite, AssetTypeInfoManager.GetCreateMissingSyncedShapesDefinition().Name, true);
-
-        ICodeBlock codeBlock = new CodeDocument();
-        new SpriteCodeGenerator().GenerateActivity(codeBlock, entity);
-
-        codeBlock.ToString().ShouldContain("SpriteInstance.SyncShapesFromAnimation(this, true);");
-    }
-
-    [Fact]
-    public void GenerateActivity_ShouldStillGenerateSetCollisionFromAnimation_OnICollidableEntity()
+    public void GenerateActivity_AtSyncShapesVersion_OnICollidableEntity_CallsSyncShapesFromAnimation()
     {
         ObjectFinder.Self.GlueProject = new GlueProjectSave
         {
@@ -135,9 +117,25 @@ public class SpriteCodeGeneratorTests : IDisposable
         var sprite = AddSprite(entity, "SpriteInstance");
         SetVariable(sprite, AssetTypeInfoManager.GetSetCollisionFromAnimationVariableDefinition().Name, true);
 
-        ICodeBlock codeBlock = new CodeDocument();
-        new SpriteCodeGenerator().GenerateActivity(codeBlock, entity);
+        // Same checkbox, same variable - at this version it uses the new method even on an ICollidable
+        // entity, since SyncShapesFromAnimation already reproduces the old behavior there (see the engine
+        // ShapeCollectionSave.SetValuesOn(PositionedObject, bool) tests).
+        GenerateActivityText(entity).ShouldContain("SpriteInstance.SyncShapesFromAnimation(this, false);");
+    }
 
-        codeBlock.ToString().ShouldContain("SpriteInstance.SetCollisionFromAnimation(this, false);");
+    [Fact]
+    public void GenerateActivity_AtSyncShapesVersion_PassesCreateMissingShapesFlag_WhenTrue()
+    {
+        ObjectFinder.Self.GlueProject = new GlueProjectSave
+        {
+            FileVersion = (int)GlueProjectSave.GluxVersions.SpriteHasSyncShapesFromAnimation
+        };
+
+        var entity = new EntitySave { Name = "Entities\\Marker", ImplementsICollidable = false };
+        var sprite = AddSprite(entity, "SpriteInstance");
+        SetVariable(sprite, AssetTypeInfoManager.GetSetCollisionFromAnimationVariableDefinition().Name, true);
+        SetVariable(sprite, AssetTypeInfoManager.GetCreateMissingShapesDefinition().Name, true);
+
+        GenerateActivityText(entity).ShouldContain("SpriteInstance.SyncShapesFromAnimation(this, true);");
     }
 }
