@@ -175,13 +175,13 @@
     <PackageReference Include="JsonDiffPatch.Net" Version="2.3.0" />
     <PackageReference Include="MaterialDesignThemes" Version="5.1.0" />
 
-    <PackageReference Include="Microsoft.Build" Version="17.3.1">
+    <PackageReference Include="Microsoft.Build" Version="17.11.48">
       <!--<ExcludeAssets>runtime</ExcludeAssets>-->
     </PackageReference>
 
-    <PackageReference Include="Microsoft.Build.Framework" Version="17.3.1" />
+    <PackageReference Include="Microsoft.Build.Framework" Version="17.11.48" />
 
-    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.3.1">
+    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.11.48">
       <!--<ExcludeAssets>runtime</ExcludeAssets>-->
     </PackageReference>
 
