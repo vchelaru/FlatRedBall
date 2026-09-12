@@ -1,10 +1,7 @@
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.SaveClasses;
-using Shouldly;
-using System.Collections.Generic;
-using Xunit;
 
-namespace GlueUnitTests.CommandInterfaces;
+namespace GlueCommonUnitTests.Elements;
 
 /// <summary>
 /// After a delete, Glue selects a neighbour of the removed object. <c>GlueElement.NamedObjects</c> is a
@@ -50,7 +47,7 @@ public class RemovalSelectionTests
         var second = Sprite("Second");
         var third = Sprite("Third");
 
-        PickAfterRemoving(new List<NamedObjectSave> { first, second, third }, second).ShouldBe(third);
+        Assert.Equal(third, PickAfterRemoving(new List<NamedObjectSave> { first, second, third }, second));
     }
 
     [Fact]
@@ -60,7 +57,7 @@ public class RemovalSelectionTests
         var second = Sprite("Second");
         var relationship = CollisionRelationship("FirstVsSecond");
 
-        PickAfterRemoving(new List<NamedObjectSave> { first, second, relationship }, second).ShouldBe(first);
+        Assert.Equal(first, PickAfterRemoving(new List<NamedObjectSave> { first, second, relationship }, second));
     }
 
     [Fact]
@@ -69,7 +66,7 @@ public class RemovalSelectionTests
         var only = Sprite("Only");
         var relationship = CollisionRelationship("OnlyVsOnly");
 
-        PickAfterRemoving(new List<NamedObjectSave> { only, relationship }, only).ShouldBeNull();
+        Assert.Null(PickAfterRemoving(new List<NamedObjectSave> { only, relationship }, only));
     }
 
     [Fact]
@@ -80,8 +77,8 @@ public class RemovalSelectionTests
         // Objects added after the relationships land after them in the flat list
         var sprite = Sprite("Sprite");
 
-        PickAfterRemoving(new List<NamedObjectSave> { firstRelationship, secondRelationship, sprite }, secondRelationship)
-            .ShouldBe(firstRelationship);
+        Assert.Equal(firstRelationship, PickAfterRemoving(
+            new List<NamedObjectSave> { firstRelationship, secondRelationship, sprite }, secondRelationship));
     }
 
     [Fact]
@@ -90,6 +87,6 @@ public class RemovalSelectionTests
         var layer = Layer("Layer");
         var relationship = CollisionRelationship("Relationship");
 
-        PickAfterRemoving(new List<NamedObjectSave> { layer, relationship }, layer).ShouldBeNull();
+        Assert.Null(PickAfterRemoving(new List<NamedObjectSave> { layer, relationship }, layer));
     }
 }
