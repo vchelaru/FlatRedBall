@@ -563,7 +563,17 @@ namespace FlatRedBall.Glue.CodeGeneration
                                         if(string.IsNullOrEmpty(defaultStartingValue))
                                         {
                                             var type = customVariable.Type;
-                                            defaultStartingValue = TypeManager.GetDefaultForType(type);
+                                            // The AssetTypeInfo's own declared default for an enum, same as
+                                            // CustomVariableHelper.GetDefaultValueFor - this becomes a C#
+                                            // source literal below, so a bare numeric default won't compile
+                                            // against an enum-typed local (issue #2283).
+                                            var declaredDefault = nos?.GetAssetTypeInfo()?.VariableDefinitions
+                                                .FirstOrDefault(item => item.Name == customVariable.SourceObjectProperty)?.DefaultValue;
+
+                                            if (!TypeManager.TryGetVariableDefaultValueExpression(type, declaredDefault, out defaultStartingValue))
+                                            {
+                                                throw new ArgumentException("Could not find the value for type " + type);
+                                            }
                                         }
                                     }
                                 }

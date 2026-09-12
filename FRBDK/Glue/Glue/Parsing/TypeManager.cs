@@ -783,6 +783,39 @@ namespace FlatRedBall.Glue.Parsing
             return TryGetDefaultForType(type, out defaultValue);
         }
 
+        /// <summary>
+        /// Like <see cref="TryGetVariableDefaultValue"/>, but for code-generation contexts where the default
+        /// becomes a C# source literal rather than a runtime-parsed string: for an enum this returns a
+        /// qualified member-name expression ("FlatRedBall.Graphics.MaxWidthBehavior.Chop") instead of the
+        /// numeric string the runtime path hands <c>VariableAssignmentLogic.ConvertStringToType</c>, since
+        /// assigning a bare int to an enum-typed local doesn't compile. Everything else forwards unchanged
+        /// to <see cref="TryGetVariableDefaultValue"/> (see issue #2283).
+        /// </summary>
+        public static bool TryGetVariableDefaultValueExpression(string type, string declaredDefault, out string expression)
+        {
+            var resolvedType = GetTypeFromString(type?.Trim());
+
+            if (resolvedType?.IsEnum == true)
+            {
+                var trimmedDeclaredDefault = declaredDefault?.Trim();
+
+                var memberName = !string.IsNullOrEmpty(trimmedDeclaredDefault) && Enum.IsDefined(resolvedType, trimmedDeclaredDefault)
+                    ? trimmedDeclaredDefault
+                    : Enum.GetName(resolvedType, Activator.CreateInstance(resolvedType));
+
+                if (memberName == null)
+                {
+                    expression = null;
+                    return false;
+                }
+
+                expression = resolvedType.FullName.Replace('+', '.') + "." + memberName;
+                return true;
+            }
+
+            return TryGetVariableDefaultValue(type, declaredDefault, out expression);
+        }
+
         public static object Parse(string typeName, string value) =>
             TypeConversion.Parse(typeName, value);
 
