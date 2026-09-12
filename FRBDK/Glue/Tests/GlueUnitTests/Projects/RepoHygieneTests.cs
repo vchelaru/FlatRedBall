@@ -84,6 +84,7 @@ public class RepoHygieneTests
     {
         @"FRBDK\Glue\GlueCommon\GlueCommon.csproj",
         @"FRBDK\Glue\StateInterpolationPlugin\StateInterpolationNet6\StateInterpolationNet6.csproj",
+        @"FRBDK\Glue\Tests\GlueCommonUnitTests\GlueCommonUnitTests.csproj",
     };
 
     [Fact]
