@@ -654,11 +654,25 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                     && type != "Nullable<String>"
                     )
                 {
+                    // "Make Default" clears the instruction, so what goes over the wire here is the
+                    // variable's default. For an enum that is the AssetTypeInfo's declared DefaultValue,
+                    // not the CLR zero: a Text's VerticalAlignment defaults to Center (2) and its
+                    // ColorOperation to ColorTextureAlpha (6), so clearing either used to revert the
+                    // running game to the wrong member - or, for an enum with no primitive default at all
+                    // (MaxWidthBehavior, HorizontalAlignment, BlendOperation), to send null and have the
+                    // game fail assigning it (issue #2272).
+                    var declaredDefault = ati?.VariableDefinitions
+                        .FirstOrDefault(item => item.Name == originalMemberName)?.DefaultValue;
+
+                    if (TypeManager.TryGetEnumValueAsNumber(type, declaredDefault, out string enumDefault))
+                    {
+                        value = enumDefault;
+                    }
                     // Only primitives have a known default. Anything else (BitmapFont, Layer, an entity type)
                     // is a reference type whose cleared value is null, which is what leaving value null sends.
                     // Throwing here would surface as an unhandled exception in RefreshManager's async void
                     // handlers and take Glue down (issue #2266).
-                    if (TypeManager.TryGetDefaultForType(type, out string defaultValue))
+                    else if (TypeManager.TryGetDefaultForType(type, out string defaultValue))
                     {
                         value = defaultValue;
                     }
