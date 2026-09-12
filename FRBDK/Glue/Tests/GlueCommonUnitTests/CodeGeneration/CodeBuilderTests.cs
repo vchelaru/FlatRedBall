@@ -4,6 +4,8 @@ namespace GlueCommonUnitTests.CodeGeneration;
 
 public class CodeBuilderTests
 {
+    private static readonly string NL = Environment.NewLine;
+
     [Fact]
     public void SpaceStrings_JoinsNonEmptyValuesWithSingleSpace()
     {
@@ -33,7 +35,7 @@ public class CodeBuilderTests
     {
         var line = new CodeLine("int x = 3;");
 
-        Assert.Equal("\tint x = 3;\r\n", line.ToString(1, "\t"));
+        Assert.Equal($"\tint x = 3;{NL}", line.ToString(1, "\t"));
     }
 
     [Fact]
@@ -53,7 +55,7 @@ public class CodeBuilderTests
 
         var code = root.ToString(0, "    ");
 
-        Assert.Equal("public DoSomething (int x) \r\n{\r\n    DoWork();\r\n}\r\n", code);
+        Assert.Equal($"public DoSomething (int x) {NL}{{{NL}    DoWork();{NL}}}{NL}", code);
     }
 
     [Fact]
@@ -63,7 +65,7 @@ public class CodeBuilderTests
 
         root.Function("public void", "DoSomething", null);
 
-        Assert.Equal("public void DoSomething () \r\n{\r\n}\r\n", root.ToString(0, "    "));
+        Assert.Equal($"public void DoSomething () {NL}{{{NL}}}{NL}", root.ToString(0, "    "));
     }
 
     [Fact]
@@ -73,7 +75,7 @@ public class CodeBuilderTests
 
         root.Class("public", "MyClass", null);
 
-        Assert.Equal("public class MyClass\r\n{\r\n}\r\n", root.ToString(0, "    "));
+        Assert.Equal($"public class MyClass{NL}{{{NL}}}{NL}", root.ToString(0, "    "));
     }
 
     [Fact]
@@ -89,7 +91,7 @@ public class CodeBuilderTests
         var code = root.ToString(0, "    ");
 
         Assert.Equal(
-            "if (x > 0)\r\n{\r\n    Positive();\r\n}\r\nelse\r\n{\r\n    NonPositive();\r\n}\r\n",
+            $"if (x > 0){NL}{{{NL}    Positive();{NL}}}{NL}else{NL}{{{NL}    NonPositive();{NL}}}{NL}",
             code);
     }
 
@@ -100,7 +102,7 @@ public class CodeBuilderTests
 
         root.AutoProperty("public int", "Health");
 
-        Assert.Equal("public int Health { get; set; }\r\n", root.ToString(0, "    "));
+        Assert.Equal($"public int Health {{ get; set; }}{NL}", root.ToString(0, "    "));
     }
 
     [Fact]
@@ -115,7 +117,7 @@ public class CodeBuilderTests
         var code = root.ToString(0, "    ");
 
         Assert.Equal(
-            "public int Health\r\n{\r\n    get\r\n    {\r\n        return mHealth;\r\n    }\r\n    set\r\n    {\r\n        mHealth = value;\r\n    }\r\n}\r\n",
+            $"public int Health{NL}{{{NL}    get{NL}    {{{NL}        return mHealth;{NL}    }}{NL}    set{NL}    {{{NL}        mHealth = value;{NL}    }}{NL}}}{NL}",
             code);
     }
 
@@ -130,7 +132,7 @@ public class CodeBuilderTests
         var code = root.ToString(0, "    ");
 
         Assert.Equal(
-            "namespace MyGame\r\n{\r\n    public class MyClass\r\n    {\r\n    }\r\n}\r\n",
+            $"namespace MyGame{NL}{{{NL}    public class MyClass{NL}    {{{NL}    }}{NL}}}{NL}",
             code);
     }
 
@@ -141,7 +143,7 @@ public class CodeBuilderTests
 
         root.Line("var x = 1;")._("var y = 2;")._();
 
-        Assert.Equal("var x = 1;\r\nvar y = 2;\r\n\r\n", root.ToString(0, "    "));
+        Assert.Equal($"var x = 1;{NL}var y = 2;{NL}{NL}", root.ToString(0, "    "));
     }
 
     [Fact]
@@ -165,7 +167,7 @@ public class CodeBuilderTests
         var code = root.ToString(0, "    ");
 
         Assert.Equal(
-            "public MyClass (int x) \r\n\t: base(x)\r\n{\r\n    Initialize();\r\n}\r\n",
+            $"public MyClass (int x) {NL}\t: base(x){NL}{{{NL}    Initialize();{NL}}}{NL}",
             code);
     }
 
