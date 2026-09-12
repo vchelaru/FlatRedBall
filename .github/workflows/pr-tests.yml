@@ -38,6 +38,17 @@ jobs:
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v1.0.2
 
+    # No packages.lock.json files are checked in, so the cache key hashes the .csproj files directly
+    # (they're what pins package versions here). A miss just falls back to a normal restore and warms
+    # the cache for next time -- never a correctness risk, only a speed one.
+    - name: Cache NuGet packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.nuget/packages
+        key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+        restore-keys: |
+          nuget-${{ runner.os }}-
+
     - name: Build
       run: dotnet build -c Debug 'FlatRedBall\FRBDK\Glue\Glue with All.sln'
 
