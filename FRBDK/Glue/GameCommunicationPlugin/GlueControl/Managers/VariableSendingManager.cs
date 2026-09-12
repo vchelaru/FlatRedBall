@@ -99,10 +99,12 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             var gameScreenName = await CommandSender.Self.GetScreenName();
             var listOfVariables = GetNamedObjectValueChangedDtos(changedMember, oldValue, nos, assignOrRecordOnly, gameScreenName, forcedCurrentValue);
 
-            PushVariableChangesToGame(listOfVariables, new List<NamedObjectSave> { nos });
+            var renamedFromInstanceName = changedMember == nameof(NamedObjectSave.InstanceName) ? oldValue as string : null;
+
+            PushVariableChangesToGame(listOfVariables, new List<NamedObjectSave> { nos }, renamedFromInstanceName);
         }
 
-        public void PushVariableChangesToGame(List<GlueVariableSetData> listOfVariables, List<NamedObjectSave> namedObjectsToUpdate)
+        public void PushVariableChangesToGame(List<GlueVariableSetData> listOfVariables, List<NamedObjectSave> namedObjectsToUpdate, string renamedNamedObjectOldInstanceName = null)
         {
             var dto = new GlueVariableSetDataList();
             dto.Data.AddRange(listOfVariables);
@@ -115,6 +117,9 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 namedObjectWithElement.GlueElementName = container?.Name;
                 var listNos = container?.NamedObjects.FirstOrDefault(item => item.ContainedObjects.Contains(nos));
                 namedObjectWithElement.ContainerName = listNos?.InstanceName;
+                // Only ever non-null for the single-NamedObjectSave rename push above - see
+                // NamedObjectWithElementName.OldInstanceName and EditingManager.ReplaceNamedObjectSave.
+                namedObjectWithElement.OldInstanceName = renamedNamedObjectOldInstanceName;
 
                 dto.NamedObjectsToUpdate.Add(namedObjectWithElement);
             }
@@ -198,6 +203,33 @@ namespace GameCommunicationPlugin.GlueControl.Managers
         public List<GlueVariableSetData> GetNamedObjectValueChangedDtos(string changedMember, object oldValue, NamedObjectSave nos, AssignOrRecordOnly assignOrRecordOnly, string gameScreenName, object forcedCurrentValue = null)
         {
             List<GlueVariableSetData> toReturn = new List<GlueVariableSetData>();
+
+            // A rename doesn't fit the generic "NOS property changed" shape below: nos.InstanceName is
+            // already the NEW name by the time this runs (see GluxCommands.RenameNamedObjectSave), but the
+            // running game has never heard of that name - VariableName must address the OLD one. The
+            // property being assigned is also the special ".Name" (CommandReceiver.HandleDto(
+            // GlueVariableSetData)'s isAssigningName check), not the model-only "InstanceName" - there is
+            // no runtime "InstanceName" property to reflect over. #2261: without this, renaming a
+            // live-added object left it unreachable under its new name forever, since nothing ever told
+            // the running game the rename happened at all.
+            if (changedMember == nameof(NamedObjectSave.InstanceName))
+            {
+                var oldName = oldValue as string;
+                var renameElement = GlueState.Self.CurrentElement ?? ObjectFinder.Self.GetElementContaining(nos);
+                if (!string.IsNullOrEmpty(oldName) && renameElement != null)
+                {
+                    toReturn.Add(new GlueVariableSetData
+                    {
+                        AssignOrRecordOnly = assignOrRecordOnly,
+                        ElementNameGlue = renameElement.Name,
+                        VariableName = $"this.{oldName}.Name",
+                        VariableValue = nos.InstanceName,
+                        Type = "string",
+                    });
+                }
+
+                return toReturn;
+            }
 
             // If the value set is "ignored" that means we want to push a command to the game to only
             // re-run the command on screen change, but don't actually set the variable now.

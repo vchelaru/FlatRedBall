@@ -198,7 +198,15 @@ namespace GlueControl.Editing
                                 //screen.ApplyVariable(variableNameOnObjectInInstance, variableValue, item);
                             }
                         }
-                        response.WasVariableAssigned = true;
+                        // Only report success if none of the (possibly several, one per matching instance)
+                        // SetValueOnObjectInElement calls above already reported a failure - unconditionally
+                        // setting this to true stomped a real "could not find the object" failure into a
+                        // false success (#2261's contradictory WasVariableAssigned=true alongside a
+                        // populated Exception).
+                        if (response.Exception == null)
+                        {
+                            response.WasVariableAssigned = true;
+                        }
                     }
                 }
                 // See comment by setOnEntity about why we check for forcedItem.

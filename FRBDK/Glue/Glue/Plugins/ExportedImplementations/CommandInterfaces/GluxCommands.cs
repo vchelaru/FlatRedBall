@@ -1055,6 +1055,13 @@ public class GluxCommands : IGluxCommands
             namedObjectSave.InstanceName = newName;
             await EditorObjects.IoC.Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedInstanceName(namedObjectSave, oldName);
 
+            // Notifies a running game of the rename (GameCommunicationPlugin's VariableSendingManager
+            // turns this into a "this.<oldName>.Name" variable set, the shape CommandReceiver's
+            // HandleDto(GlueVariableSetData) already recognizes) - without this, a live-added object
+            // renamed here keeps its original runtime Name forever, since nothing else tells the game
+            // about the rename (issue #2261).
+            PluginManager.ReactToNamedObjectChangedValue(nameof(NamedObjectSave.InstanceName), oldName, namedObjectSave);
+
             if(performSaveAndGenerateCode)
             {
                 GlueCommands.Self.GluxCommands.SaveProjectAndElements(TaskExecutionPreference.AddOrMoveToEnd);
