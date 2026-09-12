@@ -136,8 +136,13 @@ Additional Info:
                 }
                 else if (exceptionMessage.Contains("Microsoft.NET.Sdk"))
                 {
+                    var msBuildExePath = Environment.GetEnvironmentVariable("MSBUILD_EXE_PATH");
                     message = $"Could not load the project {fileName}\n" +
-                        $"Missing SDK:\n\n" + exceptionMessage;
+                        $"Missing SDK:\n\n" + exceptionMessage + "\n\n" +
+                        $"Glue is currently evaluating projects using MSBuild from:\n{msBuildExePath ?? "(not set)"}\n" +
+                        $"which is older than the SDK this project needs. Install a newer .NET SDK whose MSBuild " +
+                        $"Glue can use (see \"Using MSBUILD from ...\" in the Glue output window at startup for " +
+                        $"which SDKs it considered), or check for a Glue update that supports a newer MSBuild.";
                 }
                 else
                 {

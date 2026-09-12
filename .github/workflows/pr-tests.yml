@@ -49,7 +49,7 @@ jobs:
     # should fail the job rather than sit there until the runner's own limit kills it with no
     # attribution. It also names the test that hung. See issue #1969.
     - name: Run unit tests
-      run: dotnet test 'FlatRedBall\FRBDK\Glue\Glue with All.sln' -c Debug --filter "Category!=BuildSmoke&Category!=LiveGame" --blame-hang-timeout 10m
+      run: dotnet test 'FlatRedBall\FRBDK\Glue\Glue with All.sln' -c Debug --filter "Category!=BuildSmoke&Category!=LiveGame&Category!=SdkMatrix" --blame-hang-timeout 10m
 
     # The runners have no GPU, so opengl32.dll resolves to Windows' generic OpenGL 1.1, which has no
     # framebuffer objects - MonoGame's GraphicsDevice refuses to initialize on it and the game dies at
@@ -123,3 +123,59 @@ jobs:
     # Samples\ is unbuilt by CI.
     - name: Build the MonoGame.Extended particle sample
       run: dotnet build 'FlatRedBall\Samples\MonoGameExtendedParticles\MonoGameExtendedParticles.sln' -c Debug
+
+  # Glue evaluates .csproj files with an MSBuild engine it ships (Microsoft.Build in Glue.csproj) reading
+  # the targets of whichever installed SDK MsBuildSdkSelector picks, so whether a project loads depends on
+  # the user's installed-SDK set. The job above always has .NET 6 installed and proves nothing about a
+  # machine without it. Each cell here is a different installed-SDK set, isolated from the runner image's
+  # preinstalled SDKs by DOTNET_INSTALL_DIR (setup-dotnet puts that directory first on PATH, and `dotnet
+  # --list-sdks` only lists the SDKs under the dotnet root it runs from). Every cell needs an 8.0 SDK to
+  # build Glue itself; the rest is the scenario.
+  sdk-matrix:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: net6-net8
+            sdks: |
+              6.0.x
+              8.0.x
+          - name: net8-only
+            sdks: 8.0.x
+          # A machine that skipped .NET 6: 3.1 is the newest SDK whose MSBuild Glue's engine can read.
+          - name: net3.1-net8-net10
+            sdks: |
+              3.1.x
+              8.0.x
+              10.0.x
+    name: sdk-matrix (${{ matrix.name }})
+    env:
+      DOTNET_INSTALL_DIR: ${{ github.workspace }}\dotnet-${{ matrix.name }}
+    steps:
+    - name: Checkout FRB
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 1
+        path: 'FlatRedBall'
+
+    - name: Checkout Gum
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ github.repository_owner }}/Gum
+        fetch-depth: 1
+        path: 'Gum'
+
+    - name: Install .NET (${{ matrix.name }})
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ matrix.sdks }}
+
+    - name: Installed SDKs
+      run: dotnet --list-sdks
+
+    - name: Build
+      run: dotnet build -c Debug 'FlatRedBall\FRBDK\Glue\Glue with All.sln'
+
+    - name: Load checked-in projects with the SDK Glue selects
+      run: dotnet test 'FlatRedBall\FRBDK\Glue\Glue with All.sln' -c Debug --no-build --filter "Category=SdkMatrix" --blame-hang-timeout 10m
