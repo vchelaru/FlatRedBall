@@ -75,6 +75,64 @@ public class RepoHygieneTests
             string.Join(Environment.NewLine, offenders));
     }
 
+    // Issues #2274 and #2275, in service of #2276: these Glue projects carry no UI and no Windows-only
+    // dependency, so they target a platform-neutral TFM and build anywhere. That is what makes them
+    // usable as the seed for a UI-free Glue logic assembly - and it is cheap to undo by accident,
+    // since re-adding a "-windows" suffix or a UseWPF to one of them costs nothing on a Windows dev
+    // machine and nothing in a Windows-only CI job. This list is a ratchet: it should only ever grow.
+    private static readonly string[] PlatformNeutralGlueProjects =
+    {
+        @"FRBDK\Glue\GlueCommon\GlueCommon.csproj",
+        @"FRBDK\Glue\StateInterpolationPlugin\StateInterpolationNet6\StateInterpolationNet6.csproj",
+    };
+
+    [Fact]
+    public void PlatformNeutralGlueProjectsShouldStayPlatformNeutral()
+    {
+        var offenders = new List<string>();
+
+        foreach (var relativePath in PlatformNeutralGlueProjects)
+        {
+            var csproj = Path.Combine(FindFrbRoot(), ToLocalPath(relativePath));
+
+            if (!File.Exists(csproj))
+            {
+                offenders.Add($"{relativePath} is listed here but is not on disk");
+                continue;
+            }
+
+            var document = XDocument.Load(csproj);
+
+            var frameworks = (GetProperty(document, "TargetFrameworks") ?? GetProperty(document, "TargetFramework") ?? "")
+                .Split(';', StringSplitOptions.RemoveEmptyEntries)
+                .Select(framework => framework.Trim())
+                .Where(framework => framework.Length > 0)
+                .ToList();
+
+            if (frameworks.Count == 0)
+            {
+                offenders.Add($"{relativePath} declares no target framework");
+            }
+
+            // net8.0 is neutral; net8.0-windows, net9.0-android and the like are not.
+            foreach (var framework in frameworks.Where(framework => framework.Contains('-')))
+            {
+                offenders.Add($"{relativePath} targets {framework}");
+            }
+
+            foreach (var uiProperty in new[] { "UseWPF", "UseWindowsForms" })
+            {
+                if (string.Equals(GetProperty(document, uiProperty), "true", StringComparison.OrdinalIgnoreCase))
+                {
+                    offenders.Add($"{relativePath} sets {uiProperty}");
+                }
+            }
+        }
+
+        offenders.ShouldBeEmpty("These Glue projects are meant to build on any platform, but something " +
+            "has tied them back to Windows:" + Environment.NewLine + string.Join(Environment.NewLine, offenders));
+    }
+
     [Fact]
     public void EverySolutionShouldOnlyReferenceProjectsThatExist()
     {
