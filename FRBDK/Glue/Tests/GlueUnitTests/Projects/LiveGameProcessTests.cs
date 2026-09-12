@@ -288,6 +288,55 @@ public class LiveGameProcessTests
         byOriginalName.Data.WasVariableAssigned.ShouldBeTrue();
     }
 
+    // #2261's diagnostics gap, found while reproducing the test above: GlueViewSettingsViewModel.
+    // RestartOnFailedCommands (default true) kills and relaunches the game the moment a variable-set
+    // response reports an Exception - wiping EmbeddedDiagnosticsLogger's in-memory buffer before anyone
+    // can click "View Diagnostics Log" to fetch it, so a second repro of the same bug produced a log with
+    // no trace of the failure at all. FlushToDiskOnFailure writes the buffer to disk synchronously, as
+    // part of producing the failing response, so it lands before any restart could possibly race it. This
+    // pins that it actually does.
+    [StaFact]
+    public async Task EditorTest1_FailedVariableSet_FlushesDiagnosticsLogToDiskBeforeAnyRestart()
+    {
+        GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
+
+        using var game = await LiveGameProcess.StartAsync(
+            "Samples/EditorTest1",
+            csprojRelativeToProjectRoot: "EditorTest1/EditorTest1.csproj",
+            exeRelativeToProjectRoot: "EditorTest1/bin/Debug/net9.0/EditorTest1.exe");
+
+        var selectResponse = await game.SelectEntity("Entities\\Entity1");
+        selectResponse.Succeeded.ShouldBeTrue(selectResponse.Message);
+
+        var entity = ObjectFinder.Self.GetEntitySave("Entities\\Entity1");
+
+        // Addresses an instance that was never added - guaranteed to fail the lookup and report an
+        // Exception, regardless of which internal sub-path it takes (see the rename test above for why
+        // that sub-path can vary).
+        var setVariableDto = new GlueVariableSetData
+        {
+            AssignOrRecordOnly = AssignOrRecordOnly.Assign,
+            ElementNameGlue = "Entities\\Entity1",
+            EntitySave = entity,
+            VariableName = "this.NoSuchObject2261.X",
+            VariableValue = "5",
+            Type = "float",
+            AbsoluteGlueProjectFilePath = Path.Combine(game.ProjectRoot, "EditorTest1", "EditorTest1.gluj"),
+        };
+
+        var setResponse = await game.Send<GlueVariableSetDataResponse>(setVariableDto);
+        setResponse.Succeeded.ShouldBeTrue(setResponse.Message);
+        setResponse.Data.Exception.ShouldNotBeNull("this test needs a failing variable set to exercise the flush");
+
+        Directory.Exists(game.EmbeddedDiagnosticsOnFailureDirectory).ShouldBeTrue(
+            "a failed variable-set response should have triggered EmbeddedDiagnosticsLogger's on-failure disk flush");
+        var flushedFiles = Directory.GetFiles(game.EmbeddedDiagnosticsOnFailureDirectory, "communication-onfailure-*.log");
+        flushedFiles.ShouldNotBeEmpty();
+        var flushedContent = File.ReadAllText(flushedFiles[0]);
+        flushedContent.ShouldContain("Received GlueVariableSetData");
+        flushedContent.ShouldContain("NoSuchObject2261");
+    }
+
     // Pins the EmbeddedDiagnosticsLogger extension added for #2261: every DTO the game receives (and its
     // response, when it sends one back) is recorded in memory, always on - no enable step needed - and
     // fetchable at any time via GetEmbeddedDiagnosticsLogDto. See CommandReceiver.Receive and

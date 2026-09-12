@@ -41,6 +41,17 @@ internal sealed class LiveGameProcess : IDisposable
     internal const string OffscreenWindowEnvironmentVariable = "FRB_LIVE_GAME_TEST_OFFSCREEN";
 
     /// <summary>
+    /// Set on the launched process's environment, pointed at a subfolder of its own disposable
+    /// <see cref="project"/> temp directory - read by GlueControl.Editing.EmbeddedDiagnosticsLogger's
+    /// on-failure disk flush (see its own doc comment for why that flush exists) so a LiveGame test's
+    /// induced failures never write into the real developer's %LocalAppData%\FlatRedBall\Glue\Diagnostics
+    /// folder. Must stay identical to EmbeddedDiagnosticsLogger.DirectoryOverrideEnvironmentVariable -
+    /// same cross-compile-boundary constraint as OffscreenWindowEnvironmentVariable above, since that file
+    /// cannot reference this test assembly.
+    /// </summary>
+    internal const string EmbeddedDiagnosticsDirectoryEnvironmentVariable = "FRB_EMBEDDED_DIAGNOSTICS_DIRECTORY";
+
+    /// <summary>
     /// Set to a directory of OpenGL runtime DLLs (Mesa's llvmpipe build) to have them copied next to the
     /// game before it launches. A GPU-less CI runner resolves opengl32.dll to Windows' generic software
     /// implementation, which is OpenGL 1.1 and has no framebuffer objects, so MonoGame's GraphicsDevice
@@ -70,6 +81,13 @@ internal sealed class LiveGameProcess : IDisposable
     const double CommandResponseTimeoutInSeconds = 30;
 
     public string ProjectRoot => project.Root;
+
+    /// <summary>
+    /// Where EmbeddedDiagnosticsLogger's on-failure disk flush writes for this game process - see
+    /// <see cref="EmbeddedDiagnosticsDirectoryEnvironmentVariable"/>. Cleaned up automatically along with
+    /// the rest of <see cref="project"/> on <see cref="Dispose"/>.
+    /// </summary>
+    public string EmbeddedDiagnosticsOnFailureDirectory => Path.Combine(project.Root, "diagnostics-on-failure");
 
     LiveGameProcess(TempDir project, System.Diagnostics.Process process,
         GameJsonCommunicationPlugin.Common.GameConnectionManager connectionManager,
@@ -190,6 +208,8 @@ internal sealed class LiveGameProcess : IDisposable
                 }
             };
             process.StartInfo.Environment[OffscreenWindowEnvironmentVariable] = "1";
+            var embeddedDiagnosticsOnFailureDirectory = Path.Combine(project.Root, "diagnostics-on-failure");
+            process.StartInfo.Environment[EmbeddedDiagnosticsDirectoryEnvironmentVariable] = embeddedDiagnosticsOnFailureDirectory;
             // Async, event-based capture rather than ReadToEnd(): this process is long-lived (killed by
             // Dispose, not naturally exiting), so a blocking read would never return - see NestedDotnetCli's
             // doc comment for the same deadlock shape with dotnet build's child MSBuild nodes. This is what
