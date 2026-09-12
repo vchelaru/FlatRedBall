@@ -124,6 +124,34 @@ jobs:
     - name: Build the MonoGame.Extended particle sample
       run: dotnet build 'FlatRedBall\Samples\MonoGameExtendedParticles\MonoGameExtendedParticles.sln' -c Debug
 
+  # GlueCommon (and anything landing alongside it, see #2276) is the one part of the Glue editor with
+  # no Windows/WPF dependency, so it and its tests build and run on Linux too. A separate job, not a
+  # step in the Windows job above, so it actually proves platform independence rather than just
+  # building on a machine that happens to also have Windows-only SDKs installed.
+  test-linux:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout FRB
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 1
+        path: 'FlatRedBall'
+
+    - name: Checkout Gum
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ github.repository_owner }}/Gum
+        fetch-depth: 1
+        path: 'Gum'
+
+    - name: Install .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Run GlueCommon unit tests
+      run: dotnet test 'FlatRedBall/FRBDK/Glue/Tests/GlueCommonUnitTests/GlueCommonUnitTests.csproj' -c Debug
+
   # Glue evaluates .csproj files with an MSBuild engine it ships (Microsoft.Build in Glue.csproj) reading
   # the targets of whichever installed SDK MsBuildSdkSelector picks, so whether a project loads depends on
   # the user's installed-SDK set. The job above always has .NET 6 installed and proves nothing about a
