@@ -1186,7 +1186,7 @@ namespace GlueControl.Editing
             CurrentNamedObjects.AddRange(newNamedObjects);
         }
 
-        public void ReplaceNamedObjectSave(NamedObjectSave nos, string glueElementName, string containerName)
+        public void ReplaceNamedObjectSave(NamedObjectSave nos, string glueElementName, string containerName, string oldInstanceName = null)
         {
             ///////////////////Early Out///////////////////
             if (CurrentGlueElement?.Name != glueElementName)
@@ -1195,7 +1195,11 @@ namespace GlueControl.Editing
             }
             ////////////////End Early Out//////////////////
 
-            var oldNos = CurrentGlueElement.AllNamedObjects.FirstOrDefault(item => item.InstanceName == nos.InstanceName);
+            // For a rename, nos.InstanceName is already the NEW name - the existing entry to replace is
+            // still under the old one (oldInstanceName, set only for this case - see
+            // NamedObjectWithElementName.OldInstanceName). Matching by nos.InstanceName here unconditionally
+            // would never find that entry and would add a second one instead of replacing it (#2261).
+            var oldNos = CurrentGlueElement.AllNamedObjects.FirstOrDefault(item => item.InstanceName == (oldInstanceName ?? nos.InstanceName));
             var oldContainer = CurrentGlueElement.AllNamedObjects.FirstOrDefault(item => item.ContainedObjects.Contains(oldNos));
 
             NamedObjectSave newContainer = null;
@@ -1630,7 +1634,11 @@ namespace GlueControl.Editing
     /// longer to diagnose than they should have, since nothing recorded what led up to the failure. Not
     /// opt-in: a bug that already happened can't retroactively have logging turned on for it, so this
     /// always runs and a Glue-side "View Diagnostics Log" button fetches the current buffer on demand
-    /// (see GetEmbeddedDiagnosticsLogDto).
+    /// (see GetEmbeddedDiagnosticsLogDto). Also self-flushes to disk the moment any response reports a
+    /// failure (see FlushToDiskOnFailure) - the in-memory buffer alone doesn't survive
+    /// GlueViewSettingsViewModel.RestartOnFailedCommands killing and relaunching this process right after
+    /// a failed variable set, which would otherwise erase the only evidence of what just went wrong before
+    /// anyone could click that button.
     /// </summary>
     internal static class EmbeddedDiagnosticsLogger
     {
@@ -1670,6 +1678,18 @@ namespace GlueControl.Editing
             AppendLine($"Received {dtoTypeName}: {Describe(dto)}");
         }
 
+        // GlueControlManager.SendToGlue(object) is the single choke point every game->Glue message passes
+        // through (PrintOutput, Undo, ScreenLoadExceptionDto, ...), so logging there covers all of them
+        // for free - including diagnostic messages like EditingManager.GetObjectByName's "Tried to get
+        // object by name X but couldn't find anything", which previously only reached Glue's Output panel
+        // and never this buffer at all. That gap is what #2261 exposed: a reorder emits that exact
+        // message, but it never showed up in a pulled diagnostics log because nothing captured outbound
+        // traffic - only inbound (see LogDtoReceived/LogDtoResponse below).
+        public static void LogDtoSent(string dtoTypeName, object dto)
+        {
+            AppendLine($"Sent {dtoTypeName}: {Describe(dto)}");
+        }
+
         public static void LogDtoResponse(string dtoTypeName, object response)
         {
             if (dtoTypeName == nameof(GlueControl.Dtos.GetEmbeddedDiagnosticsLogDto))
@@ -1678,6 +1698,88 @@ namespace GlueControl.Editing
             }
 
             AppendLine($"Response to {dtoTypeName}: {Describe(response)}");
+
+            if (HasReportedFailure(response))
+            {
+                FlushToDiskOnFailure(dtoTypeName);
+            }
+        }
+
+        /// <summary>
+        /// True if `response` (or any item in its `Data` list, for a *List response wrapper) carries a
+        /// non-empty Exception string - the shape every GlueVariableSetData response family uses to
+        /// report a failed lookup/assignment. Reflection-based rather than a per-DTO-type check so any
+        /// response with this shape is covered, including a batched GlueVariableSetDataResponseList
+        /// (one Exception per item).
+        /// </summary>
+        static bool HasReportedFailure(object response)
+        {
+            if (response == null)
+            {
+                return false;
+            }
+
+            var exceptionProperty = response.GetType().GetProperty("Exception");
+            if (exceptionProperty?.GetValue(response) is string exceptionText && !string.IsNullOrEmpty(exceptionText))
+            {
+                return true;
+            }
+
+            var dataProperty = response.GetType().GetProperty("Data");
+            if (dataProperty?.GetValue(response) is System.Collections.IEnumerable dataItems && !(dataItems is string))
+            {
+                foreach (var item in dataItems)
+                {
+                    if (HasReportedFailure(item))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Writes the current buffer to disk immediately, in the same folder/naming convention as the
+        /// Glue-side "View Diagnostics Log" button (MainCompilerPlugin.cs's
+        /// BuildTab_ViewEmbeddedDiagnosticsLog), so it lands somewhere the user already knows to look.
+        /// Exists because of #2261's diagnostics gap: on a failed variable set,
+        /// GlueViewSettingsViewModel.RestartOnFailedCommands (default true) kills and relaunches this
+        /// process - wiping this in-memory buffer - before anyone can click that button to fetch it.
+        /// Written game-side, synchronously, before the response goes back over the socket, so it lands
+        /// on disk regardless of how quickly Glue reacts to the failure.
+        /// </summary>
+        /// <summary>
+        /// Overrides where <see cref="FlushToDiskOnFailure"/> writes - set by
+        /// GlueUnitTests.TestSupport.LiveGameProcess (to a subfolder of its own disposable temp project
+        /// directory) so an automated LiveGame test never writes into the real developer's
+        /// %LocalAppData%\FlatRedBall\Glue\Diagnostics folder. Unset in production, where that real
+        /// folder is exactly where the user already knows to look (matches the "View Diagnostics Log"
+        /// button's own location).
+        /// </summary>
+        internal const string DirectoryOverrideEnvironmentVariable = "FRB_EMBEDDED_DIAGNOSTICS_DIRECTORY";
+
+        static void FlushToDiskOnFailure(string dtoTypeName)
+        {
+            try
+            {
+                var directory = Environment.GetEnvironmentVariable(DirectoryOverrideEnvironmentVariable);
+                if (string.IsNullOrEmpty(directory))
+                {
+                    directory = System.IO.Path.Combine(
+                        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                        "FlatRedBall", "Glue", "Diagnostics");
+                }
+                System.IO.Directory.CreateDirectory(directory);
+                var filePath = System.IO.Path.Combine(
+                    directory, $"communication-onfailure-{DateTime.Now:yyyyMMdd-HHmmss}-{dtoTypeName}.log");
+                System.IO.File.WriteAllText(filePath, GetLogText());
+            }
+            catch
+            {
+                // Best-effort - a failure to write this safety-net file should never fail the response itself.
+            }
         }
 
         public static void LogUnhandledException(string rawMessage, Exception exception)
