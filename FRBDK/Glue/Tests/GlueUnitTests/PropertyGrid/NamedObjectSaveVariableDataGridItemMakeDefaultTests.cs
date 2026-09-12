@@ -86,12 +86,12 @@ public class NamedObjectSaveVariableDataGridItemMakeDefaultTests : IDisposable
         return (screen, text);
     }
 
-    private static NamedObjectSaveVariableDataGridItem GetFontMember(DataUiGrid grid)
+    private static NamedObjectSaveVariableDataGridItem GetMember(DataUiGrid grid, string variableName)
     {
         var member = grid.Categories.SelectMany(category => category.Members)
             .OfType<NamedObjectSaveVariableDataGridItem>()
-            .FirstOrDefault(item => item.NameOnInstance == "Font");
-        member.ShouldNotBeNull("the Text ATI should expose a Font variable in the grid");
+            .FirstOrDefault(item => item.NameOnInstance == variableName);
+        member.ShouldNotBeNull($"the Text ATI should expose a {variableName} variable in the grid");
         return member;
     }
 
@@ -102,7 +102,7 @@ public class NamedObjectSaveVariableDataGridItemMakeDefaultTests : IDisposable
 
         var grid = new DataUiGrid();
         NamedObjectVariableShowingLogic.UpdateShownVariables(grid, text, screen, text.GetAssetTypeInfo());
-        var fontMember = GetFontMember(grid);
+        var fontMember = GetMember(grid, "Font");
 
         // Step 1 of the report: pick <NONE> in the Font dropdown.
         fontMember.SetValue("<NONE>", SetPropertyCommitType.Full);
@@ -113,6 +113,33 @@ public class NamedObjectSaveVariableDataGridItemMakeDefaultTests : IDisposable
         TaskManager.Self.WaitForAllTasksFinished().Wait();
 
         text.GetCustomVariable("Font").ShouldBeNull("Make Default removes the instruction");
+    }
+
+    // GitHub issue #2272: the same context menu, on the enum-typed variables the report names. Each one's
+    // type is a name TypeManager has no primitive default for, so the throw that took Glue down was reached
+    // without any <NONE> sentinel involved - just set the variable, then Make Default.
+    [StaTheory]
+    [InlineData("MaxWidthBehavior", FlatRedBall.Graphics.MaxWidthBehavior.Wrap)]
+    [InlineData("HorizontalAlignment", FlatRedBall.Graphics.HorizontalAlignment.Right)]
+    [InlineData("VerticalAlignment", FlatRedBall.Graphics.VerticalAlignment.Top)]
+    [InlineData("BlendOperation", FlatRedBall.Graphics.BlendOperation.Add)]
+    public void MakeDefault_ShouldNotThrow_WhenAnEnumVariableWasChanged(string variableName, object newValue)
+    {
+        var (screen, text) = MakeScreenWithText();
+
+        var grid = new DataUiGrid();
+        NamedObjectVariableShowingLogic.UpdateShownVariables(grid, text, screen, text.GetAssetTypeInfo());
+        var member = GetMember(grid, variableName);
+
+        // Step 1 of the report: change the variable.
+        member.SetValue(newValue, SetPropertyCommitType.Full);
+        TaskManager.Self.WaitForAllTasksFinished().Wait();
+
+        // Step 2: "Make Default" - the grid's context menu sets IsDefault, nothing else.
+        Should.NotThrow(() => member.IsDefault = true);
+        TaskManager.Self.WaitForAllTasksFinished().Wait();
+
+        text.GetCustomVariable(variableName).ShouldBeNull("Make Default removes the instruction");
     }
 
     private class InlineUiThreadMarshaller : IUiThreadMarshaller

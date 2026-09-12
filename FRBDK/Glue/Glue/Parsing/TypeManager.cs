@@ -867,6 +867,49 @@ namespace FlatRedBall.Glue.Parsing
             }
         }
 
+        /// <summary>
+        /// Resolves <paramref name="type"/> as an enum and <paramref name="memberName"/> as one of its
+        /// members, handing back that member's underlying value as a string - "2" for
+        /// FlatRedBall.Graphics.VerticalAlignment.Center, for example. Returns false for anything that is
+        /// not an enum, or a name that enum does not define.
+        /// </summary>
+        /// <remarks>
+        /// The number rather than the name, because that is what the game can always read back: the
+        /// embedded VariableAssignmentLogic.ConvertStringToType parses an integer for every enum it
+        /// handles, while parsing a member *name* is either gated behind the MONOGAME_381/FNA define (the
+        /// enums it special-cases, such as HorizontalAlignment) or relies on an assembly scan finding the
+        /// type.
+        /// </remarks>
+        public static bool TryGetEnumValueAsNumber(string type, string memberName, out string valueAsNumber)
+        {
+            valueAsNumber = null;
+
+            if (string.IsNullOrWhiteSpace(type) || string.IsNullOrWhiteSpace(memberName))
+            {
+                return false;
+            }
+
+            var resolvedType = GetTypeFromString(type.Trim());
+
+            if (resolvedType?.IsEnum != true)
+            {
+                return false;
+            }
+
+            // AssetTypeInfo values come from ContentTypes.csv, which is written with loose spacing
+            // ("Name=MaxWidthBehavior, Category = Text, DefaultValue=Chop").
+            var trimmedMemberName = memberName.Trim();
+
+            if (!Enum.IsDefined(resolvedType, trimmedMemberName))
+            {
+                return false;
+            }
+
+            var asEnum = Enum.Parse(resolvedType, trimmedMemberName);
+            valueAsNumber = Convert.ToInt64(asEnum).ToString(System.Globalization.CultureInfo.InvariantCulture);
+            return true;
+        }
+
         public static object Parse(string typeName, string value)
         {
             var toReturn = value;
