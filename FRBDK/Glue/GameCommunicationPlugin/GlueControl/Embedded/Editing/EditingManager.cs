@@ -1674,6 +1674,18 @@ namespace GlueControl.Editing
             AppendLine($"Received {dtoTypeName}: {Describe(dto)}");
         }
 
+        // GlueControlManager.SendToGlue(object) is the single choke point every game->Glue message passes
+        // through (PrintOutput, Undo, ScreenLoadExceptionDto, ...), so logging there covers all of them
+        // for free - including diagnostic messages like EditingManager.GetObjectByName's "Tried to get
+        // object by name X but couldn't find anything", which previously only reached Glue's Output panel
+        // and never this buffer at all. That gap is what #2261 exposed: a reorder emits that exact
+        // message, but it never showed up in a pulled diagnostics log because nothing captured outbound
+        // traffic - only inbound (see LogDtoReceived/LogDtoResponse below).
+        public static void LogDtoSent(string dtoTypeName, object dto)
+        {
+            AppendLine($"Sent {dtoTypeName}: {Describe(dto)}");
+        }
+
         public static void LogDtoResponse(string dtoTypeName, object response)
         {
             if (dtoTypeName == nameof(GlueControl.Dtos.GetEmbeddedDiagnosticsLogDto))

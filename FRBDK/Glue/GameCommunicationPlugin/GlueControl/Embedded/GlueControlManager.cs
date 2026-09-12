@@ -414,6 +414,7 @@ namespace GlueControl
         {
             var type = dto.GetType().Name;
             var json = Newtonsoft.Json.JsonConvert.SerializeObject(dto);
+            EmbeddedDiagnosticsLogger.LogDtoSent(type, dto);
             return await SendCommandToGlue($"{type}:{json}");
         }
 
