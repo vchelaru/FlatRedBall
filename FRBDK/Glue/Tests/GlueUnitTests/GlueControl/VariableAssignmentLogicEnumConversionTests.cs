@@ -169,7 +169,38 @@ public class VariableAssignmentLogicEnumConversionTests : IDisposable
         output.ShouldContain("ALL_OK");
     }
 
-    private static void WriteScratchProject(string scratchDirectory, string repoRoot, string generatedDirectory)
+    // Issue #2287: live-editing a Text's Font to a real custom BitmapFont (not clearing it to <NONE>) still
+    // throws InvalidOperationException. The #2161/#2164 fix above only taught ConvertStringToType's
+    // BitmapFont case about the "<NONE>" sentinel; any other VariableValue (the name of an actual
+    // project font) fell through the case untouched and reached LateBinder as the raw name string, same
+    // as before that fix - a different VariableValue hitting the same unconverted-string class of bug.
+    [Fact]
+    public void LiveEditingBitmapFontVariable_ShouldResolveCustomFontName_NotLeaveRawNameString()
+    {
+        EmbeddedCodeManager.EmbedAll(fullyGenerate: true);
+        GlueCallsCodeGenerator.GenerateAll();
+
+        var generatedDirectory = Path.Combine(_tempProjectDirectory, "GlueControl");
+        var repoRoot = FindRepoRoot();
+        var scratchDirectory = Path.Combine(_tempProjectDirectory, "BitmapFontCustomNameScratch");
+        // GetFileFromUnqualifiedName's first lookup is GlobalContent.GetFile(name) - stub it to resolve
+        // "Font24HeadUp" to TextManager.DefaultFont (a real, already-safe-to-assign BitmapFont instance,
+        // proven by the <NONE> test above) so the test can tell a real resolved object apart from the
+        // raw unconverted string without needing a live ContentManager to load a custom font from disk.
+        WriteScratchProject(scratchDirectory, repoRoot, generatedDirectory,
+            globalContentGetFileBody: "return name == \"Font24HeadUp\" ? FlatRedBall.Graphics.TextManager.DefaultFont : null;");
+        WriteBitmapFontCustomNameProgram(scratchDirectory);
+
+        var (exitCode, output) = NestedDotnetCli.Run($"run --project \"{scratchDirectory}\" -c Debug");
+
+        exitCode.ShouldBe(0,
+            "Live-editing a FlatRedBall Text's Font variable to a real custom font name did not resolve " +
+            "to the real object:" + Environment.NewLine + output);
+        output.ShouldContain("ALL_OK");
+    }
+
+    private static void WriteScratchProject(string scratchDirectory, string repoRoot, string generatedDirectory,
+        string globalContentGetFileBody = "return null;")
     {
         Directory.CreateDirectory(scratchDirectory);
 
@@ -235,7 +266,7 @@ public class VariableAssignmentLogicEnumConversionTests : IDisposable
         //    templates that can't be compiled raw). Only referenced from the tile-shape-collection editing
         //    branches of the embedded closure, which this test's enum-conversion assertions never reach -
         //    these exist purely to satisfy the compiler with matching shapes, not real behavior.
-        File.WriteAllText(Path.Combine(scratchDirectory, "TestProjectNamespaceStub.cs"), """
+        File.WriteAllText(Path.Combine(scratchDirectory, "TestProjectNamespaceStub.cs"), ("""
             namespace TestProject
             {
                 public class CameraSetupData { }
@@ -337,7 +368,7 @@ public class VariableAssignmentLogicEnumConversionTests : IDisposable
             {
                 public static class GlobalContent
                 {
-                    public static object GetFile(string name) => null;
+                    public static object GetFile(string name) { __GET_FILE_BODY__ }
                 }
             }
 
@@ -364,7 +395,7 @@ public class VariableAssignmentLogicEnumConversionTests : IDisposable
                     public GlueControl.Models.GlueElement CurrentElement { get; set; }
                 }
             }
-            """ + Environment.NewLine);
+            """).Replace("__GET_FILE_BODY__", globalContentGetFileBody) + Environment.NewLine);
     }
 
     private static void WriteProgram(string scratchDirectory)
@@ -587,6 +618,62 @@ public class VariableAssignmentLogicEnumConversionTests : IDisposable
                 Check("BitmapFont \"<NONE>\" is not left as the unconverted string",
                     !(convertedFont is string),
                     $"got back the raw string \"{convertedFont}\" instead of a converted value");
+
+                // Closes the loop against the exact call path a live game hits: apply the converted value
+                // onto a real FlatRedBall.Graphics.Text's real Font property the same way Screen.ApplyVariable
+                // does, via FlatRedBall's reflection-based LateBinder - this is what actually threw
+                // InvalidOperationException in the original bug report.
+                var text = new FlatRedBall.Graphics.Text();
+                FlatRedBall.Instructions.Reflection.LateBinder.SetValueStatic(text, "Font", convertedFont);
+                Console.WriteLine("OK: LateBinder.SetValueStatic applied Font without throwing");
+
+                if (failureCount == 0)
+                {
+                    Console.WriteLine("ALL_OK");
+                    Environment.Exit(0);
+                }
+                else
+                {
+                    Environment.Exit(1);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("FAIL: unhandled exception: " + ex);
+                Environment.Exit(1);
+            }
+            """);
+    }
+
+    private static void WriteBitmapFontCustomNameProgram(string scratchDirectory)
+    {
+        File.WriteAllText(Path.Combine(scratchDirectory, "Program.cs"), """
+            using System;
+            using GlueControl.Editing;
+
+            int failureCount = 0;
+
+            try
+            {
+                // Issue #2287 repro: Glue sends the real font's unqualified name (not "<NONE>") as
+                // VariableValue when a Text's Font is live-edited to an actual custom BitmapFont.
+                var convertedFont = VariableAssignmentLogic.ConvertStringToType(
+                    "BitmapFont", "Font24HeadUp", isState: false, out _);
+
+                if (convertedFont is string)
+                {
+                    Console.WriteLine($"FAIL: got back the raw string \"{convertedFont}\" instead of a resolved font");
+                    failureCount++;
+                }
+                else if (!ReferenceEquals(convertedFont, FlatRedBall.Graphics.TextManager.DefaultFont))
+                {
+                    Console.WriteLine($"FAIL: expected the object the stubbed GlobalContent.GetFile resolved, got {convertedFont}");
+                    failureCount++;
+                }
+                else
+                {
+                    Console.WriteLine("OK: BitmapFont \"Font24HeadUp\" resolved to the real font object");
+                }
 
                 // Closes the loop against the exact call path a live game hits: apply the converted value
                 // onto a real FlatRedBall.Graphics.Text's real Font property the same way Screen.ApplyVariable

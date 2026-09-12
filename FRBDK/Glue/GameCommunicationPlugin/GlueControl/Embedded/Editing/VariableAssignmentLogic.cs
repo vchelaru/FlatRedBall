@@ -1317,6 +1317,13 @@ namespace GlueControl.Editing
                 {
                     convertedValue = FlatRedBall.Graphics.TextManager.DefaultFont;
                 }
+                else if (convertFileNamesToObjects)
+                {
+                    // Otherwise variableValue is the unqualified name of a BitmapFont-typed global/scoped
+                    // file (e.g. a custom .fnt/.bmfc added to the project), the same as Texture2D/AnimationChainList
+                    // below - resolve it to the real object instead of leaving the raw name string for LateBinder.
+                    convertedValue = GetFileFromUnqualifiedName(variableValue, contextualInstanceType);
+                }
             }
             else if (variableValue?.Contains(inWithSpaces) == true)
             {
