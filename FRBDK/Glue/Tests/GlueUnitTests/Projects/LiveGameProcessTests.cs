@@ -199,6 +199,95 @@ public class LiveGameProcessTests
         setResponse.Data.WasVariableAssigned.ShouldBeTrue();
     }
 
+    // #2261's actual root cause, pinned directly via the diagnostics log from a real repro: renaming a
+    // NamedObjectSave - GluxCommands.RenameNamedObjectSave (Glue/Plugins/ExportedImplementations/
+    // CommandInterfaces/GluxCommands.cs:1039) - only ever sets InstanceName on Glue's own model and
+    // regenerates code (NamedObjectSetVariableLogic.ReactToNamedObjectChangedInstanceName). Neither calls
+    // CommandSender.Self.Send - there is no DTO for "a named object was renamed" at all. So a live-added
+    // object renamed in Glue's tree/property grid keeps its ORIGINAL runtime Name forever, even though
+    // Glue's own model (and therefore every DTO addressing it from then on) uses the new one. There is
+    // nothing to replay here - the rename is a no-op on the wire - so this goes straight to the
+    // observable consequence: the running game still answers to the pre-rename name, not the name Glue
+    // now shows.
+    //
+    // Measured (not just read) via a temporary Console.WriteLine probe: addressing "this.Head.X" resolves
+    // "Head" to nothing (no compiled member, no child by that name), falls back to
+    // Screen.GetInstanceRecursive("this.Head"), which - finding nothing there either - returns the
+    // SCREEN itself rather than null. VariableAssignmentLogic then tries to apply "X" to the screen,
+    // which has no such member, throwing a raw MemberAccessException that propagates out uncaught by
+    // SetValueOnObjectInElement. That is a DIFFERENT failure shape than the original issue's clean
+    // "Could not find an object named Head..." message with a contradictory WasVariableAssigned=true -
+    // this repro's exact variable ("X", a plain float) resolves through a different branch than the
+    // original's ("CurrentChainName" on a Sprite with AnimationChains set). Reproducing that exact
+    // contradictory shape would need the same variable/setup as the original log, not attempted here.
+    // Both shapes share the same root cause: the runtime object was never renamed.
+    [StaFact]
+    public async Task EditorTest1_RenamedLiveAddedObject_IsStillFoundByItsOriginalRuntimeName()
+    {
+        GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
+
+        using var game = await LiveGameProcess.StartAsync(
+            "Samples/EditorTest1",
+            csprojRelativeToProjectRoot: "EditorTest1/EditorTest1.csproj",
+            exeRelativeToProjectRoot: "EditorTest1/bin/Debug/net9.0/EditorTest1.exe");
+
+        var selectResponse = await game.SelectEntity("Entities\\Entity1");
+        selectResponse.Succeeded.ShouldBeTrue(selectResponse.Message);
+        (await game.GetCurrentScreenName()).ShouldBe("GlueControl.Screens.EntityViewingScreen");
+
+        var entity = ObjectFinder.Self.GetEntitySave("Entities\\Entity1");
+
+        var sprite = new NamedObjectSave
+        {
+            InstanceName = "LeftWingTest",
+            SourceType = SourceType.FlatRedBallType,
+            SourceClassType = "Sprite",
+            AddToManagers = true,
+        };
+        var addObjectDto = new AddObjectDto
+        {
+            NamedObjectSave = sprite,
+            ElementNameGlue = "Entities\\Entity1",
+            EntitySave = entity,
+        };
+        addObjectDto.NamedObjectsToUpdate.Add(new NamedObjectWithElementName
+        {
+            NamedObjectSave = sprite,
+            GlueElementName = "Entities\\Entity1",
+        });
+
+        var addResponse = await game.Send<AddObjectDtoResponse>(addObjectDto);
+        addResponse.Succeeded.ShouldBeTrue(addResponse.Message);
+        addResponse.Data.CreationResponse.Succeeded.ShouldBeTrue("the game should have created the live Sprite");
+
+        GlueVariableSetData SetXDto(string instanceName) => new GlueVariableSetData
+        {
+            AssignOrRecordOnly = AssignOrRecordOnly.Assign,
+            ElementNameGlue = "Entities\\Entity1",
+            EntitySave = entity,
+            VariableName = $"this.{instanceName}.X",
+            VariableValue = "5",
+            Type = "float",
+            AbsoluteGlueProjectFilePath = Path.Combine(game.ProjectRoot, "EditorTest1", "EditorTest1.gluj"),
+        };
+
+        // Addressed by the name Glue's own model would use after a rename to "Head" - fails, because the
+        // runtime object is still named "LeftWingTest". See this test's doc comment for why the failure
+        // is a raw MemberAccessException here rather than the original issue's clean "Could not find an
+        // object named" message - different sub-path, same root cause.
+        var byNewName = await game.Send<GlueVariableSetDataResponse>(SetXDto("Head"));
+        byNewName.Succeeded.ShouldBeTrue(byNewName.Message);
+        byNewName.Data.Exception.ShouldNotBeNull("the runtime object was never renamed, so lookup by the new name should fail");
+        byNewName.Data.WasVariableAssigned.ShouldBeFalse();
+
+        // Addressed by the name the game still actually uses - succeeds, proving the object was never
+        // lost, just never renamed.
+        var byOriginalName = await game.Send<GlueVariableSetDataResponse>(SetXDto("LeftWingTest"));
+        byOriginalName.Succeeded.ShouldBeTrue(byOriginalName.Message);
+        byOriginalName.Data.Exception.ShouldBeNull(byOriginalName.Data.Exception);
+        byOriginalName.Data.WasVariableAssigned.ShouldBeTrue();
+    }
+
     // Pins the EmbeddedDiagnosticsLogger extension added for #2261: every DTO the game receives (and its
     // response, when it sends one back) is recorded in memory, always on - no enable step needed - and
     // fetchable at any time via GetEmbeddedDiagnosticsLogDto. See CommandReceiver.Receive and
