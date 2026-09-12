@@ -107,6 +107,11 @@ jobs:
         GALLIUM_DRIVER: llvmpipe   # force Mesa's software rasterizer, inherited by the game processes
       run: dotnet test 'FlatRedBall\FRBDK\Glue\Glue with All.sln' -c Debug --filter "Category=LiveGame" --blame-hang-timeout 15m
 
+    # Slowest step in the job by far: 69 tests, each copying a sample project out of the repo and loading it
+    # through a real headless editor. Needs the net9 SDK (installed above) and network for the first restore.
+    - name: Run new-project build smoke test
+      run: dotnet test 'FlatRedBall\FRBDK\Glue\Glue with All.sln' -c Debug --filter "Category=BuildSmoke" --blame-hang-timeout 15m
+
     # Everything above this line covers the Glue editor only. The steps below cover the engine,
     # which otherwise gets compiled just once per release by Engine.yml -- long after the commit
     # that broke it.
@@ -129,46 +134,6 @@ jobs:
     # Samples\ is unbuilt by CI.
     - name: Build the MonoGame.Extended particle sample
       run: dotnet build 'FlatRedBall\Samples\MonoGameExtendedParticles\MonoGameExtendedParticles.sln' -c Debug
-
-  # Split out from the `test` job: at ~10 minutes this was the single slowest step in that job
-  # by far -- 69 tests, each copying a sample project out of the repo and loading it through a real
-  # headless editor -- so it was serializing after Build/unit-tests/live-game-tests instead of running
-  # alongside them. Its own job runs in parallel with `test` on a separate runner, at the cost of
-  # duplicating Checkout/Install .NET/Build here (~5 min) -- worth it since that duplicated setup is
-  # smaller than the wall-clock this unblocks. Needs the net9 SDK (installed below) and network access
-  # for the first NuGet restore.
-  smoke-test:
-    runs-on: windows-latest
-    steps:
-    - name: Checkout FRB
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 1
-        path: 'FlatRedBall'
-
-    - name: Checkout Gum
-      uses: actions/checkout@v4
-      with:
-        repository: ${{ github.repository_owner }}/Gum
-        fetch-depth: 1
-        path: 'Gum'
-
-    - name: Install .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: |
-          6.0.x
-          8.0.x
-          9.0.x
-
-    - name: Setup MSBuild.exe
-      uses: microsoft/setup-msbuild@v1.0.2
-
-    - name: Build
-      run: dotnet build -c Debug 'FlatRedBall\FRBDK\Glue\Glue with All.sln'
-
-    - name: Run new-project build smoke test
-      run: dotnet test 'FlatRedBall\FRBDK\Glue\Glue with All.sln' -c Debug --filter "Category=BuildSmoke" --blame-hang-timeout 15m
 
   # GlueCommon (and anything landing alongside it, see #2276) is the one part of the Glue editor with
   # no Windows/WPF dependency, so it and its tests build and run on Linux too. A separate job, not a
