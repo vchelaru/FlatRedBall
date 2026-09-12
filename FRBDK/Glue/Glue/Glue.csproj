@@ -45,40 +45,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Events\EventResponseSave.cs" />
-    <Compile Remove="Events\EventSave.cs" />
-    <Compile Remove="Events\IEventContainer.cs" />
-    <Compile Remove="FormHelpers\ParameterPropertyDescriptor.cs" />
-    <Compile Remove="IO\FilePath.cs" />
-    <Compile Remove="Plugins\AvailableMessages.cs" />
-    <Compile Remove="Plugins\EmbeddedPlugins\SyncedProjects\Controls\ToolbarControl.cs" />
-    <Compile Remove="Plugins\ExportedImplementations\CommandInterfaces\GlueViewCommands.cs" />
-    <Compile Remove="Plugins\GlueCommands.cs" />
-    <Compile Remove="Plugins\GlueState.cs" />
-    <Compile Remove="Plugins\IGluePlugin.cs" />
-    <Compile Remove="Plugins\IGlueState.cs" />
-    <Compile Remove="Plugins\ITreeViewPlugin.cs" />
+    <!-- These are embedded as text templates (see the matching EmbeddedResource entries below) and
+         intentionally contain non-compilable placeholder code, e.g. `namespace REPLACED_NAMESPACE`. -->
     <Compile Remove="Resources\CameraSetupTemplate.cs" />
     <Compile Remove="Resources\IEntityFactory.cs" />
     <Compile Remove="Resources\PoolList.cs" />
-    <Compile Remove="SaveClasses\CustomClassSave.cs" />
-    <Compile Remove="SaveClasses\CustomVariable.cs" />
-    <Compile Remove="SaveClasses\CustomVariableInNamedObject.cs" />
-    <Compile Remove="SaveClasses\EntitySave.cs" />
-    <Compile Remove="SaveClasses\GlobalContentSettingsSave.cs" />
-    <Compile Remove="SaveClasses\GlueProjectSave.cs" />
-    <Compile Remove="SaveClasses\IElement.cs" />
-    <Compile Remove="SaveClasses\IFileReferencer.cs" />
-    <Compile Remove="SaveClasses\INamedObjectContainer.cs" />
-    <Compile Remove="SaveClasses\NamedObjectPropertyOverride.cs" />
-    <Compile Remove="SaveClasses\NamedObjectSave.cs" />
-    <Compile Remove="SaveClasses\PerformanceSettingsSave.cs" />
-    <Compile Remove="SaveClasses\PropertySave.cs" />
-    <Compile Remove="SaveClasses\ReferencedFileSave.cs" />
-    <Compile Remove="SaveClasses\ScreenSave.cs" />
-    <Compile Remove="SaveClasses\StateSave.cs" />
-    <Compile Remove="SaveClasses\StateSaveCategory.cs" />
-    <Compile Remove="SaveClasses\TranslatedFileSave.cs" />
   </ItemGroup>
 
   <ItemGroup>
