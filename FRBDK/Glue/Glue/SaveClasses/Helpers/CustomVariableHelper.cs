@@ -121,8 +121,18 @@ namespace FlatRedBall.Glue.SaveClasses.Helpers
 
                 Type overridingTypeAsType = TypeManager.GetTypeFromString(overridingType);
 
+                // For an enum this must be the AssetTypeInfo's own declared default, not the CLR zero for
+                // the type: a Text's VerticalAlignment defaults to Center, not Top, and a Text's
+                // ColorOperation to ColorTextureAlpha, not the Texture that TypeManager's primitive table
+                // hardcodes (that entry is a Sprite's default, and this NamedObjectSave may not be a
+                // Sprite) - see issue #2283.
+                var declaredDefault = nos?.GetAssetTypeInfo()?.VariableDefinitions
+                    .FirstOrDefault(item => item.Name == property)?.DefaultValue;
 
-                string valueAsString = TypeManager.GetDefaultForType(overridingType);
+                if (!TypeManager.TryGetVariableDefaultValue(overridingType, declaredDefault, out string valueAsString))
+                {
+                    throw new ArgumentException("Could not find the value for type " + overridingType);
+                }
 
                 return PropertyValuePair.ConvertStringToType(valueAsString, overridingTypeAsType);
 

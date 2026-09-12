@@ -58,4 +58,44 @@ public class TypeManagerEnumValueTests
         TypeManager.TryGetEnumValueAsNumber(type, memberName, out string value).ShouldBeFalse();
         value.ShouldBeNull();
     }
+
+    // GitHub issue #2283: #2272 only fixed VariableSendingManager's own two-step check (declared enum
+    // default, then TryGetDefaultForType). TryGetVariableDefaultValue is the one place all callers should
+    // go through instead, so the same reasoning can't drift out of sync again.
+    [Theory]
+    [InlineData("VerticalAlignment", "Center", "2")]
+    [InlineData("ColorOperation", "ColorTextureAlpha", "6")]
+    [InlineData("float", null, "0")]
+    [InlineData("bool", null, "false")]
+    public void TryGetVariableDefaultValue_ShouldPreferTheDeclaredDefault_WhenOneIsGiven(
+        string type, string declaredDefault, string expected)
+    {
+        TypeManager.TryGetVariableDefaultValue(type, declaredDefault, out string value).ShouldBeTrue();
+        value.ShouldBe(expected);
+    }
+
+    [Theory]
+    // No declared default at all - an AssetTypeInfo entry missing DefaultValue, or a plain
+    // CustomVariable with no AssetTypeInfo behind it. Falling through to null here is exactly what made
+    // #2272's crash possible (the game cannot assign null to an enum), so this must resolve to the enum's
+    // own CLR zero instead - "0", regardless of whether Chop/Left/Regular/whatever member actually is 0.
+    [InlineData("MaxWidthBehavior", null, "0")]
+    [InlineData("MaxWidthBehavior", "", "0")]
+    // A declared default that isn't actually a member of the enum (stale/typo'd CSV entry) falls back the
+    // same way rather than propagating the bad name.
+    [InlineData("VerticalAlignment", "NotAMember", "0")]
+    public void TryGetVariableDefaultValue_ShouldFallBackToClrZero_WhenNoDeclaredDefaultResolves(
+        string type, string declaredDefault, string expected)
+    {
+        TypeManager.TryGetVariableDefaultValue(type, declaredDefault, out string value).ShouldBeTrue();
+        value.ShouldBe(expected);
+    }
+
+    [Fact]
+    public void TryGetVariableDefaultValue_ShouldReturnFalse_ForAReferenceTypeWithNoKnownDefault()
+    {
+        // A BitmapFont, Layer, entity type, etc: callers must still send null/decide their own fallback.
+        TypeManager.TryGetVariableDefaultValue("BitmapFont", null, out string value).ShouldBeFalse();
+        value.ShouldBeNull();
+    }
 }

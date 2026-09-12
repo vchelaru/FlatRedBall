@@ -655,26 +655,20 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                     )
                 {
                     // "Make Default" clears the instruction, so what goes over the wire here is the
-                    // variable's default. For an enum that is the AssetTypeInfo's declared DefaultValue,
-                    // not the CLR zero: a Text's VerticalAlignment defaults to Center (2) and its
-                    // ColorOperation to ColorTextureAlpha (6), so clearing either used to revert the
-                    // running game to the wrong member - or, for an enum with no primitive default at all
-                    // (MaxWidthBehavior, HorizontalAlignment, BlendOperation), to send null and have the
-                    // game fail assigning it (issue #2272).
+                    // variable's default. TryGetVariableDefaultValue prefers the AssetTypeInfo's declared
+                    // DefaultValue for an enum (a Text's VerticalAlignment defaults to Center (2), its
+                    // ColorOperation to ColorTextureAlpha (6)), falls back to the enum's own CLR zero if
+                    // that doesn't resolve rather than send null - which the game cannot assign to an enum
+                    // (issue #2272) - and otherwise only known primitives get a default; anything else
+                    // (BitmapFont, Layer, an entity type) is a reference type whose cleared value is null,
+                    // which is what leaving value null sends. Throwing here would surface as an unhandled
+                    // exception in RefreshManager's async void handlers and take Glue down (issue #2266).
                     var declaredDefault = ati?.VariableDefinitions
                         .FirstOrDefault(item => item.Name == originalMemberName)?.DefaultValue;
 
-                    if (TypeManager.TryGetEnumValueAsNumber(type, declaredDefault, out string enumDefault))
+                    if (TypeManager.TryGetVariableDefaultValue(type, declaredDefault, out string resolvedDefault))
                     {
-                        value = enumDefault;
-                    }
-                    // Only primitives have a known default. Anything else (BitmapFont, Layer, an entity type)
-                    // is a reference type whose cleared value is null, which is what leaving value null sends.
-                    // Throwing here would surface as an unhandled exception in RefreshManager's async void
-                    // handlers and take Glue down (issue #2266).
-                    else if (TypeManager.TryGetDefaultForType(type, out string defaultValue))
-                    {
-                        value = defaultValue;
+                        value = resolvedDefault;
                     }
                 }
             }
