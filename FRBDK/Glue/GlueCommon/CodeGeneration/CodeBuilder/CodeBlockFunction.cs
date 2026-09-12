@@ -39,7 +39,7 @@
         }
 
         internal static ICodeBlock Function(this ICodeBlock codeBlock, string name, string parameters,
-            bool Public = false, 
+            bool Public = false,
             bool Private = false, 
             bool Protected = false, 
             bool Internal = false, 

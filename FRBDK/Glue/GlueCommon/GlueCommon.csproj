@@ -26,4 +26,10 @@
     <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\FlatRedBallDesktopGLNet6\FlatRedBallDesktopGLNet6.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>GlueFormsCore</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+
 </Project>
