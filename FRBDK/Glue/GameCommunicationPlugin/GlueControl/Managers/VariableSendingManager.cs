@@ -99,20 +99,12 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             var gameScreenName = await CommandSender.Self.GetScreenName();
             var listOfVariables = GetNamedObjectValueChangedDtos(changedMember, oldValue, nos, assignOrRecordOnly, gameScreenName, forcedCurrentValue);
 
-            // A rename's NamedObjectSave already carries its NEW InstanceName, but
-            // EditingManager.ReplaceNamedObjectSave (invoked game-side via NamedObjectsToUpdate) matches
-            // the EXISTING entry to replace by that same InstanceName - for a rename it would never find
-            // the old entry (still under the old name) and would just add a duplicate. The variable-set
-            // DTO built above already renames the runtime object directly, so there's no NOS bookkeeping
-            // to push here.
-            var namedObjectsToUpdate = changedMember == nameof(NamedObjectSave.InstanceName)
-                ? new List<NamedObjectSave>()
-                : new List<NamedObjectSave> { nos };
+            var renamedFromInstanceName = changedMember == nameof(NamedObjectSave.InstanceName) ? oldValue as string : null;
 
-            PushVariableChangesToGame(listOfVariables, namedObjectsToUpdate);
+            PushVariableChangesToGame(listOfVariables, new List<NamedObjectSave> { nos }, renamedFromInstanceName);
         }
 
-        public void PushVariableChangesToGame(List<GlueVariableSetData> listOfVariables, List<NamedObjectSave> namedObjectsToUpdate)
+        public void PushVariableChangesToGame(List<GlueVariableSetData> listOfVariables, List<NamedObjectSave> namedObjectsToUpdate, string renamedNamedObjectOldInstanceName = null)
         {
             var dto = new GlueVariableSetDataList();
             dto.Data.AddRange(listOfVariables);
@@ -125,6 +117,9 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 namedObjectWithElement.GlueElementName = container?.Name;
                 var listNos = container?.NamedObjects.FirstOrDefault(item => item.ContainedObjects.Contains(nos));
                 namedObjectWithElement.ContainerName = listNos?.InstanceName;
+                // Only ever non-null for the single-NamedObjectSave rename push above - see
+                // NamedObjectWithElementName.OldInstanceName and EditingManager.ReplaceNamedObjectSave.
+                namedObjectWithElement.OldInstanceName = renamedNamedObjectOldInstanceName;
 
                 dto.NamedObjectsToUpdate.Add(namedObjectWithElement);
             }

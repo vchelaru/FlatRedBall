@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.SaveClasses;
@@ -315,6 +316,92 @@ public class LiveGameProcessTests
         var byOriginalName = await game.Send<GlueVariableSetDataResponse>(SetXDto("LeftWingTest"));
         byOriginalName.Succeeded.ShouldBeTrue(byOriginalName.Message);
         byOriginalName.Data.Exception.ShouldNotBeNull("the object was renamed, so its old name should no longer resolve");
+    }
+
+    // Adjacent bug found (and fixed) while fixing #2261, in the game-side bookkeeping
+    // ReplaceNamedObjectSave pushes via NamedObjectsToUpdate keep in sync
+    // (EditingManager.CurrentGlueElement.NamedObjects - GetCurrentElementNamedObjectsDto, added to
+    // observe it, since it isn't visible over the wire any other way): ReplaceNamedObjectSave used to
+    // find the entry to replace by matching `item.InstanceName == nos.InstanceName` - fine when a NOS's
+    // own name never changes, but nos.InstanceName IS the new name for a rename, so it never found the
+    // old entry (still under the old name) and just added a second one instead of replacing it. Proven
+    // red before the fix: sending a rename's NamedObjectsToUpdate entry without OldInstanceName (the way
+    // this test builds it below) produced ["CircleInstance", "LeftWingTest", "Head"] - both names
+    // present. Fixed by NamedObjectWithElementName.OldInstanceName, which PushVariableChangesToGame now
+    // populates for exactly this case and ReplaceNamedObjectSave matches against instead.
+    [StaFact]
+    public async Task EditorTest1_RenamedLiveObjectPushedViaNamedObjectsToUpdate_ReplacesRatherThanDuplicatesBookkeeping()
+    {
+        GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
+
+        using var game = await LiveGameProcess.StartAsync(
+            "Samples/EditorTest1",
+            csprojRelativeToProjectRoot: "EditorTest1/EditorTest1.csproj",
+            exeRelativeToProjectRoot: "EditorTest1/bin/Debug/net9.0/EditorTest1.exe");
+
+        var selectResponse = await game.SelectEntity("Entities\\Entity1");
+        selectResponse.Succeeded.ShouldBeTrue(selectResponse.Message);
+
+        var entity = ObjectFinder.Self.GetEntitySave("Entities\\Entity1");
+
+        var sprite = new NamedObjectSave
+        {
+            InstanceName = "LeftWingTest",
+            SourceType = SourceType.FlatRedBallType,
+            SourceClassType = "Sprite",
+            AddToManagers = true,
+        };
+        var addObjectDto = new AddObjectDto
+        {
+            NamedObjectSave = sprite,
+            ElementNameGlue = "Entities\\Entity1",
+            EntitySave = entity,
+        };
+        addObjectDto.NamedObjectsToUpdate.Add(new NamedObjectWithElementName
+        {
+            NamedObjectSave = sprite,
+            GlueElementName = "Entities\\Entity1",
+        });
+        var addResponse = await game.Send<AddObjectDtoResponse>(addObjectDto);
+        addResponse.Succeeded.ShouldBeTrue(addResponse.Message);
+        addResponse.Data.CreationResponse.Succeeded.ShouldBeTrue("the game should have created the live Sprite");
+
+        var beforeRename = await game.Send<GetCurrentElementNamedObjectsResponse>(new GetCurrentElementNamedObjectsDto());
+        beforeRename.Succeeded.ShouldBeTrue(beforeRename.Message);
+        beforeRename.Data.InstanceNames.Count(n => n == "LeftWingTest").ShouldBe(1,
+            "sanity check: the live add itself should register exactly one bookkeeping entry");
+
+        entity.NamedObjects.Add(sprite);
+        var oldName = sprite.InstanceName;
+        sprite.InstanceName = "Head";
+
+        var vsm = new VariableSendingManager(new RefreshManager((_, __) => Task.FromResult(""), (_, __) => { }));
+        var renameDtos = vsm.GetNamedObjectValueChangedDtos(
+            nameof(NamedObjectSave.InstanceName), oldName, sprite, AssignOrRecordOnly.Assign, gameScreenName: "");
+        renameDtos[0].AbsoluteGlueProjectFilePath = Path.Combine(game.ProjectRoot, "EditorTest1", "EditorTest1.gluj");
+
+        // Built by hand rather than via PushVariableChangesToGame (which now populates OldInstanceName
+        // itself for exactly this case) so the test can assert on the NamedObjectsToUpdate shape
+        // directly - OldInstanceName is what tells ReplaceNamedObjectSave which stale entry to replace.
+        var listDto = new GlueVariableSetDataList();
+        listDto.Data.AddRange(renameDtos);
+        listDto.NamedObjectsToUpdate.Add(new NamedObjectWithElementName
+        {
+            NamedObjectSave = sprite,
+            GlueElementName = "Entities\\Entity1",
+            OldInstanceName = oldName,
+        });
+
+        var pushResponse = await game.Send<GlueVariableSetDataResponseList>(listDto);
+        pushResponse.Succeeded.ShouldBeTrue(pushResponse.Message);
+
+        var afterRename = await game.Send<GetCurrentElementNamedObjectsResponse>(new GetCurrentElementNamedObjectsDto());
+        afterRename.Succeeded.ShouldBeTrue(afterRename.Message);
+        afterRename.Data.InstanceNames.ShouldContain("Head");
+        afterRename.Data.InstanceNames.ShouldNotContain("LeftWingTest",
+            "ReplaceNamedObjectSave should have replaced the stale old-named entry, not left it behind");
+        afterRename.Data.InstanceNames.Count(n => n == "Head").ShouldBe(1,
+            "ReplaceNamedObjectSave should not have added a second entry for the renamed object");
     }
 
     // #2261's diagnostics gap, found while reproducing the test above: GlueViewSettingsViewModel.

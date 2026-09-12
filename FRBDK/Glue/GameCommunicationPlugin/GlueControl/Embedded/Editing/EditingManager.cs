@@ -1186,7 +1186,7 @@ namespace GlueControl.Editing
             CurrentNamedObjects.AddRange(newNamedObjects);
         }
 
-        public void ReplaceNamedObjectSave(NamedObjectSave nos, string glueElementName, string containerName)
+        public void ReplaceNamedObjectSave(NamedObjectSave nos, string glueElementName, string containerName, string oldInstanceName = null)
         {
             ///////////////////Early Out///////////////////
             if (CurrentGlueElement?.Name != glueElementName)
@@ -1195,7 +1195,11 @@ namespace GlueControl.Editing
             }
             ////////////////End Early Out//////////////////
 
-            var oldNos = CurrentGlueElement.AllNamedObjects.FirstOrDefault(item => item.InstanceName == nos.InstanceName);
+            // For a rename, nos.InstanceName is already the NEW name - the existing entry to replace is
+            // still under the old one (oldInstanceName, set only for this case - see
+            // NamedObjectWithElementName.OldInstanceName). Matching by nos.InstanceName here unconditionally
+            // would never find that entry and would add a second one instead of replacing it (#2261).
+            var oldNos = CurrentGlueElement.AllNamedObjects.FirstOrDefault(item => item.InstanceName == (oldInstanceName ?? nos.InstanceName));
             var oldContainer = CurrentGlueElement.AllNamedObjects.FirstOrDefault(item => item.ContainedObjects.Contains(oldNos));
 
             NamedObjectSave newContainer = null;

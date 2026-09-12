@@ -16,6 +16,15 @@ namespace GlueControl.Dtos
         public string GlueElementName { get; set; }
         public string ContainerName { get; set; }
         public NamedObjectSave NamedObjectSave { get; set; }
+
+        /// <summary>
+        /// Set only when NamedObjectSave.InstanceName was just renamed - the name the existing bookkeeping
+        /// entry to replace is still under, since NamedObjectSave.InstanceName is already the new name by
+        /// the time this is built. Null for every other kind of update, where InstanceName hasn't changed
+        /// and is itself the right thing to match the existing entry by (see
+        /// EditingManager.ReplaceNamedObjectSave).
+        /// </summary>
+        public string OldInstanceName { get; set; }
     }
 
     public class UpdateCurrentElementDto
@@ -627,6 +636,27 @@ namespace GlueControl.Dtos
     public class GetEmbeddedDiagnosticsLogResponse
     {
         public string LogText { get; set; }
+    }
+    #endregion
+
+    #region GetCurrentElementNamedObjectsDto
+
+    /// <summary>
+    /// Fetches the InstanceNames of the game's own current-element bookkeeping
+    /// (EditingManager.CurrentGlueElement.NamedObjects) - a duplicate entry here (as opposed to in
+    /// SpriteManager.ManagedPositionedObjects, the actual runtime objects) means a NamedObjectsToUpdate
+    /// push replaced the wrong entry or added a new one instead of replacing - see
+    /// EditingManager.ReplaceNamedObjectSave.
+    /// </summary>
+    public class GetCurrentElementNamedObjectsDto
+    {
+    }
+    #endregion
+
+    #region GetCurrentElementNamedObjectsResponse
+    public class GetCurrentElementNamedObjectsResponse
+    {
+        public List<string> InstanceNames { get; set; } = new List<string>();
     }
     #endregion
 

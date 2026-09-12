@@ -1735,6 +1735,19 @@ namespace GlueControl
 
         #endregion
 
+        #region GetCurrentElementNamedObjectsDto
+
+        private static object HandleDto(GetCurrentElementNamedObjectsDto dto)
+        {
+            var instanceNames = Editing.EditingManager.Self.CurrentGlueElement?.NamedObjects
+                .Select(item => item.InstanceName)
+                .ToList() ?? new List<string>();
+
+            return new GetCurrentElementNamedObjectsResponse { InstanceNames = instanceNames };
+        }
+
+        #endregion
+
         #region SetEmbeddedInputAllowedDto
 
         private static void HandleDto(SetEmbeddedInputAllowedDto dto)
@@ -1786,7 +1799,7 @@ namespace GlueControl
         {
             foreach (var update in dto.NamedObjectsToUpdate)
             {
-                EditingManager.Self.ReplaceNamedObjectSave(update.NamedObjectSave, update.GlueElementName, update.ContainerName);
+                EditingManager.Self.ReplaceNamedObjectSave(update.NamedObjectSave, update.GlueElementName, update.ContainerName, update.OldInstanceName);
             }
         }
 
