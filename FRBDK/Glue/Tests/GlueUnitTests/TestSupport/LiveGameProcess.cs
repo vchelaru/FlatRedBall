@@ -419,7 +419,11 @@ internal sealed class LiveGameProcess : IDisposable
             ElementNameGlue = entityNameGlue,
             EntitySave = entity,
         };
-        return await CommandSender.Self.Send(dto);
+        // Through Send (not CommandSender.Self.Send directly) so a failure carries the same
+        // elapsed-time/IsConnected/connection-log/captured-output diagnostics every other DTO gets -
+        // see AppendDiagnosticsOnFailure's doc comment (#2244). Without this, a flaky "no response"
+        // here shows only the bare message and nothing about whether the game was even still alive.
+        return await Send(dto);
     }
 
     /// <summary>
@@ -445,7 +449,8 @@ internal sealed class LiveGameProcess : IDisposable
             ElementNameGlue = screenNameGlue,
             ScreenSave = screen,
         };
-        return await CommandSender.Self.Send(dto);
+        // See SelectEntity's comment on why this goes through Send rather than CommandSender.Self.Send.
+        return await Send(dto);
     }
 
     static string PatchGlueControlPort(string game1GeneratedContents, string game1GeneratedPath, int port)
