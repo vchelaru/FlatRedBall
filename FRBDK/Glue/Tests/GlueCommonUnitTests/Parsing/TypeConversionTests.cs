@@ -63,6 +63,18 @@ public class TypeConversionTests
         Assert.Null(defaultValue);
     }
 
+    // GitHub issue #2283: this used to special-case "ColorOperation" => "0", i.e. Texture - a Sprite's
+    // default, not necessarily the caller's. That was wrong for a Text (ColorTextureAlpha) and just
+    // happened to be right for a Sprite by coincidence. Enum types now resolve through
+    // TypeManager.TryGetVariableDefaultValue (Glue.csproj, where the reflection to know a type is an enum
+    // actually lives), which this primitive-only table has no business special-casing.
+    [Fact]
+    public void TryGetDefaultForType_ColorOperation_ReturnsFalse()
+    {
+        Assert.False(TypeConversion.TryGetDefaultForType("ColorOperation", out var defaultValue));
+        Assert.Null(defaultValue);
+    }
+
     [Fact]
     public void GetDefaultForType_KnownPrimitive_ReturnsDefault()
     {

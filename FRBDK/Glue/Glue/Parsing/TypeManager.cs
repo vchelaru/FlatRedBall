@@ -760,6 +760,29 @@ namespace FlatRedBall.Glue.Parsing
             return true;
         }
 
+        /// <summary>
+        /// The one place callers that need a variable's real default (not the CLR zero for its type) should
+        /// go through: for an enum, prefers <paramref name="declaredDefault"/> (the AssetTypeInfo's
+        /// DefaultValue) resolved to its underlying number, falls back to the enum's own CLR zero if that
+        /// doesn't resolve (issue #2283 - a missing/stale declared default must not fall through to null,
+        /// which is what made #2272's crash possible), and otherwise defers to <see cref="TryGetDefaultForType"/>.
+        /// </summary>
+        public static bool TryGetVariableDefaultValue(string type, string declaredDefault, out string defaultValue)
+        {
+            if (TryGetEnumValueAsNumber(type, declaredDefault, out defaultValue))
+            {
+                return true;
+            }
+
+            if (GetTypeFromString(type?.Trim())?.IsEnum == true)
+            {
+                defaultValue = "0";
+                return true;
+            }
+
+            return TryGetDefaultForType(type, out defaultValue);
+        }
+
         public static object Parse(string typeName, string value) =>
             TypeConversion.Parse(typeName, value);
 

@@ -156,8 +156,6 @@ namespace FlatRedBall.Glue.Parsing
                 case "byte":
                 case "Byte":
 
-                case "ColorOperation":
-
                     defaultValue = "0";
                     return true;
                 case "float?":
