@@ -98,4 +98,47 @@ public class TypeManagerEnumValueTests
         TypeManager.TryGetVariableDefaultValue("BitmapFont", null, out string value).ShouldBeFalse();
         value.ShouldBeNull();
     }
+
+    // GitHub issue #2283: StateCodeGenerator.Interpolation.cs embeds this as a C# source literal, so a bare
+    // enum number (what TryGetVariableDefaultValue hands the runtime parser) doesn't compile - it needs a
+    // qualified member-name expression instead.
+    [Theory]
+    [InlineData("VerticalAlignment", "Center", "FlatRedBall.Graphics.VerticalAlignment.Center")]
+    [InlineData("ColorOperation", "ColorTextureAlpha", "FlatRedBall.Graphics.ColorOperation.ColorTextureAlpha")]
+    public void TryGetVariableDefaultValueExpression_ShouldReturnAQualifiedMemberExpression_WhenTheDeclaredDefaultResolves(
+        string type, string declaredDefault, string expected)
+    {
+        TypeManager.TryGetVariableDefaultValueExpression(type, declaredDefault, out string expression).ShouldBeTrue();
+        expression.ShouldBe(expected);
+    }
+
+    [Theory]
+    // No declared default, and a declared default that isn't a member of the enum: both fall back to the
+    // enum's own CLR zero member, same tiering as TryGetVariableDefaultValue - just as a name, not a number.
+    [InlineData("MaxWidthBehavior", null, "FlatRedBall.Graphics.MaxWidthBehavior.Chop")]
+    [InlineData("VerticalAlignment", "NotAMember", "FlatRedBall.Graphics.VerticalAlignment.Top")]
+    public void TryGetVariableDefaultValueExpression_ShouldFallBackToTheClrZeroMember_WhenNoDeclaredDefaultResolves(
+        string type, string declaredDefault, string expected)
+    {
+        TypeManager.TryGetVariableDefaultValueExpression(type, declaredDefault, out string expression).ShouldBeTrue();
+        expression.ShouldBe(expected);
+    }
+
+    [Theory]
+    // Non-enum types forward unchanged to TryGetVariableDefaultValue's own string result.
+    [InlineData("float", null, "0")]
+    [InlineData("bool", null, "false")]
+    public void TryGetVariableDefaultValueExpression_ShouldForwardToTryGetVariableDefaultValue_ForNonEnumTypes(
+        string type, string declaredDefault, string expected)
+    {
+        TypeManager.TryGetVariableDefaultValueExpression(type, declaredDefault, out string expression).ShouldBeTrue();
+        expression.ShouldBe(expected);
+    }
+
+    [Fact]
+    public void TryGetVariableDefaultValueExpression_ShouldReturnFalse_ForAReferenceTypeWithNoKnownDefault()
+    {
+        TypeManager.TryGetVariableDefaultValueExpression("BitmapFont", null, out string expression).ShouldBeFalse();
+        expression.ShouldBeNull();
+    }
 }

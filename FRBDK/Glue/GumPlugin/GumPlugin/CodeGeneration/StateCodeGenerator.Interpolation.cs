@@ -319,7 +319,15 @@ public partial class StateCodeGenerator
                             }
                             else
                             {
-                                defaultStartingValue = FlatRedBall.Glue.Parsing.TypeManager.GetDefaultForType(variableSave.Type);
+                                // No declared AssetTypeInfo default is available in this Gum-side data model,
+                                // so this only resolves an enum's own CLR zero - fine here, since this value
+                                // is just a placeholder overwritten once both interpolation endpoints are set
+                                // (unlike TypeManager.GetDefaultForType, it also compiles for an enum type -
+                                // see issue #2283).
+                                if (!FlatRedBall.Glue.Parsing.TypeManager.TryGetVariableDefaultValueExpression(variableSave.Type, declaredDefault: null, out defaultStartingValue))
+                                {
+                                    throw new ArgumentException("Could not find the value for type " + variableSave.Type);
+                                }
                             }
                         }
                         catch
