@@ -39,7 +39,7 @@ public class ObjectFinder : IObjectFinder, IObjectFinderCore
     {
         NamedObjectSave.ToStringDelegate = NamedObjectSaveElementExtensions.NamedObjectSaveToString;
         CustomVariable.ToStringDelegate = CustomVariableExtensionMethods.CustomVariableToString;
-        ReferencedFileSave.ToStringDelegate = ReferencedFileSaveExtensionMethods.ReferencedFileSaveToString;
+        ReferencedFileSave.ToStringDelegate = ReferencedFileSaveElementExtensions.ReferencedFileSaveToString;
         EventResponseSave.ToStringDelegate = EventResponseSaveExtensionMethods.EventResponseSaveToString;
         StateSave.ToStringDelegate = StateSaveExtensionMethods.StateSaveToString;
     }

@@ -156,7 +156,7 @@ public class ReferencedFileSaveExtensionMethodsTests : IDisposable
     public void GetIsFileOutsideContainerFolder_ShouldBeTrue_ForSiblingFolderWithSharedPrefix()
     {
         // "Entities/PlayerBall" must not count as being inside "Entities/Player".
-        ReferencedFileSaveExtensionMethods
+        ReferencedFileSaveElementExtensions
             .GetIsFileOutsideContainerFolder("Entities/PlayerBall/Ball.png", "Entities\\Player")
             .ShouldBeTrue();
     }
@@ -164,7 +164,7 @@ public class ReferencedFileSaveExtensionMethodsTests : IDisposable
     [Fact]
     public void GetIsFileOutsideContainerFolder_ShouldBeFalse_ForEmptyFileName()
     {
-        ReferencedFileSaveExtensionMethods
+        ReferencedFileSaveElementExtensions
             .GetIsFileOutsideContainerFolder("", "Entities\\Player")
             .ShouldBeFalse();
     }

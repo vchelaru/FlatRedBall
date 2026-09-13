@@ -260,4 +260,80 @@ public class EntitySaveInheritanceExtensionsTests
 
         Assert.Empty(entity.GetAllBaseEntities());
     }
+
+    [Fact]
+    public void GetMemberMembershipInfo_MatchesReferencedFileByName_ReturnsContainedInThis()
+    {
+        var entity = new EntitySave();
+        entity.ReferencedFiles.Add(new ReferencedFileSave { Name = "sprite.png" });
+
+        Assert.Equal(MembershipInfo.ContainedInThis, entity.GetMemberMembershipInfo("sprite.png"));
+    }
+
+    [Fact]
+    public void GetMemberMembershipInfo_MatchesReferencedFileByInstanceName_ReturnsContainedInThis()
+    {
+        var entity = new EntitySave();
+        entity.ReferencedFiles.Add(new ReferencedFileSave { Name = "Sprite Sheet.png" });
+
+        Assert.Equal(MembershipInfo.ContainedInThis, entity.GetMemberMembershipInfo("SpriteSheet"));
+    }
+
+    [Fact]
+    public void GetMemberMembershipInfo_MatchesNamedObjectField_ReturnsContainedInThis()
+    {
+        var entity = new EntitySave();
+        entity.NamedObjects.Add(new NamedObjectSave { InstanceName = "SpriteInstance" });
+
+        Assert.Equal(MembershipInfo.ContainedInThis, entity.GetMemberMembershipInfo("SpriteInstance"));
+    }
+
+    [Fact]
+    public void GetMemberMembershipInfo_MatchesInBaseEntity_ReturnsContainedInBase()
+    {
+        var baseEntity = new EntitySave { Name = "Entities\\Base" };
+        baseEntity.NamedObjects.Add(new NamedObjectSave { InstanceName = "SpriteInstance" });
+        _finder.AddElement("Entities\\Base", baseEntity);
+        var entity = new EntitySave { BaseEntity = "Entities\\Base" };
+
+        Assert.Equal(MembershipInfo.ContainedInBase, entity.GetMemberMembershipInfo("SpriteInstance"));
+    }
+
+    [Fact]
+    public void GetMemberMembershipInfo_NoMatchAnywhere_ReturnsNotContained()
+    {
+        var entity = new EntitySave { BaseEntity = "" };
+
+        Assert.Equal(MembershipInfo.NotContained, entity.GetMemberMembershipInfo("Missing"));
+    }
+
+    [Fact]
+    public void GetMemberMembershipInfoForNamedObjectList_MatchesNestedContainedObject_ReturnsContainedInThis()
+    {
+        var entity = new EntitySave();
+        var childNos = new NamedObjectSave { InstanceName = "ChildInstance" };
+        var parentNos = new NamedObjectSave { InstanceName = "ParentInstance" };
+        parentNos.ContainedObjects.Add(childNos);
+
+        var result = entity.GetMemberMembershipInfoForNamedObjectList("ChildInstance", new List<NamedObjectSave> { parentNos });
+
+        Assert.Equal(MembershipInfo.ContainedInThis, result);
+    }
+
+    [Fact]
+    public void HasMemberWithName_Match_ReturnsTrue()
+    {
+        var entity = new EntitySave();
+        entity.NamedObjects.Add(new NamedObjectSave { InstanceName = "SpriteInstance" });
+
+        Assert.True(entity.HasMemberWithName("SpriteInstance"));
+    }
+
+    [Fact]
+    public void HasMemberWithName_NoMatch_ReturnsFalse()
+    {
+        var entity = new EntitySave { BaseEntity = "" };
+
+        Assert.False(entity.HasMemberWithName("Missing"));
+    }
 }

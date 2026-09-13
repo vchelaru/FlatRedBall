@@ -16,68 +16,9 @@ namespace FlatRedBall.Glue.SaveClasses
         // BaseElements, and both GetAllBaseEntities overloads moved to
         // GlueCommon.SaveClasses.EntitySaveInheritanceExtensions (#2276) - all only needed the existing
         // IObjectFinderCore/IAvailableAssetTypesCore seams over ObjectFinder.Self/AvailableAssetTypes.Self.
-
-        public static MembershipInfo GetMemberMembershipInfo(this EntitySave instance, string memberName)
-        {
-            for (int i = 0; i < instance.ReferencedFiles.Count; i++)
-            {
-                if (instance.ReferencedFiles[i].Name == memberName || instance.ReferencedFiles[i].GetInstanceName() == memberName)
-                {
-                    return MembershipInfo.ContainedInThis;
-                }
-            }
-
-            MembershipInfo namedObjectMembershipInfo = instance.GetMemberMembershipInfoForNamedObjectList(memberName, instance.NamedObjects);
-            if (namedObjectMembershipInfo != MembershipInfo.NotContained)
-            {
-                return namedObjectMembershipInfo;
-            }
-
-            if (!string.IsNullOrEmpty(instance.BaseEntity))
-            {
-                EntitySave baseEntity = ObjectFinder.Self.GetEntitySave(instance.BaseEntity);
-                if (baseEntity != null)
-                {
-                    bool value = baseEntity.HasMemberWithName(memberName);
-
-                    if (value)
-                    {
-                        return MembershipInfo.ContainedInBase;
-                    }
-                }
-            }
-
-            return MembershipInfo.NotContained;
-
-        }
-
-        public static MembershipInfo GetMemberMembershipInfoForNamedObjectList(this EntitySave instance, string memberName, List<NamedObjectSave> namedObjectList)
-        {
-            for (int i = 0; i < namedObjectList.Count; i++)
-            {
-                if (namedObjectList[i].FieldName == memberName)
-                {
-                    return MembershipInfo.ContainedInThis;
-                }
-
-                MembershipInfo membershipInfo = instance.GetMemberMembershipInfoForNamedObjectList(memberName, namedObjectList[i].ContainedObjects);
-
-                if (membershipInfo != MembershipInfo.NotContained)
-                {
-                    return membershipInfo;
-                }
-            }
-
-
-
-            return MembershipInfo.NotContained;
-        }
-
-        public static bool HasMemberWithName(this EntitySave instance, string memberName)
-        {
-            return instance.GetMemberMembershipInfo(memberName) != MembershipInfo.NotContained;
-        }
-
+        // GetMemberMembershipInfo, GetMemberMembershipInfoForNamedObjectList, and HasMemberWithName moved
+        // there too - unblocked once ReferencedFileSave.GetInstanceName() (which GetMemberMembershipInfo
+        // calls) moved to GlueCommon.SaveClasses.ReferencedFileSaveElementExtensions.
 
         // InheritsFrom(this EntitySave, string) moved to
         // GlueCommon.SaveClasses.NamedObjectSaveElementExtensions (#2276) - needed by CanBeInList,
