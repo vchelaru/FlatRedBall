@@ -41,6 +41,83 @@ namespace GumCoreShared.FlatRedBall.Embedded
         GraphicalUiElement GumParent { get; set; }
         public GraphicalUiElement GumObject { get; private set; }
 
+        // Every entity-attached Gum object shares this one layer, so the FRB Editor's live-edit zoom
+        // can zoom world-space content (this layer) without touching HUD/screen-space content (which
+        // never lands here) - see CameraLogic.UpdateCameraToZoomLevel.
+        private static global::RenderingLibrary.Graphics.Layer entityAttachmentZoomLayer;
+        private static global::FlatRedBall.Graphics.Layer entityAttachmentFrbLayer;
+        private static bool hasSubscribedToScreenDestroyedForZoomLayerCleanup;
+
+        public static global::RenderingLibrary.Graphics.Layer GetOrCreateEntityAttachmentZoomLayer()
+        {
+            if (entityAttachmentZoomLayer == null)
+            {
+                entityAttachmentZoomLayer = new global::RenderingLibrary.Graphics.Layer();
+                entityAttachmentZoomLayer.Name = "FrbEntityAttachmentGumZoomLayer";
+                entityAttachmentZoomLayer.LayerCameraSettings = new global::RenderingLibrary.Graphics.LayerCameraSettings
+                {
+                    IsInScreenSpace = false
+                };
+
+                // A Gum layer with no matching FRB Layer never actually gets drawn - FRB's render
+                // dispatch (GumIdb.Draw) only ever renders MainLayer during the default pass, or Gum
+                // layers explicitly registered against a named FRB Layer. Create a real FRB Layer and
+                // register through GumIdb so FRB actually invokes a draw pass for it - the entity's own
+                // sprite doesn't need to move, since the health bar's layer membership is independent
+                // of whatever layer the entity itself renders on.
+                entityAttachmentFrbLayer = global::FlatRedBall.SpriteManager.AddLayer();
+                entityAttachmentFrbLayer.Name = "FrbEntityAttachmentZoomLayer";
+                global::FlatRedBall.Gum.GumIdb.Self.AddGumLayerToFrbLayer(entityAttachmentZoomLayer, entityAttachmentFrbLayer);
+
+                // FRB's ScreenManager warns (CheckAndWarnIfNotEmpty) if a screen doesn't clean up every
+                // Layer it created before unloading - since this layer is a lazily-created singleton
+                // that can outlive many screens, remove it whenever the CURRENT screen is destroyed and
+                // let it be recreated fresh for whichever screen needs it next, rather than trying to
+                // track which screen originally created it.
+                if (!hasSubscribedToScreenDestroyedForZoomLayerCleanup)
+                {
+                    hasSubscribedToScreenDestroyedForZoomLayerCleanup = true;
+                    global::FlatRedBall.Screens.ScreenManager.AfterScreenDestroyed += _ =>
+                    {
+                        if (entityAttachmentFrbLayer != null)
+                        {
+                            global::FlatRedBall.SpriteManager.RemoveLayer(entityAttachmentFrbLayer);
+                            global::RenderingLibrary.SystemManagers.Default.Renderer.RemoveLayer(entityAttachmentZoomLayer);
+                            entityAttachmentFrbLayer = null;
+                            entityAttachmentZoomLayer = null;
+                        }
+                    };
+
+                    // A statically-placed entity (and thus this layer's lazy creation) can happen
+                    // BEFORE the screen's own AddLayer() calls for things like a "draw above
+                    // darkness/lighting" layer, landing us before them in draw order. ScreenLoaded
+                    // fires once, after Initialize() has fully finished (so every screen-created layer
+                    // already exists) and is never invoked mid-draw, unlike UpdateGumObject - safe to
+                    // reorder here.
+                    global::FlatRedBall.Screens.ScreenManager.ScreenLoaded += _ => EnsureEntityAttachmentFrbLayerDrawsLast();
+                }
+            }
+            return entityAttachmentZoomLayer;
+        }
+
+        // This layer is created lazily the first time an entity-attached Gum object is constructed,
+        // which for a statically-placed entity can happen BEFORE the screen's own AddLayer() calls for
+        // things like a "draw above darkness/lighting" layer - landing us before them in draw order and
+        // getting completely covered up, even though positioning/zoom are otherwise correct. AddLayer
+        // always appends, so re-adding (public API, no access to the internal writeable list needed)
+        // moves it back to the end - drawn last, on top of everything, whenever something else has been
+        // added after it.
+        private static void EnsureEntityAttachmentFrbLayerDrawsLast()
+        {
+            var layers = global::FlatRedBall.SpriteManager.Layers;
+            var isLast = layers.Count > 0 && layers[layers.Count - 1] == entityAttachmentFrbLayer;
+            if (entityAttachmentFrbLayer != null && !isLast)
+            {
+                global::FlatRedBall.SpriteManager.RemoveLayer(entityAttachmentFrbLayer);
+                global::FlatRedBall.SpriteManager.AddLayer(entityAttachmentFrbLayer);
+            }
+        }
+
         public PositionedObjectGueWrapper(PositionedObject frbObject, GraphicalUiElement gumObject) : base()
         {
             // July 21, 2021
@@ -65,8 +142,36 @@ namespace GumCoreShared.FlatRedBall.Embedded
 
             this.FrbObject = frbObject;
             this.GumObject = gumObject;
-            
+
             gumObject.Parent = GumParent;
+
+            // Only re-home onto the shared zoom layer in edit mode - gameplay keeps gumObject on
+            // whatever layer AddToManagers originally placed it on (LayerProvidedByContainer), so
+            // draw order for shipped games is completely unaffected by this mechanism.
+            if (global::FlatRedBall.Screens.ScreenManager.IsInEditMode)
+            {
+                // gumObject.Layer (mLayer) always names the layer AddToManagers registered it on -
+                // AddToManagers hands the actual Renderables-list membership to the CONTAINED object
+                // (e.g. an InvisibleRenderable for a ContainerRuntime-derived component like a health
+                // bar), not to gumObject itself. A raw Layer.Remove(gumObject)/Add(gumObject) here would
+                // therefore never remove the real registration - it would leave the original entry in
+                // place and add gumObject as a second, independent one, so the same content draws
+                // twice. GraphicalUiElement.MoveToLayer already contains the correct remove/add against
+                // the real contained object (or, for a childless composite, against its own children);
+                // its parented-element guard is compiled out for FRB builds (#if !FRB), so calling it on
+                // a GumParent-parented element here is safe.
+                gumObject.MoveToLayer(GetOrCreateEntityAttachmentZoomLayer());
+
+                // Only reorder here, in the constructor - never from UpdateGumObject's per-frame path.
+                // UpdateGumObject runs via ForceUpdateDependencies, which FRB can also call DURING the
+                // draw pass itself (e.g. visibility/culling checks needing a fresh position). Mutating
+                // SpriteManager's layer list (Remove then Add) while DrawLayers is actively iterating
+                // that same list by index causes it to visit the reordered layer twice in one frame -
+                // drawing this exact object twice, which is exactly what was observed (a duplicate that
+                // perfectly overlaps at 100% zoom, since it's the same object drawn twice, not a second
+                // registration).
+                EnsureEntityAttachmentFrbLayerDrawsLast();
+            }
         }
 
         public override void ForceUpdateDependencies()
@@ -121,23 +226,38 @@ namespace GumCoreShared.FlatRedBall.Embedded
                 // but zooming of the objects in Gum won't change. What should happen is the Gum zoom 
                 // should be zooming when the normal camera zooms too
                 //zoom = camera.DestinationRectangle.Height / (managers.Renderer.Camera.Zoom * camera.OrthogonalHeight);
-                // Update March 18, 2022
-                // This is a huge mess, so
-                // let's work this out:
-                // screenX and screenY are
-                // the pixel X and Y regardless
-                // of any zoom. Therefore, on a 600
-                // pixel wide screen, a value of 300
-                // would be center of the screen. To convert
-                // that to Gum coordinates, we need to set the
-                // value to be the same ratio of the width and height.
-                double ratioWidth = screenXRelativeToDestinationRectangle / (double)camera.DestinationRectangle.Width;
-                double ratioHeight = screenYRelativeToDestinationRectangle / (double) camera.DestinationRectangle.Height;
-
                 var managers = GumObject.Managers ?? SystemManagers.Default;
                 var renderer = managers.Renderer;
-                GumParent.X = (float)(GraphicalUiElement.CanvasWidth * ratioWidth);
-                GumParent.Y = (float)(GraphicalUiElement.CanvasHeight * ratioHeight);
+                var gumCamera = renderer.Camera;
+
+                RenderingLibrary.Graphics.Layer editModeZoomLayer = null;
+                if (global::FlatRedBall.Screens.ScreenManager.IsInEditMode)
+                {
+                    editModeZoomLayer = GetOrCreateEntityAttachmentZoomLayer();
+
+                    // Game code can call gumObject.MoveToLayer/MoveToFrbLayer at any time after this
+                    // wrapper's constructor ran (e.g. re-parenting a health bar onto a HUD layer once
+                    // its owning entity spawns) - that silently steals gumObject back off the zoom
+                    // layer with no way for this wrapper to intervene at the call site. Reclaiming it
+                    // here every frame makes edit-mode zoom tracking win regardless of what else moves
+                    // the object, instead of depending on nothing else ever calling MoveToLayer on it
+                    // after construction.
+                    if (GumObject.Layer != editModeZoomLayer)
+                    {
+                        GumObject.MoveToLayer(editModeZoomLayer);
+                    }
+                }
+
+                // SpriteRenderer.GetZoomAndMatrix now uses the same offset-free transform
+                // (screenPos = (canvasPos - gumCamera.X) * zoom) for both a world-space layer with
+                // explicit LayerCameraSettings (our editModeZoomLayer, in TopLeft mode - see the Gum-side
+                // fix in SpriteRenderer.cs) and the null-LayerCameraSettings default (e.g. MainLayer, via
+                // the mode-aware instance GetTransformationMatrix). So one inverted formula covers both -
+                // just use whichever layer's effective zoom actually applies to gumObject right now.
+                var effectiveZoom = editModeZoomLayer?.LayerCameraSettings?.Zoom ?? gumCamera.Zoom;
+                if (effectiveZoom == 0) effectiveZoom = 1;
+                GumParent.X = (screenXRelativeToDestinationRectangle - gumCamera.X) / effectiveZoom;
+                GumParent.Y = (screenYRelativeToDestinationRectangle - gumCamera.Y) / effectiveZoom;
             }
             else
             {
