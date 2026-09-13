@@ -765,7 +765,11 @@ namespace FlatRedBall.Glue.Parsing
         /// go through: for an enum, prefers <paramref name="declaredDefault"/> (the AssetTypeInfo's
         /// DefaultValue) resolved to its underlying number, falls back to the enum's own CLR zero if that
         /// doesn't resolve (issue #2283 - a missing/stale declared default must not fall through to null,
-        /// which is what made #2272's crash possible), and otherwise defers to <see cref="TryGetDefaultForType"/>.
+        /// which is what made #2272's crash possible). For a non-enum primitive, prefers
+        /// <paramref name="declaredDefault"/> when it actually parses as that type (issue #2298 - Sprite's
+        /// Alpha declares DefaultValue=1, but the CLR zero for float is 0, so "Set to Default" was pushing
+        /// an invisible sprite instead of an opaque one), and otherwise defers to
+        /// <see cref="TryGetDefaultForType"/>.
         /// </summary>
         public static bool TryGetVariableDefaultValue(string type, string declaredDefault, out string defaultValue)
         {
@@ -780,7 +784,77 @@ namespace FlatRedBall.Glue.Parsing
                 return true;
             }
 
+            if (TryGetDeclaredPrimitiveDefault(type, declaredDefault, out defaultValue))
+            {
+                return true;
+            }
+
             return TryGetDefaultForType(type, out defaultValue);
+        }
+
+        /// <summary>
+        /// Validates <paramref name="declaredDefault"/> actually parses as <paramref name="type"/> before
+        /// trusting it - a stale/typo'd ContentTypes.csv entry must fall back to the CLR default rather
+        /// than propagate garbage (see the enum equivalent, "NotAMember", above).
+        /// </summary>
+        private static bool TryGetDeclaredPrimitiveDefault(string type, string declaredDefault, out string defaultValue)
+        {
+            defaultValue = null;
+            var trimmedDefault = declaredDefault?.Trim();
+            if (string.IsNullOrEmpty(trimmedDefault))
+            {
+                return false;
+            }
+
+            switch (type?.Trim())
+            {
+                case "bool":
+                case "Boolean":
+                case "System.Boolean":
+                    if (bool.TryParse(trimmedDefault, out var boolValue))
+                    {
+                        defaultValue = boolValue ? "true" : "false";
+                        return true;
+                    }
+                    return false;
+
+                case "float":
+                case "Single":
+                case "System.Single":
+                case "double":
+                case "Double":
+                case "System.Double":
+                case "decimal":
+                case "Decimal":
+                case "System.Decimal":
+                    if (double.TryParse(trimmedDefault, System.Globalization.NumberStyles.Float,
+                        System.Globalization.CultureInfo.InvariantCulture, out _))
+                    {
+                        defaultValue = trimmedDefault;
+                        return true;
+                    }
+                    return false;
+
+                case "Int16":
+                case "int":
+                case "Int32":
+                case "System.Int32":
+                case "long":
+                case "Int64":
+                case "System.Int64":
+                case "byte":
+                case "Byte":
+                    if (long.TryParse(trimmedDefault, System.Globalization.NumberStyles.Integer,
+                        System.Globalization.CultureInfo.InvariantCulture, out _))
+                    {
+                        defaultValue = trimmedDefault;
+                        return true;
+                    }
+                    return false;
+
+                default:
+                    return false;
+            }
         }
 
         /// <summary>

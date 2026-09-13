@@ -99,6 +99,38 @@ public class TypeManagerEnumValueTests
         value.ShouldBeNull();
     }
 
+    // GitHub issue #2298: "Set to Default" on Sprite's Alpha (ContentTypes.csv declares DefaultValue=1)
+    // sent null over the wire, which the game's float parser turns into 0 - an invisible sprite until the
+    // next full restart regenerates code from the (now-empty) InstructionSaves list. #2283 only taught
+    // this method to honor a declared default for enums; a non-enum primitive with a real, non-zero
+    // default (Alpha, or any bool that defaults true) needs the same treatment.
+    [Theory]
+    [InlineData("float", "1", "1")]
+    [InlineData("Single", "1", "1")]
+    [InlineData("double", "2.5", "2.5")]
+    [InlineData("bool", "true", "true")]
+    [InlineData("Boolean", "true", "true")]
+    [InlineData("int", "5", "5")]
+    public void TryGetVariableDefaultValue_ShouldPreferTheDeclaredDefault_ForPrimitiveTypes(
+        string type, string declaredDefault, string expected)
+    {
+        TypeManager.TryGetVariableDefaultValue(type, declaredDefault, out string value).ShouldBeTrue();
+        value.ShouldBe(expected);
+    }
+
+    [Theory]
+    // A declared default that doesn't parse as the variable's type (stale/typo'd CSV entry) must not
+    // propagate garbage - fall back the same way an unresolvable enum member does.
+    [InlineData("float", "notanumber", "0")]
+    [InlineData("bool", "notabool", "false")]
+    [InlineData("int", "notanumber", "0")]
+    public void TryGetVariableDefaultValue_ShouldFallBackToClrZero_WhenDeclaredDefaultDoesNotParseAsThatType(
+        string type, string declaredDefault, string expected)
+    {
+        TypeManager.TryGetVariableDefaultValue(type, declaredDefault, out string value).ShouldBeTrue();
+        value.ShouldBe(expected);
+    }
+
     // GitHub issue #2283: StateCodeGenerator.Interpolation.cs embeds this as a C# source literal, so a bare
     // enum number (what TryGetVariableDefaultValue hands the runtime parser) doesn't compile - it needs a
     // qualified member-name expression instead.
