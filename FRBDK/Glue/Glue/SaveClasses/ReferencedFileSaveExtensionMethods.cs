@@ -356,37 +356,8 @@ namespace FlatRedBall.Glue.SaveClasses
                 .StartsWith(containerFolder, StringComparison.OrdinalIgnoreCase);
         }
 
-        /// <summary>
-        /// Returns the associated AssetTypeInfo for the ReferencedFileSave. If the ReferencedFileSave
-        /// specifies a runtime type, then this will return the AssetTypeInfo for that runtime type. Otherwise
-        /// the AssetTypeInfo for the extension will be returned.
-        /// </summary>
-        /// <param name="referencedFileSave">The argument ReferencedFileSave</param>
-        /// <returns>The AssetTypeInfo for the argument ReferencedFileSave.</returns>
-        public static AssetTypeInfo GetAssetTypeInfo(this ReferencedFileSave referencedFileSave)
-        {
-            string extension = FileManager.GetExtension(referencedFileSave.Name);
-
-            if (!string.IsNullOrEmpty(referencedFileSave.RuntimeType))
-            {
-                // try finding one based on extension and type. If that doesn't exist, then just look at type
-
-                var found = AvailableAssetTypes.Self.GetAssetTypeFromExtensionAndQualifiedRuntime(
-                    extension, referencedFileSave.RuntimeType);
-
-                if(found == null)
-                {
-                    found = AvailableAssetTypes.Self.AllAssetTypes.FirstOrDefault(item => item.QualifiedRuntimeTypeName.QualifiedType == referencedFileSave.RuntimeType);
-                }
-
-                return found;
-            }
-            else
-            {
-
-                return AvailableAssetTypes.Self.GetAssetTypeFromExtension(extension);
-            }
-        }
+        // GetAssetTypeInfo moved to GlueCommon.SaveClasses.ReferencedFileSaveAssetTypeExtensions
+        // (#2276) - needed the new IAvailableAssetTypesCore seam over AvailableAssetTypes.Self.
 
         public static bool GetGeneratesMember(this ReferencedFileSave instance)
         {
