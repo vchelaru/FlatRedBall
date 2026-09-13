@@ -12,12 +12,16 @@ public class FakeObjectFinderCore : IObjectFinderCore
 
     readonly Dictionary<string, GlueElement> _elementsByName = new();
     readonly Dictionary<NamedObjectSave, GlueElement> _containersByNamedObject = new();
+    readonly Dictionary<ReferencedFileSave, GlueElement> _containersByReferencedFile = new();
     readonly Dictionary<GlueElement, List<GlueElement>> _baseElementsByElement = new();
 
     public void AddElement(string name, GlueElement element) => _elementsByName[name] = element;
 
     public void SetContainer(NamedObjectSave namedObjectSave, GlueElement container) =>
         _containersByNamedObject[namedObjectSave] = container;
+
+    public void SetContainer(ReferencedFileSave referencedFileSave, GlueElement container) =>
+        _containersByReferencedFile[referencedFileSave] = container;
 
     public void SetBaseElements(GlueElement derivedElement, List<GlueElement> baseElements) =>
         _baseElementsByElement[derivedElement] = baseElements;
@@ -27,6 +31,9 @@ public class FakeObjectFinderCore : IObjectFinderCore
 
     public GlueElement GetElementContaining(NamedObjectSave namedObjectSave) =>
         _containersByNamedObject.TryGetValue(namedObjectSave, out var container) ? container : null;
+
+    public GlueElement GetElementContaining(ReferencedFileSave referencedFileSave) =>
+        _containersByReferencedFile.TryGetValue(referencedFileSave, out var container) ? container : null;
 
     public EntitySave GetEntitySave(string entityName) => GetElement(entityName) as EntitySave;
 

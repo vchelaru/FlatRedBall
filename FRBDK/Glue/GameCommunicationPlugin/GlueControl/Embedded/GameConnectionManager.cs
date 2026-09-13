@@ -122,9 +122,16 @@ namespace GlueCommunication
                         Connected();
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    //Debug.WriteLine($"Listening Error: {ex}");
+                    // Diagnostic for #2301 (LiveGame tests occasionally failing with "No response
+                    // received"/"game->glue socket closed" and no clue why): a failed reconnect attempt
+                    // used to vanish entirely (Debug.WriteLine isn't captured by LiveGameProcess, only
+                    // Console output is - see the receive-loop catches below for the same gap).
+                    if (IsLiveGameTestDiagnosticsEnabled)
+                    {
+                        Console.WriteLine($"[LiveGameTest] {DateTime.UtcNow:HH:mm:ss.fff} StartConnecting failed: {ex}");
+                    }
                 }
                 finally
                 {
@@ -193,7 +200,22 @@ namespace GlueCommunication
                             {
                                 glueToGameSocket.Send(bytes);
                             }
-                            catch (ObjectDisposedException) { }
+                            // SocketException added alongside ObjectDisposedException for #2301: a
+                            // response computed successfully (see "responded after" above) can still fail
+                            // to transmit if glueToGameSocket was torn down between computing it and
+                            // sending it (e.g. the separate game->glue channel resetting concurrently -
+                            // see ResetConnection's own doc comment on why both sockets reset together).
+                            // Previously only ObjectDisposedException was caught here, so a SocketException
+                            // on this send fell through to the outer catch below and was swallowed
+                            // entirely (Debug.WriteLine, never captured) - Glue then saw nothing but a
+                            // timeout, with no way to tell "response lost in transit" from "game hung".
+                            catch (Exception ex) when (ex is ObjectDisposedException || ex is SocketException)
+                            {
+                                if (IsLiveGameTestDiagnosticsEnabled)
+                                {
+                                    Console.WriteLine($"[LiveGameTest] {DateTime.UtcNow:HH:mm:ss.fff} failed to send response size: {ex.GetType().Name} {ex.Message}");
+                                }
+                            }
 
                             try
                             {
@@ -204,7 +226,13 @@ namespace GlueCommunication
                                     glueToGameSocket.Send(sendBytes);
                                 }
                             }
-                            catch (ObjectDisposedException) { }
+                            catch (Exception ex) when (ex is ObjectDisposedException || ex is SocketException)
+                            {
+                                if (IsLiveGameTestDiagnosticsEnabled)
+                                {
+                                    Console.WriteLine($"[LiveGameTest] {DateTime.UtcNow:HH:mm:ss.fff} failed to send response payload: {ex.GetType().Name} {ex.Message}");
+                                }
+                            }
                         }
 #endif
 
@@ -213,6 +241,10 @@ namespace GlueCommunication
                 catch (Exception ex)
                 {
                     Debug.WriteLine($"Server Connection Failed: {ex}");
+                    if (IsLiveGameTestDiagnosticsEnabled)
+                    {
+                        Console.WriteLine($"[LiveGameTest] {DateTime.UtcNow:HH:mm:ss.fff} glue->game receive loop ended: {ex}");
+                    }
                 }
                 finally { _isConnected = false; }
             });
@@ -333,6 +365,14 @@ namespace GlueCommunication
             lock (_lock)
             {
                 System.Diagnostics.Debug.WriteLine($"[GameConnection] Resetting connection: {reason}");
+                // #2301: Debug.WriteLine above isn't captured by LiveGameProcess (only Console output is),
+                // so the game's OWN account of why it reset - the only place that could show which of the
+                // two sockets actually failed and with what exception - never reached a failed test's
+                // diagnostics. Glue's side of the connection log only ever saw the generic "socket closed".
+                if (IsLiveGameTestDiagnosticsEnabled)
+                {
+                    Console.WriteLine($"[LiveGameTest] {DateTime.UtcNow:HH:mm:ss.fff} game-side ResetConnection: {reason}");
+                }
 
                 _isConnected = false;
 

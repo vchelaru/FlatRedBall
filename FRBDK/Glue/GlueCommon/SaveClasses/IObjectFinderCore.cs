@@ -17,6 +17,7 @@ namespace FlatRedBall.Glue.SaveClasses
         GlueProjectSave GlueProject { get; }
         GlueElement GetElement(string elementName);
         GlueElement GetElementContaining(NamedObjectSave namedObjectSave);
+        GlueElement GetElementContaining(ReferencedFileSave referencedFileSave);
         EntitySave GetEntitySave(string entityName);
         List<GlueElement> GetAllBaseElementsRecursively(GlueElement derivedElement);
     }
