@@ -50,37 +50,10 @@ public static class IElementExtensionMethods
         return rfs;
     }
 
-    /// <summary>
-    /// Returns all referenced files in this and base elements.
-    /// </summary>
-    /// <param name="instance">The element to search</param>
-    /// <returns>All referenced file saves from this and base elements.</returns>
-    public static IEnumerable<ReferencedFileSave> GetAllReferencedFileSavesRecursively(this IElement instance)
-    {
-        if (instance == null)
-        {
-            yield break;
-        }
-
-        foreach (ReferencedFileSave rfs in instance.ReferencedFiles)
-        {
-            yield return rfs;
-        }
-
-        if (!string.IsNullOrEmpty(instance.BaseElement))
-        {
-
-            var baseElement = GlueState.CurrentGlueProject.GetElement(instance.BaseElement);
-            if (baseElement != null)
-            {
-                foreach (ReferencedFileSave rfs in baseElement.GetAllReferencedFileSavesRecursively())
-                {
-                    yield return rfs;
-                }
-            }
-        }
-
-    }
+    // GetAllReferencedFileSavesRecursively moved to GlueCommon.SaveClasses.ElementExtensions (#2276) -
+    // GlueState.CurrentGlueProject is just ObjectFinder.Self.GlueProject (see
+    // GlueState.CurrentGlueProject's own getter), so it routes through the existing IObjectFinderCore
+    // seam instead.
 
     public static ReferencedFileSave GetReferencedFileSaveByInstanceName(this IElement element, string instanceName, bool caseSensitive = true)
     {
@@ -119,46 +92,8 @@ public static class IElementExtensionMethods
 
     }
 
-    /// <summary>
-    /// Returns the CustomVarible by the argument name. If not found, this will search the base element recursively.
-    /// </summary>
-    /// <param name="element">The element to search</param>
-    /// <param name="variableName">The variable name to search for</param>
-    /// <returns>The found variable</returns>
-    public static CustomVariable GetCustomVariableRecursively(this GlueElement element, string variableName)
-    {
-        //////////////////////Early Out///////////////////////////////////
-        if (string.IsNullOrEmpty(variableName))
-        {
-            return null;
-        }
-
-        ////////////////////End Early Out//////////////////////////
-        if (variableName.StartsWith("this."))
-        {
-            variableName = variableName.Substring("this.".Length);
-        }
-        CustomVariable foundVariable = element.GetCustomVariable(variableName);
-
-        if (foundVariable != null)
-        {
-            return foundVariable;
-        }
-        else
-        {
-            if (!string.IsNullOrEmpty(element.BaseObject))
-            {
-                var baseElement = ObjectFinder.Self.GetElement(element.BaseObject);
-
-                if (baseElement != null)
-                {
-                    foundVariable = GetCustomVariableRecursively(baseElement, variableName);
-                }
-            }
-
-            return foundVariable;
-        }
-    }
+    // GetCustomVariableRecursively moved to GlueCommon.SaveClasses.ElementExtensions (#2276) - only
+    // needed the existing IObjectFinderCore seam over ObjectFinder.Self.GetElement.
 
     /// <summary>
     /// Gets the value of the argument variable recurisvely, checking "this" first, then the base elements. If this variable
@@ -250,73 +185,10 @@ public static class IElementExtensionMethods
     }
 
 
-    public static List<CustomVariable> GetCustomVariablesToBeSetByDerived(this IElement element)
-    {
-        var customVariablesToBeSetByDerived = new List<CustomVariable>();
-
-        if (!string.IsNullOrEmpty(element.BaseObject) && element.BaseObject != "<NONE>")
-        {
-            IElement elementBase = GlueState.CurrentGlueProject.GetElement(element.BaseObject);
-
-            if (elementBase == null)
-            {
-                if (!element.InheritsFromFrbType())
-                {
-                    throw new Exception("The object\n\n" + element + "\n\nhas a base type of\n\n" +
-                                        element.BaseObject + "\n\nbut this type can't be found.  This probably happened if the base type was " +
-                                        "removed from the project.  You will want to set the base type to NONE");
-                }
-            }
-            else
-            {
-                customVariablesToBeSetByDerived.AddRange(elementBase.GetCustomVariablesToBeSetByDerived());
-            }
-        }
-
-        foreach (CustomVariable cv in element.CustomVariables)
-        {
-            if (cv.SetByDerived)
-            {
-                customVariablesToBeSetByDerived.Add(cv);
-            }
-        }
-
-        return customVariablesToBeSetByDerived;
-    }
-
-    public static bool ContainsCustomVariable(this IElement container, string variableName)
-    {
-        for (int i = 0; i < container.CustomVariables.Count; i++)
-        {
-            if (container.CustomVariables[i].Name == variableName)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static bool ContainsCustomVariableRecursively(this IElement container, string variableName)
-    {
-        for (int i = 0; i < container.CustomVariables.Count; i++)
-        {
-            if (container.CustomVariables[i].Name == variableName)
-            {
-                return true;
-            }
-        }
-
-        // didn't find it, so let's look at the base:
-        if(!string.IsNullOrEmpty(container.BaseElement))
-        {
-            var baseElement = ObjectFinder.Self.GetElement(container.BaseElement);
-            if(baseElement != null && baseElement.ContainsCustomVariableRecursively(variableName))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
+    // GetCustomVariablesToBeSetByDerived, ContainsCustomVariable, and ContainsCustomVariableRecursively
+    // moved to GlueCommon.SaveClasses.ElementExtensions (#2276) - GlueState.CurrentGlueProject is just
+    // ObjectFinder.Self.GlueProject (see GlueState.CurrentGlueProject's own getter), so they route
+    // through the existing IObjectFinderCore seam instead.
 
 
     public static void PostLoadInitialize(this IElement element)
@@ -376,10 +248,7 @@ public static class IElementExtensionMethods
         return referencedFileSave;
     }
 
-    public static List<EventResponseSave> GetEventsOnVariable(this IElement instance, string variableName)
-    {
-        return instance.Events.Where(eventSave => eventSave.SourceVariable == variableName).ToList();
-    }
+    // GetEventsOnVariable moved to GlueCommon.SaveClasses.ElementExtensions (#2276) - zero coupling.
 
     public static void FixAllTypes(this GlueElement element)
     {
@@ -435,244 +304,19 @@ public static class IElementExtensionMethods
     }
 
 
-    public static StateSave GetState(this IElement element, string stateName, string categoryName = null)
-    {
-        if (string.IsNullOrEmpty(categoryName) || categoryName == "Uncategorized")
-        {
-            foreach (StateSave state in element.States)
-            {
-                if (state.Name == stateName)
-                {
-                    return state;
-                }
-            }
-        }
+    // GetState, GetStateRecursively, GetUncategorizedState, GetUncategorizedStateRecursively,
+    // GetUncategorizedStatesRecursively, GetStateCategory, GetStateCategoryRecursively, and
+    // DefinesCategoryEnumRecursive moved to GlueCommon.SaveClasses.ElementExtensions (#2276) -
+    // GlueState.CurrentGlueProject is just ObjectFinder.Self.GlueProject (see
+    // GlueState.CurrentGlueProject's own getter), so they route through the existing IObjectFinderCore
+    // seam instead.
 
-        foreach (StateSaveCategory category in element.StateCategoryList)
-        {
-            if (  string.IsNullOrEmpty(categoryName) || categoryName == category.Name)
-            {
-                foreach (StateSave state in category.States)
-                {
-                    if (state.Name == stateName)
-                    {
-                        return state;
-                    }
-                }
-            }
-        }
+    // GetAllNamedObjectsRecurisvely moved to GlueCommon.SaveClasses.ElementExtensions (#2276) - only
+    // needed the existing IObjectFinderCore seam over ObjectFinder.Self.GetAllBaseElementsRecursively.
 
-        return null;
-
-    }
-
-    public static StateSave GetStateRecursively(this IElement element, string stateName, string categoryName = null)
-    {
-        StateSave stateSave = element.GetState(stateName, categoryName);
-
-        if (stateSave != null)
-        {
-            return stateSave;
-        }
-        else if (stateSave == null && !string.IsNullOrEmpty(element.BaseElement))
-        {
-            IElement baseElement = GlueState.CurrentGlueProject.GetElement(element.BaseElement);
-
-            if (baseElement != null)
-            {
-                return GetStateRecursively(baseElement, stateName, categoryName);
-            }
-        }
-
-        return null;
-    }
-    public static StateSave GetUncategorizedState(this IElement element, string stateName)
-    {
-        foreach (StateSave state in element.States)
-        {
-            if (state.Name == stateName)
-            {
-                return state;
-            }
-        }
-        return null;
-    }
-
-    public static StateSave GetUncategorizedStateRecursively(this IElement element, string stateName)
-    {
-        StateSave foundStateSave = element.GetUncategorizedState(stateName);
-
-        if (foundStateSave == null && !string.IsNullOrEmpty(element.BaseElement))
-        {
-            IElement baseElement = GlueState.CurrentGlueProject.GetElement(element.BaseElement);
-
-            if (baseElement != null)
-            {
-                return baseElement.GetUncategorizedStateRecursively(stateName);
-            }
-        }
-
-        return foundStateSave;
-    }
-
-    public static List<StateSave> GetUncategorizedStatesRecursively(this IElement element)
-    {
-        // We'll start at the top and move down so that derived types can override baset types....not sure if this is going to eventually change
-        IElement baseElement = GlueState.CurrentGlueProject.GetElement(element.BaseElement);
-
-        if(baseElement == null || element.States.Count != 0)
-        {
-            return element.States;
-        }
-        else
-        {
-            return baseElement.GetUncategorizedStatesRecursively();
-        }
-
-    }
-
-    public static StateSaveCategory GetStateCategory(this IElement element, string stateCategoryName)
-    {
-        return element.StateCategoryList.FirstOrDefault(stateCategory => stateCategory.Name == stateCategoryName);
-    }
-
-    public static StateSaveCategory GetStateCategoryRecursively(this IElement element, string stateCategoryName)
-    {
-        // start at the top-down
-        StateSaveCategory category = element.GetStateCategory(stateCategoryName);
-
-        if (category == null && !string.IsNullOrEmpty(element.BaseElement))
-        {
-            IElement baseElement = GlueState.CurrentGlueProject.GetElement(element.BaseElement);
-
-            if (baseElement != null)
-            {
-                return baseElement.GetStateCategoryRecursively(stateCategoryName);
-            }
-        }
-
-
-        return category;
-
-    }
-
-    public static bool DefinesCategoryEnumRecursive(this IElement element, string enumType)
-    {
-        bool uses = false;
-        if (enumType == "VariableState")
-        {
-            uses = element.States.Count != 0;
-        }
-        else
-        {
-            uses = element.StateCategoryList.Count(item => { return item.Name == enumType; }) != 0;
-        }
-
-        if (!uses && !string.IsNullOrEmpty(element.BaseElement))
-        {
-            IElement baseElement = GlueState.CurrentGlueProject.GetElement(element.BaseElement);
-
-            if (baseElement != null)
-            {
-                uses = baseElement.DefinesCategoryEnumRecursive(enumType);
-            }
-        }
-
-        return uses;
-    }
-
-    /// <summary>
-    /// Returns all named objects contained in this object (both single and objects in lists) as well
-    /// as all named objects in base elements.
-    /// </summary>
-    /// <param name="element">Element named object container.</param>
-    /// <returns>All named objects.</returns>
-    public static IEnumerable<NamedObjectSave> GetAllNamedObjectsRecurisvely(this GlueElement element)
-    {
-        if (element != null)
-        {
-            foreach (NamedObjectSave nos in element.AllNamedObjects)
-            {
-                yield return nos;
-            }
-
-            var allDerived = ObjectFinder.Self.GetAllBaseElementsRecursively(element);
-
-            foreach(var derived in allDerived)
-            {
-                foreach (NamedObjectSave nos in derived.AllNamedObjects)
-                {
-                    yield return nos;
-                }
-            }
-        }
-    }
-
-    public static string GetQualifiedName(this IElement element, string projectName)
-    {
-        return projectName + '.' + element.Name.Replace('\\', '.');
-    }
-
-    public static bool InheritsFromElement(this IElement element)
-    {
-        return element.BaseElement != null &&
-               (element.BaseElement.Replace('\\', '/').StartsWith($"Entities/", StringComparison.OrdinalIgnoreCase) ||
-                element.BaseElement.Replace('\\', '/').StartsWith($"Screens/", StringComparison.OrdinalIgnoreCase));
-            
-    }
-
-    public static bool InheritsFromEntity(this IElement element)
-    {
-        if (element is ScreenSave)
-        {
-            return false;
-        }
-        else
-        {
-            return element.BaseElement != null &&
-                   element.BaseElement.Replace('\\', '/').StartsWith($"Entities/", StringComparison.OrdinalIgnoreCase);
-        }
-    }
-
-    public static bool InheritsFromFrbType(this IElement element)
-    {
-        if (element is ScreenSave)
-        {
-            return false;
-        }
-        else
-        {
-            return !string.IsNullOrEmpty(element.BaseElement) &&
-                   !element.BaseElement.Replace('\\', '/').StartsWith($"Entities/", StringComparison.OrdinalIgnoreCase);
-        }
-    }
-
-    public static AssetTypeInfo GetAssetTypeInfo(this IElement element)
-    {
-        if (element is ScreenSave)
-        {
-            return AvailableAssetTypes.CommonAtis.Screen;
-        }
-        else if (!string.IsNullOrEmpty(element.BaseElement))
-        {
-            var entitySave = element as EntitySave;
-            var baseEntity = ObjectFinder.Self.GetEntitySave(element.BaseElement);
-
-            if (baseEntity != null)
-            {
-                return baseEntity.GetAssetTypeInfo();
-            }
-            else
-            {
-                return AvailableAssetTypes.Self.AllAssetTypes.FirstOrDefault(item => item.RuntimeTypeName == element.BaseElement ||
-                    item.QualifiedRuntimeTypeName.QualifiedType == element.BaseElement);
-            }
-        }
-        else
-        {
-            var specificType = AvailableAssetTypes.Self.AllAssetTypes.FirstOrDefault(item => item.RuntimeTypeName == element.Name);
-            return specificType ?? 
-                   AvailableAssetTypes.Self.AllAssetTypes.FirstOrDefault(item => item.RuntimeTypeName == nameof(PositionedObject));
-        }
-    }
+    // GetQualifiedName, InheritsFromElement, InheritsFromEntity, InheritsFromFrbType, and
+    // GetAssetTypeInfo(this IElement) moved to GlueCommon.SaveClasses.ElementExtensions (#2276) -
+    // GetAssetTypeInfo needed IAvailableAssetTypesCore widened with a Screen property
+    // (AvailableAssetTypes.CommonAtis.Screen), same pattern as the seam's other members; the rest were
+    // already zero-coupling or only needed the existing IObjectFinderCore seam.
 }
