@@ -9,6 +9,11 @@ namespace GlueCommonUnitTests.SaveClasses;
 public class FakeAvailableAssetTypesCore : IAvailableAssetTypesCore
 {
     public AssetTypeInfo PositionedObjectList { get; set; }
+    public AssetTypeInfo CapsulePolygon { get; set; }
+    public AssetTypeInfo Circle { get; set; }
+    public AssetTypeInfo AxisAlignedRectangle { get; set; }
+    public AssetTypeInfo Polygon { get; set; }
+    public AssetTypeInfo ShapeCollection { get; set; }
 
     readonly List<AssetTypeInfo> _assetTypes = new();
 

@@ -381,13 +381,30 @@ internal sealed class LiveGameProcess : IDisposable
     /// socket was torn down mid-request and this failed fast" - see #2244, where the failure message
     /// alone ("No response received") could not tell those apart.
     /// </summary>
+    /// <remarks>
+    /// See #2301: a failure whose connection log shows the socket torn down (not a timeout) can still
+    /// mean the game process crashed, but <see cref="capturedStandardOutput"/>/<see cref="capturedStandardError"/>
+    /// come back empty if the process's OutputDataReceived/ErrorDataReceived handlers hadn't finished
+    /// draining yet at this exact moment - the same drain-timing gap <see cref="StartAsync"/>'s
+    /// WaitForExit() comment describes. Checking HasExited first and, only then, calling the no-timeout
+    /// WaitForExit() overload (fast - the process is already dead) closes that gap without risking a
+    /// hang on a genuinely-still-running (deadlocked) game.
+    /// </remarks>
     void AppendDiagnosticsOnFailure<T>(GeneralResponse<T> response, TimeSpan elapsed)
     {
         if (response?.Succeeded == false)
         {
+            string processExitInfo = "";
+            if (process.HasExited)
+            {
+                process.WaitForExit();
+                processExitInfo = $"{Environment.NewLine}{Environment.NewLine}Game process exited with code {process.ExitCode}.";
+            }
+
             response.Message +=
                 $"{Environment.NewLine}{Environment.NewLine}Send took {elapsed.TotalSeconds:0.00}s " +
                 $"(configured timeout {CommandResponseTimeoutInSeconds:0}s), IsConnected={connectionManager.IsConnected}." +
+                processExitInfo +
                 $"{Environment.NewLine}{Environment.NewLine}connection log:{Environment.NewLine}" +
                 (connectionDiagnosticLog.IsEmpty ? "<empty>" : string.Join(Environment.NewLine, connectionDiagnosticLog)) +
                 DescribeCapturedOutput(capturedStandardOutput, capturedStandardError);

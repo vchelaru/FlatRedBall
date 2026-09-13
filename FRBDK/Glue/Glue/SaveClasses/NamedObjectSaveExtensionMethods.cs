@@ -11,7 +11,6 @@ using FlatRedBall.Content.Instructions;
 using FlatRedBall.Glue.Reflection;
 using FlatRedBall.Glue.SaveClasses;
 using Newtonsoft.Json;
-using FlatRedBall.Glue.Plugins.ICollidablePlugins;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
@@ -482,104 +481,17 @@ namespace FlatRedBall.Glue.SaveClasses
 
         }
 
-        public static bool CanBeInList(this NamedObjectSave instance, NamedObjectSave listNos )
-        {
-            if (listNos.SourceClassGenericType == instance.SourceClassType ||
-                listNos.SourceClassGenericType == instance.InstanceType ||
-                listNos.SourceClassGenericType == instance.GetAssetTypeInfo()?.QualifiedRuntimeTypeName.QualifiedType)
-            {
-                return true;
-            }
-
-            if (instance.SourceType == SourceType.Entity)
-            {
-                EntitySave instanceElement = instance.GetReferencedElement() as EntitySave;
-
-                var listElementType = ObjectFinder.Self.GetElement(listNos.SourceClassGenericType);
-
-                if (instanceElement == null || listElementType == null)
-                {
-                    return false;
-                }
-
-                if (instanceElement.InheritsFrom(listNos.SourceClassGenericType))
-                {
-                    return true;
-                }
-            }
-
-
-            return false;
-        }
-
-        public static bool CanBeInShapeCollection(this NamedObjectSave instance)
-        {
-            var ati = instance.GetAssetTypeInfo();
-            var isOfCorrectType = instance.SourceType == SourceType.FlatRedBallType &&
-                (
-                    ati == AvailableAssetTypes.CommonAtis.CapsulePolygon ||
-                    ati == AvailableAssetTypes.CommonAtis.Circle ||
-                    ati == AvailableAssetTypes.CommonAtis.AxisAlignedRectangle ||
-                    ati == AvailableAssetTypes.CommonAtis.Polygon
-                );
-
-            return isOfCorrectType;
-        }
+        // CanBeInList, CanBeInShapeCollection, IsCollidableOrCollidableList, and
+        // ShouldInstantiateInConstructor moved to GlueCommon.SaveClasses.NamedObjectSaveElementExtensions
+        // / NamedObjectSaveAssetTypeExtensions (#2276) - widened IObjectFinderCore
+        // (GetAllBaseElementsRecursively) and IAvailableAssetTypesCore (CapsulePolygon/Circle/
+        // AxisAlignedRectangle/Polygon/ShapeCollection) to unblock them, per the two seams' own pattern.
 
         // GetDefiningNamedObjectSave moved to GlueCommon.SaveClasses.NamedObjectSaveElementExtensions
         // (#2276) - same IObjectFinderCore seam as GetContainer/GetReferencedElement above.
 
         // IsCollisionRelationship moved to GlueCommon.SaveClasses.NamedObjectSaveCollisionExtensions
         // (net8.0, no WPF) - see #2276. Still resolves as an extension method for existing callers.
-
-        public static bool IsCollidableOrCollidableList(this NamedObjectSave namedObjectSave)
-        {
-            if (namedObjectSave.IsList)
-            {
-                var type = namedObjectSave.SourceClassGenericType;
-
-                // For a more complete impl, see:
-                // CollisionRelationshipViewModelController
-
-                if(!string.IsNullOrEmpty(namedObjectSave.SourceClassGenericType))
-                {
-                    var entitySave = ObjectFinder.Self.GetEntitySave(namedObjectSave.SourceClassGenericType);
-
-                    if(entitySave != null)
-                    {
-                        return entitySave.IsICollidableRecursive();
-                    }
-                }
-                return false;
-            }
-            else if (namedObjectSave.GetAssetTypeInfo()?.RuntimeTypeName == "FlatRedBall.TileCollisions.TileShapeCollection" ||
-                namedObjectSave.GetAssetTypeInfo()?.RuntimeTypeName == "TileShapeCollection")
-            {
-                return true;
-            }
-            else if (namedObjectSave.GetAssetTypeInfo()?.RuntimeTypeName == "FlatRedBall.Math.Geometry.ShapeCollection" ||
-                namedObjectSave.GetAssetTypeInfo()?.RuntimeTypeName == "ShapeCollection")
-            {
-                return true;
-            }
-            else if (namedObjectSave.SourceType == SourceType.Entity &&
-                ObjectFinder.Self.GetEntitySave(namedObjectSave.SourceClassType)?.ImplementsICollidable == true)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public static bool ShouldInstantiateInConstructor(this NamedObjectSave namedObjectSave)
-        {
-            return
-                (namedObjectSave.IsList || namedObjectSave.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.ShapeCollection) &&
-                namedObjectSave.Instantiate &&
-                !namedObjectSave.InstantiatedByBase;
-        }
 
         // GetNamedObject and GetNamedObjectInList moved to
         // GlueCommon.SaveClasses.NamedObjectSaveCommonExtensions (#2276).

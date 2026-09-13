@@ -16,6 +16,11 @@ namespace FlatRedBall.Glue.Elements
     public interface IAvailableAssetTypesCore
     {
         AssetTypeInfo PositionedObjectList { get; }
+        AssetTypeInfo CapsulePolygon { get; }
+        AssetTypeInfo Circle { get; }
+        AssetTypeInfo AxisAlignedRectangle { get; }
+        AssetTypeInfo Polygon { get; }
+        AssetTypeInfo ShapeCollection { get; }
         IEnumerable<AssetTypeInfo> AllAssetTypes { get; }
         AssetTypeInfo GetAssetTypeFromRuntimeType(string runtimeType, object callingObject, bool? isObject = null);
         AssetTypeInfo GetAssetTypeFromExtension(string extension);

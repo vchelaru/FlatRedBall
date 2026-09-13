@@ -293,25 +293,10 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
 
-        public static bool InheritsFrom(this EntitySave instance, string entity)
-        {
-            if (instance.BaseEntity == entity)
-            {
-                return true;
-            }
-
-            if (!string.IsNullOrEmpty(instance.BaseEntity))
-            {
-                EntitySave baseEntity = ObjectFinder.Self.GetEntitySave(instance.BaseEntity);
-
-                if (baseEntity != null)
-                {
-                    return baseEntity.InheritsFrom(entity);
-                }
-            }
-
-            return false;
-        }
+        // InheritsFrom(this EntitySave, string) moved to
+        // GlueCommon.SaveClasses.NamedObjectSaveElementExtensions (#2276) - needed by CanBeInList,
+        // which moved alongside it. Only reached ObjectFinder.Self.GetEntitySave, so it goes through
+        // the existing IObjectFinderCore seam.
 
 
         static void AddRangeUnique(this List<TypedMemberBase> listToAddTo, List<TypedMemberBase> whatToAdd)

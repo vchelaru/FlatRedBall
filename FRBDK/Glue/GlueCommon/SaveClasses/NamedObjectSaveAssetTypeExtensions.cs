@@ -94,5 +94,27 @@ namespace FlatRedBall.Glue.SaveClasses
                 return returnAti;
             }
         }
+
+        public static bool CanBeInShapeCollection(this NamedObjectSave instance)
+        {
+            var ati = instance.GetAssetTypeInfo();
+            var isOfCorrectType = instance.SourceType == SourceType.FlatRedBallType &&
+                (
+                    ati == AvailableAssetTypesCore.Self.CapsulePolygon ||
+                    ati == AvailableAssetTypesCore.Self.Circle ||
+                    ati == AvailableAssetTypesCore.Self.AxisAlignedRectangle ||
+                    ati == AvailableAssetTypesCore.Self.Polygon
+                );
+
+            return isOfCorrectType;
+        }
+
+        public static bool ShouldInstantiateInConstructor(this NamedObjectSave namedObjectSave)
+        {
+            return
+                (namedObjectSave.IsList || namedObjectSave.GetAssetTypeInfo() == AvailableAssetTypesCore.Self.ShapeCollection) &&
+                namedObjectSave.Instantiate &&
+                !namedObjectSave.InstantiatedByBase;
+        }
     }
 }

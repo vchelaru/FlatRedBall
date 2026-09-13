@@ -83,9 +83,15 @@ namespace FlatRedBall.Glue.Elements
 
         public static CommonAtis CommonAtis { get; private set; }
 
-        // Implements IAvailableAssetTypesCore.PositionedObjectList - GlueCommon can't reach the
-        // static CommonAtis property directly, so it goes through the narrower instance-level seam.
+        // Implements IAvailableAssetTypesCore.PositionedObjectList (and siblings below) - GlueCommon
+        // can't reach the static CommonAtis property directly, so it goes through the narrower
+        // instance-level seam.
         public AssetTypeInfo PositionedObjectList => CommonAtis.PositionedObjectList;
+        public AssetTypeInfo CapsulePolygon => CommonAtis.CapsulePolygon;
+        public AssetTypeInfo Circle => CommonAtis.Circle;
+        public AssetTypeInfo AxisAlignedRectangle => CommonAtis.AxisAlignedRectangle;
+        public AssetTypeInfo Polygon => CommonAtis.Polygon;
+        public AssetTypeInfo ShapeCollection => CommonAtis.ShapeCollection;
 
         public string GlobalCustomContentTypesFolder
         {

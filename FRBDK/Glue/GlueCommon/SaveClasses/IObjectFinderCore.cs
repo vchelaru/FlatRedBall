@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace FlatRedBall.Glue.SaveClasses
 {
     /// <summary>
@@ -16,6 +18,7 @@ namespace FlatRedBall.Glue.SaveClasses
         GlueElement GetElement(string elementName);
         GlueElement GetElementContaining(NamedObjectSave namedObjectSave);
         EntitySave GetEntitySave(string entityName);
+        List<GlueElement> GetAllBaseElementsRecursively(GlueElement derivedElement);
     }
 
     public static class ObjectFinderCore
