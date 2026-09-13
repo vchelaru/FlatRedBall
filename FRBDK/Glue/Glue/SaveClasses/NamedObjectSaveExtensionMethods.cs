@@ -275,65 +275,9 @@ namespace FlatRedBall.Glue.SaveClasses
         // ConvertEnumerationValuesToInts and PostLoadLogic moved to
         // GlueCommon.SaveClasses.NamedObjectSaveCommonExtensions (#2276).
 
-        public static string NamedObjectSaveToString(NamedObjectSave nos)
-        {
-            IElement container = nos.GetContainer();
-
-            string containerName = " (Uncontained)";
-            if (container != null)
-            {
-                containerName = " in " + container.ToString();
-            }
-
-            return nos.ClassType + " " + nos.InstanceName + containerName;
-
-        }
-
-        public static ContainerType GetContainerType(this NamedObjectSave instance)
-        {
-            IElement container = instance.GetContainer();
-
-            if (container == null)
-            {
-                return SaveClasses.ContainerType.None;
-            }
-            else if (container is EntitySave)
-            {
-                return SaveClasses.ContainerType.Entity;
-            }
-            else
-            {
-                return SaveClasses.ContainerType.Screen;
-            }
-        }
-
-        public static GlueElement GetContainer(this NamedObjectSave instance)
-        {
-            if (ObjectFinder.Self.GlueProject != null)
-            {
-                return ObjectFinder.Self.GetElementContaining(instance);
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        public static GlueElement GetReferencedElement(this NamedObjectSave instance)
-        {
-            if(instance == null)
-            {
-                throw new ArgumentNullException(nameof(instance));
-            }
-            if (string.IsNullOrEmpty(instance.SourceClassType))
-            {
-                return null;
-            }
-            else
-            {
-                return ObjectFinder.Self.GetEntitySave(instance.SourceClassType);
-            }
-        }
+        // NamedObjectSaveToString, GetContainerType, GetContainer, and GetReferencedElement moved to
+        // GlueCommon.SaveClasses.NamedObjectSaveElementExtensions (#2276) - they only needed the
+        // IObjectFinderCore seam over ObjectFinder.Self, not ObjectFinder.Self itself.
 
         public static void GetAdditionsNeededForChangingType(string oldType, string newType, List<PropertyValuePair> valuesToBeSet,
             List<CustomVariable> neededVariables, List<StateSave> neededStates, List<StateSaveCategory> neededCategories)
@@ -657,52 +601,8 @@ namespace FlatRedBall.Glue.SaveClasses
             return isOfCorrectType;
         }
 
-        public static NamedObjectSave GetDefiningNamedObjectSave(this NamedObjectSave instance, IElement container)
-        {
-            if (instance.DefinedByBase == false)
-            {
-                return instance;
-            }
-            else
-            {
-                // it's defined by base
-                if (string.IsNullOrEmpty(container.BaseElement))
-                {
-                    throw new Exception("The instance is DefinedByBase, but the container doesn't have a BaseElement");
-                }
-
-                NamedObjectSave foundNos = null;
-
-                var currentElement = ObjectFinder.Self.GetElement(container.BaseElement);
-
-                while (currentElement != null)
-                {
-                    foundNos = currentElement.NamedObjects.FirstOrDefault(
-                        item => item.InstanceName == instance.InstanceName);
-
-                    if (foundNos != null && foundNos.SetByDerived)
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        currentElement = ObjectFinder.Self.GetElement(currentElement.BaseElement);
-
-                        if (currentElement == null)
-                        {
-                            if (foundNos == null || (foundNos.ExposedInDerived == false && foundNos.SetByDerived == false))
-                            {
-                                foundNos = null;
-                            }
-                        }
-                    }
-
-                }
-
-                return foundNos;
-            }
-
-        }
+        // GetDefiningNamedObjectSave moved to GlueCommon.SaveClasses.NamedObjectSaveElementExtensions
+        // (#2276) - same IObjectFinderCore seam as GetContainer/GetReferencedElement above.
 
         // IsCollisionRelationship moved to GlueCommon.SaveClasses.NamedObjectSaveCollisionExtensions
         // (net8.0, no WPF) - see #2276. Still resolves as an extension method for existing callers.

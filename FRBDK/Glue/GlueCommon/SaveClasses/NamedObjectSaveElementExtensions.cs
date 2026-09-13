@@ -1,0 +1,123 @@
+using System;
+using System.Linq;
+
+namespace FlatRedBall.Glue.SaveClasses
+{
+    /// <summary>
+    /// Split out of <c>NamedObjectSaveExtensionMethods</c> (in <c>Glue.csproj</c>, net8.0-windows): these
+    /// methods are pure logic over a <see cref="NamedObjectSave"/>/<see cref="IElement"/>, but need to
+    /// resolve elements or entities by name, so they depend on <see cref="IObjectFinderCore"/> (a narrow
+    /// seam over <c>ObjectFinder.Self</c>, see that interface's doc comment) instead of reaching for
+    /// <c>ObjectFinder.Self</c> directly. Lives here (net8.0, no WPF) so it and its tests can build and run
+    /// on Linux/macOS. See issue #2276. Named differently from the original class (not a forwarding stub)
+    /// to avoid a duplicate-type clash now that both assemblies are visible together via
+    /// <c>Glue.csproj</c>'s <c>ProjectReference</c> to <c>GlueCommon</c>; extension method resolution
+    /// doesn't care which class declares it, so existing call sites are unaffected.
+    /// </summary>
+    public static class NamedObjectSaveElementExtensions
+    {
+        public static GlueElement GetContainer(this NamedObjectSave instance)
+        {
+            if (ObjectFinderCore.Self.GlueProject != null)
+            {
+                return ObjectFinderCore.Self.GetElementContaining(instance);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public static GlueElement GetReferencedElement(this NamedObjectSave instance)
+        {
+            if (instance == null)
+            {
+                throw new ArgumentNullException(nameof(instance));
+            }
+            if (string.IsNullOrEmpty(instance.SourceClassType))
+            {
+                return null;
+            }
+            else
+            {
+                return ObjectFinderCore.Self.GetEntitySave(instance.SourceClassType);
+            }
+        }
+
+        public static ContainerType GetContainerType(this NamedObjectSave instance)
+        {
+            IElement container = instance.GetContainer();
+
+            if (container == null)
+            {
+                return ContainerType.None;
+            }
+            else if (container is EntitySave)
+            {
+                return ContainerType.Entity;
+            }
+            else
+            {
+                return ContainerType.Screen;
+            }
+        }
+
+        public static string NamedObjectSaveToString(NamedObjectSave nos)
+        {
+            IElement container = nos.GetContainer();
+
+            string containerName = " (Uncontained)";
+            if (container != null)
+            {
+                containerName = " in " + container.ToString();
+            }
+
+            return nos.ClassType + " " + nos.InstanceName + containerName;
+        }
+
+        public static NamedObjectSave GetDefiningNamedObjectSave(this NamedObjectSave instance, IElement container)
+        {
+            if (instance.DefinedByBase == false)
+            {
+                return instance;
+            }
+            else
+            {
+                // it's defined by base
+                if (string.IsNullOrEmpty(container.BaseElement))
+                {
+                    throw new Exception("The instance is DefinedByBase, but the container doesn't have a BaseElement");
+                }
+
+                NamedObjectSave foundNos = null;
+
+                var currentElement = ObjectFinderCore.Self.GetElement(container.BaseElement);
+
+                while (currentElement != null)
+                {
+                    foundNos = currentElement.NamedObjects.FirstOrDefault(
+                        item => item.InstanceName == instance.InstanceName);
+
+                    if (foundNos != null && foundNos.SetByDerived)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        currentElement = ObjectFinderCore.Self.GetElement(currentElement.BaseElement);
+
+                        if (currentElement == null)
+                        {
+                            if (foundNos == null || (foundNos.ExposedInDerived == false && foundNos.SetByDerived == false))
+                            {
+                                foundNos = null;
+                            }
+                        }
+                    }
+                }
+
+                return foundNos;
+            }
+        }
+    }
+}

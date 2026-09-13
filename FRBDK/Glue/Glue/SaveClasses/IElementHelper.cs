@@ -5,7 +5,6 @@ using System.Text;
 using System.Windows.Forms;
 using FlatRedBall.IO;
 using System.IO;
-using FlatRedBall.Glue.Elements;
 
 
 
@@ -18,26 +17,8 @@ namespace FlatRedBall.Glue.SaveClasses
 
 
 
-        public static bool ContainsRecursively(this IElement element, ReferencedFileSave whatToLookFor)
-        {
-            foreach (ReferencedFileSave rfs in element.ReferencedFiles)
-            {
-                if (rfs == whatToLookFor)
-                {
-                    return true;
-                }
-            }
-
-            if (!string.IsNullOrEmpty(element.BaseElement))
-            {
-                IElement baseElement = ObjectFinder.Self.GetIElement(element.BaseElement);
-                if (baseElement != null)
-                {
-                    return baseElement.ContainsRecursively(whatToLookFor);
-                }
-            }
-            return false;
-        }
+        // ContainsRecursively moved to GlueCommon.SaveClasses.IElementHelperMethods (#2276) - it only
+        // needed the IObjectFinderCore seam over ObjectFinder.Self, not ObjectFinder.Self itself.
 
         public static void SortStatesToCustomVariables(this IElement element)
         {

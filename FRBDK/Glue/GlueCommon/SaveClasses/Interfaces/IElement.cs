@@ -96,6 +96,32 @@ namespace FlatRedBall.Glue.SaveClasses
 
     public static class IElementHelperMethods
     {
+        /// <summary>
+        /// Split out of <c>IElementHelper</c> (in <c>Glue.csproj</c>, net8.0-windows) - needs only
+        /// <see cref="IObjectFinderCore.GetElement"/> to walk <see cref="IElement.BaseElement"/>, so it
+        /// depends on that seam instead of <c>ObjectFinder.Self</c> directly. See issue #2276.
+        /// </summary>
+        public static bool ContainsRecursively(this IElement element, ReferencedFileSave whatToLookFor)
+        {
+            foreach (ReferencedFileSave rfs in element.ReferencedFiles)
+            {
+                if (rfs == whatToLookFor)
+                {
+                    return true;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(element.BaseElement))
+            {
+                IElement baseElement = ObjectFinderCore.Self.GetElement(element.BaseElement);
+                if (baseElement != null)
+                {
+                    return baseElement.ContainsRecursively(whatToLookFor);
+                }
+            }
+            return false;
+        }
+
         public static int GetCount(this IEnumerable<StateSave> enumerable)
         {
             int returnCount = 0;
