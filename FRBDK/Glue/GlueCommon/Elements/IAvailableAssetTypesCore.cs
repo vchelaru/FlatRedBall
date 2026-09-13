@@ -21,6 +21,7 @@ namespace FlatRedBall.Glue.Elements
         AssetTypeInfo AxisAlignedRectangle { get; }
         AssetTypeInfo Polygon { get; }
         AssetTypeInfo ShapeCollection { get; }
+        AssetTypeInfo Screen { get; }
         IEnumerable<AssetTypeInfo> AllAssetTypes { get; }
         AssetTypeInfo GetAssetTypeFromRuntimeType(string runtimeType, object callingObject, bool? isObject = null);
         AssetTypeInfo GetAssetTypeFromExtension(string extension);

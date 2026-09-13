@@ -92,6 +92,7 @@ namespace FlatRedBall.Glue.Elements
         public AssetTypeInfo AxisAlignedRectangle => CommonAtis.AxisAlignedRectangle;
         public AssetTypeInfo Polygon => CommonAtis.Polygon;
         public AssetTypeInfo ShapeCollection => CommonAtis.ShapeCollection;
+        public AssetTypeInfo Screen => CommonAtis.Screen;
 
         public string GlobalCustomContentTypesFolder
         {

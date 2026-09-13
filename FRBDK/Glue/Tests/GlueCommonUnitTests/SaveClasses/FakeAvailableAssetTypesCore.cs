@@ -14,6 +14,7 @@ public class FakeAvailableAssetTypesCore : IAvailableAssetTypesCore
     public AssetTypeInfo AxisAlignedRectangle { get; set; }
     public AssetTypeInfo Polygon { get; set; }
     public AssetTypeInfo ShapeCollection { get; set; }
+    public AssetTypeInfo Screen { get; set; }
 
     readonly List<AssetTypeInfo> _assetTypes = new();
 
