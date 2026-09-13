@@ -16,7 +16,7 @@ using System.Windows.Navigation;
 
 namespace FlatRedBall.Glue.Elements;
 
-public class ObjectFinder : IObjectFinder
+public class ObjectFinder : IObjectFinder, IObjectFinderCore
 {
     #region Fields/Properties
 
@@ -27,9 +27,17 @@ public class ObjectFinder : IObjectFinder
 
     #endregion
 
+    // GlueCommon can't reference this assembly (wrong direction), so it can't set ObjectFinderCore.Self
+    // itself - this wires the seam from the Glue.csproj side instead. Runs whenever ObjectFinder is first
+    // touched, which every real caller of ObjectFinderCore.Self does transitively via ObjectFinder.Self.
+    static ObjectFinder()
+    {
+        ObjectFinderCore.Self = mSelf;
+    }
+
     public ObjectFinder()
     {
-        NamedObjectSave.ToStringDelegate = NamedObjectSaveExtensionMethods.NamedObjectSaveToString;
+        NamedObjectSave.ToStringDelegate = NamedObjectSaveElementExtensions.NamedObjectSaveToString;
         CustomVariable.ToStringDelegate = CustomVariableExtensionMethods.CustomVariableToString;
         ReferencedFileSave.ToStringDelegate = ReferencedFileSaveExtensionMethods.ReferencedFileSaveToString;
         EventResponseSave.ToStringDelegate = EventResponseSaveExtensionMethods.EventResponseSaveToString;
