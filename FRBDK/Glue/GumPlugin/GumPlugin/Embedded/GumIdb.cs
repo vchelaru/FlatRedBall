@@ -594,7 +594,6 @@ namespace FlatRedBall.Gum
 
             //////////////////////End Early Out/////////////////////////////
 
-
             // This is the first call of the frame, so reset this value:
             SystemManagers.Default.Renderer.ClearPerformanceRecordingVariables();
 

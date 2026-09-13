@@ -302,64 +302,54 @@ namespace GlueControl.Editing
             var worldXBefore = mouse.WorldXAt(0);
             var worldYBefore = mouse.WorldYAt(0);
 
-            var makeDefaultCamera100 = false;
+            // Divisor here is "screen pixels per world unit" (PixelsPerUnitAt), which is what
+            // the zoom percentage actually represents - it stays constant as the window/panel
+            // resizes since it's derived from the *current* DestinationRectangle.Height, not an
+            // absolute value. forceToGameDefault reproduces a real launch's pixel density
+            // (Data.Scale / 100) using that same window-relative formula, rather than pinning
+            // OrthogonalHeight to an absolute Data.ResolutionHeight (which would make the ratio
+            // panel-size-dependent instead of matching Data.Scale) - issue #2044.
+            var divisor = forceToGameDefault
+                ? CameraSetup.Data.Scale / 100.0f
+                : forceTo100
+                    ? 1
+                    : zoomLevels[(int)currentZoomLevelIndex] / 100.0f;
 
-            float zoomLevel = 100;
-
-            if (makeDefaultCamera100)
+            if (Camera.Main.Orthogonal == true)
             {
-                // In this case, 100% means whatever is the default zoom for the game.
-                zoomLevel =
-                    forceTo100
-                    ? 100 * CameraSetup.Data.Scale / 100.0f
-                    : zoomLevels[(int)currentZoomLevelIndex] * CameraSetup.Data.Scale / 100.0f;
-                Camera.Main.OrthogonalHeight = (CameraSetup.Data.Scale / 100.0f) * CameraSetup.Data.ResolutionHeight / (zoomLevel / 100.0f);
+                Camera.Main.OrthogonalHeight = isFixedSizePreviewLocked
+                    ? lockedOrthogonalHeight
+                    : Camera.Main.DestinationRectangle.Height / divisor;
             }
             else
             {
-                // Divisor here is "screen pixels per world unit" (PixelsPerUnitAt), which is what
-                // the zoom percentage actually represents - it stays constant as the window/panel
-                // resizes since it's derived from the *current* DestinationRectangle.Height, not an
-                // absolute value. forceToGameDefault reproduces a real launch's pixel density
-                // (Data.Scale / 100) using that same window-relative formula, rather than pinning
-                // OrthogonalHeight to an absolute Data.ResolutionHeight (which would make the ratio
-                // panel-size-dependent instead of matching Data.Scale) - issue #2044.
-                var divisor = forceToGameDefault
-                    ? CameraSetup.Data.Scale / 100.0f
-                    : forceTo100
-                        ? 1
-                        : zoomLevels[(int)currentZoomLevelIndex] / 100.0f;
-
-                if (Camera.Main.Orthogonal == true)
-                {
-                    Camera.Main.OrthogonalHeight = isFixedSizePreviewLocked
-                        ? lockedOrthogonalHeight
-                        : Camera.Main.DestinationRectangle.Height / divisor;
-                }
-                else
-                {
-                    var zDistance = Camera.Main.GetZDistanceForPixelPerfect();
-                    Camera.Main.Z = zDistance / divisor;
-                    Camera.Main.FarClipPlane = Math.Max(Camera.Main.Z, Camera.Main.FarClipPlane);
-                }
+                var zDistance = Camera.Main.GetZDistanceForPixelPerfect();
+                Camera.Main.Z = zDistance / divisor;
+                Camera.Main.FarClipPlane = Math.Max(Camera.Main.Z, Camera.Main.FarClipPlane);
             }
             Camera.Main.FixAspectRatioYConstant();
 
+#if HasGum
+            // Must run BEFORE the zoom assignment below, not after - it recomputes CanvasWidth/Height
+            // from window size but also stomps Renderer.Camera.Zoom back to a value with no knowledge
+            // of the edit-mode zoom level, silently undoing the correct assignment if called last.
+            CameraSetup.ResetGumResolutionValues();
 
             if (global::RenderingLibrary.SystemManagers.Default != null)
             {
-                var windowSizeRelativeToDefault = Camera.Main.DestinationRectangle.Height / (double)CameraSetup.Data.ResolutionHeight;
-                windowSizeRelativeToDefault /= (CameraSetup.Data.Scale / 100.0f);
+                // Only entity-attached Gum content (GetOrCreateEntityAttachmentZoomLayer) zooms with
+                // the editor's zoom control - HUD/screen-space content stays on other layers (typically
+                // MainLayer) and is deliberately left untouched here, so it keeps whatever zoom
+                // ResetGumResolutionValues just gave it above. Multiplying that existing baseline by
+                // divisor (rather than recomputing a baseline independently) guarantees this always
+                // matches whatever CanvasWidth/Height ResetGumResolutionValues just derived.
+                var baselineZoom = global::RenderingLibrary.SystemManagers.Default.Renderer.Camera.Zoom;
+                var entityZoom = baselineZoom * divisor;
 
-                global::RenderingLibrary.SystemManagers.Default.Renderer.Camera.Zoom = (float)windowSizeRelativeToDefault * zoomLevel / 100.0f;
-                foreach (var layer in global::RenderingLibrary.SystemManagers.Default.Renderer.Layers)
-                {
-                    if (layer.LayerCameraSettings != null)
-                    {
-                        layer.LayerCameraSettings.Zoom = (float)windowSizeRelativeToDefault * zoomLevel / 100.0f;
-                    }
-                }
+                var entityLayer = global::GumCoreShared.FlatRedBall.Embedded.PositionedObjectGueWrapper.GetOrCreateEntityAttachmentZoomLayer();
+                entityLayer.LayerCameraSettings.Zoom = entityZoom;
             }
+#endif
 
             if (zoomAroundCursorPosition)
             {
@@ -369,10 +359,6 @@ namespace GlueControl.Editing
                 Camera.Main.X -= worldXAfterZoom - worldXBefore;
                 Camera.Main.Y -= worldYAfterZoom - worldYBefore;
             }
-
-#if HasGum
-            CameraSetup.ResetGumResolutionValues();
-#endif
         }
 
         public static void DoZoomMinus(bool zoomAroundCursorPosition = false)

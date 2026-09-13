@@ -281,7 +281,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                             }
                         }
                     }
-                    
+
 ")
                 .End().Else()
                 .Line(@"
