@@ -174,4 +174,122 @@ public class NamedObjectSaveAssetTypeExtensionsTests
 
         Assert.Same(fallbackAti, nos.GetAssetTypeInfo());
     }
+
+    [Fact]
+    public void CanBeInShapeCollection_MatchingFrbType_ReturnsTrue()
+    {
+        var circle = new AssetTypeInfo { QualifiedRuntimeTypeName = new PlatformSpecificType { QualifiedType = "Circle" } };
+        _availableAssetTypes.Circle = circle;
+        _availableAssetTypes.AddAssetType(circle);
+
+        var nos = new NamedObjectSave
+        {
+            SourceType = SourceType.FlatRedBallType,
+            SourceClassType = "Circle"
+        };
+
+        Assert.True(nos.CanBeInShapeCollection());
+    }
+
+    [Fact]
+    public void CanBeInShapeCollection_NonShapeFrbType_ReturnsFalse()
+    {
+        var sprite = new AssetTypeInfo { QualifiedRuntimeTypeName = new PlatformSpecificType { QualifiedType = "Sprite" } };
+        _availableAssetTypes.AddAssetType(sprite);
+
+        var nos = new NamedObjectSave
+        {
+            SourceType = SourceType.FlatRedBallType,
+            SourceClassType = "Sprite"
+        };
+
+        Assert.False(nos.CanBeInShapeCollection());
+    }
+
+    [Fact]
+    public void CanBeInShapeCollection_NotFrbType_ReturnsFalse()
+    {
+        var nos = new NamedObjectSave { SourceType = SourceType.Entity, SourceClassType = "Entities\\Player" };
+
+        Assert.False(nos.CanBeInShapeCollection());
+    }
+
+    [Fact]
+    public void ShouldInstantiateInConstructor_ListInstantiatedNotByBase_ReturnsTrue()
+    {
+        var nos = new NamedObjectSave
+        {
+            SourceType = SourceType.FlatRedBallType,
+            SourceClassType = "PositionedObjectList<T>",
+            Instantiate = true,
+            InstantiatedByBase = false
+        };
+
+        Assert.True(nos.ShouldInstantiateInConstructor());
+    }
+
+    [Fact]
+    public void ShouldInstantiateInConstructor_ShapeCollectionInstantiatedNotByBase_ReturnsTrue()
+    {
+        var shapeCollection = new AssetTypeInfo { QualifiedRuntimeTypeName = new PlatformSpecificType { QualifiedType = "ShapeCollection" } };
+        _availableAssetTypes.ShapeCollection = shapeCollection;
+        _availableAssetTypes.AddAssetType(shapeCollection);
+
+        var nos = new NamedObjectSave
+        {
+            SourceType = SourceType.FlatRedBallType,
+            SourceClassType = "ShapeCollection",
+            Instantiate = true,
+            InstantiatedByBase = false
+        };
+
+        Assert.True(nos.ShouldInstantiateInConstructor());
+    }
+
+    [Fact]
+    public void ShouldInstantiateInConstructor_NotInstantiated_ReturnsFalse()
+    {
+        var nos = new NamedObjectSave
+        {
+            SourceType = SourceType.FlatRedBallType,
+            SourceClassType = "PositionedObjectList<T>",
+            Instantiate = false,
+            InstantiatedByBase = false
+        };
+
+        Assert.False(nos.ShouldInstantiateInConstructor());
+    }
+
+    [Fact]
+    public void ShouldInstantiateInConstructor_InstantiatedByBase_ReturnsFalse()
+    {
+        var nos = new NamedObjectSave
+        {
+            SourceType = SourceType.FlatRedBallType,
+            SourceClassType = "PositionedObjectList<T>",
+            Instantiate = true,
+            InstantiatedByBase = true
+        };
+
+        Assert.False(nos.ShouldInstantiateInConstructor());
+    }
+
+    [Fact]
+    public void ShouldInstantiateInConstructor_NotListAndNotShapeCollection_ReturnsFalse()
+    {
+        // Give the NOS a resolvable, non-ShapeCollection AssetTypeInfo so the comparison isn't a
+        // vacuous null == null (AvailableAssetTypesCore.Self.ShapeCollection is unset/null here).
+        var sprite = new AssetTypeInfo { QualifiedRuntimeTypeName = new PlatformSpecificType { QualifiedType = "Sprite" } };
+        _availableAssetTypes.AddAssetType(sprite);
+
+        var nos = new NamedObjectSave
+        {
+            SourceType = SourceType.FlatRedBallType,
+            SourceClassType = "Sprite",
+            Instantiate = true,
+            InstantiatedByBase = false
+        };
+
+        Assert.False(nos.ShouldInstantiateInConstructor());
+    }
 }

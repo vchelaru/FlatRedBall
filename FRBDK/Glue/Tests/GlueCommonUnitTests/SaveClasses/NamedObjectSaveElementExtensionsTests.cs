@@ -1,3 +1,4 @@
+using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.SaveClasses;
 
 namespace GlueCommonUnitTests.SaveClasses;
@@ -9,10 +10,12 @@ namespace GlueCommonUnitTests.SaveClasses;
 public class NamedObjectSaveElementExtensionsTests
 {
     readonly FakeObjectFinderCore _finder = new();
+    readonly FakeAvailableAssetTypesCore _availableAssetTypes = new();
 
     public NamedObjectSaveElementExtensionsTests()
     {
         ObjectFinderCore.Self = _finder;
+        AvailableAssetTypesCore.Self = _availableAssetTypes;
     }
 
     [Fact]
@@ -158,6 +161,178 @@ public class NamedObjectSaveElementExtensionsTests
         var derivedEntity = new EntitySave { Name = "Entities\\Derived", BaseEntity = "Entities\\Base" };
 
         Assert.Null(derivedNos.GetDefiningNamedObjectSave(derivedEntity));
+    }
+
+    [Fact]
+    public void InheritsFrom_DirectBase_ReturnsTrue()
+    {
+        var instance = new EntitySave { BaseEntity = "Entities\\Base" };
+
+        Assert.True(instance.InheritsFrom("Entities\\Base"));
+    }
+
+    [Fact]
+    public void InheritsFrom_IndirectBase_ReturnsTrue()
+    {
+        var baseEntity = new EntitySave { Name = "Entities\\Base", BaseEntity = "Entities\\Root" };
+        _finder.AddElement("Entities\\Base", baseEntity);
+        var instance = new EntitySave { BaseEntity = "Entities\\Base" };
+
+        Assert.True(instance.InheritsFrom("Entities\\Root"));
+    }
+
+    [Fact]
+    public void InheritsFrom_NoMatch_ReturnsFalse()
+    {
+        var instance = new EntitySave { BaseEntity = "" };
+
+        Assert.False(instance.InheritsFrom("Entities\\Root"));
+    }
+
+    [Fact]
+    public void IsICollidableRecursive_NotEntitySave_ReturnsFalse()
+    {
+        IElement screen = new ScreenSave { Name = "Screens\\GameScreen" };
+
+        Assert.False(screen.IsICollidableRecursive());
+    }
+
+    [Fact]
+    public void IsICollidableRecursive_ImplementsDirectly_ReturnsTrue()
+    {
+        var entity = new EntitySave { ImplementsICollidable = true };
+
+        Assert.True(((IElement)entity).IsICollidableRecursive());
+    }
+
+    [Fact]
+    public void IsICollidableRecursive_BaseImplements_ReturnsTrue()
+    {
+        var entity = new EntitySave { ImplementsICollidable = false };
+        var baseEntity = new EntitySave { ImplementsICollidable = true };
+        _finder.SetBaseElements(entity, new List<GlueElement> { baseEntity });
+
+        Assert.True(((IElement)entity).IsICollidableRecursive());
+    }
+
+    [Fact]
+    public void IsICollidableRecursive_NeitherImplements_ReturnsFalse()
+    {
+        var entity = new EntitySave { ImplementsICollidable = false };
+        var baseEntity = new EntitySave { ImplementsICollidable = false };
+        _finder.SetBaseElements(entity, new List<GlueElement> { baseEntity });
+
+        Assert.False(((IElement)entity).IsICollidableRecursive());
+    }
+
+    [Fact]
+    public void CanBeInList_MatchingSourceClassType_ReturnsTrue()
+    {
+        var instance = new NamedObjectSave { SourceClassType = "Sprite" };
+        var listNos = new NamedObjectSave { SourceClassGenericType = "Sprite" };
+
+        Assert.True(instance.CanBeInList(listNos));
+    }
+
+    [Fact]
+    public void CanBeInList_MatchingInstanceType_ReturnsTrue()
+    {
+        // InstanceType is computed; for SourceType.Entity it's SourceClassType with the "Entities\"
+        // path stripped, so this is the one case where InstanceType and SourceClassType differ.
+        var instance = new NamedObjectSave { SourceType = SourceType.Entity, SourceClassType = "Entities\\Sprite" };
+        var listNos = new NamedObjectSave { SourceClassGenericType = "Sprite" };
+
+        Assert.True(instance.CanBeInList(listNos));
+    }
+
+    [Fact]
+    public void CanBeInList_EntityInheritsFromListType_ReturnsTrue()
+    {
+        var baseEntity = new EntitySave { Name = "Entities\\Base" };
+        _finder.AddElement("Entities\\Base", baseEntity);
+        var entity = new EntitySave { Name = "Entities\\Derived", BaseEntity = "Entities\\Base" };
+        _finder.AddElement("Entities\\Derived", entity);
+        _finder.AddElement("Entities\\Base", baseEntity);
+
+        var instance = new NamedObjectSave { SourceType = SourceType.Entity, SourceClassType = "Entities\\Derived" };
+        var listNos = new NamedObjectSave { SourceClassGenericType = "Entities\\Base" };
+
+        Assert.True(instance.CanBeInList(listNos));
+    }
+
+    [Fact]
+    public void CanBeInList_NoMatch_ReturnsFalse()
+    {
+        var instance = new NamedObjectSave { SourceClassType = "Sprite" };
+        var listNos = new NamedObjectSave { SourceClassGenericType = "Circle" };
+
+        Assert.False(instance.CanBeInList(listNos));
+    }
+
+    [Fact]
+    public void IsCollidableOrCollidableList_ListOfCollidableEntity_ReturnsTrue()
+    {
+        var entity = new EntitySave { ImplementsICollidable = true };
+        _finder.AddElement("Entities\\Enemy", entity);
+
+        var nos = new NamedObjectSave
+        {
+            SourceType = SourceType.FlatRedBallType,
+            SourceClassType = "PositionedObjectList<T>",
+            SourceClassGenericType = "Entities\\Enemy"
+        };
+
+        Assert.True(nos.IsCollidableOrCollidableList());
+    }
+
+    [Fact]
+    public void IsCollidableOrCollidableList_ListOfNonCollidableEntity_ReturnsFalse()
+    {
+        var entity = new EntitySave { ImplementsICollidable = false };
+        _finder.AddElement("Entities\\NonCollidable", entity);
+
+        var nos = new NamedObjectSave
+        {
+            SourceType = SourceType.FlatRedBallType,
+            SourceClassType = "PositionedObjectList<T>",
+            SourceClassGenericType = "Entities\\NonCollidable"
+        };
+
+        Assert.False(nos.IsCollidableOrCollidableList());
+    }
+
+    [Fact]
+    public void IsCollidableOrCollidableList_ShapeCollectionRuntimeType_ReturnsTrue()
+    {
+        var ati = new AssetTypeInfo { QualifiedRuntimeTypeName = new PlatformSpecificType { QualifiedType = "ShapeCollection" } };
+        _availableAssetTypes.AddAssetType(ati);
+
+        var nos = new NamedObjectSave
+        {
+            SourceType = SourceType.FlatRedBallType,
+            SourceClassType = "ShapeCollection"
+        };
+
+        Assert.True(nos.IsCollidableOrCollidableList());
+    }
+
+    [Fact]
+    public void IsCollidableOrCollidableList_CollidableEntityInstance_ReturnsTrue()
+    {
+        var entity = new EntitySave { ImplementsICollidable = true };
+        _finder.AddElement("Entities\\Enemy", entity);
+
+        var nos = new NamedObjectSave { SourceType = SourceType.Entity, SourceClassType = "Entities\\Enemy" };
+
+        Assert.True(nos.IsCollidableOrCollidableList());
+    }
+
+    [Fact]
+    public void IsCollidableOrCollidableList_NoMatch_ReturnsFalse()
+    {
+        var nos = new NamedObjectSave { SourceType = SourceType.FlatRedBallType, SourceClassType = "Sprite" };
+
+        Assert.False(nos.IsCollidableOrCollidableList());
     }
 }
 

@@ -197,22 +197,11 @@ namespace FlatRedBall.Glue.Plugins.ICollidablePlugins
             return element is EntitySave && (element as EntitySave).ImplementsICollidable;
         }
 
-        public static bool IsICollidableRecursive(this IElement element)
-        {
-            if(element is EntitySave entitySave)
-            {
-                if (entitySave.ImplementsICollidable)
-                {
-                    return true;
-                }
-                else
-                {
-                    var baseEntities = ObjectFinder.Self.GetAllBaseElementsRecursively(entitySave);
-                    return baseEntities.Any(item => (item as EntitySave).ImplementsICollidable);
-                }
-            }
-            return false;
-        }
+        // IsICollidableRecursive(this IElement) moved to
+        // GlueCommon.SaveClasses.NamedObjectSaveElementExtensions (#2276) - needed by
+        // IsCollidableOrCollidableList, which moved alongside it. Only reached
+        // ObjectFinder.Self.GetAllBaseElementsRecursively, so it goes through the widened
+        // IObjectFinderCore seam.
 
         public static string GetAddToShapeCollection(this NamedObjectSave nos)
         {

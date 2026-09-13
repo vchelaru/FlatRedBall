@@ -119,5 +119,112 @@ namespace FlatRedBall.Glue.SaveClasses
                 return foundNos;
             }
         }
+
+        public static bool InheritsFrom(this EntitySave instance, string entity)
+        {
+            if (instance.BaseEntity == entity)
+            {
+                return true;
+            }
+
+            if (!string.IsNullOrEmpty(instance.BaseEntity))
+            {
+                EntitySave baseEntity = ObjectFinderCore.Self.GetEntitySave(instance.BaseEntity);
+
+                if (baseEntity != null)
+                {
+                    return baseEntity.InheritsFrom(entity);
+                }
+            }
+
+            return false;
+        }
+
+        public static bool IsICollidableRecursive(this IElement element)
+        {
+            if (element is EntitySave entitySave)
+            {
+                if (entitySave.ImplementsICollidable)
+                {
+                    return true;
+                }
+                else
+                {
+                    var baseEntities = ObjectFinderCore.Self.GetAllBaseElementsRecursively(entitySave);
+                    return baseEntities.Any(item => (item as EntitySave).ImplementsICollidable);
+                }
+            }
+            return false;
+        }
+
+        public static bool CanBeInList(this NamedObjectSave instance, NamedObjectSave listNos)
+        {
+            if (listNos.SourceClassGenericType == instance.SourceClassType ||
+                listNos.SourceClassGenericType == instance.InstanceType ||
+                listNos.SourceClassGenericType == instance.GetAssetTypeInfo()?.QualifiedRuntimeTypeName.QualifiedType)
+            {
+                return true;
+            }
+
+            if (instance.SourceType == SourceType.Entity)
+            {
+                EntitySave instanceElement = instance.GetReferencedElement() as EntitySave;
+
+                var listElementType = ObjectFinderCore.Self.GetElement(listNos.SourceClassGenericType);
+
+                if (instanceElement == null || listElementType == null)
+                {
+                    return false;
+                }
+
+                if (instanceElement.InheritsFrom(listNos.SourceClassGenericType))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public static bool IsCollidableOrCollidableList(this NamedObjectSave namedObjectSave)
+        {
+            if (namedObjectSave.IsList)
+            {
+                var type = namedObjectSave.SourceClassGenericType;
+
+                // For a more complete impl, see:
+                // CollisionRelationshipViewModelController
+
+                if (!string.IsNullOrEmpty(namedObjectSave.SourceClassGenericType))
+                {
+                    var entitySave = ObjectFinderCore.Self.GetEntitySave(namedObjectSave.SourceClassGenericType);
+
+                    if (entitySave != null)
+                    {
+                        return entitySave.IsICollidableRecursive();
+                    }
+                }
+                return false;
+            }
+            else if (namedObjectSave.GetAssetTypeInfo()?.RuntimeTypeName == "FlatRedBall.TileCollisions.TileShapeCollection" ||
+                namedObjectSave.GetAssetTypeInfo()?.RuntimeTypeName == "TileShapeCollection")
+            {
+                return true;
+            }
+            else if (namedObjectSave.GetAssetTypeInfo()?.RuntimeTypeName == "FlatRedBall.Math.Geometry.ShapeCollection" ||
+                namedObjectSave.GetAssetTypeInfo()?.RuntimeTypeName == "ShapeCollection")
+            {
+                return true;
+            }
+            else if (namedObjectSave.SourceType == SourceType.Entity &&
+                ObjectFinderCore.Self.GetEntitySave(namedObjectSave.SourceClassType)?.ImplementsICollidable == true)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }
