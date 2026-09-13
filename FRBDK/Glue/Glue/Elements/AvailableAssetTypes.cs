@@ -51,11 +51,20 @@ namespace FlatRedBall.Glue.Elements
         public AssetTypeInfo AnimationChainList { get; set; }
     }
 
-    public class AvailableAssetTypes
+    public class AvailableAssetTypes : IAvailableAssetTypesCore
     {
         #region Fields
 
         static AvailableAssetTypes mSelf = new AvailableAssetTypes();
+
+        // GlueCommon can't reference this assembly (wrong direction), so it can't set
+        // AvailableAssetTypesCore.Self itself - this wires the seam from the Glue.csproj side instead.
+        // Runs whenever AvailableAssetTypes is first touched, which every real caller of
+        // AvailableAssetTypesCore.Self does transitively via AvailableAssetTypes.Self.
+        static AvailableAssetTypes()
+        {
+            AvailableAssetTypesCore.Self = mSelf;
+        }
 
         string mStartupPath;
         string mCoreTypesFileLocation;
@@ -73,6 +82,10 @@ namespace FlatRedBall.Glue.Elements
         #region Properties
 
         public static CommonAtis CommonAtis { get; private set; }
+
+        // Implements IAvailableAssetTypesCore.PositionedObjectList - GlueCommon can't reach the
+        // static CommonAtis property directly, so it goes through the narrower instance-level seam.
+        public AssetTypeInfo PositionedObjectList => CommonAtis.PositionedObjectList;
 
         public string GlobalCustomContentTypesFolder
         {

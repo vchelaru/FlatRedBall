@@ -65,83 +65,8 @@ namespace FlatRedBall.Glue.SaveClasses
             return newNamedObjectSave;
         }
 
-        public static AssetTypeInfo GetAssetTypeInfo(this NamedObjectSave instance)
-        {
-            if(instance == null)
-            {
-                throw new ArgumentNullException(nameof(instance));
-            }
-            if(instance.SourceType == SourceType.Entity)
-            {
-                return null;
-            }
-            if (string.IsNullOrEmpty(instance.ClassType))
-            {
-                return null;
-            }
-            // This is a common type, so let's go faster by returning the type:
-            if(instance.SourceType == SourceType.FlatRedBallType && instance.SourceClassType.StartsWith("FlatRedBall.Math.PositionedObjectList"))
-            {
-                return AvailableAssetTypes.CommonAtis.PositionedObjectList;
-            }
-
-            // If this NOS uses an EntireFile, then we should ask the file for its AssetTypeInfo,
-            // as there may be multiple file types that produce the same class type.
-            // For example 
-            AssetTypeInfo returnAti = null;
-
-
-            if (instance.IsEntireFile)
-            {
-                var container = instance.GetContainer();
-
-                var rfs = container?.GetReferencedFileSave(instance.SourceFile);
-
-                if (rfs != null)
-                {
-                    var candidateAti = rfs.GetAssetTypeInfo();
-
-                    // The user may use a file, but may change the runtime type through the 
-                    // SourceName property, so we need to make sure they match:
-                    if (candidateAti != null && candidateAti.RuntimeTypeName == instance.ClassType)
-                    {
-                        returnAti = candidateAti;
-                    }
-                }
-            }
-
-            if (returnAti == null)
-            {
-                returnAti =
-                    // September 14, 2022
-                    // We used to check only
-                    // ClassType. Let's check
-                    // both class type and name
-                    // in case the ATI is qualified:
-                    AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(instance.ClassType, instance, isObject: true);
-
-                if(returnAti == null && instance.SourceClassType != null)
-                {
-                    returnAti = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(instance.SourceClassType, instance, isObject: true);
-                }
-            }
-
-            if (returnAti == null && instance.IsList)
-            {
-                return AvailableAssetTypes.CommonAtis.PositionedObjectList;
-            }
-            else
-            {
-                // Vic says: I don't think this should throw an exception anymore
-                //if (returnAti == null)
-                //{
-                //    throw new InvalidOperationException("You probably need to add the class type " + this.ClassType +
-                //        " to the ContentTypes.csv");
-                //}
-
-                return returnAti;
-            }
-        }
+        // GetAssetTypeInfo moved to GlueCommon.SaveClasses.NamedObjectSaveAssetTypeExtensions (#2276) -
+        // needed the new IAvailableAssetTypesCore seam over AvailableAssetTypes.Self.
 
         public static AssetTypeInfo GetContainedListItemAssetTypeInfo(this NamedObjectSave instance)
         {
