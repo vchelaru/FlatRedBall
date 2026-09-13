@@ -17,17 +17,7 @@ namespace FlatRedBall.Glue.SaveClasses
 {
     public static class NamedObjectSaveExtensionMethods
     {
-        /// <summary>
-        /// Updates the InstructionSaves in the argument NamedObject
-        /// according to the source type.  This method will never remove
-        /// instructions, but will add them if the NOS comes from a type that
-        /// has properties that are currently not represented in the NOS's Instructions.
-        /// </summary>
-        /// <param name="instance">The NamedObject to update properties on.</param>
-        public static void UpdateCustomProperties(this NamedObjectSave instance)
-        {
-            instance.InstructionSaves.Sort((first, second) => first.Member?.CompareTo(second.Member) ?? 0);
-        }
+        // UpdateCustomProperties moved to GlueCommon.SaveClasses.NamedObjectSaveCommonExtensions (#2276).
 
         public static NamedObjectSave Clone(this NamedObjectSave instance)
         {
@@ -282,40 +272,9 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
-        public static void ConvertEnumerationValuesToInts(this NamedObjectSave instance)
-        {
-            foreach (CustomVariableInNamedObject instruction in instance.InstructionSaves)
-            {
-                if (instruction.Value != null && instruction.Value.GetType().IsEnum)
-                {
-                    instruction.Value = (int)instruction.Value;
-                }
-            }
-            // to prevent some threading issues:
-            foreach(var property in instance.Properties.ToArray())
-            {
-                if(property.Value != null && property.Value.GetType().IsEnum)
-                {
-                    property.Value = (int)property.Value;
-                }
-            }
+        // ConvertEnumerationValuesToInts and PostLoadLogic moved to
+        // GlueCommon.SaveClasses.NamedObjectSaveCommonExtensions (#2276).
 
-            foreach (NamedObjectSave contained in instance.ContainedObjects)
-            {
-                contained.ConvertEnumerationValuesToInts();
-            }
-        }
-
-        public static void PostLoadLogic(this NamedObjectSave instance)
-        {
-            for (int i = instance.InstructionSaves.Count - 1; i > -1; i--)
-            {
-                if (instance.InstructionSaves[i].Value == null)
-                {
-                    instance.InstructionSaves.RemoveAt(i);
-                }
-            }
-        }
         public static string NamedObjectSaveToString(NamedObjectSave nos)
         {
             IElement container = nos.GetContainer();
@@ -501,10 +460,7 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
 
-        public static void SetProperty(this NamedObjectSave instance, string propertyName, object value)
-        {
-            instance.Properties.SetValue(propertyName, value);
-        }
+        // SetProperty moved to GlueCommon.SaveClasses.NamedObjectSaveCommonExtensions (#2276).
 
         public static void SetVariable(this NamedObjectSave instance, string variableName, object value)
         {
@@ -552,49 +508,8 @@ namespace FlatRedBall.Glue.SaveClasses
             return false;
         }
 
-        public static CustomVariableInNamedObject AddInstruction(this NamedObjectSave instance, string member, string type)
-        {
-            CustomVariableInNamedObject instructionSave = new CustomVariableInNamedObject();
-            instructionSave.Value = null; // make it the default
-            instructionSave.Type = TypeManager.GetCommonTypeName(type);
-            instructionSave.Member = member;
-            instance.InstructionSaves.Add(instructionSave);
-            return instructionSave;
-        }
-
-        public static CustomVariableInNamedObject AddNewGenericInstructionFor(this NamedObjectSave instance, string member, Type type)
-        {
-            CustomVariableInNamedObject instructionSave = new CustomVariableInNamedObject();
-            instructionSave.Value = null; // make it the default
-
-            // April 2, 2018
-            // This used to just assign type.Name, but that can cause ambiguity between 
-            // different systems like FRB's HorizontalAlignment and Gum's HorizontalAlignment,
-            // so we need to have the values be fully qualified.
-            //instructionSave.Type = type.Name;
-
-            // List<string> could maybe use the GetFriendlyGenericName
-            // method, but it seems to rely on lower-case string, so let's leave it at that...
-            if (type == typeof(List<string>))
-            {
-                instructionSave.Type = "List<string>";
-            }
-            else if(type.IsGenericType)
-            {
-                instructionSave.Type = TypeManager.GetFriendlyGenericName(type);
-            }
-            else
-            {
-                instructionSave.Type = type.FullName;
-            }
-
-            instructionSave.Type = TypeManager.GetCommonTypeName(instructionSave.Type);
-            instructionSave.Member = member;
-            // Create a new instruction
-
-            instance.InstructionSaves.Add(instructionSave);
-            return instructionSave;
-        }
+        // AddInstruction and AddNewGenericInstructionFor moved to
+        // GlueCommon.SaveClasses.NamedObjectSaveCommonExtensions (#2276).
 
         public static string GetMessageWhySwitchMightCauseProblems(this NamedObjectSave namedObjectSave, string oldType)
         {
@@ -841,35 +756,8 @@ namespace FlatRedBall.Glue.SaveClasses
                 !namedObjectSave.InstantiatedByBase;
         }
 
-        public static NamedObjectSave GetNamedObject(this INamedObjectContainer namedObjectContainer, string namedObjectName)
-        {
-            return GetNamedObjectInList(namedObjectContainer.NamedObjects, namedObjectName);
-        }
-
-        public static NamedObjectSave GetNamedObjectInList(List<NamedObjectSave> namedObjectList, string namedObjectName)
-        {
-            for (int i = 0; i < namedObjectList.Count; i++)
-            {
-                NamedObjectSave nos = namedObjectList[i];
-
-                if (nos.InstanceName == namedObjectName)
-                {
-                    return nos;
-                }
-
-                if (nos.ContainedObjects != null && nos.ContainedObjects.Count != 0)
-                {
-                    NamedObjectSave foundNos = GetNamedObjectInList(nos.ContainedObjects, namedObjectName);
-
-                    if (foundNos != null)
-                    {
-                        return foundNos;
-                    }
-                }
-            }
-
-            return null;
-        }
+        // GetNamedObject and GetNamedObjectInList moved to
+        // GlueCommon.SaveClasses.NamedObjectSaveCommonExtensions (#2276).
 
         /// <summary>
         /// Searches the argument container for any named object, and searches recursively through inheritance.
@@ -887,7 +775,7 @@ namespace FlatRedBall.Glue.SaveClasses
             //////////////////////end early out//////////////////////
             List<NamedObjectSave> namedObjectList = namedObjectContainer.NamedObjects;
 
-            NamedObjectSave foundNos = GetNamedObjectInList(namedObjectList, namedObjectName);
+            NamedObjectSave foundNos = NamedObjectSaveCommonExtensions.GetNamedObjectInList(namedObjectList, namedObjectName);
 
             if (foundNos != null)
             {
