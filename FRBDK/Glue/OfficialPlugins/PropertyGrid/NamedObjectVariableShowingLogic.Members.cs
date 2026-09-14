@@ -64,7 +64,7 @@ namespace OfficialPlugins.VariableDisplay
                 }
             };
 
-            instanceMember.FirstGridLength = new System.Windows.GridLength(140);
+            instanceMember.FirstGridLength = 140;
 
             instanceMember.UnmodifiedVariableName = "SourceName";
             string fileName = FlatRedBall.IO.FileManager.RemovePath(instance.SourceFile);

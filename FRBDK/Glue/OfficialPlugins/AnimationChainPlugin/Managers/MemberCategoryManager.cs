@@ -73,7 +73,7 @@ internal class MemberCategoryManager
         {
             var member = new InstanceMember(propertyName, selectedAnimationChain);
             member.IsReadOnly = isReadOnly;
-            member.FirstGridLength = new System.Windows.GridLength(FirstGridLength);
+            member.FirstGridLength = FirstGridLength;
             mainCategory.Members.Add(member);
             return member;
         }
@@ -140,7 +140,7 @@ internal class MemberCategoryManager
                 member.PreferredDisplayer = preferredDisplayer;
             }
             member.IsReadOnly = !canWrite;
-            member.FirstGridLength = new System.Windows.GridLength(FirstGridLength);
+            member.FirstGridLength = FirstGridLength;
             currentCategory.Members.Add(member);
             return member;
         }
@@ -166,7 +166,7 @@ internal class MemberCategoryManager
         {
             var member = new InstanceMember(propertyName, circle);
             member.IsReadOnly = !canWrite;
-            member.FirstGridLength = new System.Windows.GridLength(FirstGridLength);
+            member.FirstGridLength = FirstGridLength;
             mainCategory.Members.Add(member);
 
         }

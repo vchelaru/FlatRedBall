@@ -214,7 +214,7 @@ namespace OfficialPlugins.PropertyGrid
                 UiCreated += (view) => variableDefinition.UiCreated(view);
             }
 
-            FirstGridLength = new System.Windows.GridLength(140);
+            FirstGridLength = 140;
 
             UnmodifiedVariableName = NameOnInstance;
             string displayName = StringFunctions.InsertSpacesInCamelCaseString(NameOnInstance);

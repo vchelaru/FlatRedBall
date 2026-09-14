@@ -90,7 +90,7 @@ public static class AnimationController
         dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.MinHorizontalInputAbsolute), "Input");
         dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.MaxHorizontalInputAbsolute), "Input");
 
-        var velocityFirstGridLength = new GridLength(150);
+        var velocityFirstGridLength = 150.0;
         dataUiGrid.GetInstanceMember(nameof(AnimationRowViewModel.MinXVelocityAbsolute)).FirstGridLength = velocityFirstGridLength;
         dataUiGrid.GetInstanceMember(nameof(AnimationRowViewModel.MaxXVelocityAbsolute)).FirstGridLength = velocityFirstGridLength;
         dataUiGrid.GetInstanceMember(nameof(AnimationRowViewModel.MinYVelocity)).FirstGridLength = velocityFirstGridLength;
