@@ -1,20 +1,26 @@
 using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Instructions.Reflection;
+using GlueCommonUnitTests.Parsing;
 
 namespace GlueCommonUnitTests.SaveClasses;
 
-// These methods read the shared static ObjectFinderCore.Self/AvailableAssetTypesCore.Self, so this
-// can't run concurrently with any other test class that swaps them out.
+// These methods read the shared static ObjectFinderCore.Self/AvailableAssetTypesCore.Self/
+// TypeResolutionCore.Self, so this can't run concurrently with any other test class that swaps
+// them out.
 [Collection(nameof(ObjectFinderCoreCollection))]
 public class EntitySaveInheritanceExtensionsTests
 {
     readonly FakeObjectFinderCore _finder = new();
     readonly FakeAvailableAssetTypesCore _availableAssetTypes = new();
+    readonly FakeTypeResolutionCore _typeResolution = new();
 
     public EntitySaveInheritanceExtensionsTests()
     {
         ObjectFinderCore.Self = _finder;
         AvailableAssetTypesCore.Self = _availableAssetTypes;
+        TypeResolutionCore.Self = _typeResolution;
     }
 
     [Fact]
@@ -335,5 +341,76 @@ public class EntitySaveInheritanceExtensionsTests
         var entity = new EntitySave { BaseEntity = "" };
 
         Assert.False(entity.HasMemberWithName("Missing"));
+    }
+
+    [Fact]
+    public void GetTypedMembers_PublicCustomVariable_ReturnsTypedMember()
+    {
+        _typeResolution.AddType("int", typeof(int));
+        var entity = new EntitySave { BaseEntity = "" };
+        entity.CustomVariables.Add(new CustomVariable { Name = "Health", Type = "int", Scope = Scope.Public });
+
+        var result = entity.GetTypedMembers();
+
+        var typedMember = Assert.Single(result);
+        Assert.Equal("Health", typedMember.MemberName);
+        Assert.Equal(typeof(int), typedMember.MemberType);
+    }
+
+    [Fact]
+    public void GetTypedMembers_PrivateCustomVariable_IsExcluded()
+    {
+        var entity = new EntitySave { BaseEntity = "" };
+        entity.CustomVariables.Add(new CustomVariable { Name = "Internal", Type = "int", Scope = Scope.Private });
+
+        Assert.Empty(entity.GetTypedMembers());
+    }
+
+    [Fact]
+    public void GetTypedMembers_SetByContainerEntityNamedObject_ReturnsStringTypedMember()
+    {
+        var entity = new EntitySave { BaseEntity = "" };
+        entity.NamedObjects.Add(new NamedObjectSave
+        {
+            SetByContainer = true,
+            SourceType = SourceType.Entity,
+            SourceClassType = "Entities\\SomeEntity",
+            InstanceName = "ChildEntity"
+        });
+
+        var result = entity.GetTypedMembers();
+
+        var typedMember = Assert.Single(result);
+        Assert.Equal("ChildEntity", typedMember.MemberName);
+        Assert.Equal(typeof(string), typedMember.MemberType);
+    }
+
+    [Fact]
+    public void GetTypedMembers_StateCategory_ReturnsCurrentCategoryStateTypedMember()
+    {
+        var entity = new EntitySave { BaseEntity = "" };
+        entity.StateCategoryList.Add(new StateSaveCategory { Name = "Animation" });
+
+        var result = entity.GetTypedMembers();
+
+        var typedMember = Assert.Single(result);
+        Assert.Equal("CurrentAnimationState", typedMember.MemberName);
+        Assert.Equal("Animation", typedMember.CustomTypeName);
+    }
+
+    [Fact]
+    public void GetTypedMembers_InheritsFromBase_IncludesBaseMembersWithoutDuplicates()
+    {
+        _typeResolution.AddType("int", typeof(int));
+        var baseEntity = new EntitySave { Name = "Entities\\Base" };
+        baseEntity.CustomVariables.Add(new CustomVariable { Name = "Health", Type = "int", Scope = Scope.Public });
+        _finder.AddElement("Entities\\Base", baseEntity);
+        var entity = new EntitySave { BaseEntity = "Entities\\Base" };
+        entity.CustomVariables.Add(new CustomVariable { Name = "Health", Type = "int", Scope = Scope.Public });
+
+        var result = entity.GetTypedMembers();
+
+        var typedMember = Assert.Single(result);
+        Assert.Equal("Health", typedMember.MemberName);
     }
 }

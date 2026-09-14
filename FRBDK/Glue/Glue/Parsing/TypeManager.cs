@@ -34,6 +34,20 @@ namespace FlatRedBall.Glue.Parsing
 
 #endregion
 
+        // GlueCommon can't reference this assembly (wrong direction), so it can't set
+        // TypeResolutionCore.Self itself - wire it here instead, the first time this class is
+        // touched, which every real caller of TypeResolutionCore.Self does transitively via
+        // TypeManager.GetTypeFromString. Same trick as ObjectFinder's static constructor.
+        static TypeManager()
+        {
+            TypeResolutionCore.Self = new TypeManagerTypeResolutionCore();
+        }
+
+        class TypeManagerTypeResolutionCore : ITypeResolutionCore
+        {
+            public Type GetTypeFromString(string typeString) => TypeManager.GetTypeFromString(typeString);
+        }
+
         public static Type GetTypeFromParsedType(ParsedType parsedType)
         {
             if (parsedType.GenericType != null)
@@ -156,282 +170,22 @@ namespace FlatRedBall.Glue.Parsing
 
         public static Type GetTypeFromString(string typeString)
         {
-            ////////////////////EARLY OUT////////////////////
             if (typeString == null)
             {
                 return null;
             }
-            //////////////////END EARLY OUT//////////////////
-
 
             LoadAssembliesIfNecessary();
 
-            #region Identify if the type is an array and change the typeString if so
-
-            bool isArray = false;
-
-            Type typeToReturn = null;
-
-            if (typeString != null && typeString.EndsWith("[]"))
-            {
-                isArray = true;
-                typeString = typeString.Substring(0, typeString.Length - 2);
-            }
-
-            #endregion
-
-            #region Check primitive types
-
-            if (typeString == "bool" || typeString == "Boolean" || typeString == "System.Boolean")
-            {
-                typeToReturn = typeof(bool);
-            }
-            else if(typeString == "bool?")
-            {
-                typeToReturn = typeof(bool?);
-            }
-            else if (typeString == "float" || typeString == "Single")
-            {
-                typeToReturn = typeof(float);
-            }
-            else if(typeString == "float?")
-            {
-                typeToReturn = typeof(float?);
-            }
-            else if (typeString == "string" || typeString == "String")
-            {
-                typeToReturn = typeof(string);
-            }
-            else if (typeString == "char")
-            {
-                typeToReturn = typeof(char);
-            }
-            else if (typeString == "long")
-            {
-                typeToReturn = typeof(long);
-            }
-            else if(typeString == "long?")
-            {
-                typeToReturn = typeof(long?);
-            }
-            else if (typeString == "int" || typeString == "Int32")
-            {
-                typeToReturn = typeof(int);
-            }
-            else if(typeString == "int?")
-            {
-                typeToReturn = typeof(int?);
-            }
-            else if (typeString == "uint")
-            {
-                typeToReturn = typeof(uint);
-            }
-            else if (typeString == "double" || typeString == "Double")
-            {
-                typeToReturn = typeof(double);
-            }
-            else if(typeString == "double?")
-            {
-                typeToReturn = typeof(double?);
-            }
-            else if(typeString == "decimal" || typeString == "Decimal")
-            {
-                typeToReturn = typeof(decimal);
-            }
-            else if (typeString == "decimal?" || typeString == "Decimal")
-            {
-                typeToReturn = typeof(decimal?);
-            }
-            else if (typeString == "byte")
-            {
-                typeToReturn = typeof(byte);
-            }
-            else if (typeString == "byte?")
-            {
-                typeToReturn = typeof(byte?);
-            }
-            #endregion
-
-            else
-            {
-                if (typeString != null && typeString.Contains("<") && typeString.Contains(">") && !typeString.EndsWith("<>"))
-                {
-                    string typeToMakeGenericName = typeString.Substring(0, typeString.IndexOf('<'));
-
-                    int afterOpenBracket = typeString.IndexOf('<') + 1;
-                    int closingBracket = typeString.LastIndexOf('>');
-
-                    string internalTypeName = typeString.Substring(afterOpenBracket, closingBracket - afterOpenBracket);
-
-                    Type typeToMakeGeneric = GetTypeFromString(typeToMakeGenericName + "<>");
-                    if (typeToMakeGeneric != null)
-                    {
-                        Type internalType = GetTypeFromString(internalTypeName);
-
-                        typeToReturn = typeToMakeGeneric.MakeGenericType(internalType);
-                    }
-                }
-
-                // If we got here then maybe we have a type that's understood by our AssetTypeInfos
-                #region Check common types
-
-                if (typeToReturn == null && typeString != null && mCommonTypes.ContainsKey(typeString))
-                {
-                    typeToReturn = mCommonTypes[typeString];
-                }
-
-
-                #endregion
-                bool isFullyQualified = typeString.Contains('.');
-                #region Check Additional (custom) types
-
-                if (isFullyQualified)
-                {
-                    foreach (Type type in mAdditionalTypes)
-                    {
-                        string fullName = type.FullName.Replace('+', '.');
-
-                        if (fullName.EndsWith(typeString))
-                        {
-                            typeToReturn = type;
-                            break;
-                        }
-                    }
-                }
-                else
-                {
-
-                    foreach (Type type in mAdditionalTypes)
-                    {
-
-                        if (type.Name == typeString)
-                        {
-                            typeToReturn = type;
-                            break;
-                        }
-                    }
-                }
-                #endregion
-
-
-                string unqualifiedType = typeString;
-
-                if (isFullyQualified)
-                {
-                    int lastIndex = typeString.LastIndexOf('.') + 1;
-                    unqualifiedType = typeString.Substring(lastIndex,
-                        typeString.Length - lastIndex);
-                }
-
-                if (typeToReturn == null)
-                {
-                    foreach (Type type in FlatRedBallTypes)
-                    {
-
-                        if (isFullyQualified && type.FullName == typeString)
-                        {
-                            typeToReturn = type;
-                            break;
-                        }
-                        // If it's fully qualified, then we want to prevent false matches
-                        else if (isFullyQualified == false && type.Name == unqualifiedType)
-                        {
-                            typeToReturn = type;
-                            break;
-                        }
-                    }
-                }
-
-
-                if(typeToReturn == null && isFullyQualified)
-                {
-                    var foundPluginType = pluginTypes.FirstOrDefault(item => item.FullName == typeString);
-                    if(foundPluginType != null)
-                    {
-                        typeToReturn = foundPluginType;
-                    }
-                }
-                
-                foreach (AssetTypeInfo ati in AvailableAssetTypes.Self.AllAssetTypes)
-                {
-                    if (ati.RuntimeTypeName == typeString ||
-                        ati.QualifiedRuntimeTypeName.QualifiedType == typeString
-                        )
-                    {
-                        foreach (Type type in FlatRedBallTypes)
-                        {
-                            if (type.FullName == ati.QualifiedRuntimeTypeName.QualifiedType)
-                            {
-                                return type;
-                            }
-                        }
-                    }
-                }
-
-                if (typeToReturn == null)
-                {
-                    Type[] types = mTypesInMicrosoftXnaFramework;
-
-                    foreach (Type type in types)
-                    {
-                        if (type.Name == typeString || type.FullName == typeString)
-                        {
-                            typeToReturn = type;
-                            break;
-                        }
-                    }
-                }
-
-#if XNA4
-                if (typeToReturn == null && mTypesInMicrosoftXnaFrameworkGraphics != null)
-                {
-                    Type[] types = mTypesInMicrosoftXnaFrameworkGraphics;
-
-                    foreach (Type type in types)
-                    {
-                        if (type.Name == typeString || type.FullName == typeString)
-                        {
-                            typeToReturn = type;
-                            break;
-                        }
-                    }
-
-                }
-#endif
-
-                if (typeToReturn == null)
-                {
-                    Type[] types = mTypesInMicrosoftXnaFrameworkGame;
-
-                    foreach (Type type in types)
-                    {
-                        if (type.Name == typeString || type.FullName == typeString)
-                        {
-                            typeToReturn = type;
-                            break;
-                        }
-                    }
-                }
-                
-                
-                if (typeToReturn == null)
-                {
-
-                    // If we got here, then we really don't know what's up, so just return the name
-                    typeToReturn = Type.GetType(typeString);
-
-                }
-            }
-
-            if (isArray && typeToReturn != null)
-            {
-                return typeToReturn.MakeArrayType();
-            }
-            else
-            {
-                return typeToReturn;
-            }
-
+            return TypeResolution.GetTypeFromString(
+                typeString,
+                mCommonTypes,
+                mAdditionalTypes,
+                FlatRedBallTypes,
+                mTypesInMicrosoftXnaFramework,
+                mTypesInMicrosoftXnaFrameworkGame,
+                pluginTypes,
+                AvailableAssetTypes.Self.AllAssetTypes);
         }
 
         static byte[] LoadFileToBytes(string filename)
