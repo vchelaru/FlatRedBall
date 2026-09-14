@@ -64,4 +64,96 @@ public class ReferencedFileSaveAssetTypeExtensionsTests
 
         Assert.Same(ati, rfs.GetAssetTypeInfo());
     }
+
+    [Fact]
+    public void GetCanUseContentPipeline_AssetTypeHasContentProcessor_ReturnsTrue()
+    {
+        var ati = new AssetTypeInfo { Extension = "png", ContentProcessor = "TextureProcessor" };
+        _availableAssetTypes.AddAssetType(ati);
+
+        var rfs = new ReferencedFileSave { Name = "sprite.png" };
+
+        Assert.True(rfs.GetCanUseContentPipeline());
+    }
+
+    [Fact]
+    public void GetCanUseContentPipeline_AssetTypeHasNoContentProcessor_ReturnsFalse()
+    {
+        var ati = new AssetTypeInfo { Extension = "png" };
+        _availableAssetTypes.AddAssetType(ati);
+
+        var rfs = new ReferencedFileSave { Name = "sprite.png" };
+
+        Assert.False(rfs.GetCanUseContentPipeline());
+    }
+
+    [Fact]
+    public void GetCanUseContentPipeline_NoMatchingAssetType_ReturnsFalse()
+    {
+        var rfs = new ReferencedFileSave { Name = "sprite.png" };
+
+        Assert.False(rfs.GetCanUseContentPipeline());
+    }
+
+    [Fact]
+    public void GetGeneratesMember_LoadedAtRuntimeAndNotDatabaseForLocalizing_ReturnsTrue()
+    {
+        var rfs = new ReferencedFileSave { Name = "data.txt", LoadedAtRuntime = true };
+
+        Assert.True(rfs.GetGeneratesMember());
+    }
+
+    [Fact]
+    public void GetGeneratesMember_NotLoadedAtRuntime_ReturnsFalse()
+    {
+        var rfs = new ReferencedFileSave { Name = "data.txt", LoadedAtRuntime = false };
+
+        Assert.False(rfs.GetGeneratesMember());
+    }
+
+    [Fact]
+    public void GetGeneratesMember_IsDatabaseForLocalizing_ReturnsFalse()
+    {
+        var rfs = new ReferencedFileSave { Name = "data.txt", LoadedAtRuntime = true, IsDatabaseForLocalizing = true };
+
+        Assert.False(rfs.GetGeneratesMember());
+    }
+
+    [Fact]
+    public void GetGeneratesMember_NotCsv_AssetTypeHasNoQualifiedRuntimeType_ReturnsFalse()
+    {
+        var ati = new AssetTypeInfo
+        {
+            Extension = "png",
+            QualifiedRuntimeTypeName = new PlatformSpecificType { QualifiedType = null }
+        };
+        _availableAssetTypes.AddAssetType(ati);
+
+        var rfs = new ReferencedFileSave { Name = "sprite.png", LoadedAtRuntime = true };
+
+        Assert.False(rfs.GetGeneratesMember());
+    }
+
+    [Fact]
+    public void GetGeneratesMember_NotCsv_AssetTypeHasQualifiedRuntimeType_ReturnsTrue()
+    {
+        var ati = new AssetTypeInfo
+        {
+            Extension = "png",
+            QualifiedRuntimeTypeName = new PlatformSpecificType { QualifiedType = "FlatRedBall.Graphics.Texture2D" }
+        };
+        _availableAssetTypes.AddAssetType(ati);
+
+        var rfs = new ReferencedFileSave { Name = "sprite.png", LoadedAtRuntime = true };
+
+        Assert.True(rfs.GetGeneratesMember());
+    }
+
+    [Fact]
+    public void GetGeneratesMember_IsCsv_IgnoresMissingAssetType_ReturnsTrue()
+    {
+        var rfs = new ReferencedFileSave { Name = "data.csv", LoadedAtRuntime = true };
+
+        Assert.True(rfs.GetGeneratesMember());
+    }
 }

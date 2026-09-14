@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using FlatRedBall.IO;
 using FlatRedBall.Glue.Elements;
@@ -173,72 +172,13 @@ namespace FlatRedBall.Glue.SaveClasses
             
         }
 
-        public static bool GetCanUseContentPipeline(this ReferencedFileSave instance)
-        {
-            var assetTypeInfo = instance.GetAssetTypeInfo();
-            return
-                // CSVs can use content pipeline
-                // Update 1/29/2020 - no it can't:
-                //instance.IsCsvOrTreatedAsCsv ||
+        // GetAssetTypeInfo, GetCanUseContentPipeline, and GetGeneratesMember moved to
+        // GlueCommon.SaveClasses.ReferencedFileSaveAssetTypeExtensions (#2276) - GetAssetTypeInfo needed
+        // the IAvailableAssetTypesCore seam over AvailableAssetTypes.Self; the other two only called it
+        // indirectly, through GetAssetTypeInfo.
 
-                (!string.IsNullOrEmpty(assetTypeInfo?.ContentProcessor));
-        }
-
-        // GetAssetTypeInfo moved to GlueCommon.SaveClasses.ReferencedFileSaveAssetTypeExtensions
-        // (#2276) - needed the new IAvailableAssetTypesCore seam over AvailableAssetTypes.Self.
-
-        public static bool GetGeneratesMember(this ReferencedFileSave instance)
-        {
-
-            bool toReturn = instance.LoadedAtRuntime && !instance.IsDatabaseForLocalizing;
-
-            if(!instance.IsCsvOrTreatedAsCsv)
-            {
-                var ati = instance.GetAssetTypeInfo();
-
-                if (ati != null &&
-                    string.IsNullOrEmpty(ati.QualifiedRuntimeTypeName.QualifiedType))
-                {
-                    return false;
-                }
-            }
-
-            return toReturn;
-
-        }
-
-        public static T GetProperty<T>(this ReferencedFileSave referencedFileSave, string propertyName)
-        {
-            var propertySave = referencedFileSave.Properties.FirstOrDefault(
-                item => item.Name == propertyName);
-
-            if(propertySave?.Value != null)
-            {
-                return (T)propertySave.Value;
-            }
-            else
-            {
-                return default(T);
-            }
-        }
-
-        public static void SetProperty(this ReferencedFileSave referencedFileSave, string propertyName, object value)
-        {
-            var propertySave = referencedFileSave.Properties.FirstOrDefault(
-                item => item.Name == propertyName);
-
-            if(propertySave != null)
-            {
-                propertySave.Value = value;
-            }
-            else
-            {
-                propertySave = new PropertySave();
-                propertySave.Value = value;
-                propertySave.Name = propertyName;
-
-                referencedFileSave.Properties.Add(propertySave);
-            }
-        }
+        // GetProperty<T> and SetProperty moved to
+        // GlueCommon.SaveClasses.ReferencedFileSavePropertyExtensions (#2276) - zero coupling, only
+        // touch the ReferencedFileSave's own Properties list.
     }
 }
