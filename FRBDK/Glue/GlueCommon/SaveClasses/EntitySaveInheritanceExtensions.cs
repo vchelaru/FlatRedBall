@@ -1,23 +1,21 @@
 using System.Collections.Generic;
+using System.Linq;
 using FlatRedBall.Glue.Elements;
+using FlatRedBall.Instructions.Reflection;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
     /// <summary>
     /// Split out of <c>EntitySaveExtensionMethods</c> (in <c>Glue.csproj</c>, net8.0-windows): these
     /// methods are pure logic over an <see cref="EntitySave"/>, needing only <see cref="IObjectFinderCore"/>/
-    /// <see cref="IAvailableAssetTypesCore"/> (narrow seams over <c>ObjectFinder.Self</c>/
-    /// <c>AvailableAssetTypes.Self</c>, see those interfaces' doc comments) instead of the singletons
-    /// directly. Lives here (net8.0, no WPF) so it and its tests can build and run on Linux/macOS. See
-    /// issue #2276. Named differently from the original class (not a forwarding stub) to avoid a
-    /// duplicate-type clash now that both assemblies are visible together via <c>Glue.csproj</c>'s
-    /// <c>ProjectReference</c> to <c>GlueCommon</c>; extension method resolution doesn't care which class
-    /// declares it, so existing call sites are unaffected.
-    ///
-    /// Not moved, and why: <c>GetTypedMembers</c> (and the private helpers it alone uses) stays in
-    /// Glue.csproj - it calls <c>AssetTypeInfoExtensionMethods.GetTypedMemberBase</c>, which calls
-    /// <c>TypeManager.GetTypeFromString</c>, the type-resolution half of <c>TypeManager</c> #2279 already
-    /// found coupled to <c>PluginManager</c>/<c>AvailableAssetTypes</c>/<c>DialogService</c>.
+    /// <see cref="IAvailableAssetTypesCore"/>/<see cref="Parsing.ITypeResolutionCore"/> (narrow seams over
+    /// <c>ObjectFinder.Self</c>/<c>AvailableAssetTypes.Self</c>/<c>TypeManager.GetTypeFromString</c>, see
+    /// those interfaces' doc comments) instead of the singletons directly. Lives here (net8.0, no WPF) so
+    /// it and its tests can build and run on Linux/macOS. See issue #2276. Named differently from the
+    /// original class (not a forwarding stub) to avoid a duplicate-type clash now that both assemblies
+    /// are visible together via <c>Glue.csproj</c>'s <c>ProjectReference</c> to <c>GlueCommon</c>;
+    /// extension method resolution doesn't care which class declares it, so existing call sites are
+    /// unaffected.
     /// </summary>
     public static class EntitySaveInheritanceExtensions
     {
@@ -298,6 +296,123 @@ namespace FlatRedBall.Glue.SaveClasses
         public static bool HasMemberWithName(this EntitySave instance, string memberName)
         {
             return instance.GetMemberMembershipInfo(memberName) != MembershipInfo.NotContained;
+        }
+
+        static void AddRangeUnique(this List<TypedMemberBase> listToAddTo, List<TypedMemberBase> whatToAdd)
+        {
+            foreach (var item in whatToAdd)
+            {
+                if (!listToAddTo.ContainsMatch(item))
+                {
+                    listToAddTo.Add(item);
+                }
+            }
+
+        }
+
+        static bool DoTypedMemberBasesMatch(TypedMemberBase item1, TypedMemberBase item2)
+        {
+            return item1.MemberName == item2.MemberName &&
+                item1.MemberType == item2.MemberType;
+        }
+
+        static bool ContainsMatch(this List<TypedMemberBase> listToAddTo, TypedMemberBase itemToCheck)
+        {
+            foreach (var item in listToAddTo)
+            {
+                if (DoTypedMemberBasesMatch(item, itemToCheck))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public static List<TypedMemberBase> GetTypedMembers(this EntitySave instance)
+        {
+            List<TypedMemberBase> typedMembers = new List<TypedMemberBase>();
+
+            foreach(var customVariable in instance.CustomVariables)
+            {
+                if(customVariable.Scope == Scope.Public || customVariable.Scope == Scope.Internal)
+                {
+                    string type = customVariable.Type;
+
+                    if (!string.IsNullOrEmpty(customVariable.OverridingPropertyType))
+                    {
+                        type = customVariable.OverridingPropertyType;
+                    }
+
+                    TypedMemberBase typedMemberBase =
+                        AssetTypeInfoExtensionMethods.GetTypedMemberBase(
+                        type,
+                        customVariable.Name);
+
+                    typedMembers.Add(typedMemberBase);
+                }
+            }
+
+            // Add any variables that are set by container
+            for (int i = 0; i < instance.NamedObjects.Count; i++)
+            {
+                NamedObjectSave nos = instance.NamedObjects[i];
+
+                if (nos.SetByContainer && !string.IsNullOrEmpty(nos.InstanceType))
+                {
+                    if (nos.SourceType == SourceType.Entity)
+                    {
+                        TypedMemberBase typedMemberBase = TypedMemberBase.GetTypedMember(nos.InstanceName, typeof(string));
+                        typedMembers.Add(typedMemberBase);
+                    }
+                    else
+                    {
+                        if (!nos.IsList)
+                        {
+                            TypedMemberBase typedMemberBase =
+                            AssetTypeInfoExtensionMethods.GetTypedMemberBase(
+                                nos.InstanceType,
+                                nos.InstanceName);
+
+                            typedMembers.Add(typedMemberBase);
+                        }
+                    }
+                }
+            }
+
+            // all categorized states should be typed too, even if they are not added as variables. Need to check
+            foreach(var category in instance.StateCategoryList)
+            {
+                var name = $"Current{category.Name}State";
+                var type = category.Name;
+                var alreadyContains = typedMembers.Any(item => item.MemberName == name && item.CustomTypeName == type);
+                if(!alreadyContains)
+                {
+                    var typedMember = AssetTypeInfoExtensionMethods.GetTypedMemberBase(
+                                type,
+                                name);
+                    typedMembers.Add(typedMember);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(instance.BaseEntity))
+            {
+                EntitySave entitySave = ObjectFinderCore.Self.GetEntitySave(
+                    instance.BaseEntity);
+
+                // This may be null if the project improperly references
+                // an EntitySave that really doesn't exist.
+                if (entitySave != null)
+                {
+                    // We used to call "AddRange" but we don't want duplicates
+                    // (I don't think) so we're going to use the custom extension
+                    // method to prevent duplicates:
+                    //typedMembers.AddRange(entitySave.GetTypedMembers());
+                    typedMembers.AddRangeUnique(entitySave.GetTypedMembers());
+                }
+            }
+
+            return typedMembers;
         }
     }
 }
