@@ -555,24 +555,15 @@
     <PackageReference Include="Newtonsoft.Json">
       <Version>13.0.1</Version>
     </PackageReference>
-    <PackageReference Include="SkiaSharp" Version="2.88.6" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="FlatRedBall.Forms.DesktopGlNet6">
-      <HintPath>Libraries\DesktopGl\Debug\FlatRedBall.Forms.DesktopGlNet6.dll</HintPath>
-    </Reference>
-    <Reference Include="FlatRedBallDesktopGLNet6">
-      <HintPath>Libraries\DesktopGl\Debug\FlatRedBallDesktopGLNet6.dll</HintPath>
-    </Reference>
-    <Reference Include="GumCore.DesktopGlNet6">
-      <HintPath>Libraries\DesktopGl\Debug\GumCore.DesktopGlNet6.dll</HintPath>
-    </Reference>
-    <Reference Include="SkiaInGum">
-      <HintPath>Libraries\DesktopGl\Debug\SkiaInGum.dll</HintPath>
-    </Reference>
-    <Reference Include="StateInterpolation.DesktopNet6">
-      <HintPath>Libraries\DesktopGl\Debug\StateInterpolation.DesktopNet6.dll</HintPath>
-    </Reference>
+    <PackageReference Include="SkiaSharp" Version="3.116.1" />
+    <!-- Released engine packages, deliberately not engine source: this sample is the gold-test fixture
+         for "today's codegen against the last released engine" with a Gum project (see
+         GoldProjectCompileTests). Bump all five together when a newer release is what users have. -->
+    <PackageReference Include="FlatRedBallDesktopGLNet6" Version="2026.8.10.863" />
+    <PackageReference Include="FlatRedBall.GumCore.DesktopGLNet6" Version="2026.8.10.863" />
+    <PackageReference Include="FlatRedBall.Forms.DesktopGLNet6" Version="2026.8.10.863" />
+    <PackageReference Include="FlatRedBall.SkiaInGum" Version="2026.8.10.863" />
+    <PackageReference Include="FlatRedBall.StateInterpolation.DesktopNet6" Version="2026.8.10.863" />
   </ItemGroup>
   <ItemGroup>
     <None Update="Content\Shader.fx">

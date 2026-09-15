@@ -417,4 +417,46 @@ public class GoldProjectCompileTests
         // SecondDifference), which is still 0 on this, the very first ApplyHorizontalInput call.
         Should.NotThrow(() => applyHorizontalInput!.Invoke(entityInstance, null));
     }
+
+    // The other half of the FormsSampleProject/Beefball split above: a Gum project that references the
+    // engine as *released* NuGet packages (pinned in its csproj), so `#if HasGum` regions compile against
+    // the GumCore.DesktopGlNet6.dll users actually have, not against engine source. Neither project above
+    // covers that: FormsSampleProject is source-linked (always has the newest API) and Beefball has no
+    // .gumx (HasGum regions are dead text). An embedded file calling an engine member newer than the
+    // version gate the project's FileVersion enables fails here as the CS0117 the user sees on load, and
+    // nowhere else.
+    [StaFact]
+    public async Task ChickenClicker_WithLiveEditCode_AgainstReleasedGumDll_LoadInGlue_ThenBuild_ShouldSucceed()
+    {
+        GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
+
+        using var project = GoldProject.CopyOutOfRepo("Samples/ChickenClicker");
+        var csproj = Path.Combine(project.Root, "ChickenClicker", "ChickenClicker.csproj");
+
+        GoldProject.DeleteGeneratedCode(project.Root);
+
+        await GoldProject.LoadInGlueAsync(csproj);
+
+        GlueTestBootstrap.RecordedDialogMessages.ShouldBeEmpty();
+        ErrorRecordingPlugin.Errors.ShouldBeEmpty();
+
+        FlatRedBall.Glue.Plugins.PluginManager.CallPluginMethod("Gum Plugin", "HasGum").ShouldBe(true);
+
+        GoldProject.EmbedLiveEditCode();
+
+        var generated = GoldProject.GeneratedFiles(project.Root);
+        generated.ShouldContain("ChickenClicker/GlueControl/Editing/CameraLogic.Generated.cs");
+
+        // Pins the fixture: HasGum on, engine source off, and FileVersion below the newest engine-member gate
+        // so the build exercises the gate's #else side. If ChickenClicker is ever source-linked or loses its
+        // .gumx, this collapses onto one of the two tests above and covers nothing new.
+        var defines = GoldProject.EmbeddedDefines(
+            Path.Combine(project.Root, "ChickenClicker", "GlueControl", "Editing", "CameraLogic.Generated.cs"));
+        defines.ShouldContain("HasGum");
+        defines.ShouldNotContain("REFERENCES_FRB_SOURCE");
+        defines.ShouldNotContain("GumWrapperHasEntityAttachmentZoomLayer");
+
+        var (exitCode, output) = NestedDotnetCli.Run($"build \"{csproj}\" -c Debug");
+        exitCode.ShouldBe(0, $"dotnet build failed for the regenerated gold project:\n{output}");
+    }
 }

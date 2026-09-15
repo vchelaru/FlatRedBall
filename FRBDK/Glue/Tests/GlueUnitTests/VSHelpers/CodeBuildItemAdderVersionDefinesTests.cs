@@ -49,4 +49,19 @@ public class CodeBuildItemAdderVersionDefinesTests : IDisposable
 
         defines.Contains("#define ScreenManagerHasScreenLoadExceptionOccurred\n").ShouldBe(expectDefined);
     }
+
+    // PositionedObjectGueWrapper.GetOrCreateEntityAttachmentZoomLayer (GumCore.*.dll) landed after the
+    // version-72 bump, so the embedded CameraLogic.cs gates its call at 73. Any engine reporting 72 or lower
+    // may lack it.
+    [Theory]
+    [InlineData(72, false)]
+    [InlineData(73, true)]
+    public void GetGlueVersionsString_DefinesEntityAttachmentZoomLayerGate_OnlyFromVersion73(int fileVersion, bool expectDefined)
+    {
+        ObjectFinder.Self.GlueProject = new GlueProjectSave { FileVersion = fileVersion };
+
+        var defines = CodeBuildItemAdder.GetGlueVersionsString();
+
+        defines.Contains("#define GumWrapperHasEntityAttachmentZoomLayer\n").ShouldBe(expectDefined);
+    }
 }
