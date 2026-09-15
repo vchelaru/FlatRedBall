@@ -229,7 +229,7 @@ namespace FlatRedBall.Glue.SaveClasses
             if (!string.IsNullOrEmpty(type) && customVariable.DefaultValue != null)
             {
                 object variableValue = customVariable.DefaultValue;
-                variableValue = FixValue(variableValue, type);
+                variableValue = CustomVariableCommonExtensions.FixValue(variableValue, type);
                 customVariable.DefaultValue = variableValue;
             }
 
@@ -242,142 +242,8 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
 
-        public static object FixValue(object variableValue, string type)
-        {
-            if (type == "int")
-            {
-                if (variableValue is long asLong)
-                {
-                    variableValue = (int)asLong;
-                }
-            }
-            else if (type == "int?")
-            {
-                if (variableValue is long asLong)
-                {
-                    variableValue = (int?)asLong;
-                }
-            }
-            else if (type == "float" || type == "Single")
-            {
-                if (variableValue is int asInt)
-                {
-                    variableValue = (float)asInt;
-                }
-                else if (variableValue is double asDouble)
-                {
-                    variableValue = (float)asDouble;
-                }
-            }
-            else if (type == "float?")
-            {
-                if (variableValue is int asInt)
-                {
-                    variableValue = (float?)asInt;
-                }
-                else if (variableValue is double asDouble)
-                {
-                    variableValue = (float?)asDouble;
-                }
-            }
-            else if(type == "decimal")
-            {
-                if (variableValue is int asInt)
-                {
-                    variableValue = (decimal)asInt;
-                }
-                else if (variableValue is double asDouble)
-                {
-                    variableValue = (decimal)asDouble;
-                }
-            }
-            else if (type == "decimal?")
-            {
-                if (variableValue is int asInt)
-                {
-                    variableValue = (decimal?)asInt;
-                }
-                else if (variableValue is double asDouble)
-                {
-                    variableValue = (decimal?)asDouble;
-                }
-            }
-            else if(type == "List<Vector2>")
-            {
-                if(variableValue is Newtonsoft.Json.Linq.JArray jArray)
-                {
-                    List<Vector2> newList = new List<Vector2>();
-                    foreach(string innerValue in jArray)
-                    {
-                        var split = innerValue.Split(",").Select(item => item.Trim()).ToArray();
-
-                        if(split.Length == 2)
-                        {
-                            var firstValue = float.Parse(split[0], System.Globalization.CultureInfo.InvariantCulture);
-                            var secondValue = float.Parse(split[1], System.Globalization.CultureInfo.InvariantCulture);
-
-                            newList.Add(new Vector2(firstValue, secondValue));
-                        }
-                    }
-                    variableValue = newList;
-                }
-            }
-            else if(type == "List<float>")
-            {
-                if (variableValue is Newtonsoft.Json.Linq.JArray jArray)
-                {
-                    variableValue = jArray.Select(item => item.ToObject<float>()).ToList();
-                }
-            }
-            else if(type == "List<int>")
-            {
-                if (variableValue is Newtonsoft.Json.Linq.JArray jArray)
-                {
-                    variableValue = jArray.Select(item => item.ToObject<int>()).ToList();
-                }
-            }
-            else if(type == "List<string>")
-            {
-                if (variableValue is Newtonsoft.Json.Linq.JArray jArray)
-                {
-                    List<string> newList = new List<string>();
-                    foreach (string innerValue in jArray)
-                    {
-                        newList.Add(innerValue.ToString());
-                    }
-                    variableValue = newList;
-                }
-            }
-            else if(type == "FloatRectangle?")
-            {
-                var wasAssigned = false;
-                if(variableValue is string asString)
-                {
-                    if(asString.StartsWith("(") & asString.EndsWith(")"))
-                    {
-                        asString = asString.Substring(1, asString.Length - 2);
-                    }
-                    var values = asString.Split(",");
-
-                    if(values.Length == 4)
-                    {
-                        if (float.TryParse(values[0], out float x) &&
-                            float.TryParse(values[1], out float y) &&
-                            float.TryParse(values[2], out float width) &&
-                            float.TryParse(values[3], out float height))
-                        {
-                            variableValue = new GlueSaveClasses.FloatRectangle(x, y, width, height);
-                            wasAssigned = true;
-                        }
-                    }
-                }
-                if(!wasAssigned)
-                {
-                    variableValue = null;
-                }
-            }
-            return variableValue;
-        }
+        // FixValue moved to GlueCommon.SaveClasses.CustomVariableCommonExtensions (#2276) - pure
+        // type-conversion logic, zero coupling.
 
         public static void FixEnumerationTypes(this CustomVariable customVariable)
         {

@@ -194,7 +194,7 @@ namespace FlatRedBall.Glue.SaveClasses
                 object variableValue = property.Value;
                 var type = property.Type;
 
-                variableValue = CustomVariableExtensionMethods.FixValue(variableValue, type);
+                variableValue = CustomVariableCommonExtensions.FixValue(variableValue, type);
 
                 property.Value = variableValue;
             }

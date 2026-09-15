@@ -17,124 +17,18 @@ namespace FlatRedBall.Glue.SaveClasses
 {
     public static class ReferencedFileSaveExtensionMethods
     {
-        public static void FixAllTypes(this ReferencedFileSave referencedFileSave)
-        {
-            foreach(var property in referencedFileSave.Properties)
-            {
-                if (!string.IsNullOrEmpty(property.Type) && property.Value != null)
-                {
-                    object variableValue = property.Value;
-                    var type = property.Type;
+        // FixAllTypes moved to GlueCommon.SaveClasses.ReferencedFileSavePropertyExtensions (#2276) -
+        // only touches the ReferencedFileSave's own Properties list and the now-GlueCommon
+        // CustomVariableCommonExtensions.FixValue.
 
-                    variableValue = CustomVariableExtensionMethods.FixValue(variableValue, type);
+        // GetUnqualifiedTypeForCsv and GetTypeForCsvFile moved to
+        // GlueCommon.SaveClasses.ReferencedFileSaveTypeExtensions (#2276) - needed the new
+        // IGlueStateCore seam over GlueState.Self.ProjectNamespace, plus the existing
+        // IObjectFinderCore.GlueProject.
 
-                    property.Value = variableValue;
-                }
-            }
-        }
-        public static string GetUnqualifiedTypeForCsv(this ReferencedFileSave referencedFileSave, string alternativeFileName = null)
-        {
-            string toReturn = GetTypeForCsvFile(referencedFileSave, alternativeFileName);
-
-            if (toReturn.Contains('.'))
-            {
-                int startOfUnqualified = toReturn.LastIndexOf('.') + 1;
-                toReturn = toReturn.Substring(startOfUnqualified);
-            }
-
-            return toReturn;
-        }
-
-        public static string GetTypeForCsvFile(this ReferencedFileSave referencedFileSave, string alternativeFileName = null)//string fileName)
-        {
-            if (referencedFileSave == null)
-            {
-                throw new ArgumentNullException("ReferencedFileSave is null - it can't be.");
-            }
-
-            string fileName = referencedFileSave.Name;
-            if (!string.IsNullOrEmpty(alternativeFileName))
-            {
-                fileName = alternativeFileName;
-            }
-
-            if (!string.IsNullOrEmpty(referencedFileSave.UniformRowType))
-            {
-                return referencedFileSave.UniformRowType;
-            }
-            else
-            {
-                string className = null;
-
-                // Make sure that the fileName is relative:
-                // Wait!  There's no reason to do this.  The
-                // RFS's Name property will always be relative
-                // to the content project.  This is a must to make
-                // projects portable so we don't have to do any processing
-                // on the file name.
-                //if (!FileManager.IsRelative(fileName))
-                //{
-                //    if (ProjectManager.ContentProject.Directory != null &&
-                //        !FileManager.IsRelativeTo(ProjectManager.ContentProject.Directory, FileManager.RelativeDirectory))
-                //    {
-                //        fileName = FileManager.MakeRelative(fileName, ProjectManager.ContentProject.Directory);
-                //    }
-                //    else
-                //    {
-                //        fileName = FileManager.MakeRelative(fileName);
-                //    }
-                //}
-
-                // Is this file using a custom class?
-                CustomClassSave ccs = ObjectFinder.Self.GlueProject.GetCustomClassReferencingFile(fileName);
-                if (ccs == null)
-                {
-
-                    className = FileManager.RemovePath(FileManager.RemoveExtension(fileName));
-                    if (className.EndsWith("File"))
-                    {
-                        className = className.Substring(0, className.Length - "File".Length);
-                    }
-
-                    className = GlueState.Self.ProjectNamespace + ".DataTypes." + className;
-
-                }
-                else
-                {
-                    if (!string.IsNullOrEmpty( ccs.CustomNamespace) )
-                    {
-                        className = ccs.CustomNamespace + "." + ccs.Name;
-                    }
-                    else
-                    {
-                        className = GlueState.Self.ProjectNamespace + ".DataTypes." + ccs.Name;
-                    }
-                }
-                return className;
-            }
-        }
-
-        public static bool IsFileSourceForThis(this ReferencedFileSave instance, FilePath filePath)
-        {
-            if (!string.IsNullOrEmpty(instance.SourceFile) &&
-                 new FilePath(ObjectFinder.Self.MakeAbsoluteContent(instance.SourceFile)) == filePath)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        public static bool IsFileSourceForThis(this ReferencedFileSave instance, string fileName)
-        {
-            if (!string.IsNullOrEmpty(instance.SourceFile) &&
-                 FileManager.RemoveDotDotSlash( ObjectFinder.Self.MakeAbsoluteContent(instance.SourceFile)).Equals(fileName, StringComparison.OrdinalIgnoreCase))
-            {
-                return true;
-            }
-
-            return false;
-        }
+        // Both IsFileSourceForThis overloads moved to
+        // GlueCommon.SaveClasses.ReferencedFileSaveSourceExtensions (#2276) - needed
+        // IObjectFinderCore widened with MakeAbsoluteContent.
 
         // GetInstanceName, GetContainer, GetContainerType, ReferencedFileSaveToString,
         // GetIsSharedStaticEditable, both GetIsLinkedOutsideContainerFolder overloads, and
