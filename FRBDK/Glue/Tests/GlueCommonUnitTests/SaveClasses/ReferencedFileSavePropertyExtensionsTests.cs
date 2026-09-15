@@ -5,6 +5,28 @@ namespace GlueCommonUnitTests.SaveClasses;
 public class ReferencedFileSavePropertyExtensionsTests
 {
     [Fact]
+    public void FixAllTypes_ConvertsLongToInt_ForIntTypedProperty()
+    {
+        var rfs = new ReferencedFileSave();
+        rfs.Properties.Add(new PropertySave { Name = "SomeProperty", Type = "int", Value = 5L });
+
+        rfs.FixAllTypes();
+
+        Assert.Equal(5, rfs.GetProperty<int>("SomeProperty"));
+    }
+
+    [Fact]
+    public void FixAllTypes_LeavesUntypedProperty_Unchanged()
+    {
+        var rfs = new ReferencedFileSave();
+        rfs.Properties.Add(new PropertySave { Name = "SomeProperty", Value = "value" });
+
+        rfs.FixAllTypes();
+
+        Assert.Equal("value", rfs.GetProperty<string>("SomeProperty"));
+    }
+
+    [Fact]
     public void GetProperty_PropertyExists_ReturnsValue()
     {
         var rfs = new ReferencedFileSave();

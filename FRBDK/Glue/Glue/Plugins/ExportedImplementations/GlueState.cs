@@ -86,7 +86,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
     #endregion
 
-    public class GlueState : IGlueState
+    public class GlueState : IGlueState, IGlueStateCore
     {
         #region Current Selection Properties
 
@@ -541,6 +541,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
                 if (mSelf == null)
                 {
                     mSelf = new GlueState();
+                    GlueStateCore.Self = mSelf;
                 }
                 return mSelf;
             }

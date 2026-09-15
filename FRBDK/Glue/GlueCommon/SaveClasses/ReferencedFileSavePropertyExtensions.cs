@@ -13,6 +13,22 @@ namespace FlatRedBall.Glue.SaveClasses
     /// </summary>
     public static class ReferencedFileSavePropertyExtensions
     {
+        public static void FixAllTypes(this ReferencedFileSave referencedFileSave)
+        {
+            foreach (var property in referencedFileSave.Properties)
+            {
+                if (!string.IsNullOrEmpty(property.Type) && property.Value != null)
+                {
+                    object variableValue = property.Value;
+                    var type = property.Type;
+
+                    variableValue = CustomVariableCommonExtensions.FixValue(variableValue, type);
+
+                    property.Value = variableValue;
+                }
+            }
+        }
+
         public static T GetProperty<T>(this ReferencedFileSave referencedFileSave, string propertyName)
         {
             var propertySave = referencedFileSave.Properties.FirstOrDefault(

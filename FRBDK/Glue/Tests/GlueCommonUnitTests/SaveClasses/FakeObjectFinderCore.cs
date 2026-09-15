@@ -15,6 +15,8 @@ public class FakeObjectFinderCore : IObjectFinderCore
     readonly Dictionary<ReferencedFileSave, GlueElement> _containersByReferencedFile = new();
     readonly Dictionary<GlueElement, List<GlueElement>> _baseElementsByElement = new();
 
+    public string ContentDirectory { get; set; } = "";
+
     public void AddElement(string name, GlueElement element) => _elementsByName[name] = element;
 
     public void SetContainer(NamedObjectSave namedObjectSave, GlueElement container) =>
@@ -39,4 +41,7 @@ public class FakeObjectFinderCore : IObjectFinderCore
 
     public List<GlueElement> GetAllBaseElementsRecursively(GlueElement derivedElement) =>
         _baseElementsByElement.TryGetValue(derivedElement, out var baseElements) ? baseElements : new List<GlueElement>();
+
+    public string MakeAbsoluteContent(string fileName) =>
+        FlatRedBall.IO.FileManager.IsRelative(fileName) ? ContentDirectory + fileName : fileName;
 }

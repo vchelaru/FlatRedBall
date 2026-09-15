@@ -104,7 +104,7 @@ namespace FlatRedBall.Glue.SaveClasses
                 // special case it:
                 if(property.Name == "DestinationRectangle" && property.Value is string asString)
                 {
-                    property.Value = CustomVariableExtensionMethods.FixValue(asString, "FloatRectangle?");
+                    property.Value = CustomVariableCommonExtensions.FixValue(asString, "FloatRectangle?");
 
                 }
                 else
@@ -140,7 +140,7 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 object variableValue = instruction.Value;
                 var type = instruction.Type;
-                variableValue = CustomVariableExtensionMethods.FixValue(variableValue, type);
+                variableValue = CustomVariableCommonExtensions.FixValue(variableValue, type);
                 instruction.Value = variableValue;
             }
         }
@@ -153,7 +153,7 @@ namespace FlatRedBall.Glue.SaveClasses
                 object variableValue = property.Value;
                 var type = property.Type;
 
-                variableValue = CustomVariableExtensionMethods.FixValue(variableValue, type);
+                variableValue = CustomVariableCommonExtensions.FixValue(variableValue, type);
 
                 property.Value = variableValue;
             }

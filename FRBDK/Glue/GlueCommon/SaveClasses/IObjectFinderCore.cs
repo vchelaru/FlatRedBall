@@ -20,6 +20,7 @@ namespace FlatRedBall.Glue.SaveClasses
         GlueElement GetElementContaining(ReferencedFileSave referencedFileSave);
         EntitySave GetEntitySave(string entityName);
         List<GlueElement> GetAllBaseElementsRecursively(GlueElement derivedElement);
+        string MakeAbsoluteContent(string fileName);
     }
 
     public static class ObjectFinderCore
