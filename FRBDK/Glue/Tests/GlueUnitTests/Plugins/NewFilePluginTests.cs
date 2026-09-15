@@ -1,4 +1,5 @@
 using FlatRedBall.Content.AnimationChain;
+using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins.NewFiles;
 using FlatRedBall.Graphics;
 using Xunit;
@@ -31,5 +32,51 @@ public class NewFilePluginTests
         var instance = NewFilePlugin.CreateSaveInstance(typeof(AnimationChainSave));
 
         Assert.IsType<AnimationChainSave>(instance);
+    }
+
+    /// <summary>
+    /// GitHub issue #2249's original fix only patched <see cref="NewFilePlugin.CreateSaveInstance"/>,
+    /// which is reached from <c>SaveNewFileAtLocation</c> only when <see cref="AssetTypeInfo.SaveType"/>
+    /// is non-null. The real .achx <see cref="AssetTypeInfo"/> is CSV-loaded: its
+    /// <see cref="AssetTypeInfo.QualifiedSaveTypeName"/> setter resolves <c>SaveType</c> via
+    /// <c>Type.GetType("...AnimationChainListSave, FlatRedBall")</c> - and no engine assembly is
+    /// actually named "FlatRedBall" (it's "FlatRedBallDesktopGLNet6", "FlatRedBall.FNA", etc.), so that
+    /// resolution always fails and <c>SaveType</c> stays null. That routed real achx creation into the
+    /// <c>QualifiedSaveTypeName</c> fallback branch, which called <c>Activator.CreateInstance</c>
+    /// directly and never applied the pixel default.
+    /// </summary>
+    [Fact]
+    public void TryCreateSaveInstance_ForAssetTypeInfoWithOnlyQualifiedSaveTypeName_DefaultsAchxToPixelCoordinates()
+    {
+        var ati = new AssetTypeInfo
+        {
+            QualifiedSaveTypeName = typeof(AnimationChainListSave).FullName
+        };
+
+        // Sanity-check the CSV-load quirk this test exists to cover: SaveType did NOT resolve
+        // from QualifiedSaveTypeName alone.
+        Assert.Null(ati.SaveType);
+
+        var found = NewFilePlugin.TryCreateSaveInstance(ati, out var type, out var saveInstance);
+
+        Assert.True(found);
+        Assert.Equal(typeof(AnimationChainListSave), type);
+        var achx = Assert.IsType<AnimationChainListSave>(saveInstance);
+        Assert.Equal(TextureCoordinateType.Pixel, achx.CoordinateType);
+    }
+
+    [Fact]
+    public void TryCreateSaveInstance_ForUnresolvableQualifiedSaveTypeName_ReturnsFalse()
+    {
+        var ati = new AssetTypeInfo
+        {
+            QualifiedSaveTypeName = "Not.A.Real.Type"
+        };
+
+        var found = NewFilePlugin.TryCreateSaveInstance(ati, out var type, out var saveInstance);
+
+        Assert.False(found);
+        Assert.Null(type);
+        Assert.Null(saveInstance);
     }
 }
