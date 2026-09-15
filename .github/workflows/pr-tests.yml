@@ -91,10 +91,29 @@ jobs:
     # socket protocol (see LiveGameProcess.cs), so it needs a real MonoGame DesktopGL window. Its own step,
     # not folded into the run above, so a wedged game process is attributed here. Around three minutes, and
     # ahead of the smoke test below so a failure here shows up without waiting out the slowest step.
+    #
+    # Retried once on failure: this category drives a real OS process over a real TCP socket
+    # (GameConnectionManager), so it is occasionally susceptible to CI-environment socket/timing flakes
+    # unrelated to any code change - see #2244 (slow cold-JIT/software-GL first request blowing the
+    # response timeout) and #2301 (a connection reset with no code-visible cause). Both already hardened
+    # the failure diagnostics; this doesn't replace that investigation, it just stops a genuine transient
+    # from failing an unrelated PR. Reruns the whole category rather than a single test - --filter has no
+    # unit finer than that, and re-running passing tests alongside the flaky one is cheap next to the
+    # false-failure cost.
     - name: Run live game tests
+      shell: pwsh
       env:
         GALLIUM_DRIVER: llvmpipe   # force Mesa's software rasterizer, inherited by the game processes
-      run: dotnet test 'FlatRedBall\FRBDK\Glue\Glue with All.sln' -c Debug --filter "Category=LiveGame" --blame-hang-timeout 15m
+      run: |
+        $ErrorActionPreference = "Stop"
+        $maxAttempts = 2
+        for ($attempt = 1; $attempt -le $maxAttempts; $attempt++) {
+          Write-Host "Live game tests attempt $attempt of $maxAttempts"
+          dotnet test 'FlatRedBall\FRBDK\Glue\Glue with All.sln' -c Debug --filter "Category=LiveGame" --blame-hang-timeout 15m
+          if ($LASTEXITCODE -eq 0) { exit 0 }
+          if ($attempt -lt $maxAttempts) { Write-Host "Attempt $attempt failed (exit $LASTEXITCODE) - retrying once before failing the job." }
+        }
+        exit $LASTEXITCODE
 
     # Everything above this line covers the Glue editor only. The steps below cover the engine,
     # which otherwise gets compiled just once per release by Engine.yml -- long after the commit
