@@ -335,6 +335,10 @@ namespace GlueControl.Editing
             // of the edit-mode zoom level, silently undoing the correct assignment if called last.
             CameraSetup.ResetGumResolutionValues();
 
+            // GetOrCreateEntityAttachmentZoomLayer lives in GumCore.*.dll, so a project on an older engine
+            // doesn't have it. Below the gate, Gum content simply doesn't follow the editor zoom, which is
+            // what every version before it did.
+#if GumWrapperHasEntityAttachmentZoomLayer || REFERENCES_FRB_SOURCE
             if (global::RenderingLibrary.SystemManagers.Default != null)
             {
                 // Only entity-attached Gum content (GetOrCreateEntityAttachmentZoomLayer) zooms with
@@ -349,6 +353,7 @@ namespace GlueControl.Editing
                 var entityLayer = global::GumCoreShared.FlatRedBall.Embedded.PositionedObjectGueWrapper.GetOrCreateEntityAttachmentZoomLayer();
                 entityLayer.LayerCameraSettings.Zoom = entityZoom;
             }
+#endif
 #endif
 
             if (zoomAroundCursorPosition)

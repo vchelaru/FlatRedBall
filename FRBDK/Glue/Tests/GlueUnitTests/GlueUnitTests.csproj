@@ -12,6 +12,9 @@
 
   <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="6.0.0" />
+    <!-- Parse-only: evaluates the #if regions of generated embedded files against a given FileVersion's
+         #defines without building a game project (see EmbeddedVersionGateTests). -->
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
     <PackageReference Include="Moq" Version="4.20.72" />
     <PackageReference Include="Shouldly" Version="4.3.0" />

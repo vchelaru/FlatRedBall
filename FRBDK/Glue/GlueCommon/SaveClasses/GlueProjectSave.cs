@@ -232,6 +232,11 @@ namespace FlatRedBall.Glue.SaveClasses
             // landed after the engine's version-70 bump without a bump of its own, so an engine reporting 70
             // may or may not have it. 72 is the first syntax version guaranteed to.
             ScreenManagerHasScreenLoadExceptionOccurred = 72,
+            // September 15, 2026 - PositionedObjectGueWrapper.GetOrCreateEntityAttachmentZoomLayer (in
+            // GumCore.*.dll) is what the embedded CameraLogic.cs zooms entity-attached Gum content through in
+            // edit mode. Gated because it's a new engine-side member: a project on an older GumCore dll fails
+            // with CS0117 on CameraLogic.Generated.cs otherwise.
+            GumWrapperHasEntityAttachmentZoomLayer = 73,
 
             // Stop! If adding an entry here, modify SyntaxVersionAttribute on FlatRedBallServices
             // and LatestVersion down below
@@ -242,7 +247,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.SpriteHasSyncShapesFromAnimation;
+        public const int LatestVersion = (int)GluxVersions.GumWrapperHasEntityAttachmentZoomLayer;
 
         public int FileVersion { get; set; }
 
