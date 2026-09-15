@@ -242,20 +242,9 @@ T_Paused,Paused,En Pausa,Pausiert
             {
                 CreateNewFileFromAvailableFileTemplate(createdFile, availableFile);
             }
-            else if (assetTypeInfo.SaveType != null)
+            else if (TryCreateSaveInstance(assetTypeInfo, out var saveType, out var saveInstance))
             {
-                object saveInstance = CreateSaveInstance(assetTypeInfo.SaveType);
-                FileManager.XmlSerialize(assetTypeInfo.SaveType, saveInstance, createdFile);
-            }
-            else if(assetTypeInfo.QualifiedSaveTypeName != null)
-            {
-                var type = TypeManager.GetTypeFromString(assetTypeInfo.QualifiedSaveTypeName);
-
-                if(type != null)
-                {
-                    object saveInstance = Activator.CreateInstance(type);
-                    FileManager.XmlSerialize(type, saveInstance, createdFile);
-                }
+                FileManager.XmlSerialize(saveType, saveInstance, createdFile);
             }
             // Unknown type, so save an empty file.
             else
@@ -283,6 +272,27 @@ T_Paused,Paused,En Pausa,Pausiert
             }
 
             return saveInstance;
+        }
+
+        /// <summary>
+        /// Resolves the save type understood by Glue for <paramref name="assetTypeInfo"/> - preferring
+        /// its already-resolved <see cref="AssetTypeInfo.SaveType"/>, falling back to resolving
+        /// <see cref="AssetTypeInfo.QualifiedSaveTypeName"/> via <see cref="TypeManager.GetTypeFromString"/>
+        /// (CSV-loaded AssetTypeInfos, like the built-in .achx one, only populate the latter -
+        /// <see cref="AssetTypeInfo.QualifiedSaveTypeName"/>'s own setter resolves <c>SaveType</c> via a
+        /// naive "TypeName, FlatRedBall" assembly-qualified lookup that fails because no engine assembly
+        /// is actually named "FlatRedBall") - and instantiates it through <see cref="CreateSaveInstance"/>
+        /// either way, so every caller gets the same defaults (e.g. .achx defaulting to pixel coordinates).
+        /// </summary>
+        internal static bool TryCreateSaveInstance(AssetTypeInfo assetTypeInfo, out Type type, out object saveInstance)
+        {
+            type = assetTypeInfo.SaveType ?? (assetTypeInfo.QualifiedSaveTypeName != null
+                ? TypeManager.GetTypeFromString(assetTypeInfo.QualifiedSaveTypeName)
+                : null);
+
+            saveInstance = type != null ? CreateSaveInstance(type) : null;
+
+            return saveInstance != null;
         }
 
         private bool TryGetTemplateFileForAti(AssetTypeInfo assetTypeInfo, out string availableFile)
