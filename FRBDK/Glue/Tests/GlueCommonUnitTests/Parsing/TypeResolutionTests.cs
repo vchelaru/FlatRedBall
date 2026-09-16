@@ -1,5 +1,7 @@
+using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Parsing;
+using GlueCommonUnitTests.Controls;
 
 namespace GlueCommonUnitTests.Parsing;
 
@@ -185,5 +187,150 @@ public class TypeResolutionTests
         var result = Resolve("List<int>[]", commonTypes: commonTypes);
 
         Assert.Equal(typeof(List<int>[]), result);
+    }
+
+    static Type ResolveParsedType(
+        ParsedType parsedType,
+        IReadOnlyDictionary<string, Type> commonTypes = null,
+        IErrorReportingCore errorReporting = null) =>
+        TypeResolution.GetTypeFromParsedType(
+            parsedType,
+            commonTypes ?? new Dictionary<string, Type>(),
+            Array.Empty<Type>(),
+            Array.Empty<Type>(),
+            Array.Empty<Type>(),
+            Array.Empty<Type>(),
+            Array.Empty<Type>(),
+            Array.Empty<AssetTypeInfo>(),
+            errorReporting ?? new FakeErrorReportingCore());
+
+    [Fact]
+    public void GetTypeFromParsedType_NonGeneric_ResolvesLikeGetTypeFromString()
+    {
+        Assert.Equal(typeof(int), ResolveParsedType(new ParsedType("int")));
+    }
+
+    [Fact]
+    public void GetTypeFromParsedType_NoGenericType_UsesFirstGenericRestriction()
+    {
+        var parsedType = new ParsedType("Foo");
+        parsedType.GenericRestrictions.Add("int");
+
+        Assert.Equal(typeof(int), ResolveParsedType(parsedType));
+    }
+
+    [Fact]
+    public void GetTypeFromParsedType_UnresolvableBaseType_ReturnsNull()
+    {
+        Assert.Null(ResolveParsedType(new ParsedType("List<int>")));
+    }
+
+    [Fact]
+    public void GetTypeFromParsedType_OpenGenericBaseType_MakesGenericType()
+    {
+        var commonTypes = new Dictionary<string, Type> { { "List<>", typeof(List<>) } };
+
+        var result = ResolveParsedType(new ParsedType("List<int>"), commonTypes: commonTypes);
+
+        Assert.Equal(typeof(List<int>), result);
+    }
+
+    [Fact]
+    public void GetTypeFromParsedType_CommaSeparatedGenericArgs_MakesGenericType()
+    {
+        var commonTypes = new Dictionary<string, Type> { { "Dictionary<>", typeof(Dictionary<,>) } };
+
+        var result = ResolveParsedType(new ParsedType("Dictionary<string,int>"), commonTypes: commonTypes);
+
+        Assert.Equal(typeof(Dictionary<string, int>), result);
+    }
+
+    [Fact]
+    public void GetTypeFromParsedType_GenericArgHasNamespace_UsesUnqualifiedName()
+    {
+        var commonTypes = new Dictionary<string, Type> { { "List<>", typeof(List<>) } };
+
+        var result = ResolveParsedType(new ParsedType("List<System.Int32>"), commonTypes: commonTypes);
+
+        Assert.Equal(typeof(List<int>), result);
+    }
+
+    [Fact]
+    public void GetTypeFromParsedType_GenericArgIsUnresolvableT_WithRestriction_UsesRestriction()
+    {
+        var commonTypes = new Dictionary<string, Type> { { "List<>", typeof(List<>) } };
+        var parsedType = new ParsedType("List<T>");
+        parsedType.GenericRestrictions.Add("int");
+
+        var result = ResolveParsedType(parsedType, commonTypes: commonTypes);
+
+        Assert.Equal(typeof(List<int>), result);
+    }
+
+    [Fact]
+    public void GetTypeFromParsedType_GenericArgIsUnresolvableT_NoRestriction_FallsBackToObject()
+    {
+        var commonTypes = new Dictionary<string, Type> { { "List<>", typeof(List<>) } };
+
+        var result = ResolveParsedType(new ParsedType("List<T>"), commonTypes: commonTypes);
+
+        Assert.Equal(typeof(List<object>), result);
+    }
+
+    [Fact]
+    public void GetTypeFromParsedType_UnresolvableGenericArg_ReturnsNullWithoutReporting()
+    {
+        var commonTypes = new Dictionary<string, Type> { { "List<>", typeof(List<>) } };
+        var errorReporting = new FakeErrorReportingCore();
+
+        var result = ResolveParsedType(new ParsedType("List<Some.Totally.Unknown.Type>"), commonTypes: commonTypes, errorReporting: errorReporting);
+
+        Assert.Null(result);
+        Assert.Empty(errorReporting.Messages);
+    }
+
+    [Fact]
+    public void GetTypeFromParsedType_MakeGenericTypeThrows_ReportsAndReturnsNull()
+    {
+        // Dictionary<> needs two type arguments; only one is supplied, so MakeGenericType throws.
+        var commonTypes = new Dictionary<string, Type> { { "Dictionary<>", typeof(Dictionary<,>) } };
+        var errorReporting = new FakeErrorReportingCore();
+
+        var result = ResolveParsedType(new ParsedType("Dictionary<int>"), commonTypes: commonTypes, errorReporting: errorReporting);
+
+        Assert.Null(result);
+        Assert.Single(errorReporting.Messages);
+    }
+
+    [Fact]
+    public void GetTypeInListFromParsedType_GenericType_ResolvesGenericArgument()
+    {
+        var result = TypeResolution.GetTypeInListFromParsedType(
+            new ParsedType("List<int>"),
+            new Dictionary<string, Type>(),
+            Array.Empty<Type>(),
+            Array.Empty<Type>(),
+            Array.Empty<Type>(),
+            Array.Empty<Type>(),
+            Array.Empty<Type>(),
+            Array.Empty<AssetTypeInfo>());
+
+        Assert.Equal(typeof(int), result);
+    }
+
+    [Fact]
+    public void GetTypeInListFromParsedType_NoGenericType_ResolvesNameItself()
+    {
+        var result = TypeResolution.GetTypeInListFromParsedType(
+            new ParsedType("int[]"),
+            new Dictionary<string, Type>(),
+            Array.Empty<Type>(),
+            Array.Empty<Type>(),
+            Array.Empty<Type>(),
+            Array.Empty<Type>(),
+            Array.Empty<Type>(),
+            Array.Empty<AssetTypeInfo>());
+
+        Assert.Equal(typeof(int[]), result);
     }
 }

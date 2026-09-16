@@ -50,122 +50,33 @@ namespace FlatRedBall.Glue.Parsing
 
         public static Type GetTypeFromParsedType(ParsedType parsedType)
         {
-            if (parsedType.GenericType != null)
-            {
-                Type baseType = GetTypeFromString(parsedType.Name + "<>");
+            LoadAssembliesIfNecessary();
 
-                if (baseType == null)
-                {
-                    baseType = GetTypeFromString(parsedType.Name);
-                }
-                if (baseType == null)
-                {
-                    baseType = GetTypeFromString(parsedType.NameWithGenericNotation);
-                }
-
-                if (baseType == null)
-                {
-                    int m = 3;
-                    return null;
-                }
-
-                if (baseType.IsGenericTypeDefinition)
-                {
-
-                    return MakeGenericType(parsedType, baseType);
-                }
-                else
-                {
-                    return baseType;
-                }
-
-            }
-            else if (parsedType.GenericRestrictions.Count != 0)
-            {
-                return GetTypeFromString(parsedType.GenericRestrictions[0]);
-            }
-            else
-            {
-
-                string typeAsString = parsedType.NameWithGenericNotation;
-
-                return GetTypeFromString(typeAsString);
-            }
-        }
-
-        private static Type MakeGenericType(ParsedType parsedType, Type baseType)
-        {
-            string genericString = parsedType.GenericType.Name;
-
-            if (genericString.Contains(','))
-            {
-                string[] strings = genericString.Split(',');
-
-                Type[] types = new Type[strings.Length];
-
-                for (int i = 0; i < strings.Length; i++)
-                {
-                    types[i] = GetTypeFromString(strings[i]);
-                }
-
-                return baseType.MakeGenericType(types);
-            }
-            else
-            {
-                if (genericString.Contains('.'))
-                {
-                    int lastDot = genericString.LastIndexOf('.');
-
-                    genericString = genericString.Substring(lastDot + 1, genericString.Length - (lastDot + 1));
-                }
-                Type genericType = GetTypeFromString(genericString);
-
-                if (genericType == null && parsedType.GenericType.Name == "T")
-                {
-                    if (parsedType.GenericRestrictions.Count != 0)
-                    {
-                        genericType = GetTypeFromString(parsedType.GenericRestrictions[0]);
-                    }
-                    else
-                    {
-                        genericType = typeof(object);
-                    }
-                }
-                if (genericType == null)
-                {
-                    return null;
-                }
-                else
-                {
-                    try
-                    {
-                        return baseType.MakeGenericType(genericType);
-                    }
-                    catch(Exception exception)
-                    {
-                        DialogService.ShowMessage("Error making a generic type out of " + baseType.Name + "<" + genericType.Name + ">" +
-                            "\n This is probably because your game hasn't been rebuilt since you've made a critical change");
-                        return null;
-                    }
-                }
-            }
+            return TypeResolution.GetTypeFromParsedType(
+                parsedType,
+                mCommonTypes,
+                mAdditionalTypes,
+                FlatRedBallTypes,
+                mTypesInMicrosoftXnaFramework,
+                mTypesInMicrosoftXnaFrameworkGame,
+                pluginTypes,
+                AvailableAssetTypes.Self.AllAssetTypes,
+                ErrorReportingCore.Self);
         }
 
         public static Type GetTypeInListFromParsedType(ParsedType parsedType)
         {
-            string typeAsString = "";
+            LoadAssembliesIfNecessary();
 
-            if (parsedType.GenericType != null)
-            {
-                typeAsString = parsedType.GenericType.Name;
-            }
-            else
-            {
-                // it's probably a [], so just use the type itself
-                typeAsString = parsedType.Name;
-            }
-
-            return GetTypeFromString(typeAsString);
+            return TypeResolution.GetTypeInListFromParsedType(
+                parsedType,
+                mCommonTypes,
+                mAdditionalTypes,
+                FlatRedBallTypes,
+                mTypesInMicrosoftXnaFramework,
+                mTypesInMicrosoftXnaFrameworkGame,
+                pluginTypes,
+                AvailableAssetTypes.Self.AllAssetTypes);
         }
 
         public static Type GetTypeFromString(string typeString)
@@ -206,31 +117,7 @@ namespace FlatRedBall.Glue.Parsing
 
         public static void LoadAdditionalTypes(Assembly assembly, string namespaceFilter = null)
         {
-            try
-            {
-                Type[] types = assembly.GetTypes();
-                if (string.IsNullOrEmpty(namespaceFilter))
-                {
-                    mAdditionalTypes.AddRange(types);
-                }
-                else
-                {
-                    mAdditionalTypes.AddRange(types.Where(type => type.FullName.StartsWith(namespaceFilter)));
-                }
-            }
-            catch (ReflectionTypeLoadException)
-            {
-                DialogService.ShowMessage("Encountered exception while trying to load " + assembly.FullName +
-                    "\nThis is likely because the assembly is using a different version of the .NET framework.");
-            }
-            catch (TypeLoadException)
-            {
-
-            }
-            catch (Exception)
-            {
-
-            }
+            mAdditionalTypes.AddRange(TypeLoading.GetAdditionalTypes(assembly, namespaceFilter, ErrorReportingCore.Self));
         }
 
         static object mLockObject = new object();
