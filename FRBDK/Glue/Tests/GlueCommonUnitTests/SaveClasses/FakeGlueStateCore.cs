@@ -9,4 +9,5 @@ namespace GlueCommonUnitTests.SaveClasses;
 public class FakeGlueStateCore : IGlueStateCore
 {
     public string ProjectNamespace { get; set; } = "";
+    public string CurrentMainProjectDirectory { get; set; } = "";
 }

@@ -35,36 +35,9 @@ namespace FlatRedBall.Glue.SaveClasses
         // GetIsFileOutsideContainerFolder moved to GlueCommon.SaveClasses.ReferencedFileSaveElementExtensions
         // (#2276) - needed IObjectFinderCore.GetElementContaining widened with a ReferencedFileSave overload.
 
-        public static bool GetIsFileOutOfDate(this ReferencedFileSave instance, string absoluteSourceName, string absoluteDestinationName)
-        {
-            bool exists = System.IO.File.Exists(absoluteDestinationName);
-
-            if (!exists || System.IO.File.GetLastWriteTime(absoluteSourceName) >
-                    System.IO.File.GetLastWriteTime(absoluteDestinationName))
-            {
-                return true;
-            }
-
-            var buildToolAssociation = instance.GetBuildToolAssociation();
-
-            if (buildToolAssociation != null)
-            {
-                string buildToolFileName = buildToolAssociation.BuildToolProcessed;
-                string absoluteBuildTool = GlueState.Self.CurrentMainProject.Directory + buildToolFileName;
-
-                if (File.Exists(absoluteBuildTool))
-                {
-                    if (System.IO.File.GetLastWriteTime(absoluteBuildTool) >=
-                        System.IO.File.GetLastWriteTime(absoluteDestinationName))
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
-            
-        }
+        // GetIsFileOutOfDate moved to GlueCommon.SaveClasses.ReferencedFileSaveBuildExtensions (#2276) -
+        // needed the new IBuildToolAssociationCore seam over BuildToolAssociationManager.Self, plus
+        // IGlueStateCore widened with CurrentMainProjectDirectory.
 
         // GetAssetTypeInfo, GetCanUseContentPipeline, and GetGeneratesMember moved to
         // GlueCommon.SaveClasses.ReferencedFileSaveAssetTypeExtensions (#2276) - GetAssetTypeInfo needed
