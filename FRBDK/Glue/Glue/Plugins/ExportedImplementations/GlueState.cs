@@ -375,6 +375,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
         }
 
+        public string CurrentMainProjectDirectory => CurrentMainProject?.Directory;
+
         /// <summary>
         /// The file name of the GLUX
         /// </summary>

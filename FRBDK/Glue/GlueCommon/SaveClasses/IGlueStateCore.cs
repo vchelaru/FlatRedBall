@@ -11,6 +11,7 @@ namespace FlatRedBall.Glue.SaveClasses
     public interface IGlueStateCore
     {
         string ProjectNamespace { get; }
+        string CurrentMainProjectDirectory { get; }
     }
 
     public static class GlueStateCore

@@ -6,12 +6,13 @@ using EditorObjects.SaveClasses;
 using FlatRedBall.IO;
 using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.SaveClasses;
 using L = Localization;
 using Glue;
 
 namespace FlatRedBall.Glue.Managers;
 
-public class BuildToolAssociationManager
+public class BuildToolAssociationManager : IBuildToolAssociationCore
 {
     #region Fields
 
@@ -30,12 +31,30 @@ public class BuildToolAssociationManager
             if (mSelf == null)
             {
                 mSelf = new BuildToolAssociationManager();
+                BuildToolAssociationCore.Self = mSelf;
             }
             return mSelf;
         }
     }
 
     #endregion
+
+    public string GetBuildToolProcessed(ReferencedFileSave referencedFileSave)
+    {
+        var destinationExtension = FileManager.GetExtension(referencedFileSave.Name);
+
+        BuildToolAssociation buildToolAssociation;
+        if (!string.IsNullOrEmpty(referencedFileSave.BuildTool))
+        {
+            buildToolAssociation = GetBuilderToolAssociationByName(referencedFileSave.BuildTool);
+        }
+        else
+        {
+            buildToolAssociation = GetBuilderToolAssociationForDestinationExtension(destinationExtension);
+        }
+
+        return buildToolAssociation?.BuildToolProcessed;
+    }
 
     internal BuildToolAssociation GetBuilderToolAssociationForSourceExtension(string sourceExtension)
     {
