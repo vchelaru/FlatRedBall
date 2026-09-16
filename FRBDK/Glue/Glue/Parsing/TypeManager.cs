@@ -43,6 +43,16 @@ namespace FlatRedBall.Glue.Parsing
             TypeResolutionCore.Self = new TypeManagerTypeResolutionCore();
         }
 
+        /// <summary>
+        /// Forces the static constructor above to run. Call once at startup (MainGlueWindow,
+        /// GlueTestBootstrap) so GlueCommon code that only reaches type resolution through
+        /// TypeResolutionCore.Self (CustomVariable.GetIsEnumeration during project load, for
+        /// example) never runs ahead of the first direct TypeManager call in the process.
+        /// </summary>
+        public static void EnsureTypeResolutionSeamWired()
+        {
+        }
+
         class TypeManagerTypeResolutionCore : ITypeResolutionCore
         {
             public Type GetTypeFromString(string typeString) => TypeManager.GetTypeFromString(typeString);

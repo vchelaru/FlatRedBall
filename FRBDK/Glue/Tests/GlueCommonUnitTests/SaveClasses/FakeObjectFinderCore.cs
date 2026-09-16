@@ -13,9 +13,16 @@ public class FakeObjectFinderCore : IObjectFinderCore
     readonly Dictionary<string, GlueElement> _elementsByName = new();
     readonly Dictionary<NamedObjectSave, GlueElement> _containersByNamedObject = new();
     readonly Dictionary<ReferencedFileSave, GlueElement> _containersByReferencedFile = new();
+    readonly Dictionary<CustomVariable, GlueElement> _containersByCustomVariable = new();
     readonly Dictionary<GlueElement, List<GlueElement>> _baseElementsByElement = new();
 
     public string ContentDirectory { get; set; } = "";
+
+    /// <summary>
+    /// Stands in for ObjectFinder.GetStateSaveCategory; defaults to "not a state".
+    /// </summary>
+    public Func<CustomVariable, GlueElement, (bool IsState, StateSaveCategory Category)> StateSaveCategoryResolver { get; set; } =
+        (_, _) => (false, null);
 
     public void AddElement(string name, GlueElement element) => _elementsByName[name] = element;
 
@@ -24,6 +31,9 @@ public class FakeObjectFinderCore : IObjectFinderCore
 
     public void SetContainer(ReferencedFileSave referencedFileSave, GlueElement container) =>
         _containersByReferencedFile[referencedFileSave] = container;
+
+    public void SetContainer(CustomVariable customVariable, GlueElement container) =>
+        _containersByCustomVariable[customVariable] = container;
 
     public void SetBaseElements(GlueElement derivedElement, List<GlueElement> baseElements) =>
         _baseElementsByElement[derivedElement] = baseElements;
@@ -36,6 +46,12 @@ public class FakeObjectFinderCore : IObjectFinderCore
 
     public GlueElement GetElementContaining(ReferencedFileSave referencedFileSave) =>
         _containersByReferencedFile.TryGetValue(referencedFileSave, out var container) ? container : null;
+
+    public GlueElement GetElementContaining(CustomVariable customVariable) =>
+        _containersByCustomVariable.TryGetValue(customVariable, out var container) ? container : null;
+
+    public (bool IsState, StateSaveCategory Category) GetStateSaveCategory(CustomVariable customVariable, GlueElement containingElement) =>
+        StateSaveCategoryResolver(customVariable, containingElement);
 
     public EntitySave GetEntitySave(string entityName) => GetElement(entityName) as EntitySave;
 

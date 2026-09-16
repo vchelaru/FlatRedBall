@@ -468,7 +468,7 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 var variable = namedObject.InstructionSaves[i];
 
-                if (CustomVariableExtensionMethods.GetIsFile(variable.Type) && (string)(variable.Value) == rfs.GetInstanceName())
+                if (CustomVariableTypeExtensions.GetIsFile(variable.Type) && (string)(variable.Value) == rfs.GetInstanceName())
                 {
                     // We're going to make it null, but
                     // we don't save null instructions in 

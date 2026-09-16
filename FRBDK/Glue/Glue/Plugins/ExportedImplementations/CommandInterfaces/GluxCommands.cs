@@ -2517,8 +2517,8 @@ public class GluxCommands : IGluxCommands
                 variableDefinition.Type != "string" &&
                 variableDefinition.Type != "Microsoft.Xna.Framework.Color" &&
                 variableDefinition.Type != "Color" &&
-                !CustomVariableExtensionMethods.GetIsFile(variableDefinition.Type) && // If it's a file, we just want to set the string value and have the underlying system do the loading                         
-                !CustomVariableExtensionMethods.GetIsObjectType(variableDefinition.Type)
+                !CustomVariableTypeExtensions.GetIsFile(variableDefinition.Type) && // If it's a file, we just want to set the string value and have the underlying system do the loading                         
+                !CustomVariableTypeExtensions.GetIsObjectType(variableDefinition.Type)
                 )
             {
                 bool isCsv = NamedObjectPropertyGridDisplayer.GetIfIsCsv(nos, memberName);
