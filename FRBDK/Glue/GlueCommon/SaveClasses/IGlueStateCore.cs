@@ -12,6 +12,8 @@ namespace FlatRedBall.Glue.SaveClasses
     {
         string ProjectNamespace { get; }
         string CurrentMainProjectDirectory { get; }
+        EntitySave CurrentEntitySave { get; }
+        ScreenSave CurrentScreenSave { get; }
     }
 
     public static class GlueStateCore

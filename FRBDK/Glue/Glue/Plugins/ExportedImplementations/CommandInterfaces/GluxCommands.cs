@@ -1536,7 +1536,7 @@ public class GluxCommands : IGluxCommands
             }
 
             addObjectViewModel.ForcedElementToAddTo = element;
-            MembershipInfo membershipInfo = NamedObjectSaveExtensionMethodsGlue.GetMemberMembershipInfo(addObjectViewModel.ObjectName);
+            MembershipInfo membershipInfo = NamedObjectSaveGlueStateExtensions.GetMemberMembershipInfo(addObjectViewModel.ObjectName);
 
 
             if (GlueState.Self.CurrentGlueProject.FileVersion >=

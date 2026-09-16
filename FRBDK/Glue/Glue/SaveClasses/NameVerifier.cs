@@ -562,7 +562,7 @@ public class NameVerifier
         IElement element;
         RemoveNosFromElementIfNecessary(namedObject, out wasRemovedFromIndex, out element, out containerNos);
 
-        MembershipInfo membershipInfo = NamedObjectSaveExtensionMethodsGlue.GetMemberMembershipInfo(name);
+        MembershipInfo membershipInfo = NamedObjectSaveGlueStateExtensions.GetMemberMembershipInfo(name);
 
         if (wasRemovedFromIndex != -1)
         {
