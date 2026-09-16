@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Elements;
 
 namespace FlatRedBall.Glue.Parsing
@@ -254,6 +255,174 @@ namespace FlatRedBall.Glue.Parsing
             {
                 return typeToReturn;
             }
+        }
+
+        /// <summary>
+        /// Moved out of <c>TypeManager.GetTypeFromParsedType</c> (#2276) - the only coupling was to
+        /// <see cref="MakeGenericType"/>'s own <c>DialogService</c> call, now routed through
+        /// <paramref name="errorReporting"/>.
+        /// </summary>
+        public static Type GetTypeFromParsedType(
+            ParsedType parsedType,
+            IReadOnlyDictionary<string, Type> commonTypes,
+            IReadOnlyList<Type> additionalTypes,
+            IReadOnlyList<Type> flatRedBallTypes,
+            IReadOnlyList<Type> xnaFrameworkTypes,
+            IReadOnlyList<Type> xnaFrameworkGameTypes,
+            IReadOnlyList<Type> pluginTypes,
+            IEnumerable<AssetTypeInfo> allAssetTypes,
+            IErrorReportingCore errorReporting)
+        {
+            if (parsedType.GenericType != null)
+            {
+                Type baseType = GetTypeFromString(parsedType.Name + "<>", commonTypes, additionalTypes,
+                    flatRedBallTypes, xnaFrameworkTypes, xnaFrameworkGameTypes, pluginTypes, allAssetTypes);
+
+                if (baseType == null)
+                {
+                    baseType = GetTypeFromString(parsedType.Name, commonTypes, additionalTypes,
+                        flatRedBallTypes, xnaFrameworkTypes, xnaFrameworkGameTypes, pluginTypes, allAssetTypes);
+                }
+                if (baseType == null)
+                {
+                    baseType = GetTypeFromString(parsedType.NameWithGenericNotation, commonTypes, additionalTypes,
+                        flatRedBallTypes, xnaFrameworkTypes, xnaFrameworkGameTypes, pluginTypes, allAssetTypes);
+                }
+
+                if (baseType == null)
+                {
+                    return null;
+                }
+
+                if (baseType.IsGenericTypeDefinition)
+                {
+                    return MakeGenericType(parsedType, baseType, commonTypes, additionalTypes,
+                        flatRedBallTypes, xnaFrameworkTypes, xnaFrameworkGameTypes, pluginTypes, allAssetTypes,
+                        errorReporting);
+                }
+                else
+                {
+                    return baseType;
+                }
+            }
+            else if (parsedType.GenericRestrictions.Count != 0)
+            {
+                return GetTypeFromString(parsedType.GenericRestrictions[0], commonTypes, additionalTypes,
+                    flatRedBallTypes, xnaFrameworkTypes, xnaFrameworkGameTypes, pluginTypes, allAssetTypes);
+            }
+            else
+            {
+                string typeAsString = parsedType.NameWithGenericNotation;
+
+                return GetTypeFromString(typeAsString, commonTypes, additionalTypes,
+                    flatRedBallTypes, xnaFrameworkTypes, xnaFrameworkGameTypes, pluginTypes, allAssetTypes);
+            }
+        }
+
+        /// <summary>
+        /// Moved out of <c>TypeManager.MakeGenericType</c> (#2276) - its only coupling was the
+        /// <c>DialogService.ShowMessage</c> call on the <c>MakeGenericType</c> failure branch, now routed
+        /// through <paramref name="errorReporting"/> (<see cref="IErrorReportingCore"/>).
+        /// </summary>
+        public static Type MakeGenericType(
+            ParsedType parsedType,
+            Type baseType,
+            IReadOnlyDictionary<string, Type> commonTypes,
+            IReadOnlyList<Type> additionalTypes,
+            IReadOnlyList<Type> flatRedBallTypes,
+            IReadOnlyList<Type> xnaFrameworkTypes,
+            IReadOnlyList<Type> xnaFrameworkGameTypes,
+            IReadOnlyList<Type> pluginTypes,
+            IEnumerable<AssetTypeInfo> allAssetTypes,
+            IErrorReportingCore errorReporting)
+        {
+            string genericString = parsedType.GenericType.Name;
+
+            if (genericString.Contains(','))
+            {
+                string[] strings = genericString.Split(',');
+
+                Type[] types = new Type[strings.Length];
+
+                for (int i = 0; i < strings.Length; i++)
+                {
+                    types[i] = GetTypeFromString(strings[i], commonTypes, additionalTypes,
+                        flatRedBallTypes, xnaFrameworkTypes, xnaFrameworkGameTypes, pluginTypes, allAssetTypes);
+                }
+
+                return baseType.MakeGenericType(types);
+            }
+            else
+            {
+                if (genericString.Contains('.'))
+                {
+                    int lastDot = genericString.LastIndexOf('.');
+
+                    genericString = genericString.Substring(lastDot + 1, genericString.Length - (lastDot + 1));
+                }
+                Type genericType = GetTypeFromString(genericString, commonTypes, additionalTypes,
+                    flatRedBallTypes, xnaFrameworkTypes, xnaFrameworkGameTypes, pluginTypes, allAssetTypes);
+
+                if (genericType == null && parsedType.GenericType.Name == "T")
+                {
+                    if (parsedType.GenericRestrictions.Count != 0)
+                    {
+                        genericType = GetTypeFromString(parsedType.GenericRestrictions[0], commonTypes, additionalTypes,
+                            flatRedBallTypes, xnaFrameworkTypes, xnaFrameworkGameTypes, pluginTypes, allAssetTypes);
+                    }
+                    else
+                    {
+                        genericType = typeof(object);
+                    }
+                }
+                if (genericType == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    try
+                    {
+                        return baseType.MakeGenericType(genericType);
+                    }
+                    catch (Exception)
+                    {
+                        errorReporting.ShowMessage("Error making a generic type out of " + baseType.Name + "<" + genericType.Name + ">" +
+                            "\n This is probably because your game hasn't been rebuilt since you've made a critical change");
+                        return null;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Moved out of <c>TypeManager.GetTypeInListFromParsedType</c> (#2276) - zero coupling, only
+        /// needed the existing <see cref="GetTypeFromString"/> seam.
+        /// </summary>
+        public static Type GetTypeInListFromParsedType(
+            ParsedType parsedType,
+            IReadOnlyDictionary<string, Type> commonTypes,
+            IReadOnlyList<Type> additionalTypes,
+            IReadOnlyList<Type> flatRedBallTypes,
+            IReadOnlyList<Type> xnaFrameworkTypes,
+            IReadOnlyList<Type> xnaFrameworkGameTypes,
+            IReadOnlyList<Type> pluginTypes,
+            IEnumerable<AssetTypeInfo> allAssetTypes)
+        {
+            string typeAsString;
+
+            if (parsedType.GenericType != null)
+            {
+                typeAsString = parsedType.GenericType.Name;
+            }
+            else
+            {
+                // it's probably a [], so just use the type itself
+                typeAsString = parsedType.Name;
+            }
+
+            return GetTypeFromString(typeAsString, commonTypes, additionalTypes,
+                flatRedBallTypes, xnaFrameworkTypes, xnaFrameworkGameTypes, pluginTypes, allAssetTypes);
         }
     }
 }

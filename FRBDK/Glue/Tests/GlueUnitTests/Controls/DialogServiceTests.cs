@@ -60,6 +60,20 @@ public class DialogServiceTests : IDisposable
     }
 
     [Fact]
+    public void ErrorReportingCore_ShouldRouteToDialogService_ShowMessage()
+    {
+        // ErrorReportingCore.Self is wired from DialogService's static constructor (#2276) - the seam
+        // GlueCommon code (e.g. GlueCommon.Parsing.TypeResolution/TypeLoading) uses to report errors
+        // without referencing Glue.csproj directly.
+        string passedText = null;
+        DialogService.ShowMessageImpl = text => passedText = text;
+
+        ErrorReportingCore.Self.ShowMessage("hello from the seam");
+
+        passedText.ShouldBe("hello from the seam");
+    }
+
+    [Fact]
     public void ShowMessage_ShouldRouteThroughOnUiThread_WhenNotOnUiThread()
     {
         var marshaller = new RecordingInlineMarshaller();

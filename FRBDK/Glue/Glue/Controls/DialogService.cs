@@ -35,6 +35,19 @@ namespace FlatRedBall.Glue.Controls
     /// </remarks>
     public static class DialogService
     {
+        // GlueCommon can't reference this assembly (wrong direction), so it can't set
+        // ErrorReportingCore.Self itself - wire it here instead, the first time this class is touched.
+        // Same trick as ObjectFinder's/TypeManager's static constructors.
+        static DialogService()
+        {
+            ErrorReportingCore.Self = new DialogServiceErrorReportingCore();
+        }
+
+        class DialogServiceErrorReportingCore : IErrorReportingCore
+        {
+            public void ShowMessage(string text) => DialogService.ShowMessage(text);
+        }
+
         public static Action<string> ShowMessageImpl { get; set; } = DefaultShowMessage;
         public static Func<string, DialogButton, DialogButton, DialogButton?> ShowConfirmImpl { get; set; } = DefaultShowConfirm;
         public static Func<string, (string label, object value)[], object> ShowChoiceImpl { get; set; } = DefaultShowChoice;
