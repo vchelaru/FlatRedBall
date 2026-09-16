@@ -10,4 +10,6 @@ public class FakeGlueStateCore : IGlueStateCore
 {
     public string ProjectNamespace { get; set; } = "";
     public string CurrentMainProjectDirectory { get; set; } = "";
+    public EntitySave CurrentEntitySave { get; set; }
+    public ScreenSave CurrentScreenSave { get; set; }
 }

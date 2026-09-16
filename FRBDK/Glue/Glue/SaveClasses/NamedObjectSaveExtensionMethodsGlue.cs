@@ -29,22 +29,8 @@ namespace FlatRedBall.Glue.SaveClasses
 
         }
         
-        public static MembershipInfo GetMemberMembershipInfo(string memberName)
-        {
-            if (GlueState.Self.CurrentScreenSave != null)
-            {
-                if (GlueState.Self.CurrentScreenSave.HasMemberWithName(memberName))
-                {
-                    return MembershipInfo.ContainedInThis;
-                }
-            }
-            else if (GlueState.Self.CurrentEntitySave != null)
-            {
-                return GlueState.Self.CurrentEntitySave.GetMemberMembershipInfo(memberName);
-            }
-
-            return MembershipInfo.NotContained;
-        }
+        // GetMemberMembershipInfo moved to GlueCommon.SaveClasses.NamedObjectSaveGlueStateExtensions
+        // (#2276) - needed IGlueStateCore widened with CurrentEntitySave/CurrentScreenSave.
 
         public static void AddNamedObjectToList(NamedObjectSave namedObject, NamedObjectSave namedObjectList)
         {
