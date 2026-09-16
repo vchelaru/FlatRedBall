@@ -944,7 +944,7 @@ public class CustomVariableSaveSetPropertyLogic
                     // This could be a CSV, entity type, or state.
                     // For now just going to add entity type, but will
                     // eventually add more:
-                    if (CustomVariableExtensionMethods.GetIsBaseElementType(newType, out GlueElement containingElement))
+                    if (CustomVariableTypeExtensions.GetIsBaseElementType(newType, out GlueElement containingElement))
                     {
                         if (string.IsNullOrEmpty(valueAsString) || valueAsString == "<NONE>")
                         {
@@ -1080,7 +1080,7 @@ public class CustomVariableSaveSetPropertyLogic
             }
             if (wasAbleToConvert == false)
             {
-                newValue = CustomVariableExtensionMethods.GetDefaultValueAccordingToType(newType);
+                newValue = CustomVariableTypeExtensions.GetDefaultValueAccordingToType(newType);
             }
         }
 

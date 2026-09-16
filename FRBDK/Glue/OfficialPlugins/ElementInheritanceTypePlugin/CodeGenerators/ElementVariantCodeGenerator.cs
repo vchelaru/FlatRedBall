@@ -274,7 +274,7 @@ internal class ElementVariantCodeGenerator : ElementComponentCodeGenerator
 
     private static bool IsTypeFileType(string type)
     {
-        return CustomVariableExtensionMethods.GetIsFile(type);
+        return CustomVariableTypeExtensions.GetIsFile(type);
     }
 
     static bool ShouldSkipVariantField(CustomVariable customVariable)

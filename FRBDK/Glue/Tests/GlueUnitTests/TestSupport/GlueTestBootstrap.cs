@@ -176,6 +176,8 @@ internal static class GlueTestBootstrap
                 AvailableAssetTypes.Self.Initialize(FindGlueStartupPath());
             }
 
+            FlatRedBall.Glue.Parsing.TypeManager.EnsureTypeResolutionSeamWired();
+
             if (FlatRedBall.Glue.Reflection.ExposedVariableManager.PositionedObjectMembers == null)
             {
                 FlatRedBall.Glue.Reflection.ExposedVariableManager.Initialize();

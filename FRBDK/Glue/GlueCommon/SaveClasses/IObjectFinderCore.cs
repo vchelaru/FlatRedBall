@@ -18,6 +18,8 @@ namespace FlatRedBall.Glue.SaveClasses
         GlueElement GetElement(string elementName);
         GlueElement GetElementContaining(NamedObjectSave namedObjectSave);
         GlueElement GetElementContaining(ReferencedFileSave referencedFileSave);
+        GlueElement GetElementContaining(CustomVariable customVariable);
+        (bool IsState, StateSaveCategory Category) GetStateSaveCategory(CustomVariable customVariable, GlueElement containingElement);
         EntitySave GetEntitySave(string entityName);
         List<GlueElement> GetAllBaseElementsRecursively(GlueElement derivedElement);
         string MakeAbsoluteContent(string fileName);

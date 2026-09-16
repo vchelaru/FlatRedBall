@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
@@ -321,6 +321,7 @@ public partial class MainGlueWindow : Form, IMainGlueWindow
         var startupPath = FileManager.GetDirectory(System.Reflection.Assembly.GetExecutingAssembly().Location);
 
         AvailableAssetTypes.Self.Initialize(startupPath);
+        FlatRedBall.Glue.Parsing.TypeManager.EnsureTypeResolutionSeamWired();
 
         SetScreenMessage("Loading Plugins");
 

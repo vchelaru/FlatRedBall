@@ -685,7 +685,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 NamedObjectSave namedObject = customVariableOwner.GetNamedObjectRecursively(variableConsideringDefinedByBase?.SourceObject);
 
 
-                if ((!string.IsNullOrEmpty(forcedType) && CustomVariableExtensionMethods.GetIsFile(forcedType)) || variableConsideringDefinedByBase?.GetIsFile() == true)
+                if ((!string.IsNullOrEmpty(forcedType) && CustomVariableTypeExtensions.GetIsFile(forcedType)) || variableConsideringDefinedByBase?.GetIsFile() == true)
                 {
                     rightSide = rightSide.Replace("\"", "").Replace("-", "_");
 
@@ -1481,7 +1481,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             //object objectToParse = instructionSave.Value;
             //#region Determine the right-side value to assign
             //string value = CodeParser.ConvertValueToCodeString(objectToParse);
-            //if (CustomVariableExtensionMethods.GetIsFile(instructionSave.Type))
+            //if (CustomVariableTypeExtensions.GetIsFile(instructionSave.Type))
             //{
             //    value = value.Replace("\"", "").Replace("-", "_");
             //    if (value == "<NONE>")
