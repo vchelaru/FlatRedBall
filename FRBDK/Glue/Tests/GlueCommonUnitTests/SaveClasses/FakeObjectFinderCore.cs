@@ -25,6 +25,12 @@ public class FakeObjectFinderCore : IObjectFinderCore
     public Func<CustomVariable, GlueElement, (bool IsState, StateSaveCategory Category)> StateSaveCategoryResolver { get; set; } =
         (_, _) => (false, null);
 
+    /// <summary>
+    /// Stands in for ObjectFinder.GetValueRecursively(NamedObjectSave, GlueElement, string); defaults to "no value".
+    /// </summary>
+    public Func<NamedObjectSave, GlueElement, string, object> ValueRecursivelyResolver { get; set; } =
+        (_, _, _) => null;
+
     public void AddElement(string name, GlueElement element) => _elementsByName[name] = element;
 
     public void SetContainer(NamedObjectSave namedObjectSave, GlueElement container) =>
@@ -69,6 +75,11 @@ public class FakeObjectFinderCore : IObjectFinderCore
 
     public List<GlueElement> GetAllBaseElementsRecursively(GlueElement derivedElement) =>
         _baseElementsByElement.TryGetValue(derivedElement, out var baseElements) ? baseElements : new List<GlueElement>();
+
+    public GlueElement GetBaseElement(IElement derivedElement) => GetElement(derivedElement?.BaseElement);
+
+    public object GetValueRecursively(NamedObjectSave instance, GlueElement container, string memberName) =>
+        ValueRecursivelyResolver(instance, container, memberName);
 
     public string MakeAbsoluteContent(string fileName) =>
         FlatRedBall.IO.FileManager.IsRelative(fileName) ? ContentDirectory + fileName : fileName;

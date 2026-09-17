@@ -673,4 +673,96 @@ public class ElementExtensionsTests
     }
 
     #endregion
+
+    #region GetVariableValueRecursively
+
+    [Fact]
+    public void GetVariableValueRecursively_NullOrEmptyName_ReturnsNull()
+    {
+        var entity = new EntitySave();
+        entity.CustomVariables.Add(new CustomVariable { Name = "X", Type = "float", DefaultValue = 3f });
+
+        Assert.Null(entity.GetVariableValueRecursively(null));
+        Assert.Null(entity.GetVariableValueRecursively(""));
+    }
+
+    [Fact]
+    public void GetVariableValueRecursively_ThisPrefix_IsStripped()
+    {
+        var entity = new EntitySave();
+        entity.CustomVariables.Add(new CustomVariable { Name = "X", Type = "float", DefaultValue = 3f });
+
+        Assert.Equal(3f, entity.GetVariableValueRecursively("this.X"));
+    }
+
+    [Fact]
+    public void GetVariableValueRecursively_DefaultValueSet_ReturnsIt()
+    {
+        var entity = new EntitySave();
+        entity.CustomVariables.Add(new CustomVariable { Name = "X", Type = "float", DefaultValue = 3f });
+
+        Assert.Equal(3f, entity.GetVariableValueRecursively("X"));
+    }
+
+    [Fact]
+    public void GetVariableValueRecursively_SourceObjectVariable_ReturnsFinderValueRecursively()
+    {
+        var nos = new NamedObjectSave { InstanceName = "SpriteInstance" };
+        var entity = new EntitySave();
+        entity.NamedObjects.Add(nos);
+        entity.CustomVariables.Add(new CustomVariable
+        {
+            Name = "SpriteInstanceX", Type = "float", SourceObject = "SpriteInstance", SourceObjectProperty = "X"
+        });
+        _finder.ValueRecursivelyResolver = (instance, container, member) =>
+            ReferenceEquals(instance, nos) && ReferenceEquals(container, entity) && member == "X" ? 7f : null;
+
+        Assert.Equal(7f, entity.GetVariableValueRecursively("SpriteInstanceX"));
+    }
+
+    [Fact]
+    public void GetVariableValueRecursively_NotFoundLocally_RecursesToBaseElement()
+    {
+        var baseEntity = new EntitySave { Name = "Entities\\Base" };
+        baseEntity.CustomVariables.Add(new CustomVariable { Name = "X", Type = "float", DefaultValue = 5f });
+        _finder.AddElement("Entities\\Base", baseEntity);
+        var entity = new EntitySave { Name = "Entities\\Derived", BaseEntity = "Entities\\Base" };
+
+        Assert.Equal(5f, entity.GetVariableValueRecursively("X"));
+    }
+
+    [Fact]
+    public void GetVariableValueRecursively_NoVariableAnywhere_FallsBackToAtiVariableDefinitionDefault()
+    {
+        var ati = new AssetTypeInfo { QualifiedRuntimeTypeName = new PlatformSpecificType { QualifiedType = "Sprite" } };
+        ati.VariableDefinitions.Add(new VariableDefinition { Name = "Alpha", Type = "float", DefaultValue = "0.5" });
+        _availableAssetTypes.AddAssetType(ati);
+        // BaseElement names an FRB type, not an element, so GetBaseElement resolves to nothing.
+        var entity = new EntitySave { Name = "Entities\\Derived", BaseEntity = "Sprite" };
+
+        Assert.Equal(0.5f, entity.GetVariableValueRecursively("Alpha"));
+    }
+
+    [Fact]
+    public void GetVariableValueRecursively_VisibleOnIVisibleEntity_ReturnsTrue()
+    {
+        var entity = new EntitySave { ImplementsIVisible = true };
+        entity.CustomVariables.Add(new CustomVariable { Name = "Visible", Type = "bool" });
+
+        Assert.Equal(true, entity.GetVariableValueRecursively("Visible"));
+    }
+
+    [Theory]
+    [InlineData("float", 0f)]
+    [InlineData("bool", false)]
+    [InlineData("string", null)]
+    public void GetVariableValueRecursively_TypedVariableWithNoValue_ReturnsTypeDefault(string type, object expected)
+    {
+        var entity = new EntitySave();
+        entity.CustomVariables.Add(new CustomVariable { Name = "X", Type = type });
+
+        Assert.Equal(expected, entity.GetVariableValueRecursively("X"));
+    }
+
+    #endregion
 }
