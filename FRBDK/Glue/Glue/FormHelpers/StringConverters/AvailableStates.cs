@@ -247,7 +247,7 @@ namespace FlatRedBall.Glue.GuiDisplay
                             }
                             else
                             {
-                                stateCategory = StateSaveExtensionMethods.GetStateTypeFromCurrentVariableName(selectedItemName);
+                                stateCategory = StateSaveElementExtensions.GetStateTypeFromCurrentVariableName(selectedItemName);
                             }
 
 

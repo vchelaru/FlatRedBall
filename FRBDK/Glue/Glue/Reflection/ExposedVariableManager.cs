@@ -352,7 +352,7 @@ public static class ExposedVariableManager
         foundUnqualifiedCategoryName = "";
         if (entitySave.StateCategoryList.Count != 0 && memberName.StartsWith("Current") && memberName.EndsWith("State"))
         {
-            string possibleCategory = StateSaveExtensionMethods.GetStateTypeFromCurrentVariableName(memberName);
+            string possibleCategory = StateSaveElementExtensions.GetStateTypeFromCurrentVariableName(memberName);
 
             // See if there is a matching category
             StateSaveCategory category = entitySave.GetStateCategory(possibleCategory);

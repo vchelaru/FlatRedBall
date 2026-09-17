@@ -41,7 +41,7 @@ public class ObjectFinder : IObjectFinder, IObjectFinderCore
         CustomVariable.ToStringDelegate = CustomVariableTypeExtensions.CustomVariableToString;
         ReferencedFileSave.ToStringDelegate = ReferencedFileSaveElementExtensions.ReferencedFileSaveToString;
         EventResponseSave.ToStringDelegate = EventResponseSaveExtensionMethods.EventResponseSaveToString;
-        StateSave.ToStringDelegate = StateSaveExtensionMethods.StateSaveToString;
+        StateSave.ToStringDelegate = StateSaveElementExtensions.StateSaveToString;
     }
 
     #region File and RFS related
