@@ -346,4 +346,133 @@ public class ElementExtensionsTests
 
         Assert.Same(ati, entity.GetAssetTypeInfo());
     }
+    #region DoesMemberNeedToBeSetByContainer (IElement / ScreenSave)
+
+    [Fact]
+    public void DoesMemberNeedToBeSetByContainer_MemberSetByContainer_ReturnsTrue()
+    {
+        var entity = new EntitySave();
+        entity.NamedObjects.Add(new NamedObjectSave { InstanceName = "Sprite", SetByContainer = true });
+
+        Assert.True(entity.DoesMemberNeedToBeSetByContainer("Sprite"));
+    }
+
+    [Fact]
+    public void DoesMemberNeedToBeSetByContainer_MemberNotSetByContainerAndNoBase_ReturnsFalse()
+    {
+        var entity = new EntitySave();
+        entity.NamedObjects.Add(new NamedObjectSave { InstanceName = "Sprite", SetByContainer = false });
+
+        Assert.False(entity.DoesMemberNeedToBeSetByContainer("Sprite"));
+    }
+
+    [Fact]
+    public void DoesMemberNeedToBeSetByContainer_MemberMissingAndNoBase_ReturnsFalse()
+    {
+        var entity = new EntitySave();
+
+        Assert.False(entity.DoesMemberNeedToBeSetByContainer("Sprite"));
+    }
+
+    [Fact]
+    public void DoesMemberNeedToBeSetByContainer_SetByContainerOnBaseEntity_ReturnsTrue()
+    {
+        var baseEntity = new EntitySave { Name = "Entities\\Base" };
+        baseEntity.NamedObjects.Add(new NamedObjectSave { InstanceName = "Sprite", SetByContainer = true });
+        _finder.AddElement("Entities\\Base", baseEntity);
+        var derived = new EntitySave { Name = "Entities\\Derived", BaseEntity = "Entities\\Base" };
+
+        Assert.True(derived.DoesMemberNeedToBeSetByContainer("Sprite"));
+    }
+
+    [Fact]
+    public void DoesMemberNeedToBeSetByContainer_InheritsFromFrbType_ReturnsFalse()
+    {
+        var entity = new EntitySave { Name = "Entities\\Derived", BaseEntity = "FlatRedBall.Sprite" };
+
+        Assert.False(entity.DoesMemberNeedToBeSetByContainer("Sprite"));
+    }
+
+    [Fact]
+    public void DoesMemberNeedToBeSetByContainer_ScreenOverload_UsesSameLogic()
+    {
+        var screen = new ScreenSave();
+        screen.NamedObjects.Add(new NamedObjectSave { InstanceName = "Layer", SetByContainer = true });
+
+        Assert.True(screen.DoesMemberNeedToBeSetByContainer("Layer"));
+    }
+
+    #endregion
+
+    #region ReactToRenamedReferencedFile
+
+    [Fact]
+    public void ReactToRenamedReferencedFile_MatchingSourceFile_RenamesAndReturnsTrue()
+    {
+        var nos = new NamedObjectSave { SourceFile = "Old.scnx" };
+        var entity = new EntitySave();
+        entity.NamedObjects.Add(nos);
+
+        Assert.True(entity.ReactToRenamedReferencedFile("Old.scnx", "New.scnx"));
+        Assert.Equal("New.scnx", nos.SourceFile);
+    }
+
+    [Fact]
+    public void ReactToRenamedReferencedFile_NoMatch_ReturnsFalseAndLeavesSourceFile()
+    {
+        var nos = new NamedObjectSave { SourceFile = "Other.scnx" };
+        var entity = new EntitySave();
+        entity.NamedObjects.Add(nos);
+
+        Assert.False(entity.ReactToRenamedReferencedFile("Old.scnx", "New.scnx"));
+        Assert.Equal("Other.scnx", nos.SourceFile);
+    }
+
+    #endregion
+
+    #region PostLoadInitialize
+
+    [Fact]
+    public void PostLoadInitialize_RemovesNullValuedInstructionsFromNamedObjects()
+    {
+        var nos = new NamedObjectSave();
+        nos.InstructionSaves.Add(new CustomVariableInNamedObject { Member = "X", Value = null });
+        nos.InstructionSaves.Add(new CustomVariableInNamedObject { Member = "Y", Value = 1f });
+        var entity = new EntitySave();
+        entity.NamedObjects.Add(nos);
+
+        entity.PostLoadInitialize();
+
+        Assert.Single(nos.InstructionSaves);
+        Assert.Equal("Y", nos.InstructionSaves[0].Member);
+    }
+
+    [Fact]
+    public void PostLoadInitialize_ReachesContainedNamedObjects()
+    {
+        var contained = new NamedObjectSave();
+        contained.InstructionSaves.Add(new CustomVariableInNamedObject { Member = "X", Value = null });
+        var list = new NamedObjectSave();
+        list.ContainedObjects.Add(contained);
+        var entity = new EntitySave();
+        entity.NamedObjects.Add(list);
+
+        entity.PostLoadInitialize();
+
+        Assert.Empty(contained.InstructionSaves);
+    }
+
+    [Fact]
+    public void PostLoadInitialize_NonEnumCustomVariable_LeavesDefaultValue()
+    {
+        var variable = new CustomVariable { Name = "Health", Type = "float", DefaultValue = 3f };
+        var entity = new EntitySave();
+        entity.CustomVariables.Add(variable);
+
+        entity.PostLoadInitialize();
+
+        Assert.Equal(3f, variable.DefaultValue);
+    }
+
+    #endregion
 }

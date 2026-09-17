@@ -18,8 +18,17 @@ public class CustomVariableTypeExtensionsTests
     readonly FakeAvailableAssetTypesCore _availableAssetTypes = new();
     readonly FakeObjectFinderCore _finder = new();
 
+    // HasAccompanyingVelocityConsideringTunneling reads InstructionManager's velocity table, which the
+    // engine only fills in Initialize() (Glue calls it from MainGlueWindow). Once per process is enough.
+    static readonly Lazy<bool> _instructionManagerInitialized = new(() =>
+    {
+        FlatRedBall.Instructions.InstructionManager.Initialize();
+        return true;
+    });
+
     public CustomVariableTypeExtensionsTests()
     {
+        _ = _instructionManagerInitialized.Value;
         TypeResolutionCore.Self = _typeResolution;
         AvailableAssetTypesCore.Self = _availableAssetTypes;
         ObjectFinderCore.Self = _finder;
@@ -528,6 +537,169 @@ public class CustomVariableTypeExtensionsTests
         _finder.SetContainer(variable, entity);
 
         Assert.Equal("float Sprite.X = 1 in " + entity, CustomVariableTypeExtensions.CustomVariableToString(variable));
+    }
+
+    #endregion
+    #region HasAccompanyingVelocityConsideringTunneling
+
+    [Fact]
+    public void HasAccompanyingVelocity_HasAccompanyingVelocityProperty_ReturnsTrue()
+    {
+        var variable = new CustomVariable { Name = "X", HasAccompanyingVelocityProperty = true };
+
+        Assert.True(variable.HasAccompanyingVelocityConsideringTunneling(new EntitySave()));
+    }
+
+    [Fact]
+    public void HasAccompanyingVelocity_NotTunneled_ReturnsFalse()
+    {
+        var variable = new CustomVariable { Name = "Health" };
+
+        Assert.False(variable.HasAccompanyingVelocityConsideringTunneling(new EntitySave(), maxDepth: 1));
+    }
+
+    [Fact]
+    public void HasAccompanyingVelocity_TunneledButMaxDepthZero_ReturnsFalse()
+    {
+        var entity = new EntitySave();
+        entity.NamedObjects.Add(new NamedObjectSave { InstanceName = "SpriteInstance", SourceType = SourceType.FlatRedBallType });
+        var variable = new CustomVariable { Name = "SpriteX", SourceObject = "SpriteInstance", SourceObjectProperty = "X" };
+
+        Assert.False(variable.HasAccompanyingVelocityConsideringTunneling(entity, maxDepth: 0));
+    }
+
+    [Fact]
+    public void HasAccompanyingVelocity_TunneledToMissingObject_ReturnsFalse()
+    {
+        var variable = new CustomVariable { Name = "SpriteX", SourceObject = "Gone", SourceObjectProperty = "X" };
+
+        Assert.False(variable.HasAccompanyingVelocityConsideringTunneling(new EntitySave(), maxDepth: 1));
+    }
+
+    [Theory]
+    [InlineData("X", true)]
+    [InlineData("RotationZ", true)]
+    [InlineData("Visible", false)]
+    public void HasAccompanyingVelocity_TunneledToFrbTypeProperty_UsesFrbVelocityTable(string property, bool expected)
+    {
+        var entity = new EntitySave();
+        entity.NamedObjects.Add(new NamedObjectSave { InstanceName = "SpriteInstance", SourceType = SourceType.FlatRedBallType });
+        var variable = new CustomVariable { Name = "Tunneled", SourceObject = "SpriteInstance", SourceObjectProperty = property };
+
+        Assert.Equal(expected, variable.HasAccompanyingVelocityConsideringTunneling(entity, maxDepth: 1));
+    }
+
+    [Fact]
+    public void HasAccompanyingVelocity_TunneledToEntityVariableWithFrbVelocityName_ReturnsTrue()
+    {
+        var inner = new EntitySave { Name = "Entities\\Inner" };
+        inner.CustomVariables.Add(new CustomVariable { Name = "X" });
+        _finder.GlueProject.Entities.Add(inner);
+        var outer = new EntitySave { Name = "Entities\\Outer" };
+        outer.NamedObjects.Add(new NamedObjectSave { InstanceName = "InnerInstance", SourceType = SourceType.Entity, SourceClassType = "Entities\\Inner" });
+        var variable = new CustomVariable { Name = "Tunneled", SourceObject = "InnerInstance", SourceObjectProperty = "X" };
+
+        Assert.True(variable.HasAccompanyingVelocityConsideringTunneling(outer, maxDepth: 1));
+    }
+
+    [Fact]
+    public void HasAccompanyingVelocity_TunneledToEntityVariableWithOwnVelocity_RecursesOneLevel()
+    {
+        var inner = new EntitySave { Name = "Entities\\Inner" };
+        inner.CustomVariables.Add(new CustomVariable { Name = "Speed", HasAccompanyingVelocityProperty = true });
+        _finder.GlueProject.Entities.Add(inner);
+        var outer = new EntitySave { Name = "Entities\\Outer" };
+        outer.NamedObjects.Add(new NamedObjectSave { InstanceName = "InnerInstance", SourceType = SourceType.Entity, SourceClassType = "Entities\\Inner" });
+        var variable = new CustomVariable { Name = "Tunneled", SourceObject = "InnerInstance", SourceObjectProperty = "Speed" };
+
+        Assert.True(variable.HasAccompanyingVelocityConsideringTunneling(outer, maxDepth: 1));
+    }
+
+    [Fact]
+    public void HasAccompanyingVelocity_TunneledToEntityVariableWithoutVelocity_ReturnsFalse()
+    {
+        var inner = new EntitySave { Name = "Entities\\Inner" };
+        inner.CustomVariables.Add(new CustomVariable { Name = "Speed" });
+        _finder.GlueProject.Entities.Add(inner);
+        var outer = new EntitySave { Name = "Entities\\Outer" };
+        outer.NamedObjects.Add(new NamedObjectSave { InstanceName = "InnerInstance", SourceType = SourceType.Entity, SourceClassType = "Entities\\Inner" });
+        var variable = new CustomVariable { Name = "Tunneled", SourceObject = "InnerInstance", SourceObjectProperty = "Speed" };
+
+        Assert.False(variable.HasAccompanyingVelocityConsideringTunneling(outer, maxDepth: 1));
+    }
+
+    [Theory]
+    [InlineData("Y", true)]
+    [InlineData("Visible", false)]
+    public void HasAccompanyingVelocity_TunneledToEntityPropertyWithNoVariable_UsesFrbVelocityTable(string property, bool expected)
+    {
+        var inner = new EntitySave { Name = "Entities\\Inner" };
+        _finder.GlueProject.Entities.Add(inner);
+        var outer = new EntitySave { Name = "Entities\\Outer" };
+        outer.NamedObjects.Add(new NamedObjectSave { InstanceName = "InnerInstance", SourceType = SourceType.Entity, SourceClassType = "Entities\\Inner" });
+        var variable = new CustomVariable { Name = "Tunneled", SourceObject = "InnerInstance", SourceObjectProperty = property };
+
+        Assert.Equal(expected, variable.HasAccompanyingVelocityConsideringTunneling(outer, maxDepth: 1));
+    }
+
+    [Fact]
+    public void HasAccompanyingVelocity_TunneledToUnknownEntity_ReturnsFalse()
+    {
+        var outer = new EntitySave { Name = "Entities\\Outer" };
+        outer.NamedObjects.Add(new NamedObjectSave { InstanceName = "InnerInstance", SourceType = SourceType.Entity, SourceClassType = "Entities\\Gone" });
+        var variable = new CustomVariable { Name = "Tunneled", SourceObject = "InnerInstance", SourceObjectProperty = "X" };
+
+        Assert.False(variable.HasAccompanyingVelocityConsideringTunneling(outer, maxDepth: 1));
+    }
+
+    #endregion
+
+    #region GetIsSourceFile
+
+    [Fact]
+    public void GetIsSourceFile_NoSourceObject_ReturnsFalse()
+    {
+        var variable = new CustomVariable { Name = "Health", SourceObjectProperty = "SourceFile" };
+
+        Assert.False(variable.GetIsSourceFile(new EntitySave()));
+    }
+
+    [Fact]
+    public void GetIsSourceFile_SourceObjectNotFound_ReturnsFalse()
+    {
+        var variable = new CustomVariable { Name = "Tunneled", SourceObject = "Gone", SourceObjectProperty = "SourceFile" };
+
+        Assert.False(variable.GetIsSourceFile(new EntitySave()));
+    }
+
+    [Fact]
+    public void GetIsSourceFile_FrbTypeSourceFileProperty_ReturnsTrue()
+    {
+        var entity = new EntitySave();
+        entity.NamedObjects.Add(new NamedObjectSave { InstanceName = "SpriteInstance", SourceType = SourceType.FlatRedBallType });
+        var variable = new CustomVariable { Name = "Tunneled", SourceObject = "SpriteInstance", SourceObjectProperty = "SourceFile" };
+
+        Assert.True(variable.GetIsSourceFile(entity));
+    }
+
+    [Fact]
+    public void GetIsSourceFile_FrbTypeOtherProperty_ReturnsFalse()
+    {
+        var entity = new EntitySave();
+        entity.NamedObjects.Add(new NamedObjectSave { InstanceName = "SpriteInstance", SourceType = SourceType.FlatRedBallType });
+        var variable = new CustomVariable { Name = "Tunneled", SourceObject = "SpriteInstance", SourceObjectProperty = "X" };
+
+        Assert.False(variable.GetIsSourceFile(entity));
+    }
+
+    [Fact]
+    public void GetIsSourceFile_EntitySourceFileProperty_ReturnsFalse()
+    {
+        var entity = new EntitySave();
+        entity.NamedObjects.Add(new NamedObjectSave { InstanceName = "InnerInstance", SourceType = SourceType.Entity });
+        var variable = new CustomVariable { Name = "Tunneled", SourceObject = "InnerInstance", SourceObjectProperty = "SourceFile" };
+
+        Assert.False(variable.GetIsSourceFile(entity));
     }
 
     #endregion

@@ -334,6 +334,218 @@ public class NamedObjectSaveElementExtensionsTests
 
         Assert.False(nos.IsCollidableOrCollidableList());
     }
+
+    #region GetNamedObjectRecursively
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    public void GetNamedObjectRecursively_NoName_ReturnsNull(string name)
+    {
+        var entity = new EntitySave();
+        entity.NamedObjects.Add(new NamedObjectSave { InstanceName = "Sprite" });
+
+        Assert.Null(entity.GetNamedObjectRecursively(name));
+    }
+
+    [Fact]
+    public void GetNamedObjectRecursively_FoundOnContainer_ReturnsIt()
+    {
+        var nos = new NamedObjectSave { InstanceName = "Sprite" };
+        var entity = new EntitySave();
+        entity.NamedObjects.Add(nos);
+
+        Assert.Same(nos, entity.GetNamedObjectRecursively("Sprite"));
+    }
+
+    [Fact]
+    public void GetNamedObjectRecursively_FoundInContainedList_ReturnsIt()
+    {
+        var contained = new NamedObjectSave { InstanceName = "Bullet1" };
+        var list = new NamedObjectSave { InstanceName = "Bullets" };
+        list.ContainedObjects.Add(contained);
+        var entity = new EntitySave();
+        entity.NamedObjects.Add(list);
+
+        Assert.Same(contained, entity.GetNamedObjectRecursively("Bullet1"));
+    }
+
+    [Fact]
+    public void GetNamedObjectRecursively_NotFoundAndNoBase_ReturnsNull()
+    {
+        var entity = new EntitySave();
+        entity.NamedObjects.Add(new NamedObjectSave { InstanceName = "Sprite" });
+
+        Assert.Null(entity.GetNamedObjectRecursively("Missing"));
+    }
+
+    [Fact]
+    public void GetNamedObjectRecursively_EntityBaseHasIt_ReturnsBaseObject()
+    {
+        var baseNos = new NamedObjectSave { InstanceName = "Sprite" };
+        var baseEntity = new EntitySave { Name = "Entities\\Base" };
+        baseEntity.NamedObjects.Add(baseNos);
+        _finder.AddElement("Entities\\Base", baseEntity);
+        var derived = new EntitySave { Name = "Entities\\Derived", BaseEntity = "Entities\\Base" };
+
+        Assert.Same(baseNos, derived.GetNamedObjectRecursively("Sprite"));
+    }
+
+    [Fact]
+    public void GetNamedObjectRecursively_EntityBaseMissing_ReturnsNull()
+    {
+        var derived = new EntitySave { Name = "Entities\\Derived", BaseEntity = "Entities\\Gone" };
+
+        Assert.Null(derived.GetNamedObjectRecursively("Sprite"));
+    }
+
+    [Fact]
+    public void GetNamedObjectRecursively_ScreenBaseHasIt_ReturnsBaseObject()
+    {
+        var baseNos = new NamedObjectSave { InstanceName = "Layer" };
+        var baseScreen = new ScreenSave { Name = "Screens\\Base" };
+        baseScreen.NamedObjects.Add(baseNos);
+        _finder.AddElement("Screens\\Base", baseScreen);
+        var derived = new ScreenSave { Name = "Screens\\Derived", BaseScreen = "Screens\\Base" };
+
+        Assert.Same(baseNos, derived.GetNamedObjectRecursively("Layer"));
+    }
+
+    [Fact]
+    public void GetNamedObjectRecursively_ScreenBaseMissing_ReturnsNull()
+    {
+        var derived = new ScreenSave { Name = "Screens\\Derived", BaseScreen = "Screens\\Gone" };
+
+        Assert.Null(derived.GetNamedObjectRecursively("Layer"));
+    }
+
+    [Fact]
+    public void GetNamedObjectRecursively_TwoLevelsUp_ReturnsGrandparentObject()
+    {
+        var rootNos = new NamedObjectSave { InstanceName = "Sprite" };
+        var root = new EntitySave { Name = "Entities\\Root" };
+        root.NamedObjects.Add(rootNos);
+        var middle = new EntitySave { Name = "Entities\\Middle", BaseEntity = "Entities\\Root" };
+        _finder.AddElement("Entities\\Root", root);
+        _finder.AddElement("Entities\\Middle", middle);
+        var leaf = new EntitySave { Name = "Entities\\Leaf", BaseEntity = "Entities\\Middle" };
+
+        Assert.Same(rootNos, leaf.GetNamedObjectRecursively("Sprite"));
+    }
+
+    [Fact]
+    public void GetNamedObjectRecursively_DerivedShadowsBase_ReturnsDerivedObject()
+    {
+        var baseEntity = new EntitySave { Name = "Entities\\Base" };
+        baseEntity.NamedObjects.Add(new NamedObjectSave { InstanceName = "Sprite" });
+        _finder.AddElement("Entities\\Base", baseEntity);
+        var derivedNos = new NamedObjectSave { InstanceName = "Sprite" };
+        var derived = new EntitySave { Name = "Entities\\Derived", BaseEntity = "Entities\\Base" };
+        derived.NamedObjects.Add(derivedNos);
+
+        Assert.Same(derivedNos, derived.GetNamedObjectRecursively("Sprite"));
+    }
+
+    #endregion
+
+    #region DoesMemberNeedToBeSetByContainer (NamedObjectSave)
+
+    [Fact]
+    public void DoesMemberNeedToBeSetByContainer_NotEntity_ReturnsFalse()
+    {
+        var nos = new NamedObjectSave { SourceType = SourceType.FlatRedBallType, SourceClassType = "Sprite" };
+
+        Assert.False(nos.DoesMemberNeedToBeSetByContainer("X"));
+    }
+
+    [Fact]
+    public void DoesMemberNeedToBeSetByContainer_EntityNotFound_ReturnsFalse()
+    {
+        var nos = new NamedObjectSave { SourceType = SourceType.Entity, SourceClassType = "Entities\\Gone" };
+
+        Assert.False(nos.DoesMemberNeedToBeSetByContainer("X"));
+    }
+
+    [Fact]
+    public void DoesMemberNeedToBeSetByContainer_EntityMemberSetByContainer_ReturnsTrue()
+    {
+        var entity = new EntitySave { Name = "Entities\\Player" };
+        entity.NamedObjects.Add(new NamedObjectSave { InstanceName = "Sprite", SetByContainer = true });
+        _finder.AddElement("Entities\\Player", entity);
+        var nos = new NamedObjectSave { SourceType = SourceType.Entity, SourceClassType = "Entities\\Player" };
+
+        Assert.True(nos.DoesMemberNeedToBeSetByContainer("Sprite"));
+    }
+
+    [Fact]
+    public void DoesMemberNeedToBeSetByContainer_EntityMemberNotSetByContainer_ReturnsFalse()
+    {
+        var entity = new EntitySave { Name = "Entities\\Player" };
+        entity.NamedObjects.Add(new NamedObjectSave { InstanceName = "Sprite", SetByContainer = false });
+        _finder.AddElement("Entities\\Player", entity);
+        var nos = new NamedObjectSave { SourceType = SourceType.Entity, SourceClassType = "Entities\\Player" };
+
+        Assert.False(nos.DoesMemberNeedToBeSetByContainer("Sprite"));
+    }
+
+    #endregion
+
+    #region GetIsScalableEntity
+
+    [Fact]
+    public void GetIsScalableEntity_NotEntity_ReturnsFalse()
+    {
+        var nos = new NamedObjectSave { SourceType = SourceType.FlatRedBallType, SourceClassType = "Sprite" };
+
+        Assert.False(nos.GetIsScalableEntity());
+    }
+
+    [Fact]
+    public void GetIsScalableEntity_EntityWithNoSourceClassType_ReturnsFalse()
+    {
+        var nos = new NamedObjectSave { SourceType = SourceType.Entity, SourceClassType = "" };
+
+        Assert.False(nos.GetIsScalableEntity());
+    }
+
+    [Fact]
+    public void GetIsScalableEntity_EntityWithScaleXAndScaleY_ReturnsTrue()
+    {
+        var entity = new EntitySave { Name = "Entities\\Box" };
+        entity.CustomVariables.Add(new CustomVariable { Name = "ScaleX" });
+        entity.CustomVariables.Add(new CustomVariable { Name = "ScaleY" });
+        _finder.AddElement("Entities\\Box", entity);
+        var nos = new NamedObjectSave { SourceType = SourceType.Entity, SourceClassType = "Entities\\Box" };
+
+        Assert.True(nos.GetIsScalableEntity());
+    }
+
+    [Fact]
+    public void GetIsScalableEntity_EntityWithOnlyScaleX_ReturnsFalse()
+    {
+        var entity = new EntitySave { Name = "Entities\\Box" };
+        entity.CustomVariables.Add(new CustomVariable { Name = "ScaleX" });
+        _finder.AddElement("Entities\\Box", entity);
+        var nos = new NamedObjectSave { SourceType = SourceType.Entity, SourceClassType = "Entities\\Box" };
+
+        Assert.False(nos.GetIsScalableEntity());
+    }
+
+    [Fact]
+    public void GetIsScalableEntity_ScaleVariablesOnBase_ReturnsTrue()
+    {
+        var baseEntity = new EntitySave { Name = "Entities\\Base" };
+        baseEntity.CustomVariables.Add(new CustomVariable { Name = "ScaleX" });
+        baseEntity.CustomVariables.Add(new CustomVariable { Name = "ScaleY" });
+        _finder.AddElement("Entities\\Base", baseEntity);
+        var derived = new EntitySave { Name = "Entities\\Derived", BaseEntity = "Entities\\Base" };
+        _finder.AddElement("Entities\\Derived", derived);
+        var nos = new NamedObjectSave { SourceType = SourceType.Entity, SourceClassType = "Entities\\Derived" };
+
+        Assert.True(nos.GetIsScalableEntity());
+    }
+
+    #endregion
 }
 
 [CollectionDefinition(nameof(ObjectFinderCoreCollection), DisableParallelization = true)]

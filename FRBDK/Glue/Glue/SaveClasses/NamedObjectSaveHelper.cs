@@ -16,44 +16,8 @@ namespace FlatRedBall.Glue.SaveClasses
     public static class NamedObjectContainerHelper
     {
 
-        public static bool DoesMemberNeedToBeSetByContainer(this IElement namedObjectContainer, string memberName)
-        {
-            foreach (NamedObjectSave namedObject in namedObjectContainer.NamedObjects)
-            {
-                if (namedObject.InstanceName == memberName && namedObject.SetByContainer)
-                {
-                    return namedObject.SetByContainer;
-                }
-            }
-
-            if ( namedObjectContainer.InheritsFromElement())
-            {
-                EntitySave baseEntity = ObjectFinder.Self.GetEntitySave(namedObjectContainer.BaseObject);
-
-                return baseEntity.DoesMemberNeedToBeSetByContainer(memberName);
-            }
-
-
-            return false;
-        }
-
-        public static bool ReactToRenamedReferencedFile(this INamedObjectContainer namedObjectContainer, string oldName, string newName)
-        {
-            bool toReturn = false;
-
-            for (int i = 0; i < namedObjectContainer.NamedObjects.Count; i++)
-            {
-                NamedObjectSave namedObject = namedObjectContainer.NamedObjects[i];
-
-                if (namedObject.SourceFile == oldName)
-                {
-                    toReturn = true;
-                    namedObject.SourceFile = newName;
-                }
-            }
-            
-            return toReturn;
-        }
+        // DoesMemberNeedToBeSetByContainer and ReactToRenamedReferencedFile moved to
+        // GlueCommon.SaveClasses.ElementExtensions (#2276).
 
         public static List<NamedObjectSave> GetNamedObjectsToBeExposedInDerived(this INamedObjectContainer namedObjectContainer)
         {

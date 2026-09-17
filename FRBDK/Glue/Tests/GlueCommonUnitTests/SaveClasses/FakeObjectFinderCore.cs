@@ -55,6 +55,8 @@ public class FakeObjectFinderCore : IObjectFinderCore
 
     public EntitySave GetEntitySave(string entityName) => GetElement(entityName) as EntitySave;
 
+    public ScreenSave GetScreenSave(string screenName) => GetElement(screenName) as ScreenSave;
+
     public List<GlueElement> GetAllBaseElementsRecursively(GlueElement derivedElement) =>
         _baseElementsByElement.TryGetValue(derivedElement, out var baseElements) ? baseElements : new List<GlueElement>();
 

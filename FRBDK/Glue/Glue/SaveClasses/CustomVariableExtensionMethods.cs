@@ -125,69 +125,9 @@ namespace FlatRedBall.Glue.SaveClasses
 
         // CustomVariableToString moved to GlueCommon.SaveClasses.CustomVariableTypeExtensions (#2276).
 
-        public static bool HasAccompanyingVelocityConsideringTunneling(this CustomVariable variable, IElement container, int maxDepth = 0)
-        {
-            if (variable.HasAccompanyingVelocityProperty)
-            {
-                return true;
-            }
-            else if (!string.IsNullOrEmpty(variable.SourceObject) && !string.IsNullOrEmpty(variable.SourceObjectProperty) && maxDepth > 0)
-            {
-                NamedObjectSave nos = container.GetNamedObjectRecursively(variable.SourceObject);
-
-                if (nos != null)
-                {
-                    // If it's a FRB 
-                    if (nos.SourceType == SourceType.FlatRedBallType || nos.SourceType == SourceType.File)
-                    {
-                        return !string.IsNullOrEmpty(InstructionManager.GetVelocityForState(variable.SourceObjectProperty));
-                    }
-                    else if(nos.SourceType == SourceType.Entity)
-                    {
-                        EntitySave entity = GlueState.CurrentGlueProject.GetEntitySave(nos.SourceClassType);
-
-                        if (entity != null)
-                        {
-                            CustomVariable variableInEntity = entity.GetCustomVariable(variable.SourceObjectProperty);
-
-                            if (variableInEntity != null)
-                            {
-                                if (!string.IsNullOrEmpty(InstructionManager.GetVelocityForState(variableInEntity.Name)))
-                                {
-                                    return true;
-                                }
-                                else
-                                {
-
-                                    return variableInEntity.HasAccompanyingVelocityConsideringTunneling(entity, maxDepth - 1);
-                                }
-                            }
-                            else
-                            {
-                                // There's no variable for this, so let's see if it's a variable that has velocity in FRB
-                                return !string.IsNullOrEmpty(InstructionManager.GetVelocityForState(variable.SourceObjectProperty));
-
-                            }
-                        }
-                    }
-                }
-            }
-            return false;
-
-        }
-
-        public static bool GetIsSourceFile(this CustomVariable customVariable, IElement container)
-        {
-            NamedObjectSave referencedNos = null;
-            if(!string.IsNullOrEmpty(customVariable.SourceObject) )
-            {
-                referencedNos = container.GetNamedObjectRecursively(customVariable.SourceObject);
-            }
-
-            return referencedNos != null && customVariable.SourceObjectProperty == "SourceFile" && referencedNos.SourceType == SourceType.FlatRedBallType;
-
-
-        }
+        // HasAccompanyingVelocityConsideringTunneling and GetIsSourceFile moved to
+        // GlueCommon.SaveClasses.CustomVariableTypeExtensions (#2276) - GetNamedObjectRecursively moved
+        // with them, and GlueState.CurrentGlueProject is ObjectFinderCore.Self.GlueProject.
     }
     
 
