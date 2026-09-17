@@ -159,4 +159,51 @@ public class NamedObjectSaveCommonExtensionsTests
 
         Assert.Null(found);
     }
+
+    #region UpdateCustomProperties(INamedObjectContainer)
+
+    [Fact]
+    public void UpdateCustomProperties_Container_NullContainer_Throws()
+    {
+        INamedObjectContainer container = null;
+
+        Assert.Throws<ArgumentException>(() => container.UpdateCustomProperties());
+    }
+
+    [Fact]
+    public void UpdateCustomProperties_Container_SortsEveryTopLevelNamedObject()
+    {
+        var container = new EntitySave();
+        var first = new NamedObjectSave();
+        first.InstructionSaves.Add(new CustomVariableInNamedObject { Member = "Z" });
+        first.InstructionSaves.Add(new CustomVariableInNamedObject { Member = "A" });
+        var second = new NamedObjectSave();
+        second.InstructionSaves.Add(new CustomVariableInNamedObject { Member = "Y" });
+        second.InstructionSaves.Add(new CustomVariableInNamedObject { Member = "B" });
+        container.NamedObjects.Add(first);
+        container.NamedObjects.Add(second);
+
+        container.UpdateCustomProperties();
+
+        Assert.Equal(new[] { "A", "Z" }, first.InstructionSaves.Select(i => i.Member));
+        Assert.Equal(new[] { "B", "Y" }, second.InstructionSaves.Select(i => i.Member));
+    }
+
+    [Fact]
+    public void UpdateCustomProperties_Container_RecursesIntoContainedObjects()
+    {
+        var container = new EntitySave();
+        var list = new NamedObjectSave();
+        var nested = new NamedObjectSave();
+        nested.InstructionSaves.Add(new CustomVariableInNamedObject { Member = "Z" });
+        nested.InstructionSaves.Add(new CustomVariableInNamedObject { Member = "A" });
+        list.ContainedObjects.Add(nested);
+        container.NamedObjects.Add(list);
+
+        container.UpdateCustomProperties();
+
+        Assert.Equal(new[] { "A", "Z" }, nested.InstructionSaves.Select(i => i.Member));
+    }
+
+    #endregion
 }

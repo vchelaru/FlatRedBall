@@ -28,6 +28,30 @@ namespace FlatRedBall.Glue.SaveClasses
             instance.InstructionSaves.Sort((first, second) => first.Member?.CompareTo(second.Member) ?? 0);
         }
 
+        /// <summary>
+        /// Calls UpdateCustomProperties on every NamedObjectSave in the container, recursively through
+        /// ContainedObjects. Moved from Glue.csproj's INamedObjectContainerExtensionMethods (#2276).
+        /// </summary>
+        public static void UpdateCustomProperties(this INamedObjectContainer container)
+        {
+            if (container == null)
+            {
+                throw new ArgumentException("Argument container is null", "container");
+            }
+
+            UpdateCustomProperties(container.NamedObjects);
+        }
+
+        private static void UpdateCustomProperties(List<NamedObjectSave> namedObjectList)
+        {
+            for (int i = 0; i < namedObjectList.Count; i++)
+            {
+                namedObjectList[i].UpdateCustomProperties();
+
+                UpdateCustomProperties(namedObjectList[i].ContainedObjects);
+            }
+        }
+
         public static void ConvertEnumerationValuesToInts(this NamedObjectSave instance)
         {
             foreach (CustomVariableInNamedObject instruction in instance.InstructionSaves)

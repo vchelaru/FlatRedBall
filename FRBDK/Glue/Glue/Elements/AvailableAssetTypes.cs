@@ -91,6 +91,7 @@ namespace FlatRedBall.Glue.Elements
         public AssetTypeInfo Circle => CommonAtis.Circle;
         public AssetTypeInfo AxisAlignedRectangle => CommonAtis.AxisAlignedRectangle;
         public AssetTypeInfo Polygon => CommonAtis.Polygon;
+        public AssetTypeInfo Line => CommonAtis.Line;
         public AssetTypeInfo ShapeCollection => CommonAtis.ShapeCollection;
         public AssetTypeInfo Screen => CommonAtis.Screen;
 

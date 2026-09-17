@@ -1585,7 +1585,7 @@ public class GluxCommands : IGluxCommands
 
             if (listToAddTo != null)
             {
-                NamedObjectSaveExtensionMethodsGlue.AddNamedObjectToList(newNos, listToAddTo);
+                NamedObjectSaveElementExtensions.AddNamedObjectToList(newNos, listToAddTo);
 
             }
             else if (elementToAddTo != null)

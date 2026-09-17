@@ -880,6 +880,158 @@ public class NamedObjectSaveElementExtensionsTests
     }
 
     #endregion
+
+    #region AddNamedObjectToList
+
+    // The real AvailableAssetTypes always has its shape ATIs set once ContentTypes.csv is loaded; a
+    // null one here would make a null GetAssetTypeInfo() (any Entity-typed object) match the shape branch.
+    void GivenShapeAtisAreSet()
+    {
+        _availableAssetTypes.AxisAlignedRectangle = new AssetTypeInfo();
+        _availableAssetTypes.CapsulePolygon = new AssetTypeInfo();
+        _availableAssetTypes.Circle = new AssetTypeInfo();
+        _availableAssetTypes.Line = new AssetTypeInfo();
+        _availableAssetTypes.Polygon = new AssetTypeInfo();
+    }
+
+    [Fact]
+    public void AddNamedObjectToList_NullList_Throws()
+    {
+        var nos = new NamedObjectSave();
+
+        Assert.Throws<InvalidOperationException>(() => NamedObjectSaveElementExtensions.AddNamedObjectToList(nos, null));
+    }
+
+    [Fact]
+    public void AddNamedObjectToList_EntityList_AddsAsEntityTypedFromList()
+    {
+        _finder.AddElement("Entities\\Enemy", new EntitySave { Name = "Entities\\Enemy" });
+        var list = new NamedObjectSave { SourceClassGenericType = "Entities\\Enemy" };
+        var nos = new NamedObjectSave();
+        nos.InstructionSaves.Add(new CustomVariableInNamedObject { Member = "Z" });
+        nos.InstructionSaves.Add(new CustomVariableInNamedObject { Member = "A" });
+
+        NamedObjectSaveElementExtensions.AddNamedObjectToList(nos, list);
+
+        Assert.True(nos.AddToManagers);
+        Assert.Same(nos, Assert.Single(list.ContainedObjects));
+        Assert.Equal(SourceType.Entity, nos.SourceType);
+        Assert.Equal("Entities\\Enemy", nos.SourceClassType);
+        Assert.Equal(new[] { "A", "Z" }, nos.InstructionSaves.Select(i => i.Member));
+    }
+
+    [Fact]
+    public void AddNamedObjectToList_EntityList_KeepsExistingSourceClassType()
+    {
+        _finder.AddElement("Entities\\Enemy", new EntitySave { Name = "Entities\\Enemy" });
+        var list = new NamedObjectSave { SourceClassGenericType = "Entities\\Enemy" };
+        var nos = new NamedObjectSave { SourceClassType = "Entities\\DerivedEnemy" };
+
+        NamedObjectSaveElementExtensions.AddNamedObjectToList(nos, list);
+
+        Assert.Equal(SourceType.Entity, nos.SourceType);
+        Assert.Equal("Entities\\DerivedEnemy", nos.SourceClassType);
+    }
+
+    [Fact]
+    public void AddNamedObjectToList_FlatRedBallTypeList_AddsAsFlatRedBallType()
+    {
+        _availableAssetTypes.AddAssetType(new AssetTypeInfo
+        {
+            CanBeObject = true,
+            QualifiedRuntimeTypeName = new PlatformSpecificType { QualifiedType = "FlatRedBall.Sprite" }
+        });
+        var list = new NamedObjectSave { SourceClassGenericType = "FlatRedBall.Sprite" };
+        var nos = new NamedObjectSave { SourceType = SourceType.Entity };
+        nos.InstructionSaves.Add(new CustomVariableInNamedObject { Member = "Z" });
+        nos.InstructionSaves.Add(new CustomVariableInNamedObject { Member = "A" });
+
+        NamedObjectSaveElementExtensions.AddNamedObjectToList(nos, list);
+
+        Assert.True(nos.AddToManagers);
+        Assert.Same(nos, Assert.Single(list.ContainedObjects));
+        Assert.Equal(SourceType.FlatRedBallType, nos.SourceType);
+        Assert.Equal(new[] { "A", "Z" }, nos.InstructionSaves.Select(i => i.Member));
+    }
+
+    [Fact]
+    public void AddNamedObjectToList_ListTypeNotAnObjectType_LeavesSourceTypeAlone()
+    {
+        GivenShapeAtisAreSet();
+        _availableAssetTypes.AddAssetType(new AssetTypeInfo
+        {
+            CanBeObject = false,
+            QualifiedRuntimeTypeName = new PlatformSpecificType { QualifiedType = "FlatRedBall.Sprite" }
+        });
+        var list = new NamedObjectSave { SourceClassGenericType = "FlatRedBall.Sprite" };
+        var nos = new NamedObjectSave { SourceType = SourceType.Entity };
+
+        NamedObjectSaveElementExtensions.AddNamedObjectToList(nos, list);
+
+        Assert.Same(nos, Assert.Single(list.ContainedObjects));
+        Assert.Equal(SourceType.Entity, nos.SourceType);
+    }
+
+    public static IEnumerable<object[]> ShapeAtiSetters => new[]
+    {
+        new object[] { "AxisAlignedRectangle", (Action<FakeAvailableAssetTypesCore, AssetTypeInfo>)((f, a) => f.AxisAlignedRectangle = a) },
+        new object[] { "CapsulePolygon", (Action<FakeAvailableAssetTypesCore, AssetTypeInfo>)((f, a) => f.CapsulePolygon = a) },
+        new object[] { "Circle", (Action<FakeAvailableAssetTypesCore, AssetTypeInfo>)((f, a) => f.Circle = a) },
+        new object[] { "Line", (Action<FakeAvailableAssetTypesCore, AssetTypeInfo>)((f, a) => f.Line = a) },
+        new object[] { "Polygon", (Action<FakeAvailableAssetTypesCore, AssetTypeInfo>)((f, a) => f.Polygon = a) },
+    };
+
+    // A shape NamedObjectSave is already SourceType.FlatRedBallType when it reaches this method (the
+    // shape branch can't fire on an Entity-typed object, GetAssetTypeInfo returns null for those), so the
+    // observable effect of the branch is the UpdateCustomProperties sort, not the SourceType assignment.
+    [Theory]
+    [MemberData(nameof(ShapeAtiSetters))]
+    public void AddNamedObjectToList_ShapeObjectInUnknownList_UpdatesCustomProperties(string shapeName, Action<FakeAvailableAssetTypesCore, AssetTypeInfo> setCommonAti)
+    {
+        // Not CanBeObject, so IsFlatRedBallType(list type) is false and only the shape-ATI check can match.
+        GivenShapeAtisAreSet();
+        var shapeAti = new AssetTypeInfo
+        {
+            CanBeObject = false,
+            QualifiedRuntimeTypeName = new PlatformSpecificType { QualifiedType = "FlatRedBall.Math.Geometry." + shapeName }
+        };
+        _availableAssetTypes.AddAssetType(shapeAti);
+        setCommonAti(_availableAssetTypes, shapeAti);
+        var list = new NamedObjectSave { SourceClassGenericType = "Entities\\Missing" };
+        var nos = new NamedObjectSave { SourceType = SourceType.FlatRedBallType, SourceClassType = "FlatRedBall.Math.Geometry." + shapeName };
+        nos.InstructionSaves.Add(new CustomVariableInNamedObject { Member = "Z" });
+        nos.InstructionSaves.Add(new CustomVariableInNamedObject { Member = "A" });
+
+        NamedObjectSaveElementExtensions.AddNamedObjectToList(nos, list);
+
+        Assert.Same(nos, Assert.Single(list.ContainedObjects));
+        Assert.Equal(SourceType.FlatRedBallType, nos.SourceType);
+        Assert.Equal(new[] { "A", "Z" }, nos.InstructionSaves.Select(i => i.Member));
+    }
+
+    [Fact]
+    public void AddNamedObjectToList_NonShapeObjectInUnknownList_OnlyAddsToList()
+    {
+        GivenShapeAtisAreSet();
+        var spriteAti = new AssetTypeInfo
+        {
+            CanBeObject = false,
+            QualifiedRuntimeTypeName = new PlatformSpecificType { QualifiedType = "FlatRedBall.Sprite" }
+        };
+        _availableAssetTypes.AddAssetType(spriteAti);
+        var list = new NamedObjectSave { SourceClassGenericType = "Entities\\Missing" };
+        var nos = new NamedObjectSave { SourceType = SourceType.FlatRedBallType, SourceClassType = "FlatRedBall.Sprite" };
+        nos.InstructionSaves.Add(new CustomVariableInNamedObject { Member = "Z" });
+        nos.InstructionSaves.Add(new CustomVariableInNamedObject { Member = "A" });
+
+        NamedObjectSaveElementExtensions.AddNamedObjectToList(nos, list);
+
+        Assert.True(nos.AddToManagers);
+        Assert.Same(nos, Assert.Single(list.ContainedObjects));
+        Assert.Equal(new[] { "Z", "A" }, nos.InstructionSaves.Select(i => i.Member));
+    }
+
+    #endregion
 }
 
 [CollectionDefinition(nameof(ObjectFinderCoreCollection), DisableParallelization = true)]
