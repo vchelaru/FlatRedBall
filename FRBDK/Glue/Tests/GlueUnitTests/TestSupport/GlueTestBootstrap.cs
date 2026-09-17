@@ -177,6 +177,7 @@ internal static class GlueTestBootstrap
             }
 
             FlatRedBall.Glue.Parsing.TypeManager.EnsureTypeResolutionSeamWired();
+            FlatRedBall.Glue.Controls.DialogService.EnsureErrorReportingSeamWired();
 
             if (FlatRedBall.Glue.Reflection.ExposedVariableManager.PositionedObjectMembers == null)
             {

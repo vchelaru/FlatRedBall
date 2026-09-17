@@ -1,18 +1,24 @@
+using FlatRedBall.Content.Instructions;
+using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.SaveClasses;
+using GlueCommonUnitTests.Controls;
 
 namespace GlueCommonUnitTests.SaveClasses;
 
-// StateSaveToString reads the shared static ObjectFinderCore.Self, so this can't run concurrently
-// with any other test class that swaps it out - hence the shared collection (see
-// ObjectFinderCoreCollection in NamedObjectSaveElementExtensionsTests.cs).
+// StateSaveToString and SetValue read the shared static ObjectFinderCore.Self (SetValue also
+// ErrorReportingCore.Self), so this can't run concurrently with any other test class that swaps
+// either out - hence the shared collection (see ObjectFinderCoreCollection in
+// NamedObjectSaveElementExtensionsTests.cs).
 [Collection(nameof(ObjectFinderCoreCollection))]
 public class StateSaveElementExtensionsTests
 {
     readonly FakeObjectFinderCore _finder = new();
+    readonly FakeErrorReportingCore _errors = new();
 
     public StateSaveElementExtensionsTests()
     {
         ObjectFinderCore.Self = _finder;
+        ErrorReportingCore.Self = _errors;
     }
 
     static (EntitySave Owner, StateSave Uncategorized, StateSave Categorized, StateSaveCategory Category) BuildOwner()
@@ -133,6 +139,132 @@ public class StateSaveElementExtensionsTests
         var state = new StateSave { Name = "Idle" };
 
         Assert.Equal("Idle(State in )", StateSaveElementExtensions.StateSaveToString(state));
+    }
+
+    #endregion
+    #region RemoveVariable
+
+    [Fact]
+    public void RemoveVariable_ExistingMember_RemovesOnlyThatInstruction()
+    {
+        var state = new StateSave { Name = "Idle" };
+        state.InstructionSaves.Add(new InstructionSave { Member = "X", Value = 1f });
+        state.InstructionSaves.Add(new InstructionSave { Member = "Y", Value = 2f });
+
+        state.RemoveVariable("X");
+
+        Assert.Equal(new[] { "Y" }, state.InstructionSaves.Select(item => item.Member));
+    }
+
+    [Fact]
+    public void RemoveVariable_MissingMember_LeavesInstructionsAlone()
+    {
+        var state = new StateSave { Name = "Idle" };
+        state.InstructionSaves.Add(new InstructionSave { Member = "X", Value = 1f });
+
+        state.RemoveVariable("Z");
+
+        Assert.Single(state.InstructionSaves);
+    }
+
+    #endregion
+
+    #region SetValue
+
+    (EntitySave Owner, StateSave State) BuildSetValueOwner()
+    {
+        var owner = new EntitySave { Name = "Entities\\Player" };
+        owner.CustomVariables.Add(new CustomVariable { Name = "X", Type = "float" });
+        owner.CustomVariables.Add(new CustomVariable { Name = "Y", Type = "float" });
+        var state = new StateSave { Name = "Idle" };
+        owner.States.Add(state);
+        _finder.SetContainer(state, owner);
+        return (owner, state);
+    }
+
+    [Fact]
+    public void SetValue_NullState_Throws()
+    {
+        Assert.Throws<ArgumentNullException>(() => ((StateSave)null).SetValue("X", 1f));
+    }
+
+    [Fact]
+    public void SetValue_NewVariable_AddsInstructionInCustomVariableOrder()
+    {
+        var (_, state) = BuildSetValueOwner();
+
+        state.SetValue("Y", 2f);
+        state.SetValue("X", 1f);
+
+        Assert.Equal(new[] { "X", "Y" }, state.InstructionSaves.Select(item => item.Member));
+        var x = state.InstructionSaves[0];
+        Assert.Equal(1f, x.Value);
+        Assert.Equal("float", x.Type);
+        Assert.Empty(_errors.Confirms);
+    }
+
+    [Fact]
+    public void SetValue_UnknownVariable_UsesValueTypeName()
+    {
+        var (owner, state) = BuildSetValueOwner();
+        owner.CustomVariables.Add(new CustomVariable { Name = "Label" });
+
+        state.SetValue("Label", "hi");
+
+        var instruction = Assert.Single(state.InstructionSaves);
+        Assert.Equal("String", instruction.Type);
+    }
+
+    [Fact]
+    public void SetValue_ExistingVariable_OverwritesValue()
+    {
+        var (_, state) = BuildSetValueOwner();
+        state.InstructionSaves.Add(new InstructionSave { Member = "X", Value = 1f, Type = "float" });
+
+        state.SetValue("X", 5f);
+
+        var instruction = Assert.Single(state.InstructionSaves);
+        Assert.Equal(5f, instruction.Value);
+    }
+
+    [Fact]
+    public void SetValue_SetInOtherCategory_ConfirmYes_SetsStrippedName()
+    {
+        var (_, state) = BuildSetValueOwner();
+        _errors.ConfirmResult = DialogButton.Yes;
+
+        state.SetValue("X set in Movement", 3f);
+
+        var confirm = Assert.Single(_errors.Confirms);
+        Assert.Contains("The variable X is set in other categories", confirm);
+        var instruction = Assert.Single(state.InstructionSaves);
+        Assert.Equal("X", instruction.Member);
+        Assert.Equal(3f, instruction.Value);
+    }
+
+    [Fact]
+    public void SetValue_SetInOtherCategory_ConfirmNo_KeepsFullNameAndSortDropsIt()
+    {
+        var (_, state) = BuildSetValueOwner();
+        _errors.ConfirmResult = DialogButton.No;
+
+        state.SetValue("X set in Movement", 3f);
+
+        Assert.Single(_errors.Confirms);
+        // The unstripped name matches no CustomVariable, so SortInstructionSaves prunes it.
+        Assert.Empty(state.InstructionSaves);
+    }
+
+    [Fact]
+    public void SetValue_SetInOtherCategory_ConfirmClosed_KeepsFullNameAndSortDropsIt()
+    {
+        var (_, state) = BuildSetValueOwner();
+        _errors.ConfirmResult = null;
+
+        state.SetValue("X set in Movement", 3f);
+
+        Assert.Single(_errors.Confirms);
+        Assert.Empty(state.InstructionSaves);
     }
 
     #endregion

@@ -7,18 +7,7 @@ using GlueFormsCore.ViewModels;
 
 namespace FlatRedBall.Glue.Controls
 {
-    /// <summary>
-    /// The result of a simple confirm/choice dialog. Used both as the return type of <see cref="DialogService.ShowConfirm"/>
-    /// and as the button-identity vocabulary for the default WPF implementations.
-    /// </summary>
-    public enum DialogButton
-    {
-        Ok,
-        Yes,
-        No,
-        Cancel,
-        Retry
-    }
+    // DialogButton moved to GlueCommon/Controls/DialogButton.cs (#2276), same namespace.
 
     /// <summary>
     /// Central seam for all simple message/confirm/choice dialogs in Glue. Every public method here routes
@@ -43,9 +32,23 @@ namespace FlatRedBall.Glue.Controls
             ErrorReportingCore.Self = new DialogServiceErrorReportingCore();
         }
 
+        /// <summary>
+        /// Forces the static constructor above to run. Call once at startup (MainGlueWindow,
+        /// GlueTestBootstrap) so GlueCommon code that only reaches dialogs through
+        /// ErrorReportingCore.Self (NamedObjectContainerHelper during code generation, for example)
+        /// never runs ahead of the first direct DialogService call in the process. Same shape as
+        /// TypeManager.EnsureTypeResolutionSeamWired.
+        /// </summary>
+        public static void EnsureErrorReportingSeamWired()
+        {
+        }
+
         class DialogServiceErrorReportingCore : IErrorReportingCore
         {
             public void ShowMessage(string text) => DialogService.ShowMessage(text);
+
+            public DialogButton? ShowConfirm(string text, DialogButton primary, DialogButton secondary) =>
+                DialogService.ShowConfirm(text, primary, secondary);
         }
 
         public static Action<string> ShowMessageImpl { get; set; } = DefaultShowMessage;
