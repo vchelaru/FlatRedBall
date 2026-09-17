@@ -57,5 +57,24 @@ namespace FlatRedBall.Glue.SaveClasses
                 }
             }
         }
+
+        public static ReferencedFileSave GetReferencedFileSaveRecursively(this ScreenSave instance, string fileName)
+        {
+            ReferencedFileSave rfs = FileReferencerHelper.GetReferencedFileSave(instance, fileName);
+
+            if (rfs == null && !string.IsNullOrEmpty(instance.BaseScreen))
+            {
+                // Static type is GlueElement, so this binds to the GlueElement overload in ElementExtensions
+                // (same as it did in Glue.csproj), not back to this one.
+                var baseElement = ObjectFinderCore.Self.GetElement(instance.BaseScreen);
+
+                if (baseElement != null)
+                {
+                    rfs = baseElement.GetReferencedFileSaveRecursively(fileName);
+                }
+            }
+
+            return rfs;
+        }
     }
 }
