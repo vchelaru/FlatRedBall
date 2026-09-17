@@ -2,7 +2,7 @@ using FlatRedBall.Glue.SaveClasses;
 
 namespace GlueCommonUnitTests.SaveClasses;
 
-// InheritsFrom and GetAllBaseScreens read the shared static ObjectFinderCore.Self, so this can't run
+// InheritsFrom, GetAllBaseScreens and GetReferencedFileSaveRecursively read the shared static ObjectFinderCore.Self, so this can't run
 // concurrently with any other test class that swaps it out - hence the shared collection (see
 // ObjectFinderCoreCollection in NamedObjectSaveElementExtensionsTests.cs).
 [Collection(nameof(ObjectFinderCoreCollection))]
@@ -128,5 +128,34 @@ public class ScreenSaveElementExtensionsTests
         derived.GetAllBaseScreens(list);
 
         Assert.Equal(new[] { existing, baseScreen }, list);
+    }
+
+    [Fact]
+    public void GetReferencedFileSaveRecursively_FoundOnInstance_ReturnsIt()
+    {
+        var rfs = new ReferencedFileSave { Name = "Screens/Level1/Map.tmx" };
+        var screen = new ScreenSave { Name = "Screens\\Level1" };
+        screen.ReferencedFiles.Add(rfs);
+
+        Assert.Same(rfs, screen.GetReferencedFileSaveRecursively("Screens/Level1/Map.tmx"));
+    }
+
+    [Fact]
+    public void GetReferencedFileSaveRecursively_FoundOnBaseScreen_ReturnsIt()
+    {
+        var rfs = new ReferencedFileSave { Name = "Screens/BaseLevel/Map.tmx" };
+        var baseScreen = AddScreen("Screens\\BaseLevel");
+        baseScreen.ReferencedFiles.Add(rfs);
+        var derived = AddScreen("Screens\\Level1", "Screens\\BaseLevel");
+
+        Assert.Same(rfs, derived.GetReferencedFileSaveRecursively("Screens/BaseLevel/Map.tmx"));
+    }
+
+    [Fact]
+    public void GetReferencedFileSaveRecursively_BaseNotFoundByFinder_ReturnsNull()
+    {
+        var derived = new ScreenSave { Name = "Screens\\Level1", BaseScreen = "Screens\\Missing" };
+
+        Assert.Null(derived.GetReferencedFileSaveRecursively("Screens/Missing/Map.tmx"));
     }
 }
