@@ -623,10 +623,14 @@ public class ElementExtensionsTests
     [Fact]
     public void GetReferencedFileSaveRecursively_ByFilePath_FoundOnBase_ReturnsIt()
     {
-        AddBaseEntityWithFile("c:/content/Entities/Base/Base.png", out var rfs);
+        // The lookup compares the rfs name against FilePath.FullPath, which FilePath standardizes per
+        // OS (on Linux a "c:/..." string is relative and gets the cwd prefixed), so build the rfs name
+        // from the same FilePath rather than a literal.
+        var filePath = new FilePath("c:/content/Entities/Base/Base.png");
+        AddBaseEntityWithFile(filePath.FullPath, out var rfs);
         var entity = new EntitySave { Name = "Entities\\Player", BaseEntity = "Entities\\Base" };
 
-        Assert.Same(rfs, ((IElement)entity).GetReferencedFileSaveRecursively(new FilePath("c:/content/Entities/Base/Base.png")));
+        Assert.Same(rfs, ((IElement)entity).GetReferencedFileSaveRecursively(filePath));
     }
 
     [Fact]
