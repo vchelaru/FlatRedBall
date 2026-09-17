@@ -292,4 +292,67 @@ public class NamedObjectSaveAssetTypeExtensionsTests
 
         Assert.False(nos.ShouldInstantiateInConstructor());
     }
+
+    #region GetContainedListItemAssetTypeInfo
+
+    [Fact]
+    public void GetContainedListItemAssetTypeInfo_NullInstance_Throws()
+    {
+        NamedObjectSave instance = null;
+
+        Assert.Throws<ArgumentNullException>(() => instance.GetContainedListItemAssetTypeInfo());
+    }
+
+    [Fact]
+    public void GetContainedListItemAssetTypeInfo_NotAList_Throws()
+    {
+        var nos = new NamedObjectSave { SourceType = SourceType.FlatRedBallType, SourceClassType = "FlatRedBall.Sprite" };
+
+        Assert.Throws<InvalidOperationException>(() => nos.GetContainedListItemAssetTypeInfo());
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    public void GetContainedListItemAssetTypeInfo_NoGenericType_ReturnsNull(string genericType)
+    {
+        var nos = new NamedObjectSave
+        {
+            SourceType = SourceType.FlatRedBallType,
+            SourceClassType = "PositionedObjectList<T>",
+            SourceClassGenericType = genericType
+        };
+
+        Assert.Null(nos.GetContainedListItemAssetTypeInfo());
+    }
+
+    [Fact]
+    public void GetContainedListItemAssetTypeInfo_KnownGenericType_ReturnsItsAssetTypeInfo()
+    {
+        var spriteAti = new AssetTypeInfo { QualifiedRuntimeTypeName = new PlatformSpecificType { QualifiedType = "FlatRedBall.Sprite" } };
+        _availableAssetTypes.AddAssetType(spriteAti);
+        var nos = new NamedObjectSave
+        {
+            SourceType = SourceType.FlatRedBallType,
+            SourceClassType = "PositionedObjectList<T>",
+            SourceClassGenericType = "FlatRedBall.Sprite"
+        };
+
+        Assert.Same(spriteAti, nos.GetContainedListItemAssetTypeInfo());
+    }
+
+    [Fact]
+    public void GetContainedListItemAssetTypeInfo_UnknownGenericType_ReturnsNull()
+    {
+        var nos = new NamedObjectSave
+        {
+            SourceType = SourceType.FlatRedBallType,
+            SourceClassType = "PositionedObjectList<T>",
+            SourceClassGenericType = "Entities\\Player"
+        };
+
+        Assert.Null(nos.GetContainedListItemAssetTypeInfo());
+    }
+
+    #endregion
 }

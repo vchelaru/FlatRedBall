@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
@@ -21,6 +21,7 @@ namespace FlatRedBall.Glue.SaveClasses
         GlueElement GetElementContaining(CustomVariable customVariable);
         (bool IsState, StateSaveCategory Category) GetStateSaveCategory(CustomVariable customVariable, GlueElement containingElement);
         EntitySave GetEntitySave(string entityName);
+        EntitySave GetEntitySave(NamedObjectSave nos);
         ScreenSave GetScreenSave(string screenName);
         List<GlueElement> GetAllBaseElementsRecursively(GlueElement derivedElement);
         string MakeAbsoluteContent(string fileName);

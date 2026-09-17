@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using FlatRedBall.Glue.Elements;
 
 namespace FlatRedBall.Glue.SaveClasses
@@ -115,6 +115,24 @@ namespace FlatRedBall.Glue.SaveClasses
                 (namedObjectSave.IsList || namedObjectSave.GetAssetTypeInfo() == AvailableAssetTypesCore.Self.ShapeCollection) &&
                 namedObjectSave.Instantiate &&
                 !namedObjectSave.InstantiatedByBase;
+        }
+
+        public static AssetTypeInfo GetContainedListItemAssetTypeInfo(this NamedObjectSave instance)
+        {
+            if (instance == null)
+            {
+                throw new ArgumentNullException(nameof(instance));
+            }
+            if(instance.IsList == false)
+            {
+                throw new InvalidOperationException($"The instance {instance?.InstanceName} is not of list type");
+            }
+            if (string.IsNullOrEmpty(instance.SourceClassGenericType))
+            {
+                return null;
+            }
+
+            return AvailableAssetTypesCore.Self.GetAssetTypeFromRuntimeType(instance.SourceClassGenericType, instance, isObject: true);
         }
     }
 }

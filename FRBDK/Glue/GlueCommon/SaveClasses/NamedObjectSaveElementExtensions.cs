@@ -1,6 +1,7 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+using FlatRedBall.Instructions.Reflection;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
@@ -306,6 +307,230 @@ namespace FlatRedBall.Glue.SaveClasses
             }
 
             return null;
+        }
+
+        public static void GetAdditionsNeededForChangingType(string oldType, string newType, List<PropertyValuePair> valuesToBeSet,
+            List<CustomVariable> neededVariables, List<StateSave> neededStates, List<StateSaveCategory> neededCategories)
+        {
+            var oldElement = ObjectFinderCore.Self.GetElement(oldType);
+            var newElement = ObjectFinderCore.Self.GetElement(newType);
+
+            if (oldElement != null && newElement != null)
+            {
+                #region Compare CustomVariables
+                foreach (CustomVariable customVariable in oldElement.CustomVariables)
+                {
+                    string name = customVariable.Name;
+                    string type = customVariable.Type;
+
+                    // Is there a custom variable in the type to change to?
+                    // We used to only call GetCustomVariable, but this needs
+                    // to be recursive, because the object will get variables from
+                    // the immediate type as well as all base types.
+                    //CustomVariable customVariableInNewType = newElement.GetCustomVariable(name);
+                    CustomVariable customVariableInNewType = newElement.GetCustomVariableRecursively(name);
+                    
+                    if (customVariableInNewType == null || customVariableInNewType.Type != type)
+                    {
+                        neededVariables.Add(customVariable);
+                    }
+                }
+                #endregion
+
+                #region Compare interfaces like IClickable
+
+                if (oldElement is EntitySave && newElement is EntitySave)
+                {
+                    EntitySave oldEntity = oldElement as EntitySave;
+                    EntitySave newEntity = newElement as EntitySave;
+
+                    if (oldEntity.GetImplementsIClickableRecursively() && !newEntity.GetImplementsIClickableRecursively())
+                    {
+                        valuesToBeSet.Add(new PropertyValuePair("ImplementsIClickable", true));
+                    }
+                    if (oldEntity.GetImplementsIVisibleRecursively() && !newEntity.GetImplementsIVisibleRecursively())
+                    {
+                        valuesToBeSet.Add(new PropertyValuePair("ImplementsIVisible", true));
+                    }
+                    if (oldEntity.GetImplementsIWindowRecursively() && !newEntity.GetImplementsIWindowRecursively())
+                    {
+                        valuesToBeSet.Add(new PropertyValuePair("ImplementsIWindow", true));
+                    }
+                    if(oldEntity.GetImplementsITiledTileMetadataRecursively() && !newEntity.GetImplementsITiledTileMetadataRecursively())
+                    {
+                        valuesToBeSet.Add(new PropertyValuePair("ImplementsITiledTileMetadata", true));
+                    }
+                }
+
+                #endregion
+
+                #region Compare States
+
+                // Don't use AllStates because we want
+                // states that belong to categories to be
+                // identified as being in categories.
+                foreach (StateSave state in oldElement.States)
+                {
+                    if (newElement.GetUncategorizedStateRecursively(state.Name) == null)
+                    {
+                        neededStates.Add(state);
+                    }
+                }
+
+                #endregion
+
+                #region Compare Categories
+
+                foreach (StateSaveCategory category in oldElement.StateCategoryList)
+                {
+                    StateSaveCategory cloneOfCategory = null;
+                    StateSaveCategory categoryInNew = newElement.GetStateCategoryRecursively(category.Name);
+                    if (categoryInNew == null)
+                    {
+                        cloneOfCategory = new StateSaveCategory { Name = category.Name };
+                        neededCategories.Add(cloneOfCategory);
+                    }
+
+                    List<StateSave> statesMissingInNewCategory = new List<StateSave>();
+
+                    foreach (StateSave state in category.States)
+                    {
+                        if (categoryInNew == null || categoryInNew.GetState(state.Name) == null)
+                        {
+                            if (cloneOfCategory == null)
+                            {
+                                cloneOfCategory = new StateSaveCategory { Name = category.Name };
+                            }
+                            cloneOfCategory.States.Add(state);
+                        }
+                    }
+
+                    if (cloneOfCategory != null)
+                    {
+                        neededCategories.Add(cloneOfCategory);
+                    }
+
+                }
+
+
+                #endregion
+            }
+        }
+
+        public static string GetMessageWhySwitchMightCauseProblems(this NamedObjectSave namedObjectSave, string oldType)
+        {
+            List<CustomVariable> neededVariables = new List<CustomVariable>();
+            List<PropertyValuePair> neededProperties = new List<PropertyValuePair>();
+            List<StateSave> neededUncategoriedStates = new List<StateSave>();
+            List<StateSaveCategory> neededCategories = new List<StateSaveCategory>();
+            GetAdditionsNeededForChangingType(oldType, namedObjectSave.SourceClassType, neededProperties, neededVariables,
+                neededUncategoriedStates, neededCategories);
+
+            string message = null;
+
+            if (neededVariables.Count != 0)
+            {
+                message = "The type " + namedObjectSave.SourceClassType + " is missing the following variables:\n" + message;
+
+                foreach (CustomVariable variable in neededVariables)
+                {
+                    message += string.Format("\n{0} ({1})", variable.Name, variable.Type);
+                }
+
+                message += "\n";
+            }
+
+            if (neededProperties.Count != 0)
+            {
+                if (message != null)
+                {
+                    message += "\n";
+                }
+                message += "The type " + namedObjectSave.SourceClassType + " is missing the following properties:\n";
+
+                foreach (PropertyValuePair pvp in neededProperties)
+                {
+                    message += "\n" + pvp.Property;
+                }
+                message += "\n";
+            }
+
+            if (neededUncategoriedStates.Count != 0)
+            {
+                if (message != null)
+                {
+                    message += "\n";
+                }
+                message += "The type " + namedObjectSave.SourceClassType + " is missing the following states:\n";
+
+                foreach (StateSave state in neededUncategoriedStates)
+                {
+                    message += string.Format("\n{0} ({1})", state.Name, "Uncategorized");
+                }
+                message += "\n";
+
+            }
+
+            if (neededCategories.Count != 0)
+            {
+                if (message != null)
+                {
+                    message += "\n";
+                }
+                message += "The type " + namedObjectSave.SourceClassType + " is needs the following categoires and categoried states:\n";
+
+                foreach (StateSaveCategory category in neededCategories)
+                {
+                    if (category.States.Count == 0)
+                    {
+                        message += string.Format("\n{0} (Category) is missing", category.Name);
+                    }
+                    else
+                    {
+                        foreach (StateSave state in category.States)
+                        {
+                            message += string.Format("\n{0} ({1})", state.Name, "in category " + category.Name);
+                        }
+                    }
+                }
+                message += "\n";
+
+            }
+            return message;
+        }
+
+        public static void SetVariable(this NamedObjectSave instance, string variableName, object value)
+        {
+            var instruction = instance.GetCustomVariable(variableName);
+
+            if (instruction == null)
+            {
+                var variableDefinition = instance.GetAssetTypeInfo()?.VariableDefinitions.FirstOrDefault(item => item.Name == variableName);
+
+                if(variableDefinition != null)
+                {
+                    instruction = instance.AddInstruction(variableName, variableDefinition.Type);
+                }
+                else
+                {
+                    // If it comes from an entity, try to assign the type from the entity. This is needed if the variable
+                    // is an Entity.Type property
+                    var nosEntity = ObjectFinderCore.Self.GetEntitySave(instance);
+                    var variable = nosEntity?.GetCustomVariableRecursively(variableName);
+
+                    if(variable != null)
+                    {
+                        instruction = instance.AddInstruction(variableName, variable.Type);
+                    }
+                    else
+                    {
+                        var type = value?.GetType();
+                        instruction = instance.AddNewGenericInstructionFor(variableName, type);
+                    }
+                }
+            }
+
+            instruction.Value = value;
         }
     }
 }

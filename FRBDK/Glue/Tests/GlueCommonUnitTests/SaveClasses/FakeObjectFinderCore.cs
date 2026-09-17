@@ -55,6 +55,9 @@ public class FakeObjectFinderCore : IObjectFinderCore
 
     public EntitySave GetEntitySave(string entityName) => GetElement(entityName) as EntitySave;
 
+    public EntitySave GetEntitySave(NamedObjectSave nos) =>
+        nos?.SourceType == SourceType.Entity && !string.IsNullOrEmpty(nos.SourceClassType) ? GetEntitySave(nos.SourceClassType) : null;
+
     public ScreenSave GetScreenSave(string screenName) => GetElement(screenName) as ScreenSave;
 
     public List<GlueElement> GetAllBaseElementsRecursively(GlueElement derivedElement) =>
