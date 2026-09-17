@@ -17,3 +17,4 @@ description: Moving Glue.csproj logic into GlueCommon (net8.0) through the XxxCo
 
 - `XxxCore.Self` stays null until the Glue class's static constructor runs, and only a direct touch of that class triggers it. Code that runs during project load and reaches a singleton only through its seam needs an explicit startup touch; `TypeManager.EnsureTypeResolutionSeamWired()` in `MainGlueWindow`/`GlueTestBootstrap` is the existing example.
 - `GlueCommonUnitTests.csproj` builds and tests standalone; `GlueUnitTests.csproj` needs `-p:SolutionDir` (see [glue-unit-test-bootstrap](../glue-unit-test-bootstrap/SKILL.md)).
+- CI runs `GlueCommonUnitTests` on Linux, where `new FilePath("c:/...")` is relative and `FullPath` gets the cwd prefixed. A test that compares a raw string against `FilePath.FullPath` must build the string from a `FilePath` too; a literal passes on Windows and fails on Linux.
