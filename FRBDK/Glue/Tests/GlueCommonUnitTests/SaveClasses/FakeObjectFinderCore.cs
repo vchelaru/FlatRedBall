@@ -14,6 +14,7 @@ public class FakeObjectFinderCore : IObjectFinderCore
     readonly Dictionary<NamedObjectSave, GlueElement> _containersByNamedObject = new();
     readonly Dictionary<ReferencedFileSave, GlueElement> _containersByReferencedFile = new();
     readonly Dictionary<CustomVariable, GlueElement> _containersByCustomVariable = new();
+    readonly Dictionary<StateSave, GlueElement> _containersByStateSave = new();
     readonly Dictionary<GlueElement, List<GlueElement>> _baseElementsByElement = new();
 
     public string ContentDirectory { get; set; } = "";
@@ -35,6 +36,9 @@ public class FakeObjectFinderCore : IObjectFinderCore
     public void SetContainer(CustomVariable customVariable, GlueElement container) =>
         _containersByCustomVariable[customVariable] = container;
 
+    public void SetContainer(StateSave stateSave, GlueElement container) =>
+        _containersByStateSave[stateSave] = container;
+
     public void SetBaseElements(GlueElement derivedElement, List<GlueElement> baseElements) =>
         _baseElementsByElement[derivedElement] = baseElements;
 
@@ -49,6 +53,9 @@ public class FakeObjectFinderCore : IObjectFinderCore
 
     public GlueElement GetElementContaining(CustomVariable customVariable) =>
         _containersByCustomVariable.TryGetValue(customVariable, out var container) ? container : null;
+
+    public GlueElement GetElementContaining(StateSave stateSave) =>
+        _containersByStateSave.TryGetValue(stateSave, out var container) ? container : null;
 
     public (bool IsState, StateSaveCategory Category) GetStateSaveCategory(CustomVariable customVariable, GlueElement containingElement) =>
         StateSaveCategoryResolver(customVariable, containingElement);
