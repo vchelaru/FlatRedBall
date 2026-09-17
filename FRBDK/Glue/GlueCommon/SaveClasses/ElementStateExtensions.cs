@@ -1,25 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
-using FlatRedBall.IO;
-using System.IO;
-
-
-
 namespace FlatRedBall.Glue.SaveClasses
 {
-
-    public static class IElementHelper
+    /// <summary>
+    /// Moved out of <c>IElementHelper</c> (in <c>Glue.csproj</c>, net8.0-windows): these methods only touch
+    /// an <see cref="IElement"/>'s own state and variable lists, plus
+    /// <see cref="ElementExtensions.ContainsCustomVariableRecursively"/>, which already routes through
+    /// <see cref="IObjectFinderCore"/>. Lives here (net8.0, no WPF) so it and its tests can build and run
+    /// on Linux/macOS. See issue #2276. Named differently from the original class (not a forwarding stub)
+    /// to avoid a duplicate-type clash now that both assemblies are visible together via
+    /// <c>Glue.csproj</c>'s <c>ProjectReference</c> to <c>GlueCommon</c>; extension method resolution
+    /// doesn't care which class declares it, so existing call sites are unaffected.
+    /// </summary>
+    public static class ElementStateExtensions
     {
-        
-
-
-
-        // ContainsRecursively moved to GlueCommon.SaveClasses.IElementHelperMethods (#2276) - it only
-        // needed the IObjectFinderCore seam over ObjectFinder.Self, not ObjectFinder.Self itself.
-
         public static void SortStatesToCustomVariables(this IElement element)
         {
             foreach (StateSave stateSave in element.AllStates)
@@ -61,6 +53,5 @@ namespace FlatRedBall.Glue.SaveClasses
                 }
             }
         }
-
     }
 }
