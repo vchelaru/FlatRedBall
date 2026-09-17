@@ -25,6 +25,8 @@ namespace FlatRedBall.Glue.SaveClasses
         EntitySave GetEntitySave(NamedObjectSave nos);
         ScreenSave GetScreenSave(string screenName);
         List<GlueElement> GetAllBaseElementsRecursively(GlueElement derivedElement);
+        GlueElement GetBaseElement(IElement derivedElement);
+        object GetValueRecursively(NamedObjectSave instance, GlueElement container, string memberName);
         string MakeAbsoluteContent(string fileName);
     }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Events;
+using FlatRedBall.Glue.Parsing;
 using FlatRedBall.IO;
 
 namespace FlatRedBall.Glue.SaveClasses
@@ -59,6 +60,95 @@ namespace FlatRedBall.Glue.SaveClasses
 
                 return foundVariable;
             }
+        }
+
+        /// <summary>
+        /// Gets the value of the argument variable recurisvely, checking "this" first, then the base elements. If this variable
+        /// is on a NamedObjectSave, this searches the NamedObjectSave source type recursively too.
+        /// </summary>
+        /// <param name="element">The element owning the variable.</param>
+        /// <param name="variableName">The variable name.</param>
+        /// <returns>The value found recursively.</returns>
+        public static object GetVariableValueRecursively(this GlueElement element, string variableName)
+        {
+            //////////////////////Early Out///////////////////////////////////
+            if (string.IsNullOrEmpty(variableName))
+            {
+                return null;
+            }
+            ////////////////////End Early Out//////////////////////////
+
+            if (variableName.StartsWith("this."))
+            {
+                variableName = variableName.Substring("this.".Length);
+
+            }
+            var variable = element.GetCustomVariable(variableName);
+
+            object toReturn = null;
+            bool foundValue = false;
+
+            if (!foundValue && variable?.DefaultValue != null)
+            {
+                toReturn = variable.DefaultValue;
+                foundValue = true;
+            }
+
+            if(!foundValue && !string.IsNullOrEmpty(variable?.SourceObject))
+            {
+                var nos = element.GetNamedObjectRecursively(variable.SourceObject);
+
+                if(nos != null)
+                {
+                    var value = ObjectFinderCore.Self.GetValueRecursively(nos, element, variable.SourceObjectProperty);
+
+                    foundValue = value != null;
+                    toReturn = value;
+                }
+            }
+
+            if (!foundValue)
+            {
+                if (!string.IsNullOrEmpty(element.BaseElement))
+                {
+                    var baseElement = ObjectFinderCore.Self.GetBaseElement(element);
+
+                    if (baseElement != null)
+                    {
+                        toReturn = GetVariableValueRecursively(baseElement, variableName);
+                        foundValue = toReturn != null;
+                    }
+                }
+            }
+
+            if (!foundValue)
+            {
+                var ati = element.GetAssetTypeInfo();
+                if (ati != null)
+                {
+                    var variableDefinition = ati.VariableDefinitions.FirstOrDefault(x => x.Name == variableName);
+                    toReturn = variableDefinition?.GetCastedDefaultValue();
+                    foundValue = toReturn != null;
+                }
+            }
+
+            // special case - if the element is IVisible, and if the variable is Visible, then FRB will generate its default
+            // as true, so return that to match what is code genned:
+            if(variableName == "Visible" && element is EntitySave entity && entity.ImplementsIVisible)
+            {
+                toReturn = true;
+                foundValue = true;
+            }
+
+            if (!foundValue && variable != null)
+            {
+                // get the default value for the type:
+                // Could use the TypeManager and get full coverage but that is HEAVY and requires some (potentially) expensive conversions.
+                // Therefore, just use the quick-n-dirty VariableDefinition
+                toReturn = TypeConversion.Parse(variable.Type, null);
+
+            }
+            return toReturn;
         }
 
         public static List<CustomVariable> GetCustomVariablesToBeSetByDerived(this IElement element)
