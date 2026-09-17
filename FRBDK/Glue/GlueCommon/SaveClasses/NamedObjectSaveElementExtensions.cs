@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+using FlatRedBall.Glue.Elements;
 using FlatRedBall.Instructions.Reflection;
 
 namespace FlatRedBall.Glue.SaveClasses
@@ -531,6 +532,61 @@ namespace FlatRedBall.Glue.SaveClasses
             }
 
             instruction.Value = value;
+        }
+
+        /// <summary>
+        /// Adds the NamedObjectSave to the list's ContainedObjects and, when the list's generic type is a known
+        /// entity or FlatRedBall type (or the object itself is a shape), sets the object's SourceType to match.
+        /// Moved from Glue.csproj's NamedObjectSaveExtensionMethodsGlue (#2276); its
+        /// AvailableClassTypeConverter.IsFlatRedBallType check is inlined below over IAvailableAssetTypesCore.AllAssetTypes.
+        /// </summary>
+        public static void AddNamedObjectToList(NamedObjectSave namedObject, NamedObjectSave namedObjectList)
+        {
+            namedObject.AddToManagers = true;
+
+
+            if (namedObjectList == null)
+            {
+                throw new InvalidOperationException("No object is currently selected");
+            }
+
+            namedObjectList.ContainedObjects.Add(namedObject);
+
+
+            // Since it's part of a list we know its type
+            string typeOfNewObject = namedObjectList.SourceClassGenericType;
+
+            if (ObjectFinderCore.Self.GetEntitySave(typeOfNewObject) != null)
+            {
+                namedObject.SourceType = SourceType.Entity;
+                if(string.IsNullOrEmpty( namedObject.SourceClassType))
+                {
+                    namedObject.SourceClassType = typeOfNewObject;
+                }
+                namedObject.UpdateCustomProperties();
+            }
+            else if (IsFlatRedBallType(typeOfNewObject) ||
+                namedObject.GetAssetTypeInfo() == AvailableAssetTypesCore.Self.AxisAlignedRectangle ||
+                namedObject.GetAssetTypeInfo() == AvailableAssetTypesCore.Self.CapsulePolygon ||
+                namedObject.GetAssetTypeInfo() == AvailableAssetTypesCore.Self.Circle ||
+                namedObject.GetAssetTypeInfo() == AvailableAssetTypesCore.Self.Line ||
+                namedObject.GetAssetTypeInfo() == AvailableAssetTypesCore.Self.Polygon
+                )
+            {
+                namedObject.SourceType = SourceType.FlatRedBallType;
+                //namedObject.SourceClassType = typeOfNewObject;
+                namedObject.UpdateCustomProperties();
+            }
+        }
+
+        /// <summary>
+        /// Whether the qualified type names an asset type that can be an object. Was
+        /// AvailableClassTypeConverter.IsFlatRedBallType in Glue.csproj.
+        /// </summary>
+        private static bool IsFlatRedBallType(string qualifiedType)
+        {
+            return AvailableAssetTypesCore.Self.AllAssetTypes.Any(ati =>
+                ati.CanBeObject && ati.QualifiedRuntimeTypeName.QualifiedType == qualifiedType);
         }
     }
 }

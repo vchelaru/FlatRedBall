@@ -13,11 +13,8 @@ namespace FlatRedBall.Glue.FormHelpers.StringConverters
 
         //static string[] mFlatRedBallTypes = null;
 
-        public static bool IsFlatRedBallType(string type)
-        {
-            return GetAvailableFrbClasses().Contains(type);
-        }
-
+        // IsFlatRedBallType moved to GlueCommon.SaveClasses.NamedObjectSaveElementExtensions (#2276), a
+        // private helper of AddNamedObjectToList, its only caller.
 
         NamedObjectSave mContainer;
 

@@ -20,6 +20,7 @@ namespace FlatRedBall.Glue.Elements
         AssetTypeInfo Circle { get; }
         AssetTypeInfo AxisAlignedRectangle { get; }
         AssetTypeInfo Polygon { get; }
+        AssetTypeInfo Line { get; }
         AssetTypeInfo ShapeCollection { get; }
         AssetTypeInfo Screen { get; }
         IEnumerable<AssetTypeInfo> AllAssetTypes { get; }

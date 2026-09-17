@@ -178,7 +178,7 @@ namespace OfficialPlugins.QuickActionPlugin.Views
             // any instance added to a list will not be defined by base
             namedObject.DefinedByBase = false;
 
-            NamedObjectSaveExtensionMethodsGlue.AddNamedObjectToList(namedObject,
+            NamedObjectSaveElementExtensions.AddNamedObjectToList(namedObject,
                 targetList);
 
             if (namedObject.SourceClassType != desiredType)
