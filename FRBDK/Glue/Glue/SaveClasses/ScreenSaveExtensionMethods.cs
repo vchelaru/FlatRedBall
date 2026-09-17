@@ -77,10 +77,7 @@ namespace FlatRedBall.Glue.SaveClasses
             return rfs;
         }
 
-        public static bool DoesMemberNeedToBeSetByContainer(this ScreenSave instance, string memberName)
-        {
-            return NamedObjectContainerHelper.DoesMemberNeedToBeSetByContainer(instance, memberName);
-        }
+        // DoesMemberNeedToBeSetByContainer moved to GlueCommon.SaveClasses.ElementExtensions (#2276).
 
     }
 }

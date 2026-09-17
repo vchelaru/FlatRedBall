@@ -191,18 +191,8 @@ public static class IElementExtensionMethods
     // through the existing IObjectFinderCore seam instead.
 
 
-    public static void PostLoadInitialize(this IElement element)
-    {
-        foreach (CustomVariable cv in element.CustomVariables)
-        {
-            cv.FixEnumerationTypes();
-        }
-        foreach (NamedObjectSave nos in element.AllNamedObjects)
-        {
-            nos.PostLoadLogic();
-        }
-            
-    }
+    // PostLoadInitialize moved to GlueCommon.SaveClasses.ElementExtensions (#2276) - zero coupling
+    // once CustomVariable.FixEnumerationTypes and NamedObjectSave.PostLoadLogic had moved.
 
 
     public static ReferencedFileSave AddReferencedFile(this IElement instance, string fileName, AssetTypeInfo ati, EditorObjects.SaveClasses.BuildToolAssociation bta = null)

@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
@@ -225,6 +226,86 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 return false;
             }
+        }
+
+        public static bool DoesMemberNeedToBeSetByContainer(this NamedObjectSave instance, string memberName)
+        {
+            if (instance.SourceType == SourceType.Entity)
+            {
+                EntitySave sourceEntity = ObjectFinderCore.Self.GetEntitySave(instance.SourceClassType);
+
+                if (sourceEntity != null)
+                {
+
+                    return sourceEntity.DoesMemberNeedToBeSetByContainer(memberName);
+                }
+            }
+
+            return false;
+        }
+
+        public static bool GetIsScalableEntity(this NamedObjectSave instance)
+        {
+            if (instance.SourceType == SourceType.Entity && !string.IsNullOrEmpty(instance.SourceClassType))
+            {
+                EntitySave entitySave = ObjectFinderCore.Self.GetEntitySave(instance.SourceClassType);
+
+                return entitySave.GetCustomVariableRecursively("ScaleX") != null && entitySave.GetCustomVariableRecursively("ScaleY") != null;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Searches the argument container for any named object, and searches recursively through inheritance.
+        /// </summary>
+        /// <param name="namedObjectContainer"></param>
+        /// <param name="namedObjectName"></param>
+        /// <returns></returns>
+        public static NamedObjectSave? GetNamedObjectRecursively(this INamedObjectContainer namedObjectContainer, string namedObjectName)
+        {
+            ////////////////////////early out////////////////////////
+            if(string.IsNullOrEmpty(namedObjectName))
+            {
+                return null;
+            }
+            //////////////////////end early out//////////////////////
+            List<NamedObjectSave> namedObjectList = namedObjectContainer.NamedObjects;
+
+            NamedObjectSave foundNos = NamedObjectSaveCommonExtensions.GetNamedObjectInList(namedObjectList, namedObjectName);
+
+            if (foundNos != null)
+            {
+                return foundNos;
+            }
+
+            // These methods need to check if the baseScreen/baseEntity is not null.
+            // They can be null if the user deletes a base Screen/Entity and the tool
+            // managing the Glux doesn't handle the changes.
+
+            if (!string.IsNullOrEmpty(namedObjectContainer.BaseObject))
+            {
+                if (namedObjectContainer is EntitySave)
+                {
+                    EntitySave baseEntity = ObjectFinderCore.Self.GetEntitySave(namedObjectContainer.BaseObject);
+
+                    if (baseEntity != null)
+                    {
+                        return GetNamedObjectRecursively(baseEntity, namedObjectName);
+                    }
+                }
+
+                else if (namedObjectContainer is ScreenSave)
+                {
+                    ScreenSave baseScreen = ObjectFinderCore.Self.GetScreenSave(namedObjectContainer.BaseObject);
+
+                    if (baseScreen != null)
+                    {
+                        return GetNamedObjectRecursively(baseScreen, namedObjectName);
+                    }
+                }
+            }
+
+            return null;
         }
     }
 }

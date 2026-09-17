@@ -397,5 +397,67 @@ namespace FlatRedBall.Glue.SaveClasses
                        AvailableAssetTypesCore.Self.AllAssetTypes.FirstOrDefault(item => item.RuntimeTypeName == "PositionedObject");
             }
         }
+
+        // DoesMemberNeedToBeSetByContainer and ReactToRenamedReferencedFile came from Glue.csproj's
+        // NamedObjectContainerHelper (#2276); the ScreenSave overload from ScreenSaveExtensionMethods.
+        // The ScreenSave overload calls the IElement one by class name on purpose - an extension-syntax
+        // call on a ScreenSave would pick the more specific ScreenSave overload and recurse forever.
+
+        public static bool DoesMemberNeedToBeSetByContainer(this IElement namedObjectContainer, string memberName)
+        {
+            foreach (NamedObjectSave namedObject in namedObjectContainer.NamedObjects)
+            {
+                if (namedObject.InstanceName == memberName && namedObject.SetByContainer)
+                {
+                    return namedObject.SetByContainer;
+                }
+            }
+
+            if ( namedObjectContainer.InheritsFromElement())
+            {
+                EntitySave baseEntity = ObjectFinderCore.Self.GetEntitySave(namedObjectContainer.BaseObject);
+
+                return baseEntity.DoesMemberNeedToBeSetByContainer(memberName);
+            }
+
+
+            return false;
+        }
+
+        public static bool DoesMemberNeedToBeSetByContainer(this ScreenSave instance, string memberName)
+        {
+            return ElementExtensions.DoesMemberNeedToBeSetByContainer((IElement)instance, memberName);
+        }
+
+        public static bool ReactToRenamedReferencedFile(this INamedObjectContainer namedObjectContainer, string oldName, string newName)
+        {
+            bool toReturn = false;
+
+            for (int i = 0; i < namedObjectContainer.NamedObjects.Count; i++)
+            {
+                NamedObjectSave namedObject = namedObjectContainer.NamedObjects[i];
+
+                if (namedObject.SourceFile == oldName)
+                {
+                    toReturn = true;
+                    namedObject.SourceFile = newName;
+                }
+            }
+
+            return toReturn;
+        }
+
+        public static void PostLoadInitialize(this IElement element)
+        {
+            foreach (CustomVariable cv in element.CustomVariables)
+            {
+                cv.FixEnumerationTypes();
+            }
+            foreach (NamedObjectSave nos in element.AllNamedObjects)
+            {
+                nos.PostLoadLogic();
+            }
+
+        }
     }
 }
