@@ -134,6 +134,30 @@ public class PluginManager : PluginManagerBase
 
     #region Constructor/Initialize
 
+    // GlueCommon can't reference this assembly (wrong direction), so it can't set
+    // PluginManagerCore.Self itself - wire it here instead, the first time this class is touched.
+    // Same trick as ObjectFinder's/TypeManager's/DialogService's static constructors.
+    static PluginManager()
+    {
+        PluginManagerCore.Self = new PluginManagerPluginCore();
+    }
+
+    /// <summary>
+    /// Forces the static constructor above to run. Call once at startup (MainGlueWindow,
+    /// GlueTestBootstrap) so GlueCommon code that only reaches plugins through
+    /// PluginManagerCore.Self (CustomVariable.FixAllTypes during project load) never runs ahead of
+    /// the first direct PluginManager call in the process. Same shape as
+    /// TypeManager.EnsureTypeResolutionSeamWired.
+    /// </summary>
+    public static void EnsurePluginSeamWired()
+    {
+    }
+
+    class PluginManagerPluginCore : IPluginManagerCore
+    {
+        public void TryAssignPreferredDisplayerFromName(CustomVariable customVariable) =>
+            PluginManager.TryAssignPreferredDisplayerFromName(customVariable);
+    }
 
     public PluginManager(bool global)
         : base(global)

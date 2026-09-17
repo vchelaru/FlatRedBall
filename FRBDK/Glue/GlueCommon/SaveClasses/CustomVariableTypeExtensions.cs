@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Parsing;
+using FlatRedBall.Glue.Plugins;
 using static FlatRedBall.Glue.SaveClasses.GlueProjectSave;
 using FlatRedBall.Instructions;
 
@@ -11,7 +12,8 @@ namespace FlatRedBall.Glue.SaveClasses
     /// Split out of <c>CustomVariableExtensionMethods</c> (in <c>Glue.csproj</c>, net8.0-windows): the
     /// type/state/file classification half of that class, which only needed <c>TypeManager.GetTypeFromString</c>
     /// (via <see cref="TypeResolutionCore"/>), <c>AvailableAssetTypes.Self.AllAssetTypes</c> (via
-    /// <see cref="AvailableAssetTypesCore"/>) and <c>ObjectFinder.Self</c> (via <see cref="ObjectFinderCore"/>).
+    /// <see cref="AvailableAssetTypesCore"/>), <c>ObjectFinder.Self</c> (via <see cref="ObjectFinderCore"/>) and
+    /// <c>PluginManager.TryAssignPreferredDisplayerFromName</c> (via <see cref="PluginManagerCore"/>).
     /// Lives here (net8.0, no WPF) so it and its tests can build and run on Linux/macOS. See #2276. The
     /// non-extension static overloads (<c>GetIsFile(string)</c> etc.) needed their call sites updated to
     /// this class name; the extension methods resolved unchanged.
@@ -171,6 +173,30 @@ namespace FlatRedBall.Glue.SaveClasses
             }
 
             return newValue;
+        }
+
+        public static void FixAllTypes(this CustomVariable customVariable)
+        {
+            customVariable.FixEnumerationTypes();
+
+            var type = customVariable.OverridingPropertyType;
+            if(string.IsNullOrEmpty(type))
+            {
+                type = customVariable.Type;
+            }
+            if (!string.IsNullOrEmpty(type) && customVariable.DefaultValue != null)
+            {
+                object variableValue = customVariable.DefaultValue;
+                variableValue = CustomVariableCommonExtensions.FixValue(variableValue, type);
+                customVariable.DefaultValue = variableValue;
+            }
+
+            if(!string.IsNullOrEmpty( customVariable.VariableDefinition?.PreferredDisplayerName))
+            {
+                // Since variable displayers can be handled by plugins, then the plugin must also handle converting the name to type
+                // since the type is not necessarily known here.:
+                PluginManagerCore.Self.TryAssignPreferredDisplayerFromName(customVariable);
+            }
         }
 
         public static void FixEnumerationTypes(this CustomVariable customVariable)

@@ -1,12 +1,14 @@
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Parsing;
+using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.SaveClasses;
 using GlueCommonUnitTests.Parsing;
 using Microsoft.Xna.Framework;
 
 namespace GlueCommonUnitTests.SaveClasses;
 
-// Reads the shared static TypeResolutionCore.Self / AvailableAssetTypesCore.Self / ObjectFinderCore.Self,
+// Reads the shared static TypeResolutionCore.Self / AvailableAssetTypesCore.Self / ObjectFinderCore.Self /
+// PluginManagerCore.Self,
 // so this can't run concurrently with any other test class that swaps one out - hence the shared
 // collection (see ObjectFinderCoreCollection in NamedObjectSaveElementExtensionsTests.cs).
 [Collection(nameof(ObjectFinderCoreCollection))]
@@ -17,6 +19,7 @@ public class CustomVariableTypeExtensionsTests
     readonly FakeTypeResolutionCore _typeResolution = new();
     readonly FakeAvailableAssetTypesCore _availableAssetTypes = new();
     readonly FakeObjectFinderCore _finder = new();
+    readonly FakePluginManagerCore _plugins = new();
 
     // HasAccompanyingVelocityConsideringTunneling reads InstructionManager's velocity table, which the
     // engine only fills in Initialize() (Glue calls it from MainGlueWindow). Once per process is enough.
@@ -32,6 +35,7 @@ public class CustomVariableTypeExtensionsTests
         TypeResolutionCore.Self = _typeResolution;
         AvailableAssetTypesCore.Self = _availableAssetTypes;
         ObjectFinderCore.Self = _finder;
+        PluginManagerCore.Self = _plugins;
         _finder.GlueProject = new GlueProjectSave { FileVersion = (int)GlueProjectSave.GluxVersions.VariantsInsteadOfTypes };
     }
 
@@ -464,6 +468,84 @@ public class CustomVariableTypeExtensionsTests
         variable.ConvertEnumerationValuesToInts();
 
         Assert.Equal(TestEnum.Second, variable.Properties[0].Value);
+    }
+
+    #endregion
+
+    #region FixAllTypes
+
+    [Fact]
+    public void FixAllTypes_EnumIntDefault_ConvertsToEnumValue()
+    {
+        _typeResolution.AddType("TestEnum", typeof(TestEnum));
+        var variable = new CustomVariable { Type = "TestEnum", DefaultValue = 2 };
+
+        variable.FixAllTypes();
+
+        Assert.Equal(TestEnum.Third, variable.DefaultValue);
+    }
+
+    [Fact]
+    public void FixAllTypes_IntDefaultOnFloatType_ConvertsToFloat()
+    {
+        _typeResolution.AddType("float", typeof(float));
+        var variable = new CustomVariable { Type = "float", DefaultValue = 3 };
+
+        variable.FixAllTypes();
+
+        Assert.Equal(3f, variable.DefaultValue);
+    }
+
+    [Fact]
+    public void FixAllTypes_OverridingPropertyType_WinsOverType()
+    {
+        _typeResolution.AddType("float", typeof(float));
+        var variable = new CustomVariable { Type = "float", OverridingPropertyType = "int", DefaultValue = 3L };
+
+        variable.FixAllTypes();
+
+        Assert.Equal(3, variable.DefaultValue);
+    }
+
+    [Fact]
+    public void FixAllTypes_NullDefault_Untouched()
+    {
+        _typeResolution.AddType("float", typeof(float));
+        var variable = new CustomVariable { Type = "float", DefaultValue = null };
+
+        variable.FixAllTypes();
+
+        Assert.Null(variable.DefaultValue);
+    }
+
+    [Fact]
+    public void FixAllTypes_PreferredDisplayerName_AsksPluginSeam()
+    {
+        var variable = new CustomVariable
+        {
+            Type = "float",
+            VariableDefinition = new VariableDefinition { PreferredDisplayerName = "SliderDisplay" },
+        };
+
+        variable.FixAllTypes();
+
+        Assert.Same(variable, Assert.Single(_plugins.DisplayerRequests));
+    }
+
+    [Fact]
+    public void FixAllTypes_NoPreferredDisplayerName_SkipsPluginSeam()
+    {
+        var withEmptyName = new CustomVariable
+        {
+            Type = "float",
+            VariableDefinition = new VariableDefinition { PreferredDisplayerName = "" },
+        };
+        var withoutDefinition = new CustomVariable { Type = "float" };
+
+        withEmptyName.FixAllTypes();
+        withoutDefinition.FixAllTypes();
+
+        Assert.Empty(_plugins.DisplayerRequests);
     }
 
     #endregion
