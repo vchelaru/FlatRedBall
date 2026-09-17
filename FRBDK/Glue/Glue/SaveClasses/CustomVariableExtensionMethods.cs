@@ -66,30 +66,8 @@ namespace FlatRedBall.Glue.SaveClasses
         // SetDefaultValueAccordingToType and GetDefaultValueAccordingToType moved to
         // GlueCommon.SaveClasses.CustomVariableTypeExtensions (#2276).
 
-        public static void FixAllTypes(this CustomVariable customVariable)
-        {
-            customVariable.FixEnumerationTypes();
-
-            var type = customVariable.OverridingPropertyType;
-            if(string.IsNullOrEmpty(type))
-            {
-                type = customVariable.Type;
-            }
-            if (!string.IsNullOrEmpty(type) && customVariable.DefaultValue != null)
-            {
-                object variableValue = customVariable.DefaultValue;
-                variableValue = CustomVariableCommonExtensions.FixValue(variableValue, type);
-                customVariable.DefaultValue = variableValue;
-            }
-
-            if(!string.IsNullOrEmpty( customVariable.VariableDefinition?.PreferredDisplayerName))
-            {
-                // Since variable displayers can be handled by plugins, then the plugin must also handle converting the name to type
-                // since the type is not necessarily known here.:
-                PluginManager.TryAssignPreferredDisplayerFromName(customVariable);
-            }
-        }
-
+        // FixAllTypes moved to GlueCommon.SaveClasses.CustomVariableTypeExtensions (#2276) -
+        // PluginManager.TryAssignPreferredDisplayerFromName routes through the IPluginManagerCore seam.
 
         // FixValue moved to GlueCommon.SaveClasses.CustomVariableCommonExtensions (#2276) - pure
         // type-conversion logic, zero coupling.

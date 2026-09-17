@@ -17,80 +17,11 @@ public static class IElementExtensionMethods
     static IGlueCommands GlueCommands => EditorObjects.IoC.Container.Get<IGlueCommands>();
 
 
-    public static ReferencedFileSave GetReferencedFileSaveRecursively(this IElement instance, FilePath filePath)
-    {
-        ReferencedFileSave rfs = FileReferencerHelper.GetReferencedFileSave(instance, filePath);
-
-        if (rfs == null && !string.IsNullOrEmpty(instance.BaseObject))
-        {
-            EntitySave baseEntitySave = GlueState.CurrentGlueProject.GetEntitySave(instance.BaseObject);
-            if (baseEntitySave != null)
-            {
-                rfs = baseEntitySave.GetReferencedFileSaveRecursively(filePath);
-            }
-        }
-
-        return rfs;
-    }
-
-
-    public static ReferencedFileSave GetReferencedFileSaveRecursively(this GlueElement instance, string fileName)
-    {
-        ReferencedFileSave rfs = FileReferencerHelper.GetReferencedFileSave(instance, fileName);
-
-        if (rfs == null && !string.IsNullOrEmpty(instance.BaseObject))
-        {
-            EntitySave baseEntitySave = GlueState.CurrentGlueProject.GetEntitySave(instance.BaseObject);
-            if (baseEntitySave != null)
-            {
-                rfs = baseEntitySave.GetReferencedFileSaveRecursively(fileName);
-            }
-        }
-
-        return rfs;
-    }
-
-    // GetAllReferencedFileSavesRecursively moved to GlueCommon.SaveClasses.ElementExtensions (#2276) -
-    // GlueState.CurrentGlueProject is just ObjectFinder.Self.GlueProject (see
-    // GlueState.CurrentGlueProject's own getter), so it routes through the existing IObjectFinderCore
-    // seam instead.
-
-    public static ReferencedFileSave GetReferencedFileSaveByInstanceName(this IElement element, string instanceName, bool caseSensitive = true)
-    {
-        if (!string.IsNullOrEmpty(instanceName))
-        {
-            foreach (ReferencedFileSave rfs in element.ReferencedFiles)
-            {
-                var rfsInstanceName = rfs.GetInstanceName();
-                var matches = (caseSensitive && rfsInstanceName == instanceName) ||
-                              (!caseSensitive && rfsInstanceName.Equals(instanceName, StringComparison.InvariantCultureIgnoreCase));
-                if (matches)
-                {
-                    return rfs;
-                }
-            }
-        }
-        return null;
-    }
-
-
-    public static ReferencedFileSave GetReferencedFileSaveByInstanceNameRecursively(this IElement element, string instanceName, bool caseSensitive = true)
-    {
-        ReferencedFileSave rfs = element.GetReferencedFileSaveByInstanceName(instanceName, caseSensitive);
-
-        if (rfs == null && !string.IsNullOrEmpty(element.BaseElement))
-        {
-            EntitySave baseEntitySave = GlueState.CurrentGlueProject.GetEntitySave(element.BaseElement);
-
-            if (baseEntitySave != null)
-            {
-                rfs = baseEntitySave.GetReferencedFileSaveByInstanceNameRecursively(instanceName, caseSensitive);
-            }
-        }
-
-        return rfs;
-
-    }
+    // GetReferencedFileSaveRecursively (both overloads), GetAllReferencedFileSavesRecursively,
+    // GetReferencedFileSaveByInstanceName, and GetReferencedFileSaveByInstanceNameRecursively moved to
+    // GlueCommon.SaveClasses.ElementExtensions (#2276) - GlueState.CurrentGlueProject is just
+    // ObjectFinder.Self.GlueProject (see GlueState.CurrentGlueProject's own getter), so they route
+    // through the existing IObjectFinderCore seam instead.
 
     // GetCustomVariableRecursively moved to GlueCommon.SaveClasses.ElementExtensions (#2276) - only
     // needed the existing IObjectFinderCore seam over ObjectFinder.Self.GetElement.
@@ -240,58 +171,9 @@ public static class IElementExtensionMethods
 
     // GetEventsOnVariable moved to GlueCommon.SaveClasses.ElementExtensions (#2276) - zero coupling.
 
-    public static void FixAllTypes(this GlueElement element)
-    {
-        foreach (NamedObjectSave nos in element.NamedObjects)
-        {
-            nos.FixAllTypes();
-        }
-        foreach (StateSave state in element.AllStates)
-        {
-            state.FixAllTypes(element);
-        }
-        foreach (CustomVariable customVariable in element.CustomVariables)
-        {
-            customVariable.FixAllTypes();
-        }
-        foreach(var file in element.ReferencedFiles)
-        {
-            file.FixAllTypes();
-        }
-    }
-
-    public static void FixEnumerationValues(this IElement instance)
-    {
-
-        foreach (NamedObjectSave nos in instance.NamedObjects)
-        {
-            nos.FixEnumerationTypes();
-        }
-        foreach (StateSave state in instance.AllStates)
-        {
-            state.FixEnumerationTypes();
-        }
-        foreach (CustomVariable customVariable in instance.CustomVariables)
-        {
-            customVariable.FixEnumerationTypes();
-        }
-    }
-
-    public static void ConvertEnumerationValuesToInts(this IElement instance)
-    {
-        foreach (NamedObjectSave nos in instance.NamedObjects.ToList())
-        {
-            nos.ConvertEnumerationValuesToInts();
-        }
-        foreach (StateSave state in instance.AllStates)
-        {
-            state.ConvertEnumerationValuesToInts();
-        }
-        foreach (CustomVariable customVariable in instance.CustomVariables)
-        {
-            customVariable.ConvertEnumerationValuesToInts();
-        }
-    }
+    // FixAllTypes, FixEnumerationValues, and ConvertEnumerationValuesToInts moved to
+    // GlueCommon.SaveClasses.ElementExtensions (#2276) - zero coupling once CustomVariable.FixAllTypes
+    // had moved (it routes PluginManager through the IPluginManagerCore seam).
 
 
     // GetState, GetStateRecursively, GetUncategorizedState, GetUncategorizedStateRecursively,

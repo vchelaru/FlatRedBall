@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Events;
+using FlatRedBall.IO;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
@@ -457,6 +458,127 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 nos.PostLoadLogic();
             }
+
+        }
+
+        public static void FixAllTypes(this GlueElement element)
+        {
+            foreach (NamedObjectSave nos in element.NamedObjects)
+            {
+                nos.FixAllTypes();
+            }
+            foreach (StateSave state in element.AllStates)
+            {
+                state.FixAllTypes(element);
+            }
+            foreach (CustomVariable customVariable in element.CustomVariables)
+            {
+                customVariable.FixAllTypes();
+            }
+            foreach(var file in element.ReferencedFiles)
+            {
+                file.FixAllTypes();
+            }
+        }
+
+        public static void FixEnumerationValues(this IElement instance)
+        {
+
+            foreach (NamedObjectSave nos in instance.NamedObjects)
+            {
+                nos.FixEnumerationTypes();
+            }
+            foreach (StateSave state in instance.AllStates)
+            {
+                state.FixEnumerationTypes();
+            }
+            foreach (CustomVariable customVariable in instance.CustomVariables)
+            {
+                customVariable.FixEnumerationTypes();
+            }
+        }
+
+        public static void ConvertEnumerationValuesToInts(this IElement instance)
+        {
+            foreach (NamedObjectSave nos in instance.NamedObjects.ToList())
+            {
+                nos.ConvertEnumerationValuesToInts();
+            }
+            foreach (StateSave state in instance.AllStates)
+            {
+                state.ConvertEnumerationValuesToInts();
+            }
+            foreach (CustomVariable customVariable in instance.CustomVariables)
+            {
+                customVariable.ConvertEnumerationValuesToInts();
+            }
+        }
+
+        public static ReferencedFileSave GetReferencedFileSaveRecursively(this IElement instance, FilePath filePath)
+        {
+            ReferencedFileSave rfs = FileReferencerHelper.GetReferencedFileSave(instance, filePath);
+
+            if (rfs == null && !string.IsNullOrEmpty(instance.BaseObject))
+            {
+                EntitySave baseEntitySave = ObjectFinderCore.Self.GlueProject.GetEntitySave(instance.BaseObject);
+                if (baseEntitySave != null)
+                {
+                    rfs = baseEntitySave.GetReferencedFileSaveRecursively(filePath);
+                }
+            }
+
+            return rfs;
+        }
+
+        public static ReferencedFileSave GetReferencedFileSaveRecursively(this GlueElement instance, string fileName)
+        {
+            ReferencedFileSave rfs = FileReferencerHelper.GetReferencedFileSave(instance, fileName);
+
+            if (rfs == null && !string.IsNullOrEmpty(instance.BaseObject))
+            {
+                EntitySave baseEntitySave = ObjectFinderCore.Self.GlueProject.GetEntitySave(instance.BaseObject);
+                if (baseEntitySave != null)
+                {
+                    rfs = baseEntitySave.GetReferencedFileSaveRecursively(fileName);
+                }
+            }
+
+            return rfs;
+        }
+
+        public static ReferencedFileSave GetReferencedFileSaveByInstanceName(this IElement element, string instanceName, bool caseSensitive = true)
+        {
+            if (!string.IsNullOrEmpty(instanceName))
+            {
+                foreach (ReferencedFileSave rfs in element.ReferencedFiles)
+                {
+                    var rfsInstanceName = rfs.GetInstanceName();
+                    var matches = (caseSensitive && rfsInstanceName == instanceName) ||
+                                  (!caseSensitive && rfsInstanceName.Equals(instanceName, StringComparison.InvariantCultureIgnoreCase));
+                    if (matches)
+                    {
+                        return rfs;
+                    }
+                }
+            }
+            return null;
+        }
+
+        public static ReferencedFileSave GetReferencedFileSaveByInstanceNameRecursively(this IElement element, string instanceName, bool caseSensitive = true)
+        {
+            ReferencedFileSave rfs = element.GetReferencedFileSaveByInstanceName(instanceName, caseSensitive);
+
+            if (rfs == null && !string.IsNullOrEmpty(element.BaseElement))
+            {
+                EntitySave baseEntitySave = ObjectFinderCore.Self.GlueProject.GetEntitySave(element.BaseElement);
+
+                if (baseEntitySave != null)
+                {
+                    rfs = baseEntitySave.GetReferencedFileSaveByInstanceNameRecursively(instanceName, caseSensitive);
+                }
+            }
+
+            return rfs;
 
         }
     }

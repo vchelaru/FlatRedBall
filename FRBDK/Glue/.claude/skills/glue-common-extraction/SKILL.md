@@ -1,11 +1,11 @@
 ---
 name: glue-common-extraction
-description: Moving Glue.csproj logic into GlueCommon (net8.0) through the XxxCore.Self seams. Triggers: IObjectFinderCore, IAvailableAssetTypesCore, ITypeResolutionCore, IGlueStateCore, GlueCommonUnitTests, Fake*Core, ObjectFinderCoreCollection.
+description: Moving Glue.csproj logic into GlueCommon (net8.0) through the XxxCore.Self seams. Triggers: IObjectFinderCore, IAvailableAssetTypesCore, ITypeResolutionCore, IGlueStateCore, IPluginManagerCore, GlueCommonUnitTests, Fake*Core, ObjectFinderCoreCollection.
 ---
 
 # GlueCommon Extraction
 
-`GlueCommon` is plain net8.0 and can't reference `Glue.csproj`, so logic moved there reaches Glue's singletons only through narrow seam interfaces: `GlueCommon/SaveClasses/IObjectFinderCore.cs`, `SaveClasses/IGlueStateCore.cs`, `Elements/IAvailableAssetTypesCore.cs`, `Parsing/ITypeResolutionCore.cs`, `Build/IBuildToolAssociationCore.cs`, `Controls/IErrorReportingCore.cs`. Each has a static `XxxCore.Self` that the Glue-side class (`ObjectFinder`, `GlueState`, `AvailableAssetTypes`, `TypeManager`, ...) assigns from its own static constructor. Tests live in `Tests/GlueCommonUnitTests`, one hand-rolled `Fake*Core` per seam, and every test class that swaps a `Self` sits in `[Collection(nameof(ObjectFinderCoreCollection))]`.
+`GlueCommon` is plain net8.0 and can't reference `Glue.csproj`, so logic moved there reaches Glue's singletons only through narrow seam interfaces: `GlueCommon/SaveClasses/IObjectFinderCore.cs`, `SaveClasses/IGlueStateCore.cs`, `Elements/IAvailableAssetTypesCore.cs`, `Parsing/ITypeResolutionCore.cs`, `Build/IBuildToolAssociationCore.cs`, `Controls/IErrorReportingCore.cs`, `SaveClasses/IPluginManagerCore.cs` (under `SaveClasses/`, not `Plugins/`, because `GlueCommon.csproj` compile-excludes `Plugins\**`). Each has a static `XxxCore.Self` that the Glue-side class (`ObjectFinder`, `GlueState`, `AvailableAssetTypes`, `TypeManager`, `PluginManager`, ...) assigns from its own static constructor. Tests live in `Tests/GlueCommonUnitTests`, one hand-rolled `Fake*Core` per seam, and every test class that swaps a `Self` sits in `[Collection(nameof(ObjectFinderCoreCollection))]`.
 
 ## Pattern
 
