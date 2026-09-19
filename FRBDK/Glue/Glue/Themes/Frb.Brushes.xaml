@@ -21,7 +21,7 @@
     <SolidColorBrush x:Key="Frb.Brushes.Foreground.Disabled" Color="{DynamicResource Frb.Colors.Foreground}" Opacity="0.5" />
 
     <!--  Dims the variable grid's per-row detail/hint text relative to the main label, in both themes  -->
-    <SolidColorBrush x:Key="{x:Static wpfDataUi:Keys.DetailTextForegroundKey}" Color="{DynamicResource Frb.Colors.Foreground.Subtle}" />
+    <SolidColorBrush x:Key="{x:Static wpfDataUi:Keys.DetailTextForegroundKey}" Color="{DynamicResource Frb.Colors.Foreground.Muted}" />
     
     <SolidColorBrush x:Key="Frb.Brushes.Border" Color="{DynamicResource Frb.Colors.Border}" />
 
