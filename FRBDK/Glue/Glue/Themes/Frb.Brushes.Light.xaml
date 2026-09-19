@@ -6,6 +6,7 @@
         <ResourceDictionary>
             <StaticResource x:Key="Frb.Colors.Foreground" ResourceKey="Gray800" />
             <StaticResource x:Key="Frb.Colors.Foreground.Subtle" ResourceKey="Gray600" />
+            <StaticResource x:Key="Frb.Colors.Foreground.Muted" ResourceKey="Gray500" />
             <StaticResource x:Key="Frb.Colors.Border" ResourceKey="Gray500" />
             <StaticResource x:Key="Frb.Colors.Background" ResourceKey="Gray250" />
 
