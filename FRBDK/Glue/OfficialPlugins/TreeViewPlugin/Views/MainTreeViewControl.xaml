@@ -215,7 +215,7 @@
                         ContextMenuOpening="MainTreeView_OnContextMenuOpening_">
 
             <pt:TreeListBox.ContextMenu>
-                <ContextMenu x:Name="RightClickContextMenu"/>
+                <ContextMenu x:Name="RightClickContextMenu" Opened="RightClickContextMenu_Opened"/>
             </pt:TreeListBox.ContextMenu>
             <pt:TreeListBox.ItemTemplate>
 
