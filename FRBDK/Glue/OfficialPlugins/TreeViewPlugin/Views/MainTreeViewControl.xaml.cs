@@ -424,7 +424,60 @@ public partial class MainTreeViewControl : UserControl, ITreeViewDisplay
                 menuItem.Items.Add(wpfItem);
             }
 
+            if (item.DropDownItems.Count > 0)
+            {
+                menuItem.SubmenuOpened += (_, _) => LogSubmenuOpenedDiagnostics(menuItem, item);
+            }
+
             return menuItem;
+        }
+    }
+
+    private void RightClickContextMenu_Opened(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            var dpi = VisualTreeHelper.GetDpi(this);
+            var cursorPosition = System.Windows.Forms.Cursor.Position;
+            var screen = System.Windows.Forms.Screen.FromPoint(cursorPosition);
+
+            var message =
+                $"[RightClickMenu] Opened - DpiScale={dpi.DpiScaleX:0.00}, " +
+                $"Screen='{screen.DeviceName}' Bounds={screen.Bounds} WorkingArea={screen.WorkingArea}, " +
+                $"CursorPosition={cursorPosition}, TopLevelItemCount={RightClickContextMenu.Items.Count}";
+
+            var submenusWithCounts = RightClickContextMenu.Items.OfType<MenuItem>()
+                .Where(item => item.Items.Count > 0)
+                .Select(item => $"{item.Header}({item.Items.Count})");
+            if (submenusWithCounts.Any())
+            {
+                message += $", Submenus=[{string.Join(", ", submenusWithCounts)}]";
+            }
+
+            GlueCommands.Self.PrintOutput(message);
+        }
+        catch (Exception ex)
+        {
+            GlueCommands.Self.PrintOutput($"[RightClickMenu] Diagnostics failed: {ex}");
+        }
+    }
+
+    private void LogSubmenuOpenedDiagnostics(MenuItem menuItem, GlueFormsCore.FormHelpers.GeneralToolStripMenuItem item)
+    {
+        try
+        {
+            var dpi = VisualTreeHelper.GetDpi(menuItem);
+            var topLeft = menuItem.PointToScreen(new Point(0, 0));
+            var screen = System.Windows.Forms.Screen.FromPoint(new System.Drawing.Point((int)topLeft.X, (int)topLeft.Y));
+
+            GlueCommands.Self.PrintOutput(
+                $"[RightClickMenu] Submenu '{item.Text}' opened - ItemCount={item.DropDownItems.Count}, " +
+                $"DpiScale={dpi.DpiScaleX:0.00}, MenuItemScreenPosition={topLeft}, " +
+                $"Screen='{screen.DeviceName}' Bounds={screen.Bounds} WorkingArea={screen.WorkingArea}");
+        }
+        catch (Exception ex)
+        {
+            GlueCommands.Self.PrintOutput($"[RightClickMenu] Submenu diagnostics failed: {ex}");
         }
     }
 
