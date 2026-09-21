@@ -1,5 +1,7 @@
 ﻿using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.SaveClasses;
 using Gum.DataTypes;
 using GumPlugin.DataGeneration;
 using GumPlugin.Managers;
@@ -211,10 +213,33 @@ namespace GumPlugin.CodeGeneration
                 var gumRuntimeType = 
                     GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(fulfillment.Element);
 
-                var line =
+                var usesTemplates = GlueState.Self.CurrentGlueProject.FileVersion >=
+                    (int)GlueProjectSave.GluxVersions.GumFrameworkElementHasDefaultFormsTemplates;
+
+                var legacyLine =
                     $"FlatRedBall.Forms.Controls.FrameworkElement.DefaultFormsComponents[typeof({qualifiedControlType})] = typeof({gumRuntimeType});";
 
-                currentBlock.Line(line);
+                if(!usesTemplates)
+                {
+                    currentBlock.Line(legacyLine);
+                }
+                else if(fulfillment.ControlType == "TreeViewItem")
+                {
+                    // FRB's own TreeViewLogic only reads DefaultFormsComponents for its item type, so TreeViewItem
+                    // stays on the obsolete dictionary until the engine reads templates too (needs its own gluj version).
+                    currentBlock.Line("#pragma warning disable CS0618");
+                    currentBlock.Line(legacyLine);
+                    currentBlock.Line("#pragma warning restore CS0618");
+                }
+                else
+                {
+                    // (true, false) is what the obsolete path constructed by reflection: a full visual with no Forms
+                    // object, since the Forms element requesting the visual attaches itself. FRB's VisualTemplate
+                    // ignores CreateContent's createFormsInternally, so the lambda can't forward it.
+                    currentBlock.Line(
+                        $"FlatRedBall.Forms.Controls.FrameworkElement.DefaultFormsTemplates[typeof({qualifiedControlType})] = " +
+                        $"new global::FlatRedBall.Forms.VisualTemplate(() => new {gumRuntimeType}(fullInstantiation: true, tryCreateFormsObject: false));");
+                }
             }
         }
 
