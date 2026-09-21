@@ -467,6 +467,18 @@ namespace FlatRedBall.Screens
             {
                 FlatRedBall.Input.InputManager.CurrentFrameInputSuspended = true;
 
+                // Suspending input above means the release half of whatever click/push led to this
+                // screen change will not be reported (Mouse.ButtonReleased/ButtonDown are gated on
+                // CurrentFrameInputSuspended), so Cursor.WindowPushed/WindowGrabbed would otherwise
+                // keep referencing a window that's about to be destroyed with this screen, and nothing
+                // would ever clear that reference. Clear it here instead of waiting for a click that
+                // may never come.
+                foreach (var cursor in GuiManager.Cursors)
+                {
+                    cursor.WindowPushed = null;
+                    cursor.WindowGrabbed = null;
+                }
+
                 // We do this so that new Screens are the CurrentScreen in Activity.
                 // This is useful in custom logic.
                 mCurrentScreen = newScreen;
