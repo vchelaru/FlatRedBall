@@ -237,6 +237,12 @@ namespace FlatRedBall.Glue.SaveClasses
             // edit mode. Gated because it's a new engine-side member: a project on an older GumCore dll fails
             // with CS0117 on CameraLogic.Generated.cs otherwise.
             GumWrapperHasEntityAttachmentZoomLayer = 73,
+            // September 21, 2026 - GumIdb.Generated.cs registers component-to-Forms associations through
+            // FrameworkElement.DefaultFormsTemplates (a VisualTemplate per control) instead of the
+            // [Obsolete] DefaultFormsComponents dictionary, which warned CS0618 in every generated project
+            // (#2332). DefaultFormsTemplates has been in Gum since March 2025, so no new version is needed;
+            // sharing 73 keeps the old line for projects that haven't upgraded yet.
+            GumFrameworkElementHasDefaultFormsTemplates = 73,
 
             // Stop! If adding an entry here, modify SyntaxVersionAttribute on FlatRedBallServices
             // and LatestVersion down below

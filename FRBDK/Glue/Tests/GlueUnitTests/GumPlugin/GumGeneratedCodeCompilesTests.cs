@@ -412,6 +412,79 @@ public class GumGeneratedCodeCompilesTests : IDisposable
             string.Join(Environment.NewLine, errors));
     }
 
+    // Issue #2332. FormsAssociationCodegenTests pins the text GumIdb.Generated.cs emits for a Forms
+    // association; this proves that text is valid against the real FRB Forms build - that
+    // Gum.Forms.VisualTemplate and FrameworkElement.DefaultFormsTemplates resolve under the FRB namespace
+    // arm, and that the lambda's (bool, bool) call matches the constructor the component runtime actually
+    // generates. Compiling the registration together with the runtime it names is the point: the
+    // registration alone would only prove the dictionary exists.
+    [Fact]
+    public void FormsAssociationRegistration_ShouldCompileAgainstTheRealEngine()
+    {
+        GlueTestBootstrap.EnsureGumPluginStandardElementsInitialized();
+        GlueTestBootstrap.EnsureGumPluginCodeGeneratorsInitialized();
+
+        var gumProject = Gum.Managers.ObjectFinder.Self.GumProjectSave;
+
+        var containerDefaultState = GetGumsDefaultStateFor("Container");
+        containerDefaultState.ShouldNotBeNull();
+
+        var container = new StandardElementSave { Name = "Container" };
+        container.Initialize(containerDefaultState);
+        gumProject.StandardElements.Add(container);
+
+        var button = new ComponentSave { Name = "Controls/ButtonStandard", BaseType = "Container" };
+        button.Behaviors.Add(new Gum.DataTypes.Behaviors.ElementBehaviorReference { BehaviorName = "ButtonBehavior" });
+        button.Initialize(new Gum.DataTypes.Variables.StateSave { Name = "Default" });
+        gumProject.Components.Add(button);
+
+        // TreeViewItem is the one control still registered through the obsolete dictionary (under a
+        // pragma), so the build below also proves that arm is warning-free, not just the template arm.
+        var treeViewItem = new ComponentSave { Name = "Controls/TreeViewItemStandard", BaseType = "Container" };
+        treeViewItem.Behaviors.Add(new Gum.DataTypes.Behaviors.ElementBehaviorReference { BehaviorName = "TreeViewItemBehavior" });
+        treeViewItem.Initialize(new Gum.DataTypes.Variables.StateSave { Name = "Default" });
+        gumProject.Components.Add(treeViewItem);
+
+        var generated = new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            ["Container"] = GueDerivingClassCodeGenerator.Self.GenerateCodeFor(container),
+            ["ButtonStandard"] = GueDerivingClassCodeGenerator.Self.GenerateCodeFor(button),
+            ["TreeViewItemStandard"] = GueDerivingClassCodeGenerator.Self.GenerateCodeFor(treeViewItem),
+            ["GumIdb"] = GueRuntimeTypeAssociationGenerator.Self.GetRuntimeRegistrationPartialClassContents(registerFormsAssociations: true),
+        };
+
+        foreach (var pair in generated)
+        {
+            pair.Value.ShouldNotBeNullOrWhiteSpace($"Nothing was generated for {pair.Key}.");
+        }
+
+        // Fixture sanity: the registration must actually take both branches, or this compiles the old
+        // line alone and pins nothing.
+        generated["GumIdb"].ShouldContain("DefaultFormsTemplates[typeof(FlatRedBall.Forms.Controls.Button)]");
+        generated["GumIdb"].ShouldContain("DefaultFormsComponents[typeof(FlatRedBall.Forms.Controls.TreeViewItem)]");
+
+        var scratchDirectory = Path.Combine(_tempProjectDirectory, "FormsAssociationScratch");
+        WriteScratchProject(scratchDirectory, FindRepoRoot(), generated);
+
+        var (exitCode, output) = RunDotnetBuild(Path.Combine(scratchDirectory, "GumCodegenCompileScratch.csproj"));
+
+        var errors = output
+            .Split('\n')
+            .Where(line => line.Contains(": error ", StringComparison.Ordinal))
+            .Select(line => line.Trim())
+            .Distinct(StringComparer.Ordinal)
+            .ToList();
+
+        exitCode.ShouldBe(0,
+            "The generated Forms association registration does not compile against the real engine:" +
+            Environment.NewLine + string.Join(Environment.NewLine, errors));
+
+        // The reported symptom itself: the user's build carried an obsolete-member warning from generated code.
+        output.Split('\n')
+            .Where(line => line.Contains("GumIdbRuntime.Generated.cs", StringComparison.Ordinal) && line.Contains("CS0618", StringComparison.Ordinal))
+            .ShouldBeEmpty("GumIdb.Generated.cs still uses an obsolete member.");
+    }
+
     // Issue #1979. The sweep at the top of this file builds its fixtures from Gum's *canonical* schema,
     // which is a current Gum Editor's output - so it never sees the case that actually breaks users. Glue
     // does not back-fill a loaded project's standard elements (it calls GumProjectSave.Load and never
