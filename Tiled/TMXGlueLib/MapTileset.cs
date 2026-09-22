@@ -328,7 +328,7 @@ namespace TMXGlueLib
                 try
                 {
 
-                    xts = FileManager.XmlDeserialize<tileset>(fileAttemptedToLoad);
+                    xts = LoadTilesetWithRetryOnTransientParseFailure(fileAttemptedToLoad);
                 }
                 catch (FileNotFoundException)
                 {
@@ -378,6 +378,29 @@ namespace TMXGlueLib
                 this.TileCount = xts.TileCount;
 
                 this.wangsets = xts.wangsets;
+            }
+        }
+
+        /// <summary>
+        /// Glue's file watcher (and the runtime's own file-watch hot reload) can react to a .tsx changing
+        /// on disk and re-read it while an external tool (e.g. an editor) is still mid-write. A truncated
+        /// or momentarily-empty read fails XML parsing (XmlException wrapped in InvalidOperationException)
+        /// even though the file is about to become valid, so a short bounded retry is given before treating
+        /// the parse failure as permanent.
+        /// </summary>
+        private static tileset LoadTilesetWithRetryOnTransientParseFailure(string fileName)
+        {
+            const int maxAttempts = 5;
+            for (int attempt = 1; ; attempt++)
+            {
+                try
+                {
+                    return FileManager.XmlDeserialize<tileset>(fileName);
+                }
+                catch (System.InvalidOperationException e) when (attempt < maxAttempts && e.InnerException is System.Xml.XmlException)
+                {
+                    System.Threading.Thread.Sleep(100);
+                }
             }
         }
 

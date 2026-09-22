@@ -1345,6 +1345,29 @@ namespace TMXGlueLib
             return pixelX;
         }
 
+        /// <summary>
+        /// Glue's file watcher (and the runtime's own file-watch hot reload) can react to a .tmx changing
+        /// on disk and re-read it while an external tool is still mid-write. A truncated or momentarily-
+        /// empty read fails XML parsing (XmlException wrapped in InvalidOperationException) even though the
+        /// file is about to become valid, so a short bounded retry is given before treating the parse
+        /// failure as permanent.
+        /// </summary>
+        private static TiledMapSave LoadTiledMapSaveWithRetryOnTransientParseFailure(string fileName)
+        {
+            const int maxAttempts = 5;
+            for (int attempt = 1; ; attempt++)
+            {
+                try
+                {
+                    return FileManager.XmlDeserialize<TiledMapSave>(fileName);
+                }
+                catch (InvalidOperationException e) when (attempt < maxAttempts && e.InnerException is System.Xml.XmlException)
+                {
+                    System.Threading.Thread.Sleep(100);
+                }
+            }
+        }
+
         public static TiledMapSave FromFile(string fileName)
         {
             if (FileManager.IsRelative(fileName))
@@ -1375,7 +1398,7 @@ namespace TMXGlueLib
                 }
                 else
                 {
-                    tms = FileManager.XmlDeserialize<TiledMapSave>(fileName);
+                    tms = LoadTiledMapSaveWithRetryOnTransientParseFailure(fileName);
                     tms.FileName = fileName;
                 }
             }
