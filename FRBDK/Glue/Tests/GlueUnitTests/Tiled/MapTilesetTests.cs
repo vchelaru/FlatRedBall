@@ -164,4 +164,75 @@ public class MapTilesetTests
             Directory.Delete(tempDirectory, true);
         }
     }
+
+    /// <summary>
+    /// Same race as Source_ShouldRetryAndSucceed_WhenFileIsTransientlyEmptyDuringAnExternalWrite, but for
+    /// the .tmx itself rather than a referenced .tsx - TiledMapSave.FromFile has its own direct
+    /// FileManager.XmlDeserialize read of the map file.
+    /// </summary>
+    [Fact]
+    public void FromFile_ShouldRetryAndSucceed_WhenFileIsTransientlyEmptyDuringAnExternalWrite()
+    {
+        var tempDirectory = Path.Combine(Path.GetTempPath(), "TiledMapSaveRacyTmxTest_" + Guid.NewGuid());
+        Directory.CreateDirectory(tempDirectory);
+
+        var originalRelativeDirectory = FileManager.RelativeDirectory;
+        try
+        {
+            var tmxPath = Path.Combine(tempDirectory, "Racy.tmx");
+            // Starts empty, standing in for the moment an external tool has truncated the file but not yet
+            // flushed its new content - this is what the OS-level file watcher can observe mid-write.
+            File.WriteAllText(tmxPath, "");
+
+            var writerTask = Task.Run(() =>
+            {
+                Thread.Sleep(50);
+                File.WriteAllText(tmxPath,
+                    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                    "<map version=\"1.4\" tiledversion=\"1.4.3\" orientation=\"orthogonal\" renderorder=\"right-down\" " +
+                    "width=\"1\" height=\"1\" tilewidth=\"16\" tileheight=\"16\" infinite=\"0\" nextlayerid=\"1\" nextobjectid=\"1\">\n" +
+                    "</map>");
+            });
+
+            TiledMapSave tms = null;
+            var exception = Record.Exception(() => tms = TiledMapSave.FromFile(tmxPath));
+            writerTask.Wait();
+
+            exception.ShouldBeNull("a transient empty read should be retried, not treated as a permanent parse failure");
+            tms.ShouldNotBeNull();
+        }
+        finally
+        {
+            FileManager.RelativeDirectory = originalRelativeDirectory;
+            Directory.Delete(tempDirectory, true);
+        }
+    }
+
+    /// <summary>
+    /// The retry is bounded - a .tmx that never becomes valid XML (genuinely corrupt, not just mid-write)
+    /// must still throw, not retry forever.
+    /// </summary>
+    [Fact]
+    public void FromFile_ShouldStillThrow_WhenFileContentIsPermanentlyMalformed()
+    {
+        var tempDirectory = Path.Combine(Path.GetTempPath(), "TiledMapSaveMalformedTmxTest_" + Guid.NewGuid());
+        Directory.CreateDirectory(tempDirectory);
+
+        var originalRelativeDirectory = FileManager.RelativeDirectory;
+        try
+        {
+            var tmxPath = Path.Combine(tempDirectory, "Malformed.tmx");
+            File.WriteAllText(tmxPath, "");
+
+            var exception = Record.Exception(() => TiledMapSave.FromFile(tmxPath));
+
+            exception.ShouldNotBeNull();
+            exception.ShouldBeOfType<InvalidOperationException>();
+        }
+        finally
+        {
+            FileManager.RelativeDirectory = originalRelativeDirectory;
+            Directory.Delete(tempDirectory, true);
+        }
+    }
 }
