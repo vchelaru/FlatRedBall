@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace GumPlugin.Managers
@@ -67,20 +68,20 @@ namespace GumPlugin.Managers
 
         public FilePath DefaultGumProjectDirectory => GlueState.Self.ContentDirectory + "GumProject/";
 
-        internal void AddNewGumProject()
+        internal async Task<bool> AddNewGumProjectAsync()
         {
-            EmbeddedResourceManager.Self.SaveEmptyProject(DefaultGumProjectDirectory);
+            var absoluteGumFile = DefaultGumProjectDirectory + "GumProject.gumx";
+
+            var succeeded = await GumCliRunner.NewProjectAsync(absoluteGumFile, "empty");
+            if (!succeeded)
+            {
+                return false;
+            }
 
             GlueState.Self.CurrentTreeNode = GlueState.Self.Find.GlobalContentTreeNode;
 
             // ignore changes while this is being added, because we don't want to add then remove files:
 
-
-            //var rfs = FlatRedBall.Glue.FormHelpers.RightClickHelper.AddSingleFile(
-            //    gumProjectDirectory + "GumProject.gumx", ref userCancelled);
-            //var rfs = GlueCommands.Self.GluxCommands.AddSingleFileTo(gumProjectDirectory + "GumProject.gumx",
-            //    "GumProject.gumx", null, null, false, null, null, null);
-            var absoluteGumFile = DefaultGumProjectDirectory + "GumProject.gumx";
             var relativeFile = FileManager.MakeRelative(absoluteGumFile, GlueState.Self.ContentDirectory);
 
             var rfs = GlueCommands.Self.GluxCommands.AddReferencedFileToGlobalContent(
@@ -94,6 +95,7 @@ namespace GumPlugin.Managers
 
             GumPluginCommands.Self.UpdateGumToGlueResolution();
 
+            return true;
         }
 
         /// <summary>

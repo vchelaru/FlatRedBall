@@ -19,25 +19,21 @@
     <Compile Remove="Embedded\EmbeddedObjectGumProject\Libraries\**" />
     <Compile Remove="Embedded\EmbeddedObjectGumProject\Screens\**" />
     <Compile Remove="Embedded\EmbeddedObjectGumProject\Standards\**" />
-    <Compile Remove="Embedded\EmptyProject\Libraries\**" />
     <EmbeddedResource Remove="Embedded\EmbeddedObjectGumProject\Behaviors\**" />
     <EmbeddedResource Remove="Embedded\EmbeddedObjectGumProject\FontCache\**" />
     <EmbeddedResource Remove="Embedded\EmbeddedObjectGumProject\Libraries\**" />
     <EmbeddedResource Remove="Embedded\EmbeddedObjectGumProject\Screens\**" />
     <EmbeddedResource Remove="Embedded\EmbeddedObjectGumProject\Standards\**" />
-    <EmbeddedResource Remove="Embedded\EmptyProject\Libraries\**" />
     <None Remove="Embedded\EmbeddedObjectGumProject\Behaviors\**" />
     <None Remove="Embedded\EmbeddedObjectGumProject\FontCache\**" />
     <None Remove="Embedded\EmbeddedObjectGumProject\Libraries\**" />
     <None Remove="Embedded\EmbeddedObjectGumProject\Screens\**" />
     <None Remove="Embedded\EmbeddedObjectGumProject\Standards\**" />
-    <None Remove="Embedded\EmptyProject\Libraries\**" />
     <Page Remove="Embedded\EmbeddedObjectGumProject\Behaviors\**" />
     <Page Remove="Embedded\EmbeddedObjectGumProject\FontCache\**" />
     <Page Remove="Embedded\EmbeddedObjectGumProject\Libraries\**" />
     <Page Remove="Embedded\EmbeddedObjectGumProject\Screens\**" />
     <Page Remove="Embedded\EmbeddedObjectGumProject\Standards\**" />
-    <Page Remove="Embedded\EmptyProject\Libraries\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -80,26 +76,6 @@
     <None Remove="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\TreeViewToggleButton.gucx" />
     <None Remove="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\UserControl.gucx" />
     <None Remove="Embedded\EmbeddedObjectGumProject\UISpriteSheet.png" />
-    <None Remove="Embedded\EmptyProject\FontCache\Font18Arial.fnt" />
-    <None Remove="Embedded\EmptyProject\FontCache\Font18Arial_0.png" />
-    <None Remove="Embedded\EmptyProject\GumProject.gumx" />
-    <None Remove="Embedded\EmptyProject\Standards\Circle.gutx" />
-    <None Remove="Embedded\EmptyProject\Standards\Component.gutx" />
-    <None Remove="Embedded\EmptyProject\Standards\Container.gutx" />
-    <None Remove="Embedded\EmptyProject\Standards\NineSlice.gutx" />
-    <None Remove="Embedded\EmptyProject\Standards\Polygon.gutx" />
-    <None Remove="Embedded\EmptyProject\Standards\Rectangle.gutx" />
-    <None Remove="Embedded\EmptyProject\Standards\Sprite.gutx" />
-    <None Remove="Embedded\EmptyProject\Standards\StandardGraphics\Red_BottomCenter.png" />
-    <None Remove="Embedded\EmptyProject\Standards\StandardGraphics\Red_BottomLeft.png" />
-    <None Remove="Embedded\EmptyProject\Standards\StandardGraphics\Red_BottomRight.png" />
-    <None Remove="Embedded\EmptyProject\Standards\StandardGraphics\Red_Center.png" />
-    <None Remove="Embedded\EmptyProject\Standards\StandardGraphics\Red_Left.png" />
-    <None Remove="Embedded\EmptyProject\Standards\StandardGraphics\Red_Right.png" />
-    <None Remove="Embedded\EmptyProject\Standards\StandardGraphics\Red_TopCenter.png" />
-    <None Remove="Embedded\EmptyProject\Standards\StandardGraphics\Red_TopLeft.png" />
-    <None Remove="Embedded\EmptyProject\Standards\StandardGraphics\Red_TopRight.png" />
-    <None Remove="Embedded\EmptyProject\Standards\Text.gutx" />
     <None Remove="GumCoreShared.FlatRedBall.projitems" />
     <None Remove="Icons\AddGumProject.png" />
     <None Remove="Icons\GumIcon.png" />
@@ -227,36 +203,11 @@
     <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\TreeViewToggleButton.gucx" />
     <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\UserControl.gucx" />
     <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\UISpriteSheet.png" />
-    <EmbeddedResource Include="Embedded\EmptyProject\FontCache\Font18Arial.fnt" />
-    <EmbeddedResource Include="Embedded\EmptyProject\FontCache\Font18Arial_0.png" />
-    <EmbeddedResource Include="Embedded\EmptyProject\GumProject.gumx" />
-    <EmbeddedResource Include="Embedded\EmptyProject\Standards\Circle.gutx" />
-    <EmbeddedResource Include="Embedded\EmptyProject\Standards\Component.gutx" />
-    <EmbeddedResource Include="Embedded\EmptyProject\Standards\Container.gutx" />
-    <EmbeddedResource Include="Embedded\EmptyProject\Standards\NineSlice.gutx" />
-    <EmbeddedResource Include="Embedded\EmptyProject\Standards\Polygon.gutx" />
-    <EmbeddedResource Include="Embedded\EmptyProject\Standards\Rectangle.gutx" />
-    <EmbeddedResource Include="Embedded\EmptyProject\Standards\Sprite.gutx" />
-    <EmbeddedResource Include="Embedded\EmptyProject\Standards\StandardGraphics\Red_BottomCenter.png" />
-    <EmbeddedResource Include="Embedded\EmptyProject\Standards\StandardGraphics\Red_BottomLeft.png" />
-    <EmbeddedResource Include="Embedded\EmptyProject\Standards\StandardGraphics\Red_BottomRight.png" />
-    <EmbeddedResource Include="Embedded\EmptyProject\Standards\StandardGraphics\Red_Center.png" />
-    <EmbeddedResource Include="Embedded\EmptyProject\Standards\StandardGraphics\Red_Left.png" />
-    <EmbeddedResource Include="Embedded\EmptyProject\Standards\StandardGraphics\Red_Right.png" />
-    <EmbeddedResource Include="Embedded\EmptyProject\Standards\StandardGraphics\Red_TopCenter.png" />
-    <EmbeddedResource Include="Embedded\EmptyProject\Standards\StandardGraphics\Red_TopLeft.png" />
-    <EmbeddedResource Include="Embedded\EmptyProject\Standards\StandardGraphics\Red_TopRight.png" />
-    <EmbeddedResource Include="Embedded\EmptyProject\Standards\Text.gutx" />
     <EmbeddedResource Include="Embedded\GraphicalUiElement.Binding.cs" />
     <EmbeddedResource Include="Embedded\GraphicalUiElement.IWindow.cs" />
     <EmbeddedResource Include="Embedded\GumAnimation.cs" />
     <EmbeddedResource Include="Embedded\GumCollidableExtensions.cs" />
 
-    <EmbeddedResource Include="..\..\..\..\..\Gum\Tools\Gum.ProjectServices\Templates\FormsTemplate\Behaviors\*.behx" Link="Embedded\FormsGumProject\Behaviors\%(Filename)%(Extension)" />
-    <EmbeddedResource Include="..\..\..\..\..\Gum\Tools\Gum.ProjectServices\Templates\FormsBehaviors\*.behx" Link="Embedded\FormsGumProject\Behaviors\%(Filename)%(Extension)" />
-    <EmbeddedResource Include="..\..\..\..\..\Gum\Tools\Gum.ProjectServices\Templates\FormsTemplate\Components\**\*.gucx" Link="Embedded\FormsGumProject\Components\%(RecursiveDir)%(Filename)%(Extension)" />
-    <EmbeddedResource Include="..\..\..\..\..\Gum\Tools\Gum.ProjectServices\Templates\FormsTemplate\Standards\*.gutx" Link="Embedded\FormsGumProject\Standards\%(Filename)%(Extension)" />
-    <EmbeddedResource Include="..\..\..\..\..\Gum\Tools\Gum.ProjectServices\Templates\FormsTemplate\UISpriteSheet.png" Link="Embedded\FormsGumProject\UISpriteSheet.png" />
     <EmbeddedResource Include="Embedded\GumIdb.cs" />
     <EmbeddedResource Include="Embedded\GumToFrbShapeRelationship.cs" />
     <EmbeddedResource Include="Embedded\PositionedObjectGueWrapper.cs" />
@@ -288,6 +239,7 @@
     <Folder Include="Embedded\StateInterpolation\" />
     <Folder Include="FileAssociations\" />
     <Folder Include="Tools\GumProjectFontGenerator\" />
+    <Folder Include="Tools\gumcli\" />
   </ItemGroup>
 
 
@@ -339,6 +291,9 @@
 
   <ItemGroup>
     <None Update="Tools\GumProjectFontGenerator\**\*.*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Tools\gumcli\**\*.*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

@@ -23,20 +23,9 @@ public static class FormsControlAdder
         "UISpriteSheet.png"
     };
 
-    public static string EmbeddedProjectRoot
-    {
-        get
-        {
-            if(GlueState.Self.CurrentGlueProject?.FileVersion >= (int)GlueProjectSave.GluxVersions.GumDefaults2)
-            {
-                return "GumPlugin.Embedded.FormsGumProject";
-            }
-            else
-            {
-                return "GumPlugin.Embedded.EmbeddedObjectGumProject";
-            }
-        }
-    }
+    // FormsControlAdder now only runs for legacy (pre-GumDefaults2) projects - GumDefaults2+ projects
+    // go through GumFormsAdder -> GumCliRunner (gumcli add-forms) instead. See issue #2335.
+    public static string EmbeddedProjectRoot => "GumPlugin.Embedded.EmbeddedObjectGumProject";
 
     public static bool AskToSaveIfOverwriting(Assembly assembly)
     {

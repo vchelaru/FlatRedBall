@@ -1,0 +1,1124 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0/win-x64",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {},
+    ".NETCoreApp,Version=v10.0/win-x64": {
+      "gumcli/2026.09.23": {
+        "dependencies": {
+          "Gum.Expressions": "2026.9.23",
+          "Gum.ProjectServices": "2026.9.23",
+          "Gum.ProjectServices.MonoGame": "2026.9.23",
+          "Gum.ProjectServices.Raylib": "2026.9.23",
+          "Gum.ProjectServices.SkiaGum": "2026.9.23",
+          "System.CommandLine": "2.0.0-beta4.22272.1",
+          "GumCommon": "2026.9.23.0",
+          "GumExpressions": "2026.9.23.0",
+          "MonoGameGum": "2026.9.23.0",
+          "MonoGameGumShapes": "2026.9.23.0",
+          "RaylibGum": "0.0.0.0",
+          "SkiaGum": "2026.9.23.0",
+          "SkiaGum.Standalone": "2026.9.23.0"
+        },
+        "runtime": {
+          "gumcli.dll": {}
+        }
+      },
+      "Apos.Shapes/0.8.1": {
+        "dependencies": {
+          "MonoGame.Extended": "5.3.1",
+          "StbTrueTypeSharp": "1.26.12"
+        },
+        "runtime": {
+          "lib/net8.0/Apos.Shapes.dll": {
+            "assemblyVersion": "0.8.1.0",
+            "fileVersion": "0.8.1.0"
+          }
+        }
+      },
+      "BrotliSharpLib/0.3.3": {
+        "runtime": {
+          "lib/netstandard2.0/BrotliSharpLib.dll": {
+            "assemblyVersion": "0.3.2.0",
+            "fileVersion": "0.3.3.0"
+          }
+        }
+      },
+      "CsvHelper/33.1.0": {
+        "runtime": {
+          "lib/net9.0/CsvHelper.dll": {
+            "assemblyVersion": "33.0.0.0",
+            "fileVersion": "33.1.0.26"
+          }
+        }
+      },
+      "ExCSS/4.2.3": {
+        "runtime": {
+          "lib/net7.0/ExCSS.dll": {
+            "assemblyVersion": "4.2.3.0",
+            "fileVersion": "4.2.3.0"
+          }
+        }
+      },
+      "FlatRedBall.InterpolationCore/2025.4.22.1": {
+        "runtime": {
+          "lib/netstandard2.0/FlatRedBall.InterpolationCore.dll": {
+            "assemblyVersion": "1.1.0.0",
+            "fileVersion": "1.1.0.0"
+          }
+        }
+      },
+      "FreeTypeSharp/3.1.0": {
+        "runtime": {
+          "lib/net9.0/FreeTypeSharp.dll": {
+            "assemblyVersion": "3.1.0.0",
+            "fileVersion": "3.1.0.0"
+          }
+        },
+        "native": {
+          "runtimes/win-x64/native/freetype.dll": {
+            "fileVersion": "2.13.2.0"
+          }
+        }
+      },
+      "HarfBuzzSharp/7.3.0.2": {
+        "dependencies": {
+          "HarfBuzzSharp.NativeAssets.Win32": "7.3.0.2"
+        },
+        "runtime": {
+          "lib/net6.0/HarfBuzzSharp.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "7.3.0.2"
+          }
+        }
+      },
+      "HarfBuzzSharp.NativeAssets.Win32/7.3.0.2": {
+        "native": {
+          "runtimes/win-x64/native/libHarfBuzzSharp.dll": {
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "KernSmith/0.21.0": {
+        "dependencies": {
+          "StbImageSharp": "2.30.15",
+          "StbImageWriteSharp": "1.16.7"
+        },
+        "runtime": {
+          "lib/net10.0/KernSmith.dll": {
+            "assemblyVersion": "0.21.0.0",
+            "fileVersion": "0.21.0.0"
+          }
+        }
+      },
+      "KernSmith.Rasterizers.FreeType/0.21.0": {
+        "dependencies": {
+          "FreeTypeSharp": "3.1.0",
+          "KernSmith": "0.21.0"
+        },
+        "runtime": {
+          "lib/net10.0/KernSmith.Rasterizers.FreeType.dll": {
+            "assemblyVersion": "0.21.0.0",
+            "fileVersion": "0.21.0.0"
+          }
+        }
+      },
+      "Microsoft.CodeAnalysis.Common/4.12.0": {
+        "runtime": {
+          "lib/net8.0/Microsoft.CodeAnalysis.dll": {
+            "assemblyVersion": "4.12.0.0",
+            "fileVersion": "4.1200.24.57207"
+          }
+        },
+        "resources": {
+          "lib/net8.0/cs/Microsoft.CodeAnalysis.resources.dll": {
+            "locale": "cs"
+          },
+          "lib/net8.0/de/Microsoft.CodeAnalysis.resources.dll": {
+            "locale": "de"
+          },
+          "lib/net8.0/es/Microsoft.CodeAnalysis.resources.dll": {
+            "locale": "es"
+          },
+          "lib/net8.0/fr/Microsoft.CodeAnalysis.resources.dll": {
+            "locale": "fr"
+          },
+          "lib/net8.0/it/Microsoft.CodeAnalysis.resources.dll": {
+            "locale": "it"
+          },
+          "lib/net8.0/ja/Microsoft.CodeAnalysis.resources.dll": {
+            "locale": "ja"
+          },
+          "lib/net8.0/ko/Microsoft.CodeAnalysis.resources.dll": {
+            "locale": "ko"
+          },
+          "lib/net8.0/pl/Microsoft.CodeAnalysis.resources.dll": {
+            "locale": "pl"
+          },
+          "lib/net8.0/pt-BR/Microsoft.CodeAnalysis.resources.dll": {
+            "locale": "pt-BR"
+          },
+          "lib/net8.0/ru/Microsoft.CodeAnalysis.resources.dll": {
+            "locale": "ru"
+          },
+          "lib/net8.0/tr/Microsoft.CodeAnalysis.resources.dll": {
+            "locale": "tr"
+          },
+          "lib/net8.0/zh-Hans/Microsoft.CodeAnalysis.resources.dll": {
+            "locale": "zh-Hans"
+          },
+          "lib/net8.0/zh-Hant/Microsoft.CodeAnalysis.resources.dll": {
+            "locale": "zh-Hant"
+          }
+        }
+      },
+      "Microsoft.CodeAnalysis.CSharp/4.12.0": {
+        "dependencies": {
+          "Microsoft.CodeAnalysis.Common": "4.12.0"
+        },
+        "runtime": {
+          "lib/net8.0/Microsoft.CodeAnalysis.CSharp.dll": {
+            "assemblyVersion": "4.12.0.0",
+            "fileVersion": "4.1200.24.57207"
+          }
+        },
+        "resources": {
+          "lib/net8.0/cs/Microsoft.CodeAnalysis.CSharp.resources.dll": {
+            "locale": "cs"
+          },
+          "lib/net8.0/de/Microsoft.CodeAnalysis.CSharp.resources.dll": {
+            "locale": "de"
+          },
+          "lib/net8.0/es/Microsoft.CodeAnalysis.CSharp.resources.dll": {
+            "locale": "es"
+          },
+          "lib/net8.0/fr/Microsoft.CodeAnalysis.CSharp.resources.dll": {
+            "locale": "fr"
+          },
+          "lib/net8.0/it/Microsoft.CodeAnalysis.CSharp.resources.dll": {
+            "locale": "it"
+          },
+          "lib/net8.0/ja/Microsoft.CodeAnalysis.CSharp.resources.dll": {
+            "locale": "ja"
+          },
+          "lib/net8.0/ko/Microsoft.CodeAnalysis.CSharp.resources.dll": {
+            "locale": "ko"
+          },
+          "lib/net8.0/pl/Microsoft.CodeAnalysis.CSharp.resources.dll": {
+            "locale": "pl"
+          },
+          "lib/net8.0/pt-BR/Microsoft.CodeAnalysis.CSharp.resources.dll": {
+            "locale": "pt-BR"
+          },
+          "lib/net8.0/ru/Microsoft.CodeAnalysis.CSharp.resources.dll": {
+            "locale": "ru"
+          },
+          "lib/net8.0/tr/Microsoft.CodeAnalysis.CSharp.resources.dll": {
+            "locale": "tr"
+          },
+          "lib/net8.0/zh-Hans/Microsoft.CodeAnalysis.CSharp.resources.dll": {
+            "locale": "zh-Hans"
+          },
+          "lib/net8.0/zh-Hant/Microsoft.CodeAnalysis.CSharp.resources.dll": {
+            "locale": "zh-Hant"
+          }
+        }
+      },
+      "Microsoft.Extensions.DependencyInjection.Abstractions/7.0.0": {
+        "runtime": {
+          "lib/net7.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll": {
+            "assemblyVersion": "7.0.0.0",
+            "fileVersion": "7.0.22.51805"
+          }
+        }
+      },
+      "MonoGame.Extended/5.3.1": {
+        "runtime": {
+          "lib/net8.0/MonoGame.Extended.dll": {
+            "assemblyVersion": "5.3.1.0",
+            "fileVersion": "5.3.1.0"
+          }
+        }
+      },
+      "MonoGame.Framework.DesktopGL/3.8.4.1": {
+        "dependencies": {
+          "MonoGame.Library.OpenAL": "1.24.3.2",
+          "MonoGame.Library.SDL": "2.32.2.1",
+          "NVorbis": "0.10.4"
+        },
+        "runtime": {
+          "lib/net8.0/MonoGame.Framework.dll": {
+            "assemblyVersion": "3.8.4.1",
+            "fileVersion": "3.8.4.1"
+          }
+        }
+      },
+      "MonoGame.Library.OpenAL/1.24.3.2": {
+        "native": {
+          "runtimes/win-x64/native/openal.dll": {
+            "fileVersion": "1.24.3.0"
+          }
+        }
+      },
+      "MonoGame.Library.SDL/2.32.2.1": {
+        "native": {
+          "runtimes/win-x64/native/SDL2.dll": {
+            "fileVersion": "2.32.2.0"
+          }
+        }
+      },
+      "Newtonsoft.Json/13.0.1": {
+        "runtime": {
+          "lib/netstandard2.0/Newtonsoft.Json.dll": {
+            "assemblyVersion": "13.0.0.0",
+            "fileVersion": "13.0.1.25517"
+          }
+        }
+      },
+      "NVorbis/0.10.4": {
+        "runtime": {
+          "lib/netstandard2.0/NVorbis.dll": {
+            "assemblyVersion": "0.10.4.0",
+            "fileVersion": "0.10.4.0"
+          }
+        }
+      },
+      "Raylib-cs/8.0.0": {
+        "runtime": {
+          "lib/net10.0/Raylib-cs.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        },
+        "native": {
+          "runtimes/win-x64/native/raylib.dll": {
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "SharpCompress/0.48.0": {
+        "runtime": {
+          "lib/net10.0/SharpCompress.dll": {
+            "assemblyVersion": "0.48.0.0",
+            "fileVersion": "0.48.0.0"
+          }
+        }
+      },
+      "ShimSkiaSharp/1.0.0.19": {
+        "runtime": {
+          "lib/net8.0/ShimSkiaSharp.dll": {
+            "assemblyVersion": "1.0.0.19",
+            "fileVersion": "1.0.0.19"
+          }
+        }
+      },
+      "SkiaSharp/3.119.1": {
+        "dependencies": {
+          "SkiaSharp.NativeAssets.Win32": "3.119.1"
+        },
+        "runtime": {
+          "lib/net8.0/SkiaSharp.dll": {
+            "assemblyVersion": "3.119.0.0",
+            "fileVersion": "3.119.1.0"
+          }
+        }
+      },
+      "SkiaSharp.Extended/3.0.0": {
+        "dependencies": {
+          "SkiaSharp": "3.119.1"
+        },
+        "runtime": {
+          "lib/net9.0/SkiaSharp.Extended.dll": {
+            "assemblyVersion": "2.0.0.0",
+            "fileVersion": "2.0.0.0"
+          }
+        }
+      },
+      "SkiaSharp.HarfBuzz/2.88.8": {
+        "dependencies": {
+          "HarfBuzzSharp": "7.3.0.2",
+          "SkiaSharp": "3.119.1"
+        },
+        "runtime": {
+          "lib/net6.0/SkiaSharp.HarfBuzz.dll": {
+            "assemblyVersion": "2.88.0.0",
+            "fileVersion": "2.88.8.0"
+          }
+        }
+      },
+      "SkiaSharp.NativeAssets.Win32/3.119.1": {
+        "native": {
+          "runtimes/win-x64/native/libSkiaSharp.dll": {
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "SkiaSharp.Resources/3.119.1": {
+        "dependencies": {
+          "SkiaSharp": "3.119.1"
+        },
+        "runtime": {
+          "lib/net8.0/SkiaSharp.Resources.dll": {
+            "assemblyVersion": "3.119.0.0",
+            "fileVersion": "3.119.1.0"
+          }
+        }
+      },
+      "SkiaSharp.SceneGraph/3.119.1": {
+        "dependencies": {
+          "SkiaSharp": "3.119.1"
+        },
+        "runtime": {
+          "lib/net8.0/SkiaSharp.SceneGraph.dll": {
+            "assemblyVersion": "3.119.0.0",
+            "fileVersion": "3.119.1.0"
+          }
+        }
+      },
+      "SkiaSharp.Skottie/3.119.1": {
+        "dependencies": {
+          "SkiaSharp": "3.119.1",
+          "SkiaSharp.Resources": "3.119.1",
+          "SkiaSharp.SceneGraph": "3.119.1"
+        },
+        "runtime": {
+          "lib/net8.0/SkiaSharp.Skottie.dll": {
+            "assemblyVersion": "3.119.0.0",
+            "fileVersion": "3.119.1.0"
+          }
+        }
+      },
+      "StbImageSharp/2.30.15": {
+        "runtime": {
+          "lib/netstandard2.0/StbImageSharp.dll": {
+            "assemblyVersion": "2.30.15.0",
+            "fileVersion": "2.30.15.0"
+          }
+        }
+      },
+      "StbImageWriteSharp/1.16.7": {
+        "runtime": {
+          "lib/netstandard2.0/StbImageWriteSharp.dll": {
+            "assemblyVersion": "1.16.7.0",
+            "fileVersion": "1.16.7.0"
+          }
+        }
+      },
+      "StbTrueTypeSharp/1.26.12": {
+        "runtime": {
+          "lib/netstandard2.0/StbTrueTypeSharp.dll": {
+            "assemblyVersion": "1.26.12.0",
+            "fileVersion": "1.26.12.0"
+          }
+        }
+      },
+      "Svg.Custom/1.0.0.19": {
+        "dependencies": {
+          "ExCSS": "4.2.3"
+        },
+        "runtime": {
+          "lib/net8.0/Svg.Custom.dll": {
+            "assemblyVersion": "1.0.0.19",
+            "fileVersion": "1.0.0.19"
+          }
+        }
+      },
+      "Svg.Model/1.0.0.19": {
+        "dependencies": {
+          "ShimSkiaSharp": "1.0.0.19",
+          "Svg.Custom": "1.0.0.19"
+        },
+        "runtime": {
+          "lib/net8.0/Svg.Model.dll": {
+            "assemblyVersion": "1.0.0.19",
+            "fileVersion": "1.0.0.19"
+          }
+        }
+      },
+      "Svg.Skia/1.0.0.19": {
+        "dependencies": {
+          "SkiaSharp": "3.119.1",
+          "SkiaSharp.HarfBuzz": "2.88.8",
+          "Svg.Custom": "1.0.0.19",
+          "Svg.Model": "1.0.0.19"
+        },
+        "runtime": {
+          "lib/net8.0/Svg.Skia.dll": {
+            "assemblyVersion": "1.0.0.19",
+            "fileVersion": "1.0.0.19"
+          }
+        }
+      },
+      "System.CommandLine/2.0.0-beta4.22272.1": {
+        "runtime": {
+          "lib/net6.0/System.CommandLine.dll": {
+            "assemblyVersion": "2.0.0.0",
+            "fileVersion": "2.0.22.27201"
+          }
+        },
+        "resources": {
+          "lib/net6.0/cs/System.CommandLine.resources.dll": {
+            "locale": "cs"
+          },
+          "lib/net6.0/de/System.CommandLine.resources.dll": {
+            "locale": "de"
+          },
+          "lib/net6.0/es/System.CommandLine.resources.dll": {
+            "locale": "es"
+          },
+          "lib/net6.0/fr/System.CommandLine.resources.dll": {
+            "locale": "fr"
+          },
+          "lib/net6.0/it/System.CommandLine.resources.dll": {
+            "locale": "it"
+          },
+          "lib/net6.0/ja/System.CommandLine.resources.dll": {
+            "locale": "ja"
+          },
+          "lib/net6.0/ko/System.CommandLine.resources.dll": {
+            "locale": "ko"
+          },
+          "lib/net6.0/pl/System.CommandLine.resources.dll": {
+            "locale": "pl"
+          },
+          "lib/net6.0/pt-BR/System.CommandLine.resources.dll": {
+            "locale": "pt-BR"
+          },
+          "lib/net6.0/ru/System.CommandLine.resources.dll": {
+            "locale": "ru"
+          },
+          "lib/net6.0/tr/System.CommandLine.resources.dll": {
+            "locale": "tr"
+          },
+          "lib/net6.0/zh-Hans/System.CommandLine.resources.dll": {
+            "locale": "zh-Hans"
+          },
+          "lib/net6.0/zh-Hant/System.CommandLine.resources.dll": {
+            "locale": "zh-Hant"
+          }
+        }
+      },
+      "System.Reflection.MetadataLoadContext/10.0.5": {
+        "runtime": {
+          "lib/net10.0/System.Reflection.MetadataLoadContext.dll": {
+            "assemblyVersion": "10.0.0.5",
+            "fileVersion": "10.0.526.15411"
+          }
+        }
+      },
+      "TextCopy/6.2.1": {
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "7.0.0"
+        },
+        "runtime": {
+          "lib/net6.0/TextCopy.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Topten.RichTextKit/0.4.167-gumfix.1": {
+        "dependencies": {
+          "SkiaSharp": "3.119.1",
+          "SkiaSharp.HarfBuzz": "2.88.8"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Topten.RichTextKit.dll": {
+            "assemblyVersion": "0.4.167.0",
+            "fileVersion": "0.4.167.0"
+          }
+        }
+      },
+      "FlatRedBall.GumCommon/2026.9.23": {
+        "dependencies": {
+          "BrotliSharpLib": "0.3.3",
+          "CsvHelper": "33.1.0",
+          "FlatRedBall.InterpolationCore": "2025.4.22.1",
+          "SharpCompress": "0.48.0"
+        },
+        "runtime": {
+          "GumCommon.dll": {
+            "assemblyVersion": "2026.9.23.0",
+            "fileVersion": "2026.9.23.0"
+          }
+        }
+      },
+      "Gum.Expressions/2026.9.23": {
+        "dependencies": {
+          "FlatRedBall.GumCommon": "2026.9.23",
+          "Microsoft.CodeAnalysis.CSharp": "4.12.0"
+        },
+        "runtime": {
+          "GumExpressions.dll": {
+            "assemblyVersion": "2026.9.23.0",
+            "fileVersion": "2026.9.23.0"
+          }
+        }
+      },
+      "Gum.ImageDiff/2026.9.23": {
+        "dependencies": {
+          "SkiaSharp": "3.119.1"
+        },
+        "runtime": {
+          "Gum.ImageDiff.dll": {
+            "assemblyVersion": "2026.9.23.0",
+            "fileVersion": "2026.9.23.0"
+          }
+        }
+      },
+      "Gum.MonoGame/2026.9.23": {
+        "dependencies": {
+          "FlatRedBall.GumCommon": "2026.9.23",
+          "TextCopy": "6.2.1"
+        },
+        "runtime": {
+          "MonoGameGum.dll": {
+            "assemblyVersion": "2026.9.23.0",
+            "fileVersion": "2026.9.23.0"
+          }
+        }
+      },
+      "Gum.ProjectServices/2026.9.23": {
+        "dependencies": {
+          "FlatRedBall.GumCommon": "2026.9.23",
+          "Gum.ImageDiff": "2026.9.23",
+          "KernSmith": "0.21.0",
+          "KernSmith.Rasterizers.FreeType": "0.21.0",
+          "Newtonsoft.Json": "13.0.1",
+          "System.Reflection.MetadataLoadContext": "10.0.5"
+        },
+        "runtime": {
+          "Gum.ProjectServices.dll": {
+            "assemblyVersion": "2026.9.23.0",
+            "fileVersion": "2026.9.23.0"
+          }
+        }
+      },
+      "Gum.ProjectServices.MonoGame/2026.9.23": {
+        "dependencies": {
+          "Gum.MonoGame": "2026.9.23",
+          "Gum.ProjectServices": "2026.9.23",
+          "Gum.Shapes.MonoGame": "2026.9.23",
+          "MonoGame.Framework.DesktopGL": "3.8.4.1"
+        },
+        "runtime": {
+          "Gum.ProjectServices.MonoGame.dll": {
+            "assemblyVersion": "2026.9.23.0",
+            "fileVersion": "2026.9.23.0"
+          }
+        }
+      },
+      "Gum.ProjectServices.Raylib/2026.9.23": {
+        "dependencies": {
+          "Gum.ProjectServices": "2026.9.23",
+          "Gum.raylib": "2026.9.23",
+          "Raylib-cs": "8.0.0"
+        },
+        "runtime": {
+          "Gum.ProjectServices.Raylib.dll": {
+            "assemblyVersion": "2026.9.23.0",
+            "fileVersion": "2026.9.23.0"
+          }
+        }
+      },
+      "Gum.ProjectServices.SkiaGum/2026.9.23": {
+        "dependencies": {
+          "Gum.ProjectServices": "2026.9.23",
+          "Gum.SkiaSharp.Standalone": "2026.9.23"
+        },
+        "runtime": {
+          "Gum.ProjectServices.SkiaGum.dll": {
+            "assemblyVersion": "2026.9.23.0",
+            "fileVersion": "2026.9.23.0"
+          }
+        }
+      },
+      "Gum.raylib/2026.9.23": {
+        "dependencies": {
+          "FlatRedBall.GumCommon": "2026.9.23",
+          "Raylib-cs": "8.0.0",
+          "TextCopy": "6.2.1"
+        },
+        "runtime": {
+          "RaylibGum.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "Gum.Shapes.MonoGame/2026.9.23": {
+        "dependencies": {
+          "Apos.Shapes": "0.8.1",
+          "Gum.MonoGame": "2026.9.23"
+        },
+        "runtime": {
+          "MonoGameGumShapes.dll": {
+            "assemblyVersion": "2026.9.23.0",
+            "fileVersion": "2026.9.23.0"
+          }
+        }
+      },
+      "Gum.SkiaSharp/2026.9.23": {
+        "dependencies": {
+          "FlatRedBall.GumCommon": "2026.9.23",
+          "SkiaSharp": "3.119.1",
+          "SkiaSharp.Extended": "3.0.0",
+          "SkiaSharp.Skottie": "3.119.1",
+          "Svg.Skia": "1.0.0.19",
+          "Topten.RichTextKit": "0.4.167-gumfix.1"
+        },
+        "runtime": {
+          "SkiaGum.dll": {
+            "assemblyVersion": "2026.9.23.0",
+            "fileVersion": "2026.9.23.0"
+          }
+        }
+      },
+      "Gum.SkiaSharp.Standalone/2026.9.23": {
+        "dependencies": {
+          "Gum.SkiaSharp": "2026.9.23"
+        },
+        "runtime": {
+          "SkiaGum.Standalone.dll": {
+            "assemblyVersion": "2026.9.23.0",
+            "fileVersion": "2026.9.23.0"
+          }
+        }
+      },
+      "GumCommon/2026.9.23.0": {
+        "runtime": {
+          "GumCommon.dll": {
+            "assemblyVersion": "2026.9.23.0",
+            "fileVersion": "2026.9.23.0"
+          }
+        }
+      },
+      "GumExpressions/2026.9.23.0": {
+        "runtime": {
+          "GumExpressions.dll": {
+            "assemblyVersion": "2026.9.23.0",
+            "fileVersion": "2026.9.23.0"
+          }
+        }
+      },
+      "MonoGameGum/2026.9.23.0": {
+        "runtime": {
+          "MonoGameGum.dll": {
+            "assemblyVersion": "2026.9.23.0",
+            "fileVersion": "2026.9.23.0"
+          }
+        }
+      },
+      "MonoGameGumShapes/2026.9.23.0": {
+        "runtime": {
+          "MonoGameGumShapes.dll": {
+            "assemblyVersion": "2026.9.23.0",
+            "fileVersion": "2026.9.23.0"
+          }
+        }
+      },
+      "RaylibGum/0.0.0.0": {
+        "runtime": {
+          "RaylibGum.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "SkiaGum/2026.9.23.0": {
+        "runtime": {
+          "SkiaGum.dll": {
+            "assemblyVersion": "2026.9.23.0",
+            "fileVersion": "2026.9.23.0"
+          }
+        }
+      },
+      "SkiaGum.Standalone/2026.9.23.0": {
+        "runtime": {
+          "SkiaGum.Standalone.dll": {
+            "assemblyVersion": "2026.9.23.0",
+            "fileVersion": "2026.9.23.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "gumcli/2026.09.23": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Apos.Shapes/0.8.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-F8rc8K91oUnL6DpZLb/RImPVXNMBQYx7dFlEYLZNcdwNNNRynOOHqW/miqNXe2lsKGPUJj2EtObbDdHU3N/tzQ==",
+      "path": "apos.shapes/0.8.1",
+      "hashPath": "apos.shapes.0.8.1.nupkg.sha512"
+    },
+    "BrotliSharpLib/0.3.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-/z74VNg6etlQK/N1mSD5Tz2qQUZqc3RMiuv2F8Q/MOfvg4l7a6lDYhQQTPd9s9saSokh1GqUD7JTuunOiQid8w==",
+      "path": "brotlisharplib/0.3.3",
+      "hashPath": "brotlisharplib.0.3.3.nupkg.sha512"
+    },
+    "CsvHelper/33.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-kqfTOZGrn7NarNeXgjh86JcpTHUoeQDMB8t9NVa/ZtlSYiV1rxfRnQ49WaJsob4AiGrbK0XDzpyKkBwai4F8eg==",
+      "path": "csvhelper/33.1.0",
+      "hashPath": "csvhelper.33.1.0.nupkg.sha512"
+    },
+    "ExCSS/4.2.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-SyeAfu2wL5247sipJoPUzQfjiwQtfSd8hN4IbgoyVcDx4PP6Dud4znwPRibWQzLtTlUxYYcbf5f4p+EfFC7KtQ==",
+      "path": "excss/4.2.3",
+      "hashPath": "excss.4.2.3.nupkg.sha512"
+    },
+    "FlatRedBall.InterpolationCore/2025.4.22.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-x95teSPBlV88KKbivY+peQ8AjqfXFgmGFnHw4Adds8UaO81zJKZAZZrXeetp5K+5mgd4t2hdtW4ItBFJ7ZwWig==",
+      "path": "flatredball.interpolationcore/2025.4.22.1",
+      "hashPath": "flatredball.interpolationcore.2025.4.22.1.nupkg.sha512"
+    },
+    "FreeTypeSharp/3.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-w0pPUztBFVokuvML8G55SM1HeycyzQQqC/NV3rWdyGOPi/rtVm1vE6UAQ7v4VYzVWoP59KM8O56qH89zJY5T+g==",
+      "path": "freetypesharp/3.1.0",
+      "hashPath": "freetypesharp.3.1.0.nupkg.sha512"
+    },
+    "HarfBuzzSharp/7.3.0.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-0tCd6HyCmNsX/DniCp2b00fo0xPbdNwKOs9BxxyT8oOOuMlWjcSFwzONKyeckCKVBFEsbSmsAHPDTqxoSDwZMg==",
+      "path": "harfbuzzsharp/7.3.0.2",
+      "hashPath": "harfbuzzsharp.7.3.0.2.nupkg.sha512"
+    },
+    "HarfBuzzSharp.NativeAssets.Win32/7.3.0.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-DpF9JBzwws2dupOLnjME65hxQWWbN/GD40AoTkwB4S05WANvxo3n81AnQJKxWDCnrWfWhLPB36OF27TvEqzb/A==",
+      "path": "harfbuzzsharp.nativeassets.win32/7.3.0.2",
+      "hashPath": "harfbuzzsharp.nativeassets.win32.7.3.0.2.nupkg.sha512"
+    },
+    "KernSmith/0.21.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-LvKHG9KaBXUC5DVqAiKlTPs7Wp+tXnMTuwYUdCDKqauu5OcBsPpHQLYrKX1UuC8GjYGADCjRbkwlmpBDCie2ng==",
+      "path": "kernsmith/0.21.0",
+      "hashPath": "kernsmith.0.21.0.nupkg.sha512"
+    },
+    "KernSmith.Rasterizers.FreeType/0.21.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-5O7p21LhHxrOwBXsYhaZfRHEfb4Eg0Jn24a3zj1ryCQPzkQ2ix7h+7zvibftJKXgC3xdPjyJ+57weeOalrxAEQ==",
+      "path": "kernsmith.rasterizers.freetype/0.21.0",
+      "hashPath": "kernsmith.rasterizers.freetype.0.21.0.nupkg.sha512"
+    },
+    "Microsoft.CodeAnalysis.Common/4.12.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-c1kNYihL2gdcuU1dqm8R8YeA4YkB43TpU3pa2r66Uooh6AAhRtENzj9A4Kj0a+H8JDDyuTjNZql9XlVUzV+UjA==",
+      "path": "microsoft.codeanalysis.common/4.12.0",
+      "hashPath": "microsoft.codeanalysis.common.4.12.0.nupkg.sha512"
+    },
+    "Microsoft.CodeAnalysis.CSharp/4.12.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-30vVQ1MizeC22iEdEvI2w0eTIYG43/L20yBzuQH01xKzJgHAoWehzI2F8u07o4mXh4DGMOjQF7aEm0zzvsG3Mg==",
+      "path": "microsoft.codeanalysis.csharp/4.12.0",
+      "hashPath": "microsoft.codeanalysis.csharp.4.12.0.nupkg.sha512"
+    },
+    "Microsoft.Extensions.DependencyInjection.Abstractions/7.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-h3j/QfmFN4S0w4C2A6X7arXij/M/OVw3uQHSOFxnND4DyAzO1F9eMX7Eti7lU/OkSthEE0WzRsfT/Dmx86jzCw==",
+      "path": "microsoft.extensions.dependencyinjection.abstractions/7.0.0",
+      "hashPath": "microsoft.extensions.dependencyinjection.abstractions.7.0.0.nupkg.sha512"
+    },
+    "MonoGame.Extended/5.3.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-/61Jvhpr9fogQEma3/DWrxMEt5SGsq5H48WrISi2e2lb9J4j+xF6DOl+MkMxZcDHiVVN/noOfyTTirdqCGbm3g==",
+      "path": "monogame.extended/5.3.1",
+      "hashPath": "monogame.extended.5.3.1.nupkg.sha512"
+    },
+    "MonoGame.Framework.DesktopGL/3.8.4.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-YybxIIT5+Ky78E/XdkS0glyluMr2EeDZwx2LqXULAOCqiKt1+aDrjPZaqLL5qpNgBcMEHUeZJ4YjWe4TAZlWLw==",
+      "path": "monogame.framework.desktopgl/3.8.4.1",
+      "hashPath": "monogame.framework.desktopgl.3.8.4.1.nupkg.sha512"
+    },
+    "MonoGame.Library.OpenAL/1.24.3.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-nGRsXQXs+NSUC3C5w90hFQfyKdZPpBnHnyg2w+Dw/2pUH7s+CoRWTJNYbzzdJf3+aeUvfvG4rTbFvMKDDj5olA==",
+      "path": "monogame.library.openal/1.24.3.2",
+      "hashPath": "monogame.library.openal.1.24.3.2.nupkg.sha512"
+    },
+    "MonoGame.Library.SDL/2.32.2.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-T4E2ppGlSTC2L9US1rxtdg3qTbarRzNId31xZoumUW9cf9Nq8nRQPMu9GzvZGrhfSySf0+UWPEj1rlicps+P/w==",
+      "path": "monogame.library.sdl/2.32.2.1",
+      "hashPath": "monogame.library.sdl.2.32.2.1.nupkg.sha512"
+    },
+    "Newtonsoft.Json/13.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-ppPFpBcvxdsfUonNcvITKqLl3bqxWbDCZIzDWHzjpdAHRFfZe0Dw9HmA0+za13IdyrgJwpkDTDA9fHaxOrt20A==",
+      "path": "newtonsoft.json/13.0.1",
+      "hashPath": "newtonsoft.json.13.0.1.nupkg.sha512"
+    },
+    "NVorbis/0.10.4": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-WYnil3DhQHzjCY0dM9I2B3r1vWip90AOuQd25KE4NrjPQBg0tBJFluRLm5YPnO5ZLDmwrfosY8jCQGQRmWI/Pg==",
+      "path": "nvorbis/0.10.4",
+      "hashPath": "nvorbis.0.10.4.nupkg.sha512"
+    },
+    "Raylib-cs/8.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-m+fStTZjOGtkx05RNflERtKbmEUrIZ5/PFV5QXnlA02kAEwxxOC+XhNeCSZJhaGHu9d8m0eTMmefRhHueS3hkg==",
+      "path": "raylib-cs/8.0.0",
+      "hashPath": "raylib-cs.8.0.0.nupkg.sha512"
+    },
+    "SharpCompress/0.48.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-6k0Sa9gf85Sz9Npy7jnn5UPerejrAa3FxU9Gq5T6PwFWHUhUIdF903TjPiJtrYjXFJsXbnccaWSNMHzEg27DwQ==",
+      "path": "sharpcompress/0.48.0",
+      "hashPath": "sharpcompress.0.48.0.nupkg.sha512"
+    },
+    "ShimSkiaSharp/1.0.0.19": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-4Cgrd+PeHKVMR1hg2a0rF9cApxCl6xFggiNV4pIwAiT+1/mDK03N1X8353eX/7p0/eUpk7NwwMy/HryOSvHifw==",
+      "path": "shimskiasharp/1.0.0.19",
+      "hashPath": "shimskiasharp.1.0.0.19.nupkg.sha512"
+    },
+    "SkiaSharp/3.119.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-+Ru1BTSZQne3Vp+vbSb50Ke3Nlc3ZnItxx4+751J9WZ8YzLKAV/n+9DAo4zFTyeCI//ueT63c+VybmTTpYBEiw==",
+      "path": "skiasharp/3.119.1",
+      "hashPath": "skiasharp.3.119.1.nupkg.sha512"
+    },
+    "SkiaSharp.Extended/3.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-XEo9C8pRDQ8Kd/4UAJF4b3KBXmstuQfo2aRcczdeEwjOy3669kXQsey/fquT4b245Uvk87rfa3U+NfVJ7bOXgw==",
+      "path": "skiasharp.extended/3.0.0",
+      "hashPath": "skiasharp.extended.3.0.0.nupkg.sha512"
+    },
+    "SkiaSharp.HarfBuzz/2.88.8": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-ajSyJ2D17R0kZ4FwKwFrJTsYs3D3Y9iRBLhNecROR7dOxC6VTFaMPXJuwQB8KYpAqgmb2JAJFEgZ3i8MaaIw1g==",
+      "path": "skiasharp.harfbuzz/2.88.8",
+      "hashPath": "skiasharp.harfbuzz.2.88.8.nupkg.sha512"
+    },
+    "SkiaSharp.NativeAssets.Win32/3.119.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-8C4GSXVJqSr0y3Tyyv5jz6MJSTVUyYkMjeKrzK+VyZPGLo89MNoUEclVuYahzOCDdtbfXrd2HtxXfDuvoSXrUw==",
+      "path": "skiasharp.nativeassets.win32/3.119.1",
+      "hashPath": "skiasharp.nativeassets.win32.3.119.1.nupkg.sha512"
+    },
+    "SkiaSharp.Resources/3.119.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-V552O+msolysaFPhBctyAQcm8E0bPPuX96q2sH+bDxJQGWVjWhH8P9e1g2/4crYWem69uEUMelRRyfdb4KtebQ==",
+      "path": "skiasharp.resources/3.119.1",
+      "hashPath": "skiasharp.resources.3.119.1.nupkg.sha512"
+    },
+    "SkiaSharp.SceneGraph/3.119.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-nGnSenAwNMpB2E4Z91pNmgSm/VHzpF42Egivz6heMoK5u7sI+AA+88JhIO0R8uU0RilZuFA76VJ7FFKydV3fFw==",
+      "path": "skiasharp.scenegraph/3.119.1",
+      "hashPath": "skiasharp.scenegraph.3.119.1.nupkg.sha512"
+    },
+    "SkiaSharp.Skottie/3.119.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-+EiSMWSzxW6eUW6T2V+oeMfLv2l2OWVxxO7XnaSEtbU5jrsvxv7CFGCUZItMvqTH9N3bBCl+21AojcZ4z8TX3A==",
+      "path": "skiasharp.skottie/3.119.1",
+      "hashPath": "skiasharp.skottie.3.119.1.nupkg.sha512"
+    },
+    "StbImageSharp/2.30.15": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-7QqbupVhz2kcFUPTgMw4iHR9rYDHGundzzee19Mwmd1typ2Lnv8EVJcLJxlkeBM2+4ex0NwsMtdbGSJctp1XCQ==",
+      "path": "stbimagesharp/2.30.15",
+      "hashPath": "stbimagesharp.2.30.15.nupkg.sha512"
+    },
+    "StbImageWriteSharp/1.16.7": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-NF9kOxi0iS9VunklnRKgOpAWC2knCGKRjdy7RT6XAqYNyb7LQfyPHPdl4l1fJw7TFYKrGQzQOmK1XpBONC2MoA==",
+      "path": "stbimagewritesharp/1.16.7",
+      "hashPath": "stbimagewritesharp.1.16.7.nupkg.sha512"
+    },
+    "StbTrueTypeSharp/1.26.12": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-hCc6/OsfcPa5VsLECcEU2m78WOshBrKwK42nAodSm9Z5wH68f7n66SoiRLCdGCkDaqbWz2TlX4zYHIjogj1HJA==",
+      "path": "stbtruetypesharp/1.26.12",
+      "hashPath": "stbtruetypesharp.1.26.12.nupkg.sha512"
+    },
+    "Svg.Custom/1.0.0.19": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-cbYUNDlaXWzCuJaZ+9HPkImxH7Gk/s1j9ymy+/NWjjrPQW0xqnCsb29wtWGfd97efOsWpN9FUxBeMIh9voiT0A==",
+      "path": "svg.custom/1.0.0.19",
+      "hashPath": "svg.custom.1.0.0.19.nupkg.sha512"
+    },
+    "Svg.Model/1.0.0.19": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-EiqdQY4oR4rB8B9imU/x6tef/ub8868Xx2Dre9+i6z/KaX1XeQan2BlH7dPVSe/8fALYGauGEMq4ACZE5flvpQ==",
+      "path": "svg.model/1.0.0.19",
+      "hashPath": "svg.model.1.0.0.19.nupkg.sha512"
+    },
+    "Svg.Skia/1.0.0.19": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-sXT3cV1mhRb7emdlBCUjNdQwa2zBQxHKDN4sw3XpXYr4WFZGEWwoGdSQNXRcCB388ExOKgI4GpeJW+VPWzbhCQ==",
+      "path": "svg.skia/1.0.0.19",
+      "hashPath": "svg.skia.1.0.0.19.nupkg.sha512"
+    },
+    "System.CommandLine/2.0.0-beta4.22272.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-1uqED/q2H0kKoLJ4+hI2iPSBSEdTuhfCYADeJrAqERmiGQ2NNacYKRNEQ+gFbU4glgVyK8rxI+ZOe1onEtr/Pg==",
+      "path": "system.commandline/2.0.0-beta4.22272.1",
+      "hashPath": "system.commandline.2.0.0-beta4.22272.1.nupkg.sha512"
+    },
+    "System.Reflection.MetadataLoadContext/10.0.5": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-z9yyFZcuCwtZXrxxDc2nBfB5lTHf96gS/rsD38Lcv6Ok25TOYPjNKlqpTZUqu2HTLPAM4w+/WjGL6gi9cIJO6w==",
+      "path": "system.reflection.metadataloadcontext/10.0.5",
+      "hashPath": "system.reflection.metadataloadcontext.10.0.5.nupkg.sha512"
+    },
+    "TextCopy/6.2.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-ryejViUBmHQ2XMie2AiRBn7KVKu2Gh/hqrctGSAUf1BufwfPjr+MWuACNBaiG+40TMbWRDJZgV73Tpl9hggeRw==",
+      "path": "textcopy/6.2.1",
+      "hashPath": "textcopy.6.2.1.nupkg.sha512"
+    },
+    "Topten.RichTextKit/0.4.167-gumfix.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-p8j8si+wtYh0xLjowDDRazeczspbxB79uVLgksbD4ac2uRo5U/pxi9q66utPJh+kDGGPsWff7tcsRIAcxYo+/A==",
+      "path": "topten.richtextkit/0.4.167-gumfix.1",
+      "hashPath": "topten.richtextkit.0.4.167-gumfix.1.nupkg.sha512"
+    },
+    "FlatRedBall.GumCommon/2026.9.23": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Gum.Expressions/2026.9.23": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Gum.ImageDiff/2026.9.23": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Gum.MonoGame/2026.9.23": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Gum.ProjectServices/2026.9.23": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Gum.ProjectServices.MonoGame/2026.9.23": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Gum.ProjectServices.Raylib/2026.9.23": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Gum.ProjectServices.SkiaGum/2026.9.23": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Gum.raylib/2026.9.23": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Gum.Shapes.MonoGame/2026.9.23": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Gum.SkiaSharp/2026.9.23": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Gum.SkiaSharp.Standalone/2026.9.23": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "GumCommon/2026.9.23.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "GumExpressions/2026.9.23.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "MonoGameGum/2026.9.23.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "MonoGameGumShapes/2026.9.23.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "RaylibGum/0.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "SkiaGum/2026.9.23.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "SkiaGum.Standalone/2026.9.23.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

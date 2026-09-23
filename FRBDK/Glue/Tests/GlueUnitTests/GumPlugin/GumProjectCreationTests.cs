@@ -93,7 +93,10 @@ public class GumProjectCreationTests : IDisposable
         await creationLogic.CreateGumProjectInternal(shouldAlsoAddForms: false, askToOverwrite: false);
 
         // Real side effect #1: the .gumx (and its standard-element/font-cache siblings) were actually
-        // written to disk by EmbeddedResourceManager.SaveEmptyProject - not just an in-memory object.
+        // written to disk by a real "gumcli new ... --template empty" subprocess spawn
+        // (GumProjectManager.AddNewGumProjectAsync -> GumCliRunner.NewProjectAsync) - not just an
+        // in-memory object, and not the old hand-vendored EmbeddedResourceManager.SaveEmptyProject
+        // template (removed - see issue #2335).
         // (Lands directly under the project's content folder + "GumProject/", not "Content/GumProject/" -
         // GlueState.ContentDirectory is empty for this minimal test .csproj, same as any real project with
         // no explicit content-folder override.)
@@ -121,11 +124,8 @@ public class GumProjectCreationTests : IDisposable
 
         // Real side effect #5: the new project does NOT seed the deprecated ColoredRectangle standard
         // element. Gum deprecated ColoredRectangle in favor of the plain Rectangle standard element
-        // (upstream Gum #2965 phase 2, #2968, #2771) - StandardElementsManager.SeedableStandardTypes no
-        // longer includes it there, but Glue's embedded new-project template was never updated to match
-        // (GitHub issue #1931). Assert both that the loaded project doesn't reference it and that its
-        // backing .gutx file was never written to disk, so this covers both the .gumx template and the
-        // Embedded/EmptyProject/Standards file list in EmbeddedResourceManager.SaveEmptyProject.
+        // (upstream Gum #2965 phase 2, #2968, #2771) - gumcli's own "empty" template (Gum's real,
+        // maintained Default template, not a hand-vendored FRB copy) never included it to begin with.
         Gum.Managers.ObjectFinder.Self.GumProjectSave.StandardElementReferences
             .Any(reference => reference.Name == "ColoredRectangle")
             .ShouldBeFalse();
@@ -145,15 +145,13 @@ public class GumProjectCreationTests : IDisposable
     [Fact]
     public async Task CreateGumProjectInternal_SeedsGumxAtShapeVariableExpansionVersion_WithRectangleFillStrokeVariables()
     {
-        // Issue #1967 - Glue's embedded new-project template was stamped at gumx Version 2
-        // (AttributeVersion), one below the ShapeVariableExpansion (3) version that unlocks Gum's
-        // Rectangle fill/stroke variable family. That meant every Glue-generated .gumx opened in the
-        // standalone Gum Editor showed zero color variables for a Rectangle - Gum's canonical v3 schema
-        // no longer defines legacy Red/Green/Blue/Alpha on Rectangle, and the version gate hid the
-        // replacement Fill*/Stroke* family. This pins the fix: new projects seed at v3+, and the
-        // Rectangle standard element's own .gutx carries the new variables so the Gum Editor's Variable
-        // panel (which merges saved values with the canonical schema) has real data to show, not just an
-        // unlocked but empty category.
+        // Issue #1967 (originally against Glue's old hand-vendored new-project template, stamped at
+        // gumx Version 2/AttributeVersion - one below the ShapeVariableExpansion (3) version that
+        // unlocks Gum's Rectangle fill/stroke variable family). Now that new projects come from
+        // gumcli's own "empty" template (see issue #2335), this pins that gumcli's template still
+        // seeds at v3+ and that the Rectangle standard element's own .gutx carries the new variables,
+        // so the Gum Editor's Variable panel (which merges saved values with the canonical schema) has
+        // real data to show, not just an unlocked but empty category.
         var creationLogic = new NewGumProjectCreationLogic(new GumxPropertiesManager());
 
         await creationLogic.CreateGumProjectInternal(shouldAlsoAddForms: false, askToOverwrite: false);
@@ -177,22 +175,23 @@ public class GumProjectCreationTests : IDisposable
     {
         // Mirrors WizardProjectLogic.HandleAddGum's "with forms" branch (CreateGumProjectWithForms):
         // askToOverwrite is always false there too. shouldAlsoAddForms:true additionally routes through
-        // FormsControlAdder.SaveElements/SaveBehaviors and MainGumPlugin.HandleBuildMissingFonts - the
-        // real external GumProjectFontGenerator.exe spawn PR #1902 left uncovered. That tool is a real,
-        // already-checked-in, headless console app (its own "About" doc: no XNA/window dependency, built
-        // for exactly this "run it from another process" use case) - GlueUnitTests.csproj now mirrors
-        // Glue.exe's own "Plugins/<PluginName>/Tools/..." deployment layout under this test project's
-        // output directory (see the <None Include> item added alongside the GumPlugin ProjectReference),
-        // so the real spawn - not a fake - runs here.
+        // GumFormsAdder.AddFormsToCurrentProjectAsync (issue #2335: a real "gumcli add-forms" subprocess
+        // spawn for GumDefaults2+ projects, replacing the old FormsControlAdder.SaveElements/SaveBehaviors
+        // vendored-template path) and MainGumPlugin.HandleBuildMissingFonts - the real external
+        // GumProjectFontGenerator.exe spawn PR #1902 left uncovered. Both tools are real, already-checked-in,
+        // headless console apps - GlueUnitTests.csproj mirrors Glue.exe's own "Plugins/<PluginName>/Tools/..."
+        // deployment layout under this test project's output directory for each (see the <None Include>
+        // items added alongside the GumPlugin ProjectReference), so the real subprocess spawns - not fakes -
+        // run here.
         GlueTestBootstrap.EnsureGumPluginStandardElementsInitialized();
 
         // Real projects get FileVersion = LatestVersion (ProjectLoader.cs sets this for every new/loaded
-        // project), which routes FormsControlAdder.EmbeddedProjectRoot to "FormsGumProject" (sourced from
-        // Gum's Templates/FormsTemplate, not FRB's own legacy EmbeddedObjectGumProject). Without this, the
-        // constructor's default `new GlueProjectSave()` leaves FileVersion at 0, silently exercising the
-        // legacy fallback path instead of the one every real new project actually takes - which is exactly
-        // how issue #1933 (new Forms-enabled projects missing Button/CheckBox/ComboBox behaviors) slipped
-        // through this test.
+        // project), which routes GumFormsAdder.IsCurrentFormat to true, taking the gumcli add-forms path
+        // (Gum's own Templates/FormsTemplate, not FRB's legacy vendored EmbeddedObjectGumProject). Without
+        // this, the constructor's default `new GlueProjectSave()` leaves FileVersion at 0, silently
+        // exercising the legacy FormsControlAdder fallback path instead of the one every real new project
+        // actually takes - which is exactly how issue #1933 (new Forms-enabled projects missing
+        // Button/CheckBox/ComboBox behaviors) slipped through this test.
         ObjectFinder.Self.GlueProject.FileVersion = GlueProjectSave.LatestVersion;
         var creationLogic = new NewGumProjectCreationLogic(new GumxPropertiesManager());
 
@@ -205,7 +204,7 @@ public class GumProjectCreationTests : IDisposable
         gumRfs.Properties.GetValue<bool>(nameof(global::GumPlugin.ViewModels.GumViewModel.IncludeFormsInComponents)).ShouldBeTrue();
         gumRfs.Properties.GetValue<bool>(nameof(global::GumPlugin.ViewModels.GumViewModel.IncludeComponentToFormsAssociation)).ShouldBeTrue();
 
-        // Real side effect #2: FormsControlAdder.SaveElements actually wrote the default FRB Forms
+        // Real side effect #2: the gumcli add-forms subprocess actually wrote the default FRB Forms
         // .gucx components to disk under the Gum project's Components folder - not just flags flipped on
         // the RFS. The current FormsTemplate offers several Button variants (ButtonStandard, ButtonIcon,
         // ButtonTab, ...) rather than a single plain "Button.gucx" - assert the one FormsControlInfo
@@ -215,13 +214,14 @@ public class GumProjectCreationTests : IDisposable
         buttonGucx.ShouldNotBeEmpty();
 
         // Real side effect #3: those components were also registered into the loaded GumProjectSave itself
-        // (GumPluginCommands.Self.AddComponent), not just written to disk unreferenced.
+        // (GumFormsAdder reloads the project from disk after gumcli add-forms succeeds - see
+        // GumProjectManager.ReloadGumProject), not just written to disk unreferenced.
         Gum.Managers.ObjectFinder.Self.GumProjectSave.ShouldNotBeNull();
         Gum.Managers.ObjectFinder.Self.GumProjectSave!.ComponentReferences
             .Any(reference => reference.Name.EndsWith("ButtonStandard"))
             .ShouldBeTrue();
 
-        // Real side effect #4 (regression pin for #1933): FormsControlAdder.SaveBehaviors wrote every core
+        // Real side effect #4 (regression pin for #1933): the gumcli add-forms subprocess wrote every core
         // Forms behavior to disk under the Gum project's Behaviors folder - not just "some .behx file".
         // Upstream Gum commit dc8a204a3 (#4076) moved these 25 shared behaviors from
         // Templates/FormsTemplate/Behaviors into a new Templates/FormsBehaviors folder; GumPlugin.csproj's
@@ -245,10 +245,10 @@ public class GumProjectCreationTests : IDisposable
         // Real side effect #5: MainGumPlugin.HandleBuildMissingFonts really spawned
         // GumProjectFontGenerator.exe against the newly-created project, and it really generated the fonts
         // the default Forms controls need (e.g. the Text standard element's default Arial fonts) - proven
-        // by real .fnt bitmap-font files landing in the project's FontCache folder. The embedded project
-        // template deliberately ships without any FontCache files (GumPlugin.csproj excludes
-        // "EmbeddedObjectGumProject\FontCache\**" from its embedded resources), so any .fnt file found here
-        // was generated by the real external tool, not copied from a template.
+        // by real .fnt bitmap-font files landing in the project's FontCache folder. gumcli add-forms
+        // deliberately doesn't copy any FontCache files itself (AddFormsToProjectService only copies the
+        // Fonts/ folder - TrueType fonts like LiberationSans - and UISpriteSheet.png), so any .fnt file
+        // found here was generated by the real external tool, not copied from a template.
         var fontCacheDirectory = Path.Combine(_tempProjectDirectory, "GumProject", "FontCache");
         Directory.Exists(fontCacheDirectory).ShouldBeTrue();
         Directory.GetFiles(fontCacheDirectory, "*.fnt", SearchOption.AllDirectories).ShouldNotBeEmpty();
