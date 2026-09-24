@@ -583,7 +583,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         FilePath absoluteExe = TryToGetFilePathFromExtension(textExtension);
                         if ((absoluteExe != "") && absoluteExe?.Exists() == true)
                         {
-                            Process.Start(CreateResolvedAppStartInfo(absoluteExe.FullPath, fileName));
+                            GlueCommands.Self.PrintOutput($"Opening \"{fileName}\" with resolved app: {absoluteExe.FullPath}");
+                            var process = Process.Start(CreateResolvedAppStartInfo(absoluteExe.FullPath, fileName));
+                            if (process == null)
+                            {
+                                GlueCommands.Self.PrintError($"Process.Start returned null for {absoluteExe.FullPath} - the process did not start.");
+                            }
                             return;
                         }
 
@@ -685,7 +690,21 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             FilePath? absoluteExe = null;
             if (GumFileExtensions.Contains(textExtension.ToLower()))
             {
-                absoluteExe = GlueState.Self.GlueExeDirectory +     "../../../../../../Gum/Gum/bin/Debug/Data/Gum.exe";
+                // Gum's editor head moved from the old WinForms/WPF "Gum.exe" to the Avalonia-based
+                // "Gum.Avalonia.exe" (Direction/avalonia-migration) - try the new head's source-build
+                // location first, same "new head, old head, prebuilt" fallback shape as the achx/
+                // AnimationEditor case below.
+                absoluteExe = GlueState.Self.GlueExeDirectory + "../../../../../../Gum/Tool/Gum.Avalonia/bin/Debug/net10.0/Gum.Avalonia.exe";
+
+                if (absoluteExe?.Exists() == false)
+                {
+                    absoluteExe = GlueState.Self.GlueExeDirectory + "Gum/Data/Gum.Avalonia.exe";
+                }
+
+                if (absoluteExe?.Exists() == false)
+                {
+                    absoluteExe = GlueState.Self.GlueExeDirectory + "../../../../../../Gum/Gum/bin/Debug/Data/Gum.exe";
+                }
 
                 if (absoluteExe?.Exists() == false)
                 {
@@ -696,6 +715,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 {
                     absoluteExe = GlueState.Self.GlueExeDirectory + "Gum/Data/Gum.exe";
                 }
+
+                GlueCommands.Self.PrintOutput(absoluteExe?.Exists() == true
+                    ? $"Resolved Gum executable to open .{textExtension}: {absoluteExe.FullPath}"
+                    : $"Could not resolve a Gum executable to open .{textExtension} - none of the candidate Gum.exe/Gum.Avalonia.exe locations exist.");
             }
             if (String.Equals(textExtension, "achx", StringComparison.OrdinalIgnoreCase))
             {
