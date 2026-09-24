@@ -53,4 +53,19 @@
     </None>
   </ItemGroup>
 
+  <!--
+    GumCliRunner (used by GumProjectManager.AddNewGumProjectAsync and GumFormsAdder for GumDefaults2+
+    projects) spawns "Plugins/GumPlugin/Tools/gumcli/gumcli.exe" the same way HandleBuildMissingFonts
+    spawns GumProjectFontGenerator.exe above - mirror that layout here too so
+    GumProjectCreationTests exercises the real gumcli subprocess, not a fake. gumcli.exe is
+    framework-dependent on .NET 10.0 (see issue #2335) - the machine running these tests needs that
+    runtime installed.
+  -->
+  <ItemGroup>
+    <None Include="..\..\GumPlugin\GumPlugin\Tools\gumcli\**\*.*">
+      <Link>Plugins\GumPlugin\Tools\gumcli\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

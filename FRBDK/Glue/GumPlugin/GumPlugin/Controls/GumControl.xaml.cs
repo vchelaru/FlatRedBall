@@ -3,7 +3,6 @@ using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.VSHelpers.Projects;
 using Gum.DataTypes.Behaviors;
-using GumPlugin.DataGeneration;
 using GumPlugin.Managers;
 using GumPlugin.ViewModels;
 using HQ.Util.Unmanaged;
@@ -74,27 +73,26 @@ namespace GumPlugin.Controls
                 GlueCommands.Self.DialogCommands.ShowMessageBox(response.Message);
             }
 
-            var assembly = typeof(FormsControlAdder).Assembly;
-
-            var shouldSave = FormsControlAdder.AskToSaveIfOverwriting(assembly);
-            if(!shouldSave)
-            {
-                response.Succeeded = false;
-            }
-
             if(response.Succeeded)
             {
-                var viewModel = DataContext as GumViewModel;
+                var succeeded = await GumFormsAdder.AddFormsToCurrentProjectAsync(askToOverwrite: true);
 
-                viewModel.IncludeFormsInComponents = true;
-                viewModel.IncludeComponentToFormsAssociation = true;
-                await FormsControlAdder.SaveElements(assembly);
-                await FormsControlAdder.SaveBehaviors(assembly);
+                if (succeeded)
+                {
+                    var viewModel = DataContext as GumViewModel;
+
+                    viewModel.IncludeFormsInComponents = true;
+                    viewModel.IncludeComponentToFormsAssociation = true;
+                }
             }
         }
 
+        // Add Forms Components (only) and Generate Behaviors (only) used to be separate partial
+        // operations against the vendored template. gumcli add-forms is one atomic operation - it
+        // has no partial equivalent - so both buttons now just run the same full add-forms as
+        // HandleAddAllForms (harmless: it only ever adds elements that are missing).
         private async void HandleGenerateBehaviors(object sender, RoutedEventArgs args) =>
-                await FormsControlAdder.SaveBehaviors(typeof(FormsControlAdder).Assembly);
+                await GumFormsAdder.AddFormsToCurrentProjectAsync(askToOverwrite: true);
 
 
         private GeneralResponse GetWhyAddingFormsIsNotSupported(ProjectBase project)
@@ -109,16 +107,8 @@ namespace GumPlugin.Controls
             return response;
         }
 
-        private void HandleAddFormsComponentsClick(object sender, RoutedEventArgs e)
-        {
-            var assembly = typeof(FormsControlAdder).Assembly;
-
-            var shouldSave = FormsControlAdder.AskToSaveIfOverwriting(assembly);
-            if(shouldSave)
-            {
-                _ = FormsControlAdder.SaveElements(assembly);
-            }
-        }
+        private async void HandleAddFormsComponentsClick(object sender, RoutedEventArgs e) =>
+                await GumFormsAdder.AddFormsToCurrentProjectAsync(askToOverwrite: true);
 
         private void RegenerateFontsClicked(object sender, RoutedEventArgs e)
         {

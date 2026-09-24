@@ -1,0 +1,159 @@
+# gumcli
+
+Command-line tool for Gum UI projects. Creates projects, checks for errors, and generates C# code without the Gum editor.
+
+## Commands
+
+### `gumcli new <path> [--template <name>]`
+
+Creates a new Gum project with standard elements and folder structure.
+
+```
+gumcli new MyProject
+gumcli new path/to/MyProject.gumx
+gumcli new MyProject --template forms
+gumcli new MyProject -t empty
+```
+
+- If `<path>` has no `.gumx` extension, creates `<path>/<name>.gumx`
+- `--template` / `-t` selects the project template (default: `forms`)
+
+#### Template: `forms` (default)
+
+Populates the project with the full Forms UI control set:
+
+- All Forms behaviors (Button, CheckBox, ComboBox, ListBox, Slider, TextBox, etc.)
+- All Forms components (controls and element variants)
+- Standard elements and StandardGraphics
+- Demo and keyboard screens
+- `UISpriteSheet.png` and `ProjectCodeSettings.codsj`
+
+#### Template: `empty`
+
+Creates a minimal project with only the standard elements.
+
+- Creates subfolders: Screens, Components, Standards, Behaviors
+- Writes 9 standard elements (Circle, ColoredRectangle, Component, Container, NineSlice, Polygon, Rectangle, Sprite, Text)
+- Copies `ExampleSpriteFrame.png` (default NineSlice texture)
+
+### `gumcli check <project.gumx> [--json]`
+
+Loads a project and reports all errors, including malformed XML in element files, missing referenced files, and semantic errors (invalid base types, missing behavior instances, etc.).
+
+```
+gumcli check MyProject.gumx
+gumcli check MyProject.gumx --json
+```
+
+- Human-readable output by default
+- `--json` outputs a JSON array of `{ element, message, severity }` objects — all error types use this same format
+- Exit code `0` = no errors, `1` = errors found, `2` = project .gumx file could not be loaded
+
+### `gumcli check-references <project.gumx> [--json] [--fix]`
+
+Detects (and optionally fixes) `VariableReferences` rows whose left-hand-side scalars are not materialized into the owning state's `Variables`. This is the inconsistent shape commonly produced by AI agents and hand edits that write the references row without running the propagation Gum normally performs when references are authored interactively.
+
+```
+gumcli check-references MyProject.gumx
+gumcli check-references MyProject.gumx --json
+gumcli check-references MyProject.gumx --fix
+```
+
+- Scans `Screens` and `Components` only — `StandardElements` are skipped because their references commonly evaluate to default values (the save pipeline correctly elides default-valued scalars)
+- `--fix` runs the same propagation the Gum tool performs at author time and saves the affected element files
+- `--json` outputs `[{ element, states[] }]` (or for `--fix`: `{ fixedElements[], stillBroken[] }`)
+- Exit code `0` = clean (or all fixed), `1` = unpropagated references remain, `2` = project .gumx file could not be loaded
+
+### `gumcli codegen-init <project.gumx> [--force]`
+
+Auto-configures code generation settings for a Gum project by walking up from the `.gumx` directory to find the nearest `.csproj`.
+
+```
+gumcli codegen-init MyProject.gumx
+gumcli codegen-init path/to/MyProject.gumx --force
+```
+
+- Writes `ProjectCodeSettings.codsj` next to the `.gumx` file
+- Derives `CodeProjectRoot` as a relative path from the `.gumx` directory to the `.csproj` directory
+- Sets `ObjectInstantiationType` to `FindByName`
+- Detects MonoGame/KNI package references and sets `OutputLibrary` to `MonoGameForms` when found
+- Extracts `RootNamespace` from the `<RootNamespace>` tag in the `.csproj`, or falls back to the `.csproj` filename (with `.`, `-`, spaces replaced by `_`)
+- If `ProjectCodeSettings.codsj` already exists, prints a warning and exits without overwriting — pass `--force` to overwrite
+- Exit code `0` = success, `2` = `.csproj` not found, settings file already exists, or other error
+
+### `gumcli codegen <project.gumx> [--element <name>...] [--prune]`
+
+Generates C# code for elements in a Gum project.
+
+```
+gumcli codegen MyProject.gumx
+gumcli codegen MyProject.gumx --element Button
+gumcli codegen MyProject.gumx --element Button --element Slider
+gumcli codegen MyProject.gumx --prune
+```
+
+- Requires `ProjectCodeSettings.codsj` with `CodeProjectRoot` configured
+- Without `--element`, generates all elements not set to `NeverGenerate`
+- `--element` filters to specific elements (case-insensitive, supports folder-qualified names like `Controls/Button`)
+- Runs error checks before generating each element; errors block generation for that element
+- Warnings are printed to stderr but do not block generation
+- `--prune` deletes `.Generated.cs` files under `CodeProjectRoot` that no element accounts for. Orphaned custom `.cs` files and per-element `.codsj` settings files are listed but never deleted
+- Exit code `0` = success, `1` = elements blocked by errors, `2` = load failure or missing configuration
+
+### `gumcli screenshot <project.gumx> <element> [--output <path>] [--width <px>] [--height <px>] [--backend <name>]`
+
+Renders a Gum Screen or Component to a PNG file, producing pixel-accurate output that matches a live game using that backend.
+
+```
+gumcli screenshot MyProject.gumx MainMenu
+gumcli screenshot MyProject.gumx MainMenu --output screenshots/MainMenu.png
+gumcli screenshot MyProject.gumx MainMenu --width 1280 --height 720
+gumcli screenshot MyProject.gumx MainMenu --backend raylib
+```
+
+- `<element>` is the Screen or Component name (without folder prefix or extension, e.g. `MainMenu` not `Screens/MainMenu.gusx`)
+- `--output` path for the PNG file; defaults to `<element>.png` in the current directory
+- `--width` / `--height` override the render dimensions; default to the project canvas size (800×600 if canvas size is not set)
+- `--backend` selects the rendering backend: `monogame` (default, DesktopGL) or `raylib`. Fonts, textures, and anti-aliasing match a live game using that same backend
+- Exit code `0` = success, `1` = render error, `2` = project file not found or unknown `--backend` value
+
+### `gumcli diff-screenshots <project.gumx> [--output <dir>] [--tolerance <0-255>] [--proximity <px>] [--json]`
+
+Renders every Screen and Component in a project via both MonoGame and raylib and reports any pixel-level mismatch between the two, catching raylib rendering that silently diverges from the tool's MonoGame-based preview.
+
+```
+gumcli diff-screenshots MyProject.gumx
+gumcli diff-screenshots MyProject.gumx --output diffs/
+gumcli diff-screenshots MyProject.gumx --tolerance 4 --proximity 2
+gumcli diff-screenshots MyProject.gumx --json
+```
+
+- Renders each element through both backends into `<output>/A/` (MonoGame) and `<output>/B/` (raylib), then compares the two PNGs
+- A pixel only counts as a real mismatch if no pixel within `--proximity` pixels of it (default `1`) matches within `--tolerance` (default `2`, max per-channel difference), absorbing the few-pixel positional jitter different renderers' antialiasing/rounding produces at edges, without masking pixels that are actually wrong
+- Writes a side-by-side HTML report (`report.html` in the output directory) with MonoGame on the left and raylib on the right, mismatched elements listed first
+- Human-readable output lists each element's match/mismatch status, the mismatched pixel count/percentage, and the bounding box of the mismatched region; `--json` outputs the same data as a JSON document
+- `--output` defaults to a new temp directory when omitted (the path is always printed)
+- Exit code `0` = every element matched, `1` = at least one element mismatched or failed to render, `2` = project file not found or could not be loaded
+
+### `gumcli fonts <project.gumx>`
+
+Generates all missing bitmap font files (.fnt + .png) referenced by text elements in a Gum project.
+
+```
+gumcli fonts MyProject.gumx
+gumcli fonts path/to/MyProject.gumx
+```
+
+- Scans all elements and states for font references (Font + FontSize variable pairs)
+- Creates missing `.fnt` and `.png` files in the project's `FontCache/` folder
+- Skips fonts whose output files already exist
+- **Windows-only**: requires `bmfont.exe`, which is a Windows-only application. Running on Linux or macOS exits with code `2`.
+- Exit code `0` = success, `1` = error during generation, `2` = project could not be loaded or non-Windows platform
+
+## Exit Codes
+
+| Code | Meaning |
+|------|---------|
+| 0 | Success |
+| 1 | Errors found (check) or elements blocked (codegen) or font generation error or render error (screenshot) or a mismatch/render failure (diff-screenshots) |
+| 2 | Project could not be loaded, invalid arguments, non-Windows platform (fonts), project file not found (screenshot, diff-screenshots), or unknown `--backend` (screenshot) |

@@ -38,11 +38,14 @@ public class NewGumProjectCreationLogic
 
     public async Task CreateGumProjectInternal(bool shouldAlsoAddForms, bool askToOverwrite)
     {
-        var assembly = typeof(FormsControlAdder).Assembly;
         var shouldSave = true;
-        if (askToOverwrite)
+
+        // gumcli add-forms (used below for GumDefaults2+ projects) only ever adds elements that
+        // are missing - it never overwrites an existing file - so this overwrite confirmation only
+        // still matters for the legacy FormsControlAdder path.
+        if (askToOverwrite && shouldAlsoAddForms && !GumFormsAdder.IsCurrentFormat)
         {
-            shouldSave = FormsControlAdder.AskToSaveIfOverwriting(assembly);
+            shouldSave = FormsControlAdder.AskToSaveIfOverwriting(typeof(FormsControlAdder).Assembly);
         }
 
         if (GlueState.Self.CurrentGlueProject == null)
@@ -65,7 +68,12 @@ public class NewGumProjectCreationLogic
         await TaskManager.Self.AddAsync(async () =>
         {
             _gumxPropertiesManager.IsReactingToProperyChanges = false;
-            GumProjectManager.Self.AddNewGumProject();
+            var wasCreated = await GumProjectManager.Self.AddNewGumProjectAsync();
+            if (!wasCreated)
+            {
+                _gumxPropertiesManager.IsReactingToProperyChanges = true;
+                return;
+            }
 
             var gumRfs = GumProjectManager.Self.GetRfsForGumProject();
 
@@ -74,9 +82,9 @@ public class NewGumProjectCreationLogic
 
 
             // When we first add the RFS to Glue, the RFS tries to refresh its file cache.
-            // But since the .glux hasn't yet been assigned as the currently-loaded project, 
+            // But since the .glux hasn't yet been assigned as the currently-loaded project,
             // the Gum plugin doesn't track its references and returns an empty list. That empty
-            // list return is then cached, and future calls will always treat the .gumx as having 
+            // list return is then cached, and future calls will always treat the .gumx as having
             // no referenced files. Now that we've assigned the custom project, clear the cache so
             // it can properly be set up.
             GlueCommands.Self.FileCommands.ClearFileCache(GlueCommands.Self.GetAbsoluteFilePath(gumRfs));
@@ -93,8 +101,7 @@ public class NewGumProjectCreationLogic
                 //viewModel.IncludeComponentToFormsAssociation = true;
                 gumRfs.SetProperty(nameof(GumViewModel.IncludeComponentToFormsAssociation), true);
 
-                await FormsControlAdder.SaveElements(assembly);
-                await FormsControlAdder.SaveBehaviors(assembly);
+                await GumFormsAdder.AddFormsToCurrentProjectAsync(askToOverwrite: false);
 
                 await MainGumPlugin.HandleBuildMissingFonts();
 

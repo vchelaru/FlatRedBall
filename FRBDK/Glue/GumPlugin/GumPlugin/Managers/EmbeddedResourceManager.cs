@@ -2,7 +2,6 @@
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.VSHelpers;
-using FlatRedBall.IO;
 using GumPlugin.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -15,53 +14,7 @@ namespace GumPlugin.Managers
     public class EmbeddedResourceManager : Singleton<EmbeddedResourceManager>
     {
 
-        Assembly mContextAssembly;
-        string mContextDirectoryToSaveTo;
-
-
         CodeBuildItemAdder mStateInterpolationItemAdder;
-
-        public void SaveEmptyProject(FilePath directoryToSaveProjectTo)
-        {
-            mContextAssembly = Assembly.GetExecutingAssembly();
-            mContextDirectoryToSaveTo = directoryToSaveProjectTo.FullPath;
-
-            SaveGumFile("GumProject.gumx");
-            SaveGumFile("Standards/Circle.gutx");
-            SaveGumFile("Standards/Component.gutx");
-            SaveGumFile("Standards/Container.gutx");
-            SaveGumFile("Standards/NineSlice.gutx");
-            SaveGumFile("Standards/Polygon.gutx");
-            SaveGumFile("Standards/Rectangle.gutx");
-            SaveGumFile("Standards/Sprite.gutx");
-            SaveGumFile("Standards/Text.gutx");
-
-            SaveGumFile("FontCache/Font18Arial.fnt");
-            SaveGumFile("FontCache/Font18Arial_0.png");
-
-            SaveGumFile("Standards/StandardGraphics/Red_BottomCenter.png");
-            SaveGumFile("Standards/StandardGraphics/Red_BottomLeft.png");
-            SaveGumFile("Standards/StandardGraphics/Red_BottomRight.png");
-            SaveGumFile("Standards/StandardGraphics/Red_Center.png");
-            SaveGumFile("Standards/StandardGraphics/Red_Left.png");
-            SaveGumFile("Standards/StandardGraphics/Red_Right.png");
-            SaveGumFile("Standards/StandardGraphics/Red_TopCenter.png");
-            SaveGumFile("Standards/StandardGraphics/Red_TopLeft.png");
-            SaveGumFile("Standards/StandardGraphics/Red_TopRight.png");
-
-            
-        }
-
-        void SaveGumFile(string fileName)
-        {
-            string resourceName = "GumPlugin/Embedded/EmptyProject/" + fileName;
-
-            resourceName = resourceName.Replace("/", ".");
-
-            FileManager.SaveEmbeddedResource(mContextAssembly, resourceName,
-                 mContextDirectoryToSaveTo + fileName);
-
-        }
 
         public FileAdditionBehavior GetBehavior(ReferencedFileSave gumRfs)
         {

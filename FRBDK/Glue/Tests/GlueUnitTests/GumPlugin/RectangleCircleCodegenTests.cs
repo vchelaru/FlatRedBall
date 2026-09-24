@@ -27,7 +27,8 @@ namespace GlueUnitTests.GumPluginTests;
 // created, minimal Gum project) and inspected the resulting RectangleRuntime.Generated.cs. That did NOT
 // pin the fix: a freshly-created project's "Rectangle"/"Circle" StandardElementSave is deserialized from
 // GumPlugin's own embedded, static template resources (Embedded/EmptyProject/Standards/Rectangle.gutx,
-// Circle.gutx) - snapshots saved before Gum's v3 fill/stroke/gradient/dropshadow/blend family existed
+// Circle.gutx - since removed in favor of gumcli's own template, see issue #2335) - snapshots saved
+// before Gum's v3 fill/stroke/gradient/dropshadow/blend family existed
 // (~24-28 <Variable> entries total, none of them from that family). Nothing in the fresh-project-creation
 // path reconciles a deserialized StandardElementSave against the canonical, always-current schema in
 // Gum.Managers.StandardElementsManager.Self.DefaultStates - that reconciliation
