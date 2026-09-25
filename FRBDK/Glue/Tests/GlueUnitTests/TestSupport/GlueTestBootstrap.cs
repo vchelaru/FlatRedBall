@@ -131,6 +131,20 @@ internal static class GlueTestBootstrap
     /// </summary>
     public static List<string> RecordedDialogMessages { get; } = new();
 
+    /// <summary>
+    /// The GlueCommon seams MainGlueWindow wires at startup, in the same order. GlueCommon can't reference
+    /// Glue.csproj, so each of these points a GlueCommon static at its Glue implementation before any
+    /// project-load code reads it. Public so a test can clear one seam and re-run exactly the startup
+    /// wiring, proving startup (not some earlier caller in the process) is what populates it.
+    /// </summary>
+    public static void WireGlueCommonSeams()
+    {
+        FlatRedBall.Glue.Parsing.TypeManager.EnsureTypeResolutionSeamWired();
+        FlatRedBall.Glue.Controls.DialogService.EnsureErrorReportingSeamWired();
+        FlatRedBall.Glue.Plugins.PluginManager.EnsurePluginSeamWired();
+        FlatRedBall.Glue.Managers.BuildToolAssociationManager.EnsureBuildToolAssociationSeamWired();
+    }
+
     public static void EnsureInitialized()
     {
         lock (_lock)
@@ -176,9 +190,7 @@ internal static class GlueTestBootstrap
                 AvailableAssetTypes.Self.Initialize(FindGlueStartupPath());
             }
 
-            FlatRedBall.Glue.Parsing.TypeManager.EnsureTypeResolutionSeamWired();
-            FlatRedBall.Glue.Controls.DialogService.EnsureErrorReportingSeamWired();
-            FlatRedBall.Glue.Plugins.PluginManager.EnsurePluginSeamWired();
+            WireGlueCommonSeams();
 
             if (FlatRedBall.Glue.Reflection.ExposedVariableManager.PositionedObjectMembers == null)
             {

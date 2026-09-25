@@ -324,6 +324,7 @@ public partial class MainGlueWindow : Form, IMainGlueWindow
         FlatRedBall.Glue.Parsing.TypeManager.EnsureTypeResolutionSeamWired();
         FlatRedBall.Glue.Controls.DialogService.EnsureErrorReportingSeamWired();
         FlatRedBall.Glue.Plugins.PluginManager.EnsurePluginSeamWired();
+        FlatRedBall.Glue.Managers.BuildToolAssociationManager.EnsureBuildToolAssociationSeamWired();
 
         SetScreenMessage("Loading Plugins");
 

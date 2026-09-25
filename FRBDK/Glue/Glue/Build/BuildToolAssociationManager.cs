@@ -39,6 +39,24 @@ public class BuildToolAssociationManager : IBuildToolAssociationCore
 
     #endregion
 
+    /// <summary>
+    /// Points the GlueCommon seam at this manager. Call once at startup (MainGlueWindow,
+    /// GlueTestBootstrap) so GlueCommon code that only reaches build-tool associations through
+    /// BuildToolAssociationCore.Self never runs ahead of the first direct call to <see cref="Self"/>
+    /// in the process. Same role as DialogService.EnsureErrorReportingSeamWired.
+    /// </summary>
+    /// <remarks>
+    /// GlueCommon can't reference this assembly (wrong direction), so it can't set the seam itself, and
+    /// until this existed the seam was only assigned from the <see cref="Self"/> getter above. Nothing on
+    /// the project-load path reads that getter before ProjectLoader.BuildAllOutOfDateFiles reaches
+    /// ReferencedFileSaveBuildExtensions.GetIsFileOutOfDate in GlueCommon, so a fresh launch threw
+    /// NullReferenceException on the first built file of any project (regression from #2315).
+    /// </remarks>
+    public static void EnsureBuildToolAssociationSeamWired()
+    {
+        BuildToolAssociationCore.Self ??= Self;
+    }
+
     public string GetBuildToolProcessed(ReferencedFileSave referencedFileSave)
     {
         var destinationExtension = FileManager.GetExtension(referencedFileSave.Name);
