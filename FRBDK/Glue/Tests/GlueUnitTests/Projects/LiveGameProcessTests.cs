@@ -1,7 +1,11 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using CompilerLibrary.ViewModels;
+using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using GameCommunicationPlugin.GlueControl.Dtos;
 using GameCommunicationPlugin.GlueControl.Managers;
@@ -15,10 +19,9 @@ namespace GlueUnitTests.Projects;
 /// Proves <see cref="LiveGameProcess"/> itself works before anything is built on top of it: launch a real
 /// game process, have it connect back over the real socket protocol, and read its actual runtime state.
 ///
-/// Tagged "LiveGame" rather than "BuildSmoke" - it launches an actual MonoGame DesktopGL window, which
-/// needs a real display/GPU context. GitHub-hosted Windows runners are not guaranteed to have one, so this
-/// category is excluded from both CI filters (see pr-tests.yml/glue.yml) and is developer-machine-only for
-/// now: `dotnet test ... --filter "Category=LiveGame"`.
+/// Tagged "LiveGame" rather than "BuildSmoke" - it launches an actual MonoGame DesktopGL window. pr-tests.yml
+/// runs this category in its own step with a software OpenGL runtime; glue.yml excludes it. Locally:
+/// `dotnet test ... --filter "Category=LiveGame"`.
 /// </summary>
 [Trait("Category", "LiveGame")]
 public class LiveGameProcessTests
@@ -524,5 +527,90 @@ public class LiveGameProcessTests
         var logResponse = await game.Send<GetEmbeddedDiagnosticsLogResponse>(new GetEmbeddedDiagnosticsLogDto());
         logResponse.Succeeded.ShouldBeTrue(logResponse.Message);
         logResponse.Data.LogText.ShouldContain("Received SelectObjectDto");
+    }
+
+    // The game reports the GlueSourceHash each element was compiled with, and it matches what Glue computes
+    // for the unchanged element - otherwise every connect would resend everything.
+    [StaFact]
+    public async Task EditorTest1_ReportsCompiledSourceHashes_MatchingGlue()
+    {
+        GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
+
+        using var game = await LiveGameProcess.StartAsync(
+            "Samples/EditorTest1",
+            csprojRelativeToProjectRoot: "EditorTest1/EditorTest1.csproj",
+            exeRelativeToProjectRoot: "EditorTest1/bin/Debug/net9.0/EditorTest1.exe");
+
+        var response = await game.Send<GetCompiledGlueSourceHashesResponse>(new GetCompiledGlueSourceHashesDto());
+        response.Succeeded.ShouldBeTrue(response.Message);
+
+        var entity = ObjectFinder.Self.GetEntitySave("Entities\\Entity1");
+        response.Data.Hashes.ShouldContainKey(entity.Name);
+        response.Data.Hashes[entity.Name].ShouldBe(GlueSourceHash.Compute(entity));
+    }
+
+    // A variable changed after the compiler read an element's code, but before the game connected, is in
+    // neither the build nor any live push. The connect sweep has to catch the game up.
+    [StaFact]
+    public async Task EditorTest1_SharedVariableChangedAfterBuild_IsAppliedByConnectSweep()
+    {
+        GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
+
+        CustomVariable debugValue = null;
+        EntitySave entity = null;
+
+        using var game = await LiveGameProcess.StartAsync(
+            "Samples/EditorTest1",
+            csprojRelativeToProjectRoot: "EditorTest1/EditorTest1.csproj",
+            exeRelativeToProjectRoot: "EditorTest1/bin/Debug/net9.0/EditorTest1.exe",
+            afterLoadBeforeEmbed: async () =>
+            {
+                entity = ObjectFinder.Self.GetEntitySave("Entities\\Entity1");
+                debugValue = new CustomVariable { Name = "DebugValue", Type = "float", DefaultValue = 1f, IsShared = true };
+                entity.CustomVariables.Add(debugValue);
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entity);
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
+                await TaskManager.Self.WaitForAllTasksFinished();
+            },
+            afterBuildBeforeLaunch: async () =>
+            {
+                debugValue.DefaultValue = 2f;
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entity);
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
+                await TaskManager.Self.WaitForAllTasksFinished();
+            });
+
+        async Task<string> ReadDebugValue()
+        {
+            var read = await game.Send<GetStaticMemberValueForTestingResponse>(new GetStaticMemberValueForTestingDto
+            {
+                TypeName = "EditorTest1.Entities.Entity1",
+                MemberName = "DebugValue",
+            });
+            read.Succeeded.ShouldBeTrue(read.Message);
+            return read.Data.Value;
+        }
+
+        (await ReadDebugValue()).ShouldBe("1", "the build should hold the value from before the change");
+
+        var wasRunning = CompilerViewModel.Self.IsRunning;
+        try
+        {
+            CompilerViewModel.Self.IsRunning = true;
+            var refreshManager = new RefreshManager((_, __) => Task.FromResult(""), (_, __) => { })
+            {
+                ViewModel = CompilerViewModel.Self,
+            };
+            refreshManager.IsExplicitlySetRebuildAndRestartEnabled = true;
+            new VariableSendingManager(refreshManager) { ViewModel = CompilerViewModel.Self };
+
+            await CompiledElementSweep.RunAsync(refreshManager);
+        }
+        finally
+        {
+            CompilerViewModel.Self.IsRunning = wasRunning;
+        }
+
+        (await ReadDebugValue()).ShouldBe("2");
     }
 }

@@ -675,6 +675,42 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
     }
     #endregion
 
+    #region GetCompiledGlueSourceHashesDto
+
+    /// <summary>
+    /// Asks the game for the GlueSourceHash each element was compiled with - see CompiledElementSweep.
+    /// </summary>
+    public class GetCompiledGlueSourceHashesDto
+    {
+    }
+
+    public class GetCompiledGlueSourceHashesResponse
+    {
+        /// <summary>
+        /// Keyed by the element's Glue name, e.g. "Entities\Player".
+        /// </summary>
+        public Dictionary<string, string> Hashes { get; set; } = new Dictionary<string, string>();
+    }
+    #endregion
+
+    #region GetStaticMemberValueForTestingDto
+
+    /// <summary>
+    /// Reads a static property or field from the running game, for tests that check a live variable push
+    /// actually landed.
+    /// </summary>
+    public class GetStaticMemberValueForTestingDto
+    {
+        public string TypeName { get; set; }
+        public string MemberName { get; set; }
+    }
+
+    public class GetStaticMemberValueForTestingResponse
+    {
+        public string Value { get; set; }
+    }
+    #endregion
+
     #region SetEmbeddedInputAllowedDto
 
     /// <summary>

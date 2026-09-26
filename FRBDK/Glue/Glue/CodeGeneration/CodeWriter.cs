@@ -310,6 +310,7 @@ namespace FlatRedBallAddOns.Entities
 
         UsingsCodeGenerator.GenerateUsingStatements(rootBlock, element);
 
+        GenerateSourceHashAttribute(rootBlock, element);
 
         CodeBlockNamespace namespaceBlock = rootBlock.Namespace(classNamespace);
 
@@ -393,6 +394,16 @@ namespace FlatRedBallAddOns.Entities
             rootBlock.Line("//#define SUPPORTS_GLUEVIEW_2");
 
         }
+    }
+
+    /// <summary>
+    /// Compiles the element's <see cref="GlueSourceHash"/> into the game, so live edit can ask a running
+    /// game which version of each element it was built from.
+    /// </summary>
+    public static void GenerateSourceHashAttribute(ICodeBlock rootBlock, GlueElement element)
+    {
+        var key = GlueSourceHash.AttributeKeyPrefix + element.Name.Replace("\\", "\\\\");
+        rootBlock.Line($"[assembly: System.Reflection.AssemblyMetadata(\"{key}\", \"{GlueSourceHash.Compute(element)}\")]");
     }
 
     #endregion

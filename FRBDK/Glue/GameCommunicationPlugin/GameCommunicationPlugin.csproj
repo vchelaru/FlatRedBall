@@ -129,6 +129,7 @@
     <Compile Include="GlueControl\CommandReceiving\CommandReceiver.cs" />
     <Compile Include="GlueControl\CommandSending\CommandSender.cs" />
     <Compile Include="GlueControl\CommandSending\GameReadinessRetryPolicy.cs" />
+    <Compile Include="GlueControl\Managers\CompiledElementSweep.cs" />
     <Compile Include="GlueControl\Dtos\Dtos.cs" />
     <Compile Include="GlueControl\Dtos\GeneratePreviewDto.cs" />
     <Compile Include="GlueControl\Managers\EmbeddedInputAllowedService.cs" />

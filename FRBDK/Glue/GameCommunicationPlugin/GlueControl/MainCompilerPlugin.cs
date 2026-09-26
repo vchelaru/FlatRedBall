@@ -1253,6 +1253,19 @@ namespace GameCommunicationPlugin.GlueControl
                 case "GameCommunication_Connected":
                     CommandSender.Self.IsConnected = true;
 
+                    // Also runs on a reconnect, since live pushes are dropped while disconnected too.
+                    Task.Run(async () =>
+                    {
+                        try
+                        {
+                            await CompiledElementSweep.RunAsync(_refreshManager);
+                        }
+                        catch (Exception e)
+                        {
+                            GlueCommands.Self.PrintError($"Failed to resend changes made while the game was building:\n{e}");
+                        }
+                    });
+
                     break;
 
                 case "GameCommunication_Disconnected":

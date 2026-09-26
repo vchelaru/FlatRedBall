@@ -129,13 +129,19 @@ internal sealed class LiveGameProcess : IDisposable
     /// is embedded and the project built - so a test-only object added here reaches the built exe. Only
     /// called when <paramref name="refreshLiveEditCodeFromSource"/> is true.
     /// </param>
+    /// <param name="afterBuildBeforeLaunch">
+    /// Optional hook that runs once the build has finished and before the exe starts. A project change made
+    /// here is in Glue and on disk but not in the built game, which is the state a change made mid-build
+    /// leaves behind.
+    /// </param>
     public static async Task<LiveGameProcess> StartAsync(
         string repoRelativeProjectDirectory,
         string csprojRelativeToProjectRoot,
         string exeRelativeToProjectRoot,
         bool refreshLiveEditCodeFromSource = true,
         TimeSpan? connectTimeout = null,
-        Func<Task> afterLoadBeforeEmbed = null)
+        Func<Task> afterLoadBeforeEmbed = null,
+        Func<Task> afterBuildBeforeLaunch = null)
     {
         var project = GoldProject.CopyOutOfRepo(repoRelativeProjectDirectory);
         try
@@ -173,6 +179,11 @@ internal sealed class LiveGameProcess : IDisposable
             if (exitCode != 0)
             {
                 throw new InvalidOperationException($"Failed to build {csprojPath}:{Environment.NewLine}{buildOutput}");
+            }
+
+            if (afterBuildBeforeLaunch != null)
+            {
+                await afterBuildBeforeLaunch();
             }
 
             // Glue-side of the protocol: listens, and completes the two-socket handshake the game's

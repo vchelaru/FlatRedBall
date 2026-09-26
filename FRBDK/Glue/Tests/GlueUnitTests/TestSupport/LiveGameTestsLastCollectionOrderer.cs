@@ -19,7 +19,7 @@ namespace GlueUnitTests.TestSupport;
 /// sometimes the whole run hung forever with every thread idle (an StaFact-pumped test's
 /// <c>SynchronizationContext</c> silently lost, so its continuations stopped being posted back to the pump
 /// that is waiting for them). See GitHub issue #2008 and the 2026-08-07 entries in
-/// <c>FRBDK/Glue/.claude/testing-incidents.md</c>.
+/// <c>.claude/testing-incidents.md</c>.
 ///
 /// Ordering the collection last means nothing else in the assembly ever runs after it, so whatever state it
 /// leaves behind can no longer reach another test. xUnit's default collection order is not alphabetical or

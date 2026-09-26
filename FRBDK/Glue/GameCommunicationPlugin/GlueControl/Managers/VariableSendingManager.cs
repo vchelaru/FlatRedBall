@@ -816,6 +816,23 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             return data;
         }
 
+        /// <summary>
+        /// Pushes <paramref name="variable"/>'s current default value to the game, addressed to
+        /// <paramref name="element"/> rather than to whatever element is selected in Glue.
+        /// </summary>
+        internal async Task PushElementVariable(GlueElement element, CustomVariable variable)
+        {
+            var name = variable.IsShared
+                ? ToGameType(element) + "." + variable.Name
+                // not prefixed with "this", GetGlueVariableSetDataDto does that
+                : variable.Name;
+
+            var data = GetGlueVariableSetDataDto(null, name, variable.Type, variable.DefaultValue?.ToString(),
+                element, AssignOrRecordOnly.Assign, variable.GetIsVariableState(element));
+
+            await TryPushVariable(data);
+        }
+
         internal async Task HandleNamedObjectValueChanged(string changedMember, object oldValue)
         {
             var nos = GlueState.Self.CurrentNamedObjectSave;
