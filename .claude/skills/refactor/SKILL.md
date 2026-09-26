@@ -6,7 +6,7 @@ version: 1.0.0
 
 # Refactoring in Glue
 
-See [REFACTORING.md](../../../REFACTORING.md) for the full philosophy, checklist, and status of ongoing refactoring efforts.
+See [REFACTORING.md](../../../FRBDK/Glue/REFACTORING.md) for the full philosophy, checklist, and status of ongoing refactoring efforts.
 
 ## Core principle
 

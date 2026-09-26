@@ -9,7 +9,7 @@ FlatRedBall1 (engine + Glue) is maintenance-mode — no new features — but exi
 
 Work through these gates in order before writing a fix:
 
-1. **Scan for skills.** Search `.claude/skills/` (repo-wide) and `FRBDK/Glue/.claude/skills/` for anything covering this area. Nothing found? Stop and propose a research task to produce a new skill file — written damped, per [skills-writer](../skills-writer/SKILL.md), not a full write-up.
+1. **Scan for skills.** Search `.claude/skills/` (the only skill tree; Glue's skills live there too) for anything covering this area. Nothing found? Stop and propose a research task to produce a new skill file — written damped, per [skills-writer](../skills-writer/SKILL.md), not a full write-up.
 2. **Read the skill, discuss.** Once one exists (or was just written), read it and raise open questions with the user before touching code.
 3. **Testability gate — two sub-checks, in order.** (a) Can the fix be pinned with a real unit test as the code stands? (b) If not, that's expected — this codebase is missing DI/interfaces in places — so propose and land a scoped refactor task *before* touching the bug, then re-check (a). See [REFACTORING.md](../../../FRBDK/Glue/REFACTORING.md) for the incremental-refactor philosophy and the transitional-injection pattern (`Xyz.Self` defaulting field with an internal setter) used to unstick static-singleton coupling. Do not write the bug fix itself until both sub-checks pass. **Guard this concretely: before your first `Edit`/`Write` to the buggy source file, state which failing test you just watched fail. If you can't state one, stop and write/run it first** — a confident diagnosis is not a substitute for this checkpoint.
 

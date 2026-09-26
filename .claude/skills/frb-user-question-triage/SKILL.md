@@ -33,7 +33,7 @@ Tool cues: "in Glue"/"in the editor", a tab/menu/property name, a screenshot. Co
 
 ## 2. Where to Look: skills orient, docs cite, code confirms
 
-- **Skills** `.claude/skills/` (repo-wide — e.g. `gum-integration`, `glue-live-edit`, `glue-file-watch`, `gum-shared-source`, `achx-format`, `color-operations`) and `FRBDK/Glue/.claude/skills/` (Glue-internals — `glue-project-codegen`, `gum-codegen`, `gluj-versions`, `frb-source-linking`, `glue-unit-test-bootstrap`, `refactor`) **orient** — point at the right doc page/source file. **Never link or paste a skill to a user.**
+- **Skills** `.claude/skills/` (e.g. `gum-integration`, `glue-live-edit`, `glue-project-codegen`, `gum-codegen`, `gluj-versions`, `frb-source-linking`) **orient** — point at the right doc page/source file. **Never link or paste a skill to a user.**
 - **Docs** — sibling repo `..\FlatRedBallDocs` — **cite**. `SUMMARY.md` is the index; that's what produces the URL.
 - **Code** (this repo's engine + `FRBDK/Glue`) **confirms** real behavior and locates where a doc *should* exist or where the API is wrong.
 
@@ -82,4 +82,4 @@ Published base: `https://docs.flatredball.com/flatredball/`. Path mirrors the `F
 
 - Gum-in-FRB architecture (plugin structure, `.gumx`, runtime wrapper) → [[gum-integration]].
 - Issue/branch/worktree/PR flow → `CLAUDE.md` "Orchestration preferences", `CLAUDE.local.md`.
-- Domain skills are your first-pass index in step 2 — both `.claude/skills/` and `FRBDK/Glue/.claude/skills/`.
+- Domain skills are your first-pass index in step 2 — `.claude/skills/`.
