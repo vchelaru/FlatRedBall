@@ -39,6 +39,9 @@ public async Task MyTest()
 `GoldProject.EmbedLiveEditCode()` before building, so the test exercises the CURRENT branch's
 `Embedded/*.cs`, not whatever was checked in. See `LiveGameProcessTests.cs` for worked examples.
 
+The `afterBuildBeforeLaunch` hook changes the project after the build, for tests where the running game
+is behind Glue (see `EditorTest1_SharedVariableChangedAfterBuild_IsAppliedByConnectSweep`).
+
 ## Adding a new drive/observe method
 
 Follow `GetCurrentScreenName()`/`SelectEntity()`: build the real DTO
