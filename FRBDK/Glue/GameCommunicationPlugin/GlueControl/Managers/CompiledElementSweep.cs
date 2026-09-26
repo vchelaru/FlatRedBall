@@ -34,8 +34,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
         /// <summary>
         /// Asks the connected game for its compiled hashes and resends the custom variables of every element
-        /// that changed since. Follows the same rule as a live variable edit: pushes when hot reload is
-        /// available, otherwise restarts the game.
+        /// that changed since. Only runs when hot reload is available.
         /// </summary>
         public static async Task RunAsync(RefreshManager refreshManager)
         {
@@ -60,9 +59,10 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 return;
             }
 
+            // Deliberately no restart when hot reload is off: if a hash ever mismatches spuriously, a restart
+            // would reconnect, mismatch again, and loop.
             if (refreshManager.ShouldRestartOnChange == false)
             {
-                refreshManager.CreateStopAndRestartTask($"{elements[0]} changed while the game was building");
                 return;
             }
 
