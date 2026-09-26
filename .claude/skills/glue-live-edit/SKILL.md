@@ -88,6 +88,8 @@ Known landmines, in order of how likely they are to bite:
 
 ## Key files
 
+Tests for everything below, including launching a real game over the live-edit socket, are listed in [[test-harnesses]].
+
 | Side | File | Purpose |
 |---|---|---|
 | Glue | `GameCommunicationPlugin\GlueControl\MainCompilerPlugin.cs` | Plugin entry point; owns build/run/edit-mode toggle, wires up embedding + codegen on Glux load |
