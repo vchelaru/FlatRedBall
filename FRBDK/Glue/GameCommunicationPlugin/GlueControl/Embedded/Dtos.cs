@@ -660,6 +660,36 @@ namespace GlueControl.Dtos
     }
     #endregion
 
+    #region GetCompiledGlueSourceHashesDto
+
+    /// <summary>
+    /// Asks the game for the GlueSourceHash each element was compiled with, so Glue can resend elements
+    /// that changed after the build read them.
+    /// </summary>
+    public class GetCompiledGlueSourceHashesDto
+    {
+    }
+
+    public class GetCompiledGlueSourceHashesResponse
+    {
+        public Dictionary<string, string> Hashes { get; set; } = new Dictionary<string, string>();
+    }
+    #endregion
+
+    #region GetStaticMemberValueForTestingDto
+
+    public class GetStaticMemberValueForTestingDto
+    {
+        public string TypeName { get; set; }
+        public string MemberName { get; set; }
+    }
+
+    public class GetStaticMemberValueForTestingResponse
+    {
+        public string Value { get; set; }
+    }
+    #endregion
+
     #region SetEmbeddedInputAllowedDto
 
     /// <summary>

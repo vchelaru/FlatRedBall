@@ -1748,6 +1748,39 @@ namespace GlueControl
 
         #endregion
 
+        #region GetCompiledGlueSourceHashesDto
+
+        // Must match GlueSourceHash.AttributeKeyPrefix on the Glue side, which this file cannot reference.
+        const string GlueSourceHashKeyPrefix = "GlueSourceHash:";
+
+        private static object HandleDto(GetCompiledGlueSourceHashesDto dto)
+        {
+            var response = new GetCompiledGlueSourceHashesResponse();
+            var attributes = typeof(CommandReceiver).Assembly
+                .GetCustomAttributes(typeof(System.Reflection.AssemblyMetadataAttribute), false)
+                .Cast<System.Reflection.AssemblyMetadataAttribute>();
+
+            foreach (var attribute in attributes)
+            {
+                if (attribute.Key.StartsWith(GlueSourceHashKeyPrefix))
+                {
+                    response.Hashes[attribute.Key.Substring(GlueSourceHashKeyPrefix.Length)] = attribute.Value;
+                }
+            }
+            return response;
+        }
+
+        private static object HandleDto(GetStaticMemberValueForTestingDto dto)
+        {
+            var type = typeof(CommandReceiver).Assembly.GetType(dto.TypeName);
+            object value = type?.GetProperty(dto.MemberName)?.GetValue(null) ??
+                type?.GetField(dto.MemberName)?.GetValue(null);
+
+            return new GetStaticMemberValueForTestingResponse { Value = value?.ToString() };
+        }
+
+        #endregion
+
         #region SetEmbeddedInputAllowedDto
 
         private static void HandleDto(SetEmbeddedInputAllowedDto dto)
