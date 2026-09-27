@@ -124,6 +124,12 @@ namespace GameCommunicationPlugin.GlueControl.ViewModels
             }
         }
 
+        public bool IsGumInteractionEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         [DependsOn(nameof(EnableLiveEdit))]
         public Visibility ShowWindowDefenderUi => EnableLiveEdit.ToVisibility();
 
@@ -154,6 +160,8 @@ namespace GameCommunicationPlugin.GlueControl.ViewModels
             this.EnableSnapping = model.EnableSnapping;
             this.SnapSize = model.SnapSize;
             this.PolygonPointSnapSize = model.PolygonPointSnapSize;
+
+            this.IsGumInteractionEnabled = model.IsGumInteractionEnabled;
         }
 
         internal void SetModel(CompilerSettingsModel compilerSettings)
@@ -181,7 +189,29 @@ namespace GameCommunicationPlugin.GlueControl.ViewModels
             compilerSettings.SnapSize = this.SnapSize;
             compilerSettings.PolygonPointSnapSize = this.PolygonPointSnapSize;
 
+            compilerSettings.IsGumInteractionEnabled = this.IsGumInteractionEnabled;
+
             compilerSettings.ToolbarObjects.Clear();
+        }
+
+        internal Dtos.GlueViewSettingsDto CreateGlueViewSettingsDto()
+        {
+            return new Dtos.GlueViewSettingsDto
+            {
+                ShowGrid = ShowGrid,
+                GridAlpha = GridAlpha,
+                GridSize = GridSize,
+                ShowScreenBounds = ShowScreenBounds,
+                LockScreenBoundsToWorldSpace = LockScreenBoundsToWorldSpace,
+                SetBackgroundColor = SetBackgroundColor,
+                BackgroundRed = BackgroundRed,
+                BackgroundGreen = BackgroundGreen,
+                BackgroundBlue = BackgroundBlue,
+                EnableSnapping = EnableSnapping,
+                SnapSize = SnapSize,
+                PolygonPointSnapSize = PolygonPointSnapSize,
+                IsGumInteractionEnabled = IsGumInteractionEnabled,
+            };
         }
     }
 }

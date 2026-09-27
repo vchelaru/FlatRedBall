@@ -28,6 +28,7 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration
             "Editing.EditorVisuals.cs",
             "Editing.EditorVisualsTileShapeCollection.cs",
             "Editing.Guides.cs",
+            "Editing.GumCursorLogic.cs",
             
             "Editing.Managers.GenerateCodeCommands.cs",
             "Editing.Managers.GlueCommands.cs",

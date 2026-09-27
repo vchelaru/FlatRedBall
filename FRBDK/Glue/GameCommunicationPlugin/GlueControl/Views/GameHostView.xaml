@@ -60,6 +60,28 @@
                     UnpauseClicked="WhileRunningView_UnpauseClicked"
                     Visibility="{Binding WhileRunningViewVisibility}" />
 
+                <!--  DataContext is GlueViewSettingsViewModel, assigned in GameHostController.Initialize  -->
+                <Border
+                    Margin="0,2,6,0"
+                    VerticalAlignment="Center"
+                    Visibility="{Binding EditingToolsVisibility}">
+                    <CheckBox
+                        x:Name="GumInteractionToggle"
+                        VerticalAlignment="Center"
+                        Content="Gum Interaction"
+                        IsChecked="{Binding IsGumInteractionEnabled}">
+                        <CheckBox.ToolTip>
+                            <ToolTip>
+                                <StackPanel>
+                                    <TextBlock FontWeight="Bold" Text="Gum Interaction" />
+                                    <TextBlock Text="When checked, Gum UI under the cursor stops edit mode from selecting the objects behind it." />
+                                    <TextBlock Text="When unchecked, clicks select objects even when Gum UI covers them." />
+                                </StackPanel>
+                            </ToolTip>
+                        </CheckBox.ToolTip>
+                    </CheckBox>
+                </Border>
+
                 <Grid Margin="5,0,0,0" Visibility="Collapsed">
                     <Frame Background="{Binding ConnectedFrameBackgroundColor, FallbackValue=Red}" />
                     <TextBlock

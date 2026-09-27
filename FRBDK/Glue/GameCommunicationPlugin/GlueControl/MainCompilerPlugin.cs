@@ -717,6 +717,7 @@ namespace GameCommunicationPlugin.GlueControl
                 case nameof(ViewModels.GlueViewSettingsViewModel.PolygonPointSnapSize):
                 case nameof(ViewModels.GlueViewSettingsViewModel.ShowScreenBounds):
                 case nameof(ViewModels.GlueViewSettingsViewModel.LockScreenBoundsToWorldSpace):
+                case nameof(ViewModels.GlueViewSettingsViewModel.IsGumInteractionEnabled):
                     await SendGlueViewSettingsToGame();
                     break;
             }
@@ -728,23 +729,7 @@ namespace GameCommunicationPlugin.GlueControl
 
         private async Task SendGlueViewSettingsToGame()
         {
-            var dto = new Dtos.GlueViewSettingsDto
-            {
-                ShowGrid = GlueViewSettingsViewModel.ShowGrid,
-                GridAlpha = GlueViewSettingsViewModel.GridAlpha,
-                GridSize = GlueViewSettingsViewModel.GridSize,
-                ShowScreenBounds = GlueViewSettingsViewModel.ShowScreenBounds,
-                LockScreenBoundsToWorldSpace = GlueViewSettingsViewModel.LockScreenBoundsToWorldSpace,
-                SetBackgroundColor = GlueViewSettingsViewModel.SetBackgroundColor,
-                BackgroundRed = GlueViewSettingsViewModel.BackgroundRed,
-                BackgroundGreen = GlueViewSettingsViewModel.BackgroundGreen,
-                BackgroundBlue = GlueViewSettingsViewModel.BackgroundBlue,
-                EnableSnapping = GlueViewSettingsViewModel.EnableSnapping,
-                SnapSize = GlueViewSettingsViewModel.SnapSize,
-                PolygonPointSnapSize = GlueViewSettingsViewModel.PolygonPointSnapSize,
-            };
-
-            await CommandSender.Self.Send(dto);
+            await CommandSender.Self.Send(GlueViewSettingsViewModel.CreateGlueViewSettingsDto());
         }
 
         private async void HandleCompilerViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)

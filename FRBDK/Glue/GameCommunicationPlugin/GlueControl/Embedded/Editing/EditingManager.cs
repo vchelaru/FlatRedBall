@@ -143,6 +143,11 @@ namespace GlueControl.Editing
         public bool ShowScreenBounds { get; set; }
         public bool LockScreenBoundsToWorldSpace { get; set; }
 
+        /// <summary>
+        /// Whether Gum UI under the cursor blocks selecting world objects. See GumCursorLogic.
+        /// </summary>
+        public bool IsGumInteractionEnabled { get; set; }
+
         float snapSize = 8;
         public float SnapSize
         {
@@ -525,11 +530,10 @@ namespace GlueControl.Editing
                     
                     var isCursorUsingMouse = FlatRedBall.Gui.GuiManager.Cursor.DevicesControllingCursor.Contains(mouse);
 
-                    var isOverWindow = false;
-                    if(isCursorUsingMouse && FlatRedBall.Gui.GuiManager.Cursor.WindowOver != null)
-                    {
-                        isOverWindow = true;
-                    }
+                    var isOverWindow = GumCursorLogic.ShouldGumBlockWorldSelection(
+                        IsGumInteractionEnabled,
+                        isCursorUsingMouse,
+                        FlatRedBall.Gui.GuiManager.Cursor.WindowOver != null);
 
                     if(!isOverWindow)
                     {
