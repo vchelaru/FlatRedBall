@@ -36,7 +36,19 @@ internal class FakeMainGlueWindow : IMainGlueWindow
     public Task Invoke(Func<Task> func) => func();
     public Task<T> Invoke<T>(Func<Task<T>> func) => func();
     // No call site inspects the returned IAsyncResult - null is fine after running synchronously.
-    public IAsyncResult BeginInvoke(Delegate method) { method.DynamicInvoke(); return null!; }
+    // Control.BeginInvoke(Delegate) calls an EventHandler with (sender, EventArgs.Empty), so match that.
+    public IAsyncResult BeginInvoke(Delegate method)
+    {
+        if (method is EventHandler eventHandler)
+        {
+            eventHandler(this, EventArgs.Empty);
+        }
+        else
+        {
+            method.DynamicInvoke();
+        }
+        return null!;
+    }
 
     public void Close() => IsDisposed = true;
     public void SyncMenuStripWithTheme(System.Windows.Controls.UserControl control) { }
