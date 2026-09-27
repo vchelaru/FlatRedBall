@@ -39,6 +39,9 @@
     <Compile Include="..\..\FRBDK\Glue\GameCommunicationPlugin\GlueControl\Embedded\Editing\Visuals\Arrow.cs">
       <Link>GlueControl\Editing\Visuals\Arrow.cs</Link>
     </Compile>
+    <Compile Include="..\..\FRBDK\Glue\GameCommunicationPlugin\GlueControl\Embedded\Editing\GumCursorLogic.cs">
+      <Link>GlueControl\Editing\GumCursorLogic.cs</Link>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>

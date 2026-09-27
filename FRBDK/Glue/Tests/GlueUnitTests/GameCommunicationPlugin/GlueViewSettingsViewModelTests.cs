@@ -1,4 +1,6 @@
+using CompilerLibrary.Models;
 using GameCommunicationPlugin.GlueControl.ViewModels;
+using Newtonsoft.Json;
 using Shouldly;
 using Xunit;
 
@@ -71,5 +73,37 @@ public class GlueViewSettingsViewModelTests
         viewModel.BackgroundBlue = input;
 
         viewModel.BackgroundBlue.ShouldBe(expected);
+    }
+
+    // Issue #2339: Gum interaction in edit mode is saved per project in CompilerSettings.json and sent to
+    // the game, where it decides whether Gum UI under the cursor blocks selecting world objects.
+    [Fact]
+    public void IsGumInteractionEnabled_SetModelThenSetFrom_RoundTrips()
+    {
+        var source = new GlueViewSettingsViewModel { IsGumInteractionEnabled = true };
+        var model = new CompilerSettingsModel();
+
+        source.SetModel(model);
+        var loaded = new GlueViewSettingsViewModel();
+        loaded.SetFrom(model);
+
+        loaded.IsGumInteractionEnabled.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void IsGumInteractionEnabled_SettingsFileWithoutTheValue_DefaultsToFalse()
+    {
+        var model = JsonConvert.DeserializeObject<CompilerSettingsModel>("{ \"ShowGrid\": true }");
+
+        model.IsGumInteractionEnabled.ShouldBeFalse(
+            "projects saved before this setting existed must not have Gum UI blocking edit-mode selection");
+    }
+
+    [Fact]
+    public void CreateGlueViewSettingsDto_IsGumInteractionEnabled_IsSentToGame()
+    {
+        var viewModel = new GlueViewSettingsViewModel { IsGumInteractionEnabled = true };
+
+        viewModel.CreateGlueViewSettingsDto().IsGumInteractionEnabled.ShouldBeTrue();
     }
 }

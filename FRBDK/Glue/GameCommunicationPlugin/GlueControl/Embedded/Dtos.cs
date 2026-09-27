@@ -736,6 +736,8 @@ namespace GlueControl.Dtos
         public bool EnableSnapping { get; set; }
         public decimal SnapSize { get; set; }
         public decimal PolygonPointSnapSize { get; set; }
+
+        public bool IsGumInteractionEnabled { get; set; }
     }
     #endregion
 

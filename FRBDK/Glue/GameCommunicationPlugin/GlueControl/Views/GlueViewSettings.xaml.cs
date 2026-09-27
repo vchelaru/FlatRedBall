@@ -81,11 +81,14 @@ namespace GameCommunicationPlugin.GlueControl.Views
                     member.DisplayName = Localization.Texts.ResourceManager.GetString(member.DisplayName, Localization.Texts.Culture);
                 }
 
+                // IsGumInteractionEnabled is toggled from the Game tab's toolbar instead.
                 var whatToRemove = category.Members
-                    .FirstOrDefault(item => item.Name == nameof(GlueViewSettingsViewModel.ShowWindowDefenderUi));
-                if(whatToRemove != null)
+                    .Where(item => item.Name == nameof(GlueViewSettingsViewModel.ShowWindowDefenderUi) ||
+                        item.Name == nameof(GlueViewSettingsViewModel.IsGumInteractionEnabled))
+                    .ToArray();
+                foreach(var member in whatToRemove)
                 {
-                    category.Members.Remove(whatToRemove);
+                    category.Members.Remove(member);
                 }
             }
 

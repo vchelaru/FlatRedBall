@@ -38,6 +38,8 @@ namespace CompilerLibrary.Models
         public int BackgroundRed { get; set; }
         public int BackgroundGreen { get; set; }
         public int BackgroundBlue { get; set; }
+        public bool IsGumInteractionEnabled { get; set; }
+
         public List<ToolbarModel> ToolbarObjects { get; set; } = new List<ToolbarModel>();
 
         public void SetDefaults()

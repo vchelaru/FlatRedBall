@@ -46,6 +46,7 @@
     <Compile Remove="GlueControl\Embedded\Editing\EditorVisuals.cs" />
     <Compile Remove="GlueControl\Embedded\Editing\EditorVisualsTileShapeCollection.cs" />
     <Compile Remove="GlueControl\Embedded\Editing\Guides.cs" />
+    <Compile Remove="GlueControl\Embedded\Editing\GumCursorLogic.cs" />
     <Compile Remove="GlueControl\Embedded\Editing\Managers\GenerateCodeCommands.cs" />
     <Compile Remove="GlueControl\Embedded\Editing\Managers\GlueCommands.cs" />
     <Compile Remove="GlueControl\Embedded\Editing\Managers\GlueCommandsStateBase.cs" />
@@ -180,6 +181,7 @@
     <EmbeddedResource Include="GlueControl\Embedded\Editing\EditorVisuals.cs" />
     <EmbeddedResource Include="GlueControl\Embedded\Editing\EditorVisualsTileShapeCollection.cs" />
     <EmbeddedResource Include="GlueControl\Embedded\Editing\Guides.cs" />
+    <EmbeddedResource Include="GlueControl\Embedded\Editing\GumCursorLogic.cs" />
     <EmbeddedResource Include="GlueControl\Embedded\Editing\Managers\GenerateCodeCommands.cs" />
     <EmbeddedResource Include="GlueControl\Embedded\Editing\Managers\GlueCommands.cs" />
     <EmbeddedResource Include="GlueControl\Embedded\Editing\Managers\GlueCommandsStateBase.cs" />

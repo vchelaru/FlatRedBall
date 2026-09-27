@@ -40,6 +40,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             this.compilerViewModel = compilerViewModel;
             this.glueViewSettingsViewModel = glueViewSettingsViewModel;
             this.glueViewSettingsTab = glueViewSettingsTab;
+            gameHostView.GumInteractionToggle.DataContext = glueViewSettingsViewModel;
             gameHostView.StopClicked += async (not, used) =>
             {
                 await PluginManager.CallPluginMethodAsync("Compiler Plugin", "KillGameProcess");
