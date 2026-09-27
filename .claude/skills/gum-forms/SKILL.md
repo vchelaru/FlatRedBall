@@ -18,4 +18,4 @@ FRB's Gum codegen makes two classes for each Gum element: a Visual runtime (`Gum
 ## Landmines
 
 - **Every Gum component is a Forms control.** `FormsClassCodeGenerator` makes each component's Forms class inherit `FlatRedBall.Forms.Controls.UserControl`, including plain layout panels. So "is this a Forms control?" says nothing about whether it's interactive.
-- **A Gum element under the cursor blocks world clicks in live edit.** When `GuiManager.Cursor.WindowOver` is non-null, `EditingManager` clears the items under the cursor, so a click selects nothing and deselects the current selection. A full-screen HUD component is enough to break selection across a whole screen. See [[glue-live-edit]].
+- **Gum UI under the cursor blocks world selection in live edit only when the Game tab's "Gum Interaction" checkbox is on** (`GumCursorLogic.ShouldGumBlockWorldSelection`). Gum controls still receive the click either way. See [[glue-live-edit]].
