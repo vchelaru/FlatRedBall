@@ -311,7 +311,7 @@ namespace FlatRedBall.Glue.IO
             // The reload replaces the selected element with a freshly-loaded copy, which drops its tree
             // node and the selection with it, so remember what was selected to re-select its equivalent.
             var selectedElement = GlueState.Self.CurrentElement;
-            var selectedTag = GlueState.Self.CurrentTreeNode?.Tag;
+            var selectedTag = GlueState.Self.CurrentSelectedTag;
 
             GlueProjectSave newGlueProjectSave = null;
             bool wasHandled = false;
