@@ -19,6 +19,7 @@ using FlatRedBall.Glue.VSHelpers.Projects;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 using FlatRedBall.Glue.Errors;
+using FlatRedBall.Glue.Events;
 using FlatRedBall.Glue.Parsing;
 using System.Security.Cryptography.Pkcs;
 using System.Threading.Tasks;
@@ -54,7 +55,7 @@ namespace FlatRedBall.Glue.IO
             {
                 if (!ProjectManager.WantsToCloseProject)
                 {
-                    await ReloadGlux();
+                    await ReloadGlux(changedFile);
                 }
                 handled = true;
             }
@@ -302,12 +303,15 @@ namespace FlatRedBall.Glue.IO
             return handled;
         }
 
-        private static async Task ReloadGlux()
+        private static async Task ReloadGlux(FilePath changedFile)
         {
-            object selectedObject = null;
-            PluginManager.ReceiveOutput("Reloading FlatRedBall Project");
+            var displayedFile = FileManager.MakeRelative(changedFile.FullPath, GlueState.Self.CurrentGlueProjectDirectory);
+            PluginManager.ReceiveOutput($"Reloading changed file {displayedFile}");
 
-            var parentElement = GlueState.Self.CurrentNamedObjectSave?.GetContainer();
+            // The reload replaces the selected element with a freshly-loaded copy, which drops its tree
+            // node and the selection with it, so remember what was selected to re-select its equivalent.
+            var selectedElement = GlueState.Self.CurrentElement;
+            var selectedTag = GlueState.Self.CurrentTreeNode?.Tag;
 
             GlueProjectSave newGlueProjectSave = null;
             bool wasHandled = false;
@@ -405,33 +409,81 @@ namespace FlatRedBall.Glue.IO
                 }
 
                 wasHandled = plan.Outcome != ProjectDiffOutcome.FullReloadRequired;
+
+                if (plan.Outcome == ProjectDiffOutcome.NoDifferences)
+                {
+                    PluginManager.ReceiveOutput($"No changes found in {displayedFile}");
+                }
+                else if (wasHandled)
+                {
+                    var refreshed = plan.ElementsToReplace.Select(item => item.ReplacementElement.Name)
+                        .Concat(plan.GlobalFilesToReplace.Select(item => item.ReplacementFile.Name))
+                        .Concat(plan.TopLevelPropertiesChanged);
+                    PluginManager.ReceiveOutput($"Refreshed {string.Join(", ", refreshed)}");
+                }
             }
             if (!wasHandled)
             {
+                PluginManager.ReceiveOutput($"Changes in {displayedFile} require a full project reload");
                 await ProjectLoader.Self.LoadProject(GlueState.Self.CurrentMainProject.FullFileName.FullPath);
             }
-            
 
-            // Now that everything is done we want to re-select the same object (if we can)
-            if (parentElement != null)
+            if (selectedElement != null)
             {
-                var newElement = ObjectFinder.Self.GetElement(parentElement.Name);
+                var newElement = ObjectFinder.Self.GetElement(selectedElement.Name);
 
-                if (newElement != null)
+                if (newElement != null && newElement != selectedElement)
                 {
-                    if(selectedObject != null && selectedObject is NamedObjectSave)
-                    {
-                        GlueCommands.Self.DoOnUiThread(() =>
-                        {
-                            NamedObjectSave newNos = newElement.GetNamedObject(((NamedObjectSave)selectedObject).InstanceName);
-
-                            // forces a refresh:
-                            GlueState.Self.CurrentNamedObjectSave = null;
-                            GlueState.Self.CurrentNamedObjectSave = newNos;
-                        });
-                    }
-                }                
+                    var newSelection = GetEquivalentSelection(selectedTag, selectedElement, newElement);
+                    GlueCommands.Self.DoOnUiThread(() => Select(newSelection));
+                }
             }
+        }
+
+        private static void Select(object tag)
+        {
+            switch (tag)
+            {
+                case NamedObjectSave nos: GlueState.Self.CurrentNamedObjectSave = nos; break;
+                case CustomVariable variable: GlueState.Self.CurrentCustomVariable = variable; break;
+                case ReferencedFileSave rfs: GlueState.Self.CurrentReferencedFileSave = rfs; break;
+                case EventResponseSave ers: GlueState.Self.CurrentEventResponseSave = ers; break;
+                case StateSave state: GlueState.Self.CurrentStateSave = state; break;
+                case StateSaveCategory category: GlueState.Self.CurrentStateSaveCategory = category; break;
+                case GlueElement element: GlueState.Self.CurrentElement = element; break;
+            }
+        }
+
+        /// <summary>
+        /// Returns the object in <paramref name="newElement"/> that corresponds to <paramref name="oldTag"/>
+        /// in <paramref name="oldElement"/>, matched by name. Falls back to <paramref name="newElement"/>
+        /// itself when the tag is the element, a tagless node (a folder), or something no longer present.
+        /// </summary>
+        internal static object GetEquivalentSelection(object oldTag, GlueElement oldElement, GlueElement newElement)
+        {
+            object match = oldTag switch
+            {
+                NamedObjectSave nos => newElement.AllNamedObjects.FirstOrDefault(item => item.InstanceName == nos.InstanceName),
+                CustomVariable variable => newElement.CustomVariables.FirstOrDefault(item => item.Name == variable.Name),
+                ReferencedFileSave rfs => newElement.ReferencedFiles.FirstOrDefault(item => item.Name == rfs.Name),
+                EventResponseSave ers => newElement.Events.FirstOrDefault(item => item.EventName == ers.EventName),
+                StateSaveCategory category => newElement.StateCategoryList.FirstOrDefault(item => item.Name == category.Name),
+                StateSave state => GetEquivalentState(state, oldElement, newElement),
+                _ => null
+            };
+
+            return match ?? newElement;
+        }
+
+        private static StateSave GetEquivalentState(StateSave state, GlueElement oldElement, GlueElement newElement)
+        {
+            var oldCategory = oldElement.StateCategoryList.FirstOrDefault(item => item.States.Contains(state));
+
+            var states = oldCategory == null
+                ? newElement.States
+                : newElement.StateCategoryList.FirstOrDefault(item => item.Name == oldCategory.Name)?.States;
+
+            return states?.FirstOrDefault(item => item.Name == state.Name);
         }
 
         /// <summary>
