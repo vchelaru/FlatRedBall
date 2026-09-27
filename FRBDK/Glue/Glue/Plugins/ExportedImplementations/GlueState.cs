@@ -108,6 +108,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             }
         }
 
+        /// <summary>
+        /// The first selected model object (element, object, variable, state, file, event), or null when
+        /// nothing or only a tagless node (a folder) is selected. Unlike <see cref="CurrentTreeNode"/>'s
+        /// Tag, this does not need a tree view.
+        /// </summary>
+        public object CurrentSelectedTag => snapshot.SelectedTags.FirstOrDefault();
+
         // Every Current* setter below selects by model object. The selection lives here, not in the
         // tree view: a tree node (when a tree exists) is looked up so the tree view and other
         // ITreeNode-based plugins can follow, but the snapshot is derived from the object itself, so
