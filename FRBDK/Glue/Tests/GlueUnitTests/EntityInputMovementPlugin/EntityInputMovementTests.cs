@@ -5,6 +5,7 @@ using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.Tasks;
 using FlatRedBall.PlatformerPlugin.ViewModels;
 using GlueUnitTests.TestSupport;
 using GlueUnitTests.Tasks;
@@ -347,6 +348,148 @@ public class EntityInputMovementTests : IDisposable
         customClass.ShouldNotBeNull();
         customClass!.CsvFilesUsingThis.ShouldContain(csvRfs.Name);
     }
+
+    #region Project load must not wipe an unreadable csv
+
+    // On load, each plugin reads the movement csv and writes it back. A csv that fails to parse used to be
+    // written back as a header-only table, deleting every row and the generated constants code relies on.
+
+    private static string BreakFirstBool(string csvContents) =>
+        csvContents.Replace(",True,", ",NotABool,");
+
+    [Fact]
+    public async System.Threading.Tasks.Task RegenerateCsvFromDisk_ShouldLeaveCsvUntouched_WhenItCannotBeRead()
+    {
+        var entity = new EntitySave { Name = "Entities\\Player" };
+        GlueState.Self.CurrentGlueProject.Entities.Add(entity);
+        GlueState.Self.CurrentElement = entity;
+
+        var viewModel = TopDownPlugin.Controllers.MainController.Self.GetViewModel();
+        viewModel.BackingData = entity;
+        viewModel.IsTopDown = true;
+        await TaskManager.Self.WaitForAllTasksFinished();
+
+        var csvPath = TopDownPlugin.DataGenerators.CsvGenerator.Self.CsvTopdownFileFor(entity).FullPath;
+        var brokenContents = BreakFirstBool(File.ReadAllText(csvPath));
+        brokenContents.ShouldContain("NotABool");
+        File.WriteAllText(csvPath, brokenContents);
+
+        await TopDownPlugin.Controllers.MainController.Self.RegenerateCsvFromDisk(entity);
+        await TaskManager.Self.WaitForAllTasksFinished();
+
+        File.ReadAllText(csvPath).ShouldBe(brokenContents);
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task ForceCsvGenerationFor_ShouldLeaveCsvUntouched_WhenItCannotBeRead()
+    {
+        var entity = new EntitySave { Name = "Entities\\Player" };
+        GlueState.Self.CurrentGlueProject.Entities.Add(entity);
+        GlueState.Self.CurrentElement = entity;
+
+        var viewModel = FlatRedBall.PlatformerPlugin.Controllers.MainController.Self.GetViewModel();
+        viewModel.BackingData = entity;
+        viewModel.IsPlatformer = true;
+        await TaskManager.Self.WaitForAllTasksFinished();
+
+        var csvPath = FlatRedBall.PlatformerPlugin.Generators.CsvGenerator.Self.CsvPlatformerFileFor(entity).FullPath;
+        var brokenContents = BreakFirstBool(File.ReadAllText(csvPath));
+        brokenContents.ShouldContain("NotABool");
+        File.WriteAllText(csvPath, brokenContents);
+
+        await FlatRedBall.PlatformerPlugin.Controllers.MainController.ForceCsvGenerationFor(entity);
+        await TaskManager.Self.WaitForAllTasksFinished();
+
+        File.ReadAllText(csvPath).ShouldBe(brokenContents);
+    }
+
+    #endregion
+
+    #region Csv write must not read the view model after it's queued
+
+    // The view models are singletons that selecting an entity refreshes. In Glue the csv write sits in the
+    // task queue for a while, so if the write read the view model when it ran, a selection in between
+    // wrote the newly selected entity's rows (usually none) to the original entity's csv. Under
+    // SynchronousMode nothing actually waits, so these tests select the other entity the moment the csv
+    // task is handed to the TaskManager, before its body runs.
+
+    private static async System.Threading.Tasks.Task RunSelectingOtherEntityWhenCsvTaskStarts(
+        Action selectOtherEntity, Action triggerCsvWrite)
+    {
+        var hasSelected = false;
+        void HandleTask(TaskEvent taskEvent, GlueTaskBase task)
+        {
+            var isStarting = taskEvent == TaskEvent.Queued || taskEvent == TaskEvent.StartedImmediate;
+            if (!hasSelected && isStarting && task.DisplayInfo?.Contains("CSV for") == true)
+            {
+                hasSelected = true;
+                selectOtherEntity();
+            }
+        }
+
+        TaskManager.Self.TaskAddedOrRemoved += HandleTask;
+        try
+        {
+            triggerCsvWrite();
+            await TaskManager.Self.WaitForAllTasksFinished();
+        }
+        finally
+        {
+            TaskManager.Self.TaskAddedOrRemoved -= HandleTask;
+        }
+
+        hasSelected.ShouldBeTrue("the csv task never started, so the test didn't exercise anything");
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task TopDownCsvWrite_ShouldKeepEntitysValues_WhenAnotherEntityIsSelectedBeforeTheWriteRuns()
+    {
+        var player = new EntitySave { Name = "Entities\\Player" };
+        var enemy = new EntitySave { Name = "Entities\\Enemy" };
+        GlueState.Self.CurrentGlueProject.Entities.Add(player);
+        GlueState.Self.CurrentGlueProject.Entities.Add(enemy);
+        GlueState.Self.CurrentElement = player;
+
+        var controller = TopDownPlugin.Controllers.MainController.Self;
+        var viewModel = controller.GetViewModel();
+        viewModel.BackingData = player;
+        viewModel.IsTopDown = true;
+        await TaskManager.Self.WaitForAllTasksFinished();
+
+        await RunSelectingOtherEntityWhenCsvTaskStarts(
+            selectOtherEntity: () => controller.UpdateTo(enemy),
+            triggerCsvWrite: () => viewModel.TopDownValues[0].MaxSpeed = 777);
+
+        var csvContents = File.ReadAllText(TopDownPlugin.DataGenerators.CsvGenerator.Self.CsvTopdownFileFor(player).FullPath);
+        csvContents.ShouldContain("Default");
+        csvContents.ShouldContain("777");
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task PlatformerCsvWrite_ShouldKeepEntitysValues_WhenAnotherEntityIsSelectedBeforeTheWriteRuns()
+    {
+        var player = new EntitySave { Name = "Entities\\Player" };
+        var enemy = new EntitySave { Name = "Entities\\Enemy" };
+        GlueState.Self.CurrentGlueProject.Entities.Add(player);
+        GlueState.Self.CurrentGlueProject.Entities.Add(enemy);
+        GlueState.Self.CurrentElement = player;
+
+        var controller = FlatRedBall.PlatformerPlugin.Controllers.MainController.Self;
+        var viewModel = controller.GetViewModel();
+        viewModel.BackingData = player;
+        viewModel.IsPlatformer = true;
+        await TaskManager.Self.WaitForAllTasksFinished();
+
+        await RunSelectingOtherEntityWhenCsvTaskStarts(
+            selectOtherEntity: () => controller.UpdateTo(enemy),
+            triggerCsvWrite: () => viewModel.PlatformerValues[0].MaxSpeedX = 777);
+
+        var csvContents = File.ReadAllText(FlatRedBall.PlatformerPlugin.Generators.CsvGenerator.Self.CsvPlatformerFileFor(player).FullPath);
+        csvContents.ShouldContain("Ground");
+        csvContents.ShouldContain("777");
+    }
+
+    #endregion
 
     private class InlineUiThreadMarshaller : IUiThreadMarshaller
     {

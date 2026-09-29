@@ -267,10 +267,25 @@ internal sealed class LiveGameProcess : IDisposable
 
             if (!connectionManager.IsConnected)
             {
+                // A timed-out game usually printed nothing, so its CPU time is what tells a slow start
+                // (busy) from a hang (idle). Read before Kill, after which the process can't be queried.
+                string processState;
+                try
+                {
+                    process.Refresh();
+                    processState = $" Game CPU time {process.TotalProcessorTime.TotalSeconds:0.0}s, " +
+                        $"working set {process.WorkingSet64 / (1024 * 1024)}MB.";
+                }
+                catch (Exception e)
+                {
+                    processState = $" Could not read game process state: {e.Message}";
+                }
+
                 try { process.Kill(entireProcessTree: true); } catch { }
                 connectionManager.Dispose();
                 throw new InvalidOperationException(
                     $"{exePath} did not connect back to Glue on port {port} within {(connectTimeout ?? TimeSpan.FromSeconds(20)).TotalSeconds:0}s." +
+                    processState +
                     DescribeCapturedOutput(capturedStandardOutput, capturedStandardError));
             }
 

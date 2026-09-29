@@ -286,6 +286,27 @@ namespace TopDownPlugin.Controllers
             }
         }
 
+        /// <summary>
+        /// Rewrites the entity's csv from what's on disk, which is how a project load picks up header
+        /// changes. Skips the write when an existing csv yields no rows, since the csv failed to load and
+        /// writing it back would delete every row, along with the generated constants that code uses.
+        /// </summary>
+        public async Task RegenerateCsvFromDisk(EntitySave entity)
+        {
+            GetViewModel();
+            UpdateTo(entity);
+
+            var csvFile = CsvGenerator.Self.CsvTopdownFileFor(entity);
+            if (viewModel.TopDownValues.Count == 0 && csvFile.Exists())
+            {
+                GlueCommands.Self.PrintError(
+                    $"Not regenerating {csvFile} because no movement values were read from it. Check the csv for errors.");
+                return;
+            }
+
+            await GenerateAndAddCsv(entity, viewModel);
+        }
+
         public async Task GenerateAndAddCsv(EntitySave entity, TopDownEntityViewModel viewModel)
         {
             var didGenerate = false;
