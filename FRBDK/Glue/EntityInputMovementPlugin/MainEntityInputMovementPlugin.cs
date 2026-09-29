@@ -177,20 +177,7 @@ namespace EntityInputMovementPlugin
                 TopDownPlugin.CodeGenerators.AiCodeGenerator.Self.GenerateAndSave();
                 TopDownPlugin.CodeGenerators.AiTargetLogicCodeGenerator.Self.GenerateAndSave();
 
-                var topDownController = TopDownPlugin.Controllers.MainController.Self;
-
-                // This guarantees a instance exists in the controller and returns it...
-                var viewModel =
-                    TopDownPlugin.Controllers.MainController.Self.GetViewModel();
-
-
-
-                // ...updating to the argument entity will update the view model that was returned in the last call.
-                TopDownPlugin.Controllers.MainController.Self.UpdateTo(firstTopDownEntity);
-                
-                await topDownController.GenerateAndAddCsv(
-                    firstTopDownEntity,
-                    viewModel);
+                await TopDownPlugin.Controllers.MainController.Self.RegenerateCsvFromDisk(firstTopDownEntity);
 
                 TopDownPlugin.CodeGenerators.TopDownAnimationControllerGenerator.Self.GenerateAndSave();
 

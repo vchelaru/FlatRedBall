@@ -348,6 +348,62 @@ public class EntityInputMovementTests : IDisposable
         customClass!.CsvFilesUsingThis.ShouldContain(csvRfs.Name);
     }
 
+    #region Project load must not wipe an unreadable csv
+
+    // On load, each plugin reads the movement csv and writes it back. A csv that fails to parse used to be
+    // written back as a header-only table, deleting every row and the generated constants code relies on.
+
+    private static string BreakFirstBool(string csvContents) =>
+        csvContents.Replace(",True,", ",NotABool,");
+
+    [Fact]
+    public async System.Threading.Tasks.Task RegenerateCsvFromDisk_ShouldLeaveCsvUntouched_WhenItCannotBeRead()
+    {
+        var entity = new EntitySave { Name = "Entities\\Player" };
+        GlueState.Self.CurrentGlueProject.Entities.Add(entity);
+        GlueState.Self.CurrentElement = entity;
+
+        var viewModel = TopDownPlugin.Controllers.MainController.Self.GetViewModel();
+        viewModel.BackingData = entity;
+        viewModel.IsTopDown = true;
+        await TaskManager.Self.WaitForAllTasksFinished();
+
+        var csvPath = TopDownPlugin.DataGenerators.CsvGenerator.Self.CsvTopdownFileFor(entity).FullPath;
+        var brokenContents = BreakFirstBool(File.ReadAllText(csvPath));
+        brokenContents.ShouldContain("NotABool");
+        File.WriteAllText(csvPath, brokenContents);
+
+        await TopDownPlugin.Controllers.MainController.Self.RegenerateCsvFromDisk(entity);
+        await TaskManager.Self.WaitForAllTasksFinished();
+
+        File.ReadAllText(csvPath).ShouldBe(brokenContents);
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task ForceCsvGenerationFor_ShouldLeaveCsvUntouched_WhenItCannotBeRead()
+    {
+        var entity = new EntitySave { Name = "Entities\\Player" };
+        GlueState.Self.CurrentGlueProject.Entities.Add(entity);
+        GlueState.Self.CurrentElement = entity;
+
+        var viewModel = FlatRedBall.PlatformerPlugin.Controllers.MainController.Self.GetViewModel();
+        viewModel.BackingData = entity;
+        viewModel.IsPlatformer = true;
+        await TaskManager.Self.WaitForAllTasksFinished();
+
+        var csvPath = FlatRedBall.PlatformerPlugin.Generators.CsvGenerator.Self.CsvPlatformerFileFor(entity).FullPath;
+        var brokenContents = BreakFirstBool(File.ReadAllText(csvPath));
+        brokenContents.ShouldContain("NotABool");
+        File.WriteAllText(csvPath, brokenContents);
+
+        await FlatRedBall.PlatformerPlugin.Controllers.MainController.ForceCsvGenerationFor(entity);
+        await TaskManager.Self.WaitForAllTasksFinished();
+
+        File.ReadAllText(csvPath).ShouldBe(brokenContents);
+    }
+
+    #endregion
+
     private class InlineUiThreadMarshaller : IUiThreadMarshaller
     {
         public void Invoke(Action action) => action();

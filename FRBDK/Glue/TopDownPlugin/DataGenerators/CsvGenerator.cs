@@ -53,12 +53,14 @@ namespace TopDownPlugin.DataGenerators
 
         internal Task GenerateFor(EntitySave entity, bool inheritsFromTopDown, TopDownEntityViewModel viewModel, CsvHeader[] lastHeaders)
         {
+            // Built before queuing: the view model is a singleton that selecting another entity refreshes,
+            // so reading it when the task runs could write that entity's (possibly empty) rows to this file.
+            string newContents = GenerateCsvContents(inheritsFromTopDown, viewModel, lastHeaders);
+
+            var fileName = CsvTopdownFileFor(entity);
+
             return TaskManager.Self.AddAsync(() =>
             {
-                string newContents = GenerateCsvContents(inheritsFromTopDown, viewModel, lastHeaders);
-
-                var fileName = CsvTopdownFileFor(entity);
-
                 try
                 {
                     GlueCommands.Self.TryMultipleTimes(() =>

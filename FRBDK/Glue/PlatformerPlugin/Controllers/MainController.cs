@@ -422,6 +422,16 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
             var vm = new PlatformerEntityViewModel();
             UpdateViewModelTo(entitySave, vm);
 
+            // No rows from an existing csv means it failed to load. Writing it back would delete every row,
+            // along with the generated constants that code uses.
+            var csvFile = CsvGenerator.Self.CsvPlatformerFileFor(entitySave);
+            if (vm.PlatformerValues.Count == 0 && csvFile.Exists())
+            {
+                GlueCommands.Self.PrintError(
+                    $"Not regenerating {csvFile} because no movement values were read from it. Check the csv for errors.");
+                return;
+            }
+
             var inheritsFromPlatformerEntity = GetIfInheritsFromPlatformer(entitySave);
 
             // now that we have a prepared VM, generate it

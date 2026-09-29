@@ -54,12 +54,14 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
         internal Task GenerateFor(EntitySave entity, bool inheritsFromPlatformer, PlatformerEntityViewModel viewModel)
         {
+            // Built before queuing: the view model is a singleton that selecting another entity refreshes,
+            // so reading it when the task runs could write that entity's rows to this file.
+            string contents = GenerateCsvContents(inheritsFromPlatformer, viewModel);
+
+            var fileName = CsvPlatformerFileFor(entity);
+
             return TaskManager.Self.AddAsync(() =>
             {
-                string contents = GenerateCsvContents(inheritsFromPlatformer, viewModel);
-
-                var fileName = CsvPlatformerFileFor(entity);
-
                 GlueCommands.Self.TryMultipleTimes(() =>
                 {
                     FileManager.SaveText(contents, fileName.FullPath);
