@@ -1,10 +1,13 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.SaveClasses;
 using GlueUnitTests.TestSupport;
 using OfficialPlugins.VariableDisplay;
 using Shouldly;
 using WpfDataUi;
+using WpfDataUi.DataTypes;
 
 namespace GlueUnitTests.PropertyGrid;
 
@@ -64,5 +67,52 @@ public class NamedObjectVariableShowingLogicTests : IDisposable
         // null (instance.ClassType is unset), so "ExtraVariable" is missing from the freshly
         // derived dictionary even though the grid has a member for it.
         Should.NotThrow(() => NamedObjectVariableShowingLogic.UpdateShownVariables(grid, instance, screen, ati));
+    }
+
+    // GitHub issue #2345: a positive TextureScale takes priority over Width/Height, so the grid
+    // should say so under those two variables (same way X/Y say they may be overwritten by animations).
+    private static List<MemberCategory> BuildGridWithWidthAndHeight(object textureScale)
+    {
+        var screen = new ScreenSave { Name = "Screens/GameScreen/GameScreen" };
+        ObjectFinder.Self.GlueProject.Screens.Add(screen);
+
+        var ati = new AssetTypeInfo { FriendlyName = "TestType" };
+        ati.VariableDefinitions.Add(new VariableDefinition { Name = "Width", Type = "float" });
+        ati.VariableDefinitions.Add(new VariableDefinition { Name = "Height", Type = "float" });
+
+        var instance = new NamedObjectSave { InstanceName = "TestInstance", SourceType = SourceType.FlatRedBallType };
+        if (textureScale != null)
+        {
+            instance.InstructionSaves.Add(new CustomVariableInNamedObject { Member = "TextureScale", Value = textureScale });
+        }
+        screen.NamedObjects.Add(instance);
+
+        var grid = new DataUiGrid();
+        NamedObjectVariableShowingLogic.UpdateShownVariables(grid, instance, screen, ati);
+        return grid.Categories.ToList();
+    }
+
+    [StaTheory]
+    [InlineData(1f)]
+    [InlineData(2)]
+    [InlineData(0.5)]
+    public void UpdateShownVariables_ShouldShowSubtextOnWidthAndHeight_WhenTextureScaleIsPositive(object textureScale)
+    {
+        var members = BuildGridWithWidthAndHeight(textureScale).SelectMany(c => c.Members).ToList();
+
+        members.First(m => m.DisplayName == "Width").DetailText.ShouldNotBeNullOrEmpty();
+        members.First(m => m.DisplayName == "Height").DetailText.ShouldNotBeNullOrEmpty();
+    }
+
+    [StaTheory]
+    [InlineData(null)]
+    [InlineData(0f)]
+    [InlineData(-1f)]
+    public void UpdateShownVariables_ShouldNotShowSubtextOnWidthAndHeight_WhenTextureScaleIsNotPositive(object textureScale)
+    {
+        var members = BuildGridWithWidthAndHeight(textureScale).SelectMany(c => c.Members).ToList();
+
+        members.First(m => m.DisplayName == "Width").DetailText.ShouldBeNullOrEmpty();
+        members.First(m => m.DisplayName == "Height").DetailText.ShouldBeNullOrEmpty();
     }
 }
