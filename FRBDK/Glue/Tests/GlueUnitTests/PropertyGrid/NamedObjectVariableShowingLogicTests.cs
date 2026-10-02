@@ -76,9 +76,7 @@ public class NamedObjectVariableShowingLogicTests : IDisposable
         var screen = new ScreenSave { Name = "Screens/GameScreen/GameScreen" };
         ObjectFinder.Self.GlueProject.Screens.Add(screen);
 
-        var ati = new AssetTypeInfo { FriendlyName = "TestType" };
-        ati.VariableDefinitions.Add(new VariableDefinition { Name = "Width", Type = "float" });
-        ati.VariableDefinitions.Add(new VariableDefinition { Name = "Height", Type = "float" });
+        var ati = AvailableAssetTypes.CommonAtis.Sprite;
 
         var instance = new NamedObjectSave { InstanceName = "TestInstance", SourceType = SourceType.FlatRedBallType };
         if (textureScale != null)

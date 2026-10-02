@@ -153,8 +153,8 @@ namespace OfficialPlugins.VariableDisplay
             var widthVariable = categories.SelectMany(item => item.Members).FirstOrDefault(item => item.DisplayName == "Width");
             var heightVariable = categories.SelectMany(item => item.Members).FirstOrDefault(item => item.DisplayName == "Height");
 
-            string sizeSubtext = GetTextureScale(instance) > 0
-                ? "This value may be overwritten because TextureScale is greater than 0"
+            string sizeSubtext = assetTypeInfo == AvailableAssetTypes.CommonAtis.Sprite && GetTextureScale(instance) > 0
+                ? "Overridden by TextureScale while it is greater than 0"
                 : null;
 
             foreach (var sizeVariable in new[] { widthVariable, heightVariable })
