@@ -616,6 +616,8 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
         EntitySave entitySave = new EntitySave();
         entitySave.Is2D = is2D;
         entitySave.Name = qualifiedEntityName;
+        entitySave.UseGlobalContent =
+            GlueState.Self.CurrentGlueProject.GlobalContentSettingsSave.DefaultNewEntitiesToUseGlobalContent;
 
         const bool AddXYZ = true;
 
