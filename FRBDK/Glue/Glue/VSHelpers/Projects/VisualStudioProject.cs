@@ -1241,6 +1241,36 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         }
 
         /// <summary>
+        /// Removes every item whose include resolves to <paramref name="filePath"/> but only if that file does
+        /// not exist on disk. Used by the "Remove reference" action on missing-file errors (GitHub issue #2347).
+        /// Returns true if at least one item was removed. The caller is responsible for saving the project.
+        /// </summary>
+        public bool RemoveMissingFileReference(FilePath filePath)
+        {
+            if (filePath.Exists())
+            {
+                return false;
+            }
+
+            return RemoveItems(GetItemsReferencing(filePath));
+        }
+
+        /// <summary>
+        /// Returns whether any non-imported item in this project's include resolves to <paramref name="filePath"/>.
+        /// </summary>
+        public bool IsFileReferenced(FilePath filePath) => GetItemsReferencing(filePath).Count > 0;
+
+        List<ProjectItem> GetItemsReferencing(FilePath filePath) =>
+            EvaluatedItems
+                .Where(item => !item.IsImported)
+                .Where(item =>
+                {
+                    FilePath itemPath = this.Directory + item.EvaluatedInclude;
+                    return itemPath == filePath;
+                })
+                .ToList();
+
+        /// <summary>
         /// Removes &lt;Compile Include&gt; entries for Glue-generated files (".Generated.cs",
         /// ".Generated.Event.cs", factories, Gum Forms code) whose backing file no longer exists on disk and
         /// which no element in <paramref name="ownerElements"/> or path in

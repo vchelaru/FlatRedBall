@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FlatRedBall.Glue.Errors;
+using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.VSHelpers.Projects;
 using FlatRedBall.IO;
@@ -22,6 +23,22 @@ public class MissingCsprojReferencedFile : ErrorViewModel
         Project = project;
         FilePath = filePath;
         Details = $"The file {FilePath} is referenced in the .csproj {project.Name}, but it does not exist on disk.";
+
+        // "Go To Object" does nothing for this error since there is no Glue object to select.
+        MenuItemList.Clear();
+        MenuItemList.Add(new MenuItemViewModel
+        {
+            Header = "Remove Reference From .csproj",
+            Command = new Command(RemoveReference)
+        });
+    }
+
+    internal void RemoveReference()
+    {
+        if (Project.RemoveMissingFileReference(FilePath))
+        {
+            GlueCommands.Self.ProjectCommands.SaveProjects();
+        }
     }
 
     public override bool GetIfIsFixed()
@@ -36,9 +53,7 @@ public class MissingCsprojReferencedFile : ErrorViewModel
             return true;
         }
 
-        // is it included in the project?
-        // todo:
-
-        return false;
+        // fixed if the reference was removed from the project
+        return !Project.IsFileReferenced(FilePath);
     }
 }
