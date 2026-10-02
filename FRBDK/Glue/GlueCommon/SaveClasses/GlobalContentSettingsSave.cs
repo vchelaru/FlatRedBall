@@ -23,5 +23,13 @@ namespace FlatRedBall.Glue.SaveClasses
         {
             get; set;
         } = true;
+
+        /// <summary>
+        /// When true, newly created entities have UseGlobalContent set to true. Existing entities are not changed.
+        /// </summary>
+        public bool DefaultNewEntitiesToUseGlobalContent
+        {
+            get; set;
+        }
     }
 }

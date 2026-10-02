@@ -22,16 +22,24 @@ namespace OfficialPlugins.GlobalContentManagerPlugin.ViewModels
             set => Set(value);
         }
 
+        public bool DefaultNewEntitiesToUseGlobalContent
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         internal void SetFrom(GlobalContentSettingsSave globalContentSettingsSave)
         {
             this.GenerateLoadGlobalContentCode = globalContentSettingsSave.GenerateLoadGlobalContentCode;
             this.LoadAsynchronously = globalContentSettingsSave.LoadAsynchronously;
+            this.DefaultNewEntitiesToUseGlobalContent = globalContentSettingsSave.DefaultNewEntitiesToUseGlobalContent;
         }
 
         internal void SetOn(GlobalContentSettingsSave globalContentSettingsSave)
         {
             globalContentSettingsSave.GenerateLoadGlobalContentCode = this.GenerateLoadGlobalContentCode;
             globalContentSettingsSave.LoadAsynchronously = this.LoadAsynchronously;
+            globalContentSettingsSave.DefaultNewEntitiesToUseGlobalContent = this.DefaultNewEntitiesToUseGlobalContent;
         }
     }
 }

@@ -9,5 +9,6 @@
     <StackPanel>
         <CheckBox IsChecked="{Binding GenerateLoadGlobalContentCode}" >Generate GlobalContent Initialize</CheckBox>
         <CheckBox IsChecked="{Binding LoadAsynchronously}" >Load Asynchronously</CheckBox>
+        <CheckBox IsChecked="{Binding DefaultNewEntitiesToUseGlobalContent}" >Default New Entities to Use Global Content</CheckBox>
     </StackPanel>
 </UserControl>

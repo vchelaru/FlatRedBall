@@ -49,6 +49,7 @@ namespace OfficialPlugins.GlobalContentManagerPlugin.Views
             {
                 case nameof(ViewModels.GlobalContentPropertiesViewModel.GenerateLoadGlobalContentCode):
                 case nameof(ViewModels.GlobalContentPropertiesViewModel.LoadAsynchronously):
+                case nameof(ViewModels.GlobalContentPropertiesViewModel.DefaultNewEntitiesToUseGlobalContent):
                     TaskManager.Self.AddAsync(() =>
                     {
                         vm.SetOn(GlueState.Self.CurrentGlueProject.GlobalContentSettingsSave);
