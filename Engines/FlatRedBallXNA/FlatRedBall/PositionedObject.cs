@@ -1722,17 +1722,7 @@ namespace FlatRedBall
                     // Set the property RotationMatrix rather than the field mRotationMatrix
                     // so the individual rotation values get updated.
 
-                    // It's possible for RotationY to get set incorrectly, so let's check what we have on the parent:
-                    if (mParent.RotationX == 0 && mParent.RotationY == 0)
-                    {
-                        RotationX = 0;
-                        RotationY = 0;
-                        RotationZ = mParent.RotationZ;
-                    }
-                    else
-                    {
-                        RotationMatrix = mRelativeRotationMatrix * mParent.mRotationMatrix;
-                    }
+                    RotationMatrix = mRelativeRotationMatrix * mParent.mRotationMatrix;
                 }
                 else
                 {
