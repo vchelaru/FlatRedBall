@@ -150,7 +150,39 @@ namespace OfficialPlugins.VariableDisplay
                 }
             }
 
+            var widthVariable = categories.SelectMany(item => item.Members).FirstOrDefault(item => item.DisplayName == "Width");
+            var heightVariable = categories.SelectMany(item => item.Members).FirstOrDefault(item => item.DisplayName == "Height");
+
+            string sizeSubtext = assetTypeInfo == AvailableAssetTypes.CommonAtis.Sprite && GetTextureScale(instance) > 0
+                ? "Overridden by TextureScale while it is greater than 0"
+                : null;
+
+            foreach (var sizeVariable in new[] { widthVariable, heightVariable })
+            {
+                if (sizeVariable != null && sizeVariable.DetailText != sizeSubtext)
+                {
+                    changed = true;
+                    sizeVariable.DetailText = sizeSubtext;
+                }
+            }
+
             return changed;
+        }
+
+        private static float GetTextureScale(NamedObjectSave instance)
+        {
+            var value = instance.GetCustomVariable("TextureScale")?.Value;
+
+            return value switch
+            {
+                int asInt => asInt,
+                float asFloat => asFloat,
+                double asDouble => (float)asDouble,
+                long asLong => asLong,
+                string asString when float.TryParse(asString, System.Globalization.NumberStyles.Float,
+                    System.Globalization.CultureInfo.InvariantCulture, out var parsed) => parsed,
+                _ => 0
+            };
         }
 
         private static MemberCategory CreateTopmostCategory(List<MemberCategory> categories)
