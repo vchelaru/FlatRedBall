@@ -33,7 +33,7 @@ Consequences worth knowing before debugging "why isn't this variable generated":
 - A `.gutx` written before Gum added a variable never gains it, at any Glue version. Every checked-in sample is in this state.
 - Bumping `GluxVersions` alone will not make a variable appear — if the project's `.gutx` lacks it, no gate change helps.
 - A fixture built from `StandardElementsManager.Self.GetDefaultStateFor(name)` is a *current* editor's output, so it cannot reproduce this. Load a real sample's `.gumx` and call `Initialize(element.DefaultState)` per element to match production — see `GumGeneratedCodeCompilesTests.LegacyGutxStandardElementRuntimes_ShouldCompileAgainstTheRealEngine`.
-- `ProjectLoader.LoadProject` bumps the `.gluj`'s `FileVersion` to `LatestVersion` on load. So the live combination is always **current `GluxVersions` + whatever the `.gutx` happens to contain**, which is exactly what produced #1979.
+- Nothing bumps an existing `.gluj`'s `FileVersion` on load (only new projects get `LatestVersion`, in `ProjectLoader`). The live combination is the project's own `FileVersion` + whatever its `.gutx` contains, and a source-linked project can pair a very old `FileVersion` with the newest Gum runtime.
 
 ## The compiler can never catch a runtime mismatch (landmine)
 
@@ -132,7 +132,7 @@ There's also a per-type variant analogous to the property pipeline (`AddTypeSpec
 3. Update **every** pipeline that touches it:
    - Property pipeline: `ExcludeIfVersionLessThan(...)` in `StandardsCodeGenerator.RefreshVariableNamesToSkipForProperties` (global) or the `NineSliceCodeGenerator`-style `HasFeature` bool + conditional `Add` (type-specific).
    - State pipeline: an `if/else` `Include` / `Skip` block in `StateCodeGenerator.RefreshVariableNamesToSkipBasedOnGlueVersion`.
-   - Inheritance: only if the member belongs to a `Gum.Wireframe.I*Runtime` interface — gate the members on the *same* bool as `AddAdditionalInheritance`, never a separate one.
+   - Inheritance: only if the member belongs to a `Gum.Wireframe.I*Runtime` interface — gate the members on the *same* bool as `AddAdditionalInheritance`, never a separate one. That bool is also true for source-linked projects at any `FileVersion`, so interface members must bypass the skip lists (`NineSliceCodeGenerator.IsRequiredByDeclaredInterface`, checked first in `GetIfShouldGenerateProperty`); a `FileVersion`-only skip otherwise drops a member the interface requires.
 4. The gate's polarity is **"skip when below version"**, i.e. older projects don't see the new variable. The new variable becomes visible at and above the gating version.
 
 A pre-flight check that's saved time more than once: pick one already-gated variable (`IgnoredByParentSize` is a good one) and grep for it. Every place it appears is a place your new variable probably also needs to appear.
