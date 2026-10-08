@@ -640,11 +640,15 @@ namespace GumPlugin.CodeGeneration
         {
             string variableName = variable.GetRootName();
 
-            if (mVariableNamesToSkipForProperties.Contains(variableName))
+            // Checked before the skip lists: a member of an interface the class declares can't be skipped.
+            // The state check below still applies (a state is never a property).
+            bool requiredByInterface = _nineSliceCodeGenerator.IsRequiredByDeclaredInterface(standardElementSave.Name, variableName);
+
+            if (!requiredByInterface && mVariableNamesToSkipForProperties.Contains(variableName))
             {
                 return false;
             }
-            if(_typedVariableNamesToSkipForProperties.ContainsKey(standardElementSave.Name))
+            if(!requiredByInterface && _typedVariableNamesToSkipForProperties.ContainsKey(standardElementSave.Name))
             {
                 var list = _typedVariableNamesToSkipForProperties[standardElementSave.Name];
 

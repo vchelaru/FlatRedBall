@@ -50,6 +50,17 @@ public class NineSliceCodeGenerator
         "IsTilingMiddleSections",
     };
 
+    // True for a member of INineSliceRuntime on a class that declares it. Such a member must be generated
+    // whatever the skip lists say: they gate on FileVersion alone, while the interface is also declared for
+    // any FRB-source-linked project regardless of FileVersion, so a skip would leave the class not
+    // implementing its own interface (CS0535).
+    internal bool IsRequiredByDeclaredInterface(string standardElementName, string variableRootName)
+    {
+        return standardElementName == "NineSlice"
+            && HasFrbRuntimeInterfaces
+            && InterfaceMemberNames.Contains(variableRootName);
+    }
+
     public void AddAdditionalInheritance(StandardElementSave standardElementSave, List<string> inheritanceList)
     {
         if (standardElementSave.Name != "NineSlice" || !HasFrbRuntimeInterfaces)

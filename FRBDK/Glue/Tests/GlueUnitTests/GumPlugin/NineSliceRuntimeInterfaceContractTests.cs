@@ -133,6 +133,57 @@ public class NineSliceRuntimeInterfaceContractTests : IDisposable
         generatedSource.ShouldNotContain("IsTilingMiddleSections");
     }
 
+    [Fact]
+    public void NineSlice_SourceLinkedWithOldFileVersion_ShouldImplementEveryInterfaceMember()
+    {
+        // HasFrbRuntimeInterfaces is true for a source-linked project whatever its FileVersion, so the
+        // interface is declared. Every member it requires must then be generated too, including the ones a
+        // global version skip would otherwise drop (CustomFrameTextureCoordinateWidth is skipped below
+        // GumUsesSystemTypes) - otherwise CS0535 on exactly that member.
+        FlatRedBall.Glue.Elements.ObjectFinder.Self.GlueProject.FileVersion =
+            (int)GlueProjectSave.GluxVersions.GumUsesSystemTypes - 1;
+        LinkMainProjectToFrbSource();
+        GlueTestBootstrap.EnsureGumPluginStandardElementsInitialized();
+        GlueTestBootstrap.EnsureGumPluginCodeGeneratorsInitialized();
+
+        var legacyState = BuildLegacyGutxNineSliceState();
+        legacyState.Variables.RemoveAll(variable => variable.GetRootName() == "CustomFrameTextureCoordinateWidth");
+
+        var generatedSource = GenerateNineSliceFrom(legacyState);
+
+        generatedSource.ShouldContain("global::Gum.Wireframe.INineSliceRuntime");
+        foreach (var memberName in NineSliceCodeGenerator.InterfaceMemberNames)
+        {
+            CountPropertyDeclarations(generatedSource, memberName).ShouldBe(1, $"interface member {memberName}");
+        }
+    }
+
+    [Fact]
+    public void NineSlice_SourceLinkedWithOldFileVersion_ShouldNotDeclareInterfaceMembersTwiceWhenGutxHasThem()
+    {
+        // Same project shape, but the .gutx already defines CustomFrameTextureCoordinateWidth: the skip must
+        // not suppress it either, and it must not be generated from both sources.
+        FlatRedBall.Glue.Elements.ObjectFinder.Self.GlueProject.FileVersion =
+            (int)GlueProjectSave.GluxVersions.GumUsesSystemTypes - 1;
+        LinkMainProjectToFrbSource();
+        GlueTestBootstrap.EnsureGumPluginStandardElementsInitialized();
+        GlueTestBootstrap.EnsureGumPluginCodeGeneratorsInitialized();
+
+        var generatedSource = GenerateNineSliceFrom(Gum.Managers.StandardElementsManager.Self.GetDefaultStateFor("NineSlice"));
+
+        CountPropertyDeclarations(generatedSource, "CustomFrameTextureCoordinateWidth").ShouldBe(1);
+    }
+
+    private void LinkMainProjectToFrbSource()
+    {
+        var project = (FlatRedBall.Glue.VSHelpers.Projects.VisualStudioProject)GlueState.Self.CurrentMainProject;
+        project.Project.AddItem("ProjectReference", @"..\FlatRedBallDesktopGLNet6\FlatRedBallDesktopGLNet6.csproj");
+        project.Project.MarkDirty();
+        project.Project.ReevaluateIfNecessary();
+
+        project.IsFrbSourceLinked().ShouldBeTrue();
+    }
+
     private static string GenerateNineSliceFrom(Gum.DataTypes.Variables.StateSave defaultState)
     {
         var standardElementSave = new StandardElementSave { Name = "NineSlice" };
