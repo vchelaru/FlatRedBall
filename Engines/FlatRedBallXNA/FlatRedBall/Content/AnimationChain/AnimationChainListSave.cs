@@ -7,6 +7,7 @@ using System.Text;
 using System.Runtime.Serialization;
 using Microsoft.Xna.Framework.Graphics;
 
+using System.Text.Json.Nodes;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -95,7 +96,16 @@ namespace FlatRedBall.Content.AnimationChain
         {
             AnimationChainListSave toReturn = null;
 
-            if (ManualDeserialization)
+            if (IsJsonFileName(fileName))
+            {
+                // JsonNode parsing does no reflection, so it works the same on Android/iOS
+                // (ManualDeserialization) as anywhere else.
+                using (Stream stream = FileManager.GetStreamForFile(fileName))
+                {
+                    toReturn = ParseJson(JsonNode.Parse(stream).AsObject());
+                }
+            }
+            else if (ManualDeserialization)
             {
                 toReturn = DeserializeManually(fileName);
             }
@@ -331,6 +341,188 @@ namespace FlatRedBall.Content.AnimationChain
             FileManager.RelativeDirectory = oldRelativeDirectory;
         }
 
+
+        #region JSON (.achj)
+
+        private static bool IsJsonFileName(string fileName) =>
+            fileName.EndsWith(".achj", StringComparison.OrdinalIgnoreCase);
+
+        // Property names and defaults match the FlatRedBall Animation Editor's .achj writer (camelCase,
+        // AnimationChain.Common in the FlatRedBall2 repo). Keys this class doesn't model (chain "loop" and
+        // "locked", frame "events") are simply not read. A missing key falls back to the same default the
+        // XML path uses.
+        private static AnimationChainListSave ParseJson(JsonObject root)
+        {
+            AnimationChainListSave result = new AnimationChainListSave();
+
+            if (root["fileRelativeTextures"] is JsonValue fileRelativeTextures)
+            {
+                result.FileRelativeTextures = fileRelativeTextures.GetValue<bool>();
+            }
+
+            if (root["timeMeasurementUnit"] is JsonValue timeMeasurementUnit)
+            {
+                result.TimeMeasurementUnit = (FlatRedBall.TimeMeasurementUnit)Enum.Parse(
+                    typeof(FlatRedBall.TimeMeasurementUnit), timeMeasurementUnit.GetValue<string>());
+            }
+
+            if (root["coordinateType"] is JsonValue coordinateType)
+            {
+                result.CoordinateType = (TextureCoordinateType)Enum.Parse(
+                    typeof(TextureCoordinateType), coordinateType.GetValue<string>());
+            }
+
+            if (root["projectFile"] is JsonValue projectFile)
+            {
+                result.ProjectFile = projectFile.GetValue<string>();
+            }
+
+            if (root["animationChains"] is JsonArray chains)
+            {
+                foreach (JsonNode chainNode in chains)
+                {
+                    JsonObject chainObject = chainNode.AsObject();
+                    AnimationChainSave chain = new AnimationChainSave();
+                    chain.Name = chainObject["name"]?.GetValue<string>() ?? string.Empty;
+
+                    if (chainObject["frames"] is JsonArray frames)
+                    {
+                        foreach (JsonNode frameNode in frames)
+                        {
+                            chain.Frames.Add(ParseFrameJson(frameNode.AsObject()));
+                        }
+                    }
+
+                    result.AnimationChains.Add(chain);
+                }
+            }
+
+            return result;
+        }
+
+        private static AnimationFrameSave ParseFrameJson(JsonObject frameObject)
+        {
+            AnimationFrameSave frame = new AnimationFrameSave();
+
+            frame.TextureName = frameObject["textureName"]?.GetValue<string>() ?? string.Empty;
+            frame.FrameLength = JsonFloat(frameObject, "frameLength");
+            frame.LeftCoordinate = JsonFloat(frameObject, "leftCoordinate");
+            frame.RightCoordinate = JsonFloat(frameObject, "rightCoordinate", 1);
+            frame.TopCoordinate = JsonFloat(frameObject, "topCoordinate");
+            frame.BottomCoordinate = JsonFloat(frameObject, "bottomCoordinate", 1);
+            frame.FlipHorizontal = JsonBool(frameObject, "flipHorizontal");
+            frame.FlipVertical = JsonBool(frameObject, "flipVertical");
+            frame.FlipDiagonal = JsonBool(frameObject, "flipDiagonal");
+            frame.RelativeX = JsonFloat(frameObject, "relativeX");
+            frame.RelativeY = JsonFloat(frameObject, "relativeY");
+
+            // Stored as signed ints on purpose: negative values subtract under the Add operation.
+            frame.Red = JsonNullableInt(frameObject, "red");
+            frame.Green = JsonNullableInt(frameObject, "green");
+            frame.Blue = JsonNullableInt(frameObject, "blue");
+            frame.Alpha = JsonNullableInt(frameObject, "alpha");
+
+            if (frameObject["colorOperation"] is JsonValue colorOperation)
+            {
+                frame.ColorOperation = (AnimationFrameColorOperation)Enum.Parse(
+                    typeof(AnimationFrameColorOperation), colorOperation.GetValue<string>());
+            }
+
+            if (frameObject["shapes"] is JsonObject shapes)
+            {
+                frame.ShapeCollectionSave = ParseShapesJson(shapes);
+            }
+
+            return frame;
+        }
+
+        private static global::FlatRedBall.Content.Math.Geometry.ShapeCollectionSave ParseShapesJson(JsonObject shapesObject)
+        {
+            var shapes = new global::FlatRedBall.Content.Math.Geometry.ShapeCollectionSave();
+
+            if (shapesObject["rectangles"] is JsonArray rectangles)
+            {
+                foreach (JsonNode node in rectangles)
+                {
+                    JsonObject rectangleObject = node.AsObject();
+                    var rectangle = new global::FlatRedBall.Content.Math.Geometry.AxisAlignedRectangleSave();
+                    rectangle.Name = rectangleObject["name"]?.GetValue<string>() ?? string.Empty;
+                    rectangle.X = JsonFloat(rectangleObject, "x");
+                    rectangle.Y = JsonFloat(rectangleObject, "y");
+                    rectangle.Z = JsonFloat(rectangleObject, "z");
+                    rectangle.ScaleX = JsonFloat(rectangleObject, "scaleX", 16);
+                    rectangle.ScaleY = JsonFloat(rectangleObject, "scaleY", 16);
+                    rectangle.Alpha = JsonFloat(rectangleObject, "alpha", 1);
+                    rectangle.Red = JsonFloat(rectangleObject, "red", 1);
+                    rectangle.Green = JsonFloat(rectangleObject, "green", 1);
+                    rectangle.Blue = JsonFloat(rectangleObject, "blue", 1);
+                    shapes.AxisAlignedRectangleSaves.Add(rectangle);
+                }
+            }
+
+            if (shapesObject["circles"] is JsonArray circles)
+            {
+                foreach (JsonNode node in circles)
+                {
+                    JsonObject circleObject = node.AsObject();
+                    var circle = new global::FlatRedBall.Content.Math.Geometry.CircleSave();
+                    circle.Name = circleObject["name"]?.GetValue<string>() ?? string.Empty;
+                    circle.X = JsonFloat(circleObject, "x");
+                    circle.Y = JsonFloat(circleObject, "y");
+                    circle.Z = JsonFloat(circleObject, "z");
+                    circle.Radius = JsonFloat(circleObject, "radius", 16);
+                    circle.Alpha = JsonFloat(circleObject, "alpha", 1);
+                    circle.Red = JsonFloat(circleObject, "red", 1);
+                    circle.Green = JsonFloat(circleObject, "green", 1);
+                    circle.Blue = JsonFloat(circleObject, "blue", 1);
+                    shapes.CircleSaves.Add(circle);
+                }
+            }
+
+            if (shapesObject["polygons"] is JsonArray polygons)
+            {
+                foreach (JsonNode node in polygons)
+                {
+                    JsonObject polygonObject = node.AsObject();
+                    var polygon = new global::FlatRedBall.Content.Polygon.PolygonSave();
+                    polygon.Name = polygonObject["name"]?.GetValue<string>() ?? string.Empty;
+                    polygon.X = JsonFloat(polygonObject, "x");
+                    polygon.Y = JsonFloat(polygonObject, "y");
+                    polygon.Z = JsonFloat(polygonObject, "z");
+                    polygon.Alpha = JsonFloat(polygonObject, "alpha", 1);
+                    polygon.Red = JsonFloat(polygonObject, "red", 1);
+                    polygon.Green = JsonFloat(polygonObject, "green", 1);
+                    polygon.Blue = JsonFloat(polygonObject, "blue", 1);
+
+                    var points = new List<global::FlatRedBall.Math.Geometry.Point>();
+                    if (polygonObject["points"] is JsonArray pointsArray)
+                    {
+                        foreach (JsonNode pointNode in pointsArray)
+                        {
+                            JsonObject pointObject = pointNode.AsObject();
+                            points.Add(new global::FlatRedBall.Math.Geometry.Point(
+                                JsonFloat(pointObject, "x"), JsonFloat(pointObject, "y")));
+                        }
+                    }
+                    polygon.Points = points.ToArray();
+
+                    shapes.PolygonSaves.Add(polygon);
+                }
+            }
+
+            return shapes;
+        }
+
+        private static float JsonFloat(JsonObject parent, string name, float defaultValue = 0) =>
+            parent[name] is JsonValue value ? value.GetValue<float>() : defaultValue;
+
+        private static bool JsonBool(JsonObject parent, string name) =>
+            parent[name] is JsonValue value && value.GetValue<bool>();
+
+        private static int? JsonNullableInt(JsonObject parent, string name) =>
+            parent[name] is JsonValue value ? value.GetValue<int>() : (int?)null;
+
+        #endregion
 
         private static AnimationChainListSave DeserializeManually(string fileName)
         {
