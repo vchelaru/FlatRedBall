@@ -133,9 +133,10 @@ namespace EditorObjects.Parsing
 
                 #endregion
 
-                #region Case AnimationChainList (achx)
+                #region Case AnimationChainList (achx, achj)
 
                 case "achx":
+                case "achj":
 					AnimationChainListSave acls = AnimationChainListSave.FromFile(fileName);
 
 					for (int i = 0; i < acls.AnimationChains.Count; i++)

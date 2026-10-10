@@ -79,7 +79,7 @@ namespace OfficialPlugins.BuiltFileSizeInspector.ViewModels
             return found;
         }
 
-        private string GetCategoryForFile(string fileName)
+        internal static string GetCategoryForFile(string fileName)
         {
             var extension = FileManager.GetExtension(fileName);
 
@@ -92,6 +92,7 @@ namespace OfficialPlugins.BuiltFileSizeInspector.ViewModels
                 case "csv":
                     return "CSV";
                 case "achx":
+                case "achj":
                     return "Animation Chains";
                 case "m4a":
                     return "Audio";

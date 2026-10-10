@@ -25,6 +25,7 @@ namespace FlatRedBall.Glue.IO
                 case "scnx":
                 case "srgx":
                 case "achx":
+                case "achj":
                 case "emix":
                 case "bmfc":
                 case "wme":

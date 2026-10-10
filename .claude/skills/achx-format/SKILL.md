@@ -28,6 +28,10 @@ There are **two parallel class trees** — a serialized "Save" tree and a runtim
 - **`ShouldSerializeXxx()` controls XML output.** Save-class fields use `ShouldSerializeXxx()` methods so defaults/nulls are omitted from the `.achx`. New optional fields follow this pattern to stay backward-compatible (old files just lack the element).
 - **Coordinate + time units differ from runtime.** `AnimationChainListSave.CoordinateType` is UV *or* Pixel — `ToAnimationFrame` converts Pixel→UV by dividing by texture width/height. `TimeMeasurementUnit` (seconds vs. milliseconds) makes `ToAnimationChain` divide `FrameLength` by 1000. The runtime is always UV + seconds.
 
+## Glue editor side
+
+Glue registers an `.achj` AssetTypeInfo from `OfficialPlugins/AnimationChainPlugin/Managers/AssetTypeInfoManager.cs` (`GetAchjAti`), only when the project's `FileVersion` is at least `GluxVersions.AchjAnimationFiles` or it is FRB source-linked, because the generated load code is identical and an older engine only fails at runtime. Every other `.achx` hook (`FileHelper.DoesFileReferenceContent`, `ContentParser.GetNamedObjectsIn`, the referenced-texture scan in `MainAnimationChainPlugin`, `FileChangeManager`, Animation Editor launch) lists `.achj` beside it. `.achj` is read-only in Glue: the engine can't write it, so the in-Glue editor tab and the New File window stay `.achx`-only.
+
 ## Per-frame color (signpost)
 
 Frames carry optional nullable tint: `Red/Green/Blue/Alpha` and a color operation. The `.achx`/Save side stores 0–255 ints and an editor-flavored op enum; the runtime side stores 0–1 floats and `FlatRedBall.Graphics.ColorOperation`, with mapping done in `AnimationFrameSave.ToAnimationFrame`. Applied to the Sprite in `Sprite.UpdateToAnimationFrame` (`ApplyAnimationFrameColor`). Read the source there for the exact channels, identity-on-null rules, and op mapping.

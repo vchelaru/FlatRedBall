@@ -309,17 +309,22 @@ namespace OfficialPlugins.MonoGameContent
             _ = BuildLogic.Self.RefreshBuiltFilesFor((VisualStudioProject)project, viewModel.UseContentPipelineOnPngs, controller);
         }
 
+        /// <summary>
+        /// Extensions that never go through the content pipeline, so a change to one can skip the
+        /// file-alias regeneration and RFS lookup in HandleFileChanged.
+        /// </summary>
+        internal static bool IsKnownNonPipelineExtension(string extension) =>
+            extension == "achx" || extension == "achj" || extension == "json" ||
+            extension == "tsx" || extension == "tmx" ||
+            extension == "ase" || extension == "bmfc" ||
+            extension == "fnt";
+
         private void HandleFileChanged(FilePath filePath, FileChangeType fileChangeType)
         {
             // This method gets called a LOT for games like Deadvivors for .achx files. We can early out for file types
             // that we know are not content pipeline files:
             var extension = filePath.Extension;
-            if(extension == "achx" || extension == "json" ||
-                extension == "tsx" || extension == "tmx" ||
-                extension == "ase" || extension == "bmfc" ||
-                extension == "fnt")
-                
-
+            if(IsKnownNonPipelineExtension(extension))
             {
                 return;
             }

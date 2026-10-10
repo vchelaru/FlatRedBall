@@ -45,6 +45,35 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
             }
         }
 
+        /// <summary>
+        /// Whether the .achj ATI should be registered for a project. The engine reads .achj from
+        /// <see cref="GlueProjectSave.GluxVersions.AchjAnimationFiles"/> on; a source-linked project always builds against
+        /// current engine source, so it has it regardless of its FileVersion.
+        /// </summary>
+        internal static bool ShouldRegisterAchjAti(int fileVersion, bool isFrbSourceLinked) =>
+            isFrbSourceLinked || fileVersion >= (int)GlueProjectSave.GluxVersions.AchjAnimationFiles;
+
+        /// <summary>
+        /// An AnimationChainList ATI for the .achj extension: a clone of the .achx one (same runtime type,
+        /// same load code - the engine picks the parser from the file extension), minus everything that
+        /// assumes the file is XML.
+        /// </summary>
+        internal AssetTypeInfo GetAchjAti()
+        {
+            var clone = FileManager.CloneObject(AvailableAssetTypes.CommonAtis.AnimationChainList);
+
+            clone.FriendlyName = "Animation Chain List (.achj)";
+            clone.Extension = "achj";
+            // Glue can only write an empty .achx (XML). A new .achj has to come from the Animation Editor.
+            clone.HideFromNewFileWindow = true;
+            // The content pipeline importer parses XML.
+            clone.CanBeAddedToContentPipeline = false;
+            clone.ContentImporter = null;
+            clone.ContentProcessor = null;
+
+            return clone;
+        }
+
         internal AssetTypeInfo GetGumAnimationChainListAti()
         {
             var achxAti = AvailableAssetTypes.CommonAtis.AnimationChainList;
