@@ -1,6 +1,6 @@
 ---
 name: achx-format
-description: The .achx animation file format and its save/runtime split. Triggers: .achx, AnimationChainListSave, AnimationChainSave, AnimationFrameSave, ToAnimationChainList, FromXElement.
+description: The .achx/.achj animation file formats and their save/runtime split. Triggers: .achx, .achj, AnimationChainListSave, AnimationChainSave, AnimationFrameSave, ToAnimationChainList, FromXElement, ParseJson.
 ---
 
 # .achx Animation File Format
@@ -24,6 +24,7 @@ There are **two parallel class trees** — a serialized "Save" tree and a runtim
 ## Landmines
 
 - **Two deserialization paths, kept in sync by hand.** Desktop uses reflection-based `FileManager.XmlDeserialize<AnimationChainListSave>`. Android/iOS use a hand-written manual path (`AnimationChainListSave.DeserializeManually` / `LoadFromElement`, and `AnimationFrameSave.FromXElement` — a `switch` on element local-name). **Any new serialized element must be added to BOTH**, or it loads on desktop and silently vanishes on mobile.
+- **`.achj` is a third path, defined by FRB2.** The JSON dialect is chosen by extension in `FromFile` and parsed by `ParseJson` / `ParseFrameJson` (`System.Text.Json.Nodes`, so it works on mobile too). The spec is FRB2's `AnimationChain.Common` writer (`AnimationChainListSave.ToJsonNode` in the FlatRedBall2 repo), not Gum's copy. A new serialized field has to be added to the XML paths *and* `ParseJson`. Chain `loop`/`locked` and frame `events` have no FRB1 field and are ignored.
 - **`ShouldSerializeXxx()` controls XML output.** Save-class fields use `ShouldSerializeXxx()` methods so defaults/nulls are omitted from the `.achx`. New optional fields follow this pattern to stay backward-compatible (old files just lack the element).
 - **Coordinate + time units differ from runtime.** `AnimationChainListSave.CoordinateType` is UV *or* Pixel — `ToAnimationFrame` converts Pixel→UV by dividing by texture width/height. `TimeMeasurementUnit` (seconds vs. milliseconds) makes `ToAnimationChain` divide `FrameLength` by 1000. The runtime is always UV + seconds.
 
@@ -35,7 +36,7 @@ Frames carry optional nullable tint: `Red/Green/Blue/Alpha` and a color operatio
 
 | File (`Engines/FlatRedBallXNA/FlatRedBall/`) | Purpose |
 |---|---|
-| `Content/AnimationChain/AnimationChainListSave.cs` | `.achx` root; `FromFile`, `ToAnimationChainList`, manual load |
+| `Content/AnimationChain/AnimationChainListSave.cs` | `.achx`/`.achj` root; `FromFile`, `ToAnimationChainList`, manual load, `ParseJson` |
 | `Content/AnimationChain/AnimationChainSave.cs` | one chain; `ToAnimationChain`, `FromXElement` |
 | `Content/AnimationChain/AnimationFrameSave.cs` | one frame; `ToAnimationFrame`, `FromXElement`, color map |
 | `Graphics/Animation/AnimationFrame.cs` | runtime frame |

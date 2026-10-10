@@ -77,7 +77,7 @@ public class GumRuntimeSyntaxVersionReaderTests
     // what Gum actually ships.
     [Trait("Category", "BuildSmoke")]
     [Fact]
-    public void ReadVersion_RealBuiltGumCoreDll_Returns4()
+    public void ReadVersion_RealBuiltGumCoreDll_IsAtLeast4()
     {
         var repoRoot = FindRepoRoot();
         var gumRepoRoot = Path.GetFullPath(Path.Combine(repoRoot, "..", "Gum"));
@@ -90,7 +90,10 @@ public class GumRuntimeSyntaxVersionReaderTests
         var dllPath = Path.Combine(gumRepoRoot, "GumCore", "GumCoreXnaPc", "GumCore.DesktopGlNet6", "bin", "Debug", "net6.0", "GumCore.DesktopGlNet6.dll");
         File.Exists(dllPath).ShouldBeTrue($"Expected a built assembly at {dllPath}");
 
-        GumRuntimeSyntaxVersionReader.ReadVersion(dllPath).ShouldBe(4);
+        // A floor, not an exact value: the sibling Gum repo keeps raising its syntax version (5 added
+        // ColorOperation), and an exact pin would turn every Gum bump into a red Glue CI. 4 is the
+        // version Glue's Rectangle fill/stroke codegen requires.
+        GumRuntimeSyntaxVersionReader.ReadVersion(dllPath).ShouldNotBeNull().ShouldBeGreaterThanOrEqualTo(4);
     }
 
     private static string FindRepoRoot()

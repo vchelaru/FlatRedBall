@@ -52,6 +52,7 @@ public class GueDerivingClassCodeGenerator : Singleton<GueDerivingClassCodeGener
         mTypeToQualifiedTypes.Add("GradientType", "global::RenderingLibrary.Graphics.GradientType");
         mTypeToQualifiedTypes.Add("TextOverflowHorizontalMode", "global::RenderingLibrary.Graphics.TextOverflowHorizontalMode");
         mTypeToQualifiedTypes.Add("TextOverflowVerticalMode", "global::RenderingLibrary.Graphics.TextOverflowVerticalMode");
+        mTypeToQualifiedTypes.Add("ColorOperation", "global::RenderingLibrary.Graphics.ColorOperation");
 
         AddGetterReplacements();
 
