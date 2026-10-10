@@ -93,6 +93,7 @@ namespace FlatRedBall.Glue.Settings
 		{
 			List<string> extensions = new List<string>();
 			extensions.Add("achx");
+			extensions.Add("achj");
             extensions.Add("bmp");
             extensions.Add("csv");
             extensions.Add("emix");

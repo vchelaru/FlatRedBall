@@ -244,6 +244,13 @@ namespace FlatRedBall.Glue.SaveClasses
             // sharing 73 keeps the old line for projects that haven't upgraded yet.
             GumFrameworkElementHasDefaultFormsTemplates = 73,
 
+            // October 9, 2026 - AnimationChainListSave.FromFile reads .achj (the JSON twin of .achx written by
+            // the FlatRedBall Animation Editor), so FlatRedBallServices.Load<AnimationChainList> can load one.
+            // Gated because the generated load code is unchanged: on an older engine an .achj fails at runtime
+            // with an XML parse error instead of at edit time, so Glue only treats .achj as an
+            // AnimationChainList file at or above this version.
+            AchjAnimationFiles = 74,
+
             // Stop! If adding an entry here, modify SyntaxVersionAttribute on FlatRedBallServices
             // and LatestVersion down below
             // and update the docs
@@ -253,7 +260,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.GumWrapperHasEntityAttachmentZoomLayer;
+        public const int LatestVersion = (int)GluxVersions.AchjAnimationFiles;
 
         public int FileVersion { get; set; }
 

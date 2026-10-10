@@ -16,7 +16,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
     class FileChangeManager 
     {
-        string[] copiedExtensions = new[]
+        static readonly string[] copiedExtensions = new[]
         {
             "csv",
             "txt",
@@ -26,6 +26,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             "bmp",
             "png",
             "achx",
+            "achj",
             "emix",
             "json",
             "xnb"
@@ -64,7 +65,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
             ToolbarEntityViewModelManager.ReactToFileChanged(filePath);
 
-            var shouldCopy = copiedExtensions.Contains(extension);
+            var shouldCopy = IsCopiedExtension(extension);
 
             if(shouldCopy)
             {
@@ -80,6 +81,8 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
             _refreshManager.HandleFileChanged(filePath);
         }
+
+        internal static bool IsCopiedExtension(string extension) => copiedExtensions.Contains(extension);
 
         private bool IsFileIgnored(FilePath fileName)
         {

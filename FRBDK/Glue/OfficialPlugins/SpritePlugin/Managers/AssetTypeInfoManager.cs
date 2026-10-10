@@ -297,6 +297,17 @@ namespace OfficialPlugins.SpritePlugin.Managers
 
         #region Create new ACHX
 
+        /// <summary>
+        /// Whether any of <paramref name="files"/> is an animation file Glue can already use, in which case
+        /// the "Create new .achx file" button has nothing to offer.
+        /// </summary>
+        internal static bool HasAnimationChainFile(IEnumerable<ReferencedFileSave> files) =>
+            files.Any(item =>
+            {
+                var name = item.Name.ToLower();
+                return name.EndsWith(".achx") || name.EndsWith(".achj");
+            });
+
         private static void AddCreateNewAchxButton()
         {
             var ati = AvailableAssetTypes.CommonAtis.Sprite;
@@ -312,8 +323,7 @@ namespace OfficialPlugins.SpritePlugin.Managers
             {
                 // does this or any derived element have an .achx file?
 
-                var alreadyHasAchx = element.GetAllReferencedFileSavesRecursively()
-                    .Any(item => item.Name.ToLower().EndsWith(".achx"));
+                var alreadyHasAchx = HasAnimationChainFile(element.GetAllReferencedFileSavesRecursively());
 
                 return !alreadyHasAchx;
             };

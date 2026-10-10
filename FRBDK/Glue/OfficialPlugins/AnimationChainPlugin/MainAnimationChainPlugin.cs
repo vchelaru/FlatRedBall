@@ -18,6 +18,7 @@ using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Windows.Navigation;
 
 using FileManager = ToolsUtilities.FileManager;
@@ -117,7 +118,7 @@ public class MainAnimationChainPlugin : PluginBase
     // from 0.7 seconds to 0.2 seconds. This is a little less flexible
     // since it assumes TextureName rather than relying on reusable reference
     // tracking, but modern .achx files only use this.
-    private ToolsUtilities.GeneralResponse HandleFillWithReferencedFilesNew(FilePath path, HashSet<FilePath> list)
+    internal ToolsUtilities.GeneralResponse HandleFillWithReferencedFilesNew(FilePath path, HashSet<FilePath> list)
     {
         if (path.Extension == "achx")
         {
@@ -158,10 +159,76 @@ public class MainAnimationChainPlugin : PluginBase
                 return ToolsUtilities.GeneralResponse.UnsuccessfulWith("File does not exist: " + path.FullPath);
             }
         }
+        else if (path.Extension == "achj")
+        {
+            if (path.Exists())
+            {
+                string contents = null;
+
+                try
+                {
+                    // Only the read is retried: the file may be mid-save, but a parse error won't fix itself in 200ms.
+                    GlueCommands.Self.TryMultipleTimes(() => contents = System.IO.File.ReadAllText(path.FullPath));
+
+                    var directory = path.GetDirectoryContainingThis();
+                    foreach (var textureName in GetTextureNamesInAchj(contents))
+                    {
+                        list.Add(directory + textureName);
+                    }
+                }
+                catch (Exception exception) when (exception is IOException || exception is JsonException)
+                {
+                    GlueCommands.Self.PrintError($"Error trying to read .achj referenced files:\n{exception}");
+                }
+
+                return ToolsUtilities.GeneralResponse.SuccessfulResponse;
+            }
+            else
+            {
+                return ToolsUtilities.GeneralResponse.UnsuccessfulWith("File does not exist: " + path.FullPath);
+            }
+        }
         else
         {
             return ToolsUtilities.GeneralResponse.SuccessfulResponse;
         }
+    }
+
+    /// <summary>
+    /// The textureName of every frame in an .achj file. The JSON counterpart of scanning an .achx for
+    /// &lt;TextureName&gt;: it skips the full AnimationChainListSave load for the same reason.
+    /// </summary>
+    internal static List<string> GetTextureNamesInAchj(string json)
+    {
+        var textureNames = new List<string>();
+
+        using var document = JsonDocument.Parse(json);
+
+        if (document.RootElement.ValueKind == JsonValueKind.Object &&
+            document.RootElement.TryGetProperty("animationChains", out var chains) &&
+            chains.ValueKind == JsonValueKind.Array)
+        {
+            foreach (var chain in chains.EnumerateArray())
+            {
+                if (chain.ValueKind == JsonValueKind.Object &&
+                    chain.TryGetProperty("frames", out var frames) &&
+                    frames.ValueKind == JsonValueKind.Array)
+                {
+                    foreach (var frame in frames.EnumerateArray())
+                    {
+                        if (frame.ValueKind == JsonValueKind.Object &&
+                            frame.TryGetProperty("textureName", out var textureName) &&
+                            textureName.ValueKind == JsonValueKind.String &&
+                            !string.IsNullOrEmpty(textureName.GetString()))
+                        {
+                            textureNames.Add(textureName.GetString());
+                        }
+                    }
+                }
+            }
+        }
+
+        return textureNames;
     }
 
     private bool GetIfIsHandlingHotkeys()
@@ -181,6 +248,18 @@ public class MainAnimationChainPlugin : PluginBase
 
         // Add a Gum animation too:
         base.AddAssetTypeInfo(AssetTypeInfoManager.Self.GetGumAnimationChainListAti());
+
+        AddAchjAssetTypeInfoIfSupported(
+            GlueState.Self.CurrentGlueProject.FileVersion,
+            GlueState.Self.CurrentMainProject.IsFrbSourceLinked());
+    }
+
+    internal void AddAchjAssetTypeInfoIfSupported(int fileVersion, bool isFrbSourceLinked)
+    {
+        if (AssetTypeInfoManager.ShouldRegisterAchjAti(fileVersion, isFrbSourceLinked))
+        {
+            base.AddAssetTypeInfo(AssetTypeInfoManager.Self.GetAchjAti());
+        }
     }
 
     private void HandleUnloadedGlux()
@@ -224,9 +303,15 @@ public class MainAnimationChainPlugin : PluginBase
     }
 
 
+    /// <summary>
+    /// Whether a change to a file with this extension can change which animation chains a Sprite
+    /// references, so the animation errors need re-evaluating.
+    /// </summary>
+    internal static bool AffectsAnimationErrors(string extension) => extension == "achx" || extension == "achj";
+
     private void HandleFileChanged(FilePath filePath, FileChangeType fileChange)
     {
-        if (filePath.Extension == "achx")
+        if (AffectsAnimationErrors(filePath.Extension))
         {
             this.RefreshErrors();
 

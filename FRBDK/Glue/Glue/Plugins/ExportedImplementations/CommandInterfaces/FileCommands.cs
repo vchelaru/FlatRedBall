@@ -685,6 +685,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return startInfo;
         }
 
+        /// <summary>
+        /// Whether <paramref name="extension"/> is an animation file the AnimationEditor opens, used to
+        /// resolve the editor's exe when Windows has no association for it.
+        /// </summary>
+        internal static bool IsOpenedByAnimationEditor(string extension) =>
+            String.Equals(extension, "achx", StringComparison.OrdinalIgnoreCase) ||
+            String.Equals(extension, "achj", StringComparison.OrdinalIgnoreCase);
+
         private FilePath TryToGetFilePathFromExtension(string textExtension)
         {
             FilePath? absoluteExe = null;
@@ -720,7 +728,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     ? $"Resolved Gum executable to open .{textExtension}: {absoluteExe.FullPath}"
                     : $"Could not resolve a Gum executable to open .{textExtension} - none of the candidate Gum.exe/Gum.Avalonia.exe locations exist.");
             }
-            if (String.Equals(textExtension, "achx", StringComparison.OrdinalIgnoreCase))
+            if (IsOpenedByAnimationEditor(textExtension))
             {
                 // The XNA 4 AnimationEditor is retired; FlatRedBall2's Avalonia AnimationEditor
                 // replaces it. When running Glue from source with FlatRedBall2 checked out as a

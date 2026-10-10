@@ -924,7 +924,11 @@ namespace FlatRedBall.Glue.Plugins
         protected void AddAssetTypeInfo(AssetTypeInfo ati)
         {
             // see if it already exists
-            var alreadyExists = AddedAssetTypeInfos.Any(item => item.QualifiedRuntimeTypeName.QualifiedType == ati.QualifiedRuntimeTypeName.QualifiedType);
+            // Extension is part of the identity: the Aseprite and .achj ATIs are clones of the .achx
+            // AnimationChainList one, so they share its runtime type and differ only by extension.
+            var alreadyExists = AddedAssetTypeInfos.Any(item =>
+                item.QualifiedRuntimeTypeName.QualifiedType == ati.QualifiedRuntimeTypeName.QualifiedType &&
+                item.Extension == ati.Extension);
             if (!alreadyExists)
             {
                 AddedAssetTypeInfos.Add(ati);
