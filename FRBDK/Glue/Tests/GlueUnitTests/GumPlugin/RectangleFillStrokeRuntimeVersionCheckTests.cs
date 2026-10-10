@@ -16,7 +16,7 @@ namespace GlueUnitTests.GumPluginTests;
 // Issue #1967 bug #2 - nothing stopped a v3 gumx project from generating FilledStrokedRectangle
 // codegen against a referenced GumCore.*.dll that predates that type. This pins the detection logic
 // end-to-end against a real project file + a real (non-Gum) DLL reference, without needing a slow
-// BuildSmoke engine build - GumRuntimeSyntaxVersionReaderTests.ReadVersion_RealBuiltGumCoreDll_Returns4
+// BuildSmoke engine build - GumRuntimeSyntaxVersionReaderTests.ReadVersion_RealBuiltGumCoreDll_IsAtLeast4
 // covers the "reads a real Gum-stamped DLL correctly" half; this covers "wires that reader into a
 // real project's references correctly".
 [Collection(nameof(TaskManagerSequentialCollection))]

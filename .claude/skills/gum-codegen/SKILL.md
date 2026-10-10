@@ -39,6 +39,8 @@ Consequences worth knowing before debugging "why isn't this variable generated":
 
 Glue has **no compile-time knowledge of the runtime types it generates against**. `mStandardElementToQualifiedTypes` holds fully-qualified type names as plain *strings*; `RenderingLibrary.Graphics.Text` is not a referenced assembly in any Glue project, and it is not among GumPlugin's embedded `LibraryFiles` resources either (`LineRectangle.cs` is embedded, `Text.cs` is not). So emitting `ContainedText.DropshadowBlur` for a member that doesn't exist compiles Glue perfectly and only fails in the *user's* game project, as CS1061.
 
+A Gum variable whose `Type` is an enum name (`GradientType`, `ColorOperation`) is emitted verbatim as the property's type, so it needs an entry in `GueDerivingClassCodeGenerator`'s `mTypeToQualifiedTypes` or the generated file fails with CS0246 in the user's game.
+
 This is why the bug class recurs: Rectangle/Circle's fill/stroke family (#1907), the Arc/ColoredCircle gradient CS0266, and Text's dropshadow-channel + `LocalizeText` family were each found by a user's build breaking, not by CI.
 
 `GlueUnitTests/GumPlugin/GumRuntimeMemberContractTests.cs` is the guard: it builds the engine's Forms solution, reflects over the real `GumCore`/`SkiaInGum` assemblies, and asserts every `ContainedXxx.Member` the generator emits exists on the mapped runtime type. It's driven off `StandardsCodeGenerator.StandardElementToQualifiedTypes`, so a standard element added to that map is covered automatically. When Gum extends a standard element's schema, that test — not the compiler — is what tells you whether FRB's runtime can back it.
