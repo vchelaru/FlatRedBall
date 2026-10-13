@@ -538,7 +538,10 @@ partial class DialogCommands : IDialogCommands
 
     public void MoveToCursor(System.Windows.Window window)
     {
-        var source = System.Windows.PresentationSource.FromVisual(MainGlueWindow.MainWpfControl);
+        // MainWpfControl doesn't exist until the main window is built; startup dialogs (e.g. no usable .NET SDK)
+        // appear before then. A null source is fine - the cursor position just isn't DPI-adjusted.
+        var mainControl = MainGlueWindow.MainWpfControl;
+        var source = mainControl != null ? System.Windows.PresentationSource.FromVisual(mainControl) : null;
         window.MoveToCursor(source);
     }
 
