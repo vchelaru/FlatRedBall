@@ -47,18 +47,21 @@ public class GumExecutableResolutionTests : IDisposable
     static bool SamePath(string actual, string expected) =>
         new FilePath(actual) == new FilePath(expected);
 
+    // The Avalonia project's assembly is named "Gum", so a current build is Gum.exe. Gum.Avalonia.exe is
+    // the old name and only survives in stale output folders.
+
     [Fact]
     public void AvaloniaBuiltOnlyInRelease_IsFound()
     {
-        var release = Create("Tool/Gum.Avalonia/bin/Release/net10.0/Gum.Avalonia.exe");
+        var release = Create("Tool/Gum.Avalonia/bin/Release/net10.0/Gum.exe");
 
         SamePath(Resolve(), release).ShouldBeTrue();
     }
 
     [Fact]
-    public void AvaloniaBeatsTheOldGumExe()
+    public void AvaloniaBeatsTheOldWinFormsGumExe()
     {
-        var avalonia = Create("Tool/Gum.Avalonia/bin/Release/net10.0/Gum.Avalonia.exe");
+        var avalonia = Create("Tool/Gum.Avalonia/bin/Release/net10.0/Gum.exe");
         Create("Gum/bin/Debug/Gum.exe");
 
         SamePath(Resolve(), avalonia).ShouldBeTrue();
@@ -68,12 +71,41 @@ public class GumExecutableResolutionTests : IDisposable
     public void DebugWinsOverRelease_EvenWhenReleaseIsNewer()
     {
         // A developer building Gum from source works in Debug; a Release build beside it is usually
-        // a stale one (it crashed on startup in practice), so file times can't be trusted to pick.
+        // a stale one, so file times can't be trusted to pick.
         var now = DateTime.UtcNow;
-        var debug = Create("Tool/Gum.Avalonia/bin/Debug/net10.0/Gum.Avalonia.exe", now.AddHours(-2));
-        Create("Tool/Gum.Avalonia/bin/Release/net10.0/Gum.Avalonia.exe", now);
+        var debug = Create("Tool/Gum.Avalonia/bin/Debug/net10.0/Gum.exe", now.AddHours(-2));
+        Create("Tool/Gum.Avalonia/bin/Release/net10.0/Gum.exe", now);
 
         SamePath(Resolve(), debug).ShouldBeTrue();
+    }
+
+    [Fact]
+    public void ReleaseGumExeBeatsAStaleGumAvaloniaExeInTheSameFolder()
+    {
+        // The real layout that broke: Release held a fresh Gum.exe beside a months-old Gum.Avalonia.exe
+        // that crashes on startup, and the old name was the only one Glue looked for.
+        Create("Tool/Gum.Avalonia/bin/Release/net10.0/Gum.Avalonia.exe", DateTime.UtcNow.AddDays(-30));
+        var current = Create("Tool/Gum.Avalonia/bin/Release/net10.0/Gum.exe");
+
+        SamePath(Resolve(), current).ShouldBeTrue();
+    }
+
+    [Fact]
+    public void DebugGumExeBeatsAStaleReleaseGumAvaloniaExe()
+    {
+        // The other half of the same report: a fresh Debug Gum.exe, and a stale Release Gum.Avalonia.exe.
+        var debug = Create("Tool/Gum.Avalonia/bin/Debug/net10.0/Gum.exe");
+        Create("Tool/Gum.Avalonia/bin/Release/net10.0/Gum.Avalonia.exe", DateTime.UtcNow.AddDays(-30));
+
+        SamePath(Resolve(), debug).ShouldBeTrue();
+    }
+
+    [Fact]
+    public void OnlyTheOldGumAvaloniaName_IsStillUsed()
+    {
+        var oldName = Create("Tool/Gum.Avalonia/bin/Release/net10.0/Gum.Avalonia.exe");
+
+        SamePath(Resolve(), oldName).ShouldBeTrue();
     }
 
     [Fact]

@@ -764,8 +764,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         /// </summary>
         internal static FilePath ResolveGumExecutable(FilePath glueExeDirectory)
         {
+            // The Avalonia project's assembly is named "Gum", so a current build is Gum.exe. The old
+            // Gum.Avalonia.exe name only survives in stale output folders, so it is tried after every Gum.exe.
             var fallbacks = new[]
             {
+                "../../../../../../Gum/Tool/Gum.Avalonia/bin/Debug/net10.0/Gum.exe",
+                "../../../../../../Gum/Tool/Gum.Avalonia/bin/Release/net10.0/Gum.exe",
                 "../../../../../../Gum/Tool/Gum.Avalonia/bin/Debug/net10.0/Gum.Avalonia.exe",
                 "../../../../../../Gum/Tool/Gum.Avalonia/bin/Release/net10.0/Gum.Avalonia.exe",
                 "Gum/Data/Gum.Avalonia.exe",
