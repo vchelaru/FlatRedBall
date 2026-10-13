@@ -1019,20 +1019,25 @@ namespace GumPlugin.Managers
         {
             string contentFullFileName = FileManager.Standardize(glueContentFolder + buildItem.UnevaluatedInclude);
 
-            string gumFolder = FileManager.GetDirectory(gumProject.FullFileName);
+            return ShouldRemoveGumRelativeFile(contentFullFileName, gumProject.FullFileName, referencedGumFiles);
+        }
+
+        /// <summary>
+        /// Whether a file in the content project that lives under the Gum project's folder is no longer
+        /// needed. The loaded project file itself is always kept; any other Gum project file (such as the
+        /// .gumx left behind after converting to .gumj) is only kept while something references it.
+        /// </summary>
+        internal static bool ShouldRemoveGumRelativeFile(string contentFullFileName, string gumProjectFullFileName, string[] referencedGumFiles)
+        {
+            string gumFolder = FileManager.GetDirectory(gumProjectFullFileName);
 
             string fileRelativeToGum = FileManager.MakeRelative(contentFullFileName, gumFolder);
 
             bool isFileInGumContent = fileRelativeToGum.Contains("..") == false;
 
-            if(isFileInGumContent && !referencedGumFiles.Contains(contentFullFileName) && !GumFileExtensions.IsProject(fileRelativeToGum))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            bool isLoadedProjectFile = FileManager.Standardize(contentFullFileName) == FileManager.Standardize(gumProjectFullFileName);
+
+            return isFileInGumContent && !referencedGumFiles.Contains(contentFullFileName) && !isLoadedProjectFile;
         }
 
         private static bool GetIfShouldRemoveFontFile(List<ProjectItem> toRemove, ProjectItem buildItem, string fontCacheFolder, ProjectBase contentProject, string[] fileReferencedByGumx)

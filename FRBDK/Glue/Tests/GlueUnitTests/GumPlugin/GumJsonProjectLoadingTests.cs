@@ -236,6 +236,45 @@ public class GumJsonProjectLoadingTests : IDisposable
 
     #endregion
 
+    #region Content project cleanup
+
+    [Theory]
+    [InlineData("GumProject.gumj", "GumProject.gumj", false)]   // the loaded project is always kept
+    [InlineData("GumProject.gumj", "GumProject.gumx", true)]    // a stale XML project left after converting
+    [InlineData("GumProject.gumx", "GumProject.gumx", false)]
+    [InlineData("GumProject.gumx", "GumProject.gumj", true)]
+    [InlineData("GumProject.gumj", "Screens/Old.gusx", true)]   // unreferenced element file
+    public void ShouldRemoveGumRelativeFile_KeepsOnlyTheLoadedProjectFile(string loadedProject, string file, bool expected)
+    {
+        var gumFolder = FileManager.Standardize(_directory + "/");
+        var projectPath = gumFolder + loadedProject;
+        var filePath = FileManager.Standardize(gumFolder + file);
+
+        FileReferenceTracker.ShouldRemoveGumRelativeFile(filePath, projectPath, new string[0]).ShouldBe(expected);
+    }
+
+    [Fact]
+    public void ShouldRemoveGumRelativeFile_ReferencedFile_IsKept()
+    {
+        var gumFolder = FileManager.Standardize(_directory + "/");
+        var screen = FileManager.Standardize(gumFolder + "Screens/Main.gusj");
+
+        FileReferenceTracker.ShouldRemoveGumRelativeFile(screen, gumFolder + "GumProject.gumj", new[] { screen })
+            .ShouldBeFalse();
+    }
+
+    [Fact]
+    public void ShouldRemoveGumRelativeFile_FileOutsideTheGumFolder_IsKept()
+    {
+        var gumFolder = FileManager.Standardize(_directory + "/");
+        var outside = FileManager.Standardize(Path.GetTempPath() + "elsewhere.png");
+
+        FileReferenceTracker.ShouldRemoveGumRelativeFile(outside, gumFolder + "GumProject.gumj", new string[0])
+            .ShouldBeFalse();
+    }
+
+    #endregion
+
     #region Asset type registration
 
     [Fact]
