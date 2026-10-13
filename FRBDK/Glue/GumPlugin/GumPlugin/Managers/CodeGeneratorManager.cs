@@ -119,8 +119,8 @@ public class CodeGeneratorManager : Singleton<CodeGeneratorManager>
 
     public void GenerateCodeForcedTask(FilePath file, GenerationVerbosity generationVerbosity = GenerationVerbosity.Minimal)
     {
-        string extension = file.Extension;
-        if (extension == "gumx")
+        string extension = GumFileExtensions.Normalize(file.Extension);
+        if (extension == GumProjectSave.ProjectExtension)
         {
             foreach (var screen in ObjectFinder.Self.GumProjectSave.Screens)
             {
@@ -237,7 +237,7 @@ public class CodeGeneratorManager : Singleton<CodeGeneratorManager>
 
     private static ElementSave GetElementFromFile(FilePath file)
     {
-        var extension = file.Extension;
+        var extension = GumFileExtensions.Normalize(file.Extension);
 
         var gumProject = Gum.Managers.ObjectFinder.Self.GumProjectSave;
 
@@ -300,7 +300,7 @@ public class CodeGeneratorManager : Singleton<CodeGeneratorManager>
                     FlatRedBall.Glue.Elements.ObjectFinder.Self.GlueProject != null)
                 {
                     var rfs = FlatRedBall.Glue.Elements.ObjectFinder.Self.GlueProject.GetAllReferencedFiles()
-                        .FirstOrDefault(item => FlatRedBall.IO.FileManager.GetExtension(item.Name) == "gumx");
+                        .FirstOrDefault(item => GumFileExtensions.IsProject(item.Name));
 
                     if (rfs != null)
                     {
@@ -642,7 +642,7 @@ public class CodeGeneratorManager : Singleton<CodeGeneratorManager>
 
         var shouldGenerateComponentsToFormsAssociation = false;
         var rfs = FlatRedBall.Glue.Elements.ObjectFinder.Self.GlueProject.GetAllReferencedFiles()
-            .FirstOrDefault(item => FlatRedBall.IO.FileManager.GetExtension(item.Name) == "gumx");
+            .FirstOrDefault(item => GumFileExtensions.IsProject(item.Name));
 
         if(rfs != null)
         {

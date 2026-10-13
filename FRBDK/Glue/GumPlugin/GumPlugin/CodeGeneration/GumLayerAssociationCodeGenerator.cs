@@ -177,6 +177,6 @@ class GumLayerAssociationCodeGenerator : ElementComponentCodeGenerator
     private ReferencedFileSave GetScreenRfsIn(IElement element)
     {
         return element.ReferencedFiles.FirstOrDefault(item =>
-            FileManager.GetExtension(item.Name) == GumProjectSave.ScreenExtension);
+            GumFileExtensions.HasExtension(item.Name, GumProjectSave.ScreenExtension));
     }
 }

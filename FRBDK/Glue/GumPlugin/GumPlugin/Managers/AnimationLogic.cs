@@ -21,7 +21,7 @@ namespace GumPlugin.Managers
             {
                 try
                 {
-                    animations = FileManager.XmlDeserialize<ElementAnimationsSave>(animationFileName.FullPath);
+                    animations = ElementAnimationsSave.Load(animationFileName.FullPath);
                 }
                 catch (Exception e)
                 {
@@ -40,7 +40,8 @@ namespace GumPlugin.Managers
                 string gumFolder = FileManager.GetDirectory(AppState.Self.GumProjectSave.FullFileName);
 
                 string fullAnimationName = null;
-                fullAnimationName = gumFolder + elementSave.Subfolder + "/" + elementSave.Name + "Animations.ganx";
+                fullAnimationName = gumFolder + elementSave.Subfolder + "/" + elementSave.Name +
+                    ElementAnimationsSave.GetFileNameSuffix(AppState.Self.IsJsonProject);
                 return fullAnimationName;
             }
             else

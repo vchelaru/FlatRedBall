@@ -36,7 +36,7 @@ namespace GumPlugin.ErrorReporting
                 return true;
             }
 
-            var extension = absoluteFilePath.Extension;
+            var extension = GumFileExtensions.Normalize(absoluteFilePath.Extension);
 
             ElementSave element = null;
 

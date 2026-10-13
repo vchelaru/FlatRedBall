@@ -18,6 +18,11 @@ public static class GumCliRunner
     public static Task<bool> AddFormsAsync(FilePath gumxFilePath) =>
         RunAsync($@"add-forms ""{gumxFilePath.FullPath}""", "gumcli add-forms");
 
+    // Goes through gumcli rather than the vendored GumProjectFontGenerator.exe, which is a frozen build of
+    // Gum's loader and so can't read a .gumj project.
+    public static Task<bool> FontsAsync(FilePath gumProjectFilePath) =>
+        RunAsync($@"fonts ""{gumProjectFilePath.FullPath}""", "gumcli fonts");
+
     static async Task<bool> RunAsync(string arguments, string description)
     {
         var startInfo = new ProcessStartInfo

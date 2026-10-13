@@ -40,7 +40,7 @@ namespace GumPlugin.Managers
 
             if(shouldShowRegenerateCodeMenu)
             {
-                var extension = FileManager.GetExtension(file.Name);
+                var extension = GumFileExtensions.Normalize(FileManager.GetExtension(file.Name));
 
                 shouldShowRegenerateCodeMenu =
                     extension == GumProjectSave.ComponentExtension ||
@@ -77,7 +77,7 @@ namespace GumPlugin.Managers
 
             if(shouldContinue)
             {
-                var alreadyHasScreen = frbScreen.ReferencedFiles.Any(item => FileManager.GetExtension(item.Name) == "gusx");
+                var alreadyHasScreen = frbScreen.ReferencedFiles.Any(item => GumFileExtensions.HasExtension(item.Name, GumProjectSave.ScreenExtension));
 
                 if(alreadyHasScreen)
                 {
@@ -184,7 +184,10 @@ namespace GumPlugin.Managers
                     // Calling Load does a deep load.  We only want references, so we're
                     // going to do a shallow load for perf reasons.
                     //GumProjectSave gps = GumProjectSave.Load(fullFileName, out error);
-                    GumProjectSave gps = FileManager.XmlDeserialize<GumProjectSave>(fullFileName);
+                    GumProjectSave gps = GumFileExtensions.IsJsonProject(fullFileName)
+                        ? Gum.DataTypes.Serialization.Json.GumJsonFileSerializer.DeserializeProject(
+                            System.IO.File.ReadAllText(fullFileName))
+                        : FileManager.XmlDeserialize<GumProjectSave>(fullFileName);
 
                     if (gps.ScreenReferences.Count != 0)
                     {
@@ -219,7 +222,7 @@ namespace GumPlugin.Managers
         public async Task AddGumScreenScreenByName(string gumScreenName, FlatRedBall.Glue.SaveClasses.ScreenSave glueScreen)
         {
             string fullFileName = AppState.Self.GumProjectFolder + "Screens/" +
-                gumScreenName + "." + GumProjectSave.ScreenExtension;
+                gumScreenName + "." + AppState.Self.GetExtensionForProjectFormat(GumProjectSave.ScreenExtension);
 
             if (System.IO.File.Exists(fullFileName))
             {

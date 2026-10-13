@@ -20,6 +20,7 @@ using RenderingLibrary.Graphics;
 using GeneralResponse = ToolsUtilities.GeneralResponse;
 using static FlatRedBall.Glue.SaveClasses.GlueProjectSave;
 using Gum.Wireframe;
+using Gum.StateAnimation.SaveClasses;
 
 namespace GumPlugin.Managers
 {
@@ -49,10 +50,10 @@ namespace GumPlugin.Managers
         public static bool CanTrackDependenciesOn(string fileName)
         {
 
-            string extension = FileManager.GetExtension(fileName);
-            var isOfGumExtension = 
+            string extension = GumFileExtensions.Normalize(FileManager.GetExtension(fileName));
+            var isOfGumExtension =
                 extension == GumProjectSave.ComponentExtension ||
-                extension == "gumx" ||
+                extension == GumProjectSave.ProjectExtension ||
                 extension == GumProjectSave.ScreenExtension ||
                 extension == GumProjectSave.StandardExtension ||
                 // We want to refresh code when this gets changed, so we have to return true for .ganx files:
@@ -128,7 +129,7 @@ namespace GumPlugin.Managers
             //else
             {
                 string fullFileName = FileManager.RelativeDirectory + element.Subfolder + "\\" + element.Name +
-                    "." + element.FileExtension;
+                    "." + element.GetFileExtension(AppState.Self.IsJsonProject);
 
                 fullFileName = FileManager.RemoveDotDotSlash(fullFileName);
 
@@ -144,7 +145,8 @@ namespace GumPlugin.Managers
             {
                 var fileWithoutExtension = FileManager.RemoveExtension(element.FileName);
 
-                var potentialAnimationName = fileWithoutExtension + "Animations.ganx";
+                var potentialAnimationName = fileWithoutExtension +
+                    ElementAnimationsSave.GetFileNameSuffix(AppState.Self.IsJsonProject);
 
                 if(System.IO.File.Exists(potentialAnimationName))
                 {
@@ -526,9 +528,9 @@ namespace GumPlugin.Managers
 
         string GetGumxDirectory(string possibleGumx)
         {
-            string argumentExtension = FileManager.GetExtension(possibleGumx);
+            string argumentExtension = GumFileExtensions.Normalize(FileManager.GetExtension(possibleGumx));
 
-            if (argumentExtension == "gumx")
+            if (argumentExtension == GumProjectSave.ProjectExtension)
             {
                 return FileManager.GetDirectory(possibleGumx);
             }
@@ -594,7 +596,7 @@ namespace GumPlugin.Managers
 
             if (CanTrackDependenciesOn(fileName))
             {
-                string extension = filePath.Extension;
+                string extension = GumFileExtensions.Normalize(filePath.Extension);
 
                 string oldRelative = FileManager.RelativeDirectory;
 
@@ -636,8 +638,7 @@ namespace GumPlugin.Managers
                                 ComponentSave gumComponentSave = null;
                                 try
                                 {
-                                    var (gucxContent, _) = GumFileSerializer.ReadAndDetectFormat(absoluteFileName);
-                                    gumComponentSave = GumFileSerializer.DeserializeElementSave<ComponentSave>(gucxContent, ObjectFinder.Self.GumProjectSave?.Version ?? int.MaxValue);
+                                    gumComponentSave = GumElementFileReader.ReadElement<ComponentSave>(absoluteFileName, ObjectFinder.Self.GumProjectSave?.Version ?? int.MaxValue);
                                     gumComponentSave.FileName = absoluteFileName;
                                     // See an explanation for this in LoadGumxIfNecessaryFromDirectory
                                     gumComponentSave.Initialize(gumComponentSave.DefaultState);
@@ -655,8 +656,7 @@ namespace GumPlugin.Managers
                                 ScreenSave gumScreenSave = null;
                                 try
                                 {
-                                    var (gusxContent, _) = GumFileSerializer.ReadAndDetectFormat(absoluteFileName);
-                                    gumScreenSave = GumFileSerializer.DeserializeElementSave<ScreenSave>(gusxContent, ObjectFinder.Self.GumProjectSave?.Version ?? int.MaxValue);
+                                    gumScreenSave = GumElementFileReader.ReadElement<ScreenSave>(absoluteFileName, ObjectFinder.Self.GumProjectSave?.Version ?? int.MaxValue);
                                     gumScreenSave.FileName = absoluteFileName;
                                     // See an explanation for this in LoadGumxIfNecessaryFromDirectory
                                     gumScreenSave.Initialize(gumScreenSave.DefaultState);
@@ -675,8 +675,7 @@ namespace GumPlugin.Managers
                                 StandardElementSave standardElementSave = null;
                                 try
                                 {
-                                    var (gutxContent, _) = GumFileSerializer.ReadAndDetectFormat(absoluteFileName);
-                                    standardElementSave = GumFileSerializer.DeserializeElementSave<StandardElementSave>(gutxContent, ObjectFinder.Self.GumProjectSave?.Version ?? int.MaxValue);
+                                    standardElementSave = GumElementFileReader.ReadElement<StandardElementSave>(absoluteFileName, ObjectFinder.Self.GumProjectSave?.Version ?? int.MaxValue);
                                     standardElementSave.FileName = absoluteFileName;
                                     // See an explanation for this in LoadGumxIfNecessaryFromDirectory
                                     standardElementSave.Initialize(standardElementSave.DefaultState);
@@ -755,7 +754,7 @@ namespace GumPlugin.Managers
         private static string GetGumProjectFile(string gumxDirectory)
         {
             var files = System.IO.Directory.GetFiles(gumxDirectory)
-                .Where(item => item.EndsWith(".gumx", StringComparison.InvariantCultureIgnoreCase))
+                .Where(item => GumFileExtensions.IsProject(item))
                 .ToArray();
 
             bool multipleGumxFilesExist = files.Length > 1;
@@ -765,7 +764,7 @@ namespace GumPlugin.Managers
             if(files.Length > 1)
             {
                 // Let's limit it to any files in the project.
-                var gumxInProject = GlueState.Self.CurrentGlueProject.GetAllReferencedFiles().Where(item => item.Name.EndsWith("gumx", StringComparison.InvariantCultureIgnoreCase));
+                var gumxInProject = GlueState.Self.CurrentGlueProject.GetAllReferencedFiles().Where(item => GumFileExtensions.IsProject(item.Name));
 
                 var absoluteFiles = gumxInProject.Select(item => GlueCommands.Self.GetAbsoluteFileName(item));
 
@@ -1020,20 +1019,25 @@ namespace GumPlugin.Managers
         {
             string contentFullFileName = FileManager.Standardize(glueContentFolder + buildItem.UnevaluatedInclude);
 
-            string gumFolder = FileManager.GetDirectory(gumProject.FullFileName);
+            return ShouldRemoveGumRelativeFile(contentFullFileName, gumProject.FullFileName, referencedGumFiles);
+        }
+
+        /// <summary>
+        /// Whether a file in the content project that lives under the Gum project's folder is no longer
+        /// needed. The loaded project file itself is always kept; any other Gum project file (such as the
+        /// .gumx left behind after converting to .gumj) is only kept while something references it.
+        /// </summary>
+        internal static bool ShouldRemoveGumRelativeFile(string contentFullFileName, string gumProjectFullFileName, string[] referencedGumFiles)
+        {
+            string gumFolder = FileManager.GetDirectory(gumProjectFullFileName);
 
             string fileRelativeToGum = FileManager.MakeRelative(contentFullFileName, gumFolder);
 
             bool isFileInGumContent = fileRelativeToGum.Contains("..") == false;
 
-            if(isFileInGumContent && !referencedGumFiles.Contains(contentFullFileName) && FileManager.GetExtension(fileRelativeToGum) != "gumx")
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            bool isLoadedProjectFile = FileManager.Standardize(contentFullFileName) == FileManager.Standardize(gumProjectFullFileName);
+
+            return isFileInGumContent && !referencedGumFiles.Contains(contentFullFileName) && !isLoadedProjectFile;
         }
 
         private static bool GetIfShouldRemoveFontFile(List<ProjectItem> toRemove, ProjectItem buildItem, string fontCacheFolder, ProjectBase contentProject, string[] fileReferencedByGumx)
@@ -1061,7 +1065,7 @@ namespace GumPlugin.Managers
         {
             bool shouldRemove = false;
 
-            string extension = FileManager.GetExtension(buildItem.UnevaluatedInclude);
+            string extension = GumFileExtensions.Normalize(FileManager.GetExtension(buildItem.UnevaluatedInclude));
 
             if (extension == GumProjectSave.StandardExtension)
             {
@@ -1085,7 +1089,7 @@ namespace GumPlugin.Managers
         {
             bool shouldRemove = false;
 
-            string extension = FileManager.GetExtension(buildItem.UnevaluatedInclude);
+            string extension = GumFileExtensions.Normalize(FileManager.GetExtension(buildItem.UnevaluatedInclude));
 
             if (extension == GumProjectSave.ComponentExtension)
             {
@@ -1109,7 +1113,7 @@ namespace GumPlugin.Managers
         {
             bool shouldRemove = false;
 
-            string extension = FileManager.GetExtension(buildItem.UnevaluatedInclude);
+            string extension = GumFileExtensions.Normalize(FileManager.GetExtension(buildItem.UnevaluatedInclude));
 
             if (extension == GumProjectSave.ScreenExtension)
             {

@@ -29,6 +29,10 @@ namespace GumPlugin.Managers
         AssetTypeInfo mGraphicalUiElementAti;
         AssetTypeInfo mGumxAti;
         AssetTypeInfo mSkiaSpriteCanvas;
+        AssetTypeInfo mJsonComponentAti;
+        AssetTypeInfo mJsonScreenAti;
+        AssetTypeInfo mJsonScreenIdbAti;
+        AssetTypeInfo mJsonGumxAti;
 
         public List<AssetTypeInfo> AssetTypesForThisProject { get; private set; } = new List<FlatRedBall.Glue.Elements.AssetTypeInfo>();
 
@@ -48,41 +52,39 @@ namespace GumPlugin.Managers
         // and in that case the .gucx needs
         // to be loaded, so we're going to have
         // to support that here:
-        AssetTypeInfo ComponentAti
+        AssetTypeInfo ComponentAti => mComponentAti ??= CreateComponentAti(GumProjectSave.ComponentExtension);
+
+        // The JSON counterpart of ComponentAti, for .gumj projects. Same load code; only the extension differs.
+        AssetTypeInfo JsonComponentAti => mJsonComponentAti ??= CreateComponentAti(GumProjectSave.ComponentJsonExtension);
+
+        AssetTypeInfo CreateComponentAti(string extension)
         {
-            get
+            var ati = new AssetTypeInfo();
+            ati.FriendlyName = $"Gum Component (.{extension})";
+            ati.QualifiedRuntimeTypeName = new PlatformSpecificType()
             {
-                if (mComponentAti == null)
-                {
-                    mComponentAti = new AssetTypeInfo();
-                    mComponentAti.FriendlyName = "Gum Component (.gucx)";
-                    mComponentAti.QualifiedRuntimeTypeName = new PlatformSpecificType()
-                    {
-                        QualifiedType = "Gum.Wireframe.GraphicalUiElement"
-                    };
+                QualifiedType = "Gum.Wireframe.GraphicalUiElement"
+            };
 
-                    
-                    mComponentAti.QualifiedSaveTypeName = "Gum.Data.ComponentSave";
-                    mComponentAti.Extension = "gucx";
-                    mComponentAti.AddToManagersMethod.Add("this.AddToManagers()");
-                    
-                    mComponentAti.CustomLoadFunc = (element, nos, rfs, contentManagerName) => GetLoadStaticContentCodeFor(rfs, nos);
+            ati.QualifiedSaveTypeName = "Gum.Data.ComponentSave";
+            ati.Extension = extension;
+            ati.AddToManagersMethod.Add("this.AddToManagers()");
 
-                    mComponentAti.DestroyMethod = "this.RemoveFromManagers()";
-                    mComponentAti.SupportsMakeOneWay = false;
-                    mComponentAti.ShouldAttach = false;
-                    mComponentAti.MustBeAddedToContentPipeline = false;
-                    mComponentAti.CanBeCloned = false;
-                    mComponentAti.HasCursorIsOn = false;
-                    mComponentAti.HasVisibleProperty = false;
-                    mComponentAti.CanIgnorePausing = false;
-                    mComponentAti.FindByNameSyntax = "GetGraphicalUiElementByName(\"OBJECTNAME\")";
-                    mComponentAti.ShouldAttach = false;
-                    mComponentAti.HideFromNewFileWindow = true;
-                }
+            ati.CustomLoadFunc = (element, nos, rfs, contentManagerName) => GetLoadStaticContentCodeFor(rfs, nos);
 
-                return mComponentAti;
-            }
+            ati.DestroyMethod = "this.RemoveFromManagers()";
+            ati.SupportsMakeOneWay = false;
+            ati.ShouldAttach = false;
+            ati.MustBeAddedToContentPipeline = false;
+            ati.CanBeCloned = false;
+            ati.HasCursorIsOn = false;
+            ati.HasVisibleProperty = false;
+            ati.CanIgnorePausing = false;
+            ati.FindByNameSyntax = "GetGraphicalUiElementByName(\"OBJECTNAME\")";
+            ati.ShouldAttach = false;
+            ati.HideFromNewFileWindow = true;
+
+            return ati;
         }
 
         string GetLoadStaticContentCodeFor(ReferencedFileSave rfs, NamedObjectSave nos, string qualifiedName = null)
@@ -133,84 +135,82 @@ namespace GumPlugin.Managers
             return toReturn;
         }
 
-        AssetTypeInfo ScreenAti
+        AssetTypeInfo ScreenAti => screenAti ??= CreateScreenAti(GumProjectSave.ScreenExtension);
+
+        AssetTypeInfo JsonScreenAti => mJsonScreenAti ??= CreateScreenAti(GumProjectSave.ScreenJsonExtension);
+
+        AssetTypeInfo CreateScreenAti(string extension)
         {
-            get
+            var ati = new AssetTypeInfo();
+            ati.FriendlyName = $"Gum Screen (.{extension})";
+            ati.QualifiedRuntimeTypeName = new PlatformSpecificType()
             {
-                if (screenAti == null)
+                QualifiedType = "Gum.Wireframe.GraphicalUiElement"
+            };
+
+
+            ati.QualifiedSaveTypeName = "Gum.Data.ScreenSave";
+            ati.Extension = extension;
+
+            ati.AddToManagersFunc = (element, nos, rfs, layer) =>
+            {
+                var name = nos?.InstanceName ?? rfs?.GetInstanceName();
+
+                var addToManagersStatement = $"{name}.AddToManagers();";
+
+                var hasCommon = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.GumCommonCodeReferencing ||
+                    GlueState.Self.CurrentMainProject.IsFrbSourceLinked();
+                if (hasCommon)
                 {
-                    screenAti = new AssetTypeInfo();
-                    screenAti.FriendlyName = "Gum Screen (.gusx)";
-                    screenAti.QualifiedRuntimeTypeName = new PlatformSpecificType()
-                    {
-                        QualifiedType = "Gum.Wireframe.GraphicalUiElement"
-                    };
-
-
-                    screenAti.QualifiedSaveTypeName = "Gum.Data.ScreenSave";
-                    screenAti.Extension = "gusx";
-
-                    screenAti.AddToManagersFunc = (element, nos, rfs, layer) =>
-                    {
-                        var name = nos?.InstanceName ?? rfs?.GetInstanceName();
-
-                        var addToManagersStatement = $"{name}.AddToManagers();";
-
-                        var hasCommon = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.GumCommonCodeReferencing ||
-                            GlueState.Self.CurrentMainProject.IsFrbSourceLinked();
-                        if (hasCommon)
-                        {
-                            addToManagersStatement = $"{name}.AddToManagers(global::RenderingLibrary.SystemManagers.Default, null);";
-                        }
-
-                        if (nos?.SourceType == SourceType.File && nos.IsEntireFile)
-                        {
-                            // don't generate anything, it's handled by the file
-                            return null;
-                        }
-                        else if(string.IsNullOrEmpty(element.BaseElement))
-                        {
-
-                            return $"{addToManagersStatement} FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged += RefreshLayoutInternal;";
-                        }
-                        else
-                        {
-                            return addToManagersStatement;
-                        }
-                    };
-
-                    
-
-                    screenAti.CustomLoadFunc = (element, nos, rfs, contentManagerName) => GetLoadStaticContentCodeFor(rfs, nos);
-
-                    screenAti.DestroyFunc = (element, nos, rfs) =>
-                    {
-                        var name = nos?.InstanceName ?? rfs?.GetInstanceName();
-                        if (string.IsNullOrEmpty(element.BaseElement))
-                        {
-                            return $"{name}.RemoveFromManagers(); FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged -= RefreshLayoutInternal;";
-
-                        }
-                        else
-                        {
-                            return $"{name}.RemoveFromManagers();";
-                        }
-                    };
-
-                    screenAti.SupportsMakeOneWay = false;
-                    screenAti.ShouldAttach = false;
-                    screenAti.MustBeAddedToContentPipeline = false;
-                    screenAti.CanBeCloned = false;
-                    screenAti.HasCursorIsOn = false;
-                    screenAti.HasVisibleProperty = false;
-
-                    screenAti.CanIgnorePausing = false;
-                    screenAti.FindByNameSyntax = "GetGraphicalUiElementByName(\"OBJECTNAME\")";
-                    screenAti.HideFromNewFileWindow = true;
+                    addToManagersStatement = $"{name}.AddToManagers(global::RenderingLibrary.SystemManagers.Default, null);";
                 }
 
-                return screenAti;
-            }
+                if (nos?.SourceType == SourceType.File && nos.IsEntireFile)
+                {
+                    // don't generate anything, it's handled by the file
+                    return null;
+                }
+                else if(string.IsNullOrEmpty(element.BaseElement))
+                {
+
+                    return $"{addToManagersStatement} FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged += RefreshLayoutInternal;";
+                }
+                else
+                {
+                    return addToManagersStatement;
+                }
+            };
+
+            
+
+            ati.CustomLoadFunc = (element, nos, rfs, contentManagerName) => GetLoadStaticContentCodeFor(rfs, nos);
+
+            ati.DestroyFunc = (element, nos, rfs) =>
+            {
+                var name = nos?.InstanceName ?? rfs?.GetInstanceName();
+                if (string.IsNullOrEmpty(element.BaseElement))
+                {
+                    return $"{name}.RemoveFromManagers(); FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged -= RefreshLayoutInternal;";
+
+                }
+                else
+                {
+                    return $"{name}.RemoveFromManagers();";
+                }
+            };
+
+            ati.SupportsMakeOneWay = false;
+            ati.ShouldAttach = false;
+            ati.MustBeAddedToContentPipeline = false;
+            ati.CanBeCloned = false;
+            ati.HasCursorIsOn = false;
+            ati.HasVisibleProperty = false;
+
+            ati.CanIgnorePausing = false;
+            ati.FindByNameSyntax = "GetGraphicalUiElementByName(\"OBJECTNAME\")";
+            ati.HideFromNewFileWindow = true;
+
+            return ati;
         }
 
         AssetTypeInfo SkiaSpriteCanvas
@@ -307,61 +307,59 @@ namespace GumPlugin.Managers
             }
         }
 
-        public AssetTypeInfo ScreenIdbAti
+        public AssetTypeInfo ScreenIdbAti => mScreenIdbAti ??= CreateScreenIdbAti(GumProjectSave.ScreenExtension);
+
+        AssetTypeInfo JsonScreenIdbAti => mJsonScreenIdbAti ??= CreateScreenIdbAti(GumProjectSave.ScreenJsonExtension);
+
+        AssetTypeInfo CreateScreenIdbAti(string extension)
         {
-            get
+            var ati = new AssetTypeInfo();
+            ati.FriendlyName = $"Gum Screen (.{extension})";
+            ati.QualifiedRuntimeTypeName = new PlatformSpecificType()
             {
-                if (mScreenIdbAti == null)
-                {
-                    mScreenIdbAti = new AssetTypeInfo();
-                    mScreenIdbAti.FriendlyName = "Gum Screen (.gusx)";
-                    mScreenIdbAti.QualifiedRuntimeTypeName = new PlatformSpecificType()
-                    {
-                        QualifiedType = "FlatRedBall.Gum.GumIdb"
-                    };
+                QualifiedType = "FlatRedBall.Gum.GumIdb"
+            };
 
-                    mScreenIdbAti.QualifiedSaveTypeName = "Gum.Data.ScreenSave";
-                    mScreenIdbAti.Extension = "gusx";
-                    mScreenIdbAti.AddToManagersMethod.Add("this.InstanceInitialize(); FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged += this.HandleResolutionChanged");
-                    mScreenIdbAti.CustomLoadMethod =
-                        // February 11, 2019
-                        // We don't use content
-                        // managers to load gum, 
-                        // but doing a null check
-                        // effectively prevents the
-                        // content from being re-loaded.
-                        // This is a bug that was discovered
-                        // during a monthly when a derived screen
-                        // was loading its screen 2 times.
-                        "if({THIS} == null)\n" +
-                        "{{\n" +
-                        "Gum.Wireframe.GraphicalUiElement.IsAllLayoutSuspended = true;\n" +
-                        "{THIS} = new FlatRedBall.Gum.GumIdb(); \n" +
-                        "{THIS}.LoadFromFile(\"{FILE_NAME}\");  {THIS}.AssignReferences();" +
+            ati.QualifiedSaveTypeName = "Gum.Data.ScreenSave";
+            ati.Extension = extension;
+            ati.AddToManagersMethod.Add("this.InstanceInitialize(); FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged += this.HandleResolutionChanged");
+            ati.CustomLoadMethod =
+                // February 11, 2019
+                // We don't use content
+                // managers to load gum, 
+                // but doing a null check
+                // effectively prevents the
+                // content from being re-loaded.
+                // This is a bug that was discovered
+                // during a monthly when a derived screen
+                // was loading its screen 2 times.
+                "if({THIS} == null)\n" +
+                "{{\n" +
+                "Gum.Wireframe.GraphicalUiElement.IsAllLayoutSuspended = true;\n" +
+                "{THIS} = new FlatRedBall.Gum.GumIdb(); \n" +
+                "{THIS}.LoadFromFile(\"{FILE_NAME}\");  {THIS}.AssignReferences();" +
 
-                        "Gum.Wireframe.GraphicalUiElement.IsAllLayoutSuspended = false;\n" +
-                        "{THIS}.Element.UpdateLayout();\n" +
-                        // HACK!  There's a bug in the UpdateLayout that makes a single UpdateLayout not work right - a 2nd one fixes it. I'm adding this in temporarily until
-                        // I have time to dig into the UpdateLayout to see why it's properly positioning all children.
-                        "{THIS}.Element.UpdateFontRecursive();\n" + 
-                        "{THIS}.Element.UpdateLayout();\n" +
-                        "}}";
+                "Gum.Wireframe.GraphicalUiElement.IsAllLayoutSuspended = false;\n" +
+                "{THIS}.Element.UpdateLayout();\n" +
+                // HACK!  There's a bug in the UpdateLayout that makes a single UpdateLayout not work right - a 2nd one fixes it. I'm adding this in temporarily until
+                // I have time to dig into the UpdateLayout to see why it's properly positioning all children.
+                "{THIS}.Element.UpdateFontRecursive();\n" + 
+                "{THIS}.Element.UpdateLayout();\n" +
+                "}}";
 
-                    
-                    mScreenIdbAti.DestroyMethod = "FlatRedBall.SpriteManager.RemoveDrawableBatch(this); FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged -= this.HandleResolutionChanged";
-                    mScreenIdbAti.SupportsMakeOneWay = false;
-                    mScreenIdbAti.ShouldAttach = false;
-                    mScreenIdbAti.MustBeAddedToContentPipeline = false;
-                    mScreenIdbAti.CanBeCloned = false;
-                    mScreenIdbAti.HasCursorIsOn = false;
-                    mScreenIdbAti.HasVisibleProperty = false;
-                    mScreenIdbAti.CanIgnorePausing = false;
-                    mScreenIdbAti.FindByNameSyntax = "GetGraphicalUiElementByName(\"OBJECTNAME\")";
-                    mScreenIdbAti.HideFromNewFileWindow = true;
-                }
+            
+            ati.DestroyMethod = "FlatRedBall.SpriteManager.RemoveDrawableBatch(this); FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged -= this.HandleResolutionChanged";
+            ati.SupportsMakeOneWay = false;
+            ati.ShouldAttach = false;
+            ati.MustBeAddedToContentPipeline = false;
+            ati.CanBeCloned = false;
+            ati.HasCursorIsOn = false;
+            ati.HasVisibleProperty = false;
+            ati.CanIgnorePausing = false;
+            ati.FindByNameSyntax = "GetGraphicalUiElementByName(\"OBJECTNAME\")";
+            ati.HideFromNewFileWindow = true;
 
-                return mScreenIdbAti;
-            }
+            return ati;
         }
 
         public AssetTypeInfo GraphicalUiElementAti
@@ -450,47 +448,45 @@ namespace GumPlugin.Managers
             }
         }
 
-        AssetTypeInfo GumxAti
+        AssetTypeInfo GumxAti => mGumxAti ??= CreateGumxAti(GumProjectSave.ProjectExtension);
+
+        AssetTypeInfo JsonGumxAti => mJsonGumxAti ??= CreateGumxAti(GumProjectSave.ProjectJsonExtension);
+
+        AssetTypeInfo CreateGumxAti(string extension)
         {
-            get
+            var ati = new AssetTypeInfo();
+            ati.FriendlyName = $"Gum Project (.{extension})";
+            ati.QualifiedRuntimeTypeName = new PlatformSpecificType()
             {
-                if(mGumxAti == null)
-                {
-                    mGumxAti = new AssetTypeInfo();
-                    mGumxAti.FriendlyName = "Gum Project (.gumx)";
-                    mGumxAti.QualifiedRuntimeTypeName = new PlatformSpecificType()
-                    {
-                        QualifiedType = "FlatRedBall.Gum.GumIdb"
-                    };
-                    mGumxAti.QualifiedSaveTypeName = "Gum.Data.ProjectSave";
-                    mGumxAti.Extension = "gumx";
-                    mGumxAti.CustomLoadFunc = GetGumxLoadCode;
+                QualifiedType = "FlatRedBall.Gum.GumIdb"
+            };
+            ati.QualifiedSaveTypeName = "Gum.Data.ProjectSave";
+            ati.Extension = extension;
+            ati.CustomLoadFunc = GetGumxLoadCode;
 
 
-                    mGumxAti.SupportsMakeOneWay = false;
-                    mGumxAti.ShouldAttach = false;
-                    mGumxAti.MustBeAddedToContentPipeline = false;
-                    mGumxAti.CanBeCloned = false;
-                    mGumxAti.HasCursorIsOn = false;
-                    mGumxAti.HasVisibleProperty = false;
-                    mGumxAti.CanIgnorePausing = false;
+            ati.SupportsMakeOneWay = false;
+            ati.ShouldAttach = false;
+            ati.MustBeAddedToContentPipeline = false;
+            ati.CanBeCloned = false;
+            ati.HasCursorIsOn = false;
+            ati.HasVisibleProperty = false;
+            ati.CanIgnorePausing = false;
 
-                    // don't let users add this:
-                    mGumxAti.HideFromNewFileWindow = true;
+            // don't let users add this:
+            ati.HideFromNewFileWindow = true;
 
-                    mGumxAti.CanBeObject = false;
+            ati.CanBeObject = false;
 
-                }
 
-                return mGumxAti;
-            }
+            return ati;
         }
 
         #endregion
 
         string GetGumxLoadCode(IElement element, NamedObjectSave nos, ReferencedFileSave rfs, string contentManagerName)
         {
-            string fileNameToLoad = ReferencedFileSaveCodeGenerator.GetFileToLoadForRfs(rfs, mGumxAti);
+            string fileNameToLoad = ReferencedFileSaveCodeGenerator.GetFileToLoadForRfs(rfs);
             string toReturn = $"FlatRedBall.Gum.GumIdb.StaticInitialize(\"{fileNameToLoad}\"); " +
                         "FlatRedBall.Gum.GumIdbExtensions.RegisterTypes();  " +
                         $"FlatRedBall.Gui.GuiManager.BringsClickedWindowsToFront = false;";
@@ -603,6 +599,65 @@ namespace GumPlugin.Managers
             AddIfNotPresent(GraphicalUiElementAti);
         }
 
+        // Tracked apart from AssetTypesForThisProject: that list also answers "is this a Gum ATI whose
+        // file should open in the Gum editor", which the .gumx/.gusx ATIs (not in it) never trigger.
+        readonly List<AssetTypeInfo> registeredJsonAtis = new List<AssetTypeInfo>();
+
+        /// <summary>
+        /// Registers the JSON ATIs when the loaded project supports them. Per project rather than in
+        /// AddCommonAtis, which runs at plugin startup before any project (and so its version) exists.
+        /// </summary>
+        void RefreshJsonAtis()
+        {
+            UnloadJsonAtis();
+
+            var shouldRegister = ShouldRegisterJsonAtis(
+                GlueState.Self.CurrentGlueProject?.FileVersion ?? 0,
+                GlueState.Self.CurrentMainProject?.IsFrbSourceLinked() == true);
+
+            if (shouldRegister)
+            {
+                foreach (var jsonAti in JsonAtis)
+                {
+                    AddIfNotPresent(jsonAti);
+                    registeredJsonAtis.Add(jsonAti);
+                }
+            }
+        }
+
+        void UnloadJsonAtis()
+        {
+            foreach (var item in registeredJsonAtis)
+            {
+                if (AvailableAssetTypes.Self.AllAssetTypes.Contains(item))
+                {
+                    AvailableAssetTypes.Self.RemoveAssetType(item);
+                }
+            }
+
+            registeredJsonAtis.Clear();
+        }
+
+        /// <summary>The .gumj/.gucj/.gusj counterparts of the XML Gum ATIs.</summary>
+        internal IEnumerable<AssetTypeInfo> JsonAtis
+        {
+            get
+            {
+                yield return JsonGumxAti;
+                yield return JsonComponentAti;
+                yield return JsonScreenAti;
+                yield return JsonScreenIdbAti;
+            }
+        }
+
+        /// <summary>
+        /// Whether the .gumj/.gucj/.gusj ATIs should be registered. The Gum runtime reads them from
+        /// <see cref="GlueProjectSave.GluxVersions.GumJsonProjects"/> on; a source-linked project always builds
+        /// against current Gum source, so it has them regardless of its FileVersion.
+        /// </summary>
+        internal static bool ShouldRegisterJsonAtis(int fileVersion, bool isFrbSourceLinked) =>
+            isFrbSourceLinked || fileVersion >= (int)GluxVersions.GumJsonProjects;
+
         AssetTypeInfo FindMatchingAtiInGlueList(AssetTypeInfo ati) =>
             AvailableAssetTypes.Self.AllAssetTypes
                 .FirstOrDefault(item =>
@@ -621,6 +676,8 @@ namespace GumPlugin.Managers
             AppState.Self.HasAddedGumSkiaElements;
         public void RefreshProjectSpecificAtis()
         {
+            RefreshJsonAtis();
+
             var list = GetAtisForDerivedGues();
 
             foreach(var ati in list)
@@ -696,7 +753,7 @@ namespace GumPlugin.Managers
 
             if (element is ComponentSave)
             {
-                newAti.Extension = GumProjectSave.ComponentExtension;
+                newAti.Extension = AppState.Self.GetExtensionForProjectFormat(GumProjectSave.ComponentExtension);
 
                 //newAti.CustomLoadMethod = ComponentAti.CustomLoadMethod + " as " + 
                 //    GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(element);
@@ -942,6 +999,8 @@ namespace GumPlugin.Managers
             }
 
             AssetTypesForThisProject.Clear();
+
+            UnloadJsonAtis();
         }
 
         public bool IsAssetTypeInfoGum(AssetTypeInfo ati)

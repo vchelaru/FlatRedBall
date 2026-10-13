@@ -251,6 +251,12 @@ namespace FlatRedBall.Glue.SaveClasses
             // AnimationChainList file at or above this version.
             AchjAnimationFiles = 74,
 
+            // October 13, 2026 - the Gum runtime reads JSON Gum projects (.gumj with .gusj/.gucj/.gutj/.behj/.ganj
+            // elements). Gated because the generated load code is unchanged: on an older Gum runtime a .gumj fails
+            // at startup with an XML parse error instead of at edit time, so Glue only treats the JSON Gum
+            // extensions as Gum files at or above this version.
+            GumJsonProjects = 75,
+
             // Stop! If adding an entry here, modify SyntaxVersionAttribute on FlatRedBallServices
             // and LatestVersion down below
             // and update the docs
@@ -260,7 +266,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.AchjAnimationFiles;
+        public const int LatestVersion = (int)GluxVersions.GumJsonProjects;
 
         public int FileVersion { get; set; }
 

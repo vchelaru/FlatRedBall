@@ -584,11 +584,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         if ((absoluteExe != "") && absoluteExe?.Exists() == true)
                         {
                             GlueCommands.Self.PrintOutput($"Opening \"{fileName}\" with resolved app: {absoluteExe.FullPath}");
-                            var process = Process.Start(CreateResolvedAppStartInfo(absoluteExe.FullPath, fileName));
-                            if (process == null)
-                            {
-                                GlueCommands.Self.PrintError($"Process.Start returned null for {absoluteExe.FullPath} - the process did not start.");
-                            }
+                            _ = LaunchAndReportFailureAsync(
+                                CreateResolvedAppStartInfo(absoluteExe.FullPath, fileName),
+                                message => GlueCommands.Self.PrintError(message));
                             return;
                         }
 
@@ -686,6 +684,69 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         }
 
         /// <summary>
+        /// Starts an external editor and, if it dies with a non-zero exit code (a crash on startup, say),
+        /// reports the exit code and what it wrote to stderr. Without this a stale or broken build just
+        /// vanishes and Glue says nothing. The task completes when the process exits; callers launching a
+        /// long-lived editor should not await it.
+        /// </summary>
+        internal static async Task LaunchAndReportFailureAsync(ProcessStartInfo startInfo, Action<string> printError)
+        {
+            // Redirected so a crash can be reported. Both streams must be drained, or a chatty editor
+            // fills the pipe buffer and blocks.
+            startInfo.UseShellExecute = false;
+            startInfo.RedirectStandardError = true;
+            startInfo.RedirectStandardOutput = true;
+
+            var recentOutput = new System.Collections.Generic.Queue<string>();
+            void Remember(string line)
+            {
+                if (line == null) return;
+                lock (recentOutput)
+                {
+                    recentOutput.Enqueue(line);
+                    while (recentOutput.Count > 40) recentOutput.Dequeue();
+                }
+            }
+
+            Process process;
+            try
+            {
+                process = Process.Start(startInfo);
+            }
+            catch (Exception exception)
+            {
+                printError($"Could not start {startInfo.FileName}:\n{exception.Message}");
+                return;
+            }
+
+            if (process == null)
+            {
+                printError($"Process.Start returned null for {startInfo.FileName} - the process did not start.");
+                return;
+            }
+
+            process.OutputDataReceived += (_, e) => Remember(e.Data);
+            process.ErrorDataReceived += (_, e) => Remember(e.Data);
+            process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
+
+            await process.WaitForExitAsync();
+            // The overload without a timeout also waits for the redirected streams to finish, so the
+            // output is complete before it is reported.
+            process.WaitForExit();
+
+            if (process.ExitCode != 0)
+            {
+                string output;
+                lock (recentOutput) { output = string.Join("\n", recentOutput); }
+
+                printError($"{startInfo.FileName} exited with code {process.ExitCode} after being asked to open " +
+                    $"{string.Join(" ", startInfo.ArgumentList)}." +
+                    (string.IsNullOrWhiteSpace(output) ? "" : $"\n{output}"));
+            }
+        }
+
+        /// <summary>
         /// Whether <paramref name="extension"/> is an animation file the AnimationEditor opens, used to
         /// resolve the editor's exe when Windows has no association for it.
         /// </summary>
@@ -693,36 +754,50 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             String.Equals(extension, "achx", StringComparison.OrdinalIgnoreCase) ||
             String.Equals(extension, "achj", StringComparison.OrdinalIgnoreCase);
 
+        /// <summary>
+        /// Finds the Gum editor to open Gum files with. Gum's editor head moved from the old WinForms/WPF
+        /// "Gum.exe" to the Avalonia-based "Gum.Avalonia.exe", so the new head wins whenever it exists:
+        /// its source-build location first (Debug, then Release: a developer building Gum from source
+        /// works in Debug, so a Release build next to it is usually a stale one), then the prebuilt one,
+        /// then the old head. When nothing exists the last candidate is returned, so callers can report it
+        /// as missing.
+        /// </summary>
+        internal static FilePath ResolveGumExecutable(FilePath glueExeDirectory)
+        {
+            // The Avalonia project's assembly is named "Gum", so a current build is Gum.exe. The old
+            // Gum.Avalonia.exe name only survives in stale output folders, so it is tried after every Gum.exe.
+            var fallbacks = new[]
+            {
+                "../../../../../../Gum/Tool/Gum.Avalonia/bin/Debug/net10.0/Gum.exe",
+                "../../../../../../Gum/Tool/Gum.Avalonia/bin/Release/net10.0/Gum.exe",
+                "../../../../../../Gum/Tool/Gum.Avalonia/bin/Debug/net10.0/Gum.Avalonia.exe",
+                "../../../../../../Gum/Tool/Gum.Avalonia/bin/Release/net10.0/Gum.Avalonia.exe",
+                "Gum/Data/Gum.Avalonia.exe",
+                "../../../../../../Gum/Gum/bin/Debug/Data/Gum.exe",
+                "../../../../../../Gum/Gum/bin/Debug/Gum.exe",
+                "Gum/Data/Gum.exe",
+            };
+
+            FilePath absoluteExe = null;
+            foreach (var fallback in fallbacks)
+            {
+                absoluteExe = glueExeDirectory + fallback;
+
+                if (absoluteExe.Exists())
+                {
+                    break;
+                }
+            }
+
+            return absoluteExe;
+        }
+
         private FilePath TryToGetFilePathFromExtension(string textExtension)
         {
             FilePath? absoluteExe = null;
             if (GumFileExtensions.Contains(textExtension.ToLower()))
             {
-                // Gum's editor head moved from the old WinForms/WPF "Gum.exe" to the Avalonia-based
-                // "Gum.Avalonia.exe" (Direction/avalonia-migration) - try the new head's source-build
-                // location first, same "new head, old head, prebuilt" fallback shape as the achx/
-                // AnimationEditor case below.
-                absoluteExe = GlueState.Self.GlueExeDirectory + "../../../../../../Gum/Tool/Gum.Avalonia/bin/Debug/net10.0/Gum.Avalonia.exe";
-
-                if (absoluteExe?.Exists() == false)
-                {
-                    absoluteExe = GlueState.Self.GlueExeDirectory + "Gum/Data/Gum.Avalonia.exe";
-                }
-
-                if (absoluteExe?.Exists() == false)
-                {
-                    absoluteExe = GlueState.Self.GlueExeDirectory + "../../../../../../Gum/Gum/bin/Debug/Data/Gum.exe";
-                }
-
-                if (absoluteExe?.Exists() == false)
-                {
-                    absoluteExe = GlueState.Self.GlueExeDirectory + "../../../../../../Gum/Gum/bin/Debug/Gum.exe";
-                }
-
-                if (absoluteExe?.Exists() == false)
-                {
-                    absoluteExe = GlueState.Self.GlueExeDirectory + "Gum/Data/Gum.exe";
-                }
+                absoluteExe = ResolveGumExecutable(GlueState.Self.GlueExeDirectory);
 
                 GlueCommands.Self.PrintOutput(absoluteExe?.Exists() == true
                     ? $"Resolved Gum executable to open .{textExtension}: {absoluteExe.FullPath}"
@@ -764,7 +839,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return fileName;
         }
 
-        public List<string> GumFileExtensions { get; } = new List<string>() { "gusx", "gucx", "gutx", "gumx" };
+        public List<string> GumFileExtensions { get; } = new List<string>() { "gusx", "gucx", "gutx", "gumx", "gusj", "gucj", "gutj", "gumj" };
         public string GetGumExeFilePath() {
             return FlatRedBall.Glue.Plugins.ExportedImplementations.GlueState.Self.GlueExeDirectory + "../../../../../../Gum/Gum/bin/Debug/Gum.exe";
         }

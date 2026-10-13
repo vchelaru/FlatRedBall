@@ -446,7 +446,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             get
             {
                 var rfs = FlatRedBall.Glue.Elements.ObjectFinder.Self.GlueProject.GetAllReferencedFiles()
-                    .FirstOrDefault(item => FlatRedBall.IO.FileManager.GetExtension(item.Name) == "gumx");
+                    .FirstOrDefault(item => FlatRedBall.Glue.IO.GumFileExtensions.IsProject(item.Name));
 
                 return rfs != null;
             }

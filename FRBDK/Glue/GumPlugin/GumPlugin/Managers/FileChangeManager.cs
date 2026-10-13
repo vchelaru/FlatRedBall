@@ -20,11 +20,14 @@ public class FileChangeManager : Singleton<FileChangeManager>
     {
 
         AvailableAssetTypes.Self.AdditionalExtensionsToTreatAsAssets.Add("behx");
+        AvailableAssetTypes.Self.AdditionalExtensionsToTreatAsAssets.Add("behj");
     }
 
     public async void HandleFileChange(FilePath filePath, FileChangeType fileChangeType)
     {
-        string extension = filePath.Extension;
+        // Normalized so a .gusj is handled exactly like a .gusx; the readers below pick the
+        // deserializer from the file's real extension.
+        string extension = GumFileExtensions.Normalize(filePath.Extension);
 
         bool shouldHandleFileChange = false;
 
@@ -33,7 +36,8 @@ public class FileChangeManager : Singleton<FileChangeManager>
             var gumProjectDirectory =
                 FileManager.GetDirectory(Gum.Managers.ObjectFinder.Self.GumProjectSave.FullFileName);
 
-            shouldHandleFileChange = FileManager.IsRelativeTo(filePath.FullPath, gumProjectDirectory);
+            shouldHandleFileChange = FileManager.IsRelativeTo(filePath.FullPath, gumProjectDirectory) &&
+                !GumFileExtensions.IsGumFileOfOtherFormat(filePath.FullPath, AppState.Self.IsJsonProject);
         }
 
         if (shouldHandleFileChange)
@@ -55,8 +59,7 @@ public class FileChangeManager : Singleton<FileChangeManager>
                 {
                     try
                     {
-                        var (behaviorContent, _) = GumFileSerializer.ReadAndDetectFormat(filePath.FullPath);
-                        var newBehavior = GumFileSerializer.DeserializeBehaviorSave(behaviorContent,
+                        var newBehavior = GumElementFileReader.ReadBehavior(filePath.FullPath,
                             AppState.Self.GumProjectSave?.Version ?? int.MaxValue);
 
                         // remove behavior
@@ -117,8 +120,7 @@ public class FileChangeManager : Singleton<FileChangeManager>
                 if (filePath.Exists())
                 {
                     GlueCommands.Self.TryMultipleTimes(() => {
-                        var (screenContent, _) = GumFileSerializer.ReadAndDetectFormat(filePath.FullPath);
-                        screen = GumFileSerializer.DeserializeElementSave<ScreenSave>(screenContent, gumProject.Version);
+                        screen = GumElementFileReader.ReadElement<ScreenSave>(filePath.FullPath, gumProject.Version);
                     });
                 }
 
@@ -148,8 +150,7 @@ public class FileChangeManager : Singleton<FileChangeManager>
                 if (filePath.Exists())
                 {
                     GlueCommands.Self.TryMultipleTimes(() => {
-                        var (componentContent, _) = GumFileSerializer.ReadAndDetectFormat(filePath.FullPath);
-                        component = GumFileSerializer.DeserializeElementSave<ComponentSave>(componentContent, gumProject.Version);
+                        component = GumElementFileReader.ReadElement<ComponentSave>(filePath.FullPath, gumProject.Version);
                     });
                     component.Initialize(component.DefaultState);
 
@@ -172,8 +173,7 @@ public class FileChangeManager : Singleton<FileChangeManager>
             {
                 StandardElementSave standard = null;
                 GlueCommands.Self.TryMultipleTimes(() => {
-                    var (standardContent, _) = GumFileSerializer.ReadAndDetectFormat(filePath.FullPath);
-                    standard = GumFileSerializer.DeserializeElementSave<StandardElementSave>(standardContent, gumProject.Version);
+                    standard = GumElementFileReader.ReadElement<StandardElementSave>(filePath.FullPath, gumProject.Version);
                 });
                 standard.Initialize(standard.DefaultState);
 

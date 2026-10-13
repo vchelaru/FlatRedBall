@@ -73,7 +73,7 @@ namespace GumPlugin.Managers
             shouldAddEventsForChildren = false;
             if (namedObject.SourceType == SourceType.File)
             {
-                string extension = FileManager.GetExtension(namedObject.SourceFile);
+                string extension = GumFileExtensions.Normalize(FileManager.GetExtension(namedObject.SourceFile));
 
                 if (extension == GumProjectSave.ComponentExtension ||
                     extension == GumProjectSave.ProjectExtension ||

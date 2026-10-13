@@ -94,7 +94,7 @@ class GumPluginCodeGenerator : ElementComponentCodeGenerator
         // technically all FRB projects now have forms, so let's just default that to true
         hasForms = element.ReferencedFiles.Any(item =>
         {
-            return item.Name.EndsWith(".gusx") &&
+            return GumFileExtensions.HasExtension(item.Name, GumProjectSave.ScreenExtension) &&
                 item.RuntimeType != "FlatRedBall.Gum.GumIdb";
             //return item.RuntimeType?.EndsWith(".GraphicalUiElement") == true;
         });
@@ -110,7 +110,7 @@ class GumPluginCodeGenerator : ElementComponentCodeGenerator
     {
         
         var gumScreenRfs =
-            element.ReferencedFiles.FirstOrDefault(item => item.Name.EndsWith(".gusx"));
+            element.ReferencedFiles.FirstOrDefault(item => GumFileExtensions.HasExtension(item.Name, GumProjectSave.ScreenExtension));
 
         
         bool needsGumIdb = NeedsGumIdb(element, out bool isGlueScreen, out bool hasGumScreen, out bool hasForms);
@@ -195,7 +195,7 @@ class GumPluginCodeGenerator : ElementComponentCodeGenerator
         {
 
             var gumProject =
-                GlueState.Self.CurrentGlueProject.GlobalFiles.FirstOrDefault(item => item.Name.EndsWith(".gumx"));
+                GlueState.Self.CurrentGlueProject.GlobalFiles.FirstOrDefault(item => GumFileExtensions.IsProject(item.Name));
 
             codeBlock.Line("// Set the content manager for Gum");
             codeBlock.Line("var contentManagerWrapper = new FlatRedBall.Gum.ContentManagerWrapper();");
@@ -269,14 +269,14 @@ class GumPluginCodeGenerator : ElementComponentCodeGenerator
 
     private static bool GetIfHasGumProject()
     {
-        return GlueState.Self.CurrentGlueProject.GlobalFiles.FirstOrDefault(item => item.Name.EndsWith(".gumx")) != null;
+        return GlueState.Self.CurrentGlueProject.GlobalFiles.FirstOrDefault(item => GumFileExtensions.IsProject(item.Name)) != null;
     }
 
     private bool GetIfContainsAnyGumFilesIn(IElement element)
     {
         foreach (var file in element.ReferencedFiles)
         {
-            string extension = FileManager.GetExtension( file.Name);
+            string extension = GumFileExtensions.Normalize(FileManager.GetExtension( file.Name));
 
             if (file.LoadedAtRuntime &&
                 (extension == GumProjectSave.ComponentExtension ||
@@ -294,7 +294,7 @@ class GumPluginCodeGenerator : ElementComponentCodeGenerator
     {
         foreach (var file in element.ReferencedFiles)
         {
-            string extension = FileManager.GetExtension(file.Name);
+            string extension = GumFileExtensions.Normalize(FileManager.GetExtension(file.Name));
 
             if (file.LoadedAtRuntime && extension == GumProjectSave.ScreenExtension)
             {
@@ -339,7 +339,8 @@ class GumPluginCodeGenerator : ElementComponentCodeGenerator
         return item.SourceType == FlatRedBall.Glue.SaveClasses.SourceType.File &&
             !string.IsNullOrEmpty(item.SourceFile) &&
             !string.IsNullOrEmpty(item.SourceName) &&
-            (FileManager.GetExtension(item.SourceFile) == "gusx" || FileManager.GetExtension(item.SourceFile) == "gucx");
+            (GumFileExtensions.HasExtension(item.SourceFile, GumProjectSave.ScreenExtension) ||
+            GumFileExtensions.HasExtension(item.SourceFile, GumProjectSave.ComponentExtension));
 
     }
 }

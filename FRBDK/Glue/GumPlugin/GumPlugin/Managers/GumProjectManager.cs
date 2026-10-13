@@ -23,7 +23,7 @@ namespace GumPlugin.Managers
             {
 
                 return glueProject.GetAllReferencedFiles().FirstOrDefault
-                 (item => FileManager.GetExtension(item.Name) == "gumx");
+                 (item => GumFileExtensions.IsProject(item.Name));
             }
             else
             {
