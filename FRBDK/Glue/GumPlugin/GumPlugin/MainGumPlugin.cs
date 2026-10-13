@@ -628,38 +628,8 @@ public class MainGumPlugin : PluginBase
 
 
             {
-                var startInfo = new System.Diagnostics.ProcessStartInfo();
-
-                // Even though this is "rebuildfonts" it actually doesn't "rebuild". It's just a "build"
-                startInfo.Arguments = $@"""{gumFileName}""";
-                startInfo.FileName =
-                    "Plugins/GumPlugin/Tools/GumProjectFontGenerator/GumProjectFontGenerator.exe";
-                //"C:\\Users\\Owner\\Documents\\GitHub\\Gum\\GumProjectFontGenerator\\bin\\Debug\\net8.0\\GumProjectFontGenerator.exe";
-                startInfo.UseShellExecute = false;
-
-                // use the new font building tool:
-                var newToolStart = DateTime.Now;
-                var process = new Process();
-                process.StartInfo = startInfo;
-                process.StartInfo.UseShellExecute = false;
-                process.StartInfo.RedirectStandardOutput = true;
-                process.StartInfo.RedirectStandardError = true;
-                process.StartInfo.CreateNoWindow = true;
-
-                process.Start();
-
-                await process.WaitForExitAsync();
-
-                var newToolExit = DateTime.Now;
-                var exitCode = process.ExitCode;
-
-                if (exitCode != 0)
-                {
-                    GlueCommands.Self.PrintOutput($"{startInfo.FileName} {startInfo.Arguments}");
-                    var error = process.StandardError.ReadToEnd();
-                    // Unknown error:
-                    GlueCommands.Self.PrintError($"GumProjectFontGenerator has exited with an unknown error {exitCode} so fonts were not generated.\n{error}");
-                }
+                // Only builds the fonts that are missing; it doesn't rebuild existing ones.
+                await GumCliRunner.FontsAsync(new FilePath(gumFileName));
             }
 
 
