@@ -693,36 +693,63 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             String.Equals(extension, "achx", StringComparison.OrdinalIgnoreCase) ||
             String.Equals(extension, "achj", StringComparison.OrdinalIgnoreCase);
 
+        /// <summary>
+        /// Finds the Gum editor to open Gum files with. Gum's editor head moved from the old WinForms/WPF
+        /// "Gum.exe" to the Avalonia-based "Gum.Avalonia.exe", so the new head wins whenever it exists:
+        /// its source-build location first (Debug or Release, whichever was built most recently, since a
+        /// checkout often has only one), then the prebuilt one, then the old head. When nothing exists the
+        /// last candidate is returned, so callers can report it as missing.
+        /// </summary>
+        internal static FilePath ResolveGumExecutable(FilePath glueExeDirectory)
+        {
+            const string avaloniaSourceBuild = "../../../../../../Gum/Tool/Gum.Avalonia/bin/{0}/net10.0/Gum.Avalonia.exe";
+
+            FilePath newestAvaloniaBuild = null;
+            foreach (var configuration in new[] { "Debug", "Release" })
+            {
+                FilePath candidate = glueExeDirectory + string.Format(avaloniaSourceBuild, configuration);
+
+                if (candidate.Exists() &&
+                    (newestAvaloniaBuild == null ||
+                     System.IO.File.GetLastWriteTimeUtc(candidate.FullPath) > System.IO.File.GetLastWriteTimeUtc(newestAvaloniaBuild.FullPath)))
+                {
+                    newestAvaloniaBuild = candidate;
+                }
+            }
+
+            if (newestAvaloniaBuild != null)
+            {
+                return newestAvaloniaBuild;
+            }
+
+            var fallbacks = new[]
+            {
+                "Gum/Data/Gum.Avalonia.exe",
+                "../../../../../../Gum/Gum/bin/Debug/Data/Gum.exe",
+                "../../../../../../Gum/Gum/bin/Debug/Gum.exe",
+                "Gum/Data/Gum.exe",
+            };
+
+            FilePath absoluteExe = null;
+            foreach (var fallback in fallbacks)
+            {
+                absoluteExe = glueExeDirectory + fallback;
+
+                if (absoluteExe.Exists())
+                {
+                    break;
+                }
+            }
+
+            return absoluteExe;
+        }
+
         private FilePath TryToGetFilePathFromExtension(string textExtension)
         {
             FilePath? absoluteExe = null;
             if (GumFileExtensions.Contains(textExtension.ToLower()))
             {
-                // Gum's editor head moved from the old WinForms/WPF "Gum.exe" to the Avalonia-based
-                // "Gum.Avalonia.exe" (Direction/avalonia-migration) - try the new head's source-build
-                // location first, same "new head, old head, prebuilt" fallback shape as the achx/
-                // AnimationEditor case below.
-                absoluteExe = GlueState.Self.GlueExeDirectory + "../../../../../../Gum/Tool/Gum.Avalonia/bin/Debug/net10.0/Gum.Avalonia.exe";
-
-                if (absoluteExe?.Exists() == false)
-                {
-                    absoluteExe = GlueState.Self.GlueExeDirectory + "Gum/Data/Gum.Avalonia.exe";
-                }
-
-                if (absoluteExe?.Exists() == false)
-                {
-                    absoluteExe = GlueState.Self.GlueExeDirectory + "../../../../../../Gum/Gum/bin/Debug/Data/Gum.exe";
-                }
-
-                if (absoluteExe?.Exists() == false)
-                {
-                    absoluteExe = GlueState.Self.GlueExeDirectory + "../../../../../../Gum/Gum/bin/Debug/Gum.exe";
-                }
-
-                if (absoluteExe?.Exists() == false)
-                {
-                    absoluteExe = GlueState.Self.GlueExeDirectory + "Gum/Data/Gum.exe";
-                }
+                absoluteExe = ResolveGumExecutable(GlueState.Self.GlueExeDirectory);
 
                 GlueCommands.Self.PrintOutput(absoluteExe?.Exists() == true
                     ? $"Resolved Gum executable to open .{textExtension}: {absoluteExe.FullPath}"
