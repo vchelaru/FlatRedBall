@@ -49,7 +49,7 @@ namespace OfficialPlugins.QuickActionPlugin.Managers
             var gameScreen = glueProject?.Screens.FirstOrDefault(item => item.Name == "Screens\\GameScreen");
             var hasGameScreen = gameScreen != null;
             var hasGumProject = GlueState.Self.GetAllReferencedFiles()
-                .Any(item => item.Name.ToLowerInvariant().EndsWith(".gumx"));
+                .Any(item => FlatRedBall.Glue.IO.GumFileExtensions.IsProject(item.Name));
 
             #endregion
 

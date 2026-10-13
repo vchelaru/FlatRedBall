@@ -49,7 +49,7 @@ namespace GumPlugin.CodeGeneration
 
         public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, IElement element)
         {
-            var gumScreenRfs = element.ReferencedFiles.FirstOrDefault(item => item.Name.EndsWith(".gusx"));
+            var gumScreenRfs = element.ReferencedFiles.FirstOrDefault(item => GumFileExtensions.HasExtension(item.Name, "gusx"));
 
 
             bool needsGumIdb = GumPluginCodeGenerator.NeedsGumIdb(element, out bool isGlueScreen, out bool hasGumScreen, out bool hasForms);

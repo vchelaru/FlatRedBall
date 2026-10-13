@@ -405,6 +405,23 @@ namespace FlatRedBall.Gum
 
 
 
+        /// <summary>
+        /// A .gumj project names its elements .gucj/.gusj/.gutj. Elements are already loaded by name, so
+        /// LoadFromFile only needs the extension mapped to its XML counterpart to pick the element list.
+        /// Literals rather than GumProjectSave.*JsonExtension, since this file is copied into games whose
+        /// Gum may predate those constants.
+        /// </summary>
+        public static string GetElementExtensionForLookup(string extension)
+        {
+            switch (extension)
+            {
+                case "gucj": return GumProjectSave.ComponentExtension;
+                case "gusj": return GumProjectSave.ScreenExtension;
+                case "gutj": return GumProjectSave.StandardExtension;
+                default: return extension;
+            }
+        }
+
         public void LoadFromFile(string fileName)
         {
             var section = FlatRedBall.Performance.Measurement.Section.GetAndStartContextAndTime("LoadFromFile " + fileName);
@@ -424,6 +441,8 @@ namespace FlatRedBall.Gum
 
                 ElementSave elementSave = null;
                 string extension = ToolsUtilities.FileManager.GetExtension(fileName);
+
+                extension = GetElementExtensionForLookup(extension);
 
                 string strippedName = FlatRedBall.IO.FileManager.RemoveExtension(FlatRedBall.IO.FileManager.RemovePath(fileName));
 

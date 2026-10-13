@@ -160,7 +160,7 @@ namespace GumPlugin.CodeGeneration
                 string extension = null;
                 if(isFromFile && !string.IsNullOrEmpty(namedObject.SourceFile))
                 {
-                    extension = FileManager.GetExtension(namedObject.SourceFile);
+                    extension = GumFileExtensions.Normalize(FileManager.GetExtension(namedObject.SourceFile));
                     isGumObject = extension == "gusx" || extension == "gucx";
                 }
                 else if(AssetTypeInfoManager.Self.IsAssetTypeInfoGum(namedObject.GetAssetTypeInfo()))

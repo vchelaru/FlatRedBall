@@ -28,7 +28,7 @@ namespace GumPlugin.CodeGeneration
             if (fileVersion >= (int)GluxVersions.HasFrameworkElementManager)
             {
                 // Only if we have gum:
-                var gumxFile = GlueState.Self.CurrentGlueProject.GlobalFiles.FirstOrDefault(item => item.Name.EndsWith(".gumx"));
+                var gumxFile = GlueState.Self.CurrentGlueProject.GlobalFiles.FirstOrDefault(item => GumFileExtensions.IsProject(item.Name));
                 if (gumxFile != null)
                 {
                     codeBlock.Line("FlatRedBall.FlatRedBallServices.AddManager(FlatRedBall.Forms.Managers.FrameworkElementManager.Self);");

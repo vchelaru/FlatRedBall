@@ -764,7 +764,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return fileName;
         }
 
-        public List<string> GumFileExtensions { get; } = new List<string>() { "gusx", "gucx", "gutx", "gumx" };
+        public List<string> GumFileExtensions { get; } = new List<string>() { "gusx", "gucx", "gutx", "gumx", "gusj", "gucj", "gutj", "gumj" };
         public string GetGumExeFilePath() {
             return FlatRedBall.Glue.Plugins.ExportedImplementations.GlueState.Self.GlueExeDirectory + "../../../../../../Gum/Gum/bin/Debug/Gum.exe";
         }

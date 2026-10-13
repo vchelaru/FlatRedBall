@@ -39,8 +39,7 @@ public class GumPluginCommands : Singleton<GumPluginCommands>
 
     internal void AddComponent(FilePath filePath)
     {
-        var (componentContent, _) = GumFileSerializer.ReadAndDetectFormat(filePath.Standardized);
-        var component = GumFileSerializer.DeserializeElementSave<ComponentSave>(componentContent,
+        var component = GumElementFileReader.ReadElement<ComponentSave>(filePath.Standardized,
             //AppState.Self.GumProjectSave?.Version ?? int.MaxValue);
             // The user could be mixing an old Gum project with the new forms, so let's tolerate it by assuming
             // V2 so it reads each file:
@@ -53,8 +52,7 @@ public class GumPluginCommands : Singleton<GumPluginCommands>
 
     internal void AddStandardElement(FilePath filePath)
     {
-        var (standardContent, _) = GumFileSerializer.ReadAndDetectFormat(filePath.FullPath);
-        var standardElement = GumFileSerializer.DeserializeElementSave<StandardElementSave>(standardContent,
+        var standardElement = GumElementFileReader.ReadElement<StandardElementSave>(filePath.FullPath,
             // See AddComponent on why we assume V2
             2);
 
@@ -97,7 +95,7 @@ public class GumPluginCommands : Singleton<GumPluginCommands>
 
         var directory = FileManager.GetDirectory(gumProjectFileName.FullPath) + ElementReference.ComponentSubfolder + "/";
         string componentFileName =
-            directory + gumComponent.Name + "." + GumProjectSave.ComponentExtension;
+            directory + gumComponent.Name + "." + AppState.Self.GetExtensionForProjectFormat(GumProjectSave.ComponentExtension);
 
 
         gumComponent.Save(componentFileName);
@@ -171,7 +169,7 @@ public class GumPluginCommands : Singleton<GumPluginCommands>
 
         var directory = FileManager.GetDirectory(gumProjectFileName.FullPath) + ElementReference.ScreenSubfolder + "/";
         string screenFileName =
-            directory + gumScreen.Name + "." + GumProjectSave.ScreenExtension;
+            directory + gumScreen.Name + "." + AppState.Self.GetExtensionForProjectFormat(GumProjectSave.ScreenExtension);
 
 
         gumScreen.Save(screenFileName);
@@ -277,7 +275,7 @@ public class GumPluginCommands : Singleton<GumPluginCommands>
         var gumProjectFileName = GumProjectManager.Self.GetGumProjectFileName();
         var directory = FileManager.GetDirectory(gumProjectFileName.FullPath) + BehaviorReference.Subfolder + "/";
         string behaviorFileName =
-            directory + behavior.Name + "." + BehaviorReference.Extension;
+            directory + behavior.Name + "." + AppState.Self.GetExtensionForProjectFormat(BehaviorReference.Extension);
 
         behavior.Save(behaviorFileName);
 
@@ -312,7 +310,7 @@ public class GumPluginCommands : Singleton<GumPluginCommands>
 
         var directory = FileManager.GetDirectory(gumProjectFileName.FullPath) + ElementReference.StandardSubfolder + "/";
         string standardsFileName =
-            directory + gumStandardElement.Name + "." + GumProjectSave.StandardExtension;
+            directory + gumStandardElement.Name + "." + AppState.Self.GetExtensionForProjectFormat(GumProjectSave.StandardExtension);
 
         gumStandardElement.Save(standardsFileName);
         //var serializer = new SharpSerializer();

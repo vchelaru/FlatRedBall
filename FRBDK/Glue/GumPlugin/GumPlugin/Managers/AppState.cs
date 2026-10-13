@@ -70,6 +70,19 @@ namespace GumPlugin.Managers
             }
         }
 
+        /// <summary>
+        /// Whether the loaded Gum project is a .gumj (JSON) project. Every file Glue writes next to it
+        /// must use the matching format, since a .gumj project never loads a .gusx back.
+        /// </summary>
+        public bool IsJsonProject => GumFileExtensions.IsJsonProject(GumProjectSave?.FullFileName);
+
+        /// <summary>
+        /// The on-disk extension for a Gum file in the loaded project's format, e.g. "gusx" becomes
+        /// "gusj" in a .gumj project.
+        /// </summary>
+        public string GetExtensionForProjectFormat(string xmlExtension) =>
+            GumFileExtensions.ForFormat(xmlExtension, IsJsonProject);
+
         public ElementSave GetElementSave(string elementName)
         {
             ScreenSave screenSave = GetScreen(elementName);

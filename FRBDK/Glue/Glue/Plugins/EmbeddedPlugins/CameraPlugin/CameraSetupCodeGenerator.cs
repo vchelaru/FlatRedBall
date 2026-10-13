@@ -893,7 +893,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         {
             var gumProject = GlueState.Self.CurrentGlueProject
                 .GetAllReferencedFiles()
-                .FirstOrDefault(item => FlatRedBall.IO.FileManager.GetExtension(item.Name) == "gumx");
+                .FirstOrDefault(item => FlatRedBall.Glue.IO.GumFileExtensions.IsProject(item.Name));
             var hasGumProject = gumProject != null;
             return hasGumProject;
         }

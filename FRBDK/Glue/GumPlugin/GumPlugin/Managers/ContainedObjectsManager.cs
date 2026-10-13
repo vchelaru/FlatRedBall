@@ -20,7 +20,7 @@ namespace GumPlugin.Managers
         {
             var elementFilePath = new FilePath(absoluteFile);
 
-            string extension = FileManager.GetExtension(absoluteFile);
+            string extension = GumFileExtensions.Normalize(FileManager.GetExtension(absoluteFile));
             bool isEitherScreenOrComponent = extension == GumProjectSave.ComponentExtension ||
                 extension == GumProjectSave.ScreenExtension;
 
@@ -81,15 +81,14 @@ namespace GumPlugin.Managers
 
                 try
                 {
-                    var (fileContent, _) = GumFileSerializer.ReadAndDetectFormat(absoluteFile);
                     var projectVersion = GumObjectFinder.Self.GumProjectSave?.Version ?? int.MaxValue;
                     if (extension == GumProjectSave.ComponentExtension)
                     {
-                        element = GumFileSerializer.DeserializeElementSave<ComponentSave>(fileContent, projectVersion);
+                        element = GumElementFileReader.ReadElement<ComponentSave>(absoluteFile, projectVersion);
                     }
                     else
                     {
-                        element = GumFileSerializer.DeserializeElementSave<Gum.DataTypes.ScreenSave>(fileContent, projectVersion);
+                        element = GumElementFileReader.ReadElement<Gum.DataTypes.ScreenSave>(absoluteFile, projectVersion);
                     }
                     // we could initialize more deeply, but this should handle common cases.
                     element.DefaultState.ParentContainer = element;

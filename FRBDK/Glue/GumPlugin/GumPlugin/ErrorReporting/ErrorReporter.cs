@@ -43,7 +43,7 @@ namespace GumPlugin.ErrorReporting
 
             foreach (var rfs in allReferencedFiles)
             {
-                var extension = FileManager.GetExtension(rfs.Name);
+                var extension = GumFileExtensions.Normalize(FileManager.GetExtension(rfs.Name));
                 if(extension == "gusx")
                 {
                     // is it referenced?

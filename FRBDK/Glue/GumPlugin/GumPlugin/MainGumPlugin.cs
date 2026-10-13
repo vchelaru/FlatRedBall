@@ -234,7 +234,8 @@ public class MainGumPlugin : PluginBase
                     if (matchingComponent != null)
                     {
                         string fileName = AppState.Self.GumProjectFolder +
-                            "Components/" + matchingComponent.Name + "." + GumProjectSave.ComponentExtension;
+                            "Components/" + matchingComponent.Name + "." +
+                            AppState.Self.GetExtensionForProjectFormat(GumProjectSave.ComponentExtension);
 
                         var startInfo = new ProcessStartInfo();
                         startInfo.FileName = "\"" + fileName + "\"";
@@ -269,7 +270,7 @@ public class MainGumPlugin : PluginBase
 
     private void HandleFileRemoved(GlueElement container, ReferencedFileSave file)
     {
-        if (file.Name.EndsWith(".gumx"))
+        if (GumFileExtensions.IsProject(file.Name))
         {
             // gum project was removed, so mark it as removed:
             AppState.Self.GumProjectSave = null;
@@ -440,7 +441,7 @@ public class MainGumPlugin : PluginBase
     {
         if (selectedTreeNode?.Tag is ReferencedFileSave rfs)
         {
-            return FileManager.GetExtension(rfs.Name) == "gumx";
+            return GumFileExtensions.IsProject(rfs.Name);
         }
 
         return false;
@@ -459,7 +460,7 @@ public class MainGumPlugin : PluginBase
 
     private void HandleNewFile(ReferencedFileSave newFile, AssetTypeInfo assetTypeInfo)
     {
-        string extension = FileManager.GetExtension(newFile.Name);
+        string extension = GumFileExtensions.Normalize(FileManager.GetExtension(newFile.Name));
 
         if (extension == GumProjectSave.ProjectExtension)
         {
