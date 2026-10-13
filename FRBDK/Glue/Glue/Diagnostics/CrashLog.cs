@@ -14,6 +14,8 @@ public static class CrashLog
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
         "FlatRedBall", "Glue", "Diagnostics");
 
+    private static int _sequence;
+
     /// <summary>
     /// Returns the written file's path, or null if writing failed - this runs inside the crash handler, so
     /// it must never throw.
@@ -23,7 +25,9 @@ public static class CrashLog
         try
         {
             System.IO.Directory.CreateDirectory(Directory);
-            var filePath = Path.Combine(Directory, $"crash-{DateTime.Now:yyyyMMdd-HHmmss-fff}.log");
+            // The counter keeps two exceptions in the same millisecond (a cascade) from overwriting each other.
+            var sequence = System.Threading.Interlocked.Increment(ref _sequence);
+            var filePath = Path.Combine(Directory, $"crash-{DateTime.Now:yyyyMMdd-HHmmss-fff}-{sequence}.log");
             File.WriteAllText(filePath,
                 $"{DateTime.Now:O}{Environment.NewLine}{exceptionObject}{Environment.NewLine}");
             return filePath;
