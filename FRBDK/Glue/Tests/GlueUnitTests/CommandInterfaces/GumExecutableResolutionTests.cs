@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
 using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 using FlatRedBall.IO;
 using Shouldly;
@@ -62,23 +65,15 @@ public class GumExecutableResolutionTests : IDisposable
     }
 
     [Fact]
-    public void WhenBothConfigurationsExist_TheNewerBuildWins()
+    public void DebugWinsOverRelease_EvenWhenReleaseIsNewer()
     {
+        // A developer building Gum from source works in Debug; a Release build beside it is usually
+        // a stale one (it crashed on startup in practice), so file times can't be trusted to pick.
         var now = DateTime.UtcNow;
-        Create("Tool/Gum.Avalonia/bin/Debug/net10.0/Gum.Avalonia.exe", now.AddHours(-2));
-        var newerRelease = Create("Tool/Gum.Avalonia/bin/Release/net10.0/Gum.Avalonia.exe", now);
+        var debug = Create("Tool/Gum.Avalonia/bin/Debug/net10.0/Gum.Avalonia.exe", now.AddHours(-2));
+        Create("Tool/Gum.Avalonia/bin/Release/net10.0/Gum.Avalonia.exe", now);
 
-        SamePath(Resolve(), newerRelease).ShouldBeTrue();
-    }
-
-    [Fact]
-    public void WhenDebugIsNewer_DebugWins()
-    {
-        var now = DateTime.UtcNow;
-        var newerDebug = Create("Tool/Gum.Avalonia/bin/Debug/net10.0/Gum.Avalonia.exe", now);
-        Create("Tool/Gum.Avalonia/bin/Release/net10.0/Gum.Avalonia.exe", now.AddHours(-2));
-
-        SamePath(Resolve(), newerDebug).ShouldBeTrue();
+        SamePath(Resolve(), debug).ShouldBeTrue();
     }
 
     [Fact]
@@ -93,5 +88,55 @@ public class GumExecutableResolutionTests : IDisposable
     public void NothingBuilt_ReturnsAPathThatDoesNotExist()
     {
         FileCommands.ResolveGumExecutable(_glueExeDirectory).Exists().ShouldBeFalse();
+    }
+}
+
+/// <summary>
+/// Launching Gum used to be fire-and-forget: a build that died on startup just vanished and Glue
+/// printed nothing. These run real processes (cmd.exe) rather than fakes.
+/// </summary>
+public class LaunchAndReportFailureTests
+{
+    static ProcessStartInfo Cmd(string commandLine)
+    {
+        var startInfo = new ProcessStartInfo("cmd.exe");
+        startInfo.ArgumentList.Add("/c");
+        startInfo.ArgumentList.Add(commandLine);
+        return startInfo;
+    }
+
+    [Fact]
+    public async Task ProcessThatExitsNonZero_ReportsTheExitCodeAndItsStderr()
+    {
+        var errors = new List<string>();
+
+        await FileCommands.LaunchAndReportFailureAsync(Cmd("echo the editor blew up 1>&2 & exit 3"), errors.Add);
+
+        errors.Count.ShouldBe(1);
+        errors[0].ShouldContain("exited with code 3");
+        errors[0].ShouldContain("the editor blew up");
+    }
+
+    [Fact]
+    public async Task ProcessThatExitsCleanly_ReportsNothing()
+    {
+        var errors = new List<string>();
+
+        await FileCommands.LaunchAndReportFailureAsync(Cmd("echo all good & exit 0"), errors.Add);
+
+        errors.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task ExecutableThatCannotBeStarted_ReportsIt()
+    {
+        var errors = new List<string>();
+
+        await FileCommands.LaunchAndReportFailureAsync(
+            new ProcessStartInfo(Path.Combine(Path.GetTempPath(), "definitely-not-here-" + Guid.NewGuid() + ".exe")),
+            errors.Add);
+
+        errors.Count.ShouldBe(1);
+        errors[0].ShouldContain("Could not start");
     }
 }
