@@ -6,6 +6,8 @@ using FlatRedBall;
 using FlatRedBall.Glue;
 using System.Runtime.Remoting;
 using System.Threading;
+using System.Threading.Tasks;
+using FlatRedBall.Glue.Diagnostics;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using GlueFormsCore.Controls;
@@ -59,33 +61,40 @@ static class Program
         // our handler.
         Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
 
-        // Add the event handler for handling non-UI thread exceptions to the event. 
+        // Add the event handler for handling non-UI thread exceptions to the event.
         AppDomain.CurrentDomain.UnhandledException +=
             new UnhandledExceptionEventHandler(UnhandledException);
+
+        // WPF windows (every Glue dialog) route their Loaded/Click handlers through the WPF dispatcher, not
+        // WinForms. An exception there never reaches Application.ThreadException and, left unhandled, ends the
+        // process. Marking it handled keeps Glue alive; the reporter has already logged it and shown a popup.
+        System.Windows.Threading.Dispatcher.CurrentDispatcher.UnhandledException += (_, e) =>
+        {
+            _reporter.Report(e.Exception);
+            e.Handled = true;
+        };
+
+        // A faulted fire-and-forget task otherwise vanishes without a trace.
+        TaskScheduler.UnobservedTaskException += (_, e) =>
+        {
+            _reporter.Report(e.Exception, showPopup: false);
+            e.SetObserved();
+        };
     }
+
+    private static readonly UnhandledExceptionReporter _reporter = new UnhandledExceptionReporter(
+        PluginManager.TryHandleException,
+        message => GlueCommands.Self.PrintError(message),
+        message => DialogService.ShowMessage(message));
 
     private static void UnhandledException(object sender, UnhandledExceptionEventArgs e)
     {
-        HandleExceptionsUnified(e.ExceptionObject);
-    }
-
-    private static void HandleExceptionsUnified(object objectToPrint)
-    {
-        // An exception escaping an async void handler ends the process no matter what runs here, so the
-        // file is the only record that survives. Write it first.
-        var crashLogPath = FlatRedBall.Glue.Diagnostics.CrashLog.Write(objectToPrint);
-
-        bool wasPluginError = PluginManager.TryHandleException(objectToPrint as Exception, crashLogPath);
-        if (!wasPluginError)
-        {
-            GlueCommands.Self.PrintError(objectToPrint?.ToString() +
-                (crashLogPath != null ? $"{Environment.NewLine}Written to {crashLogPath}" : ""));
-        }
+        _reporter.Report(e.ExceptionObject);
     }
 
     private static void UIThreadException(object sender, ThreadExceptionEventArgs e)
     {
-        HandleExceptionsUnified(e.Exception);
+        _reporter.Report(e.Exception);
     }
 
 
