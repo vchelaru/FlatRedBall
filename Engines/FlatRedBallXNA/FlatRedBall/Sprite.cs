@@ -1605,13 +1605,22 @@ namespace FlatRedBall
                 mCurrentFrameIndex > -1 &&
                 mCurrentFrameIndex < mAnimationChains[mCurrentChainIndex].Count)
             {
-                var frame = mAnimationChains[mCurrentChainIndex][mCurrentFrameIndex];
-                UpdateToAnimationFrame(frame);
+                var chain = mAnimationChains[mCurrentChainIndex];
+                var frame = chain[mCurrentFrameIndex];
 
+                // A color-skipped frame's own channels are ignored (the first frame is always a keyframe).
+                bool applyColorChannels = !frame.SkipColorKeyframe || mCurrentFrameIndex == 0;
+                UpdateToAnimationFrame(frame, applyColorChannels);
+                ApplyKeyframeInterpolation(chain);
             }
         }
 
         public void UpdateToAnimationFrame(AnimationFrame frame)
+        {
+            UpdateToAnimationFrame(frame, true);
+        }
+
+        private void UpdateToAnimationFrame(AnimationFrame frame, bool applyColorChannels)
         {
             // Set the property so that any necessary values change:
             //				mTexture = mAnimationChains[mCurrentChainIndex][mCurrentFrameIndex].Texture;
@@ -1639,7 +1648,7 @@ namespace FlatRedBall
                 RelativePosition.Y = frame.RelativeY;
             }
 
-            ApplyAnimationFrameColor(frame);
+            ApplyAnimationFrameColor(frame, applyColorChannels);
 
             foreach (var instruction in frame.Instructions)
             {
@@ -1650,12 +1659,60 @@ namespace FlatRedBall
         }
 
         /// <summary>
+        /// For a chain that uses keyframe interpolation (a skip flag or a non-snap curve on any frame), applies
+        /// the offset and color for the current moment of the animation. This runs every update, not only on
+        /// frame change, so a glide moves the Sprite mid-frame. Chains without keyframe data are untouched.
+        /// </summary>
+        private void ApplyKeyframeInterpolation(AnimationChain chain)
+        {
+            if (mCurrentFrameIndex < 0 || mCurrentFrameIndex >= chain.Count || !chain.HasKeyframeData())
+            {
+                return;
+            }
+
+            double elapsedInFrame = mTimeIntoAnimation - chain.GetTimeAtFrameIndex(mCurrentFrameIndex);
+            if (elapsedInFrame < 0 || elapsedInFrame > chain[mCurrentFrameIndex].FrameLength)
+            {
+                // The time isn't within the current frame (for example the frame was just set directly), so
+                // the frame starts from its own value.
+                elapsedInFrame = 0;
+            }
+
+            // AnimateSelf always wraps back to the first frame, so chains loop.
+            const bool loop = true;
+
+            if (mUseAnimationRelativePosition)
+            {
+                Vector2 offset = KeyframeEvaluator.EvaluateOffset(chain, loop, mCurrentFrameIndex, elapsedInFrame);
+                RelativePosition.X = offset.X;
+                RelativePosition.Y = offset.Y;
+            }
+
+            KeyframeColor color = KeyframeEvaluator.EvaluateColor(chain, loop, mCurrentFrameIndex, elapsedInFrame);
+            if (color.Alpha.HasValue) this.Alpha = color.Alpha.Value / 255f;
+            if (color.Red.HasValue) this.Red = color.Red.Value / 255f;
+            if (color.Green.HasValue) this.Green = color.Green.Value / 255f;
+            if (color.Blue.HasValue) this.Blue = color.Blue.Value / 255f;
+        }
+
+        /// <summary>
         /// Applies the optional per-frame color values (tint, alpha, color operation) from the AnimationFrame
         /// to this Sprite. Frames which carry no color data leave the Sprite's color completely untouched, so
         /// existing animations are unaffected.
         /// </summary>
-        private void ApplyAnimationFrameColor(AnimationFrame frame)
+        /// <param name="applyChannels">False for a color-skipped keyframe frame, whose own channels are ignored
+        /// (only its color operation applies).</param>
+        private void ApplyAnimationFrameColor(AnimationFrame frame, bool applyChannels)
         {
+            if (!applyChannels)
+            {
+                if (frame.ColorOperation.HasValue)
+                {
+                    this.ColorOperation = frame.ColorOperation.Value;
+                }
+                return;
+            }
+
             // Alpha is independent of the color operation - apply it whenever the frame specifies it.
             if (frame.Alpha.HasValue)
             {
@@ -1950,6 +2007,10 @@ namespace FlatRedBall
             {
                 UpdateToCurrentAnimationFrame();
                 mJustChangedFrame = true;
+            }
+            else
+            {
+                ApplyKeyframeInterpolation(animationChain);
             }
         }
 

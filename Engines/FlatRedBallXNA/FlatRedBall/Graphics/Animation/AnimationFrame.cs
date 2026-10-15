@@ -142,6 +142,93 @@ namespace FlatRedBall.Graphics.Animation
         /// </summary>
         public FlatRedBall.Graphics.ColorOperation? ColorOperation;
 
+        #region Keyframe interpolation (optional, per-frame - see KeyframeEvaluator)
+
+        /// <summary>
+        /// When true this frame is not an offset keyframe: its own RelativeX/RelativeY and its offset curve are
+        /// ignored, and the previous offset keyframe's curve spans across it.
+        /// </summary>
+        public bool SkipOffsetKeyframe;
+
+        /// <summary>
+        /// When true this frame is not a color keyframe: its own Red/Green/Blue/Alpha and its color curve are
+        /// ignored, and the previous color keyframe's curve spans across it. ColorOperation still applies.
+        /// </summary>
+        public bool SkipColorKeyframe;
+
+        private string mOffsetInterpolation;
+        private string mOffsetEasing;
+        private string mColorInterpolation;
+        private string mColorEasing;
+        private KeyframeCurve mOffsetCurve;
+        private KeyframeCurve mColorCurve;
+
+        /// <summary>
+        /// The curve type name (Back, Bounce, Circular, Cubic, Elastic, Exponential, Instant, Linear, Quadratic,
+        /// Quartic, Quintic, Sinusoidal) from this frame's offset to the next offset keyframe's, exactly as stored
+        /// in the file. Null, empty, "Instant" or an unrecognized name means snap (hold until the next keyframe).
+        /// </summary>
+        public string OffsetInterpolation
+        {
+            get { return mOffsetInterpolation; }
+            set
+            {
+                mOffsetInterpolation = value;
+                mOffsetCurve = KeyframeCurve.Parse(mOffsetInterpolation, mOffsetEasing);
+            }
+        }
+
+        /// <summary>The easing (In, Out or InOut) of the offset curve, exactly as stored in the file. Null or unrecognized means Out.</summary>
+        public string OffsetEasing
+        {
+            get { return mOffsetEasing; }
+            set
+            {
+                mOffsetEasing = value;
+                mOffsetCurve = KeyframeCurve.Parse(mOffsetInterpolation, mOffsetEasing);
+            }
+        }
+
+        /// <summary>The curve type name from this frame's color to the next color keyframe's. See <see cref="OffsetInterpolation"/>.</summary>
+        public string ColorInterpolation
+        {
+            get { return mColorInterpolation; }
+            set
+            {
+                mColorInterpolation = value;
+                mColorCurve = KeyframeCurve.Parse(mColorInterpolation, mColorEasing);
+            }
+        }
+
+        /// <summary>The easing (In, Out or InOut) of the color curve, exactly as stored in the file. Null or unrecognized means Out.</summary>
+        public string ColorEasing
+        {
+            get { return mColorEasing; }
+            set
+            {
+                mColorEasing = value;
+                mColorCurve = KeyframeCurve.Parse(mColorInterpolation, mColorEasing);
+            }
+        }
+
+        /// <summary>The parsed offset curve. Snap unless <see cref="OffsetInterpolation"/> names a known curve.</summary>
+        [XmlIgnore]
+        public KeyframeCurve OffsetCurve => mOffsetCurve;
+
+        /// <summary>The parsed color curve. Snap unless <see cref="ColorInterpolation"/> names a known curve.</summary>
+        [XmlIgnore]
+        public KeyframeCurve ColorCurve => mColorCurve;
+
+        /// <summary>
+        /// Whether this frame uses any keyframe feature: a skip flag or a curve that is not snap. Chains
+        /// where no frame does are played exactly as before keyframe interpolation existed.
+        /// </summary>
+        [XmlIgnore]
+        public bool HasKeyframeData =>
+            SkipOffsetKeyframe || SkipColorKeyframe || !mOffsetCurve.IsSnap || !mColorCurve.IsSnap;
+
+        #endregion
+
         #endregion
 
         #region Properties

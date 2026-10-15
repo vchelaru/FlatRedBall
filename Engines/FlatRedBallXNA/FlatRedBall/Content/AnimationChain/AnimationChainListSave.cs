@@ -428,6 +428,14 @@ namespace FlatRedBall.Content.AnimationChain
                     typeof(AnimationFrameColorOperation), colorOperation.GetValue<string>());
             }
 
+            // Keyframe interpolation: curve names are kept as the raw strings so unknown names survive a save.
+            frame.SkipOffsetKeyframe = JsonBool(frameObject, "skipOffsetKeyframe");
+            frame.SkipColorKeyframe = JsonBool(frameObject, "skipColorKeyframe");
+            frame.OffsetInterpolation = JsonString(frameObject, "offsetInterpolation");
+            frame.OffsetEasing = JsonString(frameObject, "offsetEasing");
+            frame.ColorInterpolation = JsonString(frameObject, "colorInterpolation");
+            frame.ColorEasing = JsonString(frameObject, "colorEasing");
+
             if (frameObject["shapes"] is JsonObject shapes)
             {
                 frame.ShapeCollectionSave = ParseShapesJson(shapes);
@@ -518,6 +526,10 @@ namespace FlatRedBall.Content.AnimationChain
 
         private static bool JsonBool(JsonObject parent, string name) =>
             parent[name] is JsonValue value && value.GetValue<bool>();
+
+        // A non-string value is treated as absent rather than throwing, matching how an unrecognized name plays back (snap).
+        private static string JsonString(JsonObject parent, string name) =>
+            parent[name] is JsonValue value && value.TryGetValue<string>(out string text) ? text : null;
 
         private static int? JsonNullableInt(JsonObject parent, string name) =>
             parent[name] is JsonValue value ? value.GetValue<int>() : (int?)null;

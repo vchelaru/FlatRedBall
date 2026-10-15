@@ -163,6 +163,45 @@ namespace FlatRedBall.Content.AnimationChain
 
         #endregion
 
+        #region Keyframe interpolation (optional, per-frame - shared with FlatRedBall2 and Gum)
+
+        // These are written only when set, so files that don't use them stay byte-identical. The curve names
+        // are stored as the raw strings that were read and written back exactly, including names this version
+        // doesn't understand (see KeyframeCurve.Parse for how unknown names play back).
+
+        /// <summary>
+        /// When true this frame is not an offset keyframe: its own RelativeX/RelativeY and offset curve are ignored.
+        /// </summary>
+        public bool SkipOffsetKeyframe;
+        public bool ShouldSerializeSkipOffsetKeyframe() => SkipOffsetKeyframe;
+
+        /// <summary>
+        /// When true this frame is not a color keyframe: its own Red/Green/Blue/Alpha and color curve are ignored.
+        /// </summary>
+        public bool SkipColorKeyframe;
+        public bool ShouldSerializeSkipColorKeyframe() => SkipColorKeyframe;
+
+        /// <summary>
+        /// Curve type from this frame's offset to the next offset keyframe's: Back, Bounce, Circular, Cubic, Elastic,
+        /// Exponential, Instant, Linear, Quadratic, Quartic, Quintic or Sinusoidal. Null means snap.
+        /// </summary>
+        public string OffsetInterpolation;
+        public bool ShouldSerializeOffsetInterpolation() => OffsetInterpolation != null;
+
+        /// <summary>Easing of the offset curve: In, Out or InOut. Null means Out.</summary>
+        public string OffsetEasing;
+        public bool ShouldSerializeOffsetEasing() => OffsetEasing != null;
+
+        /// <summary>Curve type from this frame's color to the next color keyframe's. Same names as <see cref="OffsetInterpolation"/>.</summary>
+        public string ColorInterpolation;
+        public bool ShouldSerializeColorInterpolation() => ColorInterpolation != null;
+
+        /// <summary>Easing of the color curve: In, Out or InOut. Null means Out.</summary>
+        public string ColorEasing;
+        public bool ShouldSerializeColorEasing() => ColorEasing != null;
+
+        #endregion
+
         [XmlIgnore]
         [ExternalInstance]
         internal Texture2D mTextureInstance;
@@ -193,6 +232,13 @@ namespace FlatRedBall.Content.AnimationChain
             Blue = ToColorByte(template.Blue);
             Alpha = ToColorByte(template.Alpha);
             ColorOperation = ToSaveColorOperation(template.ColorOperation);
+
+            SkipOffsetKeyframe = template.SkipOffsetKeyframe;
+            SkipColorKeyframe = template.SkipColorKeyframe;
+            OffsetInterpolation = template.OffsetInterpolation;
+            OffsetEasing = template.OffsetEasing;
+            ColorInterpolation = template.ColorInterpolation;
+            ColorEasing = template.ColorEasing;
 
             TextureName = template.Texture.Name;
         }
@@ -275,6 +321,13 @@ namespace FlatRedBall.Content.AnimationChain
             frame.Alpha = ToColorFloat(Alpha);
             frame.ColorOperation = ToRuntimeColorOperation(ColorOperation);
 
+            frame.SkipOffsetKeyframe = SkipOffsetKeyframe;
+            frame.SkipColorKeyframe = SkipColorKeyframe;
+            frame.OffsetInterpolation = OffsetInterpolation;
+            frame.OffsetEasing = OffsetEasing;
+            frame.ColorInterpolation = ColorInterpolation;
+            frame.ColorEasing = ColorEasing;
+
             frame.ShapeCollectionSave = ShapeCollectionSave;
 
             #endregion
@@ -342,6 +395,24 @@ namespace FlatRedBall.Content.AnimationChain
                         {
                             toReturn.ColorOperation = parsedColorOperation;
                         }
+                        break;
+                    case "SkipOffsetKeyframe":
+                        toReturn.SkipOffsetKeyframe = SceneSave.AsBool(subElement);
+                        break;
+                    case "SkipColorKeyframe":
+                        toReturn.SkipColorKeyframe = SceneSave.AsBool(subElement);
+                        break;
+                    case "OffsetInterpolation":
+                        toReturn.OffsetInterpolation = subElement.Value;
+                        break;
+                    case "OffsetEasing":
+                        toReturn.OffsetEasing = subElement.Value;
+                        break;
+                    case "ColorInterpolation":
+                        toReturn.ColorInterpolation = subElement.Value;
+                        break;
+                    case "ColorEasing":
+                        toReturn.ColorEasing = subElement.Value;
                         break;
                 }
             }
