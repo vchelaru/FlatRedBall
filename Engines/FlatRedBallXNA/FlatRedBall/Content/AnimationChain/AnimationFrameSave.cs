@@ -414,10 +414,130 @@ namespace FlatRedBall.Content.AnimationChain
                     case "ColorEasing":
                         toReturn.ColorEasing = subElement.Value;
                         break;
+                    case "ShapeCollectionSave":
+                        toReturn.ShapeCollectionSave = ShapeCollectionSaveFromXElement(subElement);
+                        break;
                 }
             }
 
             return toReturn;
+        }
+
+        // Rectangles, circles and polygons only: those are the shapes an animation frame can carry. The cube and
+        // sphere lists are 3D placeholders that animation files write empty.
+        private static ShapeCollectionSave ShapeCollectionSaveFromXElement(System.Xml.Linq.XElement element)
+        {
+            var shapes = new ShapeCollectionSave();
+
+            foreach (var listElement in element.Elements())
+            {
+                switch (listElement.Name.LocalName)
+                {
+                    case "AxisAlignedRectangleSaves":
+                        foreach (var shapeElement in listElement.Elements())
+                        {
+                            var rectangle = new AxisAlignedRectangleSave();
+                            foreach (var field in shapeElement.Elements())
+                            {
+                                switch (field.Name.LocalName)
+                                {
+                                    case "X": rectangle.X = SceneSave.AsFloat(field); break;
+                                    case "Y": rectangle.Y = SceneSave.AsFloat(field); break;
+                                    case "Z": rectangle.Z = SceneSave.AsFloat(field); break;
+                                    case "ScaleX": rectangle.ScaleX = SceneSave.AsFloat(field); break;
+                                    case "ScaleY": rectangle.ScaleY = SceneSave.AsFloat(field); break;
+                                    case "Name": rectangle.Name = field.Value; break;
+                                    case "Parent": rectangle.Parent = field.Value; break;
+                                    case "Alpha": rectangle.Alpha = SceneSave.AsFloat(field); break;
+                                    case "Red": rectangle.Red = SceneSave.AsFloat(field); break;
+                                    case "Green": rectangle.Green = SceneSave.AsFloat(field); break;
+                                    case "Blue": rectangle.Blue = SceneSave.AsFloat(field); break;
+                                    case "SkipOffsetKeyframe": rectangle.SkipOffsetKeyframe = SceneSave.AsBool(field); break;
+                                    case "OffsetInterpolation": rectangle.OffsetInterpolation = field.Value; break;
+                                    case "OffsetEasing": rectangle.OffsetEasing = field.Value; break;
+                                    case "SkipSizeKeyframe": rectangle.SkipSizeKeyframe = SceneSave.AsBool(field); break;
+                                    case "SizeInterpolation": rectangle.SizeInterpolation = field.Value; break;
+                                    case "SizeEasing": rectangle.SizeEasing = field.Value; break;
+                                }
+                            }
+                            shapes.AxisAlignedRectangleSaves.Add(rectangle);
+                        }
+                        break;
+                    case "CircleSaves":
+                        foreach (var shapeElement in listElement.Elements())
+                        {
+                            var circle = new CircleSave();
+                            foreach (var field in shapeElement.Elements())
+                            {
+                                switch (field.Name.LocalName)
+                                {
+                                    case "X": circle.X = SceneSave.AsFloat(field); break;
+                                    case "Y": circle.Y = SceneSave.AsFloat(field); break;
+                                    case "Z": circle.Z = SceneSave.AsFloat(field); break;
+                                    case "Radius": circle.Radius = SceneSave.AsFloat(field); break;
+                                    case "Name": circle.Name = field.Value; break;
+                                    case "Parent": circle.Parent = field.Value; break;
+                                    case "Alpha": circle.Alpha = SceneSave.AsFloat(field); break;
+                                    case "Red": circle.Red = SceneSave.AsFloat(field); break;
+                                    case "Green": circle.Green = SceneSave.AsFloat(field); break;
+                                    case "Blue": circle.Blue = SceneSave.AsFloat(field); break;
+                                    case "SkipOffsetKeyframe": circle.SkipOffsetKeyframe = SceneSave.AsBool(field); break;
+                                    case "OffsetInterpolation": circle.OffsetInterpolation = field.Value; break;
+                                    case "OffsetEasing": circle.OffsetEasing = field.Value; break;
+                                    case "SkipSizeKeyframe": circle.SkipSizeKeyframe = SceneSave.AsBool(field); break;
+                                    case "SizeInterpolation": circle.SizeInterpolation = field.Value; break;
+                                    case "SizeEasing": circle.SizeEasing = field.Value; break;
+                                }
+                            }
+                            shapes.CircleSaves.Add(circle);
+                        }
+                        break;
+                    case "PolygonSaves":
+                        foreach (var shapeElement in listElement.Elements())
+                        {
+                            var polygon = new FlatRedBall.Content.Polygon.PolygonSave();
+                            foreach (var field in shapeElement.Elements())
+                            {
+                                switch (field.Name.LocalName)
+                                {
+                                    case "X": polygon.X = SceneSave.AsFloat(field); break;
+                                    case "Y": polygon.Y = SceneSave.AsFloat(field); break;
+                                    case "Z": polygon.Z = SceneSave.AsFloat(field); break;
+                                    case "RotationZ": polygon.RotationZ = SceneSave.AsFloat(field); break;
+                                    case "Name": polygon.Name = field.Value; break;
+                                    case "Alpha": polygon.Alpha = SceneSave.AsFloat(field); break;
+                                    case "Red": polygon.Red = SceneSave.AsFloat(field); break;
+                                    case "Green": polygon.Green = SceneSave.AsFloat(field); break;
+                                    case "Blue": polygon.Blue = SceneSave.AsFloat(field); break;
+                                    case "SkipOffsetKeyframe": polygon.SkipOffsetKeyframe = SceneSave.AsBool(field); break;
+                                    case "OffsetInterpolation": polygon.OffsetInterpolation = field.Value; break;
+                                    case "OffsetEasing": polygon.OffsetEasing = field.Value; break;
+                                    case "SkipPointsKeyframe": polygon.SkipPointsKeyframe = SceneSave.AsBool(field); break;
+                                    case "PointsInterpolation": polygon.PointsInterpolation = field.Value; break;
+                                    case "PointsEasing": polygon.PointsEasing = field.Value; break;
+                                    case "Points":
+                                        var points = new List<FlatRedBall.Math.Geometry.Point>();
+                                        foreach (var pointElement in field.Elements())
+                                        {
+                                            var point = new FlatRedBall.Math.Geometry.Point();
+                                            foreach (var coordinate in pointElement.Elements())
+                                            {
+                                                if (coordinate.Name.LocalName == "X") point.X = SceneSave.AsFloat(coordinate);
+                                                else if (coordinate.Name.LocalName == "Y") point.Y = SceneSave.AsFloat(coordinate);
+                                            }
+                                            points.Add(point);
+                                        }
+                                        polygon.Points = points.ToArray();
+                                        break;
+                                }
+                            }
+                            shapes.PolygonSaves.Add(polygon);
+                        }
+                        break;
+                }
+            }
+
+            return shapes;
         }
 
         private static float? ToColorFloat(int? colorByte) =>

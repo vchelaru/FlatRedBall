@@ -151,6 +151,47 @@ public class ShapeKeyframeFormatTests : IDisposable
     }
 
     [Fact]
+    public void FromFile_AchxManualDeserialization_ReadsShapesAndKeyframeFields()
+    {
+        bool original = AnimationChainListSave.ManualDeserialization;
+        AnimationChainListSave.ManualDeserialization = true;
+        try
+        {
+            AssertPreserved(AnimationChainListSave.FromFile(Write("a.achx", FullyPopulatedAchx)));
+        }
+        finally
+        {
+            AnimationChainListSave.ManualDeserialization = original;
+        }
+    }
+
+    [Fact]
+    public void FromFile_AchxManualDeserialization_ReadsShapeGeometryAndColor()
+    {
+        bool original = AnimationChainListSave.ManualDeserialization;
+        AnimationChainListSave.ManualDeserialization = true;
+        try
+        {
+            var shapes = AnimationChainListSave.FromFile(Write("a.achx", FullyPopulatedAchx))
+                .AnimationChains[0].Frames[0].ShapeCollectionSave;
+
+            var rectangle = shapes.AxisAlignedRectangleSaves.Single();
+            rectangle.Name.ShouldBe("R");
+            rectangle.X.ShouldBe(1f);
+            rectangle.Y.ShouldBe(2f);
+            rectangle.ScaleY.ShouldBe(4f);
+            rectangle.Alpha.ShouldBe(1f); // default when the element is absent
+
+            shapes.PolygonSaves.Single().Points[1].X.ShouldBe(4.0);
+            shapes.PolygonSaves.Single().Points[2].Y.ShouldBe(4.0);
+        }
+        finally
+        {
+            AnimationChainListSave.ManualDeserialization = original;
+        }
+    }
+
+    [Fact]
     public void FromFile_Achj_ReadsShapeKeyframeFields()
     {
         AssertPreserved(AnimationChainListSave.FromFile(Write("a.achj", FullyPopulatedAchj)));
