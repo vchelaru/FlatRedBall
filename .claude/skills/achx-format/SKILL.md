@@ -36,6 +36,10 @@ Glue registers an `.achj` AssetTypeInfo from `OfficialPlugins/AnimationChainPlug
 
 Frames carry optional nullable tint: `Red/Green/Blue/Alpha` and a color operation. The `.achx`/Save side stores 0–255 ints and an editor-flavored op enum; the runtime side stores 0–1 floats and `FlatRedBall.Graphics.ColorOperation`, with mapping done in `AnimationFrameSave.ToAnimationFrame`. Applied to the Sprite in `Sprite.UpdateToAnimationFrame` (`ApplyAnimationFrameColor`). Read the source there for the exact channels, identity-on-null rules, and op mapping.
 
+## Keyframe interpolation (signpost)
+
+Frames carry optional `Skip{Offset,Color}Keyframe` and `{Offset,Color}Interpolation`/`Easing` fields. Shapes add the same for offset, plus size on rectangles and circles and points on polygons. `Graphics/Animation/KeyframeEvaluator.cs` evaluates them (`EvaluateOffset`, `EvaluateColor`, `EvaluateShape`, `EvaluateShapePoints`). `Sprite` applies only offset and color (`ApplyKeyframeInterpolation`); shape values are returned for the caller to apply. A new shape field goes in the shape save (`Content/Math/Geometry/*Save.cs`, `Content/Polygon/PolygonSave.cs`), `AnimationFrameSave.ShapeCollectionSaveFromXElement` and `ParseShapesJson`.
+
 ## Key files
 
 | File (`Engines/FlatRedBallXNA/FlatRedBall/`) | Purpose |
