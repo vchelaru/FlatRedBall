@@ -334,12 +334,19 @@ public class GumRuntimeMemberContractTests : IDisposable
             Path.Combine(repoRoot, "Engines", "SkiaGum", "bin", "Debug", "net6.0", "SkiaInGum.dll"),
         };
 
+        // Loaded into a context of their own, not the default one. Assembly.LoadFrom into the default context
+        // hands back any assembly of the same identity an earlier test in this process already loaded from
+        // another folder, and a dependency like StateInterpolation.DesktopNet6 is then looked for next to
+        // that other copy and not found, depending on test order. A private context resolves every engine
+        // dependency from the freshly built folders and falls back to the test host for everything else.
+        var loadContext = new EngineAssemblyLoadContext(assemblyPaths.Select(path => Path.GetDirectoryName(path)!).ToArray());
+
         var types = new Dictionary<string, Type>(StringComparer.Ordinal);
         foreach (var assemblyPath in assemblyPaths)
         {
             File.Exists(assemblyPath).ShouldBeTrue($"Expected a built engine assembly at {assemblyPath}");
 
-            var assembly = Assembly.LoadFrom(assemblyPath);
+            var assembly = loadContext.LoadFromAssemblyPath(assemblyPath);
 
             Type[] assemblyTypes;
             try
@@ -384,12 +391,42 @@ public class GumRuntimeMemberContractTests : IDisposable
         return types;
     }
 
+    // Resolves an engine assembly's dependencies from the folders the engine was just built into, so the
+    // contract is checked against exactly those binaries. Anything not found there (MonoGame, SkiaSharp and
+    // the like) falls through to the default context, which is where the test host's own copies live.
+    private sealed class EngineAssemblyLoadContext : System.Runtime.Loader.AssemblyLoadContext
+    {
+        private readonly string[] _directories;
+
+        public EngineAssemblyLoadContext(string[] directories) : base("EngineRuntimeContract", isCollectible: false)
+        {
+            _directories = directories;
+        }
+
+        protected override Assembly? Load(AssemblyName assemblyName)
+        {
+            foreach (var directory in _directories)
+            {
+                var candidate = Path.Combine(directory, assemblyName.Name + ".dll");
+                if (File.Exists(candidate))
+                {
+                    return LoadFromAssemblyPath(candidate);
+                }
+            }
+
+            return null;
+        }
+    }
+
     // Compares the StateInterpolation identity the loaded assembly asks for with the file sitting next to it,
     // tries loading that file directly, and lists copies already loaded in this process. Separates a version
     // or identity mismatch from a load-context problem when the file is present but the load still fails.
     private static string DescribeStateInterpolationBinding(Assembly assembly, string directory)
     {
-        var lines = new List<string>();
+        var lines = new List<string>
+        {
+            $"{assembly.GetName().Name} was loaded from {assembly.Location} into context '{System.Runtime.Loader.AssemblyLoadContext.GetLoadContext(assembly)?.Name}'"
+        };
 
         foreach (var reference in assembly.GetReferencedAssemblies()
             .Where(name => name.Name != null && name.Name.StartsWith("StateInterpolation", StringComparison.Ordinal)))
