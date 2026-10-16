@@ -324,6 +324,7 @@ public class GumRuntimeMemberContractTests : IDisposable
 
         var (exitCode, output) = RunDotnetBuild(formsSolution);
         exitCode.ShouldBe(0, $"Could not build the engine Forms solution, so the runtime contract can't be checked:\n{output}");
+        var buildOutput = output;
 
         // SkiaInGum builds to its own project folder rather than into the Forms output, because Forms
         // only references it under the AutoBuild configurations.
@@ -339,7 +340,38 @@ public class GumRuntimeMemberContractTests : IDisposable
             File.Exists(assemblyPath).ShouldBeTrue($"Expected a built engine assembly at {assemblyPath}");
 
             var assembly = Assembly.LoadFrom(assemblyPath);
-            foreach (var type in assembly.GetTypes())
+
+            Type[] assemblyTypes;
+            try
+            {
+                assemblyTypes = assembly.GetTypes();
+            }
+            catch (ReflectionTypeLoadException exception)
+            {
+                // The default message names no file and no folder, which is not enough to tell a build that
+                // skipped a copy from a load-context problem. Report both.
+                var directory = Path.GetDirectoryName(assemblyPath)!;
+                var siblings = Directory.Exists(directory)
+                    ? string.Join(", ", Directory.GetFiles(directory, "*.dll").Select(Path.GetFileName).OrderBy(name => name, StringComparer.Ordinal))
+                    : "(directory missing)";
+                var buildLines = string.Join(Environment.NewLine, buildOutput
+                    .Split('\n')
+                    .Where(line => line.Contains("StateInterpolation", StringComparison.OrdinalIgnoreCase))
+                    .Take(20));
+                var loaderMessages = string.Join(Environment.NewLine, exception.LoaderExceptions
+                    .Where(loaderException => loaderException != null)
+                    .Select(loaderException => loaderException!.Message)
+                    .Distinct());
+
+                throw new InvalidOperationException(
+                    $"Could not load all types from {assemblyPath}.{Environment.NewLine}" +
+                    $"Loader exceptions:{Environment.NewLine}{loaderMessages}{Environment.NewLine}" +
+                    $"DLLs next to it: {siblings}{Environment.NewLine}" +
+                    $"StateInterpolation lines from the nested build:{Environment.NewLine}{buildLines}",
+                    exception);
+            }
+
+            foreach (var type in assemblyTypes)
             {
                 if (type.FullName != null)
                 {
