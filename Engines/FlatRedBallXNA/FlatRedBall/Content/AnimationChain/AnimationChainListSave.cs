@@ -464,6 +464,12 @@ namespace FlatRedBall.Content.AnimationChain
                     rectangle.Red = JsonFloat(rectangleObject, "red", 1);
                     rectangle.Green = JsonFloat(rectangleObject, "green", 1);
                     rectangle.Blue = JsonFloat(rectangleObject, "blue", 1);
+                    rectangle.SkipOffsetKeyframe = JsonBool(rectangleObject, "skipOffsetKeyframe");
+                    rectangle.OffsetInterpolation = JsonString(rectangleObject, "offsetInterpolation");
+                    rectangle.OffsetEasing = JsonString(rectangleObject, "offsetEasing");
+                    rectangle.SkipSizeKeyframe = JsonBool(rectangleObject, "skipSizeKeyframe");
+                    rectangle.SizeInterpolation = JsonString(rectangleObject, "sizeInterpolation");
+                    rectangle.SizeEasing = JsonString(rectangleObject, "sizeEasing");
                     shapes.AxisAlignedRectangleSaves.Add(rectangle);
                 }
             }
@@ -483,6 +489,12 @@ namespace FlatRedBall.Content.AnimationChain
                     circle.Red = JsonFloat(circleObject, "red", 1);
                     circle.Green = JsonFloat(circleObject, "green", 1);
                     circle.Blue = JsonFloat(circleObject, "blue", 1);
+                    circle.SkipOffsetKeyframe = JsonBool(circleObject, "skipOffsetKeyframe");
+                    circle.OffsetInterpolation = JsonString(circleObject, "offsetInterpolation");
+                    circle.OffsetEasing = JsonString(circleObject, "offsetEasing");
+                    circle.SkipSizeKeyframe = JsonBool(circleObject, "skipSizeKeyframe");
+                    circle.SizeInterpolation = JsonString(circleObject, "sizeInterpolation");
+                    circle.SizeEasing = JsonString(circleObject, "sizeEasing");
                     shapes.CircleSaves.Add(circle);
                 }
             }
@@ -501,6 +513,12 @@ namespace FlatRedBall.Content.AnimationChain
                     polygon.Red = JsonFloat(polygonObject, "red", 1);
                     polygon.Green = JsonFloat(polygonObject, "green", 1);
                     polygon.Blue = JsonFloat(polygonObject, "blue", 1);
+                    polygon.SkipOffsetKeyframe = JsonBool(polygonObject, "skipOffsetKeyframe");
+                    polygon.OffsetInterpolation = JsonString(polygonObject, "offsetInterpolation");
+                    polygon.OffsetEasing = JsonString(polygonObject, "offsetEasing");
+                    polygon.SkipPointsKeyframe = JsonBool(polygonObject, "skipPointsKeyframe");
+                    polygon.PointsInterpolation = JsonString(polygonObject, "pointsInterpolation");
+                    polygon.PointsEasing = JsonString(polygonObject, "pointsEasing");
 
                     var points = new List<global::FlatRedBall.Math.Geometry.Point>();
                     if (polygonObject["points"] is JsonArray pointsArray)

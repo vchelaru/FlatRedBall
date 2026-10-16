@@ -24,6 +24,43 @@ namespace FlatRedBall.Content.Math.Geometry
         public float Green = 1;
         public float Blue = 1;
 
+        #region Keyframe interpolation (optional, only meaningful on a shape inside an animation frame)
+
+        // Written only when set, and the curve names are kept as raw strings so names this engine doesn't
+        // understand survive a save. See KeyframeEvaluator.EvaluateShape.
+
+        /// <summary>
+        /// When true this shape is not an offset keyframe in its frame: its own X/Y and offset curve are ignored,
+        /// and the previous offset keyframe of the same-named shape glides across it.
+        /// </summary>
+        public bool SkipOffsetKeyframe;
+        public bool ShouldSerializeSkipOffsetKeyframe() => SkipOffsetKeyframe;
+
+        /// <summary>Curve type name from this shape's offset to the next offset keyframe's. Null, "Instant" or an unrecognized name snaps.</summary>
+        public string OffsetInterpolation;
+        public bool ShouldSerializeOffsetInterpolation() => OffsetInterpolation != null;
+
+        /// <summary>In, Out or InOut for <see cref="OffsetInterpolation"/>. Null means Out.</summary>
+        public string OffsetEasing;
+        public bool ShouldSerializeOffsetEasing() => OffsetEasing != null;
+
+        /// <summary>
+        /// When true this shape is not a size keyframe in its frame: its own Radius and size curve are ignored.
+        /// Independent of <see cref="SkipOffsetKeyframe"/>.
+        /// </summary>
+        public bool SkipSizeKeyframe;
+        public bool ShouldSerializeSkipSizeKeyframe() => SkipSizeKeyframe;
+
+        /// <summary>Curve type name from this shape's Radius to the next size keyframe's. See <see cref="OffsetInterpolation"/>.</summary>
+        public string SizeInterpolation;
+        public bool ShouldSerializeSizeInterpolation() => SizeInterpolation != null;
+
+        /// <summary>In, Out or InOut for <see cref="SizeInterpolation"/>. Null means Out.</summary>
+        public string SizeEasing;
+        public bool ShouldSerializeSizeEasing() => SizeEasing != null;
+
+        #endregion
+
         public static CircleSave FromCircle(FlatRedBall.Math.Geometry.Circle circle)
         {
             CircleSave circleSave = new CircleSave();

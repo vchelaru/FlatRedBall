@@ -324,6 +324,7 @@ public class GumRuntimeMemberContractTests : IDisposable
 
         var (exitCode, output) = RunDotnetBuild(formsSolution);
         exitCode.ShouldBe(0, $"Could not build the engine Forms solution, so the runtime contract can't be checked:\n{output}");
+        var buildOutput = output;
 
         // SkiaInGum builds to its own project folder rather than into the Forms output, because Forms
         // only references it under the AutoBuild configurations.
@@ -333,13 +334,52 @@ public class GumRuntimeMemberContractTests : IDisposable
             Path.Combine(repoRoot, "Engines", "SkiaGum", "bin", "Debug", "net6.0", "SkiaInGum.dll"),
         };
 
+        // Loaded into a context of their own, not the default one. Assembly.LoadFrom into the default context
+        // hands back any assembly of the same identity an earlier test in this process already loaded from
+        // another folder, and a dependency like StateInterpolation.DesktopNet6 is then looked for next to
+        // that other copy and not found, depending on test order. A private context resolves every engine
+        // dependency from the freshly built folders and falls back to the test host for everything else.
+        var loadContext = new EngineAssemblyLoadContext(assemblyPaths.Select(path => Path.GetDirectoryName(path)!).ToArray());
+
         var types = new Dictionary<string, Type>(StringComparer.Ordinal);
         foreach (var assemblyPath in assemblyPaths)
         {
             File.Exists(assemblyPath).ShouldBeTrue($"Expected a built engine assembly at {assemblyPath}");
 
-            var assembly = Assembly.LoadFrom(assemblyPath);
-            foreach (var type in assembly.GetTypes())
+            var assembly = loadContext.LoadFromAssemblyPath(assemblyPath);
+
+            Type[] assemblyTypes;
+            try
+            {
+                assemblyTypes = assembly.GetTypes();
+            }
+            catch (ReflectionTypeLoadException exception)
+            {
+                // The default message names no file and no folder, which is not enough to tell a build that
+                // skipped a copy from a load-context problem. Report both.
+                var directory = Path.GetDirectoryName(assemblyPath)!;
+                var siblings = Directory.Exists(directory)
+                    ? string.Join(", ", Directory.GetFiles(directory, "*.dll").Select(Path.GetFileName).OrderBy(name => name, StringComparer.Ordinal))
+                    : "(directory missing)";
+                var buildLines = string.Join(Environment.NewLine, buildOutput
+                    .Split('\n')
+                    .Where(line => line.Contains("StateInterpolation", StringComparison.OrdinalIgnoreCase))
+                    .Take(20));
+                var loaderMessages = string.Join(Environment.NewLine, exception.LoaderExceptions
+                    .Where(loaderException => loaderException != null)
+                    .Select(loaderException => loaderException!.Message)
+                    .Distinct());
+
+                throw new InvalidOperationException(
+                    $"Could not load all types from {assemblyPath}.{Environment.NewLine}" +
+                    $"Loader exceptions:{Environment.NewLine}{loaderMessages}{Environment.NewLine}" +
+                    $"DLLs next to it: {siblings}{Environment.NewLine}" +
+                    DescribeStateInterpolationBinding(assembly, directory) +
+                    $"StateInterpolation lines from the nested build:{Environment.NewLine}{buildLines}",
+                    exception);
+            }
+
+            foreach (var type in assemblyTypes)
             {
                 if (type.FullName != null)
                 {
@@ -349,6 +389,82 @@ public class GumRuntimeMemberContractTests : IDisposable
         }
 
         return types;
+    }
+
+    // Resolves an engine assembly's dependencies from the folders the engine was just built into, so the
+    // contract is checked against exactly those binaries. Anything not found there (MonoGame, SkiaSharp and
+    // the like) falls through to the default context, which is where the test host's own copies live.
+    private sealed class EngineAssemblyLoadContext : System.Runtime.Loader.AssemblyLoadContext
+    {
+        private readonly string[] _directories;
+
+        public EngineAssemblyLoadContext(string[] directories) : base("EngineRuntimeContract", isCollectible: false)
+        {
+            _directories = directories;
+        }
+
+        protected override Assembly? Load(AssemblyName assemblyName)
+        {
+            foreach (var directory in _directories)
+            {
+                var candidate = Path.Combine(directory, assemblyName.Name + ".dll");
+                if (File.Exists(candidate))
+                {
+                    return LoadFromAssemblyPath(candidate);
+                }
+            }
+
+            return null;
+        }
+    }
+
+    // Compares the StateInterpolation identity the loaded assembly asks for with the file sitting next to it,
+    // tries loading that file directly, and lists copies already loaded in this process. Separates a version
+    // or identity mismatch from a load-context problem when the file is present but the load still fails.
+    private static string DescribeStateInterpolationBinding(Assembly assembly, string directory)
+    {
+        var lines = new List<string>
+        {
+            $"{assembly.GetName().Name} was loaded from {assembly.Location} into context '{System.Runtime.Loader.AssemblyLoadContext.GetLoadContext(assembly)?.Name}'"
+        };
+
+        foreach (var reference in assembly.GetReferencedAssemblies()
+            .Where(name => name.Name != null && name.Name.StartsWith("StateInterpolation", StringComparison.Ordinal)))
+        {
+            lines.Add($"{assembly.GetName().Name} asks for: {reference.FullName}");
+        }
+
+        var filePath = Path.Combine(directory, "StateInterpolation.DesktopNet6.dll");
+        if (File.Exists(filePath))
+        {
+            try
+            {
+                lines.Add($"File next to it is: {AssemblyName.GetAssemblyName(filePath).FullName}");
+            }
+            catch (Exception exception)
+            {
+                lines.Add($"Reading the file's assembly name failed: {exception.GetType().Name}: {exception.Message}");
+            }
+
+            try
+            {
+                Assembly.LoadFrom(filePath);
+                lines.Add("Assembly.LoadFrom on that file succeeded.");
+            }
+            catch (Exception exception)
+            {
+                lines.Add($"Assembly.LoadFrom on that file failed: {exception.GetType().Name}: {exception.Message}");
+            }
+        }
+
+        foreach (var loaded in AppDomain.CurrentDomain.GetAssemblies()
+            .Where(candidate => candidate.GetName().Name?.StartsWith("StateInterpolation", StringComparison.Ordinal) == true))
+        {
+            var location = loaded.IsDynamic ? "(dynamic)" : loaded.Location;
+            lines.Add($"Already loaded: {loaded.FullName} from {location}");
+        }
+
+        return string.Join(Environment.NewLine, lines) + Environment.NewLine;
     }
 
     private static (int exitCode, string output) RunDotnetBuild(string solutionPath) =>

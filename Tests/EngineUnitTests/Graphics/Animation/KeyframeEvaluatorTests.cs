@@ -88,6 +88,30 @@ public class KeyframeEvaluatorTests
     }
 
     [Fact]
+    public void EvaluateOffset_BackIn_SwingsBelowStartValue()
+    {
+        var chain = Chain(Frame(0, offsetType: "Back", offsetEasing: "In"), Frame(100));
+
+        Offset(chain, true, 0, 0.2).X.ShouldBeLessThan(0f);
+    }
+
+    [Fact]
+    public void EvaluateOffset_BackOut_SwingsPastEndValue()
+    {
+        var chain = Chain(Frame(0, offsetType: "Back", offsetEasing: "Out"), Frame(100));
+
+        Offset(chain, true, 0, 0.8).X.ShouldBeGreaterThan(100f);
+    }
+
+    [Fact]
+    public void EvaluateColor_BackOut_SwingsPastEndValueUnclamped()
+    {
+        var chain = Chain(ColorFrame(alpha: 0, type: "Back", easing: "Out"), ColorFrame(alpha: 255));
+
+        KeyframeEvaluator.EvaluateColor(chain, true, 0, 0.8).Alpha!.Value.ShouldBeGreaterThan(255);
+    }
+
+    [Fact]
     public void EvaluateOffset_UnequalFrameLengths_UsesOwnFrameLength()
     {
         var chain = Chain(Frame(0, length: 4f, offsetType: "Linear"), Frame(100, length: 1f));
