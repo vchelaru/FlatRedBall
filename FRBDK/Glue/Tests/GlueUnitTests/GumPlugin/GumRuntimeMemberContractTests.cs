@@ -367,6 +367,7 @@ public class GumRuntimeMemberContractTests : IDisposable
                     $"Could not load all types from {assemblyPath}.{Environment.NewLine}" +
                     $"Loader exceptions:{Environment.NewLine}{loaderMessages}{Environment.NewLine}" +
                     $"DLLs next to it: {siblings}{Environment.NewLine}" +
+                    DescribeStateInterpolationBinding(assembly, directory) +
                     $"StateInterpolation lines from the nested build:{Environment.NewLine}{buildLines}",
                     exception);
             }
@@ -381,6 +382,52 @@ public class GumRuntimeMemberContractTests : IDisposable
         }
 
         return types;
+    }
+
+    // Compares the StateInterpolation identity the loaded assembly asks for with the file sitting next to it,
+    // tries loading that file directly, and lists copies already loaded in this process. Separates a version
+    // or identity mismatch from a load-context problem when the file is present but the load still fails.
+    private static string DescribeStateInterpolationBinding(Assembly assembly, string directory)
+    {
+        var lines = new List<string>();
+
+        foreach (var reference in assembly.GetReferencedAssemblies()
+            .Where(name => name.Name != null && name.Name.StartsWith("StateInterpolation", StringComparison.Ordinal)))
+        {
+            lines.Add($"{assembly.GetName().Name} asks for: {reference.FullName}");
+        }
+
+        var filePath = Path.Combine(directory, "StateInterpolation.DesktopNet6.dll");
+        if (File.Exists(filePath))
+        {
+            try
+            {
+                lines.Add($"File next to it is: {AssemblyName.GetAssemblyName(filePath).FullName}");
+            }
+            catch (Exception exception)
+            {
+                lines.Add($"Reading the file's assembly name failed: {exception.GetType().Name}: {exception.Message}");
+            }
+
+            try
+            {
+                Assembly.LoadFrom(filePath);
+                lines.Add("Assembly.LoadFrom on that file succeeded.");
+            }
+            catch (Exception exception)
+            {
+                lines.Add($"Assembly.LoadFrom on that file failed: {exception.GetType().Name}: {exception.Message}");
+            }
+        }
+
+        foreach (var loaded in AppDomain.CurrentDomain.GetAssemblies()
+            .Where(candidate => candidate.GetName().Name?.StartsWith("StateInterpolation", StringComparison.Ordinal) == true))
+        {
+            var location = loaded.IsDynamic ? "(dynamic)" : loaded.Location;
+            lines.Add($"Already loaded: {loaded.FullName} from {location}");
+        }
+
+        return string.Join(Environment.NewLine, lines) + Environment.NewLine;
     }
 
     private static (int exitCode, string output) RunDotnetBuild(string solutionPath) =>
