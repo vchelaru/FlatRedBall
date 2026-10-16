@@ -295,8 +295,8 @@ namespace FlatRedBall.Graphics.Animation
             for (int i = 0; i < result.Length; i++)
             {
                 result[i] = new Point(
-                    LerpUnclamped(from.Points[i].X, to.Points[i].X, eased),
-                    LerpUnclamped(from.Points[i].Y, to.Points[i].Y, eased));
+                    Lerp(from.Points[i].X, to.Points[i].X, eased),
+                    Lerp(from.Points[i].Y, to.Points[i].Y, eased));
             }
             return result;
         }
@@ -327,15 +327,15 @@ namespace FlatRedBall.Graphics.Animation
             if (offsetTo != null && !offsetFrom.OffsetCurve.IsSnap)
             {
                 float eased = offsetFrom.OffsetCurve.Evaluate(offsetT);
-                result.X = LerpUnclamped(offsetFrom.X, offsetTo.X, eased);
-                result.Y = LerpUnclamped(offsetFrom.Y, offsetTo.Y, eased);
+                result.X = Lerp(offsetFrom.X, offsetTo.X, eased);
+                result.Y = Lerp(offsetFrom.Y, offsetTo.Y, eased);
             }
 
             if (sizeTo != null && !sizeFrom.SizeCurve.IsSnap)
             {
                 float eased = sizeFrom.SizeCurve.Evaluate(sizeT);
-                result.SizeX = LerpUnclamped(sizeFrom.SizeX, sizeTo.SizeX, eased);
-                result.SizeY = LerpUnclamped(sizeFrom.SizeY, sizeTo.SizeY, eased);
+                result.SizeX = Lerp(sizeFrom.SizeX, sizeTo.SizeX, eased);
+                result.SizeY = Lerp(sizeFrom.SizeY, sizeTo.SizeY, eased);
             }
 
             return result;
@@ -561,13 +561,14 @@ namespace FlatRedBall.Graphics.Animation
         private static readonly Point[] EmptyPoints = new Point[0];
 
         // Endpoints are exact; anything else, including Back-curve swings below 0 or above 1 (Anticipate,
-        // Overshoot), is the raw interpolation, as in FlatRedBall2's shape evaluator.
-        private static float LerpUnclamped(float from, float to, float eased)
+        // Overshoot), is the raw interpolation, as in FlatRedBall2. Clamping is the consumer's job
+        // (the Sprite color setters clamp).
+        private static float Lerp(float from, float to, float eased)
         {
             return eased == 0f ? from : eased == 1f ? to : from + (to - from) * eased;
         }
 
-        private static double LerpUnclamped(double from, double to, float eased)
+        private static double Lerp(double from, double to, float eased)
         {
             return eased == 0f ? from : eased == 1f ? to : from + (to - from) * eased;
         }
@@ -579,18 +580,13 @@ namespace FlatRedBall.Graphics.Animation
             return colorGroup ? frame.SkipColorKeyframe : frame.SkipOffsetKeyframe;
         }
 
-        private static float Lerp(float from, float to, float eased)
-        {
-            return eased <= 0f ? from : eased >= 1f ? to : from + (to - from) * eased;
-        }
-
         private static int? LerpChannel(int? from, int? to, int fromIdentity, int toIdentity, float eased)
         {
             if (from == null && to == null) return null;
-            if (eased <= 0f) return from;
+            if (eased == 0f) return from;
             int a = from ?? fromIdentity;
             int b = to ?? toIdentity;
-            if (eased >= 1f) return b;
+            if (eased == 1f) return b;
             return (int)SMath.Round(a + (b - a) * (double)eased, MidpointRounding.AwayFromZero);
         }
 
