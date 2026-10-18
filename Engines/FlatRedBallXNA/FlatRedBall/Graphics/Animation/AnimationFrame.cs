@@ -320,7 +320,7 @@ namespace FlatRedBall.Graphics.Animation
 
             if(ShapeCollectionSave != null)
             {
-                newAnimationFrame.ShapeCollectionSave = FileManager.CloneObject(this.ShapeCollectionSave);
+                newAnimationFrame.ShapeCollectionSave = this.ShapeCollectionSave.Clone();
             }
 
             return newAnimationFrame;

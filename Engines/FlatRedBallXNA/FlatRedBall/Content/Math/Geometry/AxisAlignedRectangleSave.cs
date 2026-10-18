@@ -94,6 +94,16 @@ namespace FlatRedBall.Content.Math.Geometry
 
         #endregion
 
+        /// <summary>
+        /// Returns a deep copy. Does not use XmlSerializer, so it is safe under Native AOT.
+        /// </summary>
+        public AxisAlignedRectangleSave Clone()
+        {
+            // Every field is a value type or an immutable string, so a shallow copy is a deep copy.
+            // A reference-type field added later must be copied here.
+            return (AxisAlignedRectangleSave)MemberwiseClone();
+        }
+
         public static AxisAlignedRectangleSave FromAxisAlignedRectangle(FlatRedBall.Math.Geometry.AxisAlignedRectangle rectangle)
         {
             AxisAlignedRectangleSave aars = new AxisAlignedRectangleSave();

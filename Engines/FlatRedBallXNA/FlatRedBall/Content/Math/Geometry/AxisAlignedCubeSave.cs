@@ -25,6 +25,16 @@ namespace FlatRedBall.Content.Math.Geometry
         public float Green = 1;
         public float Blue = 1;
 
+        /// <summary>
+        /// Returns a deep copy. Does not use XmlSerializer, so it is safe under Native AOT.
+        /// </summary>
+        public AxisAlignedCubeSave Clone()
+        {
+            // Every field is a value type or an immutable string, so a shallow copy is a deep copy.
+            // A reference-type field added later must be copied here.
+            return (AxisAlignedCubeSave)MemberwiseClone();
+        }
+
         public static AxisAlignedCubeSave FromAxisAlignedCube(FlatRedBall.Math.Geometry.AxisAlignedCube cube)
         {
             AxisAlignedCubeSave aacs = new AxisAlignedCubeSave();

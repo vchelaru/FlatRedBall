@@ -61,6 +61,16 @@ namespace FlatRedBall.Content.Math.Geometry
 
         #endregion
 
+        /// <summary>
+        /// Returns a deep copy. Does not use XmlSerializer, so it is safe under Native AOT.
+        /// </summary>
+        public CircleSave Clone()
+        {
+            // Every field is a value type or an immutable string, so a shallow copy is a deep copy.
+            // A reference-type field added later must be copied here.
+            return (CircleSave)MemberwiseClone();
+        }
+
         public static CircleSave FromCircle(FlatRedBall.Math.Geometry.Circle circle)
         {
             CircleSave circleSave = new CircleSave();

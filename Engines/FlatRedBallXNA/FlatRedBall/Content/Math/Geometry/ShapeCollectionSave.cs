@@ -130,6 +130,23 @@ namespace FlatRedBall.Content.Math.Geometry
             return toReturn;
         }
 
+        /// <summary>
+        /// Returns a deep copy, including FileName. Does not use XmlSerializer, so it is safe under Native AOT.
+        /// </summary>
+        public ShapeCollectionSave Clone()
+        {
+            var toReturn = new ShapeCollectionSave();
+            toReturn.mFileName = mFileName;
+
+            foreach (var item in AxisAlignedRectangleSaves) toReturn.AxisAlignedRectangleSaves.Add(item.Clone());
+            foreach (var item in AxisAlignedCubeSaves) toReturn.AxisAlignedCubeSaves.Add(item.Clone());
+            foreach (var item in PolygonSaves) toReturn.PolygonSaves.Add(item.Clone());
+            foreach (var item in CircleSaves) toReturn.CircleSaves.Add(item.Clone());
+            foreach (var item in SphereSaves) toReturn.SphereSaves.Add(item.Clone());
+
+            return toReturn;
+        }
+
         public void Save(string fileName)
         {
             FileManager.XmlSerialize(this, fileName);
