@@ -14,22 +14,16 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration
 {
     public class Game1GlueControlGenerator : Game1CodeGenerator
     {
-        public bool GenerateConnectionOnlyInDebug { get; set; } = true;
+        // GlueControl is compiled into Debug builds only (#2371), so everything that references it is too.
         private void AddIfDebug(ICodeBlock codeBlock)
         {
-            if (GenerateConnectionOnlyInDebug)
-            {
-                codeBlock.Line("#if DEBUG");
-            }
+            codeBlock.Line("#if DEBUG");
         }
 
 
         private void EndIfDebug(ICodeBlock codeBlock)
         {
-            if (GenerateConnectionOnlyInDebug)
-            {
-                codeBlock.Line("#endif");
-            }
+            codeBlock.Line("#endif");
         }
 
         public bool IsGlueControlManagerGenerationEnabled { get; set; }
@@ -187,15 +181,13 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration
 
                 if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.HasScreenManagerAfterScreenDestroyed)
                 {
-                    // EditorVisuals is edit mode code, which only exists in Debug builds (#2371). This has to be
-                    // #if DEBUG on its own: GenerateConnectionOnlyInDebug above is optional, this is not.
-                    codeBlock.Line("#if DEBUG");
+                    AddIfDebug(codeBlock);
                     codeBlock.Line("FlatRedBall.Screens.ScreenManager.AfterScreenDestroyed += (screen) =>");
                     var innerDestroyBlock = codeBlock.Block();
                     innerDestroyBlock.Line("GlueControl.Editing.EditorVisuals.DestroyContainedObjects();");
 
                     codeBlock.Line(";");
-                    codeBlock.Line("#endif");
+                    EndIfDebug(codeBlock);
                 }
             }
 

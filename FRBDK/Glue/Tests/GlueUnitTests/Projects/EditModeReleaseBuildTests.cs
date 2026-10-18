@@ -124,6 +124,15 @@ public class EditModeReleaseBuildTests
             {
                 var (exitCode, output) = NestedDotnetCli.Run($"build \"{csproj}\" -c {configuration}");
                 exitCode.ShouldBe(0, $"dotnet build -c {configuration} failed for the live edit project:\n{output}");
+
+                // Type names sit in the assembly's UTF-8 string heap. Debug has the connection and edit mode
+                // code; Release has none of GlueControl.
+                var assembly = Directory.GetFiles(Path.Combine(projectDirectory, "bin", configuration), "EditModeGame.dll", SearchOption.AllDirectories).Single();
+                var names = System.Text.Encoding.UTF8.GetString(File.ReadAllBytes(assembly));
+                foreach (var typeName in new[] { "GlueControlManager", "CommandReceiver", "VariableAssignmentLogic", "InstanceLogic" })
+                {
+                    names.Contains(typeName).ShouldBe(configuration == "Debug", $"{typeName} in the {configuration} assembly");
+                }
             }
         }
         finally

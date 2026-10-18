@@ -7,9 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FlatRedBall.IO;
-#if DEBUG
 using GlueControl.Managers;
-#endif
 
 namespace GlueControl.Models
 {
@@ -163,8 +161,6 @@ namespace GlueControl.Models
             return variableValue;
         }
 
-#if DEBUG
-        // These look elements up through ObjectFinder, which is edit mode code and so Debug only (#2371).
         public static ReferencedFileSave GetReferencedFileSaveRecursively(this GlueElement instance, string fileName)
         {
             ReferencedFileSave rfs = GetReferencedFileSave(instance, fileName);
@@ -180,7 +176,6 @@ namespace GlueControl.Models
 
             return rfs;
         }
-#endif
 
         public static ReferencedFileSave GetReferencedFileSave(IFileReferencer instance, string name)
         {
@@ -239,7 +234,6 @@ namespace GlueControl.Models
             return null;
         }
 
-#if DEBUG
         public static CustomVariable GetCustomVariableRecursively(this GlueElement element, string variableName)
         {
             //////////////////////Early Out///////////////////////////////////
@@ -301,6 +295,5 @@ namespace GlueControl.Models
                 }
             }
         }
-#endif
     }
 }

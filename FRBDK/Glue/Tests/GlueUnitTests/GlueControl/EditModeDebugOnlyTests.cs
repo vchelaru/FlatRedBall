@@ -19,12 +19,12 @@ using Xunit;
 
 namespace GlueUnitTests.GlueControl;
 
-// #2371: live edit (the edit mode code embedded into a game) is compiled into Debug builds only, because
-// it is mostly reflection by name and MakeGenericType that Native AOT cannot compile cleanly and a shipped
-// game has no use for. The Glue connection and the profiling data it answers with stay in every
-// configuration. These are the fast half: they run the real generators and let Roslyn evaluate the
-// `#if DEBUG` regions, so "what is left in Release" is answered without publishing a game. The BuildSmoke
-// EditModeReleaseBuildTests is the half that compiles the result.
+// #2371: none of the GlueControl code (live edit, the Glue connection, profiling) is compiled into a Release
+// build. A Release game never connects to Glue (Game1 creates the connection under #if DEBUG), and the code
+// is mostly reflection by name and MakeGenericType that Native AOT cannot compile cleanly. These are the fast
+// half: they run the real generators and let Roslyn evaluate the `#if DEBUG` regions, so "what is left in
+// Release" is answered without publishing a game. The BuildSmoke EditModeReleaseBuildTests is the half that
+// compiles the result.
 public class EditModeDebugOnlyTests : IDisposable
 {
     const string Prefix = "GameCommunicationPlugin.GlueControl.Embedded.";
@@ -52,31 +52,17 @@ public class EditModeDebugOnlyTests : IDisposable
 
     #region Embedded files
 
-    [Fact]
-    public void SupportsEditModeDefine_IsDebugOnly()
-    {
-        var generated = GlueControlCodeGenerator.GetEmbeddedStringContents(Prefix + "Editing.CameraLogic.cs");
-
-        // The define is the whole point of the `#if SupportsEditMode` regions inside the Release files, so
-        // check what it evaluates to rather than where it sits in the text.
-        var probe = generated + "\r\n#if SupportsEditMode\r\nclass SupportsEditModeProbe { }\r\n#endif\r\n";
-
-        DeclaredTypeNames(probe, "DEBUG").ShouldContain("SupportsEditModeProbe");
-        DeclaredTypeNames(probe).ShouldNotContain("SupportsEditModeProbe");
-    }
-
     [Theory]
     [InlineData("Editing.EditingManager.cs", "EditingManager")]
     [InlineData("Editing.VariableAssignmentLogic.cs", "VariableAssignmentLogic")]
-    [InlineData("Editing.SelectionLogic.cs", "SelectionLogic")]
-    [InlineData("Editing.CameraLogic.cs", "CameraLogic")]
-    [InlineData("Editing.EditorVisuals.cs", "EditorVisuals")]
     [InlineData("InstanceLogic.cs", "InstanceLogic")]
-    [InlineData("CommandReplayLogic.cs", "CommandReplayLogic")]
     [InlineData("Screens.EntityViewingScreen.cs", "EntityViewingScreen")]
-    [InlineData("Runtime.DynamicEntity.cs", "DynamicEntity")]
-    [InlineData("Models.NamedObjectSaveExtensionMethods.cs", "NamedObjectSaveExtensionMethods")]
-    public void EditModeFile_IsCompiledInDebugAndAbsentFromRelease(string file, string expectedType)
+    [InlineData("CommandReceiver.cs", "CommandReceiver")]
+    [InlineData("GlueControlManager.cs", "GlueControlManager")]
+    [InlineData("GameConnectionManager.cs", "GameConnectionManager")]
+    [InlineData("Dtos.cs", "ProfilingDataDto")]
+    [InlineData("Models.NamedObjectSave.cs", "NamedObjectSave")]
+    public void EmbeddedFile_IsCompiledInDebugAndAbsentFromRelease(string file, string expectedType)
     {
         var generated = GlueControlCodeGenerator.GetEmbeddedStringContents(Prefix + file);
 
@@ -85,76 +71,29 @@ public class EditModeDebugOnlyTests : IDisposable
     }
 
     [Fact]
-    public void EveryEmbeddedFile_IsEitherAbsentFromRelease_OrOnTheReleaseList()
+    public void EveryEmbeddedFile_IsAbsentFromRelease()
     {
         var resources = typeof(GlueControlCodeGenerator).Assembly.GetManifestResourceNames()
             .Where(name => name.StartsWith(Prefix) && name.EndsWith(".cs"))
             .ToList();
         resources.ShouldNotBeEmpty();
 
-        var releaseFiles = new List<string>();
         foreach (var resource in resources)
         {
             var generated = GlueControlCodeGenerator.GetEmbeddedStringContents(resource);
-            var inRelease = DeclaredTypeNames(generated).Any();
-            inRelease.ShouldBe(!GlueControlCodeGenerator.IsEditModeOnly(resource), resource);
-            if (inRelease)
-            {
-                releaseFiles.Add(resource.Substring(Prefix.Length));
-            }
-        }
 
-        // The connection to Glue and the data profiling answers with. If this list grows, the new file has
-        // to be as safe to publish with Native AOT as these are, which is not a call to make by accident.
-        releaseFiles.ShouldBe(new[]
-        {
-            "CommandReceiver.cs",
-            "Dtos.cs",
-            "GameConnectionManager.cs",
-            "GlueControlManager.cs",
-            "Models.CustomVariable.cs",
-            "Models.GlueElement.cs",
-            "Models.GlueElementFileReference.cs",
-            "Models.GlueProjectSave.cs",
-            "Models.IElementExtensionMethods.cs",
-            "Models.INamedObjectContainer.cs",
-            "Models.NamedObjectSave.cs",
-            "Models.ReferencedFileSave.cs",
-            "Models.StateSave.cs",
-            "Models.StateSaveCategory.cs",
-        }, ignoreOrder: true);
+            DeclaredTypeNames(generated).ShouldBeEmpty(resource);
+            DeclaredTypeNames(generated, "DEBUG").ShouldNotBeEmpty(resource);
+        }
     }
 
     [Fact]
-    public void CommandReceiver_ProfilingHandler_IsOutsideTheEditModeRegion()
+    public void ProfilingHandler_NeedsADebugBuild()
     {
         var generated = GlueControlCodeGenerator.GetEmbeddedStringContents(Prefix + "CommandReceiver.cs");
 
-        var release = Identifiers(generated);
-        release.ShouldContain("GetProfilingDataDto");
-        release.ShouldContain("GetCollisionDataDto");
-        release.ShouldContain("Receive");
-
-        // And the live edit handlers are what went.
-        release.ShouldNotContain("VariableAssignmentLogic");
-        release.ShouldNotContain("EditingManager");
-        release.ShouldNotContain("SetEditMode");
-        release.ShouldNotContain("SelectObjectDto");
-
-        var debug = Identifiers(generated, "DEBUG");
-        debug.ShouldContain("GetProfilingDataDto");
-        debug.ShouldContain("VariableAssignmentLogic");
-        debug.ShouldContain("SetEditMode");
-    }
-
-    [Fact]
-    public void GlueControlManager_InReleaseDoesNotCreateTheEditingManager()
-    {
-        var generated = GlueControlCodeGenerator.GetEmbeddedStringContents(Prefix + "GlueControlManager.cs");
-
-        Identifiers(generated).ShouldContain("SendToGlue");
-        Identifiers(generated).ShouldNotContain("EditingManager");
-        Identifiers(generated, "DEBUG").ShouldContain("EditingManager");
+        Identifiers(generated).ShouldNotContain("GetProfilingDataDto");
+        Identifiers(generated, "DEBUG").ShouldContain("GetProfilingDataDto");
     }
 
     #endregion
@@ -199,20 +138,32 @@ public class EditModeDebugOnlyTests : IDisposable
     }
 
     [Fact]
-    public void Game1_AfterScreenDestroyedHook_CallsEditorVisuals_OnlyInDebug()
+    public void Game1_GlueControlManagerAndEditorVisuals_OnlyInDebug()
     {
         var generator = new Game1GlueControlGenerator
         {
             IsGlueControlManagerGenerationEnabled = true,
             PortNumber = 8888,
-            // The setting that drops the connection's own #if DEBUG; the editor visuals must not depend on it.
-            GenerateConnectionOnlyInDebug = false,
         };
         var block = new CodeDocument(0);
 
         generator.GenerateInitialize(block);
+        generator.GenerateClassScope(block);
 
         AssertOnlyInDebug(block.ToString(), "GlueControl.Editing.EditorVisuals");
+        AssertOnlyInDebug(block.ToString(), "GlueControl.GlueControlManager");
+    }
+
+    [Fact]
+    public void Game1_ConnectionManager_IsDebugOnly()
+    {
+        var generator = new Game1GlueCommunicationGenerator(true, 8888);
+        var block = new CodeDocument(0);
+
+        generator.GenerateClassScope(block);
+        generator.GenerateInitialize(block);
+
+        AssertOnlyInDebug(block.ToString(), "GlueCommunication.GameConnectionManager");
     }
 
     [Fact]

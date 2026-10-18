@@ -15,9 +15,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System;
-#if DEBUG
 using GlueControl.Editing;
-#endif
 using FlatRedBall.Utilities;
 using GlueCommunication;
 
@@ -53,9 +51,7 @@ namespace GlueControl
         //private TcpListener listener;
         public static ConcurrentQueue<GameToGlueCommand> GameToGlueCommands { get; private set; }
             = new ConcurrentQueue<GameToGlueCommand>();
-#if DEBUG
         private GlueControl.Editing.EditingManager EditingManager;
-#endif
 
         ConcurrentDictionary<int, AwaitedResponse> AwaitedResponses = new ConcurrentDictionary<int, AwaitedResponse>();
 
@@ -69,12 +65,10 @@ namespace GlueControl
         public GlueControlManager(int port)
         {
             Self = this;
-#if DEBUG
             EditingManager = new GlueControl.Editing.EditingManager();
             FlatRedBallServices.AddManager(EditingManager);
             EditingManager.PropertyChanged += HandlePropertyChanged;
             EditingManager.ObjectSelected += HandleObjectsSelected;
-#endif
 #if ScreenManagerHasScreenLoadExceptionOccurred || REFERENCES_FRB_SOURCE
             FlatRedBall.Screens.ScreenManager.ScreenLoadExceptionOccurred += HandleScreenLoadException;
 #endif
@@ -329,7 +323,6 @@ namespace GlueControl
 
         #region Game -> Glue
 
-#if DEBUG
         private async void HandlePropertyChanged(List<PropertyChangeArgs> propertyChangeArgs)
         {
 #if SupportsEditMode
@@ -400,7 +393,6 @@ namespace GlueControl
             }
 #endif
         }
-#endif
 
         public async Task<object> SendToGlue(RespondableDto respondableDto)
         {
@@ -422,9 +414,7 @@ namespace GlueControl
         {
             var type = dto.GetType().Name;
             var json = Newtonsoft.Json.JsonConvert.SerializeObject(dto);
-#if DEBUG
             EmbeddedDiagnosticsLogger.LogDtoSent(type, dto);
-#endif
             return await SendCommandToGlue($"{type}:{json}");
         }
 
