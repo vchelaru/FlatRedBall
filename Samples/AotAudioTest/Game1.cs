@@ -97,12 +97,15 @@ namespace AotAudioTest
             {
                 Run("toggle song", () =>
                 {
-                    if (AudioManager.CurrentlyPlayingISong != null)
+                    // Decide from what OpenAL is really doing, not AudioManager.CurrentlyPlayingISong:
+                    // after a device disconnect OpenAL stops the source but the manager still thinks the song plays.
+                    if (song.IsPlaying)
                     {
                         AudioManager.StopSong();
                     }
                     else
                     {
+                        AudioManager.StopSong(); // clears stale manager state; harmless when nothing plays
                         AudioManager.PlaySong(song, forceRestart: true, isSongGlobalContent: false);
                     }
                 });

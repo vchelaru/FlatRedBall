@@ -267,6 +267,8 @@ namespace FlatRedBall.Audio
 
             try
             {
+                KeepSourcesPlayingOnDisconnect();
+
                 var currentId = GetDefaultRenderEndpointId();
                 if (currentId == null)
                 {
@@ -432,6 +434,54 @@ namespace FlatRedBall.Audio
             catch (Exception e)
             {
                 DisableWithLog("failed to resolve alcReopenDeviceSOFT", e);
+            }
+        }
+
+        // Unplugging the active device (e.g. headphones) makes OpenAL-Soft stop every source,
+        // and MonoGame then frees them, so the audio is gone by the time alcReopenDeviceSOFT
+        // lands on the new default. alDisable(AL_STOP_SOURCES_ON_DISCONNECT_SOFT) from the
+        // AL_SOFT_hold_on_disconnect extension (still experimental, so OpenAL-Soft 1.24.3
+        // lists it as "AL_SOFTX_hold_on_disconnect") keeps sources playing through the
+        // disconnect. It is silently skipped if the extension is absent. It has to be set
+        // while the device is still connected, so it runs on the first tick that has an AL context.
+        private const string HoldOnDisconnectExtension = "AL_SOFTX_hold_on_disconnect";
+        private const int AL_STOP_SOURCES_ON_DISCONNECT_SOFT = 0x19AB;
+        private static bool _holdOnDisconnectApplied;
+
+        [DllImport(OpenAlLibrary, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        private static extern byte alIsExtensionPresent([MarshalAs(UnmanagedType.LPStr)] string extName);
+
+        [DllImport(OpenAlLibrary, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void alDisable(int capability);
+
+        [DllImport(OpenAlLibrary, CallingConvention = CallingConvention.Cdecl)]
+        private static extern int alGetError();
+
+        private static void KeepSourcesPlayingOnDisconnect()
+        {
+            if (_holdOnDisconnectApplied || alcGetCurrentContext() == IntPtr.Zero)
+            {
+                return; // already done, or MonoGame has not created its AL context yet: retry next tick
+            }
+
+            _holdOnDisconnectApplied = true;
+            try
+            {
+                if (alIsExtensionPresent(HoldOnDisconnectExtension) == 0)
+                {
+                    return;
+                }
+
+                alDisable(AL_STOP_SOURCES_ON_DISCONNECT_SOFT);
+                var error = alGetError(); // also clears it so it isn't blamed on MonoGame's next call
+                if (error != 0)
+                {
+                    Log("alDisable(AL_STOP_SOURCES_ON_DISCONNECT_SOFT) set AL error 0x" + error.ToString("X"));
+                }
+            }
+            catch (Exception e)
+            {
+                Log("hold_on_disconnect setup failed: " + e.GetType().Name + ": " + e.Message);
             }
         }
 
