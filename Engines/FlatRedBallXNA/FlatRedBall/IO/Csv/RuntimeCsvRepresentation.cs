@@ -9,9 +9,27 @@ using FlatRedBall.Utilities;
 using System.Linq;
 using System.Diagnostics;
 using System.Runtime.Serialization;
+using System.Diagnostics.CodeAnalysis;
 
 namespace FlatRedBall.IO.Csv
 {
+    /// <summary>
+    /// The members of a CSV data class that deserialization reflects over: public fields and properties
+    /// (matched to columns by name) and the parameterless constructor used to create each row's instance.
+    /// Apps published with Native AOT or trimming use this to keep those members on the data class.
+    /// </summary>
+    internal static class CsvDataMembers
+    {
+        public const DynamicallyAccessedMemberTypes Deserialized =
+            DynamicallyAccessedMemberTypes.PublicFields |
+            DynamicallyAccessedMemberTypes.PublicProperties |
+            DynamicallyAccessedMemberTypes.PublicParameterlessConstructor;
+
+        public const DynamicallyAccessedMemberTypes Serialized =
+            DynamicallyAccessedMemberTypes.PublicFields |
+            DynamicallyAccessedMemberTypes.PublicProperties;
+    }
+
     #region CsvHeader Class
 
     public struct CsvHeader : IEquatable<CsvHeader>
@@ -235,7 +253,8 @@ namespace FlatRedBall.IO.Csv
         /// <typeparam name="T">The generic type of the list.</typeparam>
         /// <param name="items">The list of items to conver to csv.</param>
         /// <returns>The resulting RuntimeCsvRepresentation.</returns>
-        public static RuntimeCsvRepresentation FromList<T>(IList<T> items)
+        [RequiresUnreferencedCode("Writing a CSV reflects over the members of each value's runtime type, including nested types, which the trimmer cannot preserve. Intended for editor tooling, not game runtime.")]
+        public static RuntimeCsvRepresentation FromList<[DynamicallyAccessedMembers(CsvDataMembers.Serialized)] T>(IList<T> items)
         {
             RuntimeCsvRepresentation rcrToReturn = new RuntimeCsvRepresentation();
 
@@ -280,6 +299,7 @@ namespace FlatRedBall.IO.Csv
 
         }
 
+        [RequiresUnreferencedCode("Reflects over the runtime type of each value being written, which the trimmer cannot preserve.")]
         private static void AddItemToRcr<T>(RuntimeCsvRepresentation rcrToReturn, List<FieldInfo> fieldList, List<PropertyInfo> propertyList, int totalLength, T item)
         {
             int numberOfRows = 1;
@@ -340,6 +360,7 @@ namespace FlatRedBall.IO.Csv
             }
         }
 
+        [RequiresUnreferencedCode("Reflects over the runtime type of each value being written, which the trimmer cannot preserve.")]
         private static void SetRecordAtIndex(int rowInEntry, string[] record, int currentIndex, object value)
         {
             if (value != null)
@@ -363,7 +384,7 @@ namespace FlatRedBall.IO.Csv
 
         
 
-        private static void GetSerializableFieldsAndTypes(Type itemType, out List<FieldInfo> fieldList, out List<PropertyInfo> propertyList)
+        private static void GetSerializableFieldsAndTypes([DynamicallyAccessedMembers(CsvDataMembers.Serialized)] Type itemType, out List<FieldInfo> fieldList, out List<PropertyInfo> propertyList)
         {
             FieldInfo[] fields = itemType.GetFields();
             PropertyInfo[] properties = itemType.GetProperties();
@@ -398,6 +419,7 @@ namespace FlatRedBall.IO.Csv
             }
         }
 
+        [RequiresUnreferencedCode("Writing a CSV reflects over the members of each value's runtime type, including nested types, which the trimmer cannot preserve. Intended for editor tooling, not game runtime.")]
         private static string ValueAsCsvFriendlyString(object value, Type type)
         {
             
@@ -602,12 +624,12 @@ namespace FlatRedBall.IO.Csv
             return result.ToString();
         }
 
-        public void CreateObjectList(Type typeOfElement, IList listToPopulate)
+        public void CreateObjectList([DynamicallyAccessedMembers(CsvDataMembers.Deserialized)] Type typeOfElement, IList listToPopulate)
         {
             CreateObjectList(typeOfElement, listToPopulate, CsvFileManager.ContentManagerName);
         }
 
-        public void CreateObjectList(Type typeOfElement, IList listToPopulate, string contentManagerName)
+        public void CreateObjectList([DynamicallyAccessedMembers(CsvDataMembers.Deserialized)] Type typeOfElement, IList listToPopulate, string contentManagerName)
         {
             #region If primitive or string
 
@@ -662,12 +684,12 @@ namespace FlatRedBall.IO.Csv
         }
 
         [Obsolete("Use FillObjectDictionary since that more accurately describes what this method is doing")]
-        public void CreateObjectDictionary<KeyType, ValueType>(Dictionary<KeyType, ValueType> dictionaryToPopulate, string contentManagerName)
+        public void CreateObjectDictionary<KeyType, [DynamicallyAccessedMembers(CsvDataMembers.Deserialized)] ValueType>(Dictionary<KeyType, ValueType> dictionaryToPopulate, string contentManagerName)
         {
             FillObjectDictionary(dictionaryToPopulate, contentManagerName, DuplicateDictionaryEntryBehavior.ThrowException);
         }
 
-        public void FillObjectDictionary<KeyType, ValueType>(Dictionary<KeyType, ValueType> dictionaryToPopulate, 
+        public void FillObjectDictionary<KeyType, [DynamicallyAccessedMembers(CsvDataMembers.Deserialized)] ValueType>(Dictionary<KeyType, ValueType> dictionaryToPopulate, 
             // Tools may not have access to FRBServices, so just hardcode the string
             string contentManagerName = "Global",
             DuplicateDictionaryEntryBehavior duplicateDictionaryEntryBehavior = DuplicateDictionaryEntryBehavior.ThrowException)
@@ -745,7 +767,7 @@ namespace FlatRedBall.IO.Csv
 
                 if (!newElementFailed && !wasRequiredMissing)
                 {
-                    KeyType keyToUse = GetKeyToUse<KeyType, ValueType>(typeOfElement, csvHeaderForKey, headerIndex, newElement);
+                    KeyType keyToUse = GetKeyToUse<KeyType>(typeOfElement, csvHeaderForKey, headerIndex, memberTypeIndexPairs, propertyInfos, fieldInfos, newElement);
 
                     if (dictionaryToPopulate.ContainsKey(keyToUse))
                     {
@@ -777,7 +799,7 @@ namespace FlatRedBall.IO.Csv
 
         }
 
-        public void UpdateValues<KeyType, ValueType>(Dictionary<KeyType, ValueType> dictionaryToUpdate, string contentManagerName)
+        public void UpdateValues<KeyType, [DynamicallyAccessedMembers(CsvDataMembers.Deserialized)] ValueType>(Dictionary<KeyType, ValueType> dictionaryToUpdate, string contentManagerName)
         {
             var newDictionary = new Dictionary<KeyType, ValueType>(dictionaryToUpdate.Count);
 
@@ -826,7 +848,8 @@ namespace FlatRedBall.IO.Csv
             }
         }
 
-        private static KeyType GetKeyToUse<KeyType, ValueType>(Type typeOfElement, CsvHeader csvHeaderForKey, int headerIndex, object newElement)
+        private static KeyType GetKeyToUse<KeyType>(Type typeOfElement, CsvHeader csvHeaderForKey, int headerIndex, 
+            MemberTypeIndexPair[] memberTypeIndexPairs, List<PropertyInfo> propertyInfos, List<FieldInfo> fieldInfos, object newElement)
         {
             KeyType keyToUse = default(KeyType);
 
@@ -836,21 +859,30 @@ namespace FlatRedBall.IO.Csv
             }
             else
             {
+                // Use the already-resolved MemberInfo rather than LateBinder, which emits IL
+                // (not available under Native AOT) and reflects over members the trimmer can't see.
+                int memberIndex = memberTypeIndexPairs[headerIndex].Index;
 
-                if (csvHeaderForKey.MemberTypes == MemberTypes.Property)
+                if (memberIndex == -1)
                 {
-                    keyToUse = LateBinder<ValueType>.Instance.GetProperty<KeyType>((ValueType)newElement, csvHeaderForKey.Name);
+                    throw new InvalidOperationException(
+                        $"The key column {csvHeaderForKey.Name} does not match a public field or property on {typeOfElement}.");
+                }
+
+                if (memberTypeIndexPairs[headerIndex].MemberType == MemberTypes.Property)
+                {
+                    keyToUse = (KeyType)propertyInfos[memberIndex].GetValue(newElement, null);
                 }
                 else
                 {
-                    keyToUse = LateBinder<ValueType>.Instance.GetField<KeyType>((ValueType)newElement, csvHeaderForKey.Name);
+                    keyToUse = (KeyType)fieldInfos[memberIndex].GetValue(newElement);
                 }
             }
 
             return keyToUse;
         }
 
-        private void CreateNonPrimitiveList(Type typeOfElement, IList listToPopulate, string contentManagerName)
+        private void CreateNonPrimitiveList([DynamicallyAccessedMembers(CsvDataMembers.Deserialized)] Type typeOfElement, IList listToPopulate, string contentManagerName)
         {
             MemberTypeIndexPair[] memberTypeIndexPairs;
             IEnumerable<PropertyInfo> propertyInfosEnumerable;
@@ -894,7 +926,7 @@ namespace FlatRedBall.IO.Csv
 
         }
 
-        private bool TryCreateNewObjectFromRow(Type typeOfElement, string contentManagerName, MemberTypeIndexPair[] memberTypeIndexPairs, 
+        private bool TryCreateNewObjectFromRow([DynamicallyAccessedMembers(CsvDataMembers.Deserialized)] Type typeOfElement, string contentManagerName, MemberTypeIndexPair[] memberTypeIndexPairs, 
             List<PropertyInfo> propertyInfos, List<FieldInfo> fieldInfos, int numberOfColumns, object lastElement, bool wasRequiredMissing, int row, out object newElement, out bool newElementFailed)
         {
             wasRequiredMissing = false;
@@ -968,6 +1000,21 @@ namespace FlatRedBall.IO.Csv
             return wasRequiredMissing;
         }
 
+        // List columns are created from the member's declared List<T> type, which is only known at runtime, so the trimmer
+        // cannot see which List<T> constructors are needed. These keep the ones for the element types a CSV cell can hold.
+        // A list of any other element type needs its List<T> constructor preserved by the app (for example by referencing
+        // new List<T>() or initializing the list on the data class).
+        [DynamicDependency(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor, typeof(List<string>))]
+        [DynamicDependency(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor, typeof(List<int>))]
+        [DynamicDependency(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor, typeof(List<float>))]
+        [DynamicDependency(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor, typeof(List<double>))]
+        [DynamicDependency(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor, typeof(List<bool>))]
+        [DynamicDependency(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor, typeof(List<long>))]
+        [DynamicDependency(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor, typeof(List<byte>))]
+        [DynamicDependency(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor, typeof(List<uint>))]
+        [DynamicDependency(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor, typeof(List<decimal>))]
+        [UnconditionalSuppressMessage("Trimming", "IL2072:Target parameter argument does not satisfy 'DynamicallyAccessedMembersAttribute' in call to target method",
+            Justification = "The list types are List<T>; the constructors for the element types CSV cells support are preserved by DynamicDependency above.")]
         private bool AsssignValuesOnElement(string contentManagerName, MemberTypeIndexPair[] memberTypeIndexPairs, List<PropertyInfo> propertyInfos, List<FieldInfo> fieldInfos, int numberOfColumns, object lastElement, bool wasRequiredMissing, int row, object newElement)
         {
             for (int column = 0; column < numberOfColumns; column++)
@@ -1046,9 +1093,8 @@ namespace FlatRedBall.IO.Csv
 
                             if (valueToSet != null)
                             {
-                                MethodInfo methodInfo = propertyInfo.PropertyType.GetMethod("Add");
-
-                                methodInfo.Invoke(objectToCallOn, new object[] { valueToSet });
+                                // The list type is always List<T>, so the non-generic IList.Add avoids reflecting for the Add method.
+                                ((IList)objectToCallOn).Add(valueToSet);
                             }
                         }
                         else if (!wasRequiredMissing)
@@ -1089,9 +1135,8 @@ namespace FlatRedBall.IO.Csv
 
                                 if (valueToSet != null)
                                 {
-                                    MethodInfo methodInfo = fieldInfo.FieldType.GetMethod("Add");
-
-                                    methodInfo.Invoke(objectToCallOn, new object[] { valueToSet });
+                                    // The list type is always List<T>, so the non-generic IList.Add avoids reflecting for the Add method.
+                                    ((IList)objectToCallOn).Add(valueToSet);
                                 }
                             }
                             else if (!wasRequiredMissing)
@@ -1168,7 +1213,7 @@ namespace FlatRedBall.IO.Csv
             }
         }
 
-        private void GetReflectionInformation(Type typeOfElement, out MemberTypeIndexPair[] memberTypeIndexPairs, out IEnumerable<PropertyInfo> propertyInfos, out IEnumerable<FieldInfo> fieldInfos)
+        private void GetReflectionInformation([DynamicallyAccessedMembers(CsvDataMembers.Deserialized)] Type typeOfElement, out MemberTypeIndexPair[] memberTypeIndexPairs, out IEnumerable<PropertyInfo> propertyInfos, out IEnumerable<FieldInfo> fieldInfos)
         {
             memberTypeIndexPairs = new MemberTypeIndexPair[Headers.Length];
 
