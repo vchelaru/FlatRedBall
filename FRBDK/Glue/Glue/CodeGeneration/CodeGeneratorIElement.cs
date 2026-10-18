@@ -21,6 +21,12 @@ namespace FlatRedBall.Glue.CodeGeneration
 #endif
 
             await CodeWriter.GenerateCode(element);
+
+            if (element is ScreenSave)
+            {
+                // A new screen, or one that just became abstract or concrete, changes the screen registry in Game1.Generated.cs.
+                Game1.ScreenRegistryCodeGenerator.RegenerateGame1IfStale();
+            }
         }
 
         public static async Task GenerateElementAndDerivedCode(GlueElement baseElement)

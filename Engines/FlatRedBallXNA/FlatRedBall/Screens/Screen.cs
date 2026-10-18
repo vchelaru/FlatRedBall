@@ -344,7 +344,8 @@ namespace FlatRedBall.Screens
 
         }
 
-        Type asyncScreenTypeToLoad = null;
+        string asyncScreenTypeToLoad = null;
+        Func<Screen> asyncScreenFactory = null;
 
 		public void StartAsyncLoad(Type type, Action afterLoaded = null)
         {
@@ -368,9 +369,10 @@ namespace FlatRedBall.Screens
             else
             {
 				AsyncLoadingState = AsyncLoadingState.LoadingScreen;
-				asyncScreenTypeToLoad = ScreenManager.MainAssembly.GetType(screenType);
+				asyncScreenTypeToLoad = screenType;
+				asyncScreenFactory = ScreenManager.GetScreenFactory(screenType);
 
-				if (asyncScreenTypeToLoad == null)
+				if (asyncScreenFactory == null)
 				{
 					throw new Exception("Could not find the type " + screenType);
 				}
@@ -418,7 +420,8 @@ namespace FlatRedBall.Screens
 
         private void PerformAsyncLoad()
         {
-            mNextScreenToLoadAsync = (Screen)Activator.CreateInstance(asyncScreenTypeToLoad, new object[0]);
+            mNextScreenToLoadAsync = asyncScreenFactory()
+                ?? throw new InvalidOperationException("Cannot load " + asyncScreenTypeToLoad + " because it is abstract.");
 
             // Don't add it to the manager!
             mNextScreenToLoadAsync.Initialize(addToManagers:false);

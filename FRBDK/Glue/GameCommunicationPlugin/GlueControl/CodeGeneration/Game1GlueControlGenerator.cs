@@ -141,11 +141,24 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration
                 codeBlock.Line("var commandLineArgs = System.Environment.GetCommandLineArgs();");
                 var ifBlock = codeBlock.If("commandLineArgs.Length > 0");
                 {
-                    ifBlock.Line("var thisAssembly = this.GetType().Assembly;");
+                    var hasScreenRegistry = ScreenRegistryCodeGenerator.IsEnabled(project);
+                    if (!hasScreenRegistry)
+                    {
+                        ifBlock.Line("var thisAssembly = this.GetType().Assembly;");
+                    }
                     ifBlock.Line("// see if any of these are screens:");
                     var foreachBlock = ifBlock.ForEach("var item in commandLineArgs");
                     {
-                        foreachBlock.Line("var type = thisAssembly.GetType(item);");
+                        if (hasScreenRegistry)
+                        {
+                            // Looks in the generated screen registry first, so a trimmed or AOT game finds its screens
+                            // without reflection. Unregistered names fall back to reflection inside the generated method.
+                            foreachBlock.Line($"var type = {ScreenRegistryCodeGenerator.GetScreenTypeMethodName}(item);");
+                        }
+                        else
+                        {
+                            foreachBlock.Line("var type = thisAssembly.GetType(item);");
+                        }
 
                         var innerIf = foreachBlock.If("type != null");
                         {
