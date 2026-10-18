@@ -32,4 +32,9 @@
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
 	</ItemGroup>
+
+	<ItemGroup>
+		<!-- Embedded descriptor the trimmer / Native AOT compiler applies to any game that references this assembly. -->
+		<EmbeddedResource Include="ILLink.Descriptors.xml" LogicalName="ILLink.Descriptors.xml" />
+	</ItemGroup>
 </Project>
