@@ -117,7 +117,7 @@ internal static class PlatformerLadderGoldProject
         var (exitCode, output) = NestedDotnetCli.Run($"build \"{csproj}\" -c Debug");
         exitCode.ShouldBe(0, $"dotnet build failed for the LadderDemo gold project:\n{output}");
 
-        var binDir = Path.Combine(project.Root, "LadderDemo", "bin", "Debug", "net6.0");
+        var binDir = Path.Combine(project.Root, "LadderDemo", "bin", "Debug", "net8.0");
         var gameAssemblyPath = Path.Combine(binDir, "LadderDemo.dll");
         File.Exists(gameAssemblyPath).ShouldBeTrue($"Expected build output at {gameAssemblyPath}");
         var gameAssembly = Assembly.LoadFrom(gameAssemblyPath);
