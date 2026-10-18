@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>disable</Nullable>
+    <!-- Publish with: dotnet publish -r win-x64 -p:PublishAot=true -->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- The engine project references MonoGame with PrivateAssets=All, so the game references it too. -->
+    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.4.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Native AOT only. MonoGame's ContentManager finds content readers (EffectReader for
+         Shader.xnb, which FlatRedBallServices.InitializeFlatRedBall loads) by name with
+         Type.GetType + Activator, so the readers must not be trimmed away. Without this the
+         AOT build throws a NullReferenceException in ContentTypeReaderManager.LoadAssetReaders
+         at startup. -->
+    <TrimmerRootAssembly Include="MonoGame.Framework" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Engines\FlatRedBallXNA\FlatRedBallDesktopGLNet6\FlatRedBallDesktopGLNet6.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- FlatRedBallServices.InitializeFlatRedBall loads this at startup. Every FlatRedBall
+         project ships a copy; this one came from the DesktopGL template. -->
+    <None Update="Content\Shader.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <!-- Plain .wav files loaded with SoundEffect.FromStream, so there is no content pipeline. -->
+    <None Update="Content\*.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
