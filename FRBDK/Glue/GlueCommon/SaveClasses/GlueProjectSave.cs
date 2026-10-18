@@ -257,6 +257,12 @@ namespace FlatRedBall.Glue.SaveClasses
             // extensions as Gum files at or above this version.
             GumJsonProjects = 75,
 
+            // October 18, 2026 - ScreenManager.RegisterScreenFactory exists, and Game1.Generated.cs registers a
+            // factory for every non-abstract screen so screens are created by name without reflection (Native AOT
+            // and trimming remove constructors that only Assembly.GetType + Activator reach). Gated because it
+            // is a new engine member: a project on an older engine dll fails with CS0117 on Game1.Generated.cs.
+            ScreenManagerHasRegisterScreenFactory = 76,
+
             // Stop! If adding an entry here, modify SyntaxVersionAttribute on FlatRedBallServices
             // and LatestVersion down below
             // and update the docs
@@ -266,7 +272,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.GumJsonProjects;
+        public const int LatestVersion = (int)GluxVersions.ScreenManagerHasRegisterScreenFactory;
 
         public int FileVersion { get; set; }
 

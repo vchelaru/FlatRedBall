@@ -26,6 +26,12 @@ namespace FlatRedBall.Glue.CodeGeneration.Game1
 
             GenerateClassScope(classBlock);
 
+            if (ScreenRegistryCodeGenerator.IsEnabled(GlueState.Self.CurrentGlueProject))
+            {
+                ScreenRegistryCodeGenerator.GenerateClassScope(classBlock,
+                    ScreenRegistryCodeGenerator.GetQualifiedScreenNames(GlueState.Self.CurrentGlueProject, GlueState.Self.ProjectNamespace));
+            }
+
             var gluxVersion = GlueState.Self.CurrentGlueProject.FileVersion;
             var hasEarly = gluxVersion >= (int)GlueProjectSave.GluxVersions.HasGame1GenerateEarly;
             if (hasEarly)
@@ -58,6 +64,11 @@ namespace FlatRedBall.Glue.CodeGeneration.Game1
         private static void GenerateGeneratedInitializeEarly(ICodeBlock codeBlock)
         {
             var method = codeBlock.Function("partial void", "GeneratedInitializeEarly", null);
+
+            if (ScreenRegistryCodeGenerator.IsEnabled(GlueState.Self.CurrentGlueProject))
+            {
+                method.Line($"{ScreenRegistryCodeGenerator.RegisterMethodName}();");
+            }
 
             foreach(var generator in Generators)
             {

@@ -47,6 +47,8 @@ namespace FlatRedBall.Screens
 
         private static Action<Screen> nextCallback;
 
+        private static readonly Dictionary<string, Func<Screen>> screenFactories = new Dictionary<string, Func<Screen>>();
+
         public static bool IsInEditMode { get; private set; }
         public static bool IsNextScreenInEditMode { get; set; }
 
@@ -176,6 +178,28 @@ namespace FlatRedBall.Screens
         #region Public Methods
 
         /// <summary>
+        /// Registers a factory for the screen with the given fully qualified type name, so the screen can be created
+        /// by name (Start, MoveToScreen, StartAsyncLoad) without reflection. Native AOT and trimming remove screen
+        /// constructors that only reflection reaches, so Glue-generated code registers every screen at startup.
+        /// Names that are not registered still resolve through reflection.
+        /// </summary>
+        /// <param name="screenFullName">The fully qualified type name, such as MyGame.Screens.GameScreen.</param>
+        /// <param name="factory">Creates a new instance of the screen.</param>
+        public static void RegisterScreenFactory(string screenFullName, Func<Screen> factory)
+        {
+            if (string.IsNullOrEmpty(screenFullName))
+            {
+                throw new ArgumentException("screenFullName must not be null or empty", nameof(screenFullName));
+            }
+            if (factory == null)
+            {
+                throw new ArgumentNullException(nameof(factory));
+            }
+
+            screenFactories[screenFullName] = factory;
+        }
+
+        /// <summary>
         /// Calls activity on the current screen and checks to see if screen
         /// activity is finished.  If activity is finished, the current Screen's
         /// NextScreen is loaded.
@@ -224,25 +248,7 @@ namespace FlatRedBall.Screens
                 var isFullyQualified = type?.Contains(".") == true;
                 if(!isFullyQualified && !string.IsNullOrEmpty(type))
                 {
-                    var unqualifiedType = type;
-                    // try to prepend the current type to make the next screen fully qualified:
-                    var prepend = mCurrentScreen.GetType().Namespace;
-                    type = prepend + "." + type;
-
-                    // Update October 5, 2024 - the type may not exist in this namespace because
-                    // we now support screens in folders, so the screens may have different namespaces.
-                    // Therefore we have to check the type
-                    var assembly = mCurrentScreen.GetType().Assembly;
-                    var foundType = assembly.GetType(type);
-
-                    if(foundType == null)
-                    {
-                        foundType = assembly.GetTypes().FirstOrDefault(item => item.Name == unqualifiedType);
-                        if(foundType != null)
-                        {
-                            type = foundType?.FullName;
-                        }
-                    }
+                    type = QualifyScreenName(type, mCurrentScreen.GetType().Namespace, mCurrentScreen.GetType().Assembly);
                 }
 
                 Screen asyncLoadedScreen = mCurrentScreen.mNextScreenToLoadAsync;
@@ -439,15 +445,104 @@ namespace FlatRedBall.Screens
 
         #region Private Methods
 
+        // Turns the name given to MoveToScreen/NextScreen into a fully qualified screen name.
+        private static string QualifyScreenName(string unqualifiedType, string currentNamespace, Assembly assembly)
+        {
+            // try to prepend the current type to make the next screen fully qualified:
+            var type = currentNamespace + "." + unqualifiedType;
+
+            if (screenFactories.ContainsKey(type))
+            {
+                return type;
+            }
+
+            // Screens can live in folders (different namespaces), so match the registered names by their last segment:
+            foreach (var registeredName in screenFactories.Keys)
+            {
+                if (registeredName == unqualifiedType || registeredName.EndsWith("." + unqualifiedType))
+                {
+                    return registeredName;
+                }
+            }
+
+            return QualifyScreenNameByReflection(unqualifiedType, type, assembly);
+        }
+
+#if NET5_0_OR_GREATER
+        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("Trimming", "IL2026",
+            Justification = "Only reached for screens that were not registered, so a trimmed or AOT game with a generated " +
+                "screen registry never gets here.")]
+#endif
+        private static string QualifyScreenNameByReflection(string unqualifiedType, string type, Assembly assembly)
+        {
+
+            // Update October 5, 2024 - the type may not exist in this namespace because
+            // we now support screens in folders, so the screens may have different namespaces.
+            // Therefore we have to check the type
+            var foundType = assembly.GetType(type);
+
+            if (foundType == null)
+            {
+                foundType = assembly.GetTypes().FirstOrDefault(item => item.Name == unqualifiedType);
+                if (foundType != null)
+                {
+                    type = foundType.FullName;
+                }
+            }
+            return type;
+        }
+
+        // Returns the function that creates the named screen, or null if the name is unknown.
+        // The factory returns null for an abstract screen type.
+        internal static Func<Screen> GetScreenFactory(string screenFullName)
+        {
+            // The registry is checked first because reflection cannot see screens that a trimmed or AOT build removed.
+            if (screenFactories.TryGetValue(screenFullName, out var factory))
+            {
+                return factory;
+            }
+
+            return GetReflectionScreenFactory(screenFullName);
+        }
+
+#if NET5_0_OR_GREATER
+        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("Trimming", "IL2026",
+            Justification = "Only reached for screens that were not registered. Glue-generated projects register every " +
+                "screen with RegisterScreenFactory, so a trimmed or AOT game never gets here.")]
+        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("Trimming", "IL2072",
+            Justification = "Same as IL2026: the reflection fallback is for projects that predate the screen registry.")]
+#endif
+        private static Func<Screen> GetReflectionScreenFactory(string screenFullName)
+        {
+            if (MainAssembly == null)
+            {
+                return null;
+            }
+
+            Type typeOfScreen = MainAssembly.GetType(screenFullName);
+
+            if (typeOfScreen == null)
+            {
+                return null;
+            }
+
+            if (typeOfScreen.IsAbstract)
+            {
+                return () => null;
+            }
+
+            return () => (Screen)Activator.CreateInstance(typeOfScreen, new object[0]);
+        }
+
         private static Screen LoadScreen(string screen)
         {
             mNextScreenLayer = null;
 
             Screen newScreen = null;
 
-            Type typeOfScreen = MainAssembly.GetType(screen);
+            var screenFactory = GetScreenFactory(screen);
 
-            if (typeOfScreen == null)
+            if (screenFactory == null)
             {
                 throw new System.ArgumentException("There is no " + screen + " class defined in your project or linked assemblies.");
             }
@@ -457,10 +552,7 @@ namespace FlatRedBall.Screens
 
             if (screen != null && screen != "")
             {
-                if(typeOfScreen.IsAbstract == false)
-                {
-                    newScreen = (Screen)Activator.CreateInstance(typeOfScreen, new object[0]);
-                }
+                newScreen = screenFactory();
             }
 
             if (newScreen != null)
