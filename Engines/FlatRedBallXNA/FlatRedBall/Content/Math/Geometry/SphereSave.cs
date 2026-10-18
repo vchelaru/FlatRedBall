@@ -29,6 +29,16 @@ namespace FlatRedBall.Content.Math.Geometry
 
         #region Methods
 
+        /// <summary>
+        /// Returns a deep copy. Does not use XmlSerializer, so it is safe under Native AOT.
+        /// </summary>
+        public SphereSave Clone()
+        {
+            // Every field is a value type or an immutable string, so a shallow copy is a deep copy.
+            // A reference-type field added later must be copied here.
+            return (SphereSave)MemberwiseClone();
+        }
+
         public static SphereSave FromSphere(FlatRedBall.Math.Geometry.Sphere sphere)
         {
             SphereSave sphereSave = new SphereSave();

@@ -116,6 +116,18 @@ namespace FlatRedBall.Content.Polygon
             return polygonSave;
         }
 
+        /// <summary>
+        /// Returns a deep copy. Does not use XmlSerializer, so it is safe under Native AOT.
+        /// </summary>
+        public PolygonSave Clone()
+        {
+            // MemberwiseClone copies every value-type and string field, including ones added later.
+            // Only reference types that must not be shared need an explicit copy.
+            var toReturn = (PolygonSave)MemberwiseClone();
+            toReturn.Points = (Point[])Points?.Clone();
+            return toReturn;
+        }
+
         public void Save(string fileName)
         {
             FileManager.XmlSerialize(this, fileName);

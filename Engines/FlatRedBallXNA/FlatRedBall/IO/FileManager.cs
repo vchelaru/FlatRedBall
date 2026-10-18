@@ -274,6 +274,12 @@ namespace FlatRedBall.IO
 
 #endregion
 
+#if NET7_0_OR_GREATER
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Round-trips through XmlSerializer, which fails under Native AOT. Write a type-specific Clone instead.")]
+#endif
+#if NET5_0_OR_GREATER
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Round-trips through XmlSerializer, which fails under trimming. Write a type-specific Clone instead.")]
+#endif
         public static T CloneObject<T>(T objectToClone)
         {
             string container;
