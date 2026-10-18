@@ -73,6 +73,95 @@ internal static class GoldProject
     }
 
     /// <summary>
+    /// Replaces a copied sample's prebuilt engine and Gum references (a NuGet package plus committed
+    /// Libraries\*.dll files, both older than the code Glue generates today) with ProjectReferences into this
+    /// checkout and the sibling Gum checkout. The same swap Glue's "Link Game to FRB Source" makes
+    /// (AddSourceManager.DesktopGlNet6, plus SkiaInGum); do it before loading in Glue.
+    /// </summary>
+    public static void LinkToEngineSource(string csprojPath)
+    {
+        var repoRoot = FindRepoRoot();
+        var doc = XDocument.Load(csprojPath, LoadOptions.PreserveWhitespace);
+        var ns = doc.Root!.Name.Namespace;
+
+        doc.Descendants(ns + "PackageReference")
+            // SkiaSharp: the sample pins 2.88; SkiaInGum brings the newer one it needs.
+            .Where(item => (string?)item.Attribute("Include") is "FlatRedBallDesktopGLNet6" or "SkiaSharp")
+            .ToList().ForEach(item => item.Remove());
+        doc.Descendants(ns + "Reference")
+            .Where(item => (string?)item.Attribute("Include") is "FlatRedBall.Forms.DesktopGlNet6" or "GumCore.DesktopGlNet6"
+                or "SkiaInGum" or "StateInterpolation.DesktopNet6")
+            .ToList().ForEach(item => item.Remove());
+        // The engine project references MonoGame with PrivateAssets=All, so the game must reference a
+        // version at least as new as the engine's.
+        foreach (var monoGame in doc.Descendants(ns + "PackageReference")
+            .Where(item => (string?)item.Attribute("Include") == "MonoGame.Framework.DesktopGL"))
+        {
+            monoGame.SetAttributeValue("Version", "3.8.4.1");
+        }
+
+        var gum = Path.GetFullPath(Path.Combine(repoRoot, "..", "Gum"));
+        doc.Root.Add(new XElement(ns + "ItemGroup",
+            new[]
+            {
+                Path.Combine(repoRoot, "Engines", "FlatRedBallXNA", "FlatRedBallDesktopGLNet6", "FlatRedBallDesktopGLNet6.csproj"),
+                Path.Combine(repoRoot, "Engines", "Forms", "FlatRedBall.Forms", "FlatRedBall.Forms.DesktopGlNet6", "FlatRedBall.Forms.DesktopGlNet6.csproj"),
+                Path.Combine(repoRoot, "Engines", "Forms", "FlatRedBall.Forms", "StateInterpolation", "StateInterpolation.DesktopGlNet6", "StateInterpolation.DesktopNet6.csproj"),
+                Path.Combine(repoRoot, "Engines", "SkiaGum", "SkiaInGum.csproj"),
+                Path.Combine(gum, "GumCore", "GumCoreXnaPc", "GumCore.DesktopGlNet6", "GumCore.DesktopGlNet6.csproj"),
+            }.Select(path => new XElement(ns + "ProjectReference", new XAttribute("Include", path)))));
+        doc.Save(csprojPath);
+    }
+
+    /// <summary>
+    /// Loads a copied gold project that has a .gumx the way an author preparing it for Native AOT would: bump
+    /// the project to the latest version (a .gumj needs a project at the JSON Gum version or later), convert
+    /// the Gum project with gumcli, load in Glue, swap the Gum project file in Global Content through the
+    /// calls the UI makes, then regenerate and save. An AOT game cannot load a .gumx (XmlSerializer). See
+    /// GitHub issue #2390.
+    /// </summary>
+    public static async Task LoadWithGumJsonAsync(string projectRoot, string csprojPath, string gumFolder)
+    {
+        foreach (var gluj in Directory.GetFiles(projectRoot, "*.gluj", SearchOption.AllDirectories))
+        {
+            File.WriteAllText(gluj, System.Text.RegularExpressions.Regex.Replace(File.ReadAllText(gluj),
+                "\"FileVersion\": *[0-9]+", "\"FileVersion\": " + FlatRedBall.Glue.SaveClasses.GlueProjectSave.LatestVersion));
+        }
+        DeleteGeneratedCode(projectRoot);
+
+        // Not redirected, so this isn't a NestedDotnetCli-style pipe hang risk.
+        using (var convert = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+        {
+            FileName = "Plugins/GumPlugin/Tools/gumcli/gumcli.exe",
+            Arguments = $@"convert-to-json ""{Path.Combine(gumFolder, "GumProject.gumx")}""",
+            UseShellExecute = false,
+            CreateNoWindow = true,
+        }))
+        {
+            convert!.WaitForExit();
+            if (convert.ExitCode != 0)
+            {
+                throw new InvalidOperationException($"gumcli convert-to-json exited with {convert.ExitCode}.");
+            }
+        }
+
+        await LoadInGlueAsync(csprojPath);
+        await TaskManager.Self.WaitForAllTasksFinished();
+
+        var gumxRfs = FlatRedBall.Glue.Elements.ObjectFinder.Self.GlueProject.GlobalFiles.Single(item => item.Name.EndsWith(".gumx"));
+        await GlueCommands.Self.GluxCommands.RemoveReferencedFileAsync(gumxRfs, null, new List<string>());
+        await TaskManager.Self.WaitForAllTasksFinished();
+
+        await AddExistingFileManager.Self.AddSingleFile(new FilePath(Path.Combine(gumFolder, "GumProject.gumj")), elementToAddTo: null);
+        await TaskManager.Self.WaitForAllTasksFinished();
+
+        GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
+        await TaskManager.Self.WaitForAllTasksFinished();
+        GlueCommands.Self.ProjectCommands.SaveProjects();
+        await TaskManager.Self.WaitForAllTasksFinished();
+    }
+
+    /// <summary>
     /// Writes live edit's runtime half - the ~40 files <c>EmbeddedCodeManager</c> copies into a game
     /// project's GlueControl folder - into the currently loaded project, exactly as
     /// <c>MainCompilerPlugin.HandleGluxLoaded</c> does (both calls, in this order).

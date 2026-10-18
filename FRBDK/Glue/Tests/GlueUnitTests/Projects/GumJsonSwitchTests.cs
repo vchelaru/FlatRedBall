@@ -33,31 +33,8 @@ public class GumJsonSwitchTests
         using var project = GoldProject.CopyOutOfRepo("Samples/Platformer/DialogBoxDemo");
         var csproj = Path.Combine(project.Root, "DialogBoxDemo", "DialogBoxDemo.csproj");
 
-        // The .gumj needs a project at the JSON Gum version or later, so start from the latest.
-        foreach (var gluj in Directory.GetFiles(project.Root, "*.gluj", SearchOption.AllDirectories))
-        {
-            File.WriteAllText(gluj, Regex.Replace(File.ReadAllText(gluj), "\"FileVersion\": *[0-9]+",
-                "\"FileVersion\": " + GlueProjectSave.LatestVersion));
-        }
-        GoldProject.DeleteGeneratedCode(project.Root);
-
         var gumFolder = Path.Combine(project.Root, "DialogBoxDemo", "Content", "GumProject");
-        ConvertToJson(Path.Combine(gumFolder, "GumProject.gumx"));
-
-        await GoldProject.LoadInGlueAsync(csproj);
-        await TaskManager.Self.WaitForAllTasksFinished();
-
-        var gumxRfs = ObjectFinder.Self.GlueProject.GlobalFiles.Single(item => item.Name.EndsWith(".gumx"));
-        await GlueCommands.Self.GluxCommands.RemoveReferencedFileAsync(gumxRfs, null, new System.Collections.Generic.List<string>());
-        await TaskManager.Self.WaitForAllTasksFinished();
-
-        await AddExistingFileManager.Self.AddSingleFile(new FilePath(Path.Combine(gumFolder, "GumProject.gumj")), elementToAddTo: null);
-        await TaskManager.Self.WaitForAllTasksFinished();
-
-        GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
-        await TaskManager.Self.WaitForAllTasksFinished();
-        GlueCommands.Self.ProjectCommands.SaveProjects();
-        await TaskManager.Self.WaitForAllTasksFinished();
+        await GoldProject.LoadWithGumJsonAsync(project.Root, csproj, gumFolder);
 
         // No hand edit: the generated load call follows the Gum project file in Global Content.
         var globalContent = File.ReadAllText(Path.Combine(project.Root, "DialogBoxDemo", "GlobalContent.Generated.cs"));
@@ -75,19 +52,5 @@ public class GumJsonSwitchTests
         included.ShouldContain("Content\\GumProject\\Components\\Controls\\ButtonStandard.gucj");
         included.Where(item => Regex.IsMatch(item, @"\.(gumx|gusx|gucx|gutx)$")).ShouldBeEmpty(
             "XML Gum files left over from before the swap");
-    }
-
-    static void ConvertToJson(string gumx)
-    {
-        // Not redirected, so this isn't a NestedDotnetCli-style pipe hang risk.
-        using var convert = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
-        {
-            FileName = "Plugins/GumPlugin/Tools/gumcli/gumcli.exe",
-            Arguments = $@"convert-to-json ""{gumx}""",
-            UseShellExecute = false,
-            CreateNoWindow = true,
-        });
-        convert!.WaitForExit();
-        convert.ExitCode.ShouldBe(0);
     }
 }

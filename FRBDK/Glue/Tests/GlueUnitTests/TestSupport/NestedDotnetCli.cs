@@ -52,7 +52,8 @@ internal static class NestedDotnetCli
 
     private static readonly TimeSpan StartupGatePollInterval = TimeSpan.FromMilliseconds(100);
 
-    public static (int exitCode, string output) Run(string arguments, TimeSpan? timeout = null, StartupGate? startupGate = null)
+    public static (int exitCode, string output) Run(string arguments, TimeSpan? timeout = null, StartupGate? startupGate = null,
+        IReadOnlyDictionary<string, string>? environment = null)
     {
         var startInfo = new ProcessStartInfo("dotnet", arguments)
         {
@@ -79,6 +80,14 @@ internal static class NestedDotnetCli
         // MSBuild and breaks the build. Production clears it around its own nested invocations for exactly
         // this reason (see CompilerPlugin's Compiler.cs and SyncedProjects' ProjectListEntry.xaml.cs).
         startInfo.Environment.Remove("MSBUILD_EXE_PATH");
+
+        if (environment != null)
+        {
+            foreach (var pair in environment)
+            {
+                startInfo.Environment[pair.Key] = pair.Value;
+            }
+        }
 
         var output = new StringBuilder();
         using var stdoutClosed = new ManualResetEventSlim(false);
