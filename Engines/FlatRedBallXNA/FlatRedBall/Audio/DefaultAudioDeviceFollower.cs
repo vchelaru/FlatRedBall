@@ -31,8 +31,11 @@
 //
 // WHY IT LOOKS THE WAY IT DOES (so it stays easy to delete)
 // ---------------------------------------------------------
-//   * It is a single, self-contained file. Deleting this file and its one call
-//     site in FlatRedBallServices.FinishInitialization() fully removes it.
+//   * It is a single, self-contained file. Deleting this file, its one call
+//     site in FlatRedBallServices.FinishInitialization(), and the
+//     AllowUnsafeBlocks line in FlatRedBallShared.projitems fully removes it.
+//   * It is Native AOT safe: Core Audio is reached through source-generated COM
+//     ([GeneratedComInterface] + CoCreateInstance), not [ComImport]/Activator.
 //   * It gets the ALCdevice handle from OpenAL (alcGetCurrentContext ->
 //     alcGetContextsDevice) rather than from MonoGame's private fields, so it
 //     does not depend on MonoGame internals and survives MonoGame upgrades.
@@ -53,10 +56,28 @@
 //
 // =============================================================================
 
-#if DESKTOP_GL
+#if DESKTOP_GL && !NET8_0_OR_GREATER
+
+// Source-generated COM (used below) needs .NET 8. The net6 / netstandard2.0 targets are
+// pinned to a MonoGame whose OpenAL-Soft predates ALC_SOFT_reopen_device, where this
+// shim self-disabled anyway, so those targets get this no-op.
+namespace FlatRedBall.Audio
+{
+    internal static class DefaultAudioDeviceFollower
+    {
+        public static void Start() { }
+        public static void Stop() { }
+    }
+}
+
+#elif DESKTOP_GL
+
+// This self-contained shim predates the project's nullable context; keep it out of it.
+#nullable disable
 
 using System;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.Marshalling;
 using System.Threading;
 
 // CA1416: the Core Audio COM calls below are Windows-only. We gate every entry
@@ -72,7 +93,7 @@ namespace FlatRedBall.Audio
     /// output device when it is switched mid-game. Works around MonoGame issue
     /// #9467; delete once MonoGame re-points the audio device itself.
     /// </summary>
-    internal static class DefaultAudioDeviceFollower
+    internal static partial class DefaultAudioDeviceFollower
     {
         // -------------------------------------------------------------------------
         // OpenAL (ALC) interop.
@@ -117,22 +138,43 @@ namespace FlatRedBall.Audio
         // Windows Core Audio (MMDevice) interop -- minimal, just enough to read the
         // id of the current default render (playback) endpoint.
         //
-        // We use ComImport interface declarations. Only the methods we actually
-        // call are given real signatures; earlier vtable slots are declared as
-        // stubs purely to preserve the vtable layout (COM dispatches by slot order).
+        // Native AOT cannot use [ComImport] / Activator.CreateInstance (no runtime
+        // type discovery), so this uses source-generated COM: [GeneratedComInterface]
+        // interfaces plus a CoCreateInstance P/Invoke wrapped by
+        // StrategyBasedComWrappers. Only the methods we actually call are given real
+        // signatures; earlier vtable slots are declared as stubs purely to preserve
+        // the vtable layout (COM dispatches by slot order; slots 0-2 are IUnknown,
+        // added by the generator).
         // -------------------------------------------------------------------------
 
-        // CLSID_MMDeviceEnumerator
+        // CLSID_MMDeviceEnumerator / IID_IMMDeviceEnumerator
         private static readonly Guid CLSID_MMDeviceEnumerator = new Guid("BCDE0395-E52F-467C-8E3D-C4579291692E");
+        private static readonly Guid IID_IMMDeviceEnumerator = new Guid("A95664D2-9614-4F35-A746-DE8DB63617E6");
 
         // eRender = 0 (playback endpoints), eConsole = 0 (default "games/system sounds" role).
         private const int EDataFlow_eRender = 0;
         private const int ERole_eConsole = 0;
 
-        [ComImport]
+        // CLSCTX_ALL = INPROC_SERVER | INPROC_HANDLER | LOCAL_SERVER | REMOTE_SERVER
+        private const uint CLSCTX_ALL = 0x17;
+
+        // COINIT_MULTITHREADED. The poll runs on a thread-pool thread, which has no
+        // COM apartment unless one is initialized, so GetDefaultRenderEndpointId
+        // joins the MTA for the duration of each read.
+        private const uint COINIT_MULTITHREADED = 0x0;
+
+        [LibraryImport("ole32.dll")]
+        private static partial int CoInitializeEx(IntPtr pvReserved, uint dwCoInit);
+
+        [LibraryImport("ole32.dll")]
+        private static partial void CoUninitialize();
+
+        [LibraryImport("ole32.dll")]
+        private static partial int CoCreateInstance(in Guid rclsid, IntPtr pUnkOuter, uint dwClsContext, in Guid riid, out IntPtr ppv);
+
+        [GeneratedComInterface]
         [Guid("A95664D2-9614-4F35-A746-DE8DB63617E6")] // IID_IMMDeviceEnumerator
-        [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-        private interface IMMDeviceEnumerator
+        internal partial interface IMMDeviceEnumerator
         {
             // Slot 3 (vtable): EnumAudioEndpoints -- declared only to hold its slot.
             [PreserveSig] int EnumAudioEndpoints(int dataFlow, int stateMask, out IntPtr devices);
@@ -141,13 +183,12 @@ namespace FlatRedBall.Audio
             [PreserveSig] int GetDefaultAudioEndpoint(int dataFlow, int role, out IMMDevice device);
         }
 
-        [ComImport]
+        [GeneratedComInterface]
         [Guid("D666063F-1587-4E43-81F1-B948E807363F")] // IID_IMMDevice
-        [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-        private interface IMMDevice
+        internal partial interface IMMDevice
         {
             // Slot 3: Activate -- stub to hold its slot.
-            [PreserveSig] int Activate(ref Guid iid, int clsCtx, IntPtr activationParams, [MarshalAs(UnmanagedType.IUnknown)] out object instance);
+            [PreserveSig] int Activate(in Guid iid, uint clsCtx, IntPtr activationParams, out IntPtr instance);
 
             // Slot 4: OpenPropertyStore -- stub to hold its slot.
             [PreserveSig] int OpenPropertyStore(int stgmAccess, out IntPtr properties);
@@ -160,6 +201,7 @@ namespace FlatRedBall.Audio
         // -------------------------------------------------------------------------
         // State
         // -------------------------------------------------------------------------
+        private static readonly StrategyBasedComWrappers _comWrappers = new StrategyBasedComWrappers();
         private static Timer _pollTimer;
         private static string _lastEndpointId;
         private static AlcReopenDeviceSoftDelegate _reopenDevice;
@@ -258,17 +300,32 @@ namespace FlatRedBall.Audio
         /// </summary>
         private static string GetDefaultRenderEndpointId()
         {
+            // The poll runs on a thread-pool thread with no COM apartment of its own.
+            // Join the MTA for this read and leave it again afterwards (balanced only
+            // when CoInitializeEx succeeded: S_OK or S_FALSE). A negative result such
+            // as RPC_E_CHANGED_MODE means the thread already has an apartment we must
+            // not touch, so just use it as is.
+            var coInitialized = CoInitializeEx(IntPtr.Zero, COINIT_MULTITHREADED) >= 0;
+
             IMMDeviceEnumerator enumerator = null;
             IMMDevice device = null;
             try
             {
-                var comType = Type.GetTypeFromCLSID(CLSID_MMDeviceEnumerator);
-                if (comType == null)
+                if (CoCreateInstance(CLSID_MMDeviceEnumerator, IntPtr.Zero, CLSCTX_ALL, IID_IMMDeviceEnumerator, out var enumeratorPointer) < 0
+                    || enumeratorPointer == IntPtr.Zero)
                 {
                     return null;
                 }
 
-                enumerator = (IMMDeviceEnumerator)Activator.CreateInstance(comType);
+                try
+                {
+                    // The wrapper takes its own reference; ours is released below.
+                    enumerator = (IMMDeviceEnumerator)_comWrappers.GetOrCreateObjectForComInstance(enumeratorPointer, CreateObjectFlags.UniqueInstance);
+                }
+                finally
+                {
+                    Marshal.Release(enumeratorPointer);
+                }
 
                 // hr < 0 means failure (e.g. no audio endpoints available at all).
                 if (enumerator.GetDefaultAudioEndpoint(EDataFlow_eRender, ERole_eConsole, out device) < 0 || device == null)
@@ -280,14 +337,29 @@ namespace FlatRedBall.Audio
             }
             finally
             {
-                if (device != null)
+                // Release the COM references deterministically, and before CoUninitialize.
+                ReleaseNow(device);
+                ReleaseNow(enumerator);
+
+                if (coInitialized)
                 {
-                    Marshal.ReleaseComObject(device);
+                    CoUninitialize();
                 }
-                if (enumerator != null)
-                {
-                    Marshal.ReleaseComObject(enumerator);
-                }
+            }
+        }
+
+        /// <summary>
+        /// Releases a source-generated COM wrapper now instead of waiting for the GC.
+        /// Marshal.ReleaseComObject does not work on these wrappers (it throws or is
+        /// flagged by SYSLIB1099); ComObject.FinalRelease is the equivalent. The
+        /// finalizer would release a second time, so it is suppressed.
+        /// </summary>
+        private static void ReleaseNow(object comWrapper)
+        {
+            if (comWrapper is ComObject comObject)
+            {
+                comObject.FinalRelease();
+                GC.SuppressFinalize(comObject);
             }
         }
 

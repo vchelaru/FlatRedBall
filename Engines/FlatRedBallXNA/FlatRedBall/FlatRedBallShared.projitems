@@ -4,6 +4,8 @@
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
     <HasSharedItems>true</HasSharedItems>
     <SharedGUID>{0BB8CBE3-8503-46C1-9272-D98E153A230E}</SharedGUID>
+    <!-- Required by the source generators (LibraryImport / GeneratedComInterface) used in Audio/DefaultAudioDeviceFollower.cs. Remove with that file. -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
     <Import_RootNamespace>FlatRedBall</Import_RootNamespace>
