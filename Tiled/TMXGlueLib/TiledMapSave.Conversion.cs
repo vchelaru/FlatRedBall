@@ -1359,13 +1359,31 @@ namespace TMXGlueLib
             {
                 try
                 {
-                    return FileManager.XmlDeserialize<TiledMapSave>(fileName);
+                    if (ManualDeserialization)
+                    {
+                        return TiledManualDeserializer.LoadMap(fileName);
+                    }
+
+                    return DeserializeWithXmlSerializer(fileName);
                 }
                 catch (InvalidOperationException e) when (attempt < maxAttempts && e.InnerException is System.Xml.XmlException)
                 {
                     System.Threading.Thread.Sleep(100);
                 }
             }
+        }
+
+        // Only reached when ManualDeserialization is false, which is never the default where XmlSerializer
+        // would fail (Native AOT), so the trim/AOT warnings it raises are suppressed here.
+#if NET
+        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("Trimming", "IL2026",
+            Justification = "XmlSerializer is only used when ManualDeserialization is false; it defaults to true under Native AOT.")]
+        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("AOT", "IL3050",
+            Justification = "XmlSerializer is only used when ManualDeserialization is false; it defaults to true under Native AOT.")]
+#endif
+        private static TiledMapSave DeserializeWithXmlSerializer(string fileName)
+        {
+            return FileManager.XmlDeserialize<TiledMapSave>(fileName);
         }
 
         public static TiledMapSave FromFile(string fileName)
@@ -1428,6 +1446,14 @@ namespace TMXGlueLib
             return tms;
         }
 
+        // Saving is a tool feature (Glue writes .tmx files), and XmlSerializer cannot run under trimming or
+        // Native AOT, so games that publish with AOT see a warning if they call this.
+#if NET
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Saving a .tmx uses XmlSerializer, which reflects over the type's members and is not safe under trimming.")]
+#endif
+#if NET7_0_OR_GREATER
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Saving a .tmx uses XmlSerializer, which needs runtime code generation and is not safe under Native AOT.")]
+#endif
         public void Save(string fileName)
         {
             FileManager.XmlSerialize(this, fileName);

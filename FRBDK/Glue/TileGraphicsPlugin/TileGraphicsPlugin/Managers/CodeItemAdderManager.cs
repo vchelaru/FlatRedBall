@@ -40,6 +40,7 @@ namespace TileGraphicsPlugin.Managers
             mTileGraphicsAdder.Add("TiledPlugin/EmbeddedCodeFiles/NamedValue.cs");
             mTileGraphicsAdder.Add("TiledPlugin/EmbeddedCodeFiles/TiledMapSave.Conversion.cs");
             mTileGraphicsAdder.Add("TiledPlugin/EmbeddedCodeFiles/TiledMapSave.Serialization.cs");
+            mTileGraphicsAdder.Add("TiledPlugin/EmbeddedCodeFiles/TiledManualDeserializer.cs");
             mTileGraphicsAdder.Add("TiledPlugin/EmbeddedCodeFiles/TileAnimation.cs");
             mTileGraphicsAdder.Add("TiledPlugin/EmbeddedCodeFiles/TiledMapToShapeCollectionConverter.cs");
             mTileGraphicsAdder.Add("TiledPlugin/EmbeddedCodeFiles/TilesetExtensionMethods.cs");

@@ -395,13 +395,31 @@ namespace TMXGlueLib
             {
                 try
                 {
-                    return FileManager.XmlDeserialize<tileset>(fileName);
+                    if (TiledMapSave.ManualDeserialization)
+                    {
+                        return TiledManualDeserializer.LoadTileset(fileName);
+                    }
+
+                    return DeserializeWithXmlSerializer(fileName);
                 }
                 catch (System.InvalidOperationException e) when (attempt < maxAttempts && e.InnerException is System.Xml.XmlException)
                 {
                     System.Threading.Thread.Sleep(100);
                 }
             }
+        }
+
+        // Only reached when TiledMapSave.ManualDeserialization is false, which is never the default where
+        // XmlSerializer would fail (Native AOT), so the trim/AOT warnings it raises are suppressed here.
+#if NET
+        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("Trimming", "IL2026",
+            Justification = "XmlSerializer is only used when ManualDeserialization is false; it defaults to true under Native AOT.")]
+        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("AOT", "IL3050",
+            Justification = "XmlSerializer is only used when ManualDeserialization is false; it defaults to true under Native AOT.")]
+#endif
+        private static tileset DeserializeWithXmlSerializer(string fileName)
+        {
+            return FileManager.XmlDeserialize<tileset>(fileName);
         }
 
         public override string ToString()
