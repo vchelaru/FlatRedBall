@@ -76,9 +76,11 @@ public class EmbeddedVersionGateTests : IDisposable
     // The generated file carries its own `#define` lines, which Roslyn honors when parsing; only symbols
     // that come from outside the file (HasGum is asked of the Gum plugin, REFERENCES_FRB_SOURCE of the
     // csproj) are passed in. A token inside a false #if region is disabled-text trivia, not a token.
+    // DEBUG is always passed: edit mode code is compiled into Debug builds only (#2371), and these tests ask
+    // whether a member is gated by version, not by configuration.
     static bool IsActiveCode(string source, string identifier, params string[] externalSymbols)
     {
-        var tree = CSharpSyntaxTree.ParseText(source, new CSharpParseOptions(preprocessorSymbols: externalSymbols));
+        var tree = CSharpSyntaxTree.ParseText(source, new CSharpParseOptions(preprocessorSymbols: externalSymbols.Append("DEBUG")));
         return tree.GetRoot().DescendantTokens().Any(token => token.Text == identifier);
     }
 }

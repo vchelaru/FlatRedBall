@@ -285,6 +285,14 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             compilerViewModel.IsEditChecked = true;
             TaskManager.Self.Add(async () =>
             {
+                // The edit mode code is compiled into Debug builds only, so a Release game would start and
+                // ignore every edit.
+                if (!string.Equals(compilerViewModel.Configuration, "Debug", StringComparison.OrdinalIgnoreCase))
+                {
+                    GlueCommands.Self.PrintOutput($"Live edit is only available in Debug builds. Building Debug instead of {compilerViewModel.Configuration}.");
+                    compilerViewModel.Configuration = "Debug";
+                }
+
                 var succeeded = await Compile();
                 if (succeeded)
                 {

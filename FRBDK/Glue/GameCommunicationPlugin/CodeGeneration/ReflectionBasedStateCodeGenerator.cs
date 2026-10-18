@@ -24,6 +24,8 @@ internal static class ReflectionBasedStateCodeGenerator
 
         /////////////////////////////End Early Out/////////////////////////////
 
+        // InstanceLogic and VariableAssignmentLogic are edit mode code, which only exists in Debug builds (#2371).
+        codeBlock.Line("#if DEBUG");
         codeBlock.Line("var thisType = this.GetType().FullName;");
         var ifBlock = codeBlock.If("GlueControl.InstanceLogic.Self.StatesAddedAtRuntime.ContainsKey(thisType)");
         {
@@ -56,5 +58,6 @@ internal static class ReflectionBasedStateCodeGenerator
                 }
             }
         }
+        codeBlock.Line("#endif");
     }
 }

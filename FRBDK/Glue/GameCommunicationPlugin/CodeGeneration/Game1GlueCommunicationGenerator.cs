@@ -13,7 +13,6 @@ namespace GameCommunicationPlugin.CodeGeneration
             PortNumber = portNumber;
         }
 
-        public bool GenerateConnectionOnlyInDebug { get; set; } = true;
         public bool IsGameCommunicationEnabled { get; set; }
         public int PortNumber { get; set; }
         public override void GenerateClassScope(ICodeBlock codeBlock)
@@ -26,21 +25,17 @@ namespace GameCommunicationPlugin.CodeGeneration
             }
         }
 
+        // The connection to Glue is compiled into Debug builds only (#2371), so a shipped game has none of
+        // the GlueControl code.
         private void AddIfDebug(ICodeBlock codeBlock)
         {
-            if (GenerateConnectionOnlyInDebug)
-            {
-                codeBlock.Line("#if DEBUG");
-            }
+            codeBlock.Line("#if DEBUG");
         }
 
 
         private void EndIfDebug(ICodeBlock codeBlock)
         {
-            if (GenerateConnectionOnlyInDebug)
-            {
-                codeBlock.Line("#endif");
-            }
+            codeBlock.Line("#endif");
         }
 
         public override void GenerateInitialize(ICodeBlock codeBlock)

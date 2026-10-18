@@ -43,6 +43,11 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration
 
             compilerDirectives += $"using {GlueState.Self.ProjectNamespace};\r\n";
 
+            // The whole file is compiled into Debug builds only (#2371): Game1 creates the Glue connection
+            // under #if DEBUG, and the edit mode code is reflection by name and MakeGenericType that Native
+            // AOT cannot compile cleanly. Directives (#define, using) are fine ahead of the region.
+            compilerDirectives += "#if DEBUG\r\n";
+
             if(asString.Contains("{CompilerDirectives}"))
             {
                 asString = asString.Replace("{CompilerDirectives}", compilerDirectives);
@@ -53,6 +58,8 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration
                 // still put it in, in case it got wiped out by a copy/paste
                 asString = compilerDirectives + "\n" + asString;
             }
+
+            asString = asString.TrimEnd() + "\r\n#endif\r\n";
             return asString.Trim(new char[] { '\uFEFF', '\u200B' });
         }
     }

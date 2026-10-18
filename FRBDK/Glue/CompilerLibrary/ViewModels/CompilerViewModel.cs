@@ -269,7 +269,11 @@ namespace CompilerLibrary.ViewModels
         [DependsOn(nameof(IsGenerateGlueControlManagerInGame1Checked))]
         public Visibility MessageAboutEditModeDisabledVisibility => (IsGenerateGlueControlManagerInGame1Checked == false).ToVisibility();
 
-        public string Configuration { get; set; }
+        public string Configuration
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
 
         public bool IsPrintMsBuildCommandChecked
         {
