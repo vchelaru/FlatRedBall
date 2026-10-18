@@ -7,6 +7,8 @@ using System.Reflection;
 using FlatRedBall.Instructions.Reflection;
 using System.IO;
 
+using System.Diagnostics.CodeAnalysis;
+
 using Microsoft.Xna.Framework;
 
 namespace FlatRedBall.IO.Csv
@@ -26,7 +28,7 @@ namespace FlatRedBall.IO.Csv
         public static string ContentManagerName = FlatRedBallServices.GlobalContentManager;
 #endif
 
-        public static List<object> CsvDeserializeList(Type typeOfElement, string fileName)
+        public static List<object> CsvDeserializeList([DynamicallyAccessedMembers(CsvDataMembers.Deserialized)] Type typeOfElement, string fileName)
         {
 
             List<object> listOfObjects = new List<object>();
@@ -37,35 +39,35 @@ namespace FlatRedBall.IO.Csv
             return listOfObjects;
         }
 
-        public static void CsvDeserializeList(Type typeOfElement, string fileName, IList listToPopulate)
+        public static void CsvDeserializeList([DynamicallyAccessedMembers(CsvDataMembers.Deserialized)] Type typeOfElement, string fileName, IList listToPopulate)
         {
             RuntimeCsvRepresentation rcr = CsvDeserializeToRuntime(fileName);
 
             rcr.CreateObjectList(typeOfElement, listToPopulate, ContentManagerName);
         }
 
-        public static void CsvDeserializeDictionary<KeyType, ValueType>(string fileName, Dictionary<KeyType, ValueType> dictionaryToPopulate, DuplicateDictionaryEntryBehavior duplicateDictionaryEntryBehavior = DuplicateDictionaryEntryBehavior.ThrowException)
+        public static void CsvDeserializeDictionary<KeyType, [DynamicallyAccessedMembers(CsvDataMembers.Deserialized)] ValueType>(string fileName, Dictionary<KeyType, ValueType> dictionaryToPopulate, DuplicateDictionaryEntryBehavior duplicateDictionaryEntryBehavior = DuplicateDictionaryEntryBehavior.ThrowException)
         {
             var rcr = CsvDeserializeToRuntime(fileName);
 
             rcr.FillObjectDictionary<KeyType, ValueType>(dictionaryToPopulate, ContentManagerName, duplicateDictionaryEntryBehavior);
         }
 
-        public static void CsvDeserializeDictionary<KeyType, ValueType>(string fileName, Dictionary<KeyType, ValueType> dictionaryToPopulate, out RuntimeCsvRepresentation rcr)
+        public static void CsvDeserializeDictionary<KeyType, [DynamicallyAccessedMembers(CsvDataMembers.Deserialized)] ValueType>(string fileName, Dictionary<KeyType, ValueType> dictionaryToPopulate, out RuntimeCsvRepresentation rcr)
         {
             rcr = CsvDeserializeToRuntime(fileName);
 
             rcr.FillObjectDictionary<KeyType, ValueType>(dictionaryToPopulate, ContentManagerName);
         }
 
-        public static void UpdateDictionaryValuesFromCsv<KeyType, ValueType>(Dictionary<KeyType, ValueType> dictionaryToUpdate, string fileName)
+        public static void UpdateDictionaryValuesFromCsv<KeyType, [DynamicallyAccessedMembers(CsvDataMembers.Deserialized)] ValueType>(Dictionary<KeyType, ValueType> dictionaryToUpdate, string fileName)
         {
             var rcr = CsvDeserializeToRuntime(fileName);
 
             rcr.UpdateValues(dictionaryToUpdate, ContentManagerName);
         }
 
-        public static void CsvDeserializeDictionary<KeyType, ValueType>(Stream stream, Dictionary<KeyType, ValueType> dictionaryToPopulate)
+        public static void CsvDeserializeDictionary<KeyType, [DynamicallyAccessedMembers(CsvDataMembers.Deserialized)] ValueType>(Stream stream, Dictionary<KeyType, ValueType> dictionaryToPopulate)
         {
             var rcr = CsvDeserializeToRuntime<RuntimeCsvRepresentation>(stream);
 
