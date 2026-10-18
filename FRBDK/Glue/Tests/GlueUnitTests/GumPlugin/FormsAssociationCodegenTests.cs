@@ -87,17 +87,36 @@ public class FormsAssociationCodegenTests : IDisposable
         source.ShouldNotContain("DefaultFormsComponents");
     }
 
-    // FRB's TreeViewLogic (Engines/Forms, not shared with Gum) only consults DefaultFormsComponents for its
-    // default item type, so a TreeViewItem registered through templates would silently stop being found.
+    // Issue #2370 follow-up: TreeViewLogic now reads DefaultFormsTemplates[typeof(TreeViewItem)] first, so
+    // from GumTreeViewItemHasDefaultFormsTemplate on, TreeViewItem registers like every other control.
     [Fact]
-    public void AtDefaultFormsTemplatesVersion_TreeViewItemStaysOnDefaultFormsComponentsWithoutWarning()
+    public void AtTreeViewItemTemplateVersion_TreeViewItemRegistersThroughDefaultFormsTemplates()
     {
         GlueTestBootstrap.EnsureGumPluginCodeGeneratorsInitialized();
         FlatRedBall.Glue.Elements.ObjectFinder.Self.GlueProject.FileVersion =
-            (int)GlueProjectSave.GluxVersions.GumFrameworkElementHasDefaultFormsTemplates;
-        var treeViewItem = new ComponentSave { Name = "Controls/TreeViewItemStandard", BaseType = "Container" };
-        treeViewItem.Behaviors.Add(new ElementBehaviorReference { BehaviorName = "TreeViewItemBehavior" });
-        Gum.Managers.ObjectFinder.Self.GumProjectSave.Components.Add(treeViewItem);
+            (int)GlueProjectSave.GluxVersions.GumTreeViewItemHasDefaultFormsTemplate;
+        AddTreeViewItemComponent();
+
+        var source = GueRuntimeTypeAssociationGenerator.Self.GetRuntimeRegistrationPartialClassContents(registerFormsAssociations: true);
+
+        source.ShouldContain(
+            "FlatRedBall.Forms.Controls.FrameworkElement.DefaultFormsTemplates[typeof(FlatRedBall.Forms.Controls.TreeViewItem)] = " +
+            "new global::FlatRedBall.Forms.VisualTemplate(() => new global::" + GueDerivingClassCodeGenerator.GueRuntimeNamespace +
+            ".Controls.TreeViewItemStandardRuntime(fullInstantiation: true, tryCreateFormsObject: false));");
+        source.ShouldNotContain("DefaultFormsComponents");
+        source.ShouldNotContain("CS0618");
+    }
+
+    // An engine dll older than the TreeViewLogic change only reads DefaultFormsComponents for its default
+    // item type, so a template-only TreeViewItem would throw at runtime. Projects between the
+    // DefaultFormsTemplates version and the TreeViewItem version keep the old line for TreeViewItem only.
+    [Fact]
+    public void BelowTreeViewItemTemplateVersion_TreeViewItemStaysOnDefaultFormsComponentsWithoutWarning()
+    {
+        GlueTestBootstrap.EnsureGumPluginCodeGeneratorsInitialized();
+        FlatRedBall.Glue.Elements.ObjectFinder.Self.GlueProject.FileVersion =
+            (int)GlueProjectSave.GluxVersions.GumTreeViewItemHasDefaultFormsTemplate - 1;
+        AddTreeViewItemComponent();
 
         var source = GueRuntimeTypeAssociationGenerator.Self.GetRuntimeRegistrationPartialClassContents(registerFormsAssociations: true);
 
@@ -111,6 +130,14 @@ public class FormsAssociationCodegenTests : IDisposable
         lines[index + 1].ShouldBe("#pragma warning restore CS0618");
         // The Button in the same project still goes through templates - the exception is per control, not per project.
         source.ShouldContain("DefaultFormsTemplates[typeof(FlatRedBall.Forms.Controls.Button)]");
+        source.ShouldNotContain("DefaultFormsTemplates[typeof(FlatRedBall.Forms.Controls.TreeViewItem)]");
+    }
+
+    private static void AddTreeViewItemComponent()
+    {
+        var treeViewItem = new ComponentSave { Name = "Controls/TreeViewItemStandard", BaseType = "Container" };
+        treeViewItem.Behaviors.Add(new ElementBehaviorReference { BehaviorName = "TreeViewItemBehavior" });
+        Gum.Managers.ObjectFinder.Self.GumProjectSave.Components.Add(treeViewItem);
     }
 
     [Fact]

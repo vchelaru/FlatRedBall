@@ -263,6 +263,13 @@ namespace FlatRedBall.Glue.SaveClasses
             // is a new engine member: a project on an older engine dll fails with CS0117 on Game1.Generated.cs.
             ScreenManagerHasRegisterScreenFactory = 76,
 
+            // October 18, 2026 - TreeViewLogic looks up FrameworkElement.DefaultFormsTemplates[typeof(TreeViewItem)]
+            // before the obsolete DefaultFormsComponents, so GumIdb.Generated.cs registers TreeViewItem through
+            // a VisualTemplate like every other control. Folded into 76 (not yet released) rather than adding 77.
+            // Gated because an older engine dll's TreeViewLogic only reads DefaultFormsComponents for its item
+            // type, so a template-only registration would throw "does not have an entry for TreeViewItem".
+            GumTreeViewItemHasDefaultFormsTemplate = 76,
+
             // Stop! If adding an entry here, modify SyntaxVersionAttribute on FlatRedBallServices
             // and LatestVersion down below
             // and update the docs
