@@ -14,6 +14,7 @@ using FlatRedBall.IO;
 using FlatRedBall.Glue.Elements;
 using System.Windows.Shapes;
 using FlatRedBall.Glue.Controls;
+using FlatRedBall.Glue.VSHelpers;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin
 {
@@ -381,6 +382,19 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin
             mEntireClassGenerator.GenerateAndAddToProjectIfNecessary();
         }
 
+        /// <summary>
+        /// The contents of Performance\IEntityFactory.Generated.cs: IEntityFactory and FactoryManager, with the
+        /// project's namespace and the #defines for its gluj version at the top.
+        /// </summary>
+        public static string GetEntityFactoryFileContents()
+        {
+            var byteArray = FileManager.GetByteArrayFromEmbeddedResource(
+                typeof(FactoryElementCodeGenerator).Assembly, "FlatRedBall.Glue.Resources.IEntityFactory.cs");
+            var contents = Encoding.Default.GetString(byteArray).Trim(new char[] { '﻿', '​' });
+            contents = contents.Replace("$GLUE_VERSIONS$", CodeBuildItemAdder.GetGlueVersionsString());
+            return CodeWriter.ReplaceNamespace(contents, ProjectManager.ProjectNamespace + ".Performance");
+        }
+
         public static void AddGeneratedPerformanceTypes()
         {
             // GitHub issue #2169: an FRB2 project owns its own .csproj and generated code
@@ -413,10 +427,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin
             contents = CodeWriter.ReplaceNamespace(contents, ProjectManager.ProjectNamespace + ".Performance");
             GlueCommands.Self.FileCommands.SaveIfDiffers(poolListFileName, contents);
 
-            byteArray = FileManager.GetByteArrayFromEmbeddedResource(thisAssembly, embeddedResourcePrefix + "IEntityFactory.cs");
-            contents = Encoding.Default.GetString(byteArray).Trim(new char[] { '\uFEFF', '\u200B' });
-            contents = CodeWriter.ReplaceNamespace(contents, ProjectManager.ProjectNamespace + ".Performance");
-            GlueCommands.Self.FileCommands.SaveIfDiffers(iEntityFactoryFileName, contents);
+            GlueCommands.Self.FileCommands.SaveIfDiffers(iEntityFactoryFileName, GetEntityFactoryFileContents());
 
 
 

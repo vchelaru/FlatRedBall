@@ -3391,7 +3391,7 @@ public class GluxCommands : IGluxCommands
         DeletionPlanner.FillWithOwnedFiles(filesThatCouldBeRemoved, screenToRemove);
 
         // The removed screen is still registered in Game1.Generated.cs, which would no longer compile.
-        FlatRedBall.Glue.CodeGeneration.Game1.ScreenRegistryCodeGenerator.RegenerateGame1IfStale();
+        FlatRedBall.Glue.CodeGeneration.Game1.Game1CodeGeneratorManager.RegenerateGame1IfRegistriesStale();
 
         GlueCommands.Self.ProjectCommands.SaveProjects();
         GluxCommands.Self.SaveProjectAndElements();

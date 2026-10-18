@@ -14,6 +14,22 @@ namespace FlatRedBall.Glue.CodeGeneration.Game1
     internal class Game1CodeGeneratorManager
     {
         public static List<Game1CodeGenerator> Generators { get; private set; } = new List<Game1CodeGenerator>();
+
+        /// <summary>
+        /// Regenerates Game1.Generated.cs if the screens or entity factories it registers are out of date.
+        /// Call after any change that can alter which screens or factories exist, or which are abstract.
+        /// </summary>
+        public static void RegenerateGame1IfRegistriesStale()
+        {
+            var project = GlueState.Self.CurrentGlueProject;
+            var projectNamespace = GlueState.Self.ProjectNamespace;
+            if (ScreenRegistryCodeGenerator.IsRegistryStale(project, projectNamespace) ||
+                EntityFactoryRegistryCodeGenerator.IsRegistryStale(project, projectNamespace))
+            {
+                GlueCommands.Self.GenerateCodeCommands.GenerateGame1();
+            }
+        }
+
         public static string GetGame1GeneratedContents()
         {
             var topBlock = new CodeDocument(0);
@@ -32,8 +48,14 @@ namespace FlatRedBall.Glue.CodeGeneration.Game1
                     ScreenRegistryCodeGenerator.GetQualifiedScreenNames(GlueState.Self.CurrentGlueProject, GlueState.Self.ProjectNamespace));
             }
 
+            if (EntityFactoryRegistryCodeGenerator.IsEnabled(GlueState.Self.CurrentGlueProject))
+            {
+                EntityFactoryRegistryCodeGenerator.GenerateClassScope(classBlock,
+                    GlueState.Self.CurrentGlueProject, GlueState.Self.ProjectNamespace);
+            }
+
             var gluxVersion = GlueState.Self.CurrentGlueProject.FileVersion;
-            var hasEarly = gluxVersion >= (int)GlueProjectSave.GluxVersions.HasGame1GenerateEarly;
+            var hasEarly =gluxVersion >= (int)GlueProjectSave.GluxVersions.HasGame1GenerateEarly;
             if (hasEarly)
             {
                 GenerateGeneratedInitializeEarly(classBlock);
@@ -68,6 +90,11 @@ namespace FlatRedBall.Glue.CodeGeneration.Game1
             if (ScreenRegistryCodeGenerator.IsEnabled(GlueState.Self.CurrentGlueProject))
             {
                 method.Line($"{ScreenRegistryCodeGenerator.RegisterMethodName}();");
+            }
+
+            if (EntityFactoryRegistryCodeGenerator.IsEnabled(GlueState.Self.CurrentGlueProject))
+            {
+                method.Line($"{EntityFactoryRegistryCodeGenerator.RegisterMethodName}();");
             }
 
             foreach(var generator in Generators)
