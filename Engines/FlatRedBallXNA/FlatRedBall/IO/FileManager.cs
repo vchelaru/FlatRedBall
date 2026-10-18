@@ -1647,6 +1647,11 @@ namespace FlatRedBall.IO
 
         #region XML Methods
 
+        private const string XmlSerializerAotMessage =
+            "XmlSerializer reflects over the type's members and needs runtime code generation, so it is not safe under trimming or Native AOT. Use a hand-written loader for runtime files.";
+
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode(XmlSerializerAotMessage)]
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode(XmlSerializerAotMessage)]
         public static T XmlDeserialize<T>(string fileName)
         {
             T objectToReturn = default(T);
@@ -1678,6 +1683,8 @@ namespace FlatRedBall.IO
             return objectToReturn;
         }
 
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode(XmlSerializerAotMessage)]
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode(XmlSerializerAotMessage)]
         public static T XmlDeserialize<T>(Stream stream)
         {
 
@@ -1697,6 +1704,8 @@ namespace FlatRedBall.IO
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode(XmlSerializerAotMessage)]
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode(XmlSerializerAotMessage)]
         public static T XmlDeserializeFromString<T>(string stringToDeserialize)
         {
             if (string.IsNullOrEmpty(stringToDeserialize))
@@ -1717,6 +1726,8 @@ namespace FlatRedBall.IO
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode(XmlSerializerAotMessage)]
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode(XmlSerializerAotMessage)]
         public static void XmlDeserialize<T>(string fileName, out T objectToDeserializeTo)
         {
             objectToDeserializeTo = XmlDeserialize<T>(fileName);
@@ -1880,6 +1891,8 @@ namespace FlatRedBall.IO
         }
 #endif
 
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode(XmlSerializerAotMessage)]
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode(XmlSerializerAotMessage)]
         public static object XmlDeserialize(Type type, string fileName)
         {
             object objectToReturn = null;
@@ -1948,6 +1961,8 @@ namespace FlatRedBall.IO
         }
 #endif
 
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode(XmlSerializerAotMessage)]
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode(XmlSerializerAotMessage)]
         public static void XmlSerialize(Type type, object objectToSerialize, string fileName)
         {
             if (FileManager.IsRelative(fileName))
@@ -2005,6 +2020,8 @@ namespace FlatRedBall.IO
         }
 #endif
 
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode(XmlSerializerAotMessage)]
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode(XmlSerializerAotMessage)]
         private static void XmlSerializeAllOtherPlatforms(Type type, object objectToSerialize, string fileName)
         {
             string serializedText;
@@ -2014,17 +2031,23 @@ namespace FlatRedBall.IO
         }
 
 
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode(XmlSerializerAotMessage)]
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode(XmlSerializerAotMessage)]
         public static void XmlSerialize<T>(T objectToSerialize, string fileName)
         {
 
             XmlSerialize(typeof(T), objectToSerialize, fileName);
         }
 
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode(XmlSerializerAotMessage)]
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode(XmlSerializerAotMessage)]
         public static void XmlSerialize<T>(T objectToSerialize, out string stringToSerializeTo)
         {
 			XmlSerialize(typeof(T), objectToSerialize, out stringToSerializeTo);
 		}
 
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode(XmlSerializerAotMessage)]
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode(XmlSerializerAotMessage)]
 		public static void XmlSerialize(Type type, object objectToSerialize, out string stringToSerializeTo)
 		{
             using (var memoryStream = new MemoryStream())
@@ -2077,12 +2100,16 @@ namespace FlatRedBall.IO
 
         #region Internal Methods
 
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode(XmlSerializerAotMessage)]
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode(XmlSerializerAotMessage)]
 		internal static XmlSerializer GetXmlSerializer<T>()
 		{
 			return GetXmlSerializer(typeof(T));
 		}
 
 
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode(XmlSerializerAotMessage)]
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode(XmlSerializerAotMessage)]
 		internal static XmlSerializer GetXmlSerializer(Type type)
 		{
 			lock (mXmlSerializers)

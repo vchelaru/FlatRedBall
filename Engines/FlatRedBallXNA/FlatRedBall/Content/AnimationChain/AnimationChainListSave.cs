@@ -31,7 +31,10 @@ namespace FlatRedBall.Content.AnimationChain
 #if ANDROID || IOS
         public static bool ManualDeserialization = true;
 #else
-        public static bool ManualDeserialization = false;
+        // XmlSerializer needs runtime code generation or reflection over members the trimmer removes, so
+        // under Native AOT (#2365) .achx loads through the hand-written XElement path instead. This is only
+        // the default; assigning the field still overrides it.
+        public static bool ManualDeserialization = !System.Runtime.CompilerServices.RuntimeFeature.IsDynamicCodeSupported;
 #endif
 
         #region Fields
@@ -92,6 +95,12 @@ namespace FlatRedBall.Content.AnimationChain
 
         #endregion
 
+        // The XmlSerializer branch is only taken when ManualDeserialization is false, which is never the
+        // default where it would fail (Native AOT), so the trim/AOT warnings it raises are suppressed here.
+        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("Trimming", "IL2026",
+            Justification = "XmlSerializer is only used when ManualDeserialization is false; it defaults to true under Native AOT.")]
+        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("AOT", "IL3050",
+            Justification = "XmlSerializer is only used when ManualDeserialization is false; it defaults to true under Native AOT.")]
         public static AnimationChainListSave FromFile(string fileName)
         {
             AnimationChainListSave toReturn = null;
@@ -588,6 +597,9 @@ namespace FlatRedBall.Content.AnimationChain
             {
                 switch (subElement.Name.LocalName)
                 {
+                    case "ProjectFile":
+                        toReturn.ProjectFile = subElement.Value;
+                        break;
                     case "FileRelativeTextures":
                         toReturn.FileRelativeTextures = AsBool(subElement);
                         break;
