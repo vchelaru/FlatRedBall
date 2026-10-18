@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Diagnostics.CodeAnalysis;
 
 #if FRB
 using InteractiveGue = global::Gum.Wireframe.GraphicalUiElement;
@@ -13,10 +14,10 @@ namespace MonoGameGum.Forms.Controls;
 
 class TreeViewLogic
 {
-    public Type TreeViewItemGumType { get; set; }
-    public Type ContainerTreeViewItemGumType { get; set; }
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] public Type TreeViewItemGumType { get; set; }
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] public Type ContainerTreeViewItemGumType { get; set; }
 
-    public Type TreeViewItemFormsType { get; set; } = typeof(TreeViewItem);
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] public Type TreeViewItemFormsType { get; set; } = typeof(TreeViewItem);
 
     public List<TreeViewItem> TreeViewItems = new List<TreeViewItem>();
 

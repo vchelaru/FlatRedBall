@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Forms.Controls;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Text;
 
@@ -10,7 +11,7 @@ namespace FlatRedBall.Forms
     {
         Func<FrameworkElement> creationFunc;
 
-        public FrameworkElementTemplate(Type type)
+        public FrameworkElementTemplate([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] Type type)
         {
 #if DEBUG
 

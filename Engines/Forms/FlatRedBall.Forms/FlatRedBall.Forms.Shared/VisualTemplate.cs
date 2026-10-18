@@ -1,6 +1,7 @@
 ﻿using Gum.Wireframe;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Text;
 
@@ -11,7 +12,7 @@ namespace FlatRedBall.Forms
         Func<object, GraphicalUiElement> creationFunc;
 
 
-        public VisualTemplate(Type type)
+        public VisualTemplate([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] Type type)
         {
 #if DEBUG
             if (typeof(GraphicalUiElement).IsAssignableFrom(type) == false)
