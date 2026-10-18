@@ -506,6 +506,16 @@ public class MainGumPlugin : PluginBase
                 {
                     var behavior = EmbeddedResourceManager.Self.GetBehavior(gumRfs);
                     EmbeddedResourceManager.Self.UpdateCodeInProjectPresence(behavior);
+
+                    // The RFS was added before the Gum project above was loaded, so its referenced-file
+                    // list was computed (and cached) empty, and nothing in the content project followed it.
+                    // That matters when an existing project is swapped in, such as a .gumj replacing the
+                    // .gumx: its .gusj/.gucj/.gutj files would never reach the output folder and the .gumx's
+                    // XML files would stay behind. See NewGumProjectCreationLogic for the same fix on a new project.
+                    GlueCommands.Self.FileCommands.ClearFileCache(GlueCommands.Self.GetAbsoluteFilePath(newFile));
+                    GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(newFile);
+                    FileReferenceTracker.Self.RemoveUnreferencedFilesFromVsProject();
+
                     GlueCommands.Self.ProjectCommands.SaveProjects();
                 }
 
