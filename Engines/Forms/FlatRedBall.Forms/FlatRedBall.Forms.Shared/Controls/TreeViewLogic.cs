@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Diagnostics.CodeAnalysis;
 
 #if FRB
 using InteractiveGue = global::Gum.Wireframe.GraphicalUiElement;
@@ -13,10 +14,10 @@ namespace MonoGameGum.Forms.Controls;
 
 class TreeViewLogic
 {
-    public Type TreeViewItemGumType { get; set; }
-    public Type ContainerTreeViewItemGumType { get; set; }
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] public Type TreeViewItemGumType { get; set; }
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] public Type ContainerTreeViewItemGumType { get; set; }
 
-    public Type TreeViewItemFormsType { get; set; } = typeof(TreeViewItem);
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] public Type TreeViewItemFormsType { get; set; } = typeof(TreeViewItem);
 
     public List<TreeViewItem> TreeViewItems = new List<TreeViewItem>();
 
@@ -147,22 +148,31 @@ class TreeViewLogic
         }
         else
         {
-            var treeViewItemGumType = TreeViewItemGumType;
+            GraphicalUiElement visual = null;
 
-            if (treeViewItemGumType == null && FrameworkElement.DefaultFormsComponents.ContainsKey(typeof(TreeViewItem)))
+            if (TreeViewItemGumType != null)
             {
-                treeViewItemGumType = FrameworkElement.DefaultFormsComponents[typeof(TreeViewItem)];
+                visual = CreateVisualFromType(TreeViewItemGumType);
+            }
+            else if (FrameworkElement.DefaultFormsTemplates.TryGetValue(typeof(TreeViewItem), out var template))
+            {
+                // No reflection, so this works under trimming/AOT.
+                visual = template.CreateContent(null, createFormsInternally: false);
+            }
+            else
+            {
+                visual = CreateVisualFromObsoleteDefaultFormsComponents();
             }
 
-            if (treeViewItemGumType == null)
+            if (visual == null && ContainerTreeViewItemGumType != null)
             {
-                treeViewItemGumType = ContainerTreeViewItemGumType;
+                visual = CreateVisualFromType(ContainerTreeViewItemGumType);
             }
 
 #if DEBUG
-            if (treeViewItemGumType == null)
+            if (visual == null)
             {
-                throw new Exception("The tree view item box does not have a TreeViewItemGumType specified, nor does the DefaultFormsComponents have an entry for TreeViewItemItem. " +
+                throw new Exception("The tree view item box does not have a TreeViewItemGumType specified, nor does the DefaultFormsTemplates have an entry for TreeViewItem. " +
                     "This property must be set before adding any items");
             }
             if (TreeViewItemFormsType == null)
@@ -171,9 +181,6 @@ class TreeViewLogic
                     "This property must be set before adding any items");
             }
 #endif
-
-            var gumConstructor = treeViewItemGumType.GetConstructor(new[] { typeof(bool), typeof(bool) });
-            var visual = gumConstructor.Invoke(new object[] { true, true }) as GraphicalUiElement;
 
             var treeViewFormsConstructor = TreeViewItemFormsType.GetConstructor(new Type[] { typeof(GraphicalUiElement) });
 
@@ -196,5 +203,27 @@ class TreeViewLogic
         return item;
     }
 
+    // The bool/bool constructor matches what the Gum runtime types generated for Forms expose; the second bool
+    // makes the runtime create its own Forms instance.
+    private static GraphicalUiElement CreateVisualFromType(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] Type gumType)
+    {
+        var gumConstructor = gumType.GetConstructor(new[] { typeof(bool), typeof(bool) });
+        return gumConstructor.Invoke(new object[] { true, true }) as GraphicalUiElement;
+    }
 
+    [UnconditionalSuppressMessage("Trimming", "IL2072",
+        Justification = "Only the obsolete DefaultFormsComponents branch reflects, and its value type is " +
+            "caller-supplied so the engine cannot preserve it. Callers should use DefaultFormsTemplates, " +
+            "which constructs content without reflection.")]
+    private static GraphicalUiElement CreateVisualFromObsoleteDefaultFormsComponents()
+    {
+#pragma warning disable CS0618 // Existing projects still register through DefaultFormsComponents
+        if (FrameworkElement.DefaultFormsComponents.TryGetValue(typeof(TreeViewItem), out var gumType))
+        {
+            return CreateVisualFromType(gumType);
+        }
+#pragma warning restore CS0618
+        return null;
+    }
 }

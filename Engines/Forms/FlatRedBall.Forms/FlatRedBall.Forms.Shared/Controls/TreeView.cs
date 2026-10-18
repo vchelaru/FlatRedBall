@@ -2,6 +2,7 @@
 using RenderingLibrary;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -18,12 +19,12 @@ public class TreeView : ScrollViewer
 
     TreeViewLogic treeViewLogic = new TreeViewLogic();
 
-    public Type TreeViewItemGumType
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] public Type TreeViewItemGumType
     {
         get { return treeViewLogic.TreeViewItemGumType; }
         set { treeViewLogic.TreeViewItemGumType = value; }
     }
-    public Type TreeViewItemFormsType
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] public Type TreeViewItemFormsType
     {
         get { return treeViewLogic.TreeViewItemFormsType; }
         set { treeViewLogic.TreeViewItemFormsType = value; }
