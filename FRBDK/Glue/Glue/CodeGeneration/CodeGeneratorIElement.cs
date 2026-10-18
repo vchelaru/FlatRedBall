@@ -22,10 +22,11 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             await CodeWriter.GenerateCode(element);
 
-            if (element is ScreenSave)
+            if (element is ScreenSave || element is EntitySave)
             {
-                // A new screen, or one that just became abstract or concrete, changes the screen registry in Game1.Generated.cs.
-                Game1.ScreenRegistryCodeGenerator.RegenerateGame1IfStale();
+                // A new screen or entity factory, or one that just became abstract or concrete, changes the
+                // registries in Game1.Generated.cs.
+                Game1.Game1CodeGeneratorManager.RegenerateGame1IfRegistriesStale();
             }
         }
 

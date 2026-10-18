@@ -54,19 +54,6 @@ namespace FlatRedBall.Glue.CodeGeneration.Game1
             return lastGeneratedNames == null || !current.OrderBy(item => item).SequenceEqual(lastGeneratedNames.OrderBy(item => item));
         }
 
-        /// <summary>
-        /// Regenerates Game1.Generated.cs if the screens it registers are out of date. Call after any change
-        /// that can alter which screens exist or which are abstract.
-        /// </summary>
-        public static void RegenerateGame1IfStale()
-        {
-            var project = GlueState.Self.CurrentGlueProject;
-            if (IsRegistryStale(project, GlueState.Self.ProjectNamespace))
-            {
-                GlueCommands.Self.GenerateCodeCommands.GenerateGame1();
-            }
-        }
-
         public static void GenerateClassScope(ICodeBlock classBlock, IEnumerable<string> qualifiedScreenNames)
         {
             var names = qualifiedScreenNames.ToList();

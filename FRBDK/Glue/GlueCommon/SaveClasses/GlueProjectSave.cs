@@ -276,6 +276,14 @@ namespace FlatRedBall.Glue.SaveClasses
             // or newer: a project on an older target framework fails with CS0234 in the factory.
             FactoriesKeepEntityMembers = 77,
 
+            // October 18, 2026 - Game1.Generated.cs registers every entity factory with FactoryManager.Register so
+            // factories are found by entity name without reflection (Native AOT and trimming remove the constructors
+            // and Self properties that Assembly.GetTypes + GetConstructor + GetProperty reach, so Tiled entities were
+            // never created). FactoryManager is generated into the game project, not part of the engine. Gated so
+            // older projects keep their existing generated output, and because the registry code uses attributes
+            // that need .NET 5 or newer.
+            EntityFactoryRegistry = 78,
+
             // Stop! If adding an entry here, modify SyntaxVersionAttribute on FlatRedBallServices
             // and LatestVersion down below
             // and update the docs
@@ -285,7 +293,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.FactoriesKeepEntityMembers;
+        public const int LatestVersion = (int)GluxVersions.EntityFactoryRegistry;
 
         public int FileVersion { get; set; }
 
