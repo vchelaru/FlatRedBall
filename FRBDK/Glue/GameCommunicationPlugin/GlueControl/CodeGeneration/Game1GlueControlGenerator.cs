@@ -187,11 +187,15 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration
 
                 if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.HasScreenManagerAfterScreenDestroyed)
                 {
+                    // EditorVisuals is edit mode code, which only exists in Debug builds (#2371). This has to be
+                    // #if DEBUG on its own: GenerateConnectionOnlyInDebug above is optional, this is not.
+                    codeBlock.Line("#if DEBUG");
                     codeBlock.Line("FlatRedBall.Screens.ScreenManager.AfterScreenDestroyed += (screen) =>");
                     var innerDestroyBlock = codeBlock.Block();
                     innerDestroyBlock.Line("GlueControl.Editing.EditorVisuals.DestroyContainedObjects();");
 
                     codeBlock.Line(";");
+                    codeBlock.Line("#endif");
                 }
             }
 

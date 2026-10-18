@@ -1,5 +1,7 @@
 ﻿using GlueControl.Dtos;
+#if DEBUG
 using GlueControl.Editing;
+#endif
 using Microsoft.Xna.Framework;
 
 using FlatRedBall;
@@ -14,7 +16,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using GlueControl.Models;
+#if DEBUG
 using GlueControl.Managers;
+#endif
 
 
 namespace GlueControl
@@ -84,7 +88,9 @@ namespace GlueControl
                     dtoType = typeof(CommandReceiver).Assembly.GetType(possibleQualifiedType);
                 }
                 var dto = JsonConvert.DeserializeObject(dtoSerialized, dtoType);
+#if DEBUG
                 Editing.EmbeddedDiagnosticsLogger.LogDtoReceived(dtoTypeName, dto);
+#endif
 
                 if (runPredicate == null || runPredicate(dto))
                 {
@@ -92,7 +98,9 @@ namespace GlueControl
 
                     if (response != null)
                     {
+#if DEBUG
                         Editing.EmbeddedDiagnosticsLogger.LogDtoResponse(dtoTypeName, response);
+#endif
                         return JsonConvert.SerializeObject(response);
                     }
                 }
@@ -100,7 +108,9 @@ namespace GlueControl
             }
             catch (Exception ex)
             {
+#if DEBUG
                 Editing.EmbeddedDiagnosticsLogger.LogUnhandledException(message, ex);
+#endif
                 System.Console.WriteLine(ex + "\nWith message:\n" + message);
                 return null;
             }
@@ -138,6 +148,13 @@ namespace GlueControl
 
             return toReturn;
         }
+
+        // Everything from here to the profiling handler drives live edit, so it is compiled into Debug builds
+        // only (#2371). Receive/ReceiveDto above and the profiling handler below are what Release keeps.
+        #endregion
+
+#if DEBUG
+        #region Supporting Methods/Properties (edit mode)
 
         public static bool GetIfMatchesCurrentScreen(string elementNameGlue)
         {
@@ -1836,6 +1853,8 @@ namespace GlueControl
                 EditingManager.Self.ReplaceNamedObjectSave(update.NamedObjectSave, update.GlueElementName, update.ContainerName, update.OldInstanceName);
             }
         }
+
+#endif
 
         #region GetProfilingDataDto
 

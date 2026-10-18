@@ -64,7 +64,7 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration.GlueCalls
             });
         }
 
-        private static string GenerateGlueCommunicationClass(GenerationOptions generationOptions)
+        internal static string GenerateGlueCommunicationClass(GenerationOptions generationOptions)
         {
             var bldr = new StringBuilder();
 
@@ -73,6 +73,10 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration.GlueCalls
             {
                 bldr.AppendLine($"#define {define}");
             }
+
+            // The classes in these files only exist to drive live edit, so they are compiled into Debug only
+            // (#2371). Defines have to come before the first token, so the region starts after them.
+            bldr.AppendLine("#if DEBUG");
 
             //Usings
             bldr.AppendLine("");
@@ -289,6 +293,7 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration.GlueCalls
 
             bldr.AppendLine("   }");
             bldr.AppendLine("}");
+            bldr.AppendLine("#endif");
 
             return bldr.ToString();
         }

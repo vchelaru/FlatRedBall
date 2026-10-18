@@ -26,6 +26,8 @@ namespace GameCommunicationPlugin.CodeGeneration
             var isBase = string.IsNullOrEmpty(element.BaseElement);
             if(isBase)
             {
+                // InstanceLogic is edit mode code, which only exists in Debug builds (#2371).
+                codeBlock.Line("#if DEBUG");
                 if(element is EntitySave)
                 {
                     codeBlock.Line($"GlueControl.InstanceLogic.Self.ApplyEditorCommandsToNewEntity(this, GlueControl.CommandReceiver.GameElementTypeToGlueElement(this.GetType().FullName));");
@@ -34,6 +36,7 @@ namespace GameCommunicationPlugin.CodeGeneration
                 {
                     codeBlock.Line($"GlueControl.InstanceLogic.Self.ApplyEditorCommandsToNewEntity(null, GlueControl.CommandReceiver.GameElementTypeToGlueElement(this.GetType().FullName));");
                 }
+                codeBlock.Line("#endif");
             }
             return codeBlock;
         }
