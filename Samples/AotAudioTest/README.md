@@ -31,6 +31,3 @@ The exe lands in `Samples/AotAudioTest/bin/Release/net8.0/win-x64/publish/`.
   pipeline. `Content/Shader.xnb` is the one `.xnb`; the engine loads it at startup.
 - The song is a `.wav` played through `WavSong` (an `ISong`) because MonoGame's DesktopGL `Song`
   only plays `.ogg`.
-- `TrimmerRootAssembly` for `MonoGame.Framework` in the csproj is needed under AOT: without it,
-  loading `Shader.xnb` throws a `NullReferenceException` in `ContentTypeReaderManager`, because
-  content readers are found by reflection and get trimmed.

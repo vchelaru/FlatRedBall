@@ -13,15 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Native AOT only. MonoGame's ContentManager finds content readers (EffectReader for
-         Shader.xnb, which FlatRedBallServices.InitializeFlatRedBall loads) by name with
-         Type.GetType + Activator, so the readers must not be trimmed away. Without this the
-         AOT build throws a NullReferenceException in ContentTypeReaderManager.LoadAssetReaders
-         at startup. -->
-    <TrimmerRootAssembly Include="MonoGame.Framework" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\Engines\FlatRedBallXNA\FlatRedBallDesktopGLNet6\FlatRedBallDesktopGLNet6.csproj" />
   </ItemGroup>
 
