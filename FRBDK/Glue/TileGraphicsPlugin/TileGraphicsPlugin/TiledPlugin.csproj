@@ -55,6 +55,7 @@
 		<EmbeddedResource Include="..\..\..\..\Tiled\TMXGlueLib\MapLayer.cs" Link="EmbeddedCodeFiles\MapLayer.cs" />
 		<EmbeddedResource Include="..\..\..\..\Tiled\TMXGlueLib\MapTileset.cs" Link="EmbeddedCodeFiles\MapTileset.cs" />
 		<EmbeddedResource Include="..\..\..\..\Tiled\TMXGlueLib\MapTilesetTile.cs" Link="EmbeddedCodeFiles\MapTilesetTile.cs" />
+		<EmbeddedResource Include="..\..\..\..\Tiled\TMXGlueLib\TiledManualDeserializer.cs" Link="EmbeddedCodeFiles\TiledManualDeserializer.cs" />
 		<EmbeddedResource Include="..\..\..\..\Tiled\TMXGlueLib\TileAnimation.cs" Link="EmbeddedCodeFiles\TileAnimation.cs" />
 		<EmbeddedResource Include="..\..\..\..\Tiled\TMXGlueLib\TileAnimationFrame.cs" Link="EmbeddedCodeFiles\TileAnimationFrame.cs" />
 		<EmbeddedResource Include="..\..\..\..\Tiled\TMXGlueLib\TiledMapSave.Conversion.cs" Link="EmbeddedCodeFiles\TiledMapSave.Conversion.cs" />
