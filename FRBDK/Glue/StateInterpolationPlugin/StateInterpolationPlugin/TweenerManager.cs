@@ -176,6 +176,9 @@ namespace StateInterpolationPlugin
             return toReturn;
         }
 
+#if NET5_0_OR_GREATER
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Properties other than X, Y, Z, RelativeX, RelativeY, RelativeZ and RotationZ are tweened by name with reflection, which does not work under trimming or Native AOT. Use the overload that takes an assignment Action.")]
+#endif
         public static async Task TweenAsync(this PositionedObject positionedObject, string property, float to,
             float during, InterpolationType interpolation, Easing easing)
         {
@@ -185,6 +188,9 @@ namespace StateInterpolationPlugin
             await TimeManager.DelayUntil(() => didFinish || tweener.Running == false);
         }
 
+#if NET5_0_OR_GREATER
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Properties other than X, Y, Z, RelativeX, RelativeY, RelativeZ and RotationZ are tweened by name with reflection, which does not work under trimming or Native AOT. Use the overload that takes an assignment Action.")]
+#endif
         public static Tweener Tween(this PositionedObject positionedObject, string property, float to,
             float during, InterpolationType interpolation, Easing easing)
         {
@@ -290,6 +296,9 @@ namespace StateInterpolationPlugin
         internal float ValueToSet;
         internal double TimeToTake;
 
+#if NET5_0_OR_GREATER
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Tweens the member by name with reflection, which does not work under trimming or Native AOT. Use the overload that takes an assignment Action.")]
+#endif
         public Tweener Tween(string member, float value, float time, InterpolationType interpolation, Easing easing)
         {
             MemberToSet = member;
@@ -339,6 +348,9 @@ namespace StateInterpolationPlugin
         }
 
         [Obsolete("Use Tween(string, float, float, InterpolationType, Easing) instead.")]
+#if NET5_0_OR_GREATER
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Tweens the member by name with reflection, which does not work under trimming or Native AOT. Use the overload that takes an assignment Action.")]
+#endif
         public Tweener Using(InterpolationType interpolation, Easing easing)
         {
             object currentValueAsObject =
@@ -364,6 +376,9 @@ namespace StateInterpolationPlugin
             }
         }
 
+#if NET5_0_OR_GREATER
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Tweens the member by name with reflection, which does not work under trimming or Native AOT. Use the overload that takes an assignment Action.")]
+#endif
         private void HandlePositionSet(float newPosition)
         {
             LateBinder.SetValueStatic(Caller, MemberToSet, newPosition);
@@ -387,6 +402,9 @@ namespace StateInterpolationPlugin
 
     public interface ITweenerUsing
     {
+#if NET5_0_OR_GREATER
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Tweens the member by name with reflection, which does not work under trimming or Native AOT. Use the overload that takes an assignment Action.")]
+#endif
         Tweener Using(InterpolationType interpolation, Easing easing);
     }
 

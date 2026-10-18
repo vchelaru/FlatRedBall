@@ -719,29 +719,24 @@ namespace FlatRedBall.Math.Paths
 
         private void AssignValueOnSegment(PathSegment segment, string propertyName, string v2)
         {
-            object parsedValue = null;
-            var apply = false;
+            // Assigned directly rather than by name through reflection so this works under Native AOT.
             switch(propertyName)
             {
                 case nameof(PathSegment.SegmentType):
-                    parsedValue = (SegmentType)int.Parse(v2);
-                    apply = true;
+                    segment.SegmentType = (SegmentType)int.Parse(v2);
                     break;
                 case nameof(PathSegment.EndX):
+                    segment.EndX = float.Parse(v2, System.Globalization.CultureInfo.InvariantCulture);
+                    break;
                 case nameof(PathSegment.EndY):
+                    segment.EndY = float.Parse(v2, System.Globalization.CultureInfo.InvariantCulture);
+                    break;
                 case nameof(PathSegment.ArcAngle):
-                    parsedValue = float.Parse(v2, System.Globalization.CultureInfo.InvariantCulture);
-                    apply = true;
+                    segment.ArcAngle = float.Parse(v2, System.Globalization.CultureInfo.InvariantCulture);
                     break;
                 case nameof(PathSegment.AngleUnit):
-                    parsedValue = (AngleUnit)int.Parse(v2);
-                    apply = true;
+                    segment.AngleUnit = (AngleUnit)int.Parse(v2);
                     break;
-            }
-
-            if(apply)
-            {
-                LateBinder.SetValueStatic(segment, propertyName, parsedValue);
             }
         }
 
