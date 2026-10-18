@@ -10,7 +10,7 @@ Glue projects (`.gluj`/`.glux`) are versioned so that the editor and runtime can
 
 `FRBDK/Glue/GlueCommon/SaveClasses/GlueProjectSave.cs`
 
-For background on what each version means and the historical context, see the official docs, published from `https://docs.flatredball.com/flatredball/glue-reference/glujglux`. That docs site is a GitBook synced from a **separate sibling repo checked out locally**, `C:\Users\vchel\Documents\GitHub\FlatRedBallDocs` (relative to this repo, same convention as the Gum sibling repo) — plain markdown, matching the site's URL structure. The glujglux page is `glue-reference/glujglux.md` in that repo. Edit the file directly rather than treating the docs as remote-only/unreachable.
+For background on what each version means and the historical context, see the official docs, published from `https://docs.flatredball.com/flatredball/glue-reference/glujglux`. That docs site is a GitBook synced from a **separate sibling repo checked out locally**, `FlatRedBallDocs`, a sibling of this repo under the same `GitHub` folder (on Victor's machine `F:/GitHub/FlatRedBallDocs`, same convention as the Gum sibling repo) — plain markdown, matching the site's URL structure. The glujglux page is `glue-reference/glujglux.md` in that repo. Edit the file directly rather than treating the docs as remote-only/unreachable.
 
 ## When adding a new version
 
