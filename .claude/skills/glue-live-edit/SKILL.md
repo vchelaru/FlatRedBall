@@ -38,6 +38,8 @@ Suspecting a hard-to-repro live-edit bug rather than a socket problem? `Embedded
 
 **Landmine: every file in `EmbeddedCodeManager.filesToSave` is `<Compile Remove>`d from `GameCommunicationPlugin.csproj`.** They only compile inside a game project, so a clean build of `Glue with All.sln` proves nothing about them and a typo ships to every live-edit user. Only a game-project build — the BuildSmoke tests that run `EmbedAll` and compile the output, or launching a sample into edit mode — verifies them.
 
+**Landmine: edit mode code is Debug-only.** `GlueControlCodeGenerator.IsEditModeOnly` wraps every embedded file outside its `ReleaseFiles` set (connection, profiling, data models) in `#if DEBUG`, and `SupportsEditMode` is only defined in Debug. Generated game code that calls `GlueControl.InstanceLogic`, `Editing.*` or the GlueCalls classes needs its own `#if DEBUG`, or the Release build stops compiling; `EditModeReleaseBuildTests` builds both configurations.
+
 ## Gotchas
 
 - **A reply's `Succeeded` is the only readiness signal; its payload is not.** Most `HandleDto` overloads
