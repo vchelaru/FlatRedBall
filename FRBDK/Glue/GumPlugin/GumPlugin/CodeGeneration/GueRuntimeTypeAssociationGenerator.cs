@@ -223,10 +223,12 @@ namespace GumPlugin.CodeGeneration
                 {
                     currentBlock.Line(legacyLine);
                 }
-                else if(fulfillment.ControlType == "TreeViewItem")
+                else if(fulfillment.ControlType == "TreeViewItem" &&
+                    GlueState.Self.CurrentGlueProject.FileVersion <
+                    (int)GlueProjectSave.GluxVersions.GumTreeViewItemHasDefaultFormsTemplate)
                 {
-                    // FRB's own TreeViewLogic only reads DefaultFormsComponents for its item type, so TreeViewItem
-                    // stays on the obsolete dictionary until the engine reads templates too (needs its own gluj version).
+                    // An engine dll older than GumTreeViewItemHasDefaultFormsTemplate has a TreeViewLogic that only
+                    // reads DefaultFormsComponents for its item type, so TreeViewItem stays on the obsolete dictionary.
                     currentBlock.Line("#pragma warning disable CS0618");
                     currentBlock.Line(legacyLine);
                     currentBlock.Line("#pragma warning restore CS0618");

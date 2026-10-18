@@ -438,8 +438,8 @@ public class GumGeneratedCodeCompilesTests : IDisposable
         button.Initialize(new Gum.DataTypes.Variables.StateSave { Name = "Default" });
         gumProject.Components.Add(button);
 
-        // TreeViewItem is the one control still registered through the obsolete dictionary (under a
-        // pragma), so the build below also proves that arm is warning-free, not just the template arm.
+        // TreeViewItem registers through DefaultFormsTemplates too (GumTreeViewItemHasDefaultFormsTemplate),
+        // so the build below proves the template line compiles for the control TreeViewLogic looks up.
         var treeViewItem = new ComponentSave { Name = "Controls/TreeViewItemStandard", BaseType = "Container" };
         treeViewItem.Behaviors.Add(new Gum.DataTypes.Behaviors.ElementBehaviorReference { BehaviorName = "TreeViewItemBehavior" });
         treeViewItem.Initialize(new Gum.DataTypes.Variables.StateSave { Name = "Default" });
@@ -458,10 +458,11 @@ public class GumGeneratedCodeCompilesTests : IDisposable
             pair.Value.ShouldNotBeNullOrWhiteSpace($"Nothing was generated for {pair.Key}.");
         }
 
-        // Fixture sanity: the registration must actually take both branches, or this compiles the old
-        // line alone and pins nothing.
+        // Fixture sanity: the registration must actually emit the template lines, or this compiles nothing
+        // and pins nothing.
         generated["GumIdb"].ShouldContain("DefaultFormsTemplates[typeof(FlatRedBall.Forms.Controls.Button)]");
-        generated["GumIdb"].ShouldContain("DefaultFormsComponents[typeof(FlatRedBall.Forms.Controls.TreeViewItem)]");
+        generated["GumIdb"].ShouldContain("DefaultFormsTemplates[typeof(FlatRedBall.Forms.Controls.TreeViewItem)]");
+        generated["GumIdb"].ShouldNotContain("DefaultFormsComponents");
 
         var scratchDirectory = Path.Combine(_tempProjectDirectory, "FormsAssociationScratch");
         WriteScratchProject(scratchDirectory, FindRepoRoot(), generated);
