@@ -141,7 +141,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: DesktopGlNet6Debug
-        path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.DesktopGlNet6/bin/Debug/net6.0/
+        path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.DesktopGlNet6/bin/Debug/net8.0/
     - name: Build FlatRedBall DesktopGL .NET 6 Release
       run: dotnet build -c Release 'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGLNet6.sln'
       ## We don't (yet?) publish any release nuget packages, but we do this in preparation for this in the future
@@ -149,7 +149,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: DesktopGlNet6Release
-        path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.DesktopGlNet6/bin/Release/net6.0/
+        path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.DesktopGlNet6/bin/Release/net8.0/
 
 
     ## ## -----------------------------------------------------------------------------------------------------

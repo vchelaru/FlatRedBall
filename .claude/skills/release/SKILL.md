@@ -70,7 +70,7 @@ Engine.yml builds each enabled platform Debug *and* Release — but **only Debug
 |---|---|
 | Web (Kni) | net8.0 |
 | FNA | net7.0 |
-| DesktopGL | net6.0 |
+| DesktopGL | net8.0 |
 | iOS | net8.0 — **can't build**, see below |
 | Android | net8.0 — **can't build**, see below |
 

@@ -30,7 +30,7 @@ public class EnginePackagingTests
     private static readonly Dictionary<string, string> PublishedPackages = new()
     {
         // DesktopGL. The ids keep their Net6 spelling because renaming a published package id strands
-        // every existing project on the old one; the projects themselves multi-target net6.0/net8.0.
+        // every existing project on the old one; the projects themselves target net8.0.
         ["FlatRedBallDesktopGLNet6"] = @"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBallDesktopGLNet6\FlatRedBallDesktopGLNet6.csproj",
         ["FlatRedBall.StateInterpolation.DesktopNet6"] = @"FlatRedBall\Engines\Forms\FlatRedBall.Forms\StateInterpolation\StateInterpolation.DesktopGlNet6\StateInterpolation.DesktopNet6.csproj",
         ["FlatRedBall.GumCore.DesktopGlNet6"] = @"Gum\GumCore\GumCoreXnaPc\GumCore.DesktopGlNet6\GumCore.DesktopGlNet6.csproj",

@@ -351,7 +351,7 @@ public class GoldProjectCompileTests
         // DecelerationTimeX of 0 or less returns the fallback instead of NaN/Infinity - reproducing issue
         // #2091's reported crash (PositionedObject.XAcceleration's setter rejecting NaN) rather than a proxy
         // for it.
-        var builtAssemblyPath = Path.Combine(project.Root, "FormsSampleProject", "bin", "Debug", "net6.0", "FormsSampleProject.dll");
+        var builtAssemblyPath = Path.Combine(project.Root, "FormsSampleProject", "bin", "Debug", "net8.0", "FormsSampleProject.dll");
         File.Exists(builtAssemblyPath).ShouldBeTrue();
         var assembly = System.Reflection.Assembly.LoadFrom(builtAssemblyPath);
         var entityType = assembly.GetType("FormsSampleProject.Entities.PlatformerCodegenSmokeTestEntity");
@@ -372,7 +372,7 @@ public class GoldProjectCompileTests
         // before DivideOrDefault ever runs, so testing DivideOrDefault in isolation - as the block above does -
         // passes even when that call site still divides by a possibly-zero SecondDifference.
         var engineAssembly = System.Reflection.Assembly.LoadFrom(
-            Path.Combine(project.Root, "FormsSampleProject", "bin", "Debug", "net6.0", "FlatRedBallDesktopGLNet6.dll"));
+            Path.Combine(project.Root, "FormsSampleProject", "bin", "Debug", "net8.0", "FlatRedBallDesktopGLNet6.dll"));
         // FlatRedBallServices.InitializeCommandLine() is the engine's own designed-for-this headless
         // bootstrap ("Used to initialize FlatRedBall without rendering anything to the screen") - the same
         // one EngineUnitTests/TestSupport/EngineTestBootstrap.cs already uses. Needed before constructing
