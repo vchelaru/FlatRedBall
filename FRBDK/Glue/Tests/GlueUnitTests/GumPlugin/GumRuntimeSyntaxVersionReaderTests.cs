@@ -87,7 +87,7 @@ public class GumRuntimeSyntaxVersionReaderTests
         var (exitCode, output) = RunDotnetBuild(csprojPath);
         exitCode.ShouldBe(0, $"Could not build GumCore.DesktopGlNet6.csproj:\n{output}");
 
-        var dllPath = Path.Combine(gumRepoRoot, "GumCore", "GumCoreXnaPc", "GumCore.DesktopGlNet6", "bin", "Debug", "net6.0", "GumCore.DesktopGlNet6.dll");
+        var dllPath = Path.Combine(gumRepoRoot, "GumCore", "GumCoreXnaPc", "GumCore.DesktopGlNet6", "bin", "Debug", "net8.0", "GumCore.DesktopGlNet6.dll");
         File.Exists(dllPath).ShouldBeTrue($"Expected a built assembly at {dllPath}");
 
         // A floor, not an exact value: the sibling Gum repo keeps raising its syntax version (5 added
@@ -111,5 +111,5 @@ public class GumRuntimeSyntaxVersionReaderTests
     }
 
     private static (int exitCode, string output) RunDotnetBuild(string projectPath) =>
-        NestedDotnetCli.Run($"build \"{projectPath}\" -c Debug -f net6.0");
+        NestedDotnetCli.Run($"build \"{projectPath}\" -c Debug -f net8.0");
 }

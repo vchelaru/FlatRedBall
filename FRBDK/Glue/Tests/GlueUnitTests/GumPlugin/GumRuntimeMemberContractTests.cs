@@ -330,8 +330,8 @@ public class GumRuntimeMemberContractTests : IDisposable
         // only references it under the AutoBuild configurations.
         var assemblyPaths = new[]
         {
-            Path.Combine(repoRoot, "Engines", "Forms", "FlatRedBall.Forms", "FlatRedBall.Forms.DesktopGlNet6", "bin", "Debug", "net6.0", "GumCore.DesktopGlNet6.dll"),
-            Path.Combine(repoRoot, "Engines", "SkiaGum", "bin", "Debug", "net6.0", "SkiaInGum.dll"),
+            Path.Combine(repoRoot, "Engines", "Forms", "FlatRedBall.Forms", "FlatRedBall.Forms.DesktopGlNet6", "bin", "Debug", "net8.0", "GumCore.DesktopGlNet6.dll"),
+            Path.Combine(repoRoot, "Engines", "SkiaGum", "bin", "Debug", "net8.0", "SkiaInGum.dll"),
         };
 
         // Loaded into a context of their own, not the default one. Assembly.LoadFrom into the default context
