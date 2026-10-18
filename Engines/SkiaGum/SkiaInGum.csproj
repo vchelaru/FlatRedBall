@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net6.0;net8.0</TargetFrameworks>
+		<TargetFramework>net8.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
@@ -18,15 +18,9 @@
 
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(TargetFramework)' == 'net6.0'">
-		<OutputPath>bin\$(Configuration)\</OutputPath>
-	</PropertyGroup>
 	<ItemGroup>
-		<!-- net8: MonoGame 3.8.4.1 (issue #9467). net6: 3.8.1.303 (3.8.4.1 is net8-only). -->
-		<PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.4.1" Condition="'$(TargetFramework)' == 'net8.0'">
-			<PrivateAssets>All</PrivateAssets>
-		</PackageReference>
-		<PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" Condition="'$(TargetFramework)' != 'net8.0'">
+		<!-- MonoGame 3.8.4.1 (issue #9467). -->
+		<PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.4.1">
 			<PrivateAssets>All</PrivateAssets>
 		</PackageReference>
 		<PackageReference Include="SkiaSharp" Version="3.116.1" />

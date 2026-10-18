@@ -209,7 +209,7 @@ public class VariableAssignmentLogicEnumConversionTests : IDisposable
         File.Exists(formsProject).ShouldBeTrue($"Expected the engine Forms project at {formsProject}");
 
         var skiaProject = Path.Combine(repoRoot, "Engines", "SkiaGum", "SkiaInGum.csproj");
-        var monoGameVersion = ReadNet6MonoGameVersion(skiaProject);
+        var monoGameVersion = ReadMonoGameVersion(skiaProject);
 
         // The real game project's own root namespace (TestVisualStudioProjectFactory always names it
         // "TestProject") - GlueControlCodeGenerator.GetEmbeddedStringContents bakes `using {ProjectNamespace};`
@@ -219,7 +219,7 @@ public class VariableAssignmentLogicEnumConversionTests : IDisposable
         var csproj = $"""
             <Project Sdk="Microsoft.NET.Sdk">
               <PropertyGroup>
-                <TargetFramework>net6.0</TargetFramework>
+                <TargetFramework>net8.0</TargetFramework>
                 <OutputType>Exe</OutputType>
                 <Nullable>disable</Nullable>
                 <LangVersion>latest</LangVersion>
@@ -701,14 +701,14 @@ public class VariableAssignmentLogicEnumConversionTests : IDisposable
             """);
     }
 
-    private static string ReadNet6MonoGameVersion(string skiaProjectPath)
+    private static string ReadMonoGameVersion(string skiaProjectPath)
     {
         var match = System.Text.RegularExpressions.Regex.Match(
             File.ReadAllText(skiaProjectPath),
-            """<PackageReference\s+Include="MonoGame\.Framework\.DesktopGL"\s+Version="([^"]+)"\s+Condition="'\$\(TargetFramework\)'\s*!=\s*'net8\.0'""");
+            """<PackageReference\s+Include="MonoGame\.Framework\.DesktopGL"\s+Version="([^"]+)""");
 
         match.Success.ShouldBeTrue(
-            $"Could not read the net6 MonoGame version out of {skiaProjectPath}. If the engine's MonoGame " +
+            $"Could not read the MonoGame version out of {skiaProjectPath}. If the engine's MonoGame " +
             "reference was restructured, this test's scratch project needs to follow it.");
 
         return match.Groups[1].Value;

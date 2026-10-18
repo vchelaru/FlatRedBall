@@ -703,14 +703,14 @@ public class GumGeneratedCodeCompilesTests : IDisposable
         // ProjectReference and Microsoft.Xna.Framework.Color (the generated "Color" property's type) won't
         // resolve without naming it here. Read the version out of the engine project rather than pinning a
         // copy, so a MonoGame bump there can't silently turn this test into a framework-mismatch failure.
-        var monoGameVersion = ReadNet6MonoGameVersion(skiaProject);
+        var monoGameVersion = ReadMonoGameVersion(skiaProject);
 
-        // net6.0 to match what the engine projects build - a mismatch here fails as a framework error rather
+        // net8.0 to match what the engine projects build - a mismatch here fails as a framework error rather
         // than as the codegen errors this test exists to surface.
         var csproj = $"""
             <Project Sdk="Microsoft.NET.Sdk">
               <PropertyGroup>
-                <TargetFramework>net6.0</TargetFramework>
+                <TargetFramework>net8.0</TargetFramework>
                 <Nullable>disable</Nullable>
                 <LangVersion>latest</LangVersion>
                 <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
@@ -731,16 +731,14 @@ public class GumGeneratedCodeCompilesTests : IDisposable
         }
     }
 
-    // Mirrors the net6 arm of the engine's conditional MonoGame reference (3.8.4.1 is net8-only, see the
-    // comment in SkiaInGum.csproj).
-    private static string ReadNet6MonoGameVersion(string skiaProjectPath)
+    private static string ReadMonoGameVersion(string skiaProjectPath)
     {
         var match = System.Text.RegularExpressions.Regex.Match(
             File.ReadAllText(skiaProjectPath),
-            """<PackageReference\s+Include="MonoGame\.Framework\.DesktopGL"\s+Version="([^"]+)"\s+Condition="'\$\(TargetFramework\)'\s*!=\s*'net8\.0'""");
+            """<PackageReference\s+Include="MonoGame\.Framework\.DesktopGL"\s+Version="([^"]+)""");
 
         match.Success.ShouldBeTrue(
-            $"Could not read the net6 MonoGame version out of {skiaProjectPath}. If the engine's MonoGame " +
+            $"Could not read the MonoGame version out of {skiaProjectPath}. If the engine's MonoGame " +
             "reference was restructured, this test's scratch project needs to follow it.");
 
         return match.Groups[1].Value;

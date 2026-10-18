@@ -68,7 +68,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                     // 2024.2.1.366
                     var version = Version.Parse(versionItem.EvaluatedValue);
 
-                    dllLocation = Path.Combine(globalPackagesPath, "FlatRedBallDesktopGLNet6", version.ToString(), "lib", "net6.0", "FlatRedBallDesktopGLNet6.dll");
+                    dllLocation = Path.Combine(globalPackagesPath, "FlatRedBallDesktopGLNet6", version.ToString(), "lib", "net8.0", "FlatRedBallDesktopGLNet6.dll");
 
                 }
 
