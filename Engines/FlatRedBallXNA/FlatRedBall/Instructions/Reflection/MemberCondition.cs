@@ -27,6 +27,7 @@ namespace FlatRedBall.Instructions.Reflection
     /// Base class for the generic MemberCondition class provided for List storage.
     /// </summary>
     #endregion
+    [Obsolete("MemberCondition uses reflection, is not safe for trimming or Native AOT, and nothing in the engine uses it.")]
     public abstract class MemberCondition
     {
         public abstract string Member
@@ -63,6 +64,7 @@ namespace FlatRedBall.Instructions.Reflection
     /// <typeparam name="ObjectType">The type of the object containing the property to compare.</typeparam>
     /// <typeparam name="PropertyType">The type of the property to compare.</typeparam>
     #endregion
+    [Obsolete("MemberCondition uses reflection, is not safe for trimming or Native AOT, and nothing in the engine uses it.")]
     public class MemberCondition<ObjectType, PropertyType> : MemberCondition
         where PropertyType : IComparable
     {

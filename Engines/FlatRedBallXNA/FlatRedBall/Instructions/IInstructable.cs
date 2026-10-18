@@ -119,23 +119,17 @@ namespace FlatRedBall.Instructions
             return this;
         }
 
+        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("Trimming", "IL2026",
+            Justification = "The reflective branch is only reached through the Set extension method, which is annotated. Call(...).After does not use reflection.")]
+        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("AOT", "IL3050",
+            Justification = "The reflective branch is only reached through the Set extension method, which is annotated. Call(...).After does not use reflection.")]
         public Instruction After(double time)
         {
             Instruction toReturn;
 
             if (mSetOrCall == SetOrCall.Set)
             {
-                Type memberType = GetMemberType(MemberToSet);
-                Type instructionType = typeof(Instruction<,>).MakeGenericType(typeof(T), memberType);
-
-                GenericInstruction instruction = (GenericInstruction)Activator.CreateInstance(instructionType);
-
-                instruction.TimeToExecute = TimeManager.CurrentTime + time;
-                instruction.SetTarget(Caller);
-                instruction.Member = MemberToSet;
-                instruction.MemberValueAsObject = ValueToSet;
-                toReturn = instruction;
-
+                toReturn = CreateSetInstruction(time);
             }
             else if (ActionT != null)
             {
@@ -158,6 +152,25 @@ namespace FlatRedBall.Instructions
             return toReturn;
         }
 
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Sets a member by name with reflection. Under trimming or Native AOT the member may have been removed.")]
+#if NET7_0_OR_GREATER
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Creates an Instruction<,> for the member's type at runtime.")]
+#endif
+        GenericInstruction CreateSetInstruction(double time)
+        {
+            Type memberType = GetMemberType(MemberToSet);
+            Type instructionType = typeof(Instruction<,>).MakeGenericType(typeof(T), memberType);
+
+            GenericInstruction instruction = (GenericInstruction)Activator.CreateInstance(instructionType);
+
+            instruction.TimeToExecute = TimeManager.CurrentTime + time;
+            instruction.SetTarget(Caller);
+            instruction.Member = MemberToSet;
+            instruction.MemberValueAsObject = ValueToSet;
+            return instruction;
+        }
+
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Looks up the member by name.")]
         Type GetMemberType(string memberName)
         {
             FieldInfo fieldInfo = typeof(T).GetField(memberName);
@@ -209,6 +222,10 @@ namespace FlatRedBall.Instructions
             return holder.Call(action);
         }
 
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Sets a member by name with reflection. Under trimming or Native AOT the member may have been removed. Use Call with a delegate instead.")]
+#if NET7_0_OR_GREATER
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Creates an Instruction<,> for the member's type at runtime.")]
+#endif
         public static ITo Set<T>(this T caller, string value) where T : IInstructable
         {
             SetHolder<T> holder = new SetHolder<T>();

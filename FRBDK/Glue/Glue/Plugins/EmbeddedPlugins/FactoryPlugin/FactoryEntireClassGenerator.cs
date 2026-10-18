@@ -42,6 +42,12 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin
 
         #endregion
 
+        /// <summary>
+        /// True if factories in this project keep their entity's public fields and properties for Native AOT and trimming.
+        /// </summary>
+        public static bool ShouldKeepEntityMembers(GlueProjectSave project) =>
+            project != null && project.FileVersion >= (int)GlueProjectSave.GluxVersions.FactoriesKeepEntityMembers;
+
         public override string GetCode()
         {
 
@@ -264,6 +270,17 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin
                 .Function(StringHelper.SpaceStrings("public", "static", className), "CreateNew", "Layer layer, Microsoft.Xna.Framework.Vector3 position")
                     .Line("return CreateNew(layer , position.X, position.Y, position.Z);")
                 .End();
+
+            if (ShouldKeepEntityMembers(ObjectFinder.Self.GlueProject))
+            {
+                // The Tiled entity instantiator sets properties on the created entity by name through reflection.
+                // Under Native AOT or trimming the entity's members are removed unless something that is kept
+                // names them, and this method is reached by every path that creates the entity through its factory.
+                codeBlock.Line("[System.Diagnostics.CodeAnalysis.DynamicDependency(" +
+                    "System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicFields | " +
+                    "System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicProperties, " +
+                    $"typeof({className}))]");
+            }
 
             codeBlock = codeBlock
                 .Function(StringHelper.SpaceStrings("public", "static", className), "CreateNew", "Layer layer, float? x = null, float? y = null, float? z = null");

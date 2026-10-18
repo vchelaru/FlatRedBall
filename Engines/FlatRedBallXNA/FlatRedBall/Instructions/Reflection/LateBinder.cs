@@ -4,7 +4,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
 #if !NO_CODE_EMIT
 using System.Reflection.Emit;
 #endif
@@ -20,12 +23,66 @@ namespace FlatRedBall.Instructions.Reflection
     {
         static Dictionary<Type, LateBinder> mLateBinders = new Dictionary<Type, LateBinder>();
 
-        public static LateBinder GetInstance(Type type)
+        /// <summary>
+        /// Forces the plain-reflection implementation even where dynamic code is available. Exists so tests can
+        /// exercise the Native AOT code path on the JIT.
+        /// </summary>
+        internal static bool ForceReflection;
+
+        /// <summary>
+        /// Whether get/set delegates can be emitted with DynamicMethod. False under Native AOT (and other runtimes
+        /// where RuntimeFeature.IsDynamicCodeSupported is false), where LateBinder uses plain reflection instead.
+        /// </summary>
+        internal static bool CanEmitCode
+        {
+            get
+            {
+#if NO_CODE_EMIT
+                return false;
+#elif NET6_0_OR_GREATER
+                return RuntimeFeature.IsDynamicCodeSupported && !ForceReflection;
+#else
+                return !ForceReflection;
+#endif
+            }
+        }
+
+        /// <summary>
+        /// The members LateBinder reads and writes by name. Native AOT and trimming keep these on any type used with
+        /// LateBinder when the type is known statically.
+        /// </summary>
+        internal const DynamicallyAccessedMemberTypes AccessedMembers =
+            DynamicallyAccessedMemberTypes.PublicFields |
+            DynamicallyAccessedMemberTypes.NonPublicFields |
+            DynamicallyAccessedMemberTypes.PublicProperties |
+            DynamicallyAccessedMemberTypes.NonPublicProperties;
+
+        /// <summary>
+        /// Returns the LateBinder for the argument type. Under Native AOT or trimming, the fields and properties
+        /// of the type must be kept: pass a type known at compile time, or root the type's members (for example with
+        /// DynamicDependency). Value types additionally need LateBinder&lt;T&gt; instantiated at compile time
+        /// under Native AOT.
+        /// </summary>
+        [UnconditionalSuppressMessage("AOT", "IL3050",
+            Justification = "Reference types share the canonical LateBinder<__Canon> code, so any reference type works " +
+            "under Native AOT. Value types are reported below when their instantiation is not available.")]
+        public static LateBinder GetInstance([DynamicallyAccessedMembers(AccessedMembers)] Type type)
         {
             if (!mLateBinders.ContainsKey(type))
             {
-                Type t = typeof(LateBinder<>).MakeGenericType(
-                    type);
+                Type t;
+                try
+                {
+                    t = typeof(LateBinder<>).MakeGenericType(
+                        type);
+                }
+                catch (NotSupportedException e) when (type.IsValueType)
+                {
+                    throw new NotSupportedException(
+                        $"LateBinder cannot be created for the value type {type} because LateBinder<{type.Name}> was not " +
+                        $"compiled into this app (Native AOT cannot create generic instantiations over value types at runtime). " +
+                        $"Reference LateBinder<{type.Name}> somewhere in code, or use a class.", e);
+                }
                 object obj = Activator.CreateInstance(t);
 
                 mLateBinders.Add(type, obj as LateBinder);
@@ -42,16 +99,19 @@ namespace FlatRedBall.Instructions.Reflection
         /// <param name="target">The object from which to get a value.</param>
         /// <param name="name">The variable name.</param>
         /// <returns></returns>
+        [RequiresUnreferencedCode("Looks up members by name on the runtime type of the target. Under trimming or Native AOT the target's fields and properties must be preserved, for example by annotating or rooting the type.")]
         public static object GetValueStatic(object target, string name)
         {
             return GetInstance(target.GetType()).GetValue(target, name);
         }
 
+        [RequiresUnreferencedCode("Looks up members by name on the runtime type of the target. Under trimming or Native AOT the target's fields and properties must be preserved, for example by annotating or rooting the type.")]
         public static bool SetValueStatic(object target, string name, object value)
         {
             return GetInstance(target.GetType()).SetValue(target, name, value);
         }
 
+        [RequiresUnreferencedCode("Looks up members by name on the runtime type of the target. Under trimming or Native AOT the target's fields and properties must be preserved, for example by annotating or rooting the type.")]
         public static bool TryGetValueStatic(object target, string name, out object result)
         {
             return GetInstance(target.GetType()).TryGetValue(target, name, out result);
@@ -72,7 +132,7 @@ namespace FlatRedBall.Instructions.Reflection
     /// <remarks>The first time you attempt to get or set a property, it will dynamically generate the get and/or set 
     /// methods and cache them internally.  Subsequent gets uses the dynamic methods without having to query the type's 
     /// meta data.</remarks>
-    public sealed class LateBinder<T> : LateBinder
+    public sealed class LateBinder<[DynamicallyAccessedMembers(LateBinder.AccessedMembers)] T> : LateBinder
     {
         internal class SetPropertyInfo
         {
@@ -103,6 +163,7 @@ namespace FlatRedBall.Instructions.Reflection
         HashSet<string> mFieldsSet = new HashSet<string>();
         HashSet<string> mPropertieSet = new HashSet<string>();
 
+        [DynamicallyAccessedMembers(LateBinder.AccessedMembers)]
         private Type mType;
         private Dictionary<string, GetHandler> mPropertyGet;
         private Dictionary<string, SetPropertyInfo> mPropertySet;
@@ -227,7 +288,7 @@ namespace FlatRedBall.Instructions.Reflection
             }
         }
 
-        private void GetFieldRecursive(Type type, string fieldName, out FieldInfo field, out Type ownerType)
+        private void GetFieldRecursive([DynamicallyAccessedMembers(AccessedMembers)] Type type, string fieldName, out FieldInfo field, out Type ownerType)
         {
             field = type.GetField(fieldName, mGetFieldBindingFlags);
             ownerType = null;
@@ -238,9 +299,16 @@ namespace FlatRedBall.Instructions.Reflection
             }
             else if(field == null && type.BaseType != null)
             {
-                GetFieldRecursive(type.BaseType, fieldName, out field, out ownerType);
+                GetFieldRecursive(GetBaseType(type), fieldName, out field, out ownerType);
             }
         }
+
+        // The annotation on T keeps the inherited public and protected members of its base types, but
+        // Type.BaseType itself carries no annotation, so the base-type walks go through here.
+        [return: DynamicallyAccessedMembers(AccessedMembers)]
+        [UnconditionalSuppressMessage("Trimming", "IL2073",
+            Justification = "The annotation on T keeps the members of its base types.")]
+        private static Type GetBaseType([DynamicallyAccessedMembers(AccessedMembers)] Type type) => type.BaseType;
 
         public override bool IsReadOnly(string name)
         {
@@ -389,9 +457,8 @@ namespace FlatRedBall.Instructions.Reflection
             fieldInfo.SetValue(target, value);
 
 #else
-            FieldInfo fieldInfo = target.GetType().GetField(
+            FieldInfo fieldInfo = mType.GetField(
                 name);
-
 
 #if DEBUG
             try
@@ -489,16 +556,7 @@ namespace FlatRedBall.Instructions.Reflection
                 else
                 {
 
-                    // I don't know why we branch here....Can we not call SetValue on public values?
-                    if (!fieldInfo.IsPublic)
-                    {
-                        fieldInfo.SetValue(target, value);
-                    }
-                    else
-                    {
-                        object[] args = { value };
-                        mType.InvokeMember(propertyName, BindingFlags.SetField, null, target, args);
-                    }
+                    fieldInfo.SetValue(target, value);
                 }
             }
 #endif
@@ -519,19 +577,10 @@ namespace FlatRedBall.Instructions.Reflection
             }
             else
             {
-                Binder binder = null;
-                object[] args = null;
-
                 // use this to get the recurisve type in case it's defined by base
                 GetFieldRecursive(mType, fieldName, out FieldInfo fieldInfo, out Type fieldOwner);
 
-                return fieldOwner.InvokeMember(
-                   fieldName,
-                   mGetFieldBindingFlags,
-                   binder,
-                   target,
-                   args
-                   );
+                return fieldInfo.GetValue(target);
             }
         }
 
@@ -651,7 +700,7 @@ namespace FlatRedBall.Instructions.Reflection
                 Type type = mType;
                 PropertyInfo propertyInfo = mType.GetProperty(propertyName, mGetterBindingFlags);
 
-                var baseType = mType.BaseType;
+                var baseType = GetBaseType(mType);
                 while(baseType != null && propertyInfo == null)
                 {
                     propertyInfo = baseType.GetProperty(propertyName, mGetterBindingFlags);
@@ -661,7 +710,7 @@ namespace FlatRedBall.Instructions.Reflection
                     }
                     else
                     {
-                        baseType = baseType.BaseType;
+                        baseType = GetBaseType(baseType);
                     }
                 }
                 if (propertyInfo != null)
@@ -676,7 +725,6 @@ namespace FlatRedBall.Instructions.Reflection
 #region Contained Classes
         internal delegate object GetHandler(object source);
         internal delegate void SetHandler(object source, object value);
-        internal delegate object InstantiateObjectHandler();
 
         /// <summary>
         /// provides helper functions for late binding a class
@@ -690,29 +738,49 @@ namespace FlatRedBall.Instructions.Reflection
             // DynamicMethodCompiler
             private DynamicMethodCompiler() { }
 
-            // CreateInstantiateObjectDelegate
-            internal static InstantiateObjectHandler CreateInstantiateObjectHandler(Type type)
+            // The reflection fallbacks below keep the exceptions the emitted delegates produce: a setter or getter that
+            // throws surfaces its own exception (not TargetInvocationException), and a value of the wrong type is an
+            // InvalidCastException, which callers such as the Tiled entity instantiator catch to explain the mismatch.
+            private static object GetThroughReflection(PropertyInfo propertyInfo, object source)
             {
-#if !NO_CODE_EMIT
-                ConstructorInfo constructorInfo = type.GetConstructor(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[0], null);
-                if (constructorInfo == null)
+                try
                 {
-                    throw new ApplicationException(string.Format("The type {0} must declare an empty constructor (the constructor may be private, internal, protected, protected internal, or public).", type));
+                    return propertyInfo.GetValue(source, null);
                 }
+                catch (TargetInvocationException e) when (e.InnerException != null)
+                {
+                    ExceptionDispatchInfo.Capture(e.InnerException).Throw();
+                    throw;
+                }
+            }
 
-                DynamicMethod dynamicMethod = new DynamicMethod("InstantiateObject", MethodAttributes.Static | MethodAttributes.Public, CallingConventions.Standard, typeof(object), null, type, true);
-                ILGenerator generator = dynamicMethod.GetILGenerator();
-                generator.Emit(OpCodes.Newobj, constructorInfo);
-                generator.Emit(OpCodes.Ret);
-                return (InstantiateObjectHandler)dynamicMethod.CreateDelegate(typeof(InstantiateObjectHandler));
-#else
-                throw new NotSupportedException();
-#endif
+            private static void SetThroughReflection(PropertyInfo propertyInfo, object source, object value)
+            {
+                try
+                {
+                    propertyInfo.SetValue(source, value, null);
+                }
+                catch (TargetInvocationException e) when (e.InnerException != null)
+                {
+                    ExceptionDispatchInfo.Capture(e.InnerException).Throw();
+                }
+                catch (ArgumentException e)
+                {
+                    throw new InvalidCastException(e.Message, e);
+                }
             }
 
             // CreateGetDelegate
+            [UnconditionalSuppressMessage("AOT", "IL3050",
+                Justification = "Code is only emitted when CanEmitCode is true, which includes RuntimeFeature.IsDynamicCodeSupported.")]
             internal static GetHandler CreateGetHandler(Type type, PropertyInfo propertyInfo)
             {
+                if (!CanEmitCode)
+                {
+                    // Native AOT and other runtimes without dynamic code: plain reflection.
+                    return source => GetThroughReflection(propertyInfo, source);
+                }
+
 #if !NO_CODE_EMIT
                 MethodInfo getMethodInfo = propertyInfo.GetGetMethod(true);
                 DynamicMethod dynamicGet = CreateGetDynamicMethod(type);
@@ -730,27 +798,17 @@ namespace FlatRedBall.Instructions.Reflection
 #endif
             }
 
-            // CreateGetDelegate
-            internal static GetHandler CreateGetHandler(Type type, FieldInfo fieldInfo)
-            {
-#if !NO_CODE_EMIT
-                DynamicMethod dynamicGet = CreateGetDynamicMethod(type);
-                ILGenerator getGenerator = dynamicGet.GetILGenerator();
-
-                getGenerator.Emit(OpCodes.Ldarg_0);
-                getGenerator.Emit(OpCodes.Ldfld, fieldInfo);
-                BoxIfNeeded(fieldInfo.FieldType, getGenerator);
-                getGenerator.Emit(OpCodes.Ret);
-
-                return (GetHandler)dynamicGet.CreateDelegate(typeof(GetHandler));
-#else
-                throw new NotSupportedException();
-#endif
-            }
-
             // CreateSetDelegate
+            [UnconditionalSuppressMessage("AOT", "IL3050",
+                Justification = "Code is only emitted when CanEmitCode is true, which includes RuntimeFeature.IsDynamicCodeSupported.")]
             internal static SetHandler CreateSetHandler(Type type, PropertyInfo propertyInfo)
             {
+                if (!CanEmitCode)
+                {
+                    // Native AOT and other runtimes without dynamic code: plain reflection.
+                    return (source, value) => SetThroughReflection(propertyInfo, source, value);
+                }
+
 #if !NO_CODE_EMIT
                 MethodInfo setMethodInfo = propertyInfo.GetSetMethod(true);
 
@@ -769,33 +827,20 @@ namespace FlatRedBall.Instructions.Reflection
 #endif
             }
 
-            // CreateSetDelegate
-            internal static SetHandler CreateSetHandler(Type type, FieldInfo fieldInfo)
-            {
-#if !NO_CODE_EMIT
-                DynamicMethod dynamicSet = CreateSetDynamicMethod(type);
-                ILGenerator setGenerator = dynamicSet.GetILGenerator();
-
-                setGenerator.Emit(OpCodes.Ldarg_0);
-                setGenerator.Emit(OpCodes.Ldarg_1);
-                UnboxIfNeeded(fieldInfo.FieldType, setGenerator);
-                setGenerator.Emit(OpCodes.Stfld, fieldInfo);
-                setGenerator.Emit(OpCodes.Ret);
-
-                return (SetHandler)dynamicSet.CreateDelegate(typeof(SetHandler));
-#else
-                throw new NotSupportedException();
-#endif
-            }
-
 #if !NO_CODE_EMIT
             // CreateGetDynamicMethod
+#if NET7_0_OR_GREATER
+            [RequiresDynamicCode("Creating a DynamicMethod requires dynamic code.")]
+#endif
             private static DynamicMethod CreateGetDynamicMethod(Type type)
             {
                 return new DynamicMethod("DynamicGet", typeof(object), new Type[] { typeof(object) }, type, true);
             }
 
             // CreateSetDynamicMethod
+#if NET7_0_OR_GREATER
+            [RequiresDynamicCode("Creating a DynamicMethod requires dynamic code.")]
+#endif
             private static DynamicMethod CreateSetDynamicMethod(Type type)
             {
                 return new DynamicMethod("DynamicSet", typeof(void), new Type[] { typeof(object), typeof(object) }, type, true);

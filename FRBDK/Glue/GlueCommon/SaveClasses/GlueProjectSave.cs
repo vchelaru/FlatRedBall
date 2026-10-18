@@ -270,6 +270,12 @@ namespace FlatRedBall.Glue.SaveClasses
             // type, so a template-only registration would throw "does not have an entry for TreeViewItem".
             GumTreeViewItemHasDefaultFormsTemplate = 76,
 
+            // October 18, 2026 - Entity factories carry a [DynamicDependency] that keeps the entity's public fields
+            // and properties (TileEntityInstantiator assigns Tiled object properties to them by name through
+            // LateBinder, which Native AOT and trimming otherwise remove). Gated because the attribute needs .NET 5
+            // or newer: a project on an older target framework fails with CS0234 in the factory.
+            FactoriesKeepEntityMembers = 77,
+
             // Stop! If adding an entry here, modify SyntaxVersionAttribute on FlatRedBallServices
             // and LatestVersion down below
             // and update the docs
@@ -279,7 +285,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.ScreenManagerHasRegisterScreenFactory;
+        public const int LatestVersion = (int)GluxVersions.FactoriesKeepEntityMembers;
 
         public int FileVersion { get; set; }
 

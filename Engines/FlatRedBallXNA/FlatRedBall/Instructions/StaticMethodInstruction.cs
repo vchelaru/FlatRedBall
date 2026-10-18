@@ -26,6 +26,7 @@ namespace FlatRedBall.Instructions
         }
 
         #region Methods
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Looks up the method by name on the type. Under trimming or Native AOT the method may have been removed. Pass a MethodInfo instead.")]
         public StaticMethodInstruction(Type type, string methodToCall, object[] arguments, double timeToExecute)
         {
             mMethodInfo =

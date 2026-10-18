@@ -226,6 +226,7 @@ namespace FlatRedBall.Instructions
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Looks up the member by name on the type. Under trimming or Native AOT the member may have been removed.")]
         public static Type GetTypeForMember(Type type, string member)
         {
             PropertyInfo propertyInfo = type.GetProperty(member);
@@ -591,6 +592,7 @@ namespace FlatRedBall.Instructions
         /// <param name="memberName">The name of the field or property to set.</param>
         /// <param name="valueToSet">The value of the field or property to set.</param>
         #endregion
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Sets the member by name on the runtime type of the object. Under trimming or Native AOT the member may have been removed.")]
         public static void UncastedSetMember(object objectToSetOn, string memberName, object valueToSet)
         {
             if (objectToSetOn == null)

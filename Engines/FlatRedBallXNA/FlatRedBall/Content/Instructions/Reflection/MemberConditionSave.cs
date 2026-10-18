@@ -12,6 +12,7 @@ namespace FlatRedBall.Content.Instructions.Reflection
     /// </summary>
     /// <typeparam name="PropertyType">The type of the property to be compared.</typeparam>
     #endregion
+    [Obsolete("MemberConditionSave is for MemberCondition, which uses reflection, is not safe for trimming or Native AOT, and nothing in the engine uses it.")]
     public class MemberConditionSave<PropertyType>
         where PropertyType : IComparable, IEquatable<PropertyType>
     {

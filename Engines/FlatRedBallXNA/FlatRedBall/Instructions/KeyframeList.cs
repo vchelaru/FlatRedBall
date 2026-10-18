@@ -58,6 +58,10 @@ namespace FlatRedBall.Instructions
 
         #region Public Methods
 
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Creates Instruction<,> types and sets members by name with reflection. Not supported under trimming or Native AOT.")]
+#if NET7_0_OR_GREATER
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Creates Instruction<,> types at runtime.")]
+#endif
         public InstructionList CreateVelocityListAtTime(double time)
         {
             // This will create instructions for all goal starting at the argument
@@ -98,6 +102,10 @@ namespace FlatRedBall.Instructions
             return instructionList;
         }
 
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Creates Instruction<,> types and sets members by name with reflection. Not supported under trimming or Native AOT.")]
+#if NET7_0_OR_GREATER
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Creates Instruction<,> types at runtime.")]
+#endif
         public InstructionList CreateVelocityListAtIndex(int keyframeIndex)
         {
             if (keyframeIndex > Count - 1)
@@ -357,6 +365,10 @@ namespace FlatRedBall.Instructions
 
         #region Private Methods
 
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Creates Instruction<,> types and sets members by name with reflection. Not supported under trimming or Native AOT.")]
+#if NET7_0_OR_GREATER
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Creates Instruction<,> types at runtime.")]
+#endif
         private Instruction CreateInstructionFor(object target, string velocityMemberName,
             object valueBefore, object valueAfter, double timeBetween, double instructionTime,
             Type typeOfTarget, Type typeOfValue)
