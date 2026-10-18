@@ -327,7 +327,7 @@ internal sealed class LiveGameProcess : IDisposable
     /// into the directory the game is about to launch from. Each test builds its game into its own temp
     /// directory, so CI cannot stage these DLLs itself the way it can for an in-process test host.
     /// </summary>
-    static void CopySuppliedGraphicsRuntimeNextToGame(string exeDirectory)
+    internal static void CopySuppliedGraphicsRuntimeNextToGame(string exeDirectory)
     {
         var runtimeDirectory = Environment.GetEnvironmentVariable(GraphicsRuntimeDirectoryEnvironmentVariable);
         if (string.IsNullOrEmpty(runtimeDirectory))

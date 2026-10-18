@@ -60,6 +60,9 @@ public class NestedDotnetCliTests
             // long-lived by design (killed by Dispose, not awaited to exit), and output is drained via the
             // async OutputDataReceived/BeginOutputReadLine event pair rather than a blocking ReadToEnd().
             .Where(file => Path.GetFileName(file) != "LiveGameProcess.cs")
+            // NativeAotPublishTests.cs launches the published game .exe the same way: async-drained output,
+            // killed after a fixed run time. Its `dotnet publish` goes through NestedDotnetCli.Run.
+            .Where(file => Path.GetFileName(file) != "NativeAotPublishTests.cs")
             .Where(file => File.ReadAllText(file).Contains("RedirectStandardOutput", StringComparison.Ordinal))
             .Select(Path.GetFileName)
             .ToList();
