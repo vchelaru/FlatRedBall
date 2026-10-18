@@ -1,0 +1,10 @@
+<linker>
+  <!-- Trimming / Native AOT. Content/Shader.xnb names its reader "EffectReader, MonoGame.Framework, Version=3.8.1.303".
+       MonoGame's built-in reader table is keyed on the referenced version (3.8.4.1), so the lookup misses and falls
+       back to Type.GetType plus a reflected constructor. Without this entry that fallback fails and
+       FlatRedBallServices.InitializeFlatRedBall throws a NullReferenceException in
+       ContentTypeReaderManager.LoadAssetReaders. -->
+  <assembly fullname="MonoGame.Framework">
+    <type fullname="Microsoft.Xna.Framework.Content.EffectReader" preserve="all" />
+  </assembly>
+</linker>
