@@ -363,6 +363,15 @@ namespace FlatRedBall.Glue.CodeGeneration
                     (nosTypeElement != null && nosTypeElement.GetNamedObjectRecursively(instructionSave.Member) != null) ||
                     variableDefinitions?.Any(item => item.Name == instructionSave.Member) == true;
 
+                // An exposed variable that tunnels to this member writes its own default later (in
+                // AssignCustomVariables), so writing the instance value here would only be overwritten.
+                if (shouldGenerateVariableAssignment &&
+                    container != null &&
+                    CustomVariableCodeGenerator.IsMemberAssignedByExposedVariable(container, namedObject, instructionSave.Member))
+                {
+                    shouldGenerateVariableAssignment = false;
+                }
+
                 if (shouldGenerateVariableAssignment)
                 {
                     CustomVariableCodeGenerator.AppendAssignmentForCustomVariableInInstance(namedObject, codeBlock, instructionSave, container);

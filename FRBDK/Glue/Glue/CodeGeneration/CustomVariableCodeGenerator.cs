@@ -814,6 +814,33 @@ namespace FlatRedBall.Glue.CodeGeneration
         }
 
 
+        /// <summary>
+        /// Whether AssignCustomVariables writes <paramref name="customVariable"/>'s default value.
+        /// </summary>
+        private static bool AssignsDefaultValueInAssignCustomVariables(CustomVariable customVariable, GlueElement element)
+        {
+            return customVariable.DefaultValue != null && // if it's null the user doesn't want to change what is set in the file or in the source object
+                !customVariable.IsShared && // no need to handle statics here because they're always defined in class scope
+                !IsVariableTunnelingToDisabledObject(customVariable, element);
+        }
+
+        /// <summary>
+        /// Whether an exposed variable on <paramref name="container"/> or one of its base elements assigns its own
+        /// default to <paramref name="member"/> of <paramref name="namedObject"/> in AssignCustomVariables. That
+        /// assignment runs after the instance's own value is written, so the instance value would never survive.
+        /// </summary>
+        public static bool IsMemberAssignedByExposedVariable(GlueElement container, NamedObjectSave namedObject, string member)
+        {
+            bool Assigns(GlueElement element) =>
+                element.CustomVariables.Any(item =>
+                    item.SourceObject == namedObject.InstanceName &&
+                    item.SourceObjectProperty == member &&
+                    AssignsDefaultValueInAssignCustomVariables(item, element));
+
+            return Assigns(container) ||
+                ObjectFinder.Self.GetAllBaseElementsRecursively(container).Any(Assigns);
+        }
+
         // Note - this code is very similar to StateCodeGenerator.cs's GetRightSideAssignmentValueAsString
         // Unify?
         public static ICodeBlock AppendAssignmentForCustomVariableInElement(ICodeBlock codeBlock, CustomVariable customVariable, GlueElement saveObject)
@@ -837,10 +864,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             // will always get assigned first, then the derived
             // can override it.
             //if (!customVariable.SetByDerived && 
-            else if (customVariable.DefaultValue != null && // if it's null the user doesn't want to change what is set in the file or in the source object
-                !customVariable.IsShared && // no need to handle statics here because they're always defined in class scope
-                !IsVariableTunnelingToDisabledObject(customVariable, glueElement)
-                )
+            else if (AssignsDefaultValueInAssignCustomVariables(customVariable, glueElement))
             {
                 string rightSide = GetRightSideOfEquals(customVariable, glueElement);
 
