@@ -104,6 +104,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ExtensionMethods\Vector3ExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Feedback\VibrateMotor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FlatRedBallServices.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FlatRedBallServices.Storage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Animation\AnimationChain.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Animation\AnimationChainList.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Animation\AnimationController.cs" />
@@ -227,6 +228,17 @@
     <Compile Include="$(MSBuildThisFileDirectory)IO\FilePath.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IO\GifLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IO\Gif\ImageDataList.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IO\Storage\BrowserStorageBackend.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IO\Storage\FileStorageBackend.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IO\Storage\GameStorage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IO\Storage\IBrowserStorageApi.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IO\Storage\InMemoryStorageBackend.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IO\Storage\IStorageBackend.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IO\Storage\StorageException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IO\Storage\StorageInternalsVisibleTo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IO\Storage\StorageKey.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IO\Storage\StorageWriteStream.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IO\Storage\UnconfiguredStorageBackend.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Localization\LocalizationManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ManagedSpriteGroups\SpriteFrame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ManagedSpriteGroups\SpriteGrid\SpriteGrid.cs" />

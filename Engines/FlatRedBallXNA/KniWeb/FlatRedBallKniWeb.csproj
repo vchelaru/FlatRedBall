@@ -12,6 +12,8 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>1591</NoWarn>
     <Nullable>enable</Nullable>
+    <!-- LocalStorageApi's [JSImport] methods are generated with unsafe code. -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <Import Project="..\FlatRedBall\FlatRedBallShared.projitems" Label="Shared" />
 
