@@ -47,6 +47,14 @@ public class CustomVariableStateCodegenTests : IDisposable
             FullFileName = System.IO.Path.Combine(_tempProjectDirectory, "GumProject", "GumProject.gumx"),
             Version = (int)GumProjectSave.GumxVersions.ShapeVariableExpansion
         };
+
+        // Gum's ObjectFinder keeps an element-name cache that is process-wide. A test that drove
+        // FileChangeManager leaves it enabled (that code ends on EnableCache by design), and the stale
+        // dictionary answers lookups for the elements built here ("Comp", "DerivedComp") with null.
+        // ForceResetCache zeroes the enable count, then DisableCache drops the dictionary so lookups
+        // scan the project that was just assigned.
+        Gum.Managers.ObjectFinder.Self.ForceResetCache();
+        Gum.Managers.ObjectFinder.Self.DisableCache();
     }
 
     public void Dispose()
