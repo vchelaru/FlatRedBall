@@ -643,6 +643,8 @@ namespace FlatRedBall
         {
             // All InitializeFlatRedBall methods call this one
 
+            ConfigureStorage();
+
             #region Set up the resources manager and load fonts
            
             Texture2D fontTexture = null;
