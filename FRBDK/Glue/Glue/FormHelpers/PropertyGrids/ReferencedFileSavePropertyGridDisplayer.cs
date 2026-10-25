@@ -329,58 +329,19 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
             ForcedReadOnlyProperties.Clear();
             ResetToDefault();
 
-            AssetTypeInfo ati = instance.GetAssetTypeInfo();
-
-
-            ExcludeMember(nameof(ReferencedFileSave.InvalidFileNameCharacters));
-            ExcludeMember(nameof(ReferencedFileSave.ToStringDelegate));
-            ExcludeMember(nameof(ReferencedFileSave.Properties));
-
-            ContainerType containerType = instance.GetContainerType();
-
-
-
-            if (containerType == ContainerType.Entity)
+            // Which members apply to this file (container, extension, state) is decided once, in
+            // GetHiddenMemberNames, so this grid and the WPF "Settings (Preview)" grid can't drift apart.
+            foreach (var hiddenMember in instance.GetHiddenMemberNames())
             {
-                // We do this because whether the objects from a file are manually updated or not
-                // should be up to the entity, not the source file.
-                ExcludeMember(nameof(ReferencedFileSave.IsManuallyUpdated));
-            }
-
-            if (!instance.GetIsSharedStaticEditable())
-            {
-                ExcludeMember(nameof(ReferencedFileSave.IsSharedStatic));
-            }
-
-            if (containerType == ContainerType.Entity || ati == null || ati.QualifiedRuntimeTypeName.QualifiedType != "Microsoft.Xna.Framework.Media.Song")
-            {
-                ExcludeMember( nameof(ReferencedFileSave.DestroyOnUnload));
+                ExcludeMember(hiddenMember);
             }
 
             #region Extension-based additions/removals
             string extension = FileManager.GetExtension(instance.Name);
 
-            if (extension != "csv" && !instance.TreatAsCsv)
-            {
-                ExcludeMember(nameof(ReferencedFileSave.CreatesDictionary));
-                ExcludeMember(nameof(ReferencedFileSave.IsDatabaseForLocalizing));
-                ExcludeMember(nameof(ReferencedFileSave.UniformRowType));
-            }
-            else
+            if (extension == "csv" || instance.TreatAsCsv)
             {
                 IncludeMember(nameof(ReferencedFileSave.UniformRowType), typeof(ReferencedFileSave), new AvailablePrimitiveTypeArraysStringConverter());
-            }
-
-            if ((extension != "txt" && extension != "csv") ||
-                (extension == "txt" && instance.TreatAsCsv == false)
-                )
-            {
-                ExcludeMember(nameof(ReferencedFileSave.CsvDelimiter));
-            }
-
-            if (extension != "txt")
-            {
-                ExcludeMember(nameof(ReferencedFileSave.TreatAsCsv));
             }
 
             if (extension == "png")
@@ -406,30 +367,6 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
             AddProjectSpecificFileMember();
 
 
-            if (!instance.LoadedAtRuntime)
-            {
-                ExcludeMember(nameof(ReferencedFileSave.IsSharedStatic));
-                ExcludeMember(nameof(ReferencedFileSave.IsManuallyUpdated));
-                ExcludeMember(nameof(ReferencedFileSave.LoadedOnlyWhenReferenced));
-                ExcludeMember(nameof(ReferencedFileSave.HasPublicProperty));
-                ExcludeMember("InstanceName");
-                ExcludeMember(nameof(ReferencedFileSave.IncludeDirectoryRelativeToContainer));
-            }
-
-            if (ati == null || string.IsNullOrEmpty(ati.MakeManuallyUpdatedMethod))
-            {
-                ExcludeMember(nameof(ReferencedFileSave.IsManuallyUpdated));
-            }
-
-            if (!instance.GetCanUseContentPipeline())
-            {
-                ExcludeMember(nameof(ReferencedFileSave.UseContentPipeline));
-            }
-            if (!instance.UseContentPipeline || ati.QualifiedRuntimeTypeName.QualifiedType != "Microsoft.Xna.Framework.Graphics.Texture2D")
-            {
-                ExcludeMember("TextureFormat");
-            }
-
             IncludeMember("OpensWith", typeof(ReferencedFileSave), new AvailableApplicationsStringConverters());
 
             bool shouldShowRuntimeType = instance.LoadedAtRuntime;
@@ -440,19 +377,6 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
             else
             {
                 ExcludeMember(nameof(ReferencedFileSave.RuntimeType));
-            }
-
-            if (string.IsNullOrEmpty(instance.SourceFile))
-            {
-                // If we always exclude the source file, then this can never be changed...
-                //ExcludeMember(nameof(ReferencedFileSave.SourceFile));
-                ExcludeMember(nameof(ReferencedFileSave.BuildTool));
-                ExcludeMember(nameof(ReferencedFileSave.AdditionalArguments));
-                ExcludeMember(nameof(ReferencedFileSave.ConditionalCompilationSymbols));
-            }
-            else
-            {
-
             }
 
             if(instance.IsCreatedByWildcard)
