@@ -15,23 +15,28 @@ Screen-owned files; Entity-owned files are forced static and global content is *
 trace whether its consuming code generator (`ReferencedFileSaveCodeGenerator.cs` for element-scoped vs.
 `GlobalContentCodeGenerator.cs` for global) actually reads it for every container type.
 
-## Landmine: two independent property grids, both must exclude it
+## Two property grids, one shared hide list
 
-Two separate UIs show `ReferencedFileSave` properties, and neither knows about the other's exclusion list:
+Two separate UIs show `ReferencedFileSave` properties. Both hide members from the same set,
+`GetHiddenMemberNames()` in `GlueCommon/SaveClasses/ReferencedFileSaveElementExtensions.cs`, which
+holds every container-type, extension and state rule:
 
 | Grid | File | Exclusion mechanism |
 | --- | --- | --- |
-| Legacy WinForms | `Glue/FormHelpers/PropertyGrids/ReferencedFileSavePropertyGridDisplayer.cs` (`UpdateIncludedAndExcluded`) | `ExcludeMember(...)`, driven by `GetContainerType()`/extension checks |
-| WPF "Settings (Preview)" | `OfficialPlugins/PropertyGrid/MainPropertyGridPlugin.cs` (`ShowPropertiesForReferencedFileSave`) | `settingsGrid.MembersToIgnore.Add(...)` - a flat list, doesn't consult container type at all unless you add the check yourself |
+| Legacy WinForms | `Glue/FormHelpers/PropertyGrids/ReferencedFileSavePropertyGridDisplayer.cs` (`UpdateIncludedAndExcluded`) | loops `GetHiddenMemberNames()` calling `ExcludeMember(...)`, then adds its own extras |
+| WPF "Settings (Preview)" | `OfficialPlugins/PropertyGrid/ReferencedFileSaveSettingsLogic.cs` (`GetMembersToIgnore`, used by `MainPropertyGridPlugin.ShowPropertiesForReferencedFileSave`) | the shared set plus the WPF-only ignores |
+
+The WPF grid ignores `[Browsable(false)]`, so a member that must stay hidden there has to be in the shared set.
+It also doesn't re-evaluate on its own: `MainPropertyGridPlugin.HandlePropertyChanged` rebuilds it after the
+properties that change the rules (e.g. `TreatAsCsv`, `LoadedAtRuntime`), so add a new rule's input property there.
 
 Both funnel edits into the same place - `SetPropertyManager.ReactToPropertyChanged` →
 `ReferencedFileSaveSetPropertyManager.ReactToChangedReferencedFile`. A property excluded from only one
 grid is still reachable (and still crashes if its handler assumes context, e.g. a non-null
 `GlueState.Self.CurrentElement`) through the other.
 
-**When a property's meaning/effect depends on container type, put the decision in one shared extension
-method (e.g. `ReferencedFileSaveExtensionMethods.GetIsSharedStaticEditable`) and call it from both grids**,
-not a condition duplicated in each.
+**Add a new hide rule to `GetHiddenMemberNames()`** (it calls `GetIsSharedStaticEditable` for the container-type
+case), never as a condition in one grid.
 
 ## Two real crashes from this exact gap
 
