@@ -15,7 +15,7 @@ Releasing FRB1 (engine + Glue/FRBDK) is semi-automated: `gh` CLI triggers and wa
 | `.github/workflows/glue.yml` | "FlatRedBall Editor" — bumps FRBDK version, builds Glue, zips+FTPs FRBDK.zip |
 | `FRBDK/BuildServerUploader/BuildServerUploaderConsole/Program.cs` | The actual tool both workflows shell out to (`changeengineversion`, `changefrbdkversion`, `zipanduploadtemplates`, `zipanduploadfrbdk`, ...) |
 | `Processes/UpdateAssemblyVersions.cs` | Version-bumping logic — see Version scheme below |
-| `Processes/CopyFrbdkAndPluginsToReleaseFolder.cs` (`DownloadGum`) | Pulls Gum's **latest GitHub release** `Gum.zip` asset and bundles it into FRBDK — see Gum dependency below |
+| `Processes/CopyFrbdkAndPluginsToReleaseFolder.cs` (`DownloadGum`) | Pulls Gum's **latest GitHub release** `Gum-win-x64.zip` asset and bundles it into FRBDK — see Gum dependency below |
 | [docs.flatredball.com/flatredball/contributing/builds](https://docs.flatredball.com/flatredball/contributing/builds) | The narrative doc — kept current, cross-check before deviating from this skill |
 
 Both workflows are `workflow_dispatch`-only, run against whatever is currently on the default branch (not a tag/push trigger) — confirm local `NetStandard` matches `origin/NetStandard` before dispatching. **The default branch is `NetStandard`, not `main`.**
@@ -111,7 +111,7 @@ Dummy credentials are the point: everything local (copy-to-release-folder, zip) 
 
 ## Gum dependency (landmine)
 
-`glue.yml` bundles Gum into FRBDK by downloading whatever GitHub currently reports as Gum's **latest** release (`https://github.com/vchelaru/Gum/releases/latest/download/Gum.zip`) — Gum is released on GitHub only, not FTP. This means **running glue.yml before a needed Gum change has been released on GitHub silently bundles the previous Gum build**, with no error. If this release depends on new Gum functionality, publish Gum's release first (Gum repo's `Build and Release Gum Tool` workflow) and confirm it's visible at `gh release view --repo vchelaru/Gum` before running glue.yml here.
+`glue.yml` bundles Gum into FRBDK by downloading whatever GitHub currently reports as Gum's **latest** release (`https://github.com/vchelaru/Gum/releases/latest/download/Gum-win-x64.zip`, a flat zip with `Gum.exe` at its root, extracted to `<FRBDK>/Gum/`) — Gum is released on GitHub only, not FTP. This means **running glue.yml before a needed Gum change has been released on GitHub silently bundles the previous Gum build**, with no error. If this release depends on new Gum functionality, publish Gum's release first (Gum repo's `Build and Release Gum Tool` workflow) and confirm it's visible at `gh release view --repo vchelaru/Gum` before running glue.yml here.
 
 ## Secrets & what Claude can't verify
 
