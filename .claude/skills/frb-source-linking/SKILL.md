@@ -16,5 +16,7 @@ So linking source does fix "project's `GumCore.<platform>.dll` is stale relative
 
 **Landmine:** don't answer "does linking source fix a stale-Gum-binary compile error" by reading `IsFrbSourceLinked()` alone — it's the symptom check, not the fix mechanism. Read `AddSourceManager.cs`'s reference-swap lists instead.
 
+**Landmine:** a FlatRedBall NuGet package id that a `Templates/*` csproj references must also be in `AddSourceManager.NugetPackagesRemovedOnLink`, or linking leaves the package beside the new `ProjectReference`s. `AddSourceManagerNugetRemovalTests` reads every template csproj and fails when one is missing.
+
 ## Unlinked (default) projects still ship prebuilt binaries
 A project that's never been linked to source — the common case, every Glue-generated sample/new project — references Gum via a **committed, prebuilt** `Libraries\<Platform>\Debug\GumCore.<Platform>.dll`, copied in at project-creation time. Nothing in Glue refreshes it afterward (no `CopyLibraries`-equivalent exists). A Gum-side runtime addition (new type/member) is invisible to an unlinked project until either (a) it's linked to source, or (b) its `Libraries\...\GumCore.*.dll` is manually replaced with a fresh build. This includes the repo's own bundled sample/test projects (`Samples/Beefball`, `Tests/TestProjectDesktopNet6`, etc.) — their `Libraries\DesktopGl\...` DLLs are just as stale as a user's unlinked project unless explicitly refreshed.
