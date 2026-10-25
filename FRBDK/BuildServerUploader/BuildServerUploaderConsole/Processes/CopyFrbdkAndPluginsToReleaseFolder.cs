@@ -15,6 +15,9 @@ namespace BuildServerUploaderConsole.Processes
         private List<string> _excludeFiles;
         private string _destDirectory;
 
+        // Gum publishes one self-contained package per platform; Gum.exe sits at the root of the zip.
+        private const string GumWindowsAssetName = "Gum-win-x64.zip";
+
         List<string> extraTools = new List<string>
         {
             @"PrebuiltTools\MGCB"
@@ -103,8 +106,8 @@ namespace BuildServerUploaderConsole.Processes
         async Task DownloadGum()
         {
             // Gum is no longer uploaded to the FRB FTP - it's released on GitHub only.
-            // This pulls the Gum.zip asset from Gum's latest GitHub release.
-            string url = "https://github.com/vchelaru/Gum/releases/latest/download/Gum.zip";
+            // This pulls the Windows x64 asset from Gum's latest GitHub release.
+            string url = $"https://github.com/vchelaru/Gum/releases/latest/download/{GumWindowsAssetName}";
             string targetDirectory = Path.Combine(_destDirectory, "Gum");
 
             await DownloadAndExtractZip(url, targetDirectory, "Gum");
@@ -137,6 +140,9 @@ namespace BuildServerUploaderConsole.Processes
                 // Download the file
                 using (var response = await client.GetAsync(url))
                 {
+                    // Without this a 404 body gets saved as the "zip" and fails later with a confusing InvalidDataException.
+                    response.EnsureSuccessStatusCode();
+
                     using (Stream stream = await response.Content.ReadAsStreamAsync())
                     {
                         using (FileStream fileStream = new FileStream(zipFilePath, FileMode.Create, FileAccess.Write, FileShare.None))
