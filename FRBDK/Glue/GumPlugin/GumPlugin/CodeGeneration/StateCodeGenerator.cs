@@ -569,6 +569,33 @@ public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
         return container.GetInstance(variable.SourceObject)?.BaseType;
     }
 
+    /// <summary>
+    /// Gum only sets IsCustomVariable on a custom variable's definition (in the owning element's Default state).
+    /// A value for that variable in any other state, or in a derived element's Default state, is a plain
+    /// VariableSave. So the flag on the variable itself can't tell a real custom variable apart from a stale
+    /// leftover; the definition on the container or one of its base elements can.
+    /// </summary>
+    private static bool IsDefinedAsCustomVariableOnContainerOrBase(Gum.DataTypes.Variables.VariableSave variable, ElementSave container)
+    {
+        if (DefinesCustomVariable(container, variable.Name))
+        {
+            return true;
+        }
+
+        foreach (var baseElement in ObjectFinder.Self.GetBaseElements(container))
+        {
+            if (DefinesCustomVariable(baseElement, variable.Name))
+            {
+                return true;
+            }
+        }
+
+        return false;
+
+        static bool DefinesCustomVariable(ElementSave element, string variableName) =>
+            element.DefaultState?.Variables.Any(item => item.IsCustomVariable && item.Name == variableName) == true;
+    }
+
     private bool GetIfShouldGenerateVariableInStateSetter(Gum.DataTypes.Variables.VariableSave variable, ElementSave container)
     {
         bool toReturn = true;
@@ -719,7 +746,7 @@ public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
 
         if (toReturn && !hasSourceObject)
         {
-            if (variable.IsCustomVariable)
+            if (variable.IsCustomVariable || IsDefinedAsCustomVariableOnContainerOrBase(variable, container))
             {
                 // all good, we can generate this:
                 toReturn = true;
