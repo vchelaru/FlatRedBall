@@ -159,18 +159,9 @@ namespace OfficialPlugins.VariableDisplay
         {
             AddOrShowSettingsGrid();
             settingsGrid.MembersToIgnore.Clear();
-            settingsGrid.MembersToIgnore.Add(nameof(ReferencedFileSave.Properties));
-            settingsGrid.MembersToIgnore.Add(nameof(ReferencedFileSave.FilePath));
-            settingsGrid.MembersToIgnore.Add(nameof(ReferencedFileSave.CachedInstanceName));
-            settingsGrid.MembersToIgnore.Add(nameof(ReferencedFileSave.OpensWith));
-            settingsGrid.MembersToIgnore.Add(nameof(ReferencedFileSave.IsCreatedByWildcard));
-
-            // todo - removing this until we get the dropdown working....
-            settingsGrid.MembersToIgnore.Add(nameof(ReferencedFileSave.RuntimeType));
-
-            if (!referencedFileSave.GetIsSharedStaticEditable())
+            foreach (var member in ReferencedFileSaveSettingsLogic.GetMembersToIgnore(referencedFileSave))
             {
-                settingsGrid.MembersToIgnore.Add(nameof(ReferencedFileSave.IsSharedStatic));
+                settingsGrid.MembersToIgnore.Add(member);
             }
 
             settingsGrid.Instance = referencedFileSave;
@@ -306,6 +297,20 @@ namespace OfficialPlugins.VariableDisplay
             EditorObjects.IoC.Container.Get<SetPropertyManager>().ReactToPropertyChanged(
                 propertyName, args.OldValue, propertyName, null);
 
+            // Which members apply to a file depends on its other members (e.g. Treat As Csv reveals
+            // Csv Delimiter), so rebuild the ignore list. Deferred so the grid isn't rebuilt from
+            // inside its own change event.
+            var changedFile = GlueState.Self.CurrentReferencedFileSave;
+            if (changedFile != null && ReferencedFileSaveSettingsLogic.ChangeAffectsShownMembers(propertyName))
+            {
+                settingsGrid.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    if (GlueState.Self.CurrentReferencedFileSave == changedFile)
+                    {
+                        ShowPropertiesForReferencedFileSave(changedFile);
+                    }
+                }), System.Windows.Threading.DispatcherPriority.Background);
+            }
         }
 
         private void AddOrShowVariableGrid()

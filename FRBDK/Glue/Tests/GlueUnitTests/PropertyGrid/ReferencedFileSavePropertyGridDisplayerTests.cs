@@ -66,4 +66,80 @@ public class ReferencedFileSavePropertyGridDisplayerTests : IDisposable
 
         displayer.GetPropertyGridMember(nameof(ReferencedFileSave.IsSharedStatic)).ShouldBeNull();
     }
+
+    // GitHub issue #2344: the legacy grid's container/extension/state rules moved into
+    // ReferencedFileSave.GetHiddenMemberNames so the WPF grid could share them. These pin that the
+    // legacy grid still hides CSV members on a non-CSV, still shows them on a CSV, and still follows
+    // the shared rule set exactly.
+
+    private static ReferencedFileSavePropertyGridDisplayer ShowFile(string name, bool inEntity = true)
+    {
+        var rfs = new ReferencedFileSave { Name = name };
+        if (inEntity)
+        {
+            var entity = new EntitySave { Name = "Entities/ObjectBall/ObjectBall" };
+            entity.ReferencedFiles.Add(rfs);
+            ObjectFinder.Self.GlueProject.Entities.Add(entity);
+        }
+        else
+        {
+            ObjectFinder.Self.GlueProject.GlobalFiles.Add(rfs);
+        }
+
+        return new ReferencedFileSavePropertyGridDisplayer { Instance = rfs };
+    }
+
+    [Fact]
+    public void CsvMembers_ShouldBeHidden_ForAchx()
+    {
+        var displayer = ShowFile("Entities/ObjectBall/BallColor.achx");
+
+        displayer.GetPropertyGridMember(nameof(ReferencedFileSave.CreatesDictionary)).ShouldBeNull();
+        displayer.GetPropertyGridMember(nameof(ReferencedFileSave.CsvDelimiter)).ShouldBeNull();
+        displayer.GetPropertyGridMember(nameof(ReferencedFileSave.TreatAsCsv)).ShouldBeNull();
+        displayer.GetPropertyGridMember(nameof(ReferencedFileSave.UniformRowType)).ShouldBeNull();
+        displayer.GetPropertyGridMember(nameof(ReferencedFileSave.IsDatabaseForLocalizing)).ShouldBeNull();
+    }
+
+    [Fact]
+    public void CsvMembers_ShouldBeShown_ForCsv()
+    {
+        var displayer = ShowFile("GlobalContent/Data.csv", inEntity: false);
+
+        displayer.GetPropertyGridMember(nameof(ReferencedFileSave.CreatesDictionary)).ShouldNotBeNull();
+        displayer.GetPropertyGridMember(nameof(ReferencedFileSave.CsvDelimiter)).ShouldNotBeNull();
+        displayer.GetPropertyGridMember(nameof(ReferencedFileSave.UniformRowType)).ShouldNotBeNull();
+        displayer.GetPropertyGridMember(nameof(ReferencedFileSave.IsDatabaseForLocalizing)).ShouldNotBeNull();
+        displayer.GetPropertyGridMember(nameof(ReferencedFileSave.TreatAsCsv)).ShouldBeNull();
+    }
+
+    [Fact]
+    public void TreatAsCsv_ShouldBeOffered_OnlyForTxt()
+    {
+        ShowFile("GlobalContent/Notes.txt", inEntity: false)
+            .GetPropertyGridMember(nameof(ReferencedFileSave.TreatAsCsv)).ShouldNotBeNull();
+        ShowFile("GlobalContent/Data.csv", inEntity: false)
+            .GetPropertyGridMember(nameof(ReferencedFileSave.TreatAsCsv)).ShouldBeNull();
+    }
+
+    [Fact]
+    public void Members_ShouldFollowTheSharedRuleSet_ForSeveralFileKinds()
+    {
+        var files = new[]
+        {
+            ("Entities/ObjectBall/BallColor.achx", true),
+            ("GlobalContent/Data.csv", false),
+            ("GlobalContent/Notes.txt", false),
+            ("GlobalContent/Texture.png", false),
+        };
+
+        foreach (var (name, inEntity) in files)
+        {
+            var displayer = ShowFile(name, inEntity);
+            foreach (var hidden in ((ReferencedFileSave)displayer.Instance).GetHiddenMemberNames())
+            {
+                displayer.GetPropertyGridMember(hidden).ShouldBeNull($"{name}: {hidden}");
+            }
+        }
+    }
 }

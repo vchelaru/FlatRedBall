@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.IO;
 
@@ -72,6 +73,102 @@ namespace FlatRedBall.Glue.SaveClasses
         /// </summary>
         public static bool GetIsSharedStaticEditable(this ReferencedFileSave instance) =>
             instance.GetContainerType() == ContainerType.Screen;
+
+        /// <summary>
+        /// The names of <see cref="ReferencedFileSave"/> members that have no effect for this file (wrong
+        /// container, wrong extension, or switched off by another property), and so should not be shown in a
+        /// property grid. Both grids (the legacy WinForms displayer and the WPF "Settings (Preview)" grid)
+        /// build their exclusion list from this so the two can't drift apart. Each grid adds its own extras
+        /// on top (e.g. the WPF grid always hides FilePath). Depends on the file's current state, so a grid
+        /// must call it again after the file's properties change.
+        /// </summary>
+        public static HashSet<string> GetHiddenMemberNames(this ReferencedFileSave instance)
+        {
+            var hidden = new HashSet<string>
+            {
+                nameof(ReferencedFileSave.InvalidFileNameCharacters),
+                nameof(ReferencedFileSave.ToStringDelegate),
+                nameof(ReferencedFileSave.Properties),
+                // Computed from TreatAsCsv and the extension; never editable. The legacy grid skips it
+                // through [Browsable(false)], which the WPF grid doesn't honor.
+                nameof(ReferencedFileSave.IsCsvOrTreatedAsCsv),
+            };
+
+            var containerType = instance.GetContainerType();
+            var ati = instance.GetAssetTypeInfo();
+            var qualifiedRuntimeType = ati?.QualifiedRuntimeTypeName.QualifiedType;
+
+            if (containerType == ContainerType.Entity)
+            {
+                // Whether the objects from a file are manually updated is up to the entity, not the source file.
+                hidden.Add(nameof(ReferencedFileSave.IsManuallyUpdated));
+            }
+
+            if (!instance.GetIsSharedStaticEditable())
+            {
+                hidden.Add(nameof(ReferencedFileSave.IsSharedStatic));
+            }
+
+            if (containerType == ContainerType.Entity || qualifiedRuntimeType != "Microsoft.Xna.Framework.Media.Song")
+            {
+                hidden.Add(nameof(ReferencedFileSave.DestroyOnUnload));
+            }
+
+            var extension = FileManager.GetExtension(instance.Name);
+
+            if (extension != "csv" && !instance.TreatAsCsv)
+            {
+                hidden.Add(nameof(ReferencedFileSave.CreatesDictionary));
+                hidden.Add(nameof(ReferencedFileSave.IsDatabaseForLocalizing));
+                hidden.Add(nameof(ReferencedFileSave.UniformRowType));
+            }
+
+            if ((extension != "txt" && extension != "csv") ||
+                (extension == "txt" && !instance.TreatAsCsv))
+            {
+                hidden.Add(nameof(ReferencedFileSave.CsvDelimiter));
+            }
+
+            if (extension != "txt")
+            {
+                hidden.Add(nameof(ReferencedFileSave.TreatAsCsv));
+            }
+
+            if (!instance.LoadedAtRuntime)
+            {
+                hidden.Add(nameof(ReferencedFileSave.IsSharedStatic));
+                hidden.Add(nameof(ReferencedFileSave.IsManuallyUpdated));
+                hidden.Add(nameof(ReferencedFileSave.LoadedOnlyWhenReferenced));
+                hidden.Add(nameof(ReferencedFileSave.HasPublicProperty));
+                hidden.Add("InstanceName");
+                hidden.Add(nameof(ReferencedFileSave.IncludeDirectoryRelativeToContainer));
+            }
+
+            if (string.IsNullOrEmpty(ati?.MakeManuallyUpdatedMethod))
+            {
+                hidden.Add(nameof(ReferencedFileSave.IsManuallyUpdated));
+            }
+
+            if (!instance.GetCanUseContentPipeline())
+            {
+                hidden.Add(nameof(ReferencedFileSave.UseContentPipeline));
+            }
+
+            if (!instance.UseContentPipeline || qualifiedRuntimeType != "Microsoft.Xna.Framework.Graphics.Texture2D")
+            {
+                hidden.Add("TextureFormat");
+            }
+
+            if (string.IsNullOrEmpty(instance.SourceFile))
+            {
+                // SourceFile itself stays visible, otherwise it could never be set.
+                hidden.Add(nameof(ReferencedFileSave.BuildTool));
+                hidden.Add(nameof(ReferencedFileSave.AdditionalArguments));
+                hidden.Add(nameof(ReferencedFileSave.ConditionalCompilationSymbols));
+            }
+
+            return hidden;
+        }
 
         /// <summary>
         /// Whether the file lives outside the content folder owned by its container - a Screen or Entity
