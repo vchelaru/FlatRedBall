@@ -353,25 +353,7 @@ internal class AddSourceManager
 
                 RemoveDllReference(vsProject, "FNA");
 
-                RemoveNugetReference(vsProject, "FlatRedBallDesktopGLNet6");
-                RemoveNugetReference(vsProject, "FlatRedBallKniWeb");
-                RemoveNugetReference(vsProject, "FlatRedBall.FNA");
-
-                // Forms, GumCore, SkiaInGum and StateInterpolation used to arrive as DLLs in the
-                // project's Libraries folder, which the loop above strips. They are NuGet packages
-                // now, so linking to source has to remove them here instead.
-                RemoveNugetReference(vsProject, "FlatRedBall.Forms.DesktopGlNet6");
-                RemoveNugetReference(vsProject, "FlatRedBall.GumCore.DesktopGlNet6");
-                RemoveNugetReference(vsProject, "FlatRedBall.SkiaInGum");
-                RemoveNugetReference(vsProject, "FlatRedBall.StateInterpolation.DesktopNet6");
-
-                RemoveNugetReference(vsProject, "FlatRedBall.Forms.Kni.Web");
-                RemoveNugetReference(vsProject, "FlatRedBall.GumCore.Kni.Web");
-                RemoveNugetReference(vsProject, "FlatRedBall.StateInterpolation.Kni.Web");
-
-                RemoveNugetReference(vsProject, "FlatRedBall.Forms.FNA");
-                RemoveNugetReference(vsProject, "FlatRedBall.GumCore.FNA");
-                RemoveNugetReference(vsProject, "FlatRedBall.StateInterpolation.FNA");
+                RemoveNugetReferences(vsProject);
 
                 vsProject.Save(vsProject.FullFileName.FullPath);
             }
@@ -507,7 +489,45 @@ internal class AddSourceManager
         }
     }
 
-    private void RemoveNugetReference(VisualStudioProject project, string referenceName)
+    /// <summary>
+    /// FlatRedBall-owned NuGet package ids that linking to source replaces with ProjectReferences.
+    /// Every id a project template ships must be here, or a linked project keeps the package beside
+    /// the source references; a unit test checks the templates against this list.
+    /// </summary>
+    internal static readonly IReadOnlyList<string> NugetPackagesRemovedOnLink = new[]
+    {
+        "FlatRedBallDesktopGLNet6",
+        "FlatRedBallKniWeb",
+        "FlatRedBall.FNA",
+        "FlatRedBallAndroid",
+        "FlatRedBalliOS",
+
+        // Forms, GumCore, SkiaInGum and StateInterpolation used to arrive as DLLs in the
+        // project's Libraries folder, which the loop in LinkToSourceInternal strips. They are NuGet
+        // packages now, so linking to source has to remove them here instead.
+        "FlatRedBall.Forms.DesktopGlNet6",
+        "FlatRedBall.GumCore.DesktopGlNet6",
+        "FlatRedBall.SkiaInGum",
+        "FlatRedBall.StateInterpolation.DesktopNet6",
+
+        "FlatRedBall.Forms.Kni.Web",
+        "FlatRedBall.GumCore.Kni.Web",
+        "FlatRedBall.StateInterpolation.Kni.Web",
+
+        "FlatRedBall.Forms.FNA",
+        "FlatRedBall.GumCore.FNA",
+        "FlatRedBall.StateInterpolation.FNA",
+    };
+
+    internal static void RemoveNugetReferences(VisualStudioProject project)
+    {
+        foreach (var packageId in NugetPackagesRemovedOnLink)
+        {
+            RemoveNugetReference(project, packageId);
+        }
+    }
+
+    private static void RemoveNugetReference(VisualStudioProject project, string referenceName)
     {
         var item = project.EvaluatedItems.FirstOrDefault(item => item.ItemType == "PackageReference" && item.EvaluatedInclude == referenceName);
 
