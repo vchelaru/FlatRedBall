@@ -49,9 +49,11 @@ public class AnimationChainPlaybackTests : IDisposable
     [Theory]
     [InlineData(0.0, 0)]
     [InlineData(0.5, 0)]
-    [InlineData(1.0, 1)]
+    [InlineData(1.0, 0)] // a boundary holds the frame being left
+    [InlineData(1.1, 1)]
     [InlineData(2.9, 1)]
-    [InlineData(3.0, 2)]
+    [InlineData(3.0, 1)]
+    [InlineData(3.1, 2)]
     [InlineData(3.9, 2)]
     public void GetPlaybackFrame_Plain_ShouldPlayForward(double time, int expected)
     {
@@ -61,9 +63,11 @@ public class AnimationChainPlaybackTests : IDisposable
     [Theory]
     [InlineData(0.0, 2)]
     [InlineData(0.9, 2)]
-    [InlineData(1.0, 1)]
+    [InlineData(1.0, 2)] // a boundary holds the frame being left
+    [InlineData(1.1, 1)]
     [InlineData(2.9, 1)]
-    [InlineData(3.0, 0)]
+    [InlineData(3.0, 1)]
+    [InlineData(3.1, 0)]
     [InlineData(3.9, 0)]
     public void GetPlaybackFrame_Reverse_ShouldPlayMirrored(double time, int expected)
     {
@@ -75,9 +79,11 @@ public class AnimationChainPlaybackTests : IDisposable
     [InlineData(3.9, 2)]
     [InlineData(4.0, 2)] // the end frame shows double across the turnaround
     [InlineData(4.9, 2)]
-    [InlineData(5.0, 1)]
+    [InlineData(5.0, 2)]
+    [InlineData(5.1, 1)]
     [InlineData(6.9, 1)]
-    [InlineData(7.0, 0)]
+    [InlineData(7.0, 1)]
+    [InlineData(7.1, 0)]
     [InlineData(7.9, 0)]
     public void GetPlaybackFrame_PingPong_ShouldPlayForwardThenMirrored(double time, int expected)
     {
@@ -86,12 +92,15 @@ public class AnimationChainPlaybackTests : IDisposable
 
     [Theory]
     [InlineData(0.0, 2)]
-    [InlineData(1.0, 1)]
+    [InlineData(1.0, 2)]
+    [InlineData(1.1, 1)]
     [InlineData(3.9, 0)]
     [InlineData(4.0, 0)] // the first frame shows double across the turnaround
     [InlineData(4.9, 0)]
-    [InlineData(5.0, 1)]
-    [InlineData(7.0, 2)]
+    [InlineData(5.0, 0)]
+    [InlineData(5.1, 1)]
+    [InlineData(7.0, 1)]
+    [InlineData(7.1, 2)]
     [InlineData(7.9, 2)]
     public void GetPlaybackFrame_PingPongReverse_ShouldPlayMirroredFirst(double time, int expected)
     {
