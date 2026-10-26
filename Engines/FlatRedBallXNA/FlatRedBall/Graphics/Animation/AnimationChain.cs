@@ -69,6 +69,22 @@ namespace FlatRedBall.Graphics.Animation
             set { mName = value; }
         }
 
+        /// <summary>
+        /// Whether the chain plays forward and then backward (forward 0..T, then mirrored T..0, where T is TotalLength).
+        /// The end frames show for double their length across the turnaround and the wrap.
+        /// </summary>
+        public bool PingPong { get; set; }
+
+        /// <summary>
+        /// Whether the chain plays its forward timeline mirrored. Combined with PingPong, the mirrored half plays first.
+        /// </summary>
+        public bool Reverse { get; set; }
+
+        /// <summary>
+        /// The length of one full playback cycle in seconds: TotalLength, or twice that if PingPong is true.
+        /// </summary>
+        public float PlaybackLength => PingPong ? TotalLength * 2 : TotalLength;
+
         private string mParentAchxFileName;
         public string ParentAchxFileName
         {
@@ -144,8 +160,74 @@ namespace FlatRedBall.Graphics.Animation
             animationChain.mIndexInLoadedAchx = mIndexInLoadedAchx;
 
             animationChain.mName = this.mName;
+            animationChain.PingPong = PingPong;
+            animationChain.Reverse = Reverse;
 
             return animationChain;
+        }
+
+        /// <summary>
+        /// Maps a time within one playback cycle (0 to PlaybackLength) to the frame shown and how far into that
+        /// frame the forward timeline is. A mirrored half reports forward elapsed time, so keyframe interpolation
+        /// plays backward rather than re-easing.
+        /// </summary>
+        /// <param name="timeIntoCycle">Time into the cycle, in seconds. Values past the cycle clamp to its end.</param>
+        /// <param name="frameIndex">The frame shown, or -1 if the chain is empty.</param>
+        /// <param name="forwardElapsedInFrame">Seconds into the frame on the forward timeline.</param>
+        public void GetPlaybackFrame(double timeIntoCycle, out int frameIndex, out double forwardElapsedInFrame)
+        {
+            frameIndex = -1;
+            forwardElapsedInFrame = 0;
+
+            if (Count == 0)
+            {
+                return;
+            }
+
+            double totalLength = TotalLength;
+            bool mirrored = Reverse;
+            double local = timeIntoCycle;
+
+            if (PingPong && local >= totalLength)
+            {
+                mirrored = !Reverse;
+                local -= totalLength;
+            }
+
+            if (mirrored)
+            {
+                for (int i = Count - 1; i >= 0; i--)
+                {
+                    double length = this[i].FrameLength;
+                    if (local < length)
+                    {
+                        frameIndex = i;
+                        forwardElapsedInFrame = length - local;
+                        return;
+                    }
+                    local -= length;
+                }
+
+                frameIndex = 0;
+                forwardElapsedInFrame = 0;
+            }
+            else
+            {
+                for (int i = 0; i < Count; i++)
+                {
+                    double length = this[i].FrameLength;
+                    if (local < length)
+                    {
+                        frameIndex = i;
+                        forwardElapsedInFrame = local;
+                        return;
+                    }
+                    local -= length;
+                }
+
+                frameIndex = Count - 1;
+                forwardElapsedInFrame = this[frameIndex].FrameLength;
+            }
         }
 
         /// <summary>

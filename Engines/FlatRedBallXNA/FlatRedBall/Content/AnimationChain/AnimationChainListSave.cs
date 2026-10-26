@@ -358,7 +358,7 @@ namespace FlatRedBall.Content.AnimationChain
 
         // Property names and defaults match the FlatRedBall Animation Editor's .achj writer (camelCase,
         // AnimationChain.Common in the FlatRedBall2 repo). Keys this class doesn't model (chain "loop" and
-        // "locked", frame "events") are simply not read. A missing key falls back to the same default the
+        // "locked", frame "events") are simply not read; Sprite playback always loops. A missing key falls back to the same default the
         // XML path uses.
         private static AnimationChainListSave ParseJson(JsonObject root)
         {
@@ -393,6 +393,8 @@ namespace FlatRedBall.Content.AnimationChain
                     JsonObject chainObject = chainNode.AsObject();
                     AnimationChainSave chain = new AnimationChainSave();
                     chain.Name = chainObject["name"]?.GetValue<string>() ?? string.Empty;
+                    chain.PingPong = JsonBool(chainObject, "pingPong");
+                    chain.Reverse = JsonBool(chainObject, "reverse");
 
                     if (chainObject["frames"] is JsonArray frames)
                     {
