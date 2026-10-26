@@ -74,6 +74,31 @@ public class SpriteKeyframeInterpolationTests
     }
 
     [Fact]
+    public void AnimateSelf_PingPong_LastKeyframeHoldsInsteadOfGlidingToFirst()
+    {
+        var sprite = Play(Slide(0, type: "Linear"), Slide(100, type: "Linear"));
+        sprite.CurrentChain.PingPong = true;
+
+        Step(sprite, 1.5);
+
+        sprite.CurrentFrameIndex.ShouldBe(1);
+        sprite.RelativeX.ShouldBe(100f, 0.001f);
+    }
+
+    [Fact]
+    public void AnimateSelf_PingPong_BackwardHalfPlaysTheGlideInReverse()
+    {
+        var sprite = Play(Slide(0, type: "Linear"), Slide(100, type: "Linear"));
+        sprite.CurrentChain.PingPong = true;
+
+        Step(sprite, 3.5);
+
+        // Cycle time 3.5 is 0.5s into the mirrored frame 0: forward elapsed 0.5, so halfway.
+        sprite.CurrentFrameIndex.ShouldBe(0);
+        sprite.RelativeX.ShouldBe(50f, 0.001f);
+    }
+
+    [Fact]
     public void AnimateSelf_LinearOffset_KeepsMovingEveryUpdate()
     {
         var sprite = Play(Slide(0, type: "Linear"), Slide(100));

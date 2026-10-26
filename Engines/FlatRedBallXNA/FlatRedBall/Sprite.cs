@@ -1691,8 +1691,9 @@ namespace FlatRedBall
                 elapsedInFrame = 0;
             }
 
-            // AnimateSelf always wraps back to the first frame, so chains loop.
-            const bool loop = true;
+            // AnimateSelf always wraps back to the first frame, so chains loop. A ping-pong turns around at its
+            // ends instead of gliding from the last keyframe back to the first.
+            bool loop = !chain.PingPong;
 
             if (mUseAnimationRelativePosition)
             {
