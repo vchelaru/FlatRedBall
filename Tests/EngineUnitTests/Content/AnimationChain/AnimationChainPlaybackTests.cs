@@ -98,6 +98,26 @@ public class AnimationChainPlaybackTests : IDisposable
         FrameAt(CreateChain(pingPong: true, reverse: true), time).ShouldBe(expected);
     }
 
+    // Pins the boundary convention shared with plain chains: a time exactly on a frame boundary shows the frame being
+    // entered, in both directions. FRB2 and Gum match this (#2400).
+    [Fact]
+    public void GetPlaybackFrame_ExactBoundary_ShouldEnterTheNextFrameInPlaybackOrder()
+    {
+        // Frames are 0.5s, binary-exact so the boundaries are exact.
+        var chain = new FlatRedBall.Graphics.Animation.AnimationChain { PingPong = true };
+        chain.Add(new AnimationFrame { FrameLength = 0.5f });
+        chain.Add(new AnimationFrame { FrameLength = 0.5f });
+
+        FrameAt(chain, 0.5).ShouldBe(1);  // forward: A -> B
+        FrameAt(chain, 1.0).ShouldBe(1);  // turnaround: B stays, now mirrored
+        FrameAt(chain, 1.5).ShouldBe(0);  // backward: B -> A
+
+        chain.PingPong = false;
+        chain.Reverse = true;
+        FrameAt(chain, 0.0).ShouldBe(1);  // reverse starts on the last frame
+        FrameAt(chain, 0.5).ShouldBe(0);  // backward: B -> A
+    }
+
     [Fact]
     public void GetPlaybackFrame_Reverse_ShouldReportForwardElapsedTime()
     {
