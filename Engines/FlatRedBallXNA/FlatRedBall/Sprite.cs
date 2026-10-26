@@ -1670,7 +1670,20 @@ namespace FlatRedBall
                 return;
             }
 
-            double elapsedInFrame = mTimeIntoAnimation - chain.GetTimeAtFrameIndex(mCurrentFrameIndex);
+            double elapsedInFrame;
+            if (chain.PingPong || chain.Reverse)
+            {
+                chain.GetPlaybackFrame(mTimeIntoAnimation % chain.PlaybackLength, out int playbackFrameIndex, out elapsedInFrame);
+                if (playbackFrameIndex != mCurrentFrameIndex)
+                {
+                    elapsedInFrame = -1;
+                }
+            }
+            else
+            {
+                elapsedInFrame = mTimeIntoAnimation - chain.GetTimeAtFrameIndex(mCurrentFrameIndex);
+            }
+
             if (elapsedInFrame < 0 || elapsedInFrame > chain[mCurrentFrameIndex].FrameLength)
             {
                 // The time isn't within the current frame (for example the frame was just set directly), so
@@ -1678,8 +1691,9 @@ namespace FlatRedBall
                 elapsedInFrame = 0;
             }
 
-            // AnimateSelf always wraps back to the first frame, so chains loop.
-            const bool loop = true;
+            // AnimateSelf always wraps back to the first frame, so chains loop. A ping-pong turns around at its
+            // ends instead of gliding from the last keyframe back to the first.
+            bool loop = !chain.PingPong;
 
             if (mUseAnimationRelativePosition)
             {
@@ -1999,7 +2013,7 @@ namespace FlatRedBall
 
             AnimationChain animationChain = mAnimationChains[mCurrentChainIndex];
 
-            mTimeIntoAnimation = MathFunctions.Loop(mTimeIntoAnimation, animationChain.TotalLength, out mJustCycled);
+            mTimeIntoAnimation = MathFunctions.Loop(mTimeIntoAnimation, animationChain.PlaybackLength, out mJustCycled);
 
             UpdateFrameBasedOffOfTimeIntoAnimation();
 
@@ -2194,6 +2208,13 @@ namespace FlatRedBall
                     return;
                 }
 
+                if (CurrentChain.PingPong || CurrentChain.Reverse)
+                {
+                    CurrentChain.GetPlaybackFrame(timeIntoAnimation % CurrentChain.PlaybackLength, out int playbackFrameIndex, out _);
+                    mCurrentFrameIndex = playbackFrameIndex;
+                    return;
+                }
+
                 // Bound the number of loop iterations to the number of frames by wrapping
                 // timeIntoAnimation into a single pass through the chain up front.
                 timeIntoAnimation %= totalChainTime;
@@ -2230,9 +2251,20 @@ namespace FlatRedBall
             {
                 mTimeIntoAnimation = 0.0f;
                 //update to the correct time for this frame
-                for (int x = 0; x < mCurrentFrameIndex && x < CurrentChain.Count; x++)
+                if (CurrentChain.Reverse)
                 {
-                    mTimeIntoAnimation += CurrentChain[x].FrameLength;
+                    // The first half plays the forward timeline mirrored, so the frames after this one come first.
+                    for (int x = mCurrentFrameIndex + 1; x < CurrentChain.Count; x++)
+                    {
+                        mTimeIntoAnimation += CurrentChain[x].FrameLength;
+                    }
+                }
+                else
+                {
+                    for (int x = 0; x < mCurrentFrameIndex && x < CurrentChain.Count; x++)
+                    {
+                        mTimeIntoAnimation += CurrentChain[x].FrameLength;
+                    }
                 }
             }
         }

@@ -35,6 +35,14 @@ namespace FlatRedBall.Content.AnimationChain
         [XmlElementAttribute("Frame")]
         public List<AnimationFrameSave> Frames = new List<AnimationFrameSave>();
 
+        /// <summary>Whether the chain plays forward then backward. Written only when true.</summary>
+        public bool PingPong;
+        public bool ShouldSerializePingPong() => PingPong;
+
+        /// <summary>Whether the chain plays its forward timeline mirrored. Written only when true.</summary>
+        public bool Reverse;
+        public bool ShouldSerializeReverse() => Reverse;
+
 
         #endregion
 
@@ -48,6 +56,8 @@ namespace FlatRedBall.Content.AnimationChain
             AnimationChainSave animationChainSave = new AnimationChainSave();
             animationChainSave.Frames = new List<AnimationFrameSave>();
             animationChainSave.Name = animationChain.Name;
+            animationChainSave.PingPong = animationChain.PingPong;
+            animationChainSave.Reverse = animationChain.Reverse;
 
             foreach (Anim.AnimationFrame frame in animationChain)
             {
@@ -89,6 +99,8 @@ namespace FlatRedBall.Content.AnimationChain
                 new Anim.AnimationChain();
 
             animationChain.Name = Name;
+            animationChain.PingPong = PingPong;
+            animationChain.Reverse = Reverse;
 
             float divisor = 1;
 
@@ -199,6 +211,12 @@ namespace FlatRedBall.Content.AnimationChain
                         break;
                     case "Frame":
                         toReturn.Frames.Add(AnimationFrameSave.FromXElement(subElement));
+                        break;
+                    case "PingPong":
+                        toReturn.PingPong = AnimationChainListSave.AsBool(subElement);
+                        break;
+                    case "Reverse":
+                        toReturn.Reverse = AnimationChainListSave.AsBool(subElement);
                         break;
                 }
             }
