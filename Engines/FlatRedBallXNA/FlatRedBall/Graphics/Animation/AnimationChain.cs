@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Texture2D = Microsoft.Xna.Framework.Graphics.Texture2D;
 using FlatRedBall.Utilities;
@@ -169,10 +169,9 @@ namespace FlatRedBall.Graphics.Animation
         /// <summary>
         /// Maps a time within one playback cycle (0 to PlaybackLength) to the frame shown and how far into that
         /// frame the forward timeline is. A mirrored half reports forward elapsed time, so keyframe interpolation
-        /// plays backward rather than re-easing. A time exactly on a frame boundary shows the frame playback is
-        /// leaving, and a ping-pong's turnaround instant already counts as mirrored (same as FlatRedBall2's PlaybackTimeline).
+        /// plays backward rather than re-easing.
         /// </summary>
-        /// <param name="timeIntoCycle">Time into the cycle, in seconds. Values outside the cycle clamp to it.</param>
+        /// <param name="timeIntoCycle">Time into the cycle, in seconds. Values past the cycle clamp to its end.</param>
         /// <param name="frameIndex">The frame shown, or -1 if the chain is empty.</param>
         /// <param name="forwardElapsedInFrame">Seconds into the frame on the forward timeline.</param>
         public void GetPlaybackFrame(double timeIntoCycle, out int frameIndex, out double forwardElapsedInFrame)
@@ -185,52 +184,50 @@ namespace FlatRedBall.Graphics.Animation
                 return;
             }
 
-            double total = TotalLength;
-            double u = System.Math.Min(System.Math.Max(timeIntoCycle, 0), PlaybackLength);
+            double totalLength = TotalLength;
+            bool mirrored = Reverse;
+            double local = timeIntoCycle;
 
-            double forwardTime;
-            bool backward;
-            if (!PingPong)
+            if (PingPong && local >= totalLength)
             {
-                backward = Reverse;
-                forwardTime = Reverse ? total - u : u;
+                mirrored = !Reverse;
+                local -= totalLength;
+            }
+
+            if (mirrored)
+            {
+                for (int i = Count - 1; i >= 0; i--)
+                {
+                    double length = this[i].FrameLength;
+                    if (local < length)
+                    {
+                        frameIndex = i;
+                        forwardElapsedInFrame = length - local;
+                        return;
+                    }
+                    local -= length;
+                }
+
+                frameIndex = 0;
+                forwardElapsedInFrame = 0;
             }
             else
             {
-                bool firstHalf = u < total;
-                if (!Reverse)
+                for (int i = 0; i < Count; i++)
                 {
-                    backward = !firstHalf;
-                    forwardTime = firstHalf ? u : 2 * total - u;
+                    double length = this[i].FrameLength;
+                    if (local < length)
+                    {
+                        frameIndex = i;
+                        forwardElapsedInFrame = local;
+                        return;
+                    }
+                    local -= length;
                 }
-                else
-                {
-                    backward = firstHalf;
-                    forwardTime = firstHalf ? total - u : u - total;
-                }
-            }
 
-            // Going forward the frame being left is the earlier one, going backward the later one.
-            int frame = Count - 1;
-            double start = 0;
-            for (int i = 0; i < Count; i++)
-            {
-                double end = start + this[i].FrameLength;
-                if (backward ? forwardTime < end : forwardTime <= end)
-                {
-                    frame = i;
-                    break;
-                }
-                start = end;
+                frameIndex = Count - 1;
+                forwardElapsedInFrame = this[frameIndex].FrameLength;
             }
-
-            if (frame == Count - 1)
-            {
-                start = total - this[frame].FrameLength;
-            }
-
-            frameIndex = frame;
-            forwardElapsedInFrame = System.Math.Min(System.Math.Max(forwardTime - start, 0), this[frame].FrameLength);
         }
 
         /// <summary>
