@@ -105,7 +105,8 @@ public class ContainerCodeGenerator
         // "SourceShaderFile" (Gum v3) has no equivalent surface on Container - permanent, version-
         // independent skip, unlike Alpha/Blend/IsRenderTarget below which are real InvisibleRenderable-backed
         // properties gated on HasIsRenderTarget.
-        var variablesToSkip = new List<string> { "SourceShaderFile" };
+        // "ShaderParameters" is the same: it lives on IRenderTargetRenderable, not IRenderableIpso.
+        var variablesToSkip = new List<string> { "SourceShaderFile", "ShaderParameters" };
 
         if(!HasIsRenderTarget)
         {
@@ -122,8 +123,8 @@ public class ContainerCodeGenerator
         // See AddTypeSpecificVariableNamesToSkipForStates above - Container has no backing runtime type,
         // so "SourceShaderFile" can't back a generated property at any version. Left unskipped it's
         // generated against ((RenderingLibrary.Graphics.IRenderableIpso)this.RenderableComponent), which
-        // has no such member (CS1061).
-        typedVariableNamesToSkipForProperties.Add("Container", new List<string> { "SourceShaderFile" });
+        // has no such member (CS1061). "ShaderParameters" fails the same way.
+        typedVariableNamesToSkipForProperties.Add("Container", new List<string> { "SourceShaderFile", "ShaderParameters" });
     }
 }
 
