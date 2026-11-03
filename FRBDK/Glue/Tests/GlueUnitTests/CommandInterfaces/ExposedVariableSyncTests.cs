@@ -1,9 +1,13 @@
+using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.SetVariable;
 using GlueUnitTests.Tasks;
 using GlueUnitTests.TestSupport;
 using Shouldly;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
@@ -17,14 +21,36 @@ namespace GlueUnitTests.CommandInterfaces;
 /// Setting an instance value one at a time keeps the exposed default in step; setting several at once
 /// (<see cref="IGluxCommands.SetVariableOnList"/>, used by multi-select edits and edits pushed from the game) must too.
 /// </summary>
-// Loads a real project, which replaces ObjectFinder.Self.GlueProject, so it runs in the sequential collection.
+// Replaces ObjectFinder.Self.GlueProject and TaskManager.SynchronousMode, so it runs in the sequential collection.
+// The project is built in memory on purpose: loading a sample project registers every plugin's asset types for
+// the rest of the test run, which changes what unrelated codegen tests generate.
 [Collection(nameof(TaskManagerSequentialCollection))]
-public class ExposedVariableSyncTests : DeleteDialogTestBase
+public class ExposedVariableSyncTests : IDisposable
 {
-    private static async Task<(ScreenSave screen, NamedObjectSave sprite, CustomVariable exposed)> AddScreenWithExposedRedAsync(
-        string screenName)
+    private readonly GlueProjectSave _originalGlueProject;
+    private readonly bool _originalSynchronousMode;
+
+    public ExposedVariableSyncTests()
     {
-        var screen = await GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(screenName);
+        GlueTestBootstrap.EnsureInitialized();
+
+        _originalGlueProject = ObjectFinder.Self.GlueProject;
+        _originalSynchronousMode = TaskManager.SynchronousMode;
+
+        ObjectFinder.Self.GlueProject = new GlueProjectSave { FileVersion = GlueProjectSave.LatestVersion };
+        TaskManager.SynchronousMode = true;
+    }
+
+    public void Dispose()
+    {
+        ObjectFinder.Self.GlueProject = _originalGlueProject;
+        TaskManager.SynchronousMode = _originalSynchronousMode;
+    }
+
+    private static (ScreenSave screen, NamedObjectSave sprite, CustomVariable exposed) AddScreenWithExposedRed()
+    {
+        var screen = new ScreenSave { Name = "Screens\\SyncScreen" };
+        ObjectFinder.Self.GlueProject.Screens.Add(screen);
 
         var sprite = new NamedObjectSave
         {
@@ -32,7 +58,7 @@ public class ExposedVariableSyncTests : DeleteDialogTestBase
             SourceType = SourceType.FlatRedBallType,
             SourceClassType = "FlatRedBall.Sprite"
         };
-        await GlueCommands.Self.GluxCommands.AddNamedObjectToAsync(sprite, screen);
+        screen.NamedObjects.Add(sprite);
 
         var exposed = new CustomVariable
         {
@@ -47,30 +73,30 @@ public class ExposedVariableSyncTests : DeleteDialogTestBase
         return (screen, sprite, exposed);
     }
 
-    [StaFact]
-    public async Task SettingOneInstanceValue_UpdatesTheExposedDefault()
+    // The single-edit path (SetVariableOnAsync) also refreshes the property grid, which needs a loaded project, so
+    // this exercises the sync step it ends in directly. The list path below goes through the real command.
+    [Fact]
+    public void CopyingAnInstanceValueToTunneledVariables_UpdatesTheExposedDefault()
     {
-        using var project = await LoadFormsSampleAsync();
-        var (_, sprite, exposed) = await AddScreenWithExposedRedAsync("SyncSingleScreen");
+        var (screen, sprite, exposed) = AddScreenWithExposedRed();
 
-        await GlueCommands.Self.GluxCommands.SetVariableOnAsync(
-            sprite, "Red", 0.2f, performSaveAndGenerateCode: false, updateUi: false);
+        sprite.SetVariable("Red", 0.2f);
+        NamedObjectSetVariableLogic.CopyInstanceValueToTunneledVariables("Red", sprite, screen);
 
         exposed.DefaultValue.ShouldBe(0.2f);
     }
 
-    [StaFact]
+    [Fact]
     public async Task SettingInstanceValuesAsAList_UpdatesTheExposedDefault()
     {
-        using var project = await LoadFormsSampleAsync();
-        var (_, sprite, exposed) = await AddScreenWithExposedRedAsync("SyncListScreen");
+        var (_, sprite, exposed) = AddScreenWithExposedRed();
 
         await GlueCommands.Self.GluxCommands.SetVariableOnList(
             new List<NosVariableAssignment>
             {
                 new NosVariableAssignment { NamedObjectSave = sprite, VariableName = "Red", Value = 0.2f }
             },
-            performSaveAndGenerateCode: false, updateUi: false);
+            performSaveAndGenerateCode: false, updateUi: false, recordUndo: false);
 
         exposed.DefaultValue.ShouldBe(0.2f);
     }
