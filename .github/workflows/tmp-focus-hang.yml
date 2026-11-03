@@ -38,13 +38,22 @@ jobs:
       shell: pwsh
       run: |
         dotnet tool install -g dotnet-dump | Out-Null
+        dotnet tool install -g dotnet-stack | Out-Null
         $env:PATH += ";$env:USERPROFILE\.dotnet\tools"
         $p = Start-Process dotnet -PassThru -NoNewWindow -ArgumentList @(
           'test', '"FlatRedBall\FRBDK\Glue\Glue with All.sln"', '-c', 'Debug', '--no-build',
           '--filter', 'Category!=BuildSmoke&Category!=LiveGame&Category!=SdkMatrix', '--logger', 'console;verbosity=normal') `
           -RedirectStandardOutput "$env:RUNNER_TEMP\out.txt"
-        if (-not $p.WaitForExit(200000)) {
+        if (-not $p.WaitForExit(280000)) {
           Write-Host "WEDGED - dumping testhost stacks"
+          Write-Host "=== child processes"
+          Get-CimInstance Win32_Process | Where-Object { $_.Name -match 'gumcli|ping|testhost|conhost|cmd' } |
+            Select-Object ProcessId, ParentProcessId, Name, CreationDate, CommandLine | Format-List | Out-String | Write-Host
+          Get-Process gumcli -ErrorAction SilentlyContinue | ForEach-Object {
+            Write-Host "=== gumcli $($_.Id) cpu=$($_.CPU) threads=$($_.Threads.Count)"
+            dotnet-stack report -p $_.Id
+          }
+          Get-Item "FlatRedBall\FRBDK\Glue\Glue\bin\Debug\Plugins\GumPlugin\Tools\gumcli\gumcli.exe" -ErrorAction SilentlyContinue | Select-Object FullName, Length | Format-List | Out-String | Write-Host
           Get-Process testhost* -ErrorAction SilentlyContinue | ForEach-Object {
             Write-Host "=== testhost $($_.Id)"
             dotnet-dump collect -p $_.Id -o "$env:RUNNER_TEMP\hang.dmp" --type Full | Out-Null
