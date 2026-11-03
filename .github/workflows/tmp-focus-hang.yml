@@ -48,7 +48,7 @@ jobs:
           Get-Process testhost* -ErrorAction SilentlyContinue | ForEach-Object {
             Write-Host "=== testhost $($_.Id)"
             dotnet-dump collect -p $_.Id -o "$env:RUNNER_TEMP\hang.dmp" --type Full | Out-Null
-            dotnet-dump analyze "$env:RUNNER_TEMP\hang.dmp" -c "dumpasync -tasks" -c "exit"
+            dotnet-dump analyze "$env:RUNNER_TEMP\hang.dmp" -c "dumpasync --tasks" -c "exit"
           }
           Get-Content "$env:RUNNER_TEMP\out.txt" -Tail 400
           Stop-Process -Id $p.Id -Force
