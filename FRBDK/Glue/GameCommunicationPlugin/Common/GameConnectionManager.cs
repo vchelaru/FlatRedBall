@@ -464,6 +464,9 @@ namespace GameJsonCommunicationPlugin.Common
                 var timeoutTask = Task.Delay(TimeSpan.FromSeconds(TimeoutInSeconds));
                 if (await Task.WhenAny(receiveTask, timeoutTask) == timeoutTask)
                 {
+                    // Closing the socket aborts the abandoned receive, which faults with a SocketException
+                    // nobody awaits. Observe it here so it isn't reported later as an unobserved task exception.
+                    _ = receiveTask.ContinueWith(t => _ = t.Exception, TaskContinuationOptions.OnlyOnFaulted);
                     ResetConnection($"No response received within {TimeoutInSeconds} seconds");
                     return null;
                 }

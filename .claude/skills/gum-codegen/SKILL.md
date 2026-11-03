@@ -47,6 +47,10 @@ This is why the bug class recurs: Rectangle/Circle's fill/stroke family (#1907),
 
 Note the fix is per-member, not per-type: `Text` legitimately backs `HasDropshadow`/`DropshadowOffsetX`/`DropshadowOffsetY` (it has a single `DropshadowColor`) while having no per-channel color, no blur, and no `LocalizeText`. Skip only what's actually unbacked.
 
+## CI goes red after Gum adds a variable
+
+Glue generates from whatever the sibling Gum repo's current schema holds, so a Gum commit can break Glue tests with no FRB change. The detectors are `GumGeneratedCodeCompilesTests` (CS1061 on the generated runtime), `GumRuntimeMemberContractTests`, and the `NineSliceRuntimeInterfaceContractTests` text checks. Decide per variable: if FRB's runtime can't back it, add a permanent per-type skip to both `AddTypeSpecificVariableNamesToSkipForProperties` and `...ForStates` (see `ContainerCodeGenerator`'s `SourceShaderFile` and `ShaderParameters`); if it can, version-gate it as below. Default to the skip for anything that only adds visual functionality to Gum objects (shaders, effects, new rendering options): FRB1 leaves those out unless a game explicitly needs one. Text assertions on generated code must match a whole member name, not a substring, because `CustomBorderScaleBottom` contains `BorderScale`.
+
 ## Where it lives
 
 Property pipeline:

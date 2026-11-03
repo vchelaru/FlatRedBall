@@ -159,6 +159,58 @@ namespace GlueUnitTests.GameCommunicationPlugin
         }
 
         /// <summary>
+        /// A timed-out request abandons its pending receive and then closes the socket, which aborts that
+        /// receive. If nobody observes the abort, the finalizer thread reports it later as an unobserved
+        /// task exception - in Glue, a crash log with a SocketException 995 stack and no Glue frames.
+        /// </summary>
+        [Fact]
+        public async Task TimedOutRequest_DoesNotLeaveAnUnobservedSocketException()
+        {
+            var unobserved = new ConcurrentQueue<AggregateException>();
+            EventHandler<UnobservedTaskExceptionEventArgs> handler = (_, e) => unobserved.Enqueue(e.Exception);
+            TaskScheduler.UnobservedTaskException += handler;
+
+            try
+            {
+                var port = GetFreePort();
+
+                using (var manager = new GameConnectionManager((_, __) => { }, port) { TimeoutInSeconds = ShortTimeoutInSeconds })
+                {
+                    var (glueToGame, gameToGlue) = await ConnectAsGameAsync(manager, port);
+                    try
+                    {
+                        await manager.SendItemWithResponse(new GameConnectionManager.Packet
+                        {
+                            PacketType = "Test",
+                            Payload = "no one is going to answer this"
+                        });
+                        manager.IsConnected.ShouldBeFalse();
+                    }
+                    finally
+                    {
+                        glueToGame.Dispose();
+                        gameToGlue.Dispose();
+                    }
+                }
+
+                // Unobserved exceptions only surface when the faulted task is finalized.
+                await Task.Delay(100);
+                for (int i = 0; i < 3; i++)
+                {
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                }
+
+                unobserved.SelectMany(x => x.Flatten().InnerExceptions).OfType<SocketException>().ShouldBeEmpty(
+                    "the abandoned receive's abort should be observed: " + string.Join(" | ", unobserved.Select(x => x.Message)));
+            }
+            finally
+            {
+                TaskScheduler.UnobservedTaskException -= handler;
+            }
+        }
+
+        /// <summary>
         /// Reproduces the editor freeze: diagnostics reach the UI thread and block until it services
         /// them, and StatusCheck takes the connection lock on that same UI thread ten times a second. If
         /// a reset logs while holding the lock, the logging thread waits on the UI thread and the UI

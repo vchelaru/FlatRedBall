@@ -129,7 +129,8 @@ public class NineSliceRuntimeInterfaceContractTests : IDisposable
         var generatedSource = GenerateNineSliceFrom(BuildLegacyGutxNineSliceState());
 
         generatedSource.ShouldNotContain("INineSliceRuntime");
-        generatedSource.ShouldNotContain("BorderScale");
+        // Not a substring check: the schema's CustomBorderScaleBottom/Left/Right/Top contain "BorderScale".
+        CountPropertyDeclarations(generatedSource, "BorderScale").ShouldBe(0);
         generatedSource.ShouldNotContain("IsTilingMiddleSections");
     }
 
