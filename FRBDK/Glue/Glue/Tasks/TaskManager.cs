@@ -520,7 +520,21 @@ namespace FlatRedBall.Glue.Managers
             SyncTaskThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
 
             TaskAddedOrRemoved?.Invoke(TaskEvent.Queued, glueTask);
-            RunTask(glueTask, markAsCurrent: true).GetAwaiter().GetResult();
+
+            // This thread is about to block until the task finishes. If it has a SynchronizationContext (an
+            // [StaFact] test thread does), every await inside the task that doesn't complete synchronously posts
+            // its continuation back to this blocked thread and nothing ever runs it: a deadlock. Run without one
+            // so continuations resume on the thread pool.
+            var originalContext = SynchronizationContext.Current;
+            SynchronizationContext.SetSynchronizationContext(null);
+            try
+            {
+                RunTask(glueTask, markAsCurrent: true).GetAwaiter().GetResult();
+            }
+            finally
+            {
+                SynchronizationContext.SetSynchronizationContext(originalContext);
+            }
         }
 
         /// <summary>

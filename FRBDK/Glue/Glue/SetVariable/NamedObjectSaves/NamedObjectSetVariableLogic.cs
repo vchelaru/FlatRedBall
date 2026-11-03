@@ -368,7 +368,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             else if (namedObjectSave?.GetCustomVariable(changedMember) != null)
             {
-                HandleCustomVariableValueSet(changedMember, namedObjectSave, element);
+                CopyInstanceValueToTunneledVariables(changedMember, namedObjectSave, element);
             }
 
             #endregion
@@ -389,11 +389,20 @@ namespace FlatRedBall.Glue.SetVariable
             PluginManager.ReactToNamedObjectChangedValue(changedMember, oldValue, namedObjectSave);
         }
 
-        private static void HandleCustomVariableValueSet(string customVariableName, NamedObjectSave namedObjectSave, GlueElement element)
+        /// <summary>
+        /// Copies an instance's value for <paramref name="customVariableName"/> into the default of the exposed variable
+        /// on <paramref name="element"/> that tunnels to it, so the two don't disagree. Every path that sets an instance
+        /// variable must call this, including the ones that skip <see cref="ReactToNamedObjectChangedValue"/>.
+        /// </summary>
+        public static void CopyInstanceValueToTunneledVariables(string customVariableName, NamedObjectSave namedObjectSave, GlueElement element)
         {
             // See if this variable is tunneled into in this element.
             // If so, set that value too.
             CustomVariableInNamedObject cvino = namedObjectSave.GetCustomVariable(customVariableName);
+            if (cvino == null)
+            {
+                return;
+            }
             object value = cvino.Value;
 
             if (element != null)

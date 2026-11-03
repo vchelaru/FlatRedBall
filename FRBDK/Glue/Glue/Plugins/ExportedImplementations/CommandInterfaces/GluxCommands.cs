@@ -2414,7 +2414,13 @@ public class GluxCommands : IGluxCommands
 
             await SetVariableOnInner(assignment.NamedObjectSave, assignment.VariableName, assignment.Value, performSaveAndGenerateCode: false, updateUi: false,
                 notifyPlugins: false, recordUndo:recordUndo);
-            nosContainers.Add(ObjectFinder.Self.GetElementContaining(assignment.NamedObjectSave));
+            var nosContainer = ObjectFinder.Self.GetElementContaining(assignment.NamedObjectSave);
+            nosContainers.Add(nosContainer);
+
+            // notifyPlugins is false so SetVariableOnInner skipped the logic that keeps exposed variables in step
+            // with the instance value. Without this the exposed default overwrites the instance value at runtime.
+            NamedObjectSetVariableLogic.CopyInstanceValueToTunneledVariables(
+                assignment.VariableName, assignment.NamedObjectSave, nosContainer);
 
 
             changes.Add(new VariableChangeArguments

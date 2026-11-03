@@ -135,6 +135,28 @@ public class NineSliceRuntimeInterfaceContractTests : IDisposable
     }
 
     [Fact]
+    public void NineSlice_WithRaiseChildrenEventsOutsideOfBounds_ShouldNotGenerateIt()
+    {
+        // Gum added this standard variable after FRB's renderables were written; the generated property would
+        // forward to ContainedNineSlice.RaiseChildrenEventsOutsideOfBounds, which doesn't exist (CS1061 in the user's game).
+        GlueTestBootstrap.EnsureGumPluginStandardElementsInitialized();
+        GlueTestBootstrap.EnsureGumPluginCodeGeneratorsInitialized();
+
+        var state = Gum.Managers.StandardElementsManager.Self.GetDefaultStateFor("NineSlice").Clone();
+        state.Variables.Add(new Gum.DataTypes.Variables.VariableSave
+        {
+            Name = "RaiseChildrenEventsOutsideOfBounds",
+            Type = "bool",
+            Value = false,
+            SetsValue = true
+        });
+
+        var generatedSource = GenerateNineSliceFrom(state);
+
+        generatedSource.ShouldNotContain("RaiseChildrenEventsOutsideOfBounds");
+    }
+
+    [Fact]
     public void NineSlice_SourceLinkedWithOldFileVersion_ShouldImplementEveryInterfaceMember()
     {
         // HasFrbRuntimeInterfaces is true for a source-linked project whatever its FileVersion, so the
