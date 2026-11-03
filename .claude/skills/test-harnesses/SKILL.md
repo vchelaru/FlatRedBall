@@ -22,3 +22,5 @@ Before calling a scenario untestable, or proposing a new harness, check this tab
 
 - **A race doesn't need to happen for real to be tested.** Put the files and timestamps into the state the race leaves behind, then launch.
 - **Extending a harness beats working around it.** If `LiveGameProcess.StartAsync` or `GoldProject` lacks a hook for the step you need, add the hook there.
+- **`LoadFormsSampleAsync` changes the rest of the test run.** It registers every plugin's asset types for the whole process, so unrelated codegen tests start generating different text (`Map = X` becomes `Map = X.Clone()`). Build the project in memory unless the test is about project load; `ExposedVariableSyncTests` shows the shape.
+- **A running Glue breaks the test build.** It holds `GlueFormsCore.exe` and `.dll` in the Debug output, so `dotnet test` fails with MSB3027. Close Glue, or run the tests from a throwaway detached worktree.

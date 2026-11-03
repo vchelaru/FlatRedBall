@@ -63,3 +63,7 @@ what the real threaded model would do.
 across every `await` inside it and nothing else is dequeued until it completes. I/O awaited from inside
 a task — `GameCommunicationPlugin`'s socket round trips, each with a 10-second ceiling — stalls all
 queued project work for its full duration.
+
+## Synchronous mode must run without a SynchronizationContext
+
+`TaskManager.RunSynchronously` blocks the calling thread until the task finishes, so it clears `SynchronizationContext.Current` while it waits. An `[StaFact]` test thread has a context, and without clearing it every await that doesn't finish synchronously posts its continuation back to the blocked thread, which hangs the test. `TaskManagerSynchronousModeTests` pins this.
