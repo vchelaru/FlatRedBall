@@ -40,7 +40,7 @@ jobs:
         dotnet tool install -g dotnet-stack | Out-Null
         $env:PATH += ";$env:USERPROFILE\.dotnet\tools"
         $p = Start-Process dotnet -PassThru -NoNewWindow -ArgumentList @(
-          'test', 'FlatRedBall\FRBDK\Glue\Glue with All.sln', '-c', 'Debug', '--no-build',
+          'test', '"FlatRedBall\FRBDK\Glue\Glue with All.sln"', '-c', 'Debug', '--no-build',
           '--filter', 'FullyQualifiedName~ExposedVariableSyncTests') `
           -RedirectStandardOutput "$env:RUNNER_TEMP\out.txt"
         if (-not $p.WaitForExit(240000)) {
