@@ -41,18 +41,18 @@ jobs:
         $env:PATH += ";$env:USERPROFILE\.dotnet\tools"
         $p = Start-Process dotnet -PassThru -NoNewWindow -ArgumentList @(
           'test', '"FlatRedBall\FRBDK\Glue\Glue with All.sln"', '-c', 'Debug', '--no-build',
-          '--filter', 'FullyQualifiedName~ExposedVariableSyncTests') `
+          '--filter', 'Category!=BuildSmoke&Category!=LiveGame&Category!=SdkMatrix', '--logger', 'console;verbosity=normal') `
           -RedirectStandardOutput "$env:RUNNER_TEMP\out.txt"
-        if (-not $p.WaitForExit(240000)) {
+        if (-not $p.WaitForExit(200000)) {
           Write-Host "WEDGED - dumping testhost stacks"
           Get-Process testhost* -ErrorAction SilentlyContinue | ForEach-Object {
             Write-Host "=== testhost $($_.Id)"
             dotnet-stack report -p $_.Id
           }
-          Get-Content "$env:RUNNER_TEMP\out.txt" -Tail 30
+          Get-Content "$env:RUNNER_TEMP\out.txt" -Tail 400
           Stop-Process -Id $p.Id -Force
           Get-Process testhost* -ErrorAction SilentlyContinue | Stop-Process -Force
           exit 1
         }
-        Get-Content "$env:RUNNER_TEMP\out.txt" -Tail 30
+        Get-Content "$env:RUNNER_TEMP\out.txt" -Tail 400
         exit $p.ExitCode
