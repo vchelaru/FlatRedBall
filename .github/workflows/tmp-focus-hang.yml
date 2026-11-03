@@ -55,6 +55,10 @@ jobs:
           }
           Get-Item "FlatRedBall\FRBDK\Glue\Glue\bin\Debug\Plugins\GumPlugin\Tools\gumcli\gumcli.exe" -ErrorAction SilentlyContinue | Select-Object FullName, Length | Format-List | Out-String | Write-Host
           Get-Process testhost* -ErrorAction SilentlyContinue | ForEach-Object {
+            Write-Host "=== gumcli trace"
+            Get-Content "$env:TEMP\gumcli-trace.txt" -ErrorAction SilentlyContinue | Write-Host
+            Write-Host "=== testhost threads $($_.Id)"
+            dotnet-stack report -p $_.Id
             Write-Host "=== testhost $($_.Id)"
             dotnet-dump collect -p $_.Id -o "$env:RUNNER_TEMP\hang.dmp" --type Full | Out-Null
             dotnet-dump analyze "$env:RUNNER_TEMP\hang.dmp" -c "dumpasync --tasks" -c "exit"

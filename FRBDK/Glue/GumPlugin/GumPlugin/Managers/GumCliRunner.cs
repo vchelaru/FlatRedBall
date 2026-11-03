@@ -31,6 +31,10 @@ public static class GumCliRunner
     static Task<bool> RunAsync(string arguments, string description) =>
         RunAsync(ExecutablePath, arguments, description, DefaultTimeout);
 
+    static void Trace(string message) =>
+        System.IO.File.AppendAllText(System.IO.Path.Combine(System.IO.Path.GetTempPath(), "gumcli-trace.txt"),
+            DateTime.Now.ToString("HH:mm:ss.fff") + " " + message + "\n");
+
     internal static async Task<bool> RunAsync(string executablePath, string arguments, string description, TimeSpan timeout)
     {
         var startInfo = new ProcessStartInfo
@@ -43,8 +47,10 @@ public static class GumCliRunner
             CreateNoWindow = true
         };
 
+        Trace("starting " + startInfo.FileName + " " + startInfo.Arguments);
         var process = new Process { StartInfo = startInfo };
         process.Start();
+        Trace("started pid " + process.Id);
 
         // Read both streams at once: a full stderr pipe would otherwise block the child while we wait on stdout.
         var outputTask = process.StandardOutput.ReadToEndAsync();
@@ -57,11 +63,15 @@ public static class GumCliRunner
         }
         catch (OperationCanceledException)
         {
+            Trace("timeout, killing");
             process.Kill(entireProcessTree: true);
+            Trace("killed");
+            Trace("printing error");
             GlueCommands.Self.PrintError($"{description} did not finish within {timeout.TotalSeconds:0} seconds and was stopped ({startInfo.FileName} {startInfo.Arguments})");
             return false;
         }
 
+        Trace("exited " + process.ExitCode);
         var output = await outputTask;
         var error = await errorTask;
 
