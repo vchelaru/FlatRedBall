@@ -1,6 +1,8 @@
 ﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.IO;
+using System;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace GumPlugin.Managers;
@@ -23,11 +25,17 @@ public static class GumCliRunner
     public static Task<bool> FontsAsync(FilePath gumProjectFilePath) =>
         RunAsync($@"fonts ""{gumProjectFilePath.FullPath}""", "gumcli fonts");
 
-    static async Task<bool> RunAsync(string arguments, string description)
+    // A wedged gumcli would otherwise hang project load forever, because reading its stdout waits for it to exit.
+    internal static readonly TimeSpan DefaultTimeout = TimeSpan.FromMinutes(2);
+
+    static Task<bool> RunAsync(string arguments, string description) =>
+        RunAsync(ExecutablePath, arguments, description, DefaultTimeout);
+
+    internal static async Task<bool> RunAsync(string executablePath, string arguments, string description, TimeSpan timeout)
     {
         var startInfo = new ProcessStartInfo
         {
-            FileName = ExecutablePath,
+            FileName = executablePath,
             Arguments = arguments,
             UseShellExecute = false,
             RedirectStandardOutput = true,
@@ -38,9 +46,24 @@ public static class GumCliRunner
         var process = new Process { StartInfo = startInfo };
         process.Start();
 
-        var output = await process.StandardOutput.ReadToEndAsync();
-        var error = await process.StandardError.ReadToEndAsync();
-        await process.WaitForExitAsync();
+        // Read both streams at once: a full stderr pipe would otherwise block the child while we wait on stdout.
+        var outputTask = process.StandardOutput.ReadToEndAsync();
+        var errorTask = process.StandardError.ReadToEndAsync();
+
+        using var timeoutSource = new CancellationTokenSource(timeout);
+        try
+        {
+            await process.WaitForExitAsync(timeoutSource.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            process.Kill(entireProcessTree: true);
+            GlueCommands.Self.PrintError($"{description} did not finish within {timeout.TotalSeconds:0} seconds and was stopped ({startInfo.FileName} {startInfo.Arguments})");
+            return false;
+        }
+
+        var output = await outputTask;
+        var error = await errorTask;
 
         if (process.ExitCode != 0)
         {
