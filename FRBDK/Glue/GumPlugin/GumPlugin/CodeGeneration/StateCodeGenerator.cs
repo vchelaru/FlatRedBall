@@ -79,6 +79,7 @@ public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
         //mVariableNamesToSkipForStates.Add("CustomFontFile");
         //mVariableNamesToSkipForStates.Add("UseCustomFont");
         mVariableNamesToSkipForStates.Add("Guide");
+        mVariableNamesToSkipForStates.Add("RaiseChildrenEventsOutsideOfBounds"); // no generated property to assign, see StandardsCodeGenerator
         //mVariableNamesToSkipForStates.Add("Parent");
 
         // Why did we skip width units and height units?
