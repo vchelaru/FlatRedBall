@@ -1,0 +1,59 @@
+name: TEMP focus hang
+
+# Throwaway: reproduces the ExposedVariableSyncTests hang on PR #2403 without the full suite. Delete before merge.
+on:
+  push:
+    branches: [fix/exposed-variable-sync-revert-2399]
+    paths: ['.github/workflows/tmp-focus-hang.yml']
+  workflow_dispatch:
+
+jobs:
+  focus:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 1
+        path: 'FlatRedBall'
+
+    - uses: actions/checkout@v4
+      with:
+        repository: ${{ github.repository_owner }}/Gum
+        fetch-depth: 1
+        path: 'Gum'
+
+    - uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: |
+          6.0.x
+          8.0.x
+          9.0.x
+
+    - uses: microsoft/setup-msbuild@v1.0.2
+
+    - name: Build
+      run: dotnet build -c Debug 'FlatRedBall\FRBDK\Glue\Glue with All.sln'
+
+    - name: Run focused tests, dump stacks if wedged
+      shell: pwsh
+      run: |
+        dotnet tool install -g dotnet-dump | Out-Null
+        $env:PATH += ";$env:USERPROFILE\.dotnet\tools"
+        $p = Start-Process dotnet -PassThru -NoNewWindow -ArgumentList @(
+          'test', '"FlatRedBall\FRBDK\Glue\Glue with All.sln"', '-c', 'Debug', '--no-build',
+          '--filter', 'Category!=BuildSmoke&Category!=LiveGame&Category!=SdkMatrix', '--logger', 'console;verbosity=normal') `
+          -RedirectStandardOutput "$env:RUNNER_TEMP\out.txt"
+        if (-not $p.WaitForExit(200000)) {
+          Write-Host "WEDGED - dumping testhost stacks"
+          Get-Process testhost* -ErrorAction SilentlyContinue | ForEach-Object {
+            Write-Host "=== testhost $($_.Id)"
+            dotnet-dump collect -p $_.Id -o "$env:RUNNER_TEMP\hang.dmp" --type Full | Out-Null
+            dotnet-dump analyze "$env:RUNNER_TEMP\hang.dmp" -c "dumpasync --tasks" -c "exit"
+          }
+          Get-Content "$env:RUNNER_TEMP\out.txt" -Tail 400
+          Stop-Process -Id $p.Id -Force
+          Get-Process testhost* -ErrorAction SilentlyContinue | Stop-Process -Force
+          exit 1
+        }
+        Get-Content "$env:RUNNER_TEMP\out.txt" -Tail 400
+        exit $p.ExitCode
