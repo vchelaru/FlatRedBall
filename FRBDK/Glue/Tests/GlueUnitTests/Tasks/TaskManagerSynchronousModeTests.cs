@@ -45,6 +45,34 @@ public class TaskManagerSynchronousModeTests : System.IDisposable
         ranOnThreadId.ShouldBe(callingThreadId);
     }
 
+    // Models a UI thread that is blocked waiting on the task: work posted to it never gets to run.
+    private class BlockedThreadSynchronizationContext : SynchronizationContext
+    {
+        public override void Post(SendOrPostCallback d, object state) { }
+    }
+
+    [Fact]
+    public void Add_AsyncFunc_OnAThreadWithASynchronizationContext_ShouldNotDeadlock()
+    {
+        // An [StaFact] test thread has a SynchronizationContext. Add blocks that thread until the task is done,
+        // so a continuation posted back to the context would never run.
+        var completed = false;
+        var thread = new Thread(() =>
+        {
+            SynchronizationContext.SetSynchronizationContext(new BlockedThreadSynchronizationContext());
+
+            TaskManager.Self.Add(async () =>
+            {
+                await Task.Delay(50);
+                completed = true;
+            }, "test async func");
+        });
+        thread.Start();
+
+        thread.Join(System.TimeSpan.FromSeconds(10)).ShouldBeTrue("Add never returned");
+        completed.ShouldBeTrue();
+    }
+
     [Fact]
     public void Add_Func_ShouldRunInlineAndPopulateResult()
     {
