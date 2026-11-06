@@ -1,0 +1,49 @@
+//==== Entities\Base ====
+public virtual void AddToManagers (FlatRedBall.Graphics.Layer layerToAddTo) 
+{
+    LayerProvidedByContainer = layerToAddTo;
+    FlatRedBall.SpriteManager.AddPositionedObject(this);
+    FlatRedBall.SpriteManager.AddToLayer(BaseSprite, LayerProvidedByContainer);
+    AddToManagersBottomUp(layerToAddTo);
+    CustomInitialize();
+}
+
+// ---- AddToManagersBottomUp ----
+public virtual void AddToManagersBottomUp (FlatRedBall.Graphics.Layer layerToAddTo) 
+{
+    AssignCustomVariables(false);
+}
+
+// ---- AssignCustomVariables ----
+public virtual void AssignCustomVariables (bool callOnContainedElements) 
+{
+    if (callOnContainedElements)
+    {
+    }
+    BaseSprite.Z = 5f;
+}
+
+//==== Entities\Derived ====
+public override void AddToManagers (FlatRedBall.Graphics.Layer layerToAddTo) 
+{
+    LayerProvidedByContainer = layerToAddTo;
+    FlatRedBall.SpriteManager.AddToLayer(DerivedSprite, LayerProvidedByContainer);
+    base.AddToManagers(layerToAddTo);
+    CustomInitialize();
+}
+
+// ---- AddToManagersBottomUp ----
+public override void AddToManagersBottomUp (FlatRedBall.Graphics.Layer layerToAddTo) 
+{
+    base.AddToManagersBottomUp(layerToAddTo);
+}
+
+// ---- AssignCustomVariables ----
+public override void AssignCustomVariables (bool callOnContainedElements) 
+{
+    base.AssignCustomVariables(callOnContainedElements);
+    if (callOnContainedElements)
+    {
+    }
+    DerivedSprite.Z = -5f;
+}

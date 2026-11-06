@@ -1,0 +1,99 @@
+//==== Entities\L0 ====
+public virtual void AddToManagers (FlatRedBall.Graphics.Layer layerToAddTo) 
+{
+    LayerProvidedByContainer = layerToAddTo;
+    FlatRedBall.SpriteManager.AddPositionedObject(this);
+    FlatRedBall.SpriteManager.AddToLayer(S0, LayerProvidedByContainer);
+    AddToManagersBottomUp(layerToAddTo);
+    CustomInitialize();
+}
+
+// ---- AddToManagersBottomUp ----
+public virtual void AddToManagersBottomUp (FlatRedBall.Graphics.Layer layerToAddTo) 
+{
+    AssignCustomVariables(false);
+}
+
+// ---- AssignCustomVariables ----
+public virtual void AssignCustomVariables (bool callOnContainedElements) 
+{
+    if (callOnContainedElements)
+    {
+    }
+    S0.Z = 0f;
+}
+
+//==== Entities\L1 ====
+public override void AddToManagers (FlatRedBall.Graphics.Layer layerToAddTo) 
+{
+    LayerProvidedByContainer = layerToAddTo;
+    FlatRedBall.SpriteManager.AddToLayer(S1, LayerProvidedByContainer);
+    base.AddToManagers(layerToAddTo);
+    CustomInitialize();
+}
+
+// ---- AddToManagersBottomUp ----
+public override void AddToManagersBottomUp (FlatRedBall.Graphics.Layer layerToAddTo) 
+{
+    base.AddToManagersBottomUp(layerToAddTo);
+}
+
+// ---- AssignCustomVariables ----
+public override void AssignCustomVariables (bool callOnContainedElements) 
+{
+    base.AssignCustomVariables(callOnContainedElements);
+    if (callOnContainedElements)
+    {
+    }
+    S1.Z = 0f;
+}
+
+//==== Entities\L2 ====
+public override void AddToManagers (FlatRedBall.Graphics.Layer layerToAddTo) 
+{
+    LayerProvidedByContainer = layerToAddTo;
+    FlatRedBall.SpriteManager.AddToLayer(S2, LayerProvidedByContainer);
+    base.AddToManagers(layerToAddTo);
+    CustomInitialize();
+}
+
+// ---- AddToManagersBottomUp ----
+public override void AddToManagersBottomUp (FlatRedBall.Graphics.Layer layerToAddTo) 
+{
+    base.AddToManagersBottomUp(layerToAddTo);
+}
+
+// ---- AssignCustomVariables ----
+public override void AssignCustomVariables (bool callOnContainedElements) 
+{
+    base.AssignCustomVariables(callOnContainedElements);
+    if (callOnContainedElements)
+    {
+    }
+    S2.Z = 0f;
+}
+
+//==== Entities\L3 ====
+public override void AddToManagers (FlatRedBall.Graphics.Layer layerToAddTo) 
+{
+    LayerProvidedByContainer = layerToAddTo;
+    FlatRedBall.SpriteManager.AddToLayer(S3, LayerProvidedByContainer);
+    base.AddToManagers(layerToAddTo);
+    CustomInitialize();
+}
+
+// ---- AddToManagersBottomUp ----
+public override void AddToManagersBottomUp (FlatRedBall.Graphics.Layer layerToAddTo) 
+{
+    base.AddToManagersBottomUp(layerToAddTo);
+}
+
+// ---- AssignCustomVariables ----
+public override void AssignCustomVariables (bool callOnContainedElements) 
+{
+    base.AssignCustomVariables(callOnContainedElements);
+    if (callOnContainedElements)
+    {
+    }
+    S3.Z = 0f;
+}

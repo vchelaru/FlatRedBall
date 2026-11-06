@@ -1,0 +1,9 @@
+[DerivedTwo.AddToManagers] LayerProvidedByContainer = layerToAddTo;
+[DerivedTwo.AddToManagers] FlatRedBall.SpriteManager.AddToLayer(TwoSprite, LayerProvidedByContainer);
+[Base.AddToManagers] LayerProvidedByContainer = layerToAddTo;
+[Base.AddToManagers] FlatRedBall.SpriteManager.AddPositionedObject(this);
+[Base.AddToManagers] FlatRedBall.SpriteManager.AddToLayer(BaseSprite, LayerProvidedByContainer);
+[Base.AssignCustomVariables] if (callOnContainedElements)
+[DerivedTwo.AssignCustomVariables] if (callOnContainedElements)
+[Base.AddToManagers] CustomInitialize();
+[DerivedTwo.AddToManagers] CustomInitialize();

@@ -1,0 +1,11 @@
+[Derived.AddToManagers] LayerProvidedByContainer = layerToAddTo;
+[Derived.AddToManagers] FlatRedBall.SpriteManager.AddToLayer(DerivedSprite, LayerProvidedByContainer);
+[Base.AddToManagers] LayerProvidedByContainer = layerToAddTo;
+[Base.AddToManagers] FlatRedBall.SpriteManager.AddPositionedObject(this);
+[Base.AddToManagers] FlatRedBall.SpriteManager.AddToLayer(BaseSprite, LayerProvidedByContainer);
+[Base.AssignCustomVariables] if (callOnContainedElements)
+[Base.AssignCustomVariables] BaseSprite.Z = 5f;
+[Derived.AssignCustomVariables] if (callOnContainedElements)
+[Derived.AssignCustomVariables] DerivedSprite.Z = -5f;
+[Base.AddToManagers] CustomInitialize();
+[Derived.AddToManagers] CustomInitialize();

@@ -1,0 +1,61 @@
+//==== Entities\Base ====
+public virtual void AddToManagers (FlatRedBall.Graphics.Layer layerToAddTo) 
+{
+    LayerProvidedByContainer = layerToAddTo;
+    FlatRedBall.SpriteManager.AddPositionedObject(this);
+    FlatRedBall.Graphics.TextManager.AddToLayer(BaseText, LayerProvidedByContainer);
+    if (BaseText.Font != null)
+    {
+        BaseText.SetPixelPerfectScale(LayerProvidedByContainer);
+    }
+    FlatRedBall.SpriteManager.AddToLayer(BaseSprite, LayerProvidedByContainer);
+    AddToManagersBottomUp(layerToAddTo);
+    CustomInitialize();
+}
+
+// ---- AddToManagersBottomUp ----
+public virtual void AddToManagersBottomUp (FlatRedBall.Graphics.Layer layerToAddTo) 
+{
+    AssignCustomVariables(false);
+}
+
+// ---- AssignCustomVariables ----
+public virtual void AssignCustomVariables (bool callOnContainedElements) 
+{
+    if (callOnContainedElements)
+    {
+    }
+    BaseText.Z = 1f;
+    BaseSprite.Z = 1f;
+}
+
+//==== Entities\Derived ====
+public override void AddToManagers (FlatRedBall.Graphics.Layer layerToAddTo) 
+{
+    LayerProvidedByContainer = layerToAddTo;
+    FlatRedBall.Graphics.TextManager.AddToLayer(DerivedText, LayerProvidedByContainer);
+    if (DerivedText.Font != null)
+    {
+        DerivedText.SetPixelPerfectScale(LayerProvidedByContainer);
+    }
+    FlatRedBall.SpriteManager.AddToLayer(DerivedSprite, LayerProvidedByContainer);
+    base.AddToManagers(layerToAddTo);
+    CustomInitialize();
+}
+
+// ---- AddToManagersBottomUp ----
+public override void AddToManagersBottomUp (FlatRedBall.Graphics.Layer layerToAddTo) 
+{
+    base.AddToManagersBottomUp(layerToAddTo);
+}
+
+// ---- AssignCustomVariables ----
+public override void AssignCustomVariables (bool callOnContainedElements) 
+{
+    base.AssignCustomVariables(callOnContainedElements);
+    if (callOnContainedElements)
+    {
+    }
+    DerivedText.Z = 1f;
+    DerivedSprite.Z = 1f;
+}
