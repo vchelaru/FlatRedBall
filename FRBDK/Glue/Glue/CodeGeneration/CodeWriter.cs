@@ -2750,7 +2750,7 @@ namespace FlatRedBallAddOns.Entities
     /// </summary>
     /// <param name="codeBlock">Code block to write the element to</param>
     /// <param name="element">Element to write to the code block.</param>
-    private static void GenerateAssignCustomVariables(ICodeBlock codeBlock, GlueElement element)
+    internal static void GenerateAssignCustomVariables(ICodeBlock codeBlock, GlueElement element)
     {
         bool inherits = !String.IsNullOrEmpty(element.BaseElement) && !element.InheritsFromFrbType();
 

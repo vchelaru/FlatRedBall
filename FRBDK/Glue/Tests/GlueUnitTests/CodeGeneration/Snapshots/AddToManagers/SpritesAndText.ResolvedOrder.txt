@@ -1,0 +1,19 @@
+[Derived.AddToManagers] LayerProvidedByContainer = layerToAddTo;
+[Derived.AddToManagers] FlatRedBall.Graphics.TextManager.AddToLayer(DerivedText, LayerProvidedByContainer);
+[Derived.AddToManagers] if (DerivedText.Font != null)
+[Derived.AddToManagers] DerivedText.SetPixelPerfectScale(LayerProvidedByContainer);
+[Derived.AddToManagers] FlatRedBall.SpriteManager.AddToLayer(DerivedSprite, LayerProvidedByContainer);
+[Base.AddToManagers] LayerProvidedByContainer = layerToAddTo;
+[Base.AddToManagers] FlatRedBall.SpriteManager.AddPositionedObject(this);
+[Base.AddToManagers] FlatRedBall.Graphics.TextManager.AddToLayer(BaseText, LayerProvidedByContainer);
+[Base.AddToManagers] if (BaseText.Font != null)
+[Base.AddToManagers] BaseText.SetPixelPerfectScale(LayerProvidedByContainer);
+[Base.AddToManagers] FlatRedBall.SpriteManager.AddToLayer(BaseSprite, LayerProvidedByContainer);
+[Base.AssignCustomVariables] if (callOnContainedElements)
+[Base.AssignCustomVariables] BaseText.Z = 1f;
+[Base.AssignCustomVariables] BaseSprite.Z = 1f;
+[Derived.AssignCustomVariables] if (callOnContainedElements)
+[Derived.AssignCustomVariables] DerivedText.Z = 1f;
+[Derived.AssignCustomVariables] DerivedSprite.Z = 1f;
+[Base.AddToManagers] CustomInitialize();
+[Derived.AddToManagers] CustomInitialize();

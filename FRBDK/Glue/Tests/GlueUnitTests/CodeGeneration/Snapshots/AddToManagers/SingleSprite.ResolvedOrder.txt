@@ -1,0 +1,5 @@
+[Solo.AddToManagers] LayerProvidedByContainer = layerToAddTo;
+[Solo.AddToManagers] FlatRedBall.SpriteManager.AddPositionedObject(this);
+[Solo.AddToManagers] FlatRedBall.SpriteManager.AddToLayer(SpriteA, LayerProvidedByContainer);
+[Solo.AssignCustomVariables] if (callOnContainedElements)
+[Solo.AddToManagers] CustomInitialize();

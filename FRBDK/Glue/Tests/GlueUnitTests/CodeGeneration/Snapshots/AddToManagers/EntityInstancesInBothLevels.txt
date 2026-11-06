@@ -1,0 +1,76 @@
+//==== Entities\Child ====
+public virtual void AddToManagers (FlatRedBall.Graphics.Layer layerToAddTo) 
+{
+    LayerProvidedByContainer = layerToAddTo;
+    FlatRedBall.SpriteManager.AddPositionedObject(this);
+    AddToManagersBottomUp(layerToAddTo);
+    CustomInitialize();
+}
+
+// ---- AddToManagersBottomUp ----
+public virtual void AddToManagersBottomUp (FlatRedBall.Graphics.Layer layerToAddTo) 
+{
+    AssignCustomVariables(false);
+}
+
+// ---- AssignCustomVariables ----
+public virtual void AssignCustomVariables (bool callOnContainedElements) 
+{
+    if (callOnContainedElements)
+    {
+    }
+}
+
+//==== Entities\Base ====
+public virtual void AddToManagers (FlatRedBall.Graphics.Layer layerToAddTo) 
+{
+    LayerProvidedByContainer = layerToAddTo;
+    FlatRedBall.SpriteManager.AddPositionedObject(this);
+    BaseChild.AddToManagers(LayerProvidedByContainer);
+    FlatRedBall.SpriteManager.AddToLayer(BaseSprite, LayerProvidedByContainer);
+    AddToManagersBottomUp(layerToAddTo);
+    CustomInitialize();
+}
+
+// ---- AddToManagersBottomUp ----
+public virtual void AddToManagersBottomUp (FlatRedBall.Graphics.Layer layerToAddTo) 
+{
+    AssignCustomVariables(false);
+}
+
+// ---- AssignCustomVariables ----
+public virtual void AssignCustomVariables (bool callOnContainedElements) 
+{
+    if (callOnContainedElements)
+    {
+        BaseChild.AssignCustomVariables(true);
+    }
+    BaseSprite.Z = 1f;
+}
+
+//==== Entities\Derived ====
+public override void AddToManagers (FlatRedBall.Graphics.Layer layerToAddTo) 
+{
+    LayerProvidedByContainer = layerToAddTo;
+    DerivedChild.AddToManagers(LayerProvidedByContainer);
+    FlatRedBall.SpriteManager.AddToLayer(DerivedSprite, LayerProvidedByContainer);
+    base.AddToManagers(layerToAddTo);
+    CustomInitialize();
+}
+
+// ---- AddToManagersBottomUp ----
+public override void AddToManagersBottomUp (FlatRedBall.Graphics.Layer layerToAddTo) 
+{
+    base.AddToManagersBottomUp(layerToAddTo);
+}
+
+// ---- AssignCustomVariables ----
+public override void AssignCustomVariables (bool callOnContainedElements) 
+{
+    base.AssignCustomVariables(callOnContainedElements);
+    if (callOnContainedElements)
+    {
+        DerivedChild.AssignCustomVariables(true);
+    }
+    DerivedSprite.Z = 1f;
+}

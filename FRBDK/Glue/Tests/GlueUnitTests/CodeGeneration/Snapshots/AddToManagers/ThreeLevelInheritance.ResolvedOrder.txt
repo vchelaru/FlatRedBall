@@ -1,0 +1,13 @@
+[Child.AddToManagers] LayerProvidedByContainer = layerToAddTo;
+[Child.AddToManagers] FlatRedBall.SpriteManager.AddToLayer(ChildSprite, LayerProvidedByContainer);
+[Parent.AddToManagers] LayerProvidedByContainer = layerToAddTo;
+[Parent.AddToManagers] FlatRedBall.SpriteManager.AddToLayer(ParentSprite, LayerProvidedByContainer);
+[Grand.AddToManagers] LayerProvidedByContainer = layerToAddTo;
+[Grand.AddToManagers] FlatRedBall.SpriteManager.AddPositionedObject(this);
+[Grand.AddToManagers] FlatRedBall.SpriteManager.AddToLayer(GrandSprite, LayerProvidedByContainer);
+[Grand.AssignCustomVariables] if (callOnContainedElements)
+[Parent.AssignCustomVariables] if (callOnContainedElements)
+[Child.AssignCustomVariables] if (callOnContainedElements)
+[Grand.AddToManagers] CustomInitialize();
+[Parent.AddToManagers] CustomInitialize();
+[Child.AddToManagers] CustomInitialize();
