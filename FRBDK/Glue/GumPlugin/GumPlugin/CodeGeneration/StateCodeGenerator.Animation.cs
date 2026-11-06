@@ -384,6 +384,23 @@ public partial class StateCodeGenerator
         currentBlock = currentBlock.End();
     }
 
+    // Animation state names are "Category/State", but a StateSave's own Name is the bare "State", and several
+    // categories can share one. So the lookup has to go through the category rather than match a full name
+    // against ElementSave.AllStates.
+    private static string GetStateLookupExpression(string animatedStateName)
+    {
+        var slashIndex = animatedStateName.IndexOf('/');
+        if (slashIndex < 0)
+        {
+            return "ElementSave.States.First(item => item.Name == \"" + animatedStateName + "\")";
+        }
+
+        var categoryName = animatedStateName.Substring(0, slashIndex);
+        var stateName = animatedStateName.Substring(slashIndex + 1);
+        return "ElementSave.Categories.First(category => category.Name == \"" + categoryName + "\")" +
+            ".States.First(item => item.Name == \"" + stateName + "\")";
+    }
+
     private void CreateInstructionForInterpolationRelative(StateCodeGeneratorContext context, ICodeBlock currentBlock, AnimatedStateSave previousState, AnimatedStateSave currentState, string animationName)
     {
         if(previousState != null)
@@ -393,8 +410,8 @@ public partial class StateCodeGenerator
                 currentBlock = currentBlock.Block();
 
                 // Is the start clone necessary?
-                currentBlock.Line("var relativeStart = ElementSave.AllStates.FirstOrDefault(item => item.Name == \"" + previousState.StateName + "\").Clone();");
-                currentBlock.Line("var relativeEnd = ElementSave.AllStates.FirstOrDefault(item => item.Name == \"" + currentState.StateName + "\").Clone();");
+                currentBlock.Line("var relativeStart = " + GetStateLookupExpression(previousState.StateName) + ".Clone();");
+                currentBlock.Line("var relativeEnd = " + GetStateLookupExpression(currentState.StateName) + ".Clone();");
                 currentBlock.Line("Gum.DataTypes.Variables.StateSaveExtensionMethods.SubtractFromThis(relativeEnd, relativeStart);");
                 currentBlock.Line("var difference = relativeEnd;");
 

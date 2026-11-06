@@ -597,6 +597,166 @@ public class GumGeneratedCodeCompilesTests : IDisposable
             string.Join(Environment.NewLine, errors) + Environment.NewLine + Environment.NewLine + coverage);
     }
 
+    // Relative Gum animations crashed at runtime with a NullReferenceException: the generated lookup was
+    // ElementSave.AllStates.FirstOrDefault(item => item.Name == "Category/State"), but categorized states are
+    // stored (and yielded by AllStates) under their bare name, so it matched nothing and .Clone() threw. The
+    // fixture also has a SECOND category with a same-named state ("Start") holding different values, since a
+    // bare-name lookup over AllStates would "work" yet silently read the wrong category's state.
+    // Compiling can't see either problem; this executes the generated relative instruction.
+    [Fact]
+    public void RelativeAnimationOverCategorizedStates_ShouldExecuteWithoutThrowing()
+    {
+        GlueTestBootstrap.EnsureGumPluginStandardElementsInitialized();
+        GlueTestBootstrap.EnsureGumPluginCodeGeneratorsInitialized();
+
+        var gumProject = Gum.Managers.ObjectFinder.Self.GumProjectSave;
+
+        var containerDefaultState = GetGumsDefaultStateFor("Container");
+        containerDefaultState.ShouldNotBeNull();
+        var container = new StandardElementSave { Name = "Container" };
+        container.Initialize(containerDefaultState);
+        gumProject.StandardElements.Add(container);
+
+        // Codegen resolves a component's variables through the "Component" standard element.
+        var componentStandard = new StandardElementSave { Name = "Component" };
+        componentStandard.Initialize(GetGumsDefaultStateFor("Component"));
+        gumProject.StandardElements.Add(componentStandard);
+
+        var component = new ComponentSave { Name = "Panel", BaseType = "Container" };
+        var defaultState = new Gum.DataTypes.Variables.StateSave { Name = "Default" };
+        component.States.Add(defaultState);
+
+        Gum.DataTypes.Variables.StateSave CreateYState(string name, float y)
+        {
+            var state = new Gum.DataTypes.Variables.StateSave { Name = name };
+            state.Variables.Add(new Gum.DataTypes.Variables.VariableSave
+            {
+                Name = "Y", Type = "float", Value = y, SetsValue = true
+            });
+            return state;
+        }
+
+        // "Other" comes first so a bare-name search over AllStates would find Other's Start before Pos's.
+        var other = new Gum.DataTypes.Variables.StateSaveCategory { Name = "Other" };
+        other.States.Add(CreateYState("Start", 9999f));
+        other.States.Add(CreateYState("End", 8888f));
+        component.Categories.Add(other);
+
+        var pos = new Gum.DataTypes.Variables.StateSaveCategory { Name = "Pos" };
+        pos.States.Add(CreateYState("Start", -150f));
+        pos.States.Add(CreateYState("End", 400f));
+        component.Categories.Add(pos);
+
+        component.Initialize(defaultState);
+        gumProject.Components.Add(component);
+
+        var animations = new Gum.StateAnimation.SaveClasses.ElementAnimationsSave { ElementName = "Panel" };
+        var animation = new Gum.StateAnimation.SaveClasses.AnimationSave { Name = "SlideDown" };
+        animation.States.Add(new Gum.StateAnimation.SaveClasses.AnimatedStateSave { StateName = "Pos/Start", Time = 0 });
+        animation.States.Add(new Gum.StateAnimation.SaveClasses.AnimatedStateSave { StateName = "Pos/End", Time = 1.5f });
+        animations.Animations.Add(animation);
+        var animationFile = GumPlugin.Managers.AnimationLogic.GetAnimationFile(component).FullPath;
+        Directory.CreateDirectory(Path.GetDirectoryName(animationFile));
+        animations.Save(animationFile);
+
+        var generated = new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            ["Container"] = GueDerivingClassCodeGenerator.Self.GenerateCodeFor(container),
+            ["Panel"] = GueDerivingClassCodeGenerator.Self.GenerateCodeFor(component),
+        };
+        generated["Panel"].ShouldContain("SlideDownAnimationRelativeInstructions");
+
+        var scratchDirectory = Path.Combine(_tempProjectDirectory, "RelativeAnimationScratch");
+        WriteScratchProject(scratchDirectory, FindRepoRoot(), generated);
+
+        var csprojPath = Path.Combine(scratchDirectory, "GumCodegenCompileScratch.csproj");
+        File.WriteAllText(csprojPath, File.ReadAllText(csprojPath)
+            .Replace("<Nullable>disable</Nullable>", "<Nullable>disable</Nullable>\n    <OutputType>Exe</OutputType>"));
+
+        // Runs the generated relative instructions the way GumAnimation.Play does (DelegateInstruction.ExecuteOn),
+        // then ticks the tweener it starts to completion and reports where Y landed. Expected: Pos.End - Pos.Start
+        // = 550 added to the live Y (0), so 550. Other's states would give -1111.
+        File.WriteAllText(Path.Combine(scratchDirectory, "Program.cs"), """
+            using System;
+            using System.Collections.Generic;
+            using System.Reflection;
+            using Gum.DataTypes;
+            using Gum.Managers;
+            using GumRuntime;
+            using TestProject.GumRuntimes;
+
+            StandardElementsManager.Self.Initialize();
+            ElementSaveExtensions.CustomCreateGraphicalComponentFunc =
+                (name, managers) => Gum.Wireframe.FallbackRenderableFactory.TryHandleAsBaseType(name, managers);
+
+            // Rebuild the same project shape the generator saw.
+            var container = new StandardElementSave { Name = "Container" };
+            container.Initialize(StandardElementsManager.Self.GetDefaultStateFor("Container"));
+
+            var component = new ComponentSave { Name = "Panel", BaseType = "Container" };
+            var defaultState = new Gum.DataTypes.Variables.StateSave { Name = "Default" };
+            component.States.Add(defaultState);
+            Gum.DataTypes.Variables.StateSave Y(string name, float y)
+            {
+                var s = new Gum.DataTypes.Variables.StateSave { Name = name };
+                s.Variables.Add(new Gum.DataTypes.Variables.VariableSave { Name = "Y", Type = "float", Value = y, SetsValue = true });
+                return s;
+            }
+            var other = new Gum.DataTypes.Variables.StateSaveCategory { Name = "Other" };
+            other.States.Add(Y("Start", 9999f));
+            other.States.Add(Y("End", 8888f));
+            component.Categories.Add(other);
+            var pos = new Gum.DataTypes.Variables.StateSaveCategory { Name = "Pos" };
+            pos.States.Add(Y("Start", -150f));
+            pos.States.Add(Y("End", 400f));
+            component.Categories.Add(pos);
+            component.Initialize(defaultState);
+
+            ObjectFinder.Self.GumProjectSave = new GumProjectSave
+            {
+                Version = 3,
+                FullFileName = "C:\\FakeGumProject\\GumProject.gumx",
+            };
+            ObjectFinder.Self.GumProjectSave.StandardElements.Add(container);
+            ObjectFinder.Self.GumProjectSave.Components.Add(component);
+
+            try
+            {
+                var panel = new PanelRuntime(fullInstantiation: false, tryCreateFormsObject: false);
+                component.SetGraphicalUiElement(panel, null);
+                panel.ElementSave = component;
+                panel.Y = 0;
+
+                var method = typeof(PanelRuntime).GetMethod("SlideDownAnimationRelativeInstructions",
+                    BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+                var instructions = (IEnumerable<FlatRedBall.Instructions.Instruction>)method.Invoke(panel, new object[] { panel });
+                foreach (var instruction in instructions)
+                {
+                    instruction.ExecuteOn(panel);
+                }
+
+                // Finish the tween the instruction started.
+                foreach (var tweener in new List<FlatRedBall.Glue.StateInterpolation.Tweener>(StateInterpolationPlugin.TweenerManager.Self.Tweeners))
+                {
+                    tweener.Update(1000f);
+                }
+                Console.WriteLine("Y=" + panel.Y);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("FAIL: " + ex);
+                Environment.Exit(1);
+            }
+            """);
+
+        var (exitCode, output) = RunDotnetRun(scratchDirectory);
+
+        exitCode.ShouldBe(0,
+            "Executing the generated relative animation over categorized states threw:" +
+            Environment.NewLine + output);
+        output.ShouldContain("Y=550");
+    }
+
     private static (int exitCode, string output) RunDotnetRun(string projectDirectory) =>
         NestedDotnetCli.Run($"run --project \"{projectDirectory}\" -c Debug");
 
