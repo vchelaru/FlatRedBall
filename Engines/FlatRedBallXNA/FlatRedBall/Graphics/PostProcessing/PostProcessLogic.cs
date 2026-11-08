@@ -30,7 +30,7 @@ internal static class PostProcessLogic
         if (hasGlobalPostProcessing)
         {
             var renderTargetCount = 0;
-#if WEB || FNA
+#if WEB || FNA || KNI
 
             renderTargetCount = Renderer.GraphicsDevice.GetRenderTargets().Length;
 #else
