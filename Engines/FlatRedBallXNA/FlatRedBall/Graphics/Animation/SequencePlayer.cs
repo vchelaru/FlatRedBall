@@ -117,6 +117,21 @@ namespace FlatRedBall.Graphics.Animation
             {
                 instance.AddToManagers(layer);
             }
+
+            // Tracks never reorder, so the draw order is fixed once here: each Sprite draws on top of the track before it,
+            // across sequences in file order. Z is left alone so the entity still sorts against everything else.
+            Sprite previous = null;
+            foreach (SequenceInstance instance in mInstances)
+            {
+                foreach (SequenceTrack track in instance.Tracks)
+                {
+                    if (previous != null)
+                    {
+                        SpriteManager.MoveAbove(track.Sprite, previous);
+                    }
+                    previous = track.Sprite;
+                }
+            }
         }
 
         /// <summary>Stops every sequence and removes the Sprites and pivots from the managers. The player can't be used afterwards.</summary>
