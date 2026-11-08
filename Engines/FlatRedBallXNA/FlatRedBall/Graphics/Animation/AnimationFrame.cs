@@ -239,6 +239,15 @@ namespace FlatRedBall.Graphics.Animation
             private set;
         }
 
+        /// <summary>
+        /// Named events raised when a SequenceInstance's playback enters this frame. A Sprite ignores them.
+        /// </summary>
+        public List<AnimationFrameEvent> Events
+        {
+            get;
+            private set;
+        } = new List<AnimationFrameEvent>();
+
         public Vector3 RelativePosition => new Vector3(RelativeX, RelativeY, 0);
 
         #endregion
@@ -317,6 +326,12 @@ namespace FlatRedBall.Graphics.Animation
         public AnimationFrame Clone()
         {
             var newAnimationFrame = this.MemberwiseClone() as AnimationFrame;
+
+            newAnimationFrame.Events = new List<AnimationFrameEvent>(Events.Count);
+            foreach (AnimationFrameEvent frameEvent in Events)
+            {
+                newAnimationFrame.Events.Add(frameEvent.Clone());
+            }
 
             if(ShapeCollectionSave != null)
             {

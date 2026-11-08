@@ -454,6 +454,21 @@ namespace FlatRedBall.Content.AnimationChain
                 frame.ShapeCollectionSave = ParseShapesJson(shapes);
             }
 
+            if (frameObject["events"] is JsonArray events)
+            {
+                foreach (JsonNode eventNode in events)
+                {
+                    if (eventNode is JsonObject eventObject)
+                    {
+                        frame.Events.Add(new FlatRedBall.Graphics.Animation.AnimationFrameEvent
+                        {
+                            Name = JsonString(eventObject, "name") ?? string.Empty,
+                            Data = JsonString(eventObject, "data"),
+                        });
+                    }
+                }
+            }
+
             return frame;
         }
 

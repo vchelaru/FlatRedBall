@@ -202,6 +202,15 @@ namespace FlatRedBall.Content.AnimationChain
 
         #endregion
 
+        /// <summary>
+        /// Named events raised when a SequenceInstance's playback enters this frame. Written as
+        /// &lt;Events&gt;&lt;Event&gt;&lt;Name/&gt;&lt;Data/&gt;&lt;/Event&gt;&lt;/Events&gt;, only when the frame has any.
+        /// </summary>
+        [XmlArray("Events")]
+        [XmlArrayItem("Event")]
+        public List<AnimationFrameEvent> Events = new List<AnimationFrameEvent>();
+        public bool ShouldSerializeEvents() => Events.Count > 0;
+
         [XmlIgnore]
         [ExternalInstance]
         internal Texture2D mTextureInstance;
@@ -239,6 +248,11 @@ namespace FlatRedBall.Content.AnimationChain
             OffsetEasing = template.OffsetEasing;
             ColorInterpolation = template.ColorInterpolation;
             ColorEasing = template.ColorEasing;
+
+            foreach (AnimationFrameEvent frameEvent in template.Events)
+            {
+                Events.Add(frameEvent.Clone());
+            }
 
             TextureName = template.Texture.Name;
         }
@@ -330,6 +344,11 @@ namespace FlatRedBall.Content.AnimationChain
 
             frame.ShapeCollectionSave = ShapeCollectionSave;
 
+            foreach (AnimationFrameEvent frameEvent in Events)
+            {
+                frame.Events.Add(frameEvent.Clone());
+            }
+
             #endregion
 
             return frame;
@@ -416,6 +435,16 @@ namespace FlatRedBall.Content.AnimationChain
                         break;
                     case "ShapeCollectionSave":
                         toReturn.ShapeCollectionSave = ShapeCollectionSaveFromXElement(subElement);
+                        break;
+                    case "Events":
+                        foreach (var eventElement in subElement.Elements("Event"))
+                        {
+                            toReturn.Events.Add(new AnimationFrameEvent
+                            {
+                                Name = (string)eventElement.Element("Name") ?? string.Empty,
+                                Data = (string)eventElement.Element("Data"),
+                            });
+                        }
                         break;
                 }
             }

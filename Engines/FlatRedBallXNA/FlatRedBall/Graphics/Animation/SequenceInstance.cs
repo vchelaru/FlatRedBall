@@ -66,6 +66,14 @@ namespace FlatRedBall.Graphics.Animation
         /// <summary>Multiplier on elapsed time. 2 plays twice as fast.</summary>
         public float Speed { get; set; } = 1;
 
+        /// <summary>
+        /// Raised with an event's name and data when playback enters a frame that has it. Events fire in the first cycle of a
+        /// chain's block only, never from a cut-off tail or a track that is off, and a big step raises every skipped frame's
+        /// events in order. <see cref="Play"/> raises the first frames' events at once. A handler that stops or restarts the
+        /// sequence ends the rest of that update.
+        /// </summary>
+        public event Action<string, string> EventRaised;
+
         /// <summary>Starts the sequence from time 0. Playing it again restarts it. Tracks keep their <see cref="SequenceTrack.Visible"/>.</summary>
         public void Play()
         {
@@ -74,6 +82,11 @@ namespace FlatRedBall.Graphics.Animation
             Length = SequenceTimeline.Length(Save, mPlayer.CycleLength);
             Time = 0;
             IsPlaying = true;
+            foreach (SequenceTrack track in Tracks)
+            {
+                track.EventReference = null;
+                track.EventVisit = -1;
+            }
             mPlayer.SequenceStarted(this);
             ApplyTracks();
             mPlayer.SyncShapes();
@@ -201,6 +214,60 @@ namespace FlatRedBall.Graphics.Animation
             }
         }
 
+        // Raises the events of the frames playback has entered since the last pass, in the first cycle of the block only.
+        // Frames passed while the time moved backward, while the track was off, or after the first cycle raise nothing.
+        private void RaiseEvents(SequenceTrack track, SequenceChainReferenceSave reference, double local)
+        {
+            AnimationChain chain = reference == null ? null : mPlayer.Source.FindChain(reference);
+            if (chain == null || chain.Count == 0)
+            {
+                track.EventReference = null;
+                track.EventVisit = -1;
+                return;
+            }
+
+            if (!ReferenceEquals(track.EventReference, reference))
+            {
+                track.EventReference = reference;
+                track.EventVisit = -1;
+            }
+
+            int visit = SequenceChainClock.VisitAt(chain, local);
+            if (visit < track.EventVisit)
+            {
+                // Time moved backward (a seek); nothing is raised for frames already seen.
+                track.EventVisit = visit;
+                return;
+            }
+
+            int playVersion = mPlayVersion;
+            int from = track.EventVisit + 1;
+            track.EventVisit = visit;
+            if (!track.Visible || EventRaised == null)
+            {
+                return;
+            }
+
+            for (int next = from; next <= visit; next++)
+            {
+                // Visit 0 is the block starting, which always enters its first frame; for a ping-pong it only looks like the
+                // loop point of an earlier cycle.
+                if (next != 0 && !SequenceChainClock.EntersNewFrame(chain, next))
+                {
+                    continue;
+                }
+                List<AnimationFrameEvent> events = chain[SequenceChainClock.FrameOfVisit(chain, next)].Events;
+                for (int i = 0; i < events.Count; i++)
+                {
+                    EventRaised?.Invoke(events[i].Name, events[i].Data);
+                    if (playVersion != mPlayVersion)
+                    {
+                        return;
+                    }
+                }
+            }
+        }
+
         internal void Destroy(bool inManagers)
         {
             foreach (SequenceTrack track in Tracks)
@@ -234,9 +301,16 @@ namespace FlatRedBall.Graphics.Animation
         private void ApplyTracks()
         {
             double shown = SequenceTimeline.WrapTime(Time, Length, Save.Loop);
+            int playVersion = mPlayVersion;
             foreach (SequenceTrack track in Tracks)
             {
                 ApplyTrack(track, shown);
+
+                // An event handler may have stopped or restarted the sequence; the rest of this pass is stale.
+                if (playVersion != mPlayVersion)
+                {
+                    return;
+                }
             }
         }
 
@@ -245,10 +319,14 @@ namespace FlatRedBall.Graphics.Animation
             Sprite sprite = track.Sprite;
 
             track.ActiveFrame = null;
-            double local = 0;
-            SequenceChainReferenceSave reference = track.Visible
-                ? SequenceTimeline.ActiveAt(track.Ordered, time, mPlayer.CycleLength, out local)
-                : null;
+            SequenceChainReferenceSave reference = SequenceTimeline.ActiveAt(track.Ordered, time, mPlayer.CycleLength, out double local);
+
+            // Events are tracked even while the track is off, so turning it on midway doesn't replay what went by.
+            RaiseEvents(track, reference, local);
+            if (!track.Visible)
+            {
+                reference = null;
+            }
 
             AnimationChain chain = reference == null ? null : mPlayer.Source.FindChain(reference);
             if (chain == null || chain.Count == 0)

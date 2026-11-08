@@ -56,6 +56,10 @@ namespace FlatRedBall.Graphics.Animation
 
         internal List<SequenceChainReferenceSave> Ordered { get; }
 
+        // Event bookkeeping: the block the track was last in and the last visit whose events were raised there.
+        internal SequenceChainReferenceSave EventReference;
+        internal int EventVisit = -1;
+
         internal AnimationChainList ActiveList;
         internal AnimationChain ActiveChain;
 

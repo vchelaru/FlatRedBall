@@ -20,6 +20,62 @@ namespace FlatRedBall.Graphics.Animation
         }
 
         /// <summary>
+        /// How many showings of a frame one cycle has, in playback order ("visits"): one per frame, two under ping-pong
+        /// (once each way). Frame events are raised per visit.
+        /// </summary>
+        public static int VisitCount(AnimationChain chain)
+        {
+            return chain.PingPong ? 2 * chain.Count : chain.Count;
+        }
+
+        /// <summary>The visit being shown cycleTime seconds into the first cycle. Time past the cycle gives the last visit.</summary>
+        public static int VisitAt(AnimationChain chain, double cycleTime)
+        {
+            int count = chain.Count;
+            double local = cycleTime + BoundaryTolerance;
+            if (local >= CycleLength(chain))
+            {
+                return VisitCount(chain) - 1;
+            }
+
+            chain.GetPlaybackFrame(local, out int frame, out _);
+            bool backward = chain.Reverse != (chain.PingPong && local >= chain.TotalLength);
+            bool firstHalf = !chain.PingPong || (chain.Reverse ? backward : !backward);
+            int visit = backward ? count - 1 - frame : frame;
+            return firstHalf ? visit : visit + count;
+        }
+
+        /// <summary>The frame of this visit, in the order <see cref="VisitAt"/> numbers them.</summary>
+        public static int FrameOfVisit(AnimationChain chain, int visit)
+        {
+            int count = chain.Count;
+            if (!chain.PingPong)
+            {
+                return chain.Reverse ? count - 1 - visit : visit;
+            }
+            if (!chain.Reverse)
+            {
+                return visit < count ? visit : 2 * count - 1 - visit;
+            }
+            return visit < count ? count - 1 - visit : visit - count;
+        }
+
+        /// <summary>
+        /// Whether reaching this visit enters a frame, so its events are raised. Always for a chain that is not a ping-pong
+        /// (a plain loop re-enters its first frame on each wrap); for a ping-pong, only when the shown frame changes, so the
+        /// turnaround and the loop point raise nothing.
+        /// </summary>
+        public static bool EntersNewFrame(AnimationChain chain, int visit)
+        {
+            if (!chain.PingPong)
+            {
+                return true;
+            }
+            int visits = VisitCount(chain);
+            return FrameOfVisit(chain, visit) != FrameOfVisit(chain, (visit - 1 + visits) % visits);
+        }
+
+        /// <summary>
         /// The time into the chain's playback cycle to give a Sprite for a moment time seconds after the block starts:
         /// wrapped when the chain loops, held just short of the cycle's end when it does not. The Sprite's own frame
         /// lookup then lands on the frame <see cref="Locate"/> reports.
