@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using FlatRedBall.Content.AnimationChain;
 using FlatRedBall.Content.Math.Geometry;
 using FlatRedBall.Content.Polygon;
@@ -47,6 +49,8 @@ namespace FlatRedBall.Graphics.Animation
         private readonly HashSet<string> mDrivenNames = new HashSet<string>();
         private readonly HashSet<string> mDisabledNames = new HashSet<string>();
 
+        // Bumped whenever the playing sequence is replaced or removed, so a PlayAsync still waiting can tell.
+        private int mPlayVersion;
         private SequenceSave mCurrent;
         private double mLength;
         private bool mIsInManagers;
@@ -99,6 +103,7 @@ namespace FlatRedBall.Graphics.Animation
                 return false;
             }
 
+            mPlayVersion++;
             RestoreShapes();
             DestroyTracks();
             mCurrent = sequence;
@@ -108,6 +113,39 @@ namespace FlatRedBall.Graphics.Animation
             FindManagedShapes();
             SetTime(0);
             return true;
+        }
+
+        /// <summary>
+        /// Starts the sequence with this name and returns a task that completes when it reaches its end. The task is
+        /// canceled, not completed, if another sequence replaces it or <see cref="RemoveFromManagers"/> runs first, so code
+        /// after the await never runs as though the sequence had finished.
+        /// </summary>
+        /// <param name="sequenceName">The sequence to play.</param>
+        /// <param name="cancellationToken">Cancels the wait; the sequence keeps playing.</param>
+        /// <exception cref="InvalidOperationException">The file has no such sequence, or the sequence loops and so never
+        /// finishes (use <see cref="Play"/> for those).</exception>
+        public async Task PlayAsync(string sequenceName, CancellationToken cancellationToken = default)
+        {
+            SequenceSave sequence = Sequences.Find(sequenceName);
+            if (sequence == null)
+            {
+                throw new InvalidOperationException($"Could not play {sequenceName} because the sequence file has no sequence with that name");
+            }
+            if (sequence.Loop)
+            {
+                throw new InvalidOperationException($"Could not await {sequenceName} because it has Loop turned on, so it never finishes. Use Play for a looping sequence");
+            }
+
+            Play(sequenceName);
+            int playVersion = mPlayVersion;
+
+            await TimeManager.DelayUntil(() => mPlayVersion != playVersion || IsFinished, cancellationToken);
+
+            cancellationToken.ThrowIfCancellationRequested();
+            if (mPlayVersion != playVersion)
+            {
+                throw new OperationCanceledException($"The sequence {sequenceName} was replaced or removed before it finished");
+            }
         }
 
         /// <summary>
@@ -176,6 +214,7 @@ namespace FlatRedBall.Graphics.Animation
         /// </remarks>
         public void RemoveFromManagers()
         {
+            mPlayVersion++;
             RestoreShapes();
             DestroyTracks();
             mIsInManagers = false;
