@@ -171,6 +171,66 @@ public class SequencePlayerTests
     }
 
     [Fact]
+    public void SetTrackVisible_TurnsATrackOnOrOffAtOnce_AndTheFilesValueIsTheStart()
+    {
+        var off = Track("2_Fx", 5, ("fx.achj", "Spark", 0, 1));
+        off.Visible = false;
+        var player = Player(false, Track("1_Body", 1, ("body.achj", "Walk", 0, 1)), off);
+        player.SetTime(0.1);
+        player.Sprites[1].Visible.ShouldBeFalse();
+        player.IsTrackVisible("2_Fx").ShouldBeFalse();
+
+        player.SetTrackVisible("2_Fx", true);
+        player.Sprites[1].Visible.ShouldBeTrue();
+        player.IsTrackVisible("2_Fx").ShouldBeTrue();
+
+        player.SetTrackVisible("1_Body", false);
+        player.Sprites[0].Visible.ShouldBeFalse();
+        player.Time.ShouldBe(0.1, 1e-9);
+    }
+
+    [Fact]
+    public void SetTrackVisible_BeforeItsChainStarts_ShowsItWhenTheChainStarts()
+    {
+        var late = Track("Fx", 0, ("fx.achj", "Spark", 1, 1));
+        late.Visible = false;
+        var player = Player(false, late);
+
+        player.SetTrackVisible("Fx", true);
+        player.SetTime(0.5);
+        player.Sprites[0].Visible.ShouldBeFalse();
+        player.SetTime(1.1);
+        player.Sprites[0].Visible.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void Play_AgainAfterToggling_GoesBackToTheFilesVisibility()
+    {
+        var off = Track("2_Fx", 0, ("fx.achj", "Spark", 0, 1));
+        off.Visible = false;
+        var player = Player(false, off);
+        player.SetTrackVisible("2_Fx", true);
+
+        player.Play("Attack");
+
+        player.IsTrackVisible("2_Fx").ShouldBeFalse();
+        player.Sprites[0].Visible.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void SetTrackVisible_AnUnknownTrackOrNothingPlaying_ThrowsInsteadOfSilentlyDoingNothing()
+    {
+        var player = Player(false, Track("1_Body", 0, ("body.achj", "Walk", 0, 1)));
+
+        Should.Throw<InvalidOperationException>(() => player.SetTrackVisible("1_Bodyy", true))
+            .Message.ShouldContain("1_Bodyy");
+        Should.Throw<InvalidOperationException>(() => player.IsTrackVisible("Nope"));
+
+        var idle = new SequencePlayer(new PositionedObject(), new SequenceList(new SequenceListSave(), _ => null));
+        Should.Throw<InvalidOperationException>(() => idle.SetTrackVisible("1_Body", true));
+    }
+
+    [Fact]
     public void SetTime_AFlippedTrack_MirrorsTheFrameFlipAndOffsetAcrossTheTrack()
     {
         var body = Track("Body", 0, ("body.achj", "Walk", 0, 1));

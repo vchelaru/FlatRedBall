@@ -184,6 +184,22 @@ public class SequencePlayerShapeTests
     }
 
     [Fact]
+    public void SetTrackVisible_TurningATrackOn_LetsItsFrameShapesDriveTheEntityShape()
+    {
+        var off = Track("Swing", loops: 2);
+        off.Visible = false;
+        var (player, entity, hitbox, _) = Setup(off);
+        player.SetTime(0.1);
+        entity.Collision.Contains(hitbox).ShouldBeFalse();
+
+        player.SetTrackVisible("Swing", true);
+
+        entity.Collision.Contains(hitbox).ShouldBeTrue();
+        hitbox.RelativeX.ShouldBe(5);
+        player.IsShapeEnabled("Hitbox").ShouldBeTrue();
+    }
+
+    [Fact]
     public void Play_ASecondSequence_PutsDisabledShapesBack()
     {
         var (player, entity, hitbox, _) = Setup();

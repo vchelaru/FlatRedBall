@@ -25,6 +25,8 @@ namespace FlatRedBall.Graphics.Animation
         private class TrackRuntime
         {
             public SequenceTrackSave Save;
+            // Starts as the file's value; SetTrackVisible changes it until the next Play.
+            public bool Visible;
             public List<SequenceChainReferenceSave> Ordered;
             public PositionedObject Pivot;
             public Sprite Sprite;
@@ -186,6 +188,48 @@ namespace FlatRedBall.Graphics.Animation
 
             // Time keeps counting past the end for a non-looping sequence, so IsFinished stays true.
             Time = System.Math.Max(0, time);
+            ApplyCurrentTime();
+        }
+
+        /// <summary>
+        /// Turns the track with this name on or off for the playing sequence, at once. The file's <c>visible</c> value is
+        /// where each track starts; <see cref="Play"/> goes back to it. A track that is off shows nothing, and its frame
+        /// shapes drive nothing. This is how game code picks between alternatives the file lays out as parallel tracks.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">No sequence is playing, or it has no track with this name.</exception>
+        public void SetTrackVisible(string trackName, bool visible)
+        {
+            foreach (TrackRuntime track in FindTracks(trackName))
+            {
+                track.Visible = visible;
+            }
+            ApplyCurrentTime();
+        }
+
+        /// <summary>Whether the track with this name is on right now.</summary>
+        /// <exception cref="InvalidOperationException">No sequence is playing, or it has no track with this name.</exception>
+        public bool IsTrackVisible(string trackName)
+        {
+            return FindTracks(trackName)[0].Visible;
+        }
+
+        // Every track with this name (the editor keeps names unique, but a hand-edited file may not).
+        private List<TrackRuntime> FindTracks(string trackName)
+        {
+            if (mCurrent == null)
+            {
+                throw new InvalidOperationException($"Could not find the track {trackName} because no sequence is playing");
+            }
+            List<TrackRuntime> found = mTracks.FindAll(item => item.Save.Name == trackName);
+            if (found.Count == 0)
+            {
+                throw new InvalidOperationException($"The sequence {mCurrent.Name} has no track named {trackName}");
+            }
+            return found;
+        }
+
+        private void ApplyCurrentTime()
+        {
             double shown = SequenceTimeline.WrapTime(Time, mLength, mCurrent.Loop);
 
             foreach (TrackRuntime track in mTracks)
@@ -227,7 +271,7 @@ namespace FlatRedBall.Graphics.Animation
 
             track.ActiveFrame = null;
             double local = 0;
-            SequenceChainReferenceSave reference = track.Save.Visible
+            SequenceChainReferenceSave reference = track.Visible
                 ? SequenceTimeline.ActiveAt(track.Ordered, time, CycleLength, out local)
                 : null;
 
@@ -289,6 +333,7 @@ namespace FlatRedBall.Graphics.Animation
                 TrackRuntime track = new TrackRuntime
                 {
                     Save = save,
+                    Visible = save.Visible,
                     Ordered = SequenceTimeline.Ordered(save),
                     Pivot = pivot,
                     Sprite = sprite,
