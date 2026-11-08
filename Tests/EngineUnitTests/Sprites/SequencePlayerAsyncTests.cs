@@ -114,6 +114,56 @@ public class SequencePlayerAsyncTests
     }
 
     [Fact]
+    public async Task PlayAsync_PlayingTheNextSequenceRightAfterTheAwait_NeverLeavesTheSpritesHiddenAtDrawTime()
+    {
+        // A finished sequence hides its sprites, so a hand-off ("await the attack, then play the idle") could show a
+        // gap if the code after the await ran a frame late. This runs the real frame order with the engine's own
+        // synchronization context: player update, task logic, then queued continuations, then "draw".
+        var previousContext = SynchronizationContext.Current;
+        var context = new FlatRedBall.Managers.SingleThreadSynchronizationContext();
+        try
+        {
+            var player = Player();
+            int handOffs = 0;
+            async Task RunAttackThenOtherForever()
+            {
+                while (true)
+                {
+                    await player.PlayAsync("Attack");
+                    handOffs++;
+                    // The next sequence starts in the continuation, as game code would write it.
+                    await player.PlayAsync("Other");
+                    handOffs++;
+                }
+            }
+            _ = RunAttackThenOtherForever();
+
+            int hiddenAtDrawTime = 0;
+            for (int frame = 0; frame < 60; frame++)
+            {
+                player.Update(0.1);
+                TimeManager.Update(new GameTime(TimeSpan.Zero, TimeSpan.FromSeconds(0.1)));
+                TimeManager.DoTaskLogic();
+                context.Update();
+
+                // End of the frame is when the game draws.
+                if (player.Sprites.Count > 0 && !player.Sprites[0].Visible)
+                {
+                    hiddenAtDrawTime++;
+                }
+            }
+
+            handOffs.ShouldBeGreaterThan(4);
+            hiddenAtDrawTime.ShouldBe(0);
+        }
+        finally
+        {
+            SynchronizationContext.SetSynchronizationContext(previousContext);
+        }
+        await Task.CompletedTask;
+    }
+
+    [Fact]
     public async Task PlayAsync_ALoopingSequence_IsRefusedBecauseItNeverFinishes()
     {
         var player = Player();
