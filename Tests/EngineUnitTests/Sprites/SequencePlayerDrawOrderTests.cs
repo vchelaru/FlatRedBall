@@ -8,7 +8,7 @@ using Shouldly;
 namespace EngineUnitTests.Sprites;
 
 /// <summary>
-/// SequencePlayer.AddToManagers fixes the draw order once: tracks in file order, across sequences, with no Z involved.
+/// SequencePlayer.AddToManagers fixes the draw order once: the first track in the file draws on top and the last at the bottom, across sequences, with no Z involved.
 /// </summary>
 [Collection(nameof(EngineStatefulTestCollection))]
 public class SequencePlayerDrawOrderTests
@@ -41,7 +41,8 @@ public class SequencePlayerDrawOrderTests
 
             var indexes = tracks.Select(track => drawn.IndexOf(track.Sprite)).ToList();
             indexes.ShouldAllBe(index => index >= 0);
-            indexes.ShouldBe(indexes.OrderBy(index => index).ToList());
+            // The first track draws on top (latest in the list), the last at the bottom.
+            indexes.ShouldBe(indexes.OrderByDescending(index => index).ToList());
             tracks.ShouldAllBe(track => track.Sprite.Z == 0);
         }
         finally

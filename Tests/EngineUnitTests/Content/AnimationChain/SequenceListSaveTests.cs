@@ -17,7 +17,7 @@ public class SequenceListSaveTests
               "loop": true,
               "tracks": [
                 {
-                  "name": "Body", "x": 10.5, "y": -4, "z": 3, "flipHorizontal": true, "visible": false,
+                  "name": "Body", "x": 10.5, "y": -4,"flipHorizontal": true, "visible": false,
                   "chains": [
                     { "source": "body/body.achj", "chain": "Walk", "start": 0.25, "loops": 2.5 }
                   ]
@@ -42,7 +42,6 @@ public class SequenceListSaveTests
         track.Name.ShouldBe("Body");
         track.X.ShouldBe(10.5f);
         track.Y.ShouldBe(-4f);
-        track.Z.ShouldBe(3);
         track.FlipHorizontal.ShouldBeTrue();
         track.Visible.ShouldBeFalse();
         var chain = track.Chains.Single();
@@ -64,7 +63,7 @@ public class SequenceListSaveTests
         var sequence = save.Sequences.Single();
         sequence.Loop.ShouldBeFalse();
         var track = sequence.Tracks.Single();
-        (track.X, track.Y, track.Z).ShouldBe((0f, 0f, 0));
+        (track.X, track.Y).ShouldBe((0f, 0f));
         track.FlipHorizontal.ShouldBeFalse();
         track.Visible.ShouldBeTrue();
         var chain = track.Chains.Single();

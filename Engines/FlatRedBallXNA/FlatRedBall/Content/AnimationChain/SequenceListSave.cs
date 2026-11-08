@@ -94,7 +94,6 @@ namespace FlatRedBall.Content.AnimationChain
                             Name = String(trackObject, "name"),
                             X = Float(trackObject, "x", 0),
                             Y = Float(trackObject, "y", 0),
-                            Z = Int(trackObject, "z", 0),
                             FlipHorizontal = Bool(trackObject, "flipHorizontal", false),
                             Visible = Bool(trackObject, "visible", true),
                         };
@@ -254,9 +253,6 @@ namespace FlatRedBall.Content.AnimationChain
 
         /// <summary>Initial visibility of the track. A track that is not visible shows nothing.</summary>
         public bool Visible { get; set; } = true;
-
-        /// <summary>Draw order: higher draws on top. Equal values draw in track order, a later track on top.</summary>
-        public int Z { get; set; }
 
         /// <summary>Chain references in any order. Playback orders them by start; list order breaks ties.</summary>
         public List<SequenceChainReferenceSave> Chains { get; } = new List<SequenceChainReferenceSave>();

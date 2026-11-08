@@ -118,8 +118,8 @@ namespace FlatRedBall.Graphics.Animation
                 instance.AddToManagers(layer);
             }
 
-            // Tracks never reorder, so the draw order is fixed once here: each Sprite draws on top of the track before it,
-            // across sequences in file order. Z is left alone so the entity still sorts against everything else.
+            // Tracks never reorder, so the draw order is fixed once here: the first track draws on top and the last at the
+            // bottom, across sequences in file order. Z is left alone so the entity still sorts against everything else.
             Sprite previous = null;
             foreach (SequenceInstance instance in mInstances)
             {
@@ -127,7 +127,7 @@ namespace FlatRedBall.Graphics.Animation
                 {
                     if (previous != null)
                     {
-                        SpriteManager.MoveAbove(track.Sprite, previous);
+                        SpriteManager.MoveBelow(track.Sprite, previous);
                     }
                     previous = track.Sprite;
                 }

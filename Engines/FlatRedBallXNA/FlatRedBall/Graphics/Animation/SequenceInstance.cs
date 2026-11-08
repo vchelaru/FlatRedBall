@@ -24,8 +24,7 @@ namespace FlatRedBall.Graphics.Animation
             Save = save;
             Tracks = new SequenceTrackList(save.Name);
 
-            // The track's Z (draw order) is not applied yet: FRB1 orders sprites by layer and sort type, not by a
-            // Z the player can set safely. Tracks are created in file order.
+            // Tracks are created in file order, which is also their draw order (see SequencePlayer.AddToManagers).
             foreach (SequenceTrackSave trackSave in save.Tracks)
             {
                 PositionedObject pivot = new PositionedObject { Name = trackSave.Name };

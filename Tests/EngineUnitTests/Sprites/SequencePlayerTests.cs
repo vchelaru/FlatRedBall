@@ -44,9 +44,9 @@ public class SequencePlayerTests
         _ => null,
     };
 
-    static SequenceTrackSave Track(string name, int z, params (string Source, string Chain, double Start, float Loops)[] chains)
+    static SequenceTrackSave Track(string name, params (string Source, string Chain, double Start, float Loops)[] chains)
     {
-        var track = new SequenceTrackSave { Name = name, Z = z };
+        var track = new SequenceTrackSave { Name = name };
         foreach (var (source, chain, start, loops) in chains)
         {
             track.Chains.Add(new SequenceChainReferenceSave { Source = source, Chain = chain, Start = start, Loops = loops });
@@ -78,11 +78,11 @@ public class SequencePlayerTests
     [Fact]
     public void Constructing_MakesOneSpriteAndPivotPerTrack_HiddenUntilPlayed()
     {
-        var body = Track("Body", 1, ("body.achj", "Walk", 0, 1));
+        var body = Track("Body", ("body.achj", "Walk", 0, 1));
         body.X = 10;
         body.Y = -4;
         var entity = new PositionedObject();
-        var player = new SequencePlayer(entity, new SequenceList(SeqFile(("Attack", false, new[] { body, Track("Fx", 5, ("fx.achj", "Spark", 0, 1)) })), Resolve!));
+        var player = new SequencePlayer(entity, new SequenceList(SeqFile(("Attack", false, new[] { body, Track("Fx", ("fx.achj", "Spark", 0, 1)) })), Resolve!));
 
         var tracks = player["Attack"].Tracks;
 
@@ -98,7 +98,7 @@ public class SequencePlayerTests
     [Fact]
     public void Tracks_TheSpriteIsTheSameObjectBeforeAndAfterEveryPlay()
     {
-        var attack = Attack(false, Track("Body", 0, ("body.achj", "Walk", 0, 1)));
+        var attack = Attack(false, Track("Body", ("body.achj", "Walk", 0, 1)));
         var sprite = attack.Tracks["Body"].Sprite;
 
         attack.Play();
@@ -112,7 +112,7 @@ public class SequencePlayerTests
     public void SetTime_HiddenBeforeItsChainStarts_VisibleDuring_HiddenAfter()
     {
         // Walk is 0.5 s, so this chain plays from 1 s to 1.5 s.
-        var attack = Attack(false, Track("Body", 0, ("body.achj", "Walk", 1, 1)));
+        var attack = Attack(false, Track("Body", ("body.achj", "Walk", 1, 1)));
         var sprite = attack.Tracks[0].Sprite;
 
         attack.SetTime(0.5);
@@ -129,7 +129,7 @@ public class SequencePlayerTests
     [Fact]
     public void SetTime_LoopingChain_RepeatsAcrossTheBlock()
     {
-        var attack = Attack(false, Track("Body", 0, ("body.achj", "Walk", 0, 3)));
+        var attack = Attack(false, Track("Body", ("body.achj", "Walk", 0, 3)));
 
         attack.SetTime(0.6);
 
@@ -140,7 +140,7 @@ public class SequencePlayerTests
     [Fact]
     public void SetTime_NonLoopingChain_PlaysOnceThenHoldsItsLastFrame_UntilTheBlockEnds()
     {
-        var attack = Attack(false, Track("Body", 0, ("body.achj", "Hold", 0, 3)));
+        var attack = Attack(false, Track("Body", ("body.achj", "Hold", 0, 3)));
         var sprite = attack.Tracks[0].Sprite;
 
         attack.SetTime(0.6);
@@ -156,7 +156,7 @@ public class SequencePlayerTests
     public void SetTime_ACutChain_SwitchesToTheNextChainAtItsStart()
     {
         // Walk asks for 2 s (four cycles) but Spark starts at 0.6 s on the same track.
-        var attack = Attack(false, Track("Body", 0, ("body.achj", "Walk", 0, 4), ("fx.achj", "Spark", 0.6, 1)));
+        var attack = Attack(false, Track("Body", ("body.achj", "Walk", 0, 4), ("fx.achj", "Spark", 0.6, 1)));
         var sprite = attack.Tracks[0].Sprite;
 
         attack.SetTime(0.55);
@@ -169,8 +169,8 @@ public class SequencePlayerTests
     public void SetTime_MissingSourceOrChain_HidesTheSpriteWithoutThrowing()
     {
         var attack = Attack(false,
-            Track("NoSource", 0, ("gone.achj", "Walk", 0, 1)),
-            Track("NoChain", 0, ("body.achj", "Deleted", 0, 1)));
+            Track("NoSource", ("gone.achj", "Walk", 0, 1)),
+            Track("NoChain", ("body.achj", "Deleted", 0, 1)));
 
         Should.NotThrow(() => attack.SetTime(0.1));
 
@@ -181,7 +181,7 @@ public class SequencePlayerTests
     [Fact]
     public void SetTime_AMissingChainStillCutsTheChainBeforeIt()
     {
-        var attack = Attack(false, Track("Body", 0, ("body.achj", "Walk", 0, 4), ("body.achj", "Deleted", 0.6, 1)));
+        var attack = Attack(false, Track("Body", ("body.achj", "Walk", 0, 4), ("body.achj", "Deleted", 0.6, 1)));
 
         attack.SetTime(0.55);
         attack.Tracks[0].Sprite.Visible.ShouldBeTrue();
@@ -192,9 +192,9 @@ public class SequencePlayerTests
     [Fact]
     public void Visible_AFilesVisibleFalseIsTheStart_AndTheTrackShowsNothingWhileItIsOff()
     {
-        var off = Track("2_Fx", 5, ("fx.achj", "Spark", 0, 1));
+        var off = Track("2_Fx", ("fx.achj", "Spark", 0, 1));
         off.Visible = false;
-        var attack = Attack(false, off, Track("1_Body", 1, ("body.achj", "Walk", 0, 1)));
+        var attack = Attack(false, off, Track("1_Body", ("body.achj", "Walk", 0, 1)));
 
         attack.SetTime(0.1);
 
@@ -206,9 +206,9 @@ public class SequencePlayerTests
     [Fact]
     public void Visible_SettingATrackOnOrOff_ChangesItAtOnce()
     {
-        var off = Track("2_Fx", 5, ("fx.achj", "Spark", 0, 1));
+        var off = Track("2_Fx", ("fx.achj", "Spark", 0, 1));
         off.Visible = false;
-        var attack = Attack(false, Track("1_Body", 1, ("body.achj", "Walk", 0, 1)), off);
+        var attack = Attack(false, Track("1_Body", ("body.achj", "Walk", 0, 1)), off);
         attack.SetTime(0.1);
 
         attack.Tracks["2_Fx"].Visible = true;
@@ -222,7 +222,7 @@ public class SequencePlayerTests
     [Fact]
     public void Visible_BeforeItsChainStarts_ShowsItWhenTheChainStarts()
     {
-        var late = Track("Fx", 0, ("fx.achj", "Spark", 1, 1));
+        var late = Track("Fx", ("fx.achj", "Spark", 1, 1));
         late.Visible = false;
         var attack = Attack(false, late);
 
@@ -236,7 +236,7 @@ public class SequencePlayerTests
     [Fact]
     public void Visible_StaysWhatItWasSetTo_AcrossStopAndPlay()
     {
-        var off = Track("2_Fx", 0, ("fx.achj", "Spark", 0, 1));
+        var off = Track("2_Fx", ("fx.achj", "Spark", 0, 1));
         off.Visible = false;
         var attack = Attack(false, off);
         attack.Tracks["2_Fx"].Visible = true;
@@ -251,7 +251,7 @@ public class SequencePlayerTests
     [Fact]
     public void AnUnknownTrackOrSequenceName_ThrowsAndNamesIt()
     {
-        var player = new SequencePlayer(new PositionedObject(), new SequenceList(SeqFile(("Attack", false, new[] { Track("1_Body", 0, ("body.achj", "Walk", 0, 1)) })), Resolve!));
+        var player = new SequencePlayer(new PositionedObject(), new SequenceList(SeqFile(("Attack", false, new[] { Track("1_Body", ("body.achj", "Walk", 0, 1)) })), Resolve!));
 
         Should.Throw<InvalidOperationException>(() => player["Attack"].Tracks["1_Bodyy"]).Message.ShouldContain("1_Bodyy");
         Should.Throw<InvalidOperationException>(() => player["Atack"]).Message.ShouldContain("Atack");
@@ -260,7 +260,7 @@ public class SequencePlayerTests
     [Fact]
     public void SetTime_AFlippedTrack_MirrorsTheFrameFlipAndOffsetAcrossTheTrack()
     {
-        var body = Track("Body", 0, ("body.achj", "Walk", 0, 1));
+        var body = Track("Body", ("body.achj", "Walk", 0, 1));
         body.X = 10;
         body.FlipHorizontal = true;
         var list = Body();
@@ -288,7 +288,7 @@ public class SequencePlayerTests
         list["Walk"][0].RelativeX = 3;
         list["Walk"][0].FlipHorizontal = true;
         var player = new SequencePlayer(new PositionedObject(),
-            new SequenceList(SeqFile(("Attack", false, new[] { Track("Body", 0, ("body.achj", "Walk", 0, 1)) })), _ => list));
+            new SequenceList(SeqFile(("Attack", false, new[] { Track("Body", ("body.achj", "Walk", 0, 1)) })), _ => list));
         var attack = player["Attack"];
         attack.Play();
 
@@ -302,11 +302,11 @@ public class SequencePlayerTests
     public void SetTime_PastTheEnd_LoopsWhenTheSequenceLoops_AndHoldsHiddenWhenItDoesNot()
     {
         // Walk plays 0 to 0.5 s.
-        var looping = Attack(true, Track("Body", 0, ("body.achj", "Walk", 0, 1)));
+        var looping = Attack(true, Track("Body", ("body.achj", "Walk", 0, 1)));
         looping.SetTime(0.6);
         looping.Tracks[0].Sprite.Visible.ShouldBeTrue();
 
-        var once = Attack(false, Track("Body", 0, ("body.achj", "Walk", 0, 1)));
+        var once = Attack(false, Track("Body", ("body.achj", "Walk", 0, 1)));
         once.SetTime(0.6);
         once.Tracks[0].Sprite.Visible.ShouldBeFalse();
     }
@@ -314,7 +314,7 @@ public class SequencePlayerTests
     [Fact]
     public void Update_AdvancesTime_AndFinishesANonLoopingSequenceAtItsLength()
     {
-        var attack = Attack(false, Track("Body", 0, ("body.achj", "Walk", 0, 1)));
+        var attack = Attack(false, Track("Body", ("body.achj", "Walk", 0, 1)));
 
         attack.Update(0.3);
         attack.Time.ShouldBe(0.3, 1e-9);
@@ -327,7 +327,7 @@ public class SequencePlayerTests
     [Fact]
     public void Play_AgainRestartsFromTimeZero()
     {
-        var attack = Attack(false, Track("Body", 0, ("body.achj", "Walk", 0, 1)));
+        var attack = Attack(false, Track("Body", ("body.achj", "Walk", 0, 1)));
         attack.Update(0.4);
 
         attack.Play();
@@ -339,7 +339,7 @@ public class SequencePlayerTests
     [Fact]
     public void Stop_HidesTheSprites_AndNothingAdvancesUntilItPlaysAgain()
     {
-        var attack = Attack(false, Track("Body", 0, ("body.achj", "Walk", 0, 3)));
+        var attack = Attack(false, Track("Body", ("body.achj", "Walk", 0, 3)));
         attack.Update(0.1);
 
         attack.Stop();
@@ -354,8 +354,8 @@ public class SequencePlayerTests
     public void PlayingOneSequence_NeverStopsAnother()
     {
         var player = new SequencePlayer(new PositionedObject(), new SequenceList(SeqFile(
-            ("Idle", true, new[] { Track("Body", 0, ("body.achj", "Walk", 0, 1)) }),
-            ("Wings", true, new[] { Track("Wing", 0, ("fx.achj", "Spark", 0, 1)) })), Resolve!));
+            ("Idle", true, new[] { Track("Body", ("body.achj", "Walk", 0, 1)) }),
+            ("Wings", true, new[] { Track("Wing", ("fx.achj", "Spark", 0, 1)) })), Resolve!));
 
         player["Idle"].Play();
         player["Wings"].Play();
@@ -376,7 +376,7 @@ public class SequencePlayerTests
     public void RemoveFromManagers_StopsEverything_AndThePlayerCantPlayAgain()
     {
         var player = new SequencePlayer(new PositionedObject(), new SequenceList(SeqFile(
-            ("Attack", false, new[] { Track("Body", 0, ("body.achj", "Walk", 0, 1)) })), Resolve!));
+            ("Attack", false, new[] { Track("Body", ("body.achj", "Walk", 0, 1)) })), Resolve!));
         player["Attack"].Play();
 
         player.RemoveFromManagers();
@@ -388,7 +388,7 @@ public class SequencePlayerTests
     [Fact]
     public void TwoPlayersOnOneSequenceList_ShareTheLoadedChains_AndPlayIndependently()
     {
-        var file = SeqFile(("Attack", false, new[] { Track("Body", 0, ("body.achj", "Walk", 0, 3)) }));
+        var file = SeqFile(("Attack", false, new[] { Track("Body", ("body.achj", "Walk", 0, 3)) }));
         int loads = 0;
         var list = new SequenceList(file, source => { loads++; return Resolve(source); });
         var first = new SequencePlayer(new PositionedObject(), list)["Attack"];
@@ -444,7 +444,7 @@ public class SequencePlayerTests
     public void SetTime_MatchesTheClockAtEveryFrameBoundary()
     {
         // The Sprite does the frame lookup; the clock is the reference. They must agree, boundaries included.
-        var attack = Attack(false, Track("Body", 0, ("body.achj", "Walk", 0, 4)));
+        var attack = Attack(false, Track("Body", ("body.achj", "Walk", 0, 4)));
         var chain = Body()["Walk"];
 
         for (double time = 0; time < 1.99; time += 0.05)
