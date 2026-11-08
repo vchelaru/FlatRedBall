@@ -81,6 +81,13 @@ namespace FlatRedBall.Graphics.Animation
         public bool Reverse { get; set; }
 
         /// <summary>
+        /// Whether the chain repeats when played for longer than one cycle. Defaults to true. This is data only:
+        /// a Sprite always loops regardless of it. It is read by SequencePlayer, where a non-looping chain plays one
+        /// cycle and then holds its last frame.
+        /// </summary>
+        public bool Loop { get; set; } = true;
+
+        /// <summary>
         /// The length of one full playback cycle in seconds: TotalLength, or twice that if PingPong is true.
         /// </summary>
         public float PlaybackLength => PingPong ? TotalLength * 2 : TotalLength;
@@ -162,6 +169,7 @@ namespace FlatRedBall.Graphics.Animation
             animationChain.mName = this.mName;
             animationChain.PingPong = PingPong;
             animationChain.Reverse = Reverse;
+            animationChain.Loop = Loop;
 
             return animationChain;
         }

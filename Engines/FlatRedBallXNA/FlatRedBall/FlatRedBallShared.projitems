@@ -39,6 +39,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Content\AnimationChain\AnimationChainListSave.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Content\AnimationChain\AnimationChainSave.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Content\AnimationChain\AnimationFrameSave.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Content\AnimationChain\SequenceListSave.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Content\Aseprite\AsepriteFile.Extensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Content\ContentLoaders\AsepriteFileLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Content\ContentLoaders\SongLoader.cs" />
@@ -111,6 +112,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Animation\AnimationFrame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Animation\KeyframeCurve.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Animation\KeyframeEvaluator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Animation\SequenceChainClock.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Animation\SequencePlayer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Animation\SequenceTimeline.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Animation\AnimationLayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Animation\IAnimatable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Animation\IAnimationChainAnimatable.cs" />
