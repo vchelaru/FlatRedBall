@@ -742,6 +742,45 @@ namespace FlatRedBall
             #endregion
         }
 
+        /// <summary>
+        /// Draws <paramref name="sprite"/> on top of <paramref name="reference"/> without changing either Z. The two Sprites
+        /// must be drawn from the same list, which means the same Layer (or both un-layered). The order only decides between
+        /// Sprites whose sort values are equal, since sorting is stable on ties.
+        /// </summary>
+        public static void MoveAbove(Sprite sprite, Sprite reference)
+        {
+            FindSharedDrawList(sprite, reference).MoveAfter(sprite, reference);
+        }
+
+        /// <summary>
+        /// Draws <paramref name="sprite"/> behind <paramref name="reference"/> without changing either Z. See <see cref="MoveAbove"/>.
+        /// </summary>
+        public static void MoveBelow(Sprite sprite, Sprite reference)
+        {
+            FindSharedDrawList(sprite, reference).MoveBefore(sprite, reference);
+        }
+
+        static SpriteList FindSharedDrawList(Sprite sprite, Sprite reference)
+        {
+            if (sprite == null) throw new ArgumentNullException(nameof(sprite));
+            if (reference == null) throw new ArgumentNullException(nameof(reference));
+
+            bool BothIn(SpriteList list) =>
+                sprite.ListsBelongingTo.Contains(list) && reference.ListsBelongingTo.Contains(list);
+
+            if (BothIn(mOrderedByDistanceFromCameraSprites)) return mOrderedByDistanceFromCameraSprites;
+            if (BothIn(mZBufferedSprites)) return mZBufferedSprites;
+
+            foreach (var layer in mLayers)
+            {
+                if (BothIn(layer.mSprites)) return layer.mSprites;
+                if (BothIn(layer.mZBufferedSprites)) return layer.mZBufferedSprites;
+            }
+
+            throw new InvalidOperationException(
+                "Both Sprites must be added to the SpriteManager and drawn from the same Layer (or both un-layered).");
+        }
+
         public static void AddToLayerZBuffered(Sprite spriteToAdd, Layer layerToAddTo)
         {
 #if DEBUG

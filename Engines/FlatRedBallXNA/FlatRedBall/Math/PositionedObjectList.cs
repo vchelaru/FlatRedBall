@@ -452,6 +452,47 @@ namespace FlatRedBall.Math
 
         #endregion
 
+        #region Move methods (change where an object sits relative to another)
+
+        /// <summary>
+        /// Moves <paramref name="item"/> so it sits directly after <paramref name="reference"/>. Both must be in this list.
+        /// </summary>
+        public void MoveAfter(T item, T reference)
+        {
+            MoveRelativeTo(item, reference, 1);
+        }
+
+        /// <summary>
+        /// Moves <paramref name="item"/> so it sits directly before <paramref name="reference"/>. Both must be in this list.
+        /// </summary>
+        public void MoveBefore(T item, T reference)
+        {
+            MoveRelativeTo(item, reference, 0);
+        }
+
+        void MoveRelativeTo(T item, T reference, int offset)
+        {
+            if (ReferenceEquals(item, reference))
+            {
+                throw new ArgumentException("An object cannot be moved relative to itself.");
+            }
+            int itemIndex = mInternalList.IndexOf(item);
+            int referenceIndex = mInternalList.IndexOf(reference);
+            if (itemIndex < 0 || referenceIndex < 0)
+            {
+                throw new ArgumentException("Both objects must be in the list.");
+            }
+
+            mInternalList.RemoveAt(itemIndex);
+            if (itemIndex < referenceIndex)
+            {
+                referenceIndex--;
+            }
+            mInternalList.Insert(referenceIndex + offset, item);
+        }
+
+        #endregion
+
         #region Shuffle/Sorting Methods
         /*
         public void KeepObjectSortedAscending(int positionedObject, Axis axis)
