@@ -362,6 +362,12 @@ namespace FlatRedBall.Graphics.Animation
                     sprite.RelativeX = -sprite.RelativeX;
                 }
             }
+
+            // The managers have already updated this Sprite's dependencies for the frame, and UpdateDependencies skips a
+            // Sprite it has already updated at the current time. Clearing that stamp lets the new frame's offset reach the
+            // world position now, instead of one frame after the texture and size change.
+            sprite.LastDependencyUpdate = -1;
+            sprite.UpdateDependencies(TimeManager.CurrentTime);
         }
     }
 }
