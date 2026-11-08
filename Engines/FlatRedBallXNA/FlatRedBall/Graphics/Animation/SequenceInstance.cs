@@ -16,6 +16,7 @@ namespace FlatRedBall.Graphics.Animation
     {
         private readonly SequencePlayer mPlayer;
         private int mPlayVersion;
+        private double mLastShown;
         private HashSet<string> mShapeNames;
 
         internal SequenceInstance(SequencePlayer player, SequenceSave save)
@@ -32,6 +33,7 @@ namespace FlatRedBall.Graphics.Animation
                 pivot.RelativeX = trackSave.X;
                 pivot.RelativeY = trackSave.Y;
 
+                // The Sprite animates itself once a block switches its chain (Animate turns on then).
                 Sprite sprite = new Sprite { Name = trackSave.Name, TextureScale = 1, Animate = false, Visible = false };
                 sprite.AttachTo(pivot);
                 // A flipped track applies frame flips itself, mirrored across the track.
@@ -80,14 +82,16 @@ namespace FlatRedBall.Graphics.Animation
             mPlayVersion++;
             Length = SequenceTimeline.Length(Save, mPlayer.CycleLength);
             Time = 0;
+            mLastShown = 0;
             IsPlaying = true;
             foreach (SequenceTrack track in Tracks)
             {
                 track.EventReference = null;
                 track.EventVisit = -1;
+                track.ActiveReference = null;
             }
             mPlayer.SequenceStarted(this);
-            ApplyTracks();
+            ApplyTracks(true);
             mPlayer.SyncShapes();
         }
 
@@ -108,6 +112,7 @@ namespace FlatRedBall.Graphics.Animation
             {
                 track.Sprite.Visible = false;
                 track.ActiveFrame = null;
+                track.ActiveReference = null;
             }
             mPlayer.SequenceStopped(this);
         }
@@ -155,7 +160,7 @@ namespace FlatRedBall.Graphics.Animation
             {
                 // Time keeps counting past the end for a non-looping sequence, so IsFinished stays true.
                 Time = System.Math.Max(0, time);
-                ApplyTracks();
+                ApplyTracks(true);
                 mPlayer.SyncShapes();
             }
         }
@@ -163,14 +168,14 @@ namespace FlatRedBall.Graphics.Animation
         internal void Advance(double seconds)
         {
             Time = System.Math.Max(0, Time + seconds * Speed);
-            ApplyTracks();
+            ApplyTracks(false);
         }
 
         internal void TrackVisibilityChanged()
         {
             if (IsPlaying)
             {
-                ApplyTracks();
+                ApplyTracks(true);
                 mPlayer.SyncShapes();
             }
         }
@@ -297,13 +302,22 @@ namespace FlatRedBall.Graphics.Animation
             }
         }
 
-        private void ApplyTracks()
+        // A seek (play, SetTime, a track turned on or off, a loop wrapping) writes every Sprite's time into its chain.
+        // A plain advance only switches a Sprite's chain when a new block starts; between switches the Sprite animates
+        // itself in the manager's update, as it does for any Sprite.
+        private void ApplyTracks(bool seek)
         {
             double shown = SequenceTimeline.WrapTime(Time, Length, Save.Loop);
+            if (shown < mLastShown)
+            {
+                seek = true;
+            }
+            mLastShown = shown;
+
             int playVersion = mPlayVersion;
             foreach (SequenceTrack track in Tracks)
             {
-                ApplyTrack(track, shown);
+                ApplyTrack(track, shown, seek);
 
                 // An event handler may have stopped or restarted the sequence; the rest of this pass is stale.
                 if (playVersion != mPlayVersion)
@@ -313,7 +327,7 @@ namespace FlatRedBall.Graphics.Animation
             }
         }
 
-        private void ApplyTrack(SequenceTrack track, double time)
+        private void ApplyTrack(SequenceTrack track, double time, bool seek)
         {
             Sprite sprite = track.Sprite;
 
@@ -331,6 +345,7 @@ namespace FlatRedBall.Graphics.Animation
             if (chain == null || chain.Count == 0)
             {
                 sprite.Visible = false;
+                track.ActiveReference = null;
                 return;
             }
 
@@ -341,31 +356,76 @@ namespace FlatRedBall.Graphics.Animation
                 sprite.AnimationChains = list;
                 track.ActiveList = list;
             }
+
+            if (track.Save.FlipHorizontal)
+            {
+                ApplyFlippedTrack(track, chain, local);
+                return;
+            }
+
+            sprite.AnimationSpeed = Speed;
+            if (seek || !ReferenceEquals(track.ActiveReference, reference))
+            {
+                track.ActiveReference = reference;
+                if (track.ActiveChain != chain)
+                {
+                    sprite.CurrentChain = chain;
+                    track.ActiveChain = chain;
+                }
+                sprite.TimeIntoAnimation = SequenceChainClock.TimeIntoCycle(chain, local);
+                sprite.Animate = true;
+                track.Holding = false;
+
+                // A chain with Loop off plays one cycle and holds its last frame.
+                if (!chain.Loop && local + 1e-6 >= SequenceChainClock.CycleLength(chain))
+                {
+                    Hold(track, chain);
+                }
+            }
+            else if (!chain.Loop && !track.Holding && sprite.JustCycled)
+            {
+                // The Sprite's own animation just wrapped past the end of the cycle.
+                Hold(track, chain);
+            }
+
+            track.ActiveFrame = chain[sprite.CurrentFrameIndex];
+        }
+
+        private static void Hold(SequenceTrack track, AnimationChain chain)
+        {
+            track.Sprite.TimeIntoAnimation = SequenceChainClock.TimeIntoCycle(chain, SequenceChainClock.CycleLength(chain));
+            track.Sprite.Animate = false;
+            track.Holding = true;
+        }
+
+        // A flipped track can't use the Sprite's own animation: every frame's offset has to be mirrored after the Sprite
+        // applies it. So the player sets the time on every update and puts the Sprite at its new world position itself.
+        private void ApplyFlippedTrack(SequenceTrack track, AnimationChain chain, double local)
+        {
+            Sprite sprite = track.Sprite;
+            track.ActiveReference = null;
             if (track.ActiveChain != chain)
             {
                 sprite.CurrentChain = chain;
                 track.ActiveChain = chain;
             }
 
+            sprite.Animate = false;
             sprite.TimeIntoAnimation = SequenceChainClock.TimeIntoCycle(chain, local);
             track.ActiveFrame = chain[sprite.CurrentFrameIndex];
 
-            if (track.Save.FlipHorizontal)
+            // The Sprite was told not to apply frame flips; mirror the frame's own across the track instead.
+            AnimationFrame frame = track.ActiveFrame;
+            sprite.FlipHorizontal = !frame.FlipHorizontal;
+            sprite.FlipVertical = frame.FlipVertical;
+            sprite.FlipDiagonal = frame.FlipDiagonal;
+            if (sprite.UseAnimationRelativePosition)
             {
-                // The Sprite was told not to apply frame flips; mirror the frame's own across the track instead.
-                AnimationFrame frame = track.ActiveFrame;
-                sprite.FlipHorizontal = !frame.FlipHorizontal;
-                sprite.FlipVertical = frame.FlipVertical;
-                sprite.FlipDiagonal = frame.FlipDiagonal;
-                if (sprite.UseAnimationRelativePosition)
-                {
-                    sprite.RelativeX = -sprite.RelativeX;
-                }
+                sprite.RelativeX = -sprite.RelativeX;
             }
 
-            // The managers have already updated this Sprite's dependencies for the frame, and UpdateDependencies skips a
-            // Sprite it has already updated at the current time. Clearing that stamp lets the new frame's offset reach the
-            // world position now, instead of one frame after the texture and size change.
+            // UpdateDependencies skips a Sprite the managers already updated at the current time; clear that so the new
+            // offset reaches the world position now instead of one frame late.
             sprite.LastDependencyUpdate = -1;
             sprite.UpdateDependencies(TimeManager.CurrentTime);
         }

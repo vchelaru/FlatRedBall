@@ -6,8 +6,8 @@ using Shouldly;
 namespace EngineUnitTests.Sprites;
 
 /// <summary>
-/// The player applies frames during entity activity, after the managers have updated dependencies for the frame. The
-/// Sprite's world position must follow the new frame's offset right away, not a frame later than its texture.
+/// A flipped track has the player set its frames during entity activity, after the managers have updated dependencies for
+/// the frame. The Sprite's world position must follow the new frame's offset right away, not a frame after its texture.
 /// </summary>
 public class SequencePlayerPositionTests
 {
@@ -21,7 +21,8 @@ public class SequencePlayerPositionTests
 
         var file = new SequenceListSave();
         var sequence = new SequenceSave { Name = "Idle", Loop = true };
-        var track = new SequenceTrackSave { Name = "Body" };
+        // A flipped track can't use the Sprite's own animation, so the player sets its frames and its position itself.
+        var track = new SequenceTrackSave { Name = "Body", FlipHorizontal = true };
         track.Chains.Add(new SequenceChainReferenceSave { Source = "body.achj", Chain = "Bob", Start = 0, Loops = 1 });
         sequence.Tracks.Add(track);
         file.Sequences.Add(sequence);

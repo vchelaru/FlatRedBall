@@ -63,6 +63,10 @@ namespace FlatRedBall.Graphics.Animation
         internal AnimationChainList ActiveList;
         internal AnimationChain ActiveChain;
 
+        // The block the Sprite was last switched to, and whether it is holding the last frame of a chain with Loop off.
+        internal SequenceChainReferenceSave ActiveReference;
+        internal bool Holding;
+
         // The frame the track shows right now, or null while its Sprite is hidden. Its shapes drive the entity's shapes.
         internal AnimationFrame ActiveFrame;
     }
