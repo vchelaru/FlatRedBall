@@ -113,6 +113,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Animation\KeyframeCurve.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Animation\KeyframeEvaluator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Animation\SequenceChainClock.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Animation\SequenceList.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Animation\SequencePlayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Animation\SequenceTimeline.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Animation\AnimationLayer.cs" />

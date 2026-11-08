@@ -59,7 +59,7 @@ public class SequencePlayerTests
         var sequence = new SequenceSave { Name = "Attack", Loop = loop };
         sequence.Tracks.AddRange(tracks);
         file.Sequences.Add(sequence);
-        var player = new SequencePlayer(new PositionedObject(), file, Resolve!);
+        var player = new SequencePlayer(new PositionedObject(), new SequenceList(file, Resolve!));
         player.Play("Attack").ShouldBeTrue();
         return player;
     }
@@ -184,7 +184,7 @@ public class SequencePlayerTests
         list["Walk"][0].RelativeX = 3;
         list["Walk"][0].FlipHorizontal = false;
         list["Walk"][1].FlipHorizontal = true;
-        var player = new SequencePlayer(new PositionedObject(), file, _ => list);
+        var player = new SequencePlayer(new PositionedObject(), new SequenceList(file, _ => list));
         player.Play("Attack");
 
         player.SetTime(0);
@@ -206,7 +206,7 @@ public class SequencePlayerTests
         var list = Body();
         list["Walk"][0].RelativeX = 3;
         list["Walk"][0].FlipHorizontal = true;
-        var player = new SequencePlayer(new PositionedObject(), file, _ => list);
+        var player = new SequencePlayer(new PositionedObject(), new SequenceList(file, _ => list));
         player.Play("Attack");
 
         player.SetTime(0);
@@ -263,7 +263,7 @@ public class SequencePlayerTests
         two.Tracks.Add(Track("B", 0, ("fx.achj", "Spark", 0, 1)));
         file.Sequences.Add(one);
         file.Sequences.Add(two);
-        var player = new SequencePlayer(new PositionedObject(), file, Resolve!);
+        var player = new SequencePlayer(new PositionedObject(), new SequenceList(file, Resolve!));
         player.Play("One");
         player.Update(0.3);
 
@@ -292,7 +292,7 @@ public class SequencePlayerTests
                     { "name": "Lost", "chains": [ { "source": "gone/gone.achj", "chain": "Walk", "start": 0 } ] } ] } ] }
                 """);
 
-            var player = SequencePlayer.FromFile(new PositionedObject(), Path.Combine(directory, "boss.seqj"), "test");
+            var player = new SequencePlayer(new PositionedObject(), SequenceList.FromFile(Path.Combine(directory, "boss.seqj"), "test"));
             player.Play("Attack").ShouldBeTrue();
 
             player.SetTime(0.6);
@@ -305,6 +305,29 @@ public class SequencePlayerTests
         {
             Directory.Delete(directory, recursive: true);
         }
+    }
+
+    [Fact]
+    public void TwoPlayersOnOneSequenceList_ShareTheLoadedChains_AndPlayIndependently()
+    {
+        var file = new SequenceListSave();
+        var sequence = new SequenceSave { Name = "Attack" };
+        sequence.Tracks.Add(Track("Body", 0, ("body.achj", "Walk", 0, 3)));
+        file.Sequences.Add(sequence);
+        int loads = 0;
+        var list = new SequenceList(file, source => { loads++; return Resolve(source); });
+        var first = new SequencePlayer(new PositionedObject(), list);
+        var second = new SequencePlayer(new PositionedObject(), list);
+        first.Play("Attack");
+        second.Play("Attack");
+
+        first.SetTime(0.1);
+        second.SetTime(0.3);
+
+        loads.ShouldBe(1);
+        first.Sprites[0].AnimationChains.ShouldBeSameAs(second.Sprites[0].AnimationChains);
+        first.Sprites[0].CurrentFrameIndex.ShouldBe(0);
+        second.Sprites[0].CurrentFrameIndex.ShouldBe(1);
     }
 
     [Fact]

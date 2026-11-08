@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using FlatRedBall.Content.AnimationChain;
 using FlatRedBall.Content.Math.Geometry;
 using FlatRedBall.Content.Polygon;
-using FlatRedBall.IO;
 using FlatRedBall.Math.Geometry;
 
 namespace FlatRedBall.Graphics.Animation
@@ -41,10 +40,6 @@ namespace FlatRedBall.Graphics.Animation
             public bool RemovedFromCollision;
         }
 
-        private readonly SequenceListSave mFile;
-        private readonly Func<string, AnimationChainList> mSourceResolver;
-        private readonly Dictionary<string, AnimationChainList> mSources =
-            new Dictionary<string, AnimationChainList>(StringComparer.OrdinalIgnoreCase);
         private readonly List<TrackRuntime> mTracks = new List<TrackRuntime>();
         private readonly List<Sprite> mSprites = new List<Sprite>();
         private readonly List<PositionedObject> mPivots = new List<PositionedObject>();
@@ -81,39 +76,15 @@ namespace FlatRedBall.Graphics.Animation
         /// <summary>Multiplier on elapsed time. 2 plays twice as fast.</summary>
         public float Speed { get; set; } = 1;
 
+        /// <summary>The loaded .seqj this player plays from. It can be shared by the players of many entities.</summary>
+        public SequenceList Sequences { get; }
+
         /// <param name="owner">The entity to play on.</param>
-        /// <param name="file">The loaded .seqj.</param>
-        /// <param name="sourceResolver">Returns the chains of a source as written in the .seqj's source list, or null when
-        /// it can't be loaded. Called once per source.</param>
-        public SequencePlayer(PositionedObject owner, SequenceListSave file, Func<string, AnimationChainList> sourceResolver)
+        /// <param name="sequences">The loaded .seqj (see <see cref="SequenceList.FromFile"/>).</param>
+        public SequencePlayer(PositionedObject owner, SequenceList sequences)
         {
             Owner = owner ?? throw new ArgumentNullException(nameof(owner));
-            mFile = file ?? throw new ArgumentNullException(nameof(file));
-            mSourceResolver = sourceResolver ?? throw new ArgumentNullException(nameof(sourceResolver));
-        }
-
-        /// <summary>
-        /// Loads a .seqj from disk. Each source is loaded from the .achx/.achj next to it (paths in the file are relative
-        /// to the .seqj); a source that can't be loaded is treated as missing.
-        /// </summary>
-        public static SequencePlayer FromFile(PositionedObject owner, string seqjFileName, string contentManagerName)
-        {
-            string absolute = FileManager.IsRelative(seqjFileName) ? FileManager.MakeAbsolute(seqjFileName) : seqjFileName;
-            string directory = FileManager.GetDirectory(absolute);
-
-            return new SequencePlayer(owner, SequenceListSave.FromFile(absolute), source =>
-            {
-                try
-                {
-                    return Content.AnimationChain.AnimationChainListSave
-                        .FromFile(directory + source)
-                        .ToAnimationChainList(contentManagerName, throwError: false);
-                }
-                catch (Exception)
-                {
-                    return null;
-                }
-            });
+            Sequences = sequences ?? throw new ArgumentNullException(nameof(sequences));
         }
 
         /// <summary>
@@ -122,7 +93,7 @@ namespace FlatRedBall.Graphics.Animation
         /// </summary>
         public bool Play(string sequenceName)
         {
-            SequenceSave sequence = mFile.Sequences.Find(item => item.Name == sequenceName);
+            SequenceSave sequence = Sequences.Find(sequenceName);
             if (sequence == null)
             {
                 return false;
@@ -221,7 +192,7 @@ namespace FlatRedBall.Graphics.Animation
                 ? SequenceTimeline.ActiveAt(track.Ordered, time, CycleLength, out local)
                 : null;
 
-            AnimationChain chain = reference == null ? null : FindChain(reference);
+            AnimationChain chain = reference == null ? null : Sequences.FindChain(reference);
             if (chain == null || chain.Count == 0)
             {
                 sprite.Visible = false;
@@ -229,7 +200,7 @@ namespace FlatRedBall.Graphics.Animation
             }
 
             sprite.Visible = true;
-            AnimationChainList list = GetSource(reference.Source);
+            AnimationChainList list = Sequences.GetSource(reference.Source);
             if (track.ActiveList != list)
             {
                 sprite.AnimationChains = list;
@@ -332,7 +303,7 @@ namespace FlatRedBall.Graphics.Animation
             {
                 foreach (SequenceChainReferenceSave reference in track.Chains)
                 {
-                    AnimationChain chain = FindChain(reference);
+                    AnimationChain chain = Sequences.FindChain(reference);
                     if (chain == null)
                     {
                         continue;
@@ -474,43 +445,8 @@ namespace FlatRedBall.Graphics.Animation
         // 0 for a missing source, chain or empty chain: it never plays but still cuts the chain before it.
         private double CycleLength(SequenceChainReferenceSave reference)
         {
-            AnimationChain chain = FindChain(reference);
+            AnimationChain chain = Sequences.FindChain(reference);
             return chain == null || chain.Count == 0 ? 0 : SequenceChainClock.CycleLength(chain);
-        }
-
-        private AnimationChain FindChain(SequenceChainReferenceSave reference)
-        {
-            AnimationChainList list = GetSource(reference.Source);
-            if (list == null)
-            {
-                return null;
-            }
-            for (int i = 0; i < list.Count; i++)
-            {
-                if (list[i].Name == reference.Chain)
-                {
-                    return list[i];
-                }
-            }
-            return null;
-        }
-
-        private AnimationChainList GetSource(string source)
-        {
-            if (!mSources.TryGetValue(source, out AnimationChainList list))
-            {
-                try
-                {
-                    list = mSourceResolver(source);
-                }
-                catch (Exception)
-                {
-                    // A source that can't be loaded is a missing source, not a crash.
-                    list = null;
-                }
-                mSources[source] = list;
-            }
-            return list;
         }
     }
 }

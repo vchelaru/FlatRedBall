@@ -69,7 +69,7 @@ public class SequencePlayerShapeTests
         var sequence = new SequenceSave { Name = "Attack" };
         sequence.Tracks.AddRange(tracks.Length > 0 ? tracks : new[] { Track("Swing", loops: 2) });
         file.Sequences.Add(sequence);
-        var player = new SequencePlayer(entity, file, _ => swing);
+        var player = new SequencePlayer(entity, new SequenceList(file, _ => swing));
         player.Play("Attack").ShouldBeTrue();
         return (player, entity, hitbox, body);
     }
@@ -129,7 +129,7 @@ public class SequencePlayerShapeTests
         var sequence = new SequenceSave { Name = "Attack" };
         sequence.Tracks.Add(Track("Swing"));
         file.Sequences.Add(sequence);
-        var player = new SequencePlayer(entity, file, _ => swing);
+        var player = new SequencePlayer(entity, new SequenceList(file, _ => swing));
 
         player.Play("Attack");
 
@@ -155,7 +155,7 @@ public class SequencePlayerShapeTests
         sequence.Tracks[0].Chains[0].Source = "a";
         sequence.Tracks[1].Chains[0].Source = "b";
         file.Sequences.Add(sequence);
-        var player = new SequencePlayer(entity, file, source => source == "a" ? first : second);
+        var player = new SequencePlayer(entity, new SequenceList(file, source => source == "a" ? first : second));
         player.Play("Attack");
 
         player.SetTime(0.1);
@@ -219,7 +219,7 @@ public class SequencePlayerShapeTests
         var sequence = new SequenceSave { Name = "Attack" };
         sequence.Tracks.Add(Track("Swing"));
         file.Sequences.Add(sequence);
-        var player = new SequencePlayer(entity, file, _ => swing);
+        var player = new SequencePlayer(entity, new SequenceList(file, _ => swing));
         player.Play("Attack");
 
         player.SetTime(0.1);
@@ -233,7 +233,7 @@ public class SequencePlayerShapeTests
     [Fact]
     public void IsShapeEnabled_BeforeAnythingPlays_IsTrueForEveryName()
     {
-        var player = new SequencePlayer(new PositionedObject(), new SequenceListSave(), _ => null);
+        var player = new SequencePlayer(new PositionedObject(), new SequenceList(new SequenceListSave(), _ => null));
 
         player.IsShapeEnabled("Anything").ShouldBeTrue();
     }
