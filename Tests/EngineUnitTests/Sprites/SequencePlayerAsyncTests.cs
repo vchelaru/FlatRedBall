@@ -9,7 +9,7 @@ namespace EngineUnitTests.Sprites;
 
 /// <summary>
 /// PlayAsync completes when a non-looping sequence reaches its end. It is canceled, not completed, when the sequence is
-/// replaced or removed first, so code after the await never runs as though the sequence had finished.
+/// stopped or played again first, so code after the await never runs as though the sequence had finished.
 /// </summary>
 [Collection(nameof(EngineStatefulTestCollection))]
 public class SequencePlayerAsyncTests
@@ -57,42 +57,69 @@ public class SequencePlayerAsyncTests
     public async Task PlayAsync_CompletesWhenTheSequenceReachesItsEnd()
     {
         var player = Player();
+        var attack = player["Attack"];
 
-        var task = player.PlayAsync("Attack");
+        var task = attack.PlayAsync();
         Frame(player, 0.3);
         task.IsCompleted.ShouldBeFalse();
         Frame(player, 0.3);
 
         await task.WaitAsync(Wait);
-        player.IsFinished.ShouldBeTrue();
+        attack.IsFinished.ShouldBeTrue();
     }
 
     [Fact]
     public async Task PlayAsync_ASequenceWithNothingToPlay_CompletesAtOnce()
     {
-        var player = Player();
-
-        await player.PlayAsync("Empty").WaitAsync(Wait);
+        await Player()["Empty"].PlayAsync().WaitAsync(Wait);
     }
 
     [Fact]
-    public async Task PlayAsync_ReplacedByAnotherPlay_IsCanceled()
+    public async Task PlayAsync_PlayedAgainFirst_IsCanceled()
     {
         var player = Player();
-        var task = player.PlayAsync("Attack");
+        var task = player["Attack"].PlayAsync();
         Frame(player, 0.1);
 
-        player.Play("Other");
+        player["Attack"].Play();
         Frame(player, 0.1);
 
         await Should.ThrowAsync<OperationCanceledException>(() => task.WaitAsync(Wait));
     }
 
     [Fact]
+    public async Task PlayAsync_StoppedFirst_IsCanceled()
+    {
+        var player = Player();
+        var task = player["Attack"].PlayAsync();
+        Frame(player, 0.1);
+
+        player["Attack"].Stop();
+        Frame(player, 0.1);
+
+        await Should.ThrowAsync<OperationCanceledException>(() => task.WaitAsync(Wait));
+    }
+
+    [Fact]
+    public async Task PlayAsync_AnotherSequenceStartingOrStopping_DoesNotCancelIt()
+    {
+        var player = Player();
+        var task = player["Attack"].PlayAsync();
+        Frame(player, 0.1);
+
+        player["Other"].Play();
+        Frame(player, 0.1);
+        player["Other"].Stop();
+        Frame(player, 0.4);
+
+        await task.WaitAsync(Wait);
+    }
+
+    [Fact]
     public async Task PlayAsync_RemovedFromManagersFirst_IsCanceled()
     {
         var player = Player();
-        var task = player.PlayAsync("Attack");
+        var task = player["Attack"].PlayAsync();
 
         player.RemoveFromManagers();
         Frame(player, 0.1);
@@ -105,7 +132,7 @@ public class SequencePlayerAsyncTests
     {
         var player = Player();
         using var source = new CancellationTokenSource();
-        var task = player.PlayAsync("Attack", source.Token);
+        var task = player["Attack"].PlayAsync(source.Token);
 
         source.Cancel();
         Frame(player, 0.1);
@@ -114,9 +141,9 @@ public class SequencePlayerAsyncTests
     }
 
     [Fact]
-    public async Task PlayAsync_PlayingTheNextSequenceRightAfterTheAwait_NeverLeavesTheSpritesHiddenAtDrawTime()
+    public async Task PlayAsync_PlayingTheNextSequenceRightAfterTheAwait_NeverLeavesEverySpriteHiddenAtDrawTime()
     {
-        // A finished sequence hides its sprites, so a hand-off ("await the attack, then play the idle") could show a
+        // A finished sequence hides its sprites, so a hand-off ("await the attack, then play the other") could show a
         // gap if the code after the await ran a frame late. This runs the real frame order with the engine's own
         // synchronization context: player update, task logic, then queued continuations, then "draw".
         var previousContext = SynchronizationContext.Current;
@@ -124,15 +151,17 @@ public class SequencePlayerAsyncTests
         try
         {
             var player = Player();
+            var attack = player["Attack"];
+            var other = player["Other"];
             int handOffs = 0;
             async Task RunAttackThenOtherForever()
             {
                 while (true)
                 {
-                    await player.PlayAsync("Attack");
+                    await attack.PlayAsync();
                     handOffs++;
                     // The next sequence starts in the continuation, as game code would write it.
-                    await player.PlayAsync("Other");
+                    await other.PlayAsync();
                     handOffs++;
                 }
             }
@@ -147,7 +176,7 @@ public class SequencePlayerAsyncTests
                 context.Update();
 
                 // End of the frame is when the game draws.
-                if (player.Sprites.Count > 0 && !player.Sprites[0].Visible)
+                if (!attack.Tracks[0].Sprite.Visible && !other.Tracks[0].Sprite.Visible)
                 {
                     hiddenAtDrawTime++;
                 }
@@ -168,17 +197,9 @@ public class SequencePlayerAsyncTests
     {
         var player = Player();
 
-        var exception = await Should.ThrowAsync<InvalidOperationException>(() => player.PlayAsync("Loop"));
+        var exception = await Should.ThrowAsync<InvalidOperationException>(() => player["Loop"].PlayAsync());
 
         exception.Message.ShouldContain("Loop");
-        player.CurrentSequenceName.ShouldBeNull();
-    }
-
-    [Fact]
-    public async Task PlayAsync_UnknownName_Throws()
-    {
-        var player = Player();
-
-        await Should.ThrowAsync<InvalidOperationException>(() => player.PlayAsync("Nope"));
+        player["Loop"].IsPlaying.ShouldBeFalse();
     }
 }

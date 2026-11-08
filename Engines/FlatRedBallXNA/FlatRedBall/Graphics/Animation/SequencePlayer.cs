@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using FlatRedBall.Content.AnimationChain;
 using FlatRedBall.Content.Math.Geometry;
 using FlatRedBall.Content.Polygon;
@@ -10,151 +8,100 @@ using FlatRedBall.Math.Geometry;
 namespace FlatRedBall.Graphics.Animation
 {
     /// <summary>
-    /// Plays the sequences of a .seqj on an entity. Each track of the playing sequence gets a Sprite, parented to a
-    /// pivot object that carries the track's offset; the Sprite keeps applying its own frame offset, texture, flip and
-    /// keyframes. The player decides which chain each Sprite shows (and whether it shows at all) from the sequence time,
-    /// following <see cref="SequenceTimeline"/> and <see cref="SequenceChainClock"/>. A missing source or chain never
-    /// throws: that track's Sprite is simply hidden.
+    /// The sequences of a .seqj on one entity. Each sequence is a <see cref="SequenceInstance"/> you get by name, keep, and
+    /// play or stop; each track of it has a Sprite that exists from the start (see <see cref="SequenceTrack"/>). The
+    /// player runs everything that is playing and keeps the entity's shapes in step with it. A missing source or chain
+    /// never throws: that track's Sprite is simply hidden.
     /// </summary>
     /// <remarks>
-    /// Call <see cref="Activity"/> (or <see cref="Update"/>) every frame. The Sprites exist only while a sequence is
-    /// playing: <see cref="Play"/> destroys the previous sequence's Sprites and creates the new ones.
+    /// Call <see cref="Activity"/> (or <see cref="Update"/>) every frame, <see cref="AddToManagers"/> once, and
+    /// <see cref="RemoveFromManagers"/> before the entity removes its own shapes.
+    /// <para>
+    /// Shapes: the entity's own shapes (direct children) are matched by name to the shapes in the active frames' chains.
+    /// A shape that a playing sequence names is enabled while an active frame names it and disabled otherwise; a disabled
+    /// shape has left the owner's Collision. A name with no entity shape is ignored, and a shape no playing sequence names is
+    /// never touched.
+    /// </para>
     /// </remarks>
     public class SequencePlayer
     {
-        private class TrackRuntime
-        {
-            public SequenceTrackSave Save;
-            // Starts as the file's value; SetTrackVisible changes it until the next Play.
-            public bool Visible;
-            public List<SequenceChainReferenceSave> Ordered;
-            public PositionedObject Pivot;
-            public Sprite Sprite;
-            public AnimationChainList ActiveList;
-            public AnimationChain ActiveChain;
-            // The frame the track shows right now, or null while its Sprite is hidden. Its shapes drive the entity's shapes.
-            public AnimationFrame ActiveFrame;
-        }
-
-        // An entity shape that some chain of the playing sequence names. It is in Collision only while an active frame
-        // names it.
+        // An entity shape that some playing sequence names. It is in Collision only while an active frame names it.
         private class ManagedShape
         {
             public PositionedObject Shape;
             public bool RemovedFromCollision;
         }
 
-        private readonly List<TrackRuntime> mTracks = new List<TrackRuntime>();
-        private readonly List<Sprite> mSprites = new List<Sprite>();
-        private readonly List<PositionedObject> mPivots = new List<PositionedObject>();
+        private readonly List<SequenceInstance> mInstances = new List<SequenceInstance>();
+        // The playing sequences, oldest start first. When two name the same shape, the newest start wins.
+        private readonly List<SequenceInstance> mPlaying = new List<SequenceInstance>();
         private readonly List<ManagedShape> mManagedShapes = new List<ManagedShape>();
         private readonly HashSet<string> mDrivenNames = new HashSet<string>();
         private readonly HashSet<string> mDisabledNames = new HashSet<string>();
 
-        // Bumped whenever the playing sequence is replaced or removed, so a PlayAsync still waiting can tell.
-        private int mPlayVersion;
-        private SequenceSave mCurrent;
-        private double mLength;
         private bool mIsInManagers;
-        private Layer mLayer;
+        private bool mIsRemoved;
 
-        /// <summary>The entity the sequence plays on. Track offsets are relative to it.</summary>
+        /// <summary>The entity the sequences play on. Track offsets are relative to it.</summary>
         public PositionedObject Owner { get; }
 
-        /// <summary>One Sprite per track of the playing sequence, in track order. Empty when nothing is playing.</summary>
-        public IReadOnlyList<Sprite> Sprites => mSprites;
-
-        /// <summary>The pivot each track's Sprite is attached to, carrying the track offset and draw order.</summary>
-        public IReadOnlyList<PositionedObject> Pivots => mPivots;
-
-        /// <summary>The name of the playing sequence, or null when none is.</summary>
-        public string CurrentSequenceName => mCurrent?.Name;
-
-        /// <summary>Seconds into the playing sequence.</summary>
-        public double Time { get; private set; }
-
-        /// <summary>Seconds the playing sequence lasts: until its last chain stops playing.</summary>
-        public double Length => mLength;
-
-        /// <summary>True once a sequence that does not loop has reached its end.</summary>
-        public bool IsFinished => mCurrent != null && !mCurrent.Loop && Time >= mLength;
-
-        /// <summary>Multiplier on elapsed time. 2 plays twice as fast.</summary>
-        public float Speed { get; set; } = 1;
-
         /// <summary>The loaded .seqj this player plays from. It can be shared by the players of many entities.</summary>
-        public SequenceList Sequences { get; }
+        public SequenceList Source { get; }
+
+        /// <summary>Every sequence of the file, in file order.</summary>
+        public IReadOnlyList<SequenceInstance> Sequences => mInstances;
 
         /// <param name="owner">The entity to play on.</param>
-        /// <param name="sequences">The loaded .seqj (see <see cref="SequenceList.FromFile"/>).</param>
-        public SequencePlayer(PositionedObject owner, SequenceList sequences)
+        /// <param name="source">The loaded .seqj (see <see cref="SequenceList.FromFile"/>).</param>
+        public SequencePlayer(PositionedObject owner, SequenceList source)
         {
             Owner = owner ?? throw new ArgumentNullException(nameof(owner));
-            Sequences = sequences ?? throw new ArgumentNullException(nameof(sequences));
+            Source = source ?? throw new ArgumentNullException(nameof(source));
+
+            foreach (SequenceSave save in source.Save.Sequences)
+            {
+                mInstances.Add(new SequenceInstance(this, save));
+            }
         }
 
-        /// <summary>
-        /// Starts the sequence with this name from time 0, replacing the one playing. Returns false, changing nothing,
-        /// when the file has no such sequence.
-        /// </summary>
-        public bool Play(string sequenceName)
+        /// <summary>The sequence with this name (the first one, if a hand-edited file repeats a name).</summary>
+        /// <exception cref="InvalidOperationException">The file has no sequence with this name.</exception>
+        public SequenceInstance this[string sequenceName]
         {
-            SequenceSave sequence = Sequences.Find(sequenceName);
-            if (sequence == null)
+            get
             {
-                return false;
+                foreach (SequenceInstance instance in mInstances)
+                {
+                    if (instance.Name == sequenceName)
+                    {
+                        return instance;
+                    }
+                }
+                throw new InvalidOperationException($"The sequence file has no sequence named {sequenceName}");
             }
-
-            mPlayVersion++;
-            RestoreShapes();
-            DestroyTracks();
-            mCurrent = sequence;
-            Time = 0;
-            mLength = SequenceTimeline.Length(sequence, CycleLength);
-            CreateTracks();
-            FindManagedShapes();
-            SetTime(0);
-            return true;
         }
 
-        /// <summary>
-        /// Starts the sequence with this name and returns a task that completes when it reaches its end. The task is
-        /// canceled, not completed, if another sequence replaces it or <see cref="RemoveFromManagers"/> runs first, so code
-        /// after the await never runs as though the sequence had finished.
-        /// </summary>
-        /// <param name="sequenceName">The sequence to play.</param>
-        /// <param name="cancellationToken">Cancels the wait; the sequence keeps playing.</param>
-        /// <exception cref="InvalidOperationException">The file has no such sequence, or the sequence loops and so never
-        /// finishes (use <see cref="Play"/> for those).</exception>
-        public async Task PlayAsync(string sequenceName, CancellationToken cancellationToken = default)
+        /// <summary>Advances every playing sequence by TimeManager.SecondDifference. Call once per frame.</summary>
+        public void Activity()
         {
-            SequenceSave sequence = Sequences.Find(sequenceName);
-            if (sequence == null)
-            {
-                throw new InvalidOperationException($"Could not play {sequenceName} because the sequence file has no sequence with that name");
-            }
-            if (sequence.Loop)
-            {
-                throw new InvalidOperationException($"Could not await {sequenceName} because it has Loop turned on, so it never finishes. Use Play for a looping sequence");
-            }
+            Update(TimeManager.SecondDifference);
+        }
 
-            Play(sequenceName);
-            int playVersion = mPlayVersion;
-
-            await TimeManager.DelayUntil(() => mPlayVersion != playVersion || IsFinished, cancellationToken);
-
-            cancellationToken.ThrowIfCancellationRequested();
-            if (mPlayVersion != playVersion)
+        /// <summary>Advances every playing sequence by this many seconds (scaled by each one's <see cref="SequenceInstance.Speed"/>).</summary>
+        public void Update(double seconds)
+        {
+            foreach (SequenceInstance instance in mPlaying)
             {
-                throw new OperationCanceledException($"The sequence {sequenceName} was replaced or removed before it finished");
+                instance.Advance(seconds);
             }
+            SyncShapes();
         }
 
         /// <summary>
-        /// Whether the entity shape with this name is currently enabled. A shape that some chain of the playing sequence
-        /// names is enabled while an active frame names it, and disabled otherwise; every other name is always enabled.
-        /// A disabled shape has left the owner's Collision. A collision relationship on that shape alone (a sub-collision)
-        /// calls the shape directly, so its delegate should return null while this is false:
+        /// Whether the entity shape with this name is currently enabled. A shape that a playing sequence names is enabled
+        /// while an active frame names it, and disabled otherwise; every other name is always enabled. A disabled shape has
+        /// left the owner's Collision. A collision relationship on that shape alone (a sub-collision) calls the shape
+        /// directly, so its delegate should return null while this is false:
         /// <c>item => item.Player.IsShapeEnabled("Hitbox") ? item.Hitbox : null</c>.
         /// </summary>
         public bool IsShapeEnabled(string shapeName)
@@ -162,241 +109,73 @@ namespace FlatRedBall.Graphics.Animation
             return !mDisabledNames.Contains(shapeName);
         }
 
-        /// <summary>Advances the playing sequence by TimeManager.SecondDifference. Call once per frame.</summary>
-        public void Activity()
-        {
-            Update(TimeManager.SecondDifference);
-        }
-
-        /// <summary>Advances the playing sequence by this many seconds (scaled by <see cref="Speed"/>).</summary>
-        public void Update(double seconds)
-        {
-            if (mCurrent == null)
-            {
-                return;
-            }
-            SetTime(Time + seconds * Speed);
-        }
-
-        /// <summary>Shows the playing sequence at this time: wrapped when it loops, held at its end when it does not.</summary>
-        public void SetTime(double time)
-        {
-            if (mCurrent == null)
-            {
-                return;
-            }
-
-            // Time keeps counting past the end for a non-looping sequence, so IsFinished stays true.
-            Time = System.Math.Max(0, time);
-            ApplyCurrentTime();
-        }
-
-        /// <summary>
-        /// Turns the track with this name on or off for the playing sequence, at once. The file's <c>visible</c> value is
-        /// where each track starts; <see cref="Play"/> goes back to it. A track that is off shows nothing, and its frame
-        /// shapes drive nothing. This is how game code picks between alternatives the file lays out as parallel tracks.
-        /// </summary>
-        /// <exception cref="InvalidOperationException">No sequence is playing, or it has no track with this name.</exception>
-        public void SetTrackVisible(string trackName, bool visible)
-        {
-            foreach (TrackRuntime track in FindTracks(trackName))
-            {
-                track.Visible = visible;
-            }
-            ApplyCurrentTime();
-        }
-
-        /// <summary>Whether the track with this name is on right now.</summary>
-        /// <exception cref="InvalidOperationException">No sequence is playing, or it has no track with this name.</exception>
-        public bool IsTrackVisible(string trackName)
-        {
-            return FindTracks(trackName)[0].Visible;
-        }
-
-        // Every track with this name (the editor keeps names unique, but a hand-edited file may not).
-        private List<TrackRuntime> FindTracks(string trackName)
-        {
-            if (mCurrent == null)
-            {
-                throw new InvalidOperationException($"Could not find the track {trackName} because no sequence is playing");
-            }
-            List<TrackRuntime> found = mTracks.FindAll(item => item.Save.Name == trackName);
-            if (found.Count == 0)
-            {
-                throw new InvalidOperationException($"The sequence {mCurrent.Name} has no track named {trackName}");
-            }
-            return found;
-        }
-
-        private void ApplyCurrentTime()
-        {
-            double shown = SequenceTimeline.WrapTime(Time, mLength, mCurrent.Loop);
-
-            foreach (TrackRuntime track in mTracks)
-            {
-                ApplyTrack(track, shown);
-            }
-
-            SyncShapes();
-        }
-
-        /// <summary>Adds the Sprites and pivots to the managers. Sprites created by later calls to Play are added too.</summary>
+        /// <summary>Adds every track's Sprite and pivot to the managers.</summary>
         public void AddToManagers(Layer layer = null)
         {
             mIsInManagers = true;
-            mLayer = layer;
-            foreach (TrackRuntime track in mTracks)
+            foreach (SequenceInstance instance in mInstances)
             {
-                AddTrackToManagers(track);
+                instance.AddToManagers(layer);
             }
         }
 
-        /// <summary>Removes the Sprites and pivots from the managers and stops the sequence.</summary>
+        /// <summary>Stops every sequence and removes the Sprites and pivots from the managers. The player can't be used afterwards.</summary>
         /// <remarks>
         /// Call this before the entity removes its own shapes: a shape taken out of Collision would otherwise stay in the
-        /// ShapeManager when the entity clears its Collision. This puts every disabled shape back first.
+        /// ShapeManager when the entity clears its Collision. Stopping puts every disabled shape back first.
         /// </remarks>
         public void RemoveFromManagers()
         {
-            mPlayVersion++;
-            RestoreShapes();
-            DestroyTracks();
+            foreach (SequenceInstance instance in new List<SequenceInstance>(mPlaying))
+            {
+                instance.Stop();
+            }
+            foreach (SequenceInstance instance in mInstances)
+            {
+                instance.Destroy(mIsInManagers);
+            }
             mIsInManagers = false;
-            mCurrent = null;
+            mIsRemoved = true;
         }
 
-        private void ApplyTrack(TrackRuntime track, double time)
+        internal void ThrowIfRemoved()
         {
-            Sprite sprite = track.Sprite;
-
-            track.ActiveFrame = null;
-            double local = 0;
-            SequenceChainReferenceSave reference = track.Visible
-                ? SequenceTimeline.ActiveAt(track.Ordered, time, CycleLength, out local)
-                : null;
-
-            AnimationChain chain = reference == null ? null : Sequences.FindChain(reference);
-            if (chain == null || chain.Count == 0)
+            if (mIsRemoved)
             {
-                sprite.Visible = false;
-                return;
-            }
-
-            sprite.Visible = true;
-            AnimationChainList list = Sequences.GetSource(reference.Source);
-            if (track.ActiveList != list)
-            {
-                sprite.AnimationChains = list;
-                track.ActiveList = list;
-            }
-            if (track.ActiveChain != chain)
-            {
-                sprite.CurrentChain = chain;
-                track.ActiveChain = chain;
-            }
-
-            sprite.TimeIntoAnimation = SequenceChainClock.TimeIntoCycle(chain, local);
-            track.ActiveFrame = chain[sprite.CurrentFrameIndex];
-
-            if (track.Save.FlipHorizontal)
-            {
-                // The Sprite was told not to apply frame flips; mirror the frame's own across the track instead.
-                AnimationFrame frame = track.ActiveFrame;
-                sprite.FlipHorizontal = !frame.FlipHorizontal;
-                sprite.FlipVertical = frame.FlipVertical;
-                sprite.FlipDiagonal = frame.FlipDiagonal;
-                if (sprite.UseAnimationRelativePosition)
-                {
-                    sprite.RelativeX = -sprite.RelativeX;
-                }
+                throw new InvalidOperationException("This SequencePlayer was removed from the managers and can't play again");
             }
         }
 
-        private void CreateTracks()
+        // 0 for a missing source, chain or empty chain: it never plays but still cuts the chain before it.
+        internal double CycleLength(SequenceChainReferenceSave reference)
         {
-            // The track's Z (draw order) is not applied yet: FRB1 orders sprites by layer and sort type, not by a
-            // Z the player can set safely. Tracks are created in file order.
-            for (int i = 0; i < mCurrent.Tracks.Count; i++)
-            {
-                SequenceTrackSave save = mCurrent.Tracks[i];
-
-                PositionedObject pivot = new PositionedObject { Name = save.Name };
-                pivot.AttachTo(Owner);
-                pivot.RelativeX = save.X;
-                pivot.RelativeY = save.Y;
-
-                Sprite sprite = new Sprite { Name = save.Name, TextureScale = 1, Animate = false, Visible = false };
-                sprite.AttachTo(pivot);
-                // A flipped track applies frame flips itself, mirrored across the track.
-                sprite.UseAnimationTextureFlip = !save.FlipHorizontal;
-
-                TrackRuntime track = new TrackRuntime
-                {
-                    Save = save,
-                    Visible = save.Visible,
-                    Ordered = SequenceTimeline.Ordered(save),
-                    Pivot = pivot,
-                    Sprite = sprite,
-                };
-                mTracks.Add(track);
-                mSprites.Add(sprite);
-                mPivots.Add(pivot);
-
-                if (mIsInManagers)
-                {
-                    AddTrackToManagers(track);
-                }
-            }
+            AnimationChain chain = Source.FindChain(reference);
+            return chain == null || chain.Count == 0 ? 0 : SequenceChainClock.CycleLength(chain);
         }
 
-        private void AddTrackToManagers(TrackRuntime track)
+        internal void SequenceStarted(SequenceInstance instance)
         {
-            SpriteManager.AddPositionedObject(track.Pivot);
-            if (mLayer != null)
-            {
-                SpriteManager.AddToLayer(track.Sprite, mLayer);
-            }
-            else
-            {
-                SpriteManager.AddSprite(track.Sprite);
-            }
+            mPlaying.Remove(instance);
+            mPlaying.Add(instance);
+            RefreshManagedShapes();
         }
 
-        private void DestroyTracks()
+        internal void SequenceStopped(SequenceInstance instance)
         {
-            foreach (TrackRuntime track in mTracks)
-            {
-                if (mIsInManagers)
-                {
-                    SpriteManager.RemoveSprite(track.Sprite);
-                    SpriteManager.RemovePositionedObject(track.Pivot);
-                }
-                track.Sprite.Detach();
-                track.Pivot.Detach();
-            }
-            mTracks.Clear();
-            mSprites.Clear();
-            mPivots.Clear();
+            mPlaying.Remove(instance);
+            RefreshManagedShapes();
+            SyncShapes();
         }
 
-        // Collects the entity's shapes (direct children) whose name some chain of the playing sequence names in a frame.
-        private void FindManagedShapes()
+        // Collects the entity's shapes (direct children) whose name some playing sequence names in a frame.
+        private void RefreshManagedShapes()
         {
+            RestoreShapes();
+
             HashSet<string> names = new HashSet<string>();
-            foreach (SequenceTrackSave track in mCurrent.Tracks)
+            foreach (SequenceInstance instance in mPlaying)
             {
-                foreach (SequenceChainReferenceSave reference in track.Chains)
-                {
-                    AnimationChain chain = Sequences.FindChain(reference);
-                    if (chain == null)
-                    {
-                        continue;
-                    }
-                    for (int i = 0; i < chain.Count; i++)
-                    {
-                        AddShapeNames(chain[i].ShapeCollectionSave, names);
-                    }
-                }
+                names.UnionWith(instance.GetShapeNames());
             }
 
             foreach (PositionedObject child in Owner.Children)
@@ -409,7 +188,7 @@ namespace FlatRedBall.Graphics.Animation
             }
         }
 
-        private static void AddShapeNames(ShapeCollectionSave save, HashSet<string> names)
+        internal static void AddShapeNames(ShapeCollectionSave save, HashSet<string> names)
         {
             if (save == null)
             {
@@ -431,23 +210,23 @@ namespace FlatRedBall.Graphics.Animation
 
         // Applies the active frames' shape values to the entity's shapes, then enables the managed shapes an active
         // frame names and disables the rest. Matching is by name; a frame shape with no entity shape is ignored.
-        private void SyncShapes()
+        internal void SyncShapes()
         {
             if (mManagedShapes.Count == 0)
             {
                 return;
             }
 
-            // The first track wins when several name the same shape, so apply from the last track to the first.
-            for (int i = mTracks.Count - 1; i >= 0; i--)
+            // Oldest start first, so the newest sequence's values are applied last and win.
+            foreach (SequenceInstance instance in mPlaying)
             {
-                mTracks[i].ActiveFrame?.ShapeCollectionSave?.SetValuesOn(Owner, false);
+                instance.ApplyFrameShapes(Owner);
             }
 
             mDrivenNames.Clear();
-            foreach (TrackRuntime track in mTracks)
+            foreach (SequenceInstance instance in mPlaying)
             {
-                AddShapeNames(track.ActiveFrame?.ShapeCollectionSave, mDrivenNames);
+                instance.AddDrivenShapeNames(mDrivenNames);
             }
 
             ShapeCollection collision = (Owner as ICollidable)?.Collision;
@@ -524,13 +303,6 @@ namespace FlatRedBall.Graphics.Animation
                 return true;
             }
             return false;
-        }
-
-        // 0 for a missing source, chain or empty chain: it never plays but still cuts the chain before it.
-        private double CycleLength(SequenceChainReferenceSave reference)
-        {
-            AnimationChain chain = Sequences.FindChain(reference);
-            return chain == null || chain.Count == 0 ? 0 : SequenceChainClock.CycleLength(chain);
         }
     }
 }
