@@ -43,6 +43,10 @@ namespace FlatRedBall.Content.AnimationChain
         public bool Reverse;
         public bool ShouldSerializeReverse() => Reverse;
 
+        /// <summary>Whether the chain repeats past one cycle. Defaults to true; written only when false.</summary>
+        public bool Loop = true;
+        public bool ShouldSerializeLoop() => !Loop;
+
 
         #endregion
 
@@ -58,6 +62,7 @@ namespace FlatRedBall.Content.AnimationChain
             animationChainSave.Name = animationChain.Name;
             animationChainSave.PingPong = animationChain.PingPong;
             animationChainSave.Reverse = animationChain.Reverse;
+            animationChainSave.Loop = animationChain.Loop;
 
             foreach (Anim.AnimationFrame frame in animationChain)
             {
@@ -101,6 +106,7 @@ namespace FlatRedBall.Content.AnimationChain
             animationChain.Name = Name;
             animationChain.PingPong = PingPong;
             animationChain.Reverse = Reverse;
+            animationChain.Loop = Loop;
 
             float divisor = 1;
 
@@ -217,6 +223,9 @@ namespace FlatRedBall.Content.AnimationChain
                         break;
                     case "Reverse":
                         toReturn.Reverse = AnimationChainListSave.AsBool(subElement);
+                        break;
+                    case "Loop":
+                        toReturn.Loop = AnimationChainListSave.AsBool(subElement);
                         break;
                 }
             }

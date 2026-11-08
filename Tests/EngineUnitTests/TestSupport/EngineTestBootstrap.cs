@@ -18,6 +18,12 @@ internal static class EngineTestBootstrap
             FlatRedBall.FlatRedBallServices.InitializeCommandLine();
             s_initialized = true;
         }
+
+        // Tests in the collection run one at a time but not always on the same thread (an async test moves the rest
+        // of the run to another one), so the test that is running now takes over as the primary thread.
+        typeof(FlatRedBall.FlatRedBallServices)
+            .GetField("mPrimaryThreadId", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!
+            .SetValue(null, (int?)Environment.CurrentManagedThreadId);
     }
 }
 

@@ -357,9 +357,9 @@ namespace FlatRedBall.Content.AnimationChain
             fileName.EndsWith(".achj", StringComparison.OrdinalIgnoreCase);
 
         // Property names and defaults match the FlatRedBall Animation Editor's .achj writer (camelCase,
-        // AnimationChain.Common in the FlatRedBall2 repo). Keys this class doesn't model (chain "loop" and
-        // "locked", frame "events") are simply not read; Sprite playback always loops. A missing key falls back to the same default the
-        // XML path uses.
+        // AnimationChain.Common in the FlatRedBall2 repo). Keys this class doesn't model (chain "locked", frame
+        // "events") are simply not read. A chain's "loop" is read as data only; Sprite playback always loops.
+        // A missing key falls back to the same default the XML path uses.
         private static AnimationChainListSave ParseJson(JsonObject root)
         {
             AnimationChainListSave result = new AnimationChainListSave();
@@ -395,6 +395,8 @@ namespace FlatRedBall.Content.AnimationChain
                     chain.Name = chainObject["name"]?.GetValue<string>() ?? string.Empty;
                     chain.PingPong = JsonBool(chainObject, "pingPong");
                     chain.Reverse = JsonBool(chainObject, "reverse");
+                    // Loop defaults to true, so only an explicit false turns it off.
+                    chain.Loop = !(chainObject["loop"] is JsonValue loop && !loop.GetValue<bool>());
 
                     if (chainObject["frames"] is JsonArray frames)
                     {
@@ -450,6 +452,21 @@ namespace FlatRedBall.Content.AnimationChain
             if (frameObject["shapes"] is JsonObject shapes)
             {
                 frame.ShapeCollectionSave = ParseShapesJson(shapes);
+            }
+
+            if (frameObject["events"] is JsonArray events)
+            {
+                foreach (JsonNode eventNode in events)
+                {
+                    if (eventNode is JsonObject eventObject)
+                    {
+                        frame.Events.Add(new FlatRedBall.Graphics.Animation.AnimationFrameEvent
+                        {
+                            Name = JsonString(eventObject, "name") ?? string.Empty,
+                            Data = JsonString(eventObject, "data"),
+                        });
+                    }
+                }
             }
 
             return frame;
