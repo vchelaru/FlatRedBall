@@ -65,12 +65,6 @@ namespace FlatRedBall.Graphics.Animation
         /// <summary>Multiplier on elapsed time. 2 plays twice as fast.</summary>
         public float Speed { get; set; } = 1;
 
-        /// <summary>
-        /// Distance in Z between draw-order ranks of tracks. A track with a higher Z gets a higher RelativeZ (in front for
-        /// the default camera); equal Z keeps track order, a later track in front.
-        /// </summary>
-        public float ZSpacing { get; set; } = 0.001f;
-
         /// <param name="owner">The entity to play on.</param>
         /// <param name="file">The loaded .seqj.</param>
         /// <param name="sourceResolver">Returns the chains of a source as written in the .seqj's source list, or null when
@@ -227,23 +221,8 @@ namespace FlatRedBall.Graphics.Animation
 
         private void CreateTracks()
         {
-            // Draw order: by Z, equal Z in track order. Rank r gets RelativeZ r * ZSpacing.
-            int[] byDrawOrder = new int[mCurrent.Tracks.Count];
-            for (int i = 0; i < byDrawOrder.Length; i++)
-            {
-                byDrawOrder[i] = i;
-            }
-            Array.Sort(byDrawOrder, (a, b) =>
-            {
-                int byZ = mCurrent.Tracks[a].Z.CompareTo(mCurrent.Tracks[b].Z);
-                return byZ != 0 ? byZ : a.CompareTo(b);
-            });
-            int[] rank = new int[byDrawOrder.Length];
-            for (int r = 0; r < byDrawOrder.Length; r++)
-            {
-                rank[byDrawOrder[r]] = r;
-            }
-
+            // The track's Z (draw order) is not applied yet: FRB1 orders sprites by layer and sort type, not by a
+            // Z the player can set safely. Tracks are created in file order.
             for (int i = 0; i < mCurrent.Tracks.Count; i++)
             {
                 SequenceTrackSave save = mCurrent.Tracks[i];
@@ -252,7 +231,6 @@ namespace FlatRedBall.Graphics.Animation
                 pivot.AttachTo(Owner);
                 pivot.RelativeX = save.X;
                 pivot.RelativeY = save.Y;
-                pivot.RelativeZ = rank[i] * ZSpacing;
 
                 Sprite sprite = new Sprite { Name = save.Name, TextureScale = 1, Animate = false, Visible = false };
                 sprite.AttachTo(pivot);

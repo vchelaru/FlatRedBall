@@ -80,19 +80,6 @@ public class SequencePlayerTests
     }
 
     [Fact]
-    public void Play_HigherZDrawsOnTop_AndEqualZKeepsTrackOrder()
-    {
-        var player = Player(false,
-            Track("A", 0, ("body.achj", "Walk", 0, 1)),
-            Track("B", 0, ("body.achj", "Walk", 0, 1)),
-            Track("C", 5, ("body.achj", "Walk", 0, 1)));
-
-        // Higher RelativeZ is in front for FRB1's default camera.
-        player.Pivots[1].RelativeZ.ShouldBeGreaterThan(player.Pivots[0].RelativeZ);
-        player.Pivots[2].RelativeZ.ShouldBeGreaterThan(player.Pivots[1].RelativeZ);
-    }
-
-    [Fact]
     public void SetTime_HiddenBeforeItsChainStarts_VisibleDuring_HiddenAfter()
     {
         // Walk is 0.5 s, so this chain plays from 1 s to 1.5 s.
