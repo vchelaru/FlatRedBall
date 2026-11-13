@@ -19,7 +19,7 @@ namespace FlatRedBall.Graphics.Animation
         private double mLastShown;
         private HashSet<string> mShapeNames;
 
-        internal SequenceInstance(SequencePlayer player, SequenceSave save)
+        internal SequenceInstance(SequencePlayer player, SequenceSave save, IReadOnlyDictionary<string, Sprite> existingSprites)
         {
             mPlayer = player;
             Save = save;
@@ -28,6 +28,15 @@ namespace FlatRedBall.Graphics.Animation
             // Tracks are created in file order, which is also their draw order (see SequencePlayer.AddToManagers).
             foreach (SequenceTrackSave trackSave in save.Tracks)
             {
+                if (existingSprites != null && existingSprites.TryGetValue(trackSave.Name, out Sprite bound) && bound != null)
+                {
+                    // The entity owns this Sprite; the player only animates and shows it.
+                    bound.Animate = false;
+                    bound.Visible = false;
+                    Tracks.Add(new SequenceTrack(this, trackSave, null, bound));
+                    continue;
+                }
+
                 PositionedObject pivot = new PositionedObject { Name = trackSave.Name };
                 pivot.AttachTo(player.Owner);
                 pivot.RelativeX = trackSave.X;
@@ -276,6 +285,10 @@ namespace FlatRedBall.Graphics.Animation
         {
             foreach (SequenceTrack track in Tracks)
             {
+                if (track.IsBound)
+                {
+                    continue;
+                }
                 if (inManagers)
                 {
                     SpriteManager.RemoveSprite(track.Sprite);
@@ -290,6 +303,10 @@ namespace FlatRedBall.Graphics.Animation
         {
             foreach (SequenceTrack track in Tracks)
             {
+                if (track.IsBound)
+                {
+                    continue;
+                }
                 SpriteManager.AddPositionedObject(track.Pivot);
                 if (layer != null)
                 {

@@ -31,7 +31,10 @@ namespace FlatRedBall.Graphics.Animation
         /// <summary>The track's data from the file.</summary>
         public SequenceTrackSave Save { get; }
 
-        /// <summary>The object between the entity and the Sprite. It carries the track's X and Y offset.</summary>
+        /// <summary>True when the Sprite belongs to the entity (see <see cref="SequencePlayer"/>'s existingSprites). A bound track has no <see cref="Pivot"/>.</summary>
+        public bool IsBound => Pivot == null;
+
+        /// <summary>The object between the entity and the Sprite. It carries the track's X and Y offset. Null for a bound track.</summary>
         public PositionedObject Pivot { get; }
 
         /// <summary>The Sprite that shows this track. It is hidden whenever no chain of the track is playing.</summary>

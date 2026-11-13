@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using FlatRedBall.Content.AnimationChain;
 using FlatRedBall.Content.Math.Geometry;
@@ -53,14 +53,21 @@ namespace FlatRedBall.Graphics.Animation
 
         /// <param name="owner">The entity to play on.</param>
         /// <param name="source">The loaded .seqj (see <see cref="SequenceList.FromFile"/>).</param>
-        public SequencePlayer(PositionedObject owner, SequenceList source)
+        /// <param name="existingSprites">
+        /// Sprites the entity already owns (for example Glue-authored ones), by track name. A track with a matching name
+        /// drives that Sprite instead of creating its own, in every sequence that has such a track. The player never adds,
+        /// removes, attaches or reorders a bound Sprite, so it keeps its own position, parent and Z (the track's X and Y are ignored and
+        /// FlipHorizontal isn't supported). It is hidden until a chain of the track plays, and hidden again when the sequence
+        /// stops.
+        /// </param>
+        public SequencePlayer(PositionedObject owner, SequenceList source, IReadOnlyDictionary<string, Sprite> existingSprites = null)
         {
             Owner = owner ?? throw new ArgumentNullException(nameof(owner));
             Source = source ?? throw new ArgumentNullException(nameof(source));
 
             foreach (SequenceSave save in source.Save.Sequences)
             {
-                mInstances.Add(new SequenceInstance(this, save));
+                mInstances.Add(new SequenceInstance(this, save, existingSprites));
             }
         }
 
@@ -125,6 +132,10 @@ namespace FlatRedBall.Graphics.Animation
             {
                 foreach (SequenceTrack track in instance.Tracks)
                 {
+                    if (track.IsBound)
+                    {
+                        continue;
+                    }
                     if (previous != null)
                     {
                         SpriteManager.MoveBelow(track.Sprite, previous);
