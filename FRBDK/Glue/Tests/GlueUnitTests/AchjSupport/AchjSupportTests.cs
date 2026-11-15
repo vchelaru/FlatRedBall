@@ -229,14 +229,13 @@ public class AchjSupportTests : IDisposable
     }
 
     [Fact]
-    public void GetAchjAti_IsAnAnimationChainListThatCannotBeCreatedOrPiped()
+    public void GetAchjAti_IsAnAnimationChainListThatCanBeCreatedButNotPiped()
     {
         var ati = AnimationChainAtiManager.Self.GetAchjAti();
 
         ati.Extension.ShouldBe("achj");
         ati.QualifiedRuntimeTypeName.QualifiedType.ShouldBe(AnimationChainListQualifiedType);
-        // Glue writes new files as XML, so offering .achj in the New File window would corrupt it.
-        ati.HideFromNewFileWindow.ShouldBeTrue();
+        ati.HideFromNewFileWindow.ShouldBeFalse();
         // The pipeline importer is the XML one.
         ati.CanBeAddedToContentPipeline.ShouldBeFalse();
         ati.ContentImporter.ShouldBeNull();

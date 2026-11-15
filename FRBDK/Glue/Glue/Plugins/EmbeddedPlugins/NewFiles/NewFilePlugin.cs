@@ -204,6 +204,17 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.NewFiles
 
         }
 
+        /// <summary>
+        /// A blank .achj in the Animation Editor's format, pixel coordinates like a new .achx.
+        /// </summary>
+        internal const string EmptyAchjContents =
+@"{
+  ""fileRelativeTextures"": true,
+  ""timeMeasurementUnit"": ""Millisecond"",
+  ""coordinateType"": ""Pixel"",
+  ""animationChains"": []
+}";
+
         private void SaveNewFileAtLocation(AssetTypeInfo assetTypeInfo, string createdFile)
         {
             string availableFile;
@@ -234,6 +245,11 @@ T_Paused,Paused,En Pausa,Pausiert
                 const string contents = "Glue is such a great tool!";
 
                 FileManager.SaveText(contents, createdFile);
+            }
+            else if (assetTypeInfo.Extension == "achj")
+            {
+                // The engine only reads .achj (no writer), and the XML serializer below would write XML into it.
+                FileManager.SaveText(EmptyAchjContents, createdFile);
             }
             // If the save type isn't null, then it's a type that is understood by the Glue, so we can
             // instantiate and save off the instance

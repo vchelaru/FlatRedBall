@@ -27,6 +27,25 @@ public class NewFilePluginTests
     }
 
     [Fact]
+    public void EmptyAchjContents_LoadsAsAnEmptyPixelAnimationChainList()
+    {
+        var path = System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.Guid.NewGuid() + ".achj");
+        try
+        {
+            System.IO.File.WriteAllText(path, NewFilePlugin.EmptyAchjContents);
+
+            var loaded = AnimationChainListSave.FromFile(path);
+
+            Assert.Empty(loaded.AnimationChains);
+            Assert.Equal(TextureCoordinateType.Pixel, loaded.CoordinateType);
+        }
+        finally
+        {
+            System.IO.File.Delete(path);
+        }
+    }
+
+    [Fact]
     public void CreateSaveInstance_ForOtherSaveTypes_UsesThePlainDefaultConstructor()
     {
         var instance = NewFilePlugin.CreateSaveInstance(typeof(AnimationChainSave));
