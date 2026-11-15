@@ -64,8 +64,8 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
 
             clone.FriendlyName = "Animation Chain List (.achj)";
             clone.Extension = "achj";
-            // Glue can only write an empty .achx (XML). A new .achj has to come from the Animation Editor.
-            clone.HideFromNewFileWindow = true;
+            // NewFilePlugin writes a blank JSON file for this extension.
+            clone.HideFromNewFileWindow = false;
             // The content pipeline importer parses XML.
             clone.CanBeAddedToContentPipeline = false;
             clone.ContentImporter = null;
