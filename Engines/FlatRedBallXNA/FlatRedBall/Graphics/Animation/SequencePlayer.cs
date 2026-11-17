@@ -38,6 +38,7 @@ namespace FlatRedBall.Graphics.Animation
         private readonly List<ManagedShape> mManagedShapes = new List<ManagedShape>();
         private readonly HashSet<string> mDrivenNames = new HashSet<string>();
         private readonly HashSet<string> mDisabledNames = new HashSet<string>();
+        private readonly Dictionary<SequenceSave, double> mSequenceLengths = new Dictionary<SequenceSave, double>();
 
         private bool mIsInManagers;
         private bool mIsRemoved;
@@ -177,6 +178,17 @@ namespace FlatRedBall.Graphics.Animation
         {
             AnimationChain chain = Source.FindChain(reference);
             return chain == null || chain.Count == 0 ? 0 : SequenceChainClock.CycleLength(chain);
+        }
+
+        // A sequence's length, references included. Chains never change after loading, so each is measured once.
+        internal double SequenceLength(SequenceSave sequence)
+        {
+            if (!mSequenceLengths.TryGetValue(sequence, out double length))
+            {
+                length = SequenceTimeline.Length(Source.Save.Sequences, sequence, CycleLength);
+                mSequenceLengths[sequence] = length;
+            }
+            return length;
         }
 
         internal void SequenceStarted(SequenceInstance instance)

@@ -118,6 +118,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Animation\SequenceList.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Animation\SequenceTrack.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Animation\SequencePlayer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Animation\SequenceReferences.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Animation\SequenceTimeline.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Animation\AnimationLayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Animation\IAnimatable.cs" />

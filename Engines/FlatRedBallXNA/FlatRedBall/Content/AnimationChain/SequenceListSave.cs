@@ -98,6 +98,20 @@ namespace FlatRedBall.Content.AnimationChain
                             Visible = Bool(trackObject, "visible", true),
                         };
 
+                        if (trackObject["reference"] != null)
+                        {
+                            if (!(trackObject["reference"] is JsonObject referenceObject))
+                            {
+                                throw new JsonException("The \"reference\" property must be an object.");
+                            }
+                            track.Reference = new SequenceReferenceSave
+                            {
+                                Sequence = String(referenceObject, "sequence"),
+                                Start = Double(referenceObject, "start", 0),
+                                Loops = Float(referenceObject, "loops", 1),
+                            };
+                        }
+
                         foreach (JsonObject chainObject in Objects(trackObject, "chains"))
                         {
                             track.Chains.Add(new SequenceChainReferenceSave
@@ -107,6 +121,14 @@ namespace FlatRedBall.Content.AnimationChain
                                 Start = Double(chainObject, "start", 0),
                                 Loops = Float(chainObject, "loops", 1),
                             });
+                        }
+
+                        // Readers disagree on which one plays, so the file is refused rather than read one way. An empty
+                        // "chains" is fine.
+                        if (track.Reference != null && track.Chains.Count > 0)
+                        {
+                            throw new JsonException("Sequence \"" + sequence.Name + "\", track \"" + track.Name +
+                                "\" has both a reference and chains; a track plays one or the other. Remove one.");
                         }
 
                         sequence.Tracks.Add(track);
@@ -220,7 +242,7 @@ namespace FlatRedBall.Content.AnimationChain
         }
     }
 
-    /// <summary>A named timeline in a .seqj, played by name. It has no stored length: it ends when its last chain stops playing.</summary>
+    /// <summary>A named timeline in a .seqj, played by name. It has no stored length: it ends when its last clip (chain or reference) stops playing.</summary>
     public class SequenceSave
     {
         /// <summary>The name game code plays the sequence by.</summary>
@@ -254,8 +276,37 @@ namespace FlatRedBall.Content.AnimationChain
         /// <summary>Initial visibility of the track. A track that is not visible shows nothing.</summary>
         public bool Visible { get; set; } = true;
 
+        /// <summary>
+        /// When set, the track plays another sequence of the file instead of chains, and <see cref="Chains"/> is empty
+        /// (reading a file whose track has both throws). The target's tracks are inlined under this track's name;
+        /// <see cref="Visible"/> false hides all of them. See <see cref="SequenceReferenceSave"/>.
+        /// </summary>
+        public SequenceReferenceSave Reference { get; set; }
+
         /// <summary>Chain references in any order. Playback orders them by start; list order breaks ties.</summary>
         public List<SequenceChainReferenceSave> Chains { get; } = new List<SequenceChainReferenceSave>();
+    }
+
+    /// <summary>
+    /// A track that plays another sequence of the same .seqj instead of chains: the target's tracks are inlined under this
+    /// track's name. It is a clip like a chain placement, with a <see cref="Start"/> and a length in <see cref="Loops"/>
+    /// cycles of the target, and it extends the sequence that holds it to its end. The target restarts whenever the holding
+    /// sequence starts. A missing target, or one that plays the holder back (a cycle), plays nothing. Matches the
+    /// FlatRedBall2 AnimationEditor's SequenceReferenceSave.
+    /// </summary>
+    public class SequenceReferenceSave
+    {
+        /// <summary>The name of the sequence to play. Kept as written even when no such sequence exists.</summary>
+        public string Sequence { get; set; } = string.Empty;
+
+        /// <summary>Seconds from the start of the holding sequence.</summary>
+        public double Start { get; set; }
+
+        /// <summary>
+        /// The clip's length in cycles of the target's length. A target with Loop on repeats across it; one with Loop off
+        /// plays once, then holds its final pose until the clip ends.
+        /// </summary>
+        public float Loops { get; set; } = 1;
     }
 
     /// <summary>One placement of an animation chain on a track. The next chain on the track can cut it short.</summary>

@@ -25,30 +25,32 @@ namespace FlatRedBall.Graphics.Animation
             Save = save;
             Tracks = new SequenceTrackList(save.Name);
 
-            // Tracks are created in file order, which is also their draw order (see SequencePlayer.AddToManagers).
-            foreach (SequenceTrackSave trackSave in save.Tracks)
+            // Tracks are created in file order, which is also their draw order (see SequencePlayer.AddToManagers). A reference
+            // track is replaced by the tracks of the sequence it plays, in its place.
+            foreach (InlinedTrack inlined in SequenceReferences.Inline(player.Source.Save.Sequences, save))
             {
-                if (existingSprites != null && existingSprites.TryGetValue(trackSave.Name, out Sprite bound) && bound != null)
+                SequenceTrackSave trackSave = inlined.Track;
+                if (existingSprites != null && existingSprites.TryGetValue(inlined.Name, out Sprite bound) && bound != null)
                 {
                     // The entity owns this Sprite; the player only animates and shows it.
                     bound.Animate = false;
                     bound.Visible = false;
-                    Tracks.Add(new SequenceTrack(this, trackSave, null, bound));
+                    Tracks.Add(new SequenceTrack(this, inlined, null, bound));
                     continue;
                 }
 
-                PositionedObject pivot = new PositionedObject { Name = trackSave.Name };
+                PositionedObject pivot = new PositionedObject { Name = inlined.Name };
                 pivot.AttachTo(player.Owner);
                 pivot.RelativeX = trackSave.X;
                 pivot.RelativeY = trackSave.Y;
 
                 // The Sprite animates itself once a block switches its chain (Animate turns on then).
-                Sprite sprite = new Sprite { Name = trackSave.Name, TextureScale = 1, Animate = false, Visible = false };
+                Sprite sprite = new Sprite { Name = inlined.Name, TextureScale = 1, Animate = false, Visible = false };
                 sprite.AttachTo(pivot);
                 // A flipped track applies frame flips itself, mirrored across the track.
                 sprite.UseAnimationTextureFlip = !trackSave.FlipHorizontal;
 
-                Tracks.Add(new SequenceTrack(this, trackSave, pivot, sprite));
+                Tracks.Add(new SequenceTrack(this, inlined, pivot, sprite));
             }
         }
 
@@ -89,7 +91,7 @@ namespace FlatRedBall.Graphics.Animation
         {
             mPlayer.ThrowIfRemoved();
             mPlayVersion++;
-            Length = SequenceTimeline.Length(Save, mPlayer.CycleLength);
+            Length = mPlayer.SequenceLength(Save);
             Time = 0;
             mLastShown = 0;
             IsPlaying = true;
@@ -98,6 +100,7 @@ namespace FlatRedBall.Graphics.Animation
                 track.EventReference = null;
                 track.EventVisit = -1;
                 track.ActiveReference = null;
+                track.LastClock = null;
             }
             mPlayer.SequenceStarted(this);
             ApplyTracks(true);
@@ -195,9 +198,9 @@ namespace FlatRedBall.Graphics.Animation
             if (mShapeNames == null)
             {
                 mShapeNames = new HashSet<string>();
-                foreach (SequenceTrackSave track in Save.Tracks)
+                foreach (SequenceTrack track in Tracks)
                 {
-                    foreach (SequenceChainReferenceSave reference in track.Chains)
+                    foreach (SequenceChainReferenceSave reference in track.Save.Chains)
                     {
                         AnimationChain chain = mPlayer.Source.FindChain(reference);
                         for (int i = 0; chain != null && i < chain.Count; i++)
@@ -349,7 +352,27 @@ namespace FlatRedBall.Graphics.Animation
             Sprite sprite = track.Sprite;
 
             track.ActiveFrame = null;
-            SequenceChainReferenceSave reference = SequenceTimeline.ActiveAt(track.Ordered, time, mPlayer.CycleLength, out double local);
+
+            // A track played through a reference runs on its own sequence's clock, or not at all while a clip on the way
+            // isn't playing.
+            double? clock = track.IsReferenced
+                ? SequenceReferences.InlinedTime(track.Inlined, time, mPlayer.SequenceLength)
+                : time;
+            SequenceChainReferenceSave reference = null;
+            double local = 0;
+            if (clock.HasValue)
+            {
+                reference = SequenceTimeline.ActiveAt(track.Ordered, clock.Value, mPlayer.CycleLength, out local);
+            }
+
+            // A referenced sequence that loops restarts within its clip; playback enters its frames again, so their events
+            // are raised again. A seek still raises nothing for frames it jumps back over.
+            if (!seek && clock.HasValue && track.LastClock.HasValue && clock.Value < track.LastClock.Value)
+            {
+                track.EventReference = null;
+                track.EventVisit = -1;
+            }
+            track.LastClock = clock;
 
             // Events are tracked even while the track is off, so turning it on midway doesn't replay what went by.
             RaiseEvents(track, reference, local);
@@ -374,9 +397,9 @@ namespace FlatRedBall.Graphics.Animation
                 track.ActiveList = list;
             }
 
-            if (track.Save.FlipHorizontal)
+            if (track.Save.FlipHorizontal || track.IsReferenced)
             {
-                ApplyFlippedTrack(track, chain, local);
+                ApplyDrivenTrack(track, chain, local);
                 return;
             }
 
@@ -415,9 +438,12 @@ namespace FlatRedBall.Graphics.Animation
             track.Holding = true;
         }
 
-        // A flipped track can't use the Sprite's own animation: every frame's offset has to be mirrored after the Sprite
-        // applies it. So the player sets the time on every update and puts the Sprite at its new world position itself.
-        private void ApplyFlippedTrack(SequenceTrack track, AnimationChain chain, double local)
+        // Some tracks can't use the Sprite's own animation, so the player sets the time on every update and puts the Sprite
+        // at its new world position itself:
+        // - A flipped track: every frame's offset has to be mirrored after the Sprite applies it.
+        // - A track played through a reference: its clock wraps or holds with the referenced sequence (a target with Loop
+        //   off holds its final pose), which the Sprite's own clock can't follow.
+        private void ApplyDrivenTrack(SequenceTrack track, AnimationChain chain, double local)
         {
             Sprite sprite = track.Sprite;
             track.ActiveReference = null;
@@ -431,14 +457,17 @@ namespace FlatRedBall.Graphics.Animation
             sprite.TimeIntoAnimation = SequenceChainClock.TimeIntoCycle(chain, local);
             track.ActiveFrame = chain[sprite.CurrentFrameIndex];
 
-            // The Sprite was told not to apply frame flips; mirror the frame's own across the track instead.
-            AnimationFrame frame = track.ActiveFrame;
-            sprite.FlipHorizontal = !frame.FlipHorizontal;
-            sprite.FlipVertical = frame.FlipVertical;
-            sprite.FlipDiagonal = frame.FlipDiagonal;
-            if (sprite.UseAnimationRelativePosition)
+            if (track.Save.FlipHorizontal)
             {
-                sprite.RelativeX = -sprite.RelativeX;
+                // The Sprite was told not to apply frame flips; mirror the frame's own across the track instead.
+                AnimationFrame frame = track.ActiveFrame;
+                sprite.FlipHorizontal = !frame.FlipHorizontal;
+                sprite.FlipVertical = frame.FlipVertical;
+                sprite.FlipDiagonal = frame.FlipDiagonal;
+                if (sprite.UseAnimationRelativePosition)
+                {
+                    sprite.RelativeX = -sprite.RelativeX;
+                }
             }
 
             // UpdateDependencies skips a Sprite the managers already updated at the current time; clear that so the new
