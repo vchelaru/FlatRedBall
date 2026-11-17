@@ -117,6 +117,34 @@ public class SequenceListSaveTests
     }
 
     [Fact]
+    public void FromJsonString_ReferenceTrack_ReadsSequenceStartAndLoops()
+    {
+        const string json = """
+            { "sequences": [ { "name": "A", "tracks": [
+              { "name": "Earth", "reference": { "sequence": "B", "start": 0.5, "loops": 2 } } ] } ] }
+            """;
+
+        var reference = SequenceListSave.FromJsonString(json).Sequences.Single().Tracks.Single().Reference!;
+
+        reference.Sequence.ShouldBe("B");
+        reference.Start.ShouldBe(0.5);
+        reference.Loops.ShouldBe(2);
+    }
+
+    [Fact]
+    public void FromJsonString_TrackWithBothAReferenceAndChains_Throws()
+    {
+        const string json = """
+            { "sequences": [ { "name": "A", "tracks": [
+              { "name": "Earth", "reference": { "sequence": "B" }, "chains": [ { "source": "s", "chain": "Walk" } ] } ] } ] }
+            """;
+
+        var exception = Should.Throw<JsonException>(() => SequenceListSave.FromJsonString(json));
+
+        exception.Message.ShouldContain("Earth");
+    }
+
+    [Fact]
     public void FromFile_ReadsTheFile()
     {
         string path = Path.Combine(Path.GetTempPath(), "seqj-" + Guid.NewGuid() + ".seqj");

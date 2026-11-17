@@ -15,21 +15,32 @@ namespace FlatRedBall.Graphics.Animation
         private readonly SequenceInstance mInstance;
         private bool mVisible;
 
-        internal SequenceTrack(SequenceInstance instance, SequenceTrackSave save, PositionedObject pivot, Sprite sprite)
+        internal SequenceTrack(SequenceInstance instance, InlinedTrack inlined, PositionedObject pivot, Sprite sprite)
         {
             mInstance = instance;
-            Save = save;
+            Inlined = inlined;
             Pivot = pivot;
             Sprite = sprite;
-            mVisible = save.Visible;
-            Ordered = SequenceTimeline.Ordered(save);
+            mVisible = inlined.Visible;
+            Ordered = SequenceTimeline.Ordered(inlined.Track);
         }
 
-        /// <summary>The track's name in the file.</summary>
-        public string Name => Save.Name;
+        /// <summary>
+        /// The track's name. A track played through a reference track is named after it and <c>/</c>
+        /// (<c>Earth/Body</c>, <c>Earth/Dust/Body</c> when nested).
+        /// </summary>
+        public string Name => Inlined.Name;
 
-        /// <summary>The track's data from the file.</summary>
-        public SequenceTrackSave Save { get; }
+        /// <summary>The track's data as written in its own sequence, which is the referenced one for a track played through a reference.</summary>
+        public SequenceTrackSave Save => Inlined.Track;
+
+        /// <summary>True when the track is played through one or more reference tracks, so it runs on the referenced sequence's clock.</summary>
+        public bool IsReferenced => Inlined.Hops.Count > 0;
+
+        internal InlinedTrack Inlined { get; }
+
+        // The time on the track's own sequence clock at the last pass, or null when no clip on the way was playing.
+        internal double? LastClock;
 
         /// <summary>True when the Sprite belongs to the entity (see <see cref="SequencePlayer"/>'s existingSprites). A bound track has no <see cref="Pivot"/>.</summary>
         public bool IsBound => Pivot == null;
@@ -41,8 +52,9 @@ namespace FlatRedBall.Graphics.Animation
         public Sprite Sprite { get; }
 
         /// <summary>
-        /// Whether the track is on. It starts as the file's <c>visible</c> value and stays whatever it is set to. A track that
-        /// is off shows nothing and its frame shapes drive nothing, even while the sequence plays.
+        /// Whether the track is on. It starts as the file's <c>visible</c> value (false when it or any reference track it is
+        /// played through is hidden) and stays whatever it is set to. A track that is off shows nothing and its frame shapes
+        /// drive nothing, even while the sequence plays.
         /// </summary>
         public bool Visible
         {

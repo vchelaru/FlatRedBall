@@ -100,8 +100,31 @@ namespace FlatRedBall.Graphics.Animation
             return null;
         }
 
-        /// <summary>Seconds until the sequence ends: the end of the last chain to finish playing, across all tracks. 0 when it has no chains.</summary>
+        /// <summary>
+        /// Seconds until a sequence with no reference tracks ends. A reference track adds nothing here, since its target
+        /// can't be resolved without the rest of the file; use the overload that takes every sequence.
+        /// </summary>
         public static double Length(SequenceSave sequence, Func<SequenceChainReferenceSave, double> cycleLength)
+        {
+            return Length(new[] { sequence }, sequence, cycleLength);
+        }
+
+        /// <summary>
+        /// Seconds until the sequence ends: the latest end of any clip on any track. A chain ends where it stops playing; a
+        /// reference clip ends <see cref="SequenceReferenceSave.Loops"/> cycles of its target's own length after its start,
+        /// measured the same way, through every level. A reference that does not <see cref="SequenceReferences.Plays"/> (a
+        /// missing target or a cycle) adds nothing. 0 when nothing plays.
+        /// </summary>
+        /// <param name="sequences">Every sequence of the file, to resolve references by name.</param>
+        /// <param name="sequence">The sequence to measure.</param>
+        /// <param name="cycleLength">A chain reference's cycle length in seconds; 0 for a missing chain.</param>
+        public static double Length(IReadOnlyList<SequenceSave> sequences, SequenceSave sequence, Func<SequenceChainReferenceSave, double> cycleLength)
+        {
+            return LengthWithin(sequences, sequence, cycleLength, new List<SequenceSave> { sequence });
+        }
+
+        private static double LengthWithin(IReadOnlyList<SequenceSave> sequences, SequenceSave sequence,
+            Func<SequenceChainReferenceSave, double> cycleLength, List<SequenceSave> stack)
         {
             double end = 0;
             foreach (SequenceTrackSave track in sequence.Tracks)
@@ -110,8 +133,76 @@ namespace FlatRedBall.Graphics.Animation
                 {
                     end = System.Math.Max(end, reference.Start + PlayedLength(track, reference, cycleLength(reference)));
                 }
+
+                // The stack check is a backstop for duplicate names, which Plays (by name) cannot tell apart.
+                SequenceReferenceSave clip = track.Reference;
+                if (clip == null || !SequenceReferences.Plays(sequences, sequence.Name, clip.Sequence))
+                {
+                    continue;
+                }
+                SequenceSave target = SequenceReferences.Find(sequences, clip.Sequence);
+                if (target == null || stack.Contains(target))
+                {
+                    continue;
+                }
+                stack.Add(target);
+                double targetLength = LengthWithin(sequences, target, cycleLength, stack);
+                stack.RemoveAt(stack.Count - 1);
+                end = System.Math.Max(end, clip.Start + FullLength(clip.Loops, targetLength));
             }
             return end;
+        }
+
+        /// <summary>
+        /// Slack in seconds (at least this, and proportional to the time beyond 1 s) when comparing a time to a clip's start
+        /// or end. A start is inclusive and an end exclusive, within this slack.
+        /// </summary>
+        public const double BoundaryTolerance = 1e-6;
+
+        // Float error in a summed clip end grows with the number of cycles, so the slack scales with the time.
+        private static double Slack(double time)
+        {
+            return BoundaryTolerance * System.Math.Max(1, System.Math.Abs(time));
+        }
+
+        /// <summary>How far before the end of a non-looping sequence its held final pose is sampled, in seconds.</summary>
+        public const double HoldEpsilon = 1e-4;
+
+        /// <summary>
+        /// The time to sample a sequence's pose at for a playhead at <paramref name="time"/>. A sequence with
+        /// <paramref name="loop"/> off holds its final pose: at or past <paramref name="length"/> the pose is the one at the
+        /// last instant before the end (<see cref="HoldEpsilon"/> earlier), so a track whose chains already finished stays
+        /// hidden and the rest keep their last frame. Otherwise, and for an empty sequence, the time is unchanged.
+        /// </summary>
+        public static double PoseTime(double time, double length, bool loop)
+        {
+            return !loop && length > 0 && time >= length ? length - System.Math.Min(HoldEpsilon, length) : time;
+        }
+
+        /// <summary>
+        /// The time to sample <paramref name="target"/> at when the sequence holding <paramref name="reference"/> is at
+        /// <paramref name="parentTime"/>, or null when the clip is not playing: before its start, after
+        /// <see cref="SequenceReferenceSave.Loops"/> cycles of <paramref name="targetLength"/>, or when the target has no
+        /// length. The target restarts with the holder (its clock is the holder's minus the clip start). A looping target
+        /// wraps at its length; one with Loop off plays once and then holds its final pose (<see cref="PoseTime"/>) until the
+        /// clip ends.
+        /// </summary>
+        public static double? ReferenceTime(SequenceReferenceSave reference, SequenceSave target, double targetLength, double parentTime)
+        {
+            if (targetLength <= 0)
+            {
+                return null;
+            }
+            if (reference.Start > parentTime + Slack(parentTime))
+            {
+                return null;
+            }
+            double local = System.Math.Max(0, parentTime - reference.Start);
+            if (parentTime + Slack(parentTime) >= reference.Start + FullLength(reference.Loops, targetLength))
+            {
+                return null;
+            }
+            return PoseTime(WrapTime(local, targetLength, target.Loop), targetLength, target.Loop);
         }
 
         /// <summary>The sequence time to show for an elapsed time: wrapped when loop, otherwise held at length. Negative time shows 0.</summary>
