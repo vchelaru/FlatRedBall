@@ -610,10 +610,21 @@ public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
             toReturn = false;
         }
 
-        var isVariableState = variable.IsState(container);
+        var isVariableState = variable.IsState(container, out var stateCategoryContainer, out var stateCategory);
+
+        // A category owned by the container itself can't be set from inside its own states. A category inherited
+        // from a base element can: a component deriving from Text picks Text's "ColorCategory" state in its Default state.
+        var isInheritedCategoryState =
+            isVariableState &&
+            string.IsNullOrEmpty(variable.SourceObject) &&
+            stateCategory != null &&
+            stateCategoryContainer != null &&
+            stateCategoryContainer != container &&
+            // Gum keeps a value after its state is deleted; assigning it would not compile.
+            stateCategory.States.Any(item => item.Name == variable.Value?.ToString());
 
         // states can't set states on this
-        if (isVariableState && string.IsNullOrEmpty(variable.SourceObject))
+        if (isVariableState && string.IsNullOrEmpty(variable.SourceObject) && !isInheritedCategoryState)
         {
             toReturn = false;
         }
@@ -747,7 +758,7 @@ public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
 
         if (toReturn && !hasSourceObject)
         {
-            if (variable.IsCustomVariable || IsDefinedAsCustomVariableOnContainerOrBase(variable, container))
+            if (isInheritedCategoryState || variable.IsCustomVariable || IsDefinedAsCustomVariableOnContainerOrBase(variable, container))
             {
                 // all good, we can generate this:
                 toReturn = true;
