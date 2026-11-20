@@ -115,6 +115,38 @@ public class InheritedCategoryStateCodegenTests : IDisposable
     }
 
     [Fact]
+    public void ComponentOwnCategory_SettingItselfFromItsOwnState_IsStillNotGenerated()
+    {
+        // The rule the inherited-category fix must not loosen: a state of the component's own category
+        // can't assign that same category (it would recurse into its own setter).
+        GlueTestBootstrap.EnsureGumPluginCodeGeneratorsInitialized();
+        BuildTextWithColorCategory();
+
+        var comp = new ComponentSave { Name = "Announcement", BaseType = "Text" };
+        var defaultState = new StateSave { Name = "Default" };
+        defaultState.Variables.Add(new VariableSave { Name = "MyCategoryState", Type = "MyCategory", SetsValue = false });
+        comp.States.Add(defaultState);
+
+        var category = new StateSaveCategory { Name = "MyCategory" };
+        var first = new StateSave { Name = "First" };
+        first.Variables.Add(Var("MyCategoryState", "MyCategory", "Second"));
+        category.States.Add(first);
+        category.States.Add(new StateSave { Name = "Second" });
+        comp.Categories.Add(category);
+
+        comp.Initialize(defaultState);
+        Gum.Managers.ObjectFinder.Self.GumProjectSave.Components.Add(comp);
+
+        var source = GueDerivingClassCodeGenerator.Self.GenerateCodeFor(comp);
+
+        // The public property assigns "CurrentMyCategoryState = ..."; the field helpers assign "mCurrentMyCategoryState = ...",
+        // so require that no character precedes "Current" other than a non-identifier one.
+        System.Text.RegularExpressions.Regex
+            .IsMatch(source, @"(?<![A-Za-z_])CurrentMyCategoryState = [^;]*Second;")
+            .ShouldBeFalse(source);
+    }
+
+    [Fact]
     public void ComponentDerivingFromText_InheritedCategoryStateThatNoLongerExists_IsNotGenerated()
     {
         // Gum keeps a value around after its state is deleted; assigning it would not compile.
