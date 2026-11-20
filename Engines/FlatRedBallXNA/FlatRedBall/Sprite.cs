@@ -575,7 +575,14 @@ namespace FlatRedBall
         public bool FlipDiagonal
         {
             get { return mFlipDiagonal; }
-            set { mFlipDiagonal = value; }
+            set
+            {
+                if (mFlipDiagonal != value)
+                {
+                    mFlipDiagonal = value;
+                    UpdateScale();
+                }
+            }
         }
 
         /// <summary>
@@ -1886,8 +1893,12 @@ namespace FlatRedBall
         {
             if (mPixelSize > 0 && mTexture != null)
             {
-                mScaleX = mTexture.Width * mPixelSize * (mVertices[1].TextureCoordinate.X - mVertices[0].TextureCoordinate.X);
-                mScaleY = mTexture.Height * mPixelSize * (mVertices[2].TextureCoordinate.Y - mVertices[1].TextureCoordinate.Y);
+                float scaleX = mTexture.Width * mPixelSize * (mVertices[1].TextureCoordinate.X - mVertices[0].TextureCoordinate.X);
+                float scaleY = mTexture.Height * mPixelSize * (mVertices[2].TextureCoordinate.Y - mVertices[1].TextureCoordinate.Y);
+
+                // A diagonal flip transposes the texture region, so what was its width is now the Sprite's height.
+                mScaleX = mFlipDiagonal ? scaleY : scaleX;
+                mScaleY = mFlipDiagonal ? scaleX : scaleY;
             }
         }
 
