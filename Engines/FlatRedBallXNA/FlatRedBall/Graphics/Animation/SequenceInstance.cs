@@ -17,6 +17,8 @@ namespace FlatRedBall.Graphics.Animation
         private readonly SequencePlayer mPlayer;
         private int mPlayVersion;
         private double mLastShown;
+        // How many times a looping sequence has wrapped since Play or the last seek. Carries a continuous track's phase.
+        private int mPass;
         private HashSet<string> mShapeNames;
 
         internal SequenceInstance(SequencePlayer player, SequenceSave save, IReadOnlyDictionary<string, Sprite> existingSprites)
@@ -94,6 +96,7 @@ namespace FlatRedBall.Graphics.Animation
             Length = mPlayer.SequenceLength(Save);
             Time = 0;
             mLastShown = 0;
+            mPass = 0;
             IsPlaying = true;
             foreach (SequenceTrack track in Tracks)
             {
@@ -172,6 +175,7 @@ namespace FlatRedBall.Graphics.Animation
             {
                 // Time keeps counting past the end for a non-looping sequence, so IsFinished stays true.
                 Time = System.Math.Max(0, time);
+                mPass = 0;
                 ApplyTracks(true);
                 mPlayer.SyncShapes();
             }
@@ -179,7 +183,13 @@ namespace FlatRedBall.Graphics.Animation
 
         internal void Advance(double seconds)
         {
+            double previous = Time;
             Time = System.Math.Max(0, Time + seconds * Speed);
+            if (Save.Loop && Length > 0)
+            {
+                mPass += (int)(Time / Length) - (int)(previous / Length);
+                mPass = System.Math.Max(0, mPass);
+            }
             ApplyTracks(false);
         }
 
@@ -362,7 +372,10 @@ namespace FlatRedBall.Graphics.Animation
             double local = 0;
             if (clock.HasValue)
             {
-                reference = SequenceTimeline.ActiveAt(track.Ordered, clock.Value, mPlayer.CycleLength, out local);
+                // A continuous track keeps its phase across a wrap. A track played through a reference runs at pass 0.
+                reference = track.Save.Continuous && !track.IsReferenced && mPass > 0
+                    ? SequenceTimeline.ActiveAtPass(track.Save, clock.Value, mPass, Length, mPlayer.CycleLength, out local)
+                    : SequenceTimeline.ActiveAt(track.Ordered, clock.Value, mPlayer.CycleLength, out local);
             }
 
             // A referenced sequence that loops restarts within its clip; playback enters its frames again, so their events

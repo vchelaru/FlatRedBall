@@ -101,6 +101,59 @@ namespace FlatRedBall.Graphics.Animation
         }
 
         /// <summary>
+        /// Seconds of playback a <see cref="SequenceTrackSave.Continuous"/> track's first block has already advanced when
+        /// pass <paramref name="pass"/> (0 = the first run through, 1 = after the first wrap) begins: 0 for pass 0 and for a
+        /// track that restarts at the wrap. At each wrap the carry becomes the playback time of the block playing at the wrap
+        /// (sequenceLength minus its start, plus its own carry when it is the first block), if that block is the same chain
+        /// (source and name) as the first block and the first block starts at 0; otherwise 0.
+        /// </summary>
+        public static double CarryOver(SequenceTrackSave track, double sequenceLength, int pass,
+            Func<SequenceChainReferenceSave, double> cycleLength)
+        {
+            if (!track.Continuous || pass <= 0 || sequenceLength <= 0 || track.Chains.Count == 0)
+            {
+                return 0;
+            }
+            SequenceChainReferenceSave first = Ordered(track)[0];
+            if (first.Start > Slack(0))
+            {
+                return 0;
+            }
+
+            // The block playing just before the end of a pass: the wrap instant itself belongs to the next pass.
+            double endTime = sequenceLength - System.Math.Min(HoldEpsilon, sequenceLength);
+            double carry = 0;
+            for (int i = 0; i < pass; i++)
+            {
+                SequenceChainReferenceSave atWrap = ActiveAt(track, endTime, cycleLength, out _);
+                if (atWrap == null || atWrap.Source != first.Source || atWrap.Chain != first.Chain)
+                {
+                    carry = 0;
+                    continue;
+                }
+                carry = (ReferenceEquals(atWrap, first) ? carry : 0) + (sequenceLength - atWrap.Start);
+            }
+            return carry;
+        }
+
+        /// <summary>
+        /// <see cref="ActiveAt(SequenceTrackSave, double, Func{SequenceChainReferenceSave, double}, out double)"/> for pass
+        /// <paramref name="pass"/> of a looping sequence, where <paramref name="time"/> is the time inside that pass. A
+        /// <see cref="SequenceTrackSave.Continuous"/> track's first block does not restart at the wrap: its
+        /// <paramref name="localTime"/> includes <see cref="CarryOver"/>. Every other block and track is exactly ActiveAt.
+        /// </summary>
+        public static SequenceChainReferenceSave ActiveAtPass(SequenceTrackSave track, double time, int pass, double sequenceLength,
+            Func<SequenceChainReferenceSave, double> cycleLength, out double localTime)
+        {
+            SequenceChainReferenceSave active = ActiveAt(track, time, cycleLength, out localTime);
+            if (active != null && track.Continuous && pass > 0 && ReferenceEquals(active, Ordered(track)[0]))
+            {
+                localTime += CarryOver(track, sequenceLength, pass, cycleLength);
+            }
+            return active;
+        }
+
+        /// <summary>
         /// Seconds until a sequence with no reference tracks ends. A reference track adds nothing here, since its target
         /// can't be resolved without the rest of the file; use the overload that takes every sequence.
         /// </summary>

@@ -96,6 +96,7 @@ namespace FlatRedBall.Content.AnimationChain
                             Y = Float(trackObject, "y", 0),
                             FlipHorizontal = Bool(trackObject, "flipHorizontal", false),
                             Visible = Bool(trackObject, "visible", true),
+                            Continuous = Bool(trackObject, "continuous", false),
                         };
 
                         if (trackObject["reference"] != null)
@@ -275,6 +276,14 @@ namespace FlatRedBall.Content.AnimationChain
 
         /// <summary>Initial visibility of the track. A track that is not visible shows nothing.</summary>
         public bool Visible { get; set; } = true;
+
+        /// <summary>
+        /// When a looping sequence wraps, this track does not restart if the chain playing at the wrap is the same chain
+        /// (same source and name) as the track's first block and that block starts at 0: it keeps its playback phase.
+        /// Any other case restarts as usual. Tracks drift against each other across passes. See
+        /// <see cref="SequenceTimeline.ActiveAtPass"/>.
+        /// </summary>
+        public bool Continuous { get; set; }
 
         /// <summary>
         /// When set, the track plays another sequence of the file instead of chains, and <see cref="Chains"/> is empty
