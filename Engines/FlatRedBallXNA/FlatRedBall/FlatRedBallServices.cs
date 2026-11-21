@@ -118,7 +118,7 @@ namespace FlatRedBall
         public int Version;
     }
 
-    [SyntaxVersion(Version=78)]
+    [SyntaxVersion(Version=79)]
     public static partial class FlatRedBallServices
     {
         internal static SingleThreadSynchronizationContext singleThreadSynchronizationContext;
@@ -400,6 +400,7 @@ namespace FlatRedBall
                 mTypesThatCanBeLoaded.Add(typeof(ShapeCollection));
                 mTypesThatCanBeLoaded.Add(typeof(PositionedObjectList<Polygon>));
                 mTypesThatCanBeLoaded.Add(typeof(AnimationChainList));
+                mTypesThatCanBeLoaded.Add(typeof(SequenceList));
 
                 #endregion
 

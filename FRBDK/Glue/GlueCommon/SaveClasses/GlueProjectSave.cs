@@ -284,6 +284,12 @@ namespace FlatRedBall.Glue.SaveClasses
             // that need .NET 5 or newer.
             EntityFactoryRegistry = 78,
 
+            // November 21, 2026 - FlatRedBallServices.Load<SequenceList> reads a .seqj (named sequences that play
+            // animation chains from .achx/.achj files on several sprites at once). Gated because the generated load
+            // code names SequenceList, a type an older engine dll doesn't have: the project would fail to compile
+            // (CS0234) instead of Glue refusing the file at edit time.
+            SeqjSequenceFiles = 79,
+
             // Stop! If adding an entry here, modify SyntaxVersionAttribute on FlatRedBallServices
             // and LatestVersion down below
             // and update the docs
@@ -293,7 +299,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.EntityFactoryRegistry;
+        public const int LatestVersion = (int)GluxVersions.SeqjSequenceFiles;
 
         public int FileVersion { get; set; }
 

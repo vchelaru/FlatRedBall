@@ -93,6 +93,7 @@ namespace OfficialPlugins.BuiltFileSizeInspector.ViewModels
                     return "CSV";
                 case "achx":
                 case "achj":
+                case "seqj":
                     return "Animation Chains";
                 case "m4a":
                     return "Audio";
