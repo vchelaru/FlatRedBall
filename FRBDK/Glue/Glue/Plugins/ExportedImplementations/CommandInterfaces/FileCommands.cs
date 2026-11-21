@@ -752,7 +752,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         /// </summary>
         internal static bool IsOpenedByAnimationEditor(string extension) =>
             String.Equals(extension, "achx", StringComparison.OrdinalIgnoreCase) ||
-            String.Equals(extension, "achj", StringComparison.OrdinalIgnoreCase);
+            String.Equals(extension, "achj", StringComparison.OrdinalIgnoreCase) ||
+            String.Equals(extension, "seqj", StringComparison.OrdinalIgnoreCase);
 
         /// <summary>
         /// Finds the Gum editor to open Gum files with. Gum's editor head moved from the old WinForms/WPF

@@ -760,6 +760,20 @@ namespace FlatRedBall.Content
 
                     #endregion
 
+                    #region SequenceList (.seqj)
+
+                    else if (typeof(T) == typeof(SequenceList))
+                    {
+                        // Not IDisposable: its chains load on first use, through the same content manager.
+                        var sequenceList = SequenceList.FromFile(assetName, mName);
+
+                        mNonDisposableDictionary.Add(fullNameWithType, sequenceList);
+
+                        return (T)((object)sequenceList);
+                    }
+
+                    #endregion
+
                     else if (typeof(T) == typeof(Song))
                     {
                         var loader = new SongLoader();

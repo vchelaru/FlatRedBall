@@ -74,6 +74,33 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
             return clone;
         }
 
+        /// <summary>
+        /// Whether the .seqj ATI should be registered for a project. <c>FlatRedBallServices.Load&lt;SequenceList&gt;</c> exists from
+        /// <see cref="GlueProjectSave.GluxVersions.SeqjSequenceFiles"/> on; a source-linked project always builds against
+        /// current engine source, so it has it regardless of its FileVersion.
+        /// </summary>
+        internal static bool ShouldRegisterSeqjAti(int fileVersion, bool isFrbSourceLinked) =>
+            isFrbSourceLinked || fileVersion >= (int)GlueProjectSave.GluxVersions.SeqjSequenceFiles;
+
+        /// <summary>
+        /// An ATI for a .seqj: a SequenceList loaded through FlatRedBallServices.Load like any file. It is JSON, owned by the
+        /// FlatRedBall 2 Animation Editor (the only writer), so Glue can add an existing one but not create a blank one,
+        /// and it never goes through the content pipeline.
+        /// </summary>
+        internal AssetTypeInfo GetSeqjAti() => new AssetTypeInfo
+        {
+            FriendlyName = "Sequence List (.seqj)",
+            Extension = "seqj",
+            QualifiedRuntimeTypeName = new PlatformSpecificType { QualifiedType = "FlatRedBall.Graphics.Animation.SequenceList" },
+            QualifiedSaveTypeName = "FlatRedBall.Content.AnimationChain.SequenceListSave",
+            HideFromNewFileWindow = true,
+            CanBeAddedToContentPipeline = false,
+            MustBeAddedToContentPipeline = false,
+            CanBeObject = false,
+            ShouldBeDisposed = false,
+            FindByNameSyntax = "\"OBJECTNAME\"",
+        };
+
         internal AssetTypeInfo GetGumAnimationChainListAti()
         {
             var achxAti = AvailableAssetTypes.CommonAtis.AnimationChainList;

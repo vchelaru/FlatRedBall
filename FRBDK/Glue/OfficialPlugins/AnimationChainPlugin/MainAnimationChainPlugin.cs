@@ -109,6 +109,17 @@ public class MainAnimationChainPlugin : PluginBase
         }
     }
 
+    /// <summary>
+    /// The .achx/.achj files a .seqj uses (its "sources", relative to the .seqj), so they are copied to the
+    /// output folder with it.
+    /// </summary>
+    internal static List<string> GetSourcesInSeqj(string json)
+    {
+        // The engine's parser tolerates a leading byte-order mark; JsonDocument.Parse(string) does not.
+        var save = SequenceListSave.FromJsonString(json);
+        return save.Sources.Where(item => !string.IsNullOrEmpty(item)).ToList();
+    }
+
     // Deadvivors has a lot of .achx files and 
     // loading the project can be a bit slow. This
     // method attempts to speed up the .achx file reference
@@ -151,6 +162,33 @@ public class MainAnimationChainPlugin : PluginBase
                     GlueCommands.Self.PrintError($"Error trying to read .achx referenced files:\n{exception}");
                 }
 
+
+                return ToolsUtilities.GeneralResponse.SuccessfulResponse;
+            }
+            else
+            {
+                return ToolsUtilities.GeneralResponse.UnsuccessfulWith("File does not exist: " + path.FullPath);
+            }
+        }
+        else if (path.Extension == "seqj")
+        {
+            if (path.Exists())
+            {
+                try
+                {
+                    string contents = null;
+                    GlueCommands.Self.TryMultipleTimes(() => contents = System.IO.File.ReadAllText(path.FullPath));
+
+                    var directory = path.GetDirectoryContainingThis();
+                    foreach (var source in GetSourcesInSeqj(contents))
+                    {
+                        list.Add(directory + source);
+                    }
+                }
+                catch (Exception exception) when (exception is IOException || exception is JsonException)
+                {
+                    GlueCommands.Self.PrintError($"Error trying to read .seqj referenced files:\n{exception}");
+                }
 
                 return ToolsUtilities.GeneralResponse.SuccessfulResponse;
             }
@@ -252,6 +290,10 @@ public class MainAnimationChainPlugin : PluginBase
         AddAchjAssetTypeInfoIfSupported(
             GlueState.Self.CurrentGlueProject.FileVersion,
             GlueState.Self.CurrentMainProject.IsFrbSourceLinked());
+
+        AddSeqjAssetTypeInfoIfSupported(
+            GlueState.Self.CurrentGlueProject.FileVersion,
+            GlueState.Self.CurrentMainProject.IsFrbSourceLinked());
     }
 
     internal void AddAchjAssetTypeInfoIfSupported(int fileVersion, bool isFrbSourceLinked)
@@ -259,6 +301,14 @@ public class MainAnimationChainPlugin : PluginBase
         if (AssetTypeInfoManager.ShouldRegisterAchjAti(fileVersion, isFrbSourceLinked))
         {
             base.AddAssetTypeInfo(AssetTypeInfoManager.Self.GetAchjAti());
+        }
+    }
+
+    internal void AddSeqjAssetTypeInfoIfSupported(int fileVersion, bool isFrbSourceLinked)
+    {
+        if (AssetTypeInfoManager.ShouldRegisterSeqjAti(fileVersion, isFrbSourceLinked))
+        {
+            base.AddAssetTypeInfo(AssetTypeInfoManager.Self.GetSeqjAti());
         }
     }
 

@@ -27,6 +27,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             "png",
             "achx",
             "achj",
+            "seqj",
             "emix",
             "json",
             "xnb"

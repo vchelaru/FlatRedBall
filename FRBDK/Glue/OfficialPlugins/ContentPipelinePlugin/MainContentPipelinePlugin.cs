@@ -314,7 +314,7 @@ namespace OfficialPlugins.MonoGameContent
         /// file-alias regeneration and RFS lookup in HandleFileChanged.
         /// </summary>
         internal static bool IsKnownNonPipelineExtension(string extension) =>
-            extension == "achx" || extension == "achj" || extension == "json" ||
+            extension == "achx" || extension == "achj" || extension == "seqj" || extension == "json" ||
             extension == "tsx" || extension == "tmx" ||
             extension == "ase" || extension == "bmfc" ||
             extension == "fnt";
