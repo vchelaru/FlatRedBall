@@ -23,38 +23,40 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
     {
 
 
-        public static CreateProjectResult CreateProject(string fileName)
+        /// <summary>
+        /// The MSBuild evaluation of a .csproj, in its own ProjectCollection. Touches no Glue state, so it
+        /// can run on any thread once MSBUILD_EXE_PATH is final (see <see cref="EarlyProjectEvaluation"/>).
+        /// </summary>
+        public static Project EvaluateProject(string fileName)
         {
-            //Project coreVisualStudioProject = new Project(fileName);
+            try
+            {
+                return new Project(fileName, null, null, new ProjectCollection());
+            }
+            catch (Microsoft.Build.Exceptions.InvalidProjectFileException exception)
+            {
+                // This is a bug I haven't been able to figure out, but have asked about here:
+                // https://stackoverflow.com/questions/46384075/why-does-microsoft-build-framework-dll-15-3-not-load-csproj-15-1-does
+                // So I'm going to hack a fix by checking if this has to do with 15.0 vs the other versions:
+                if(exception.Message.Contains("\"15.0\"") && exception.Message.Contains("\"14.0\""))
+                {
+                    return new Project(fileName, null, "14.0", new ProjectCollection());
+                }
+                throw;
+            }
+        }
+
+        /// <param name="alreadyEvaluated">The result of <see cref="EvaluateProject"/> for this file, if it
+        /// was evaluated ahead of time. When null, the file is evaluated here.</param>
+        public static CreateProjectResult CreateProject(string fileName, Project alreadyEvaluated = null)
+        {
             Project coreVisualStudioProject = null;
             CreateProjectResult result = new CreateProjectResult();
-
-            //SetMsBuildEnvironmentVariable();
 
             var didErrorOccur = false;
             try
             {
-                try
-                {
-                    coreVisualStudioProject = new Project(fileName, null, null, new ProjectCollection());
-                }
-                catch (Microsoft.Build.Exceptions.InvalidProjectFileException exception)
-                {
-                    // This is a bug I haven't been able to figure out, but have asked about here:
-                    // https://stackoverflow.com/questions/46384075/why-does-microsoft-build-framework-dll-15-3-not-load-csproj-15-1-does
-                    // So I'm going to hack a fix by checking if this has to do with 15.0 vs the other versions:
-
-                    var message = exception.Message;
-                    if(exception.Message.Contains("\"15.0\"") && exception.Message.Contains("\"14.0\""))
-                    {
-                        coreVisualStudioProject = new Project(fileName, null, "14.0", new ProjectCollection());
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-
+                coreVisualStudioProject = alreadyEvaluated ?? EvaluateProject(fileName);
             }
             catch (Microsoft.Build.Exceptions.InvalidProjectFileException exception)
             {
