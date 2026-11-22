@@ -182,6 +182,15 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
         }
 
+        /// <summary>
+        /// The same text as namedObject.ToString(), which names the element holding the object. Finding that element
+        /// searches the whole project, but the element being generated almost always holds it, so that is checked first.
+        /// </summary>
+        internal static string DescribeForComment(NamedObjectSave namedObject, IElement saveObject) =>
+            saveObject is GlueElement glueElement && ObjectFinder.Self.IsContainedIn(glueElement, namedObject)
+                ? NamedObjectSaveElementExtensions.NamedObjectSaveToString(namedObject, glueElement)
+                : namedObject.ToString();
+
         public static void WriteCodeForNamedObjectInitialize(NamedObjectSave namedObject, IElement saveObject,
             ICodeBlock codeBlock, string overridingContainerName, bool inConstructor = false)
         {
@@ -193,7 +202,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             if (codeGenerationType == CodeGenerationType.Nothing)
             {
-                codeBlock.Line($"// Not instantiating for {namedObject} because properties on the object prevent it");
+                codeBlock.Line($"// Not instantiating for {DescribeForComment(namedObject, saveObject)} because properties on the object prevent it");
                 return;
             }
 
@@ -234,7 +243,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
             else
             {
-                codeBlock.Line($"// skipping instantiation of {namedObject} because it has its InstantiatedByBase set to true");
+                codeBlock.Line($"// skipping instantiation of {DescribeForComment(namedObject, saveObject)} because it has its InstantiatedByBase set to true");
             }
             #endregion
 

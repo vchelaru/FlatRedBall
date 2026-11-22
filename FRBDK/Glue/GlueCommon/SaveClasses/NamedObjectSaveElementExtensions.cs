@@ -65,10 +65,14 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
-        public static string NamedObjectSaveToString(NamedObjectSave nos)
-        {
-            IElement container = nos.GetContainer();
+        public static string NamedObjectSaveToString(NamedObjectSave nos) => NamedObjectSaveToString(nos, nos.GetContainer());
 
+        /// <summary>
+        /// The same text as <see cref="NamedObjectSaveToString(NamedObjectSave)"/>, for a caller that already knows
+        /// the element containing <paramref name="nos"/> (finding it searches the whole project).
+        /// </summary>
+        public static string NamedObjectSaveToString(NamedObjectSave nos, IElement container)
+        {
             string containerName = " (Uncontained)";
             if (container != null)
             {

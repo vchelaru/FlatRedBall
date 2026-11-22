@@ -323,6 +323,13 @@ public class ObjectFinder : IObjectFinder, IObjectFinderCore
 
     }
 
+    /// <summary>
+    /// Whether <paramref name="element"/> holds <paramref name="namedObjectSave"/>, by the same rule
+    /// <see cref="GetElementContaining(NamedObjectSave)"/> uses, without searching the rest of the project.
+    /// </summary>
+    public bool IsContainedIn(GlueElement element, NamedObjectSave namedObjectSave) =>
+        element != null && IsContainedInListOrAsChild(element.NamedObjects, namedObjectSave);
+
     public GlueElement GetElementContaining(ReferencedFileSave referencedFileSave)
     {
 
