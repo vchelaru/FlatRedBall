@@ -37,6 +37,26 @@ namespace OfficialPlugins.MonoGameContent
         // this session so the log line only prints once per missing tool.
         static HashSet<string> reportedMissingBuildExePaths = new HashSet<string>();
 
+        /// <summary>
+        /// Finds the content builder for a project. Tests replace this and <see cref="BuildContentItem"/> so a
+        /// build needs no MGCB.
+        /// </summary>
+        internal Func<VisualStudioProject, string> GetBuildExe = GetCommandLineBuildExe;
+
+        /// <summary>
+        /// Builds one content file: installs MGCB if needed, then runs it.
+        /// </summary>
+        internal Action<ContentItem, VisualStudioProject, bool> BuildContentItem;
+
+        public BuildLogic()
+        {
+            BuildContentItem = (contentItem, project, rebuild) =>
+            {
+                InstallBuilderIfNecessary(project);
+                PerformBuild(contentItem, project, rebuild);
+            };
+        }
+
         static string KniRootDirectory => Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + @"\KNI";
 
         // The KNI installer names its install folder after the installed SDK release (e.g. v4.2), not
@@ -81,7 +101,7 @@ namespace OfficialPlugins.MonoGameContent
         public async Task RefreshBuiltFilesFor(VisualStudioProject project, bool forcePngsToContentPipeline, ContentPipelineController controller)
         {
 
-            var mgcbToUse = GetCommandLineBuildExe(project);
+            var mgcbToUse = GetBuildExe(project);
 
             /////////////Early Out///////////////////
             
@@ -475,7 +495,7 @@ namespace OfficialPlugins.MonoGameContent
         {
             List<FilePath> toReturn = new List<FilePath>();
 
-            var commandLineBuildExe = GetCommandLineBuildExe(project);
+            var commandLineBuildExe = GetBuildExe(project);
 
             var contentDirectory = GlueState.ContentDirectory;
 
@@ -577,9 +597,7 @@ namespace OfficialPlugins.MonoGameContent
 
                         if (contentItem.GetIfNeedsBuild(destinationDirectory) || rebuild)
                         {
-                            InstallBuilderIfNecessary(project);
-
-                            PerformBuild(contentItem, project, rebuild);
+                            BuildContentItem(contentItem, project, rebuild);
 
                             if (ignoreWatcherReactionsToBuiltFiles)
                             {
