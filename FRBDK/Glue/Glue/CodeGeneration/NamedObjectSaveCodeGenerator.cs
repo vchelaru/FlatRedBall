@@ -37,7 +37,15 @@ namespace FlatRedBall.Glue.CodeGeneration
 
     public class NamedObjectSaveCodeGenerator : ElementComponentCodeGenerator
     {
-        public static Dictionary<string, string> ReusableEntireFileRfses { get; set; }
+        // Per-thread: it holds the element being built, and several elements are built at once.
+        [ThreadStatic]
+        static Dictionary<string, string> reusableEntireFileRfses;
+
+        public static Dictionary<string, string> ReusableEntireFileRfses
+        {
+            get => reusableEntireFileRfses;
+            set => reusableEntireFileRfses = value;
+        }
 
         #region Fields
 

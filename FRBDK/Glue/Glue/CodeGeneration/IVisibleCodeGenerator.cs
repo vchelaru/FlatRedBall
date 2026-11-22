@@ -13,10 +13,14 @@ namespace FlatRedBall.Glue.CodeGeneration
     {
 
         static List<NamedObjectSave> mPreservedVisibleNoses = new List<NamedObjectSave>();
+        // Per-thread: it holds the element being built, and several elements are built at once.
+        [ThreadStatic]
+        static Dictionary<string, string> reusableEntireFileRfses;
+
         public static Dictionary<string, string> ReusableEntireFileRfses
         {
-            get;
-            set;
+            get => reusableEntireFileRfses;
+            set => reusableEntireFileRfses = value;
         }
 
         public override void AddInheritedTypesToList(List<string> listToAddTo, IElement element)

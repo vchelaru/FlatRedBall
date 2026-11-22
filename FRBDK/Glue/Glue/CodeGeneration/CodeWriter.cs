@@ -242,8 +242,19 @@ namespace FlatRedBallAddOns.Entities
     {
         TaskManager.Self.WarnIfNotInTask();
 
-        #region Prepare for generation
+        PrepareToGenerateCode(element);
 
+        string contents = GetGeneratedCode(element);
+
+        await SaveGeneratedCode(element, contents);
+    }
+
+    /// <summary>
+    /// The part of <see cref="GenerateCode"/> that runs before the element's code is built: it may change the
+    /// element and calls plugins, so it runs on the task's own thread.
+    /// </summary>
+    internal static void PrepareToGenerateCode(GlueElement element)
+    {
         if (element == null)
         {
             throw new ArgumentNullException(nameof(element));
@@ -261,13 +272,28 @@ namespace FlatRedBallAddOns.Entities
             PluginManager.ReceiveError("Error fixing enumerations for " + element + ": " + e.ToString());
         }
 
+        foreach (PluginManager pluginManager in PluginManagerBase.GetInstances().Cast<PluginManager>())
+        {
+            CodeGeneratorPluginMethods.CallCodeGenerationStart(pluginManager, element);
+        }
 
-        // Do this before doing anything else since 
-        // these reusable entire file RFS's are used 
-        // in other code.
-        RefreshReusableEntireFileRfses(element);
-        #endregion
+        if (GlobalContentCodeGenerator.SuppressGlobalContentDictionaryRefresh == false)
+        {
+            ReferencedFileSaveCodeGenerator.RefreshGlobalContentDictionary();
+        }
 
+        if (ReferencedFileSaveCodeGenerator.GlobalContentFilesDictionary == null)
+        {
+            throw new Exception("Global content files dictionary should not be null");
+        }
+    }
+
+    /// <summary>
+    /// The part of <see cref="GenerateCode"/> that writes files and adds them to the project, in the order
+    /// it always has: the element's event files, its .Generated.cs, its factory, then the project entry.
+    /// </summary>
+    internal static async Task SaveGeneratedCode(GlueElement element, string contents)
+    {
         #region Event Generation
 
         EventCodeGenerator.GenerateEventGeneratedFile(element);
@@ -287,21 +313,43 @@ namespace FlatRedBallAddOns.Entities
 
         CreateGeneratedFileIfNecessary(element);
 
-        foreach (PluginManager pluginManager in PluginManagerBase.GetInstances().Cast<PluginManager>())
-        {
-            CodeGeneratorPluginMethods.CallCodeGenerationStart(pluginManager, element);
-        }
+        string generatedCodeFileName = element.Name + ".Generated.cs";
 
-        if (GlobalContentCodeGenerator.SuppressGlobalContentDictionaryRefresh == false)
-        {
-            ReferencedFileSaveCodeGenerator.RefreshGlobalContentDictionary();
-        }
+        SaveFileContents(contents, FileManager.RelativeDirectory + generatedCodeFileName, true);
 
-        if (ReferencedFileSaveCodeGenerator.GlobalContentFilesDictionary == null)
+        #region Extra stuff if it's an EntitySave
+
+        if (element is EntitySave entitySave)
         {
-            throw new Exception("Global content files dictionary should not be null");
+            #region If this thing is created by other entities, then we should make it IPoolable
+
+            if (entitySave.CreatedByOtherEntities && !entitySave.IsAbstract)
+            {
+                FactoryElementCodeGenerator.GenerateAndAddFactoryToProjectClass(entitySave);
+            }
+
+            #endregion
+
         }
-        
+        #endregion
+
+        // This code will create and add above, but if the file already exists, the code above won't re-add it to the
+        // project. This is a last chance to add it if necessary:
+        await GlueCommands.Self.ProjectCommands.TryAddCodeFileToProjectAsync(GetAbsoluteGeneratedCodeFileFor(element), saveOnAdd: true);
+    }
+
+    /// <summary>
+    /// Builds the contents of the element's .Generated.cs. It writes no files and changes nothing in the project
+    /// or the element, so <see cref="GenerateCodeCommands"/> runs it for several elements at once; anything a
+    /// code generator keeps between calls while building one element must therefore be per-thread.
+    /// </summary>
+    public static string GetGeneratedCode(GlueElement element)
+    {
+        // Do this before doing anything else since
+        // these reusable entire file RFS's are used
+        // in other code.
+        RefreshReusableEntireFileRfses(element);
+
         string classNamespace = GetGlueElementNamespace(element);
 
         CodeDocument rootBlock = new(0);
@@ -344,30 +392,7 @@ namespace FlatRedBallAddOns.Entities
             codeGenerator.GenerateAdditionalClasses(namespaceBlock, element);
         }
 
-        string generatedCodeFileName = element.Name + ".Generated.cs";
-        string contentsToSave = rootBlock.ToString();
-
-        SaveFileContents(contentsToSave, FileManager.RelativeDirectory + generatedCodeFileName, true);
-
-        #region Extra stuff if it's an EntitySave
-
-        if (element is EntitySave entitySave)
-        {
-            #region If this thing is created by other entities, then we should make it IPoolable
-
-            if (entitySave.CreatedByOtherEntities && !entitySave.IsAbstract)
-            {
-                FactoryElementCodeGenerator.GenerateAndAddFactoryToProjectClass(entitySave);
-            }
-
-            #endregion
-
-        }
-        #endregion
-
-        // This code will create and add above, but if the file already exists, the code above won't re-add it to the 
-        // project. This is a last chance to add it if necessary:
-        await GlueCommands.Self.ProjectCommands.TryAddCodeFileToProjectAsync(GetAbsoluteGeneratedCodeFileFor(element), saveOnAdd: true);
+        return rootBlock.ToString();
     }
 
     #region Predefines like #if ANDROID
@@ -856,7 +881,11 @@ namespace FlatRedBallAddOns.Entities
     /// <summary>
     /// Reusable entire file RFSes for the entire project.
     /// </summary>
-    public static Dictionary<string, string> ReusableEntireFileRfses { get; } = new Dictionary<string, string>();
+    public static Dictionary<string, string> ReusableEntireFileRfses => reusableEntireFileRfses ??= new Dictionary<string, string>();
+
+    // Per-thread: it holds the element being built, and several elements are built at once.
+    [ThreadStatic]
+    static Dictionary<string, string> reusableEntireFileRfses;
 
 
     /// <summary>

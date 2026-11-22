@@ -959,10 +959,44 @@ namespace FlatRedBall.Glue.Managers
 
         public bool IsOnUiThread => System.Threading.Thread.CurrentThread.ManagedThreadId == global::Glue.MainGlueWindow.UiThreadId;
 
+        // True on a thread while it runs part of the current task for RunInParallel.
+        [ThreadStatic]
+        static bool isRunningPartOfTask;
+
+        /// <summary>
+        /// Calls <paramref name="body"/> once per item on several threads and returns when every call has finished.
+        /// For a task to split up work that only reads the project: the task keeps its slot the whole time,
+        /// so nothing else changes the project meanwhile. The calls count as being in the task
+        /// (<see cref="IsInTask"/> is true), so AddOrRunIfTasked from one runs immediately on that thread, as it
+        /// does on the task thread, instead of queueing behind the task that is waiting for it. Each call also
+        /// sees the task thread's <see cref="FileManager.RelativeDirectory"/>, which is per thread.
+        /// </summary>
+        public void RunInParallel<T>(IEnumerable<T> items, Action<T> body)
+        {
+            var relativeDirectory = FileManager.RelativeDirectory;
+
+            Parallel.ForEach(items, item =>
+            {
+                var wasRunningPartOfTask = isRunningPartOfTask;
+                var oldRelativeDirectory = FileManager.RelativeDirectory;
+                isRunningPartOfTask = true;
+                FileManager.RelativeDirectory = relativeDirectory;
+                try
+                {
+                    body(item);
+                }
+                finally
+                {
+                    FileManager.RelativeDirectory = oldRelativeDirectory;
+                    isRunningPartOfTask = wasRunningPartOfTask;
+                }
+            });
+        }
+
         public bool IsInTask()
         {
             var currentThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
-            if (currentThreadId == TaskManager.Self.SyncTaskThreadId)
+            if (currentThreadId == TaskManager.Self.SyncTaskThreadId || isRunningPartOfTask)
             {
                 return true;
             }
