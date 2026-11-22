@@ -88,6 +88,55 @@ namespace FlatRedBall.Glue.IO
         public static void IgnoreChangeOnFileUntil(FilePath filePath, DateTimeOffset expiration) =>
             filesWaitingToBeFlushed.IgnoreChangeOnFileUntil(filePath, expiration);
 
+        static readonly System.Collections.Concurrent.ConcurrentDictionary<FilePath, (DateTime lastWriteUtc, long length)> selfWrittenFiles = new();
+
+        /// <summary>
+        /// Records a file Glue just had an external tool write (a content build, say), so the watcher does not react
+        /// to that write. There is no time window: a change is skipped only while the file still has the last-write
+        /// time and length recorded here, so a later change still gets a reaction. Call it from the task that ran
+        /// the tool, once the tool has exited: reactions run as later queued tasks, so they see the record.
+        /// </summary>
+        public static void IgnoreChangesWhileUnchanged(FilePath filePath)
+        {
+            if (TryGetStamp(filePath, out var stamp))
+            {
+                selfWrittenFiles[filePath] = stamp;
+            }
+        }
+
+        /// <summary>
+        /// Whether the file was recorded by <see cref="IgnoreChangesWhileUnchanged"/> and has not changed since. A
+        /// changed or deleted file is forgotten, so it is reacted to from then on.
+        /// </summary>
+        internal static bool IsUnchangedSelfWrite(FilePath filePath)
+        {
+            if (!selfWrittenFiles.TryGetValue(filePath, out var recorded))
+            {
+                return false;
+            }
+
+            if (TryGetStamp(filePath, out var current) && current == recorded)
+            {
+                return true;
+            }
+
+            selfWrittenFiles.TryRemove(filePath, out _);
+            return false;
+        }
+
+        static bool TryGetStamp(FilePath filePath, out (DateTime lastWriteUtc, long length) stamp)
+        {
+            var info = new FileInfo(filePath.FullPath);
+            if (!info.Exists)
+            {
+                stamp = default;
+                return false;
+            }
+
+            stamp = (info.LastWriteTimeUtc, info.Length);
+            return true;
+        }
+
         public static void UpdateToProjectDirectory()
         {
             if (GlueState.Self.CurrentMainProject?.FullFileName != null)
@@ -275,7 +324,7 @@ namespace FlatRedBall.Glue.IO
                     // November 12, 2019
                     // Vic asks - why do we only ignore files that are generated here?
                     //var skip = isIgnored && reason == IgnoreReason.GeneratedCodeFile;
-                    var skip = isIgnored;
+                    var skip = isIgnored || IsUnchangedSelfWrite(fileChangeCopy.FilePath);
 
                     if (!skip)
                     {
@@ -324,6 +373,12 @@ namespace FlatRedBall.Glue.IO
             bool isIgnored = false;
 
             isIgnored = IsFileIgnoredBasedOnFileType(file.FilePath, out reason);
+
+            // Checked again here: the task that wrote the file may have recorded it after the flush queued this.
+            if (IsUnchangedSelfWrite(file.FilePath))
+            {
+                return false;
+            }
 
             if (!isIgnored)
             {

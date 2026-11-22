@@ -25,9 +25,9 @@ internal static class TestVisualStudioProjectFactory
     /// directory.
     /// </summary>
     public static ClassLibraryProject CreateInNewTempDirectory(out string directory, string projectName = "TestProject",
-        string extraItemGroupXml = null)
+        string extraItemGroupXml = null, string parentDirectory = null)
     {
-        directory = Path.Combine(Path.GetTempPath(), "GlueUnitTests_" + Guid.NewGuid());
+        directory = Path.Combine(parentDirectory ?? Path.GetTempPath(), "GlueUnitTests_" + Guid.NewGuid());
         Directory.CreateDirectory(directory);
 
         var csprojPath = Path.Combine(directory, projectName + ".csproj");

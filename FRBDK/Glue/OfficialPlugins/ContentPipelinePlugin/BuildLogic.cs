@@ -577,6 +577,14 @@ namespace OfficialPlugins.MonoGameContent
                             InstallBuilderIfNecessary(project);
 
                             PerformBuild(contentItem, project, rebuild);
+
+                            // Glue registers what it built below, so its own watcher reacting to these
+                            // writes would only regenerate global content code once per built file.
+                            foreach (var extension in contentItem.GetBuiltExtensions())
+                            {
+                                FlatRedBall.Glue.IO.FileWatchManager.IgnoreChangesWhileUnchanged(
+                                    destinationDirectory + contentItem.BuildFileName.NoPathNoExtension + "." + extension);
+                            }
                         }
 
                         toReturn.AddRange(AddBuiltXnbReferences(project, rfsFilePath, contentDirectory,
