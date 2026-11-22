@@ -326,6 +326,8 @@ namespace EditorObjects.Parsing
         private static List<string> GetTextureReferencesInFnt(string fileName)
         {
             List<string> referencedFiles = new List<string>();
+            // gumcli may be writing this font right now.
+            FlatRedBall.Glue.IO.ExternalFileWrites.WaitIfInTask();
             string contents = FileManager.FromFileText(fileName);
             referencedFiles = new List<string>(BitmapFont.GetSourceTextures(contents));
             for(int x = 0; x < referencedFiles.Count; ++x)

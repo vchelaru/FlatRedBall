@@ -120,6 +120,9 @@ namespace FlatRedBall.Glue.Managers
 
         public void RefreshUnreferencedFilesInternal()
         {
+            // Compare against files an external tool (gumcli fonts) has finished writing.
+            FlatRedBall.Glue.IO.ExternalFileWrites.WaitIfInTask();
+
             // This may be called sync and async at the same time
             // and this can cause weird results.  let's make sure that
             // this never happens...

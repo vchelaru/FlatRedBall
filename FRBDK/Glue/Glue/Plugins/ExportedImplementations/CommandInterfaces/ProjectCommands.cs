@@ -220,6 +220,9 @@ class ProjectCommands : IProjectCommands
     /// <returns>Whether anything was added to any projects.</returns>
     public bool UpdateFileMembershipInProject(ReferencedFileSave referencedFileSave, bool reEvaluateAfterAdd = true)
     {
+        // Decide membership from files an external tool (gumcli fonts) has finished writing.
+        FlatRedBall.Glue.IO.ExternalFileWrites.WaitIfInTask();
+
         var assetTypeInfo = referencedFileSave.GetAssetTypeInfo();
 
         bool shouldSkip = assetTypeInfo != null && assetTypeInfo.ExcludeFromContentProject;

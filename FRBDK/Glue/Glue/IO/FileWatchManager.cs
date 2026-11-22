@@ -293,6 +293,9 @@ namespace FlatRedBall.Glue.IO
                                 GlueCommands.Self.PrintOutput($"Flushing {file} files");
                             }
 
+                            // A file an external tool is still writing (a font gumcli is generating)
+                            // is reacted to once it is complete.
+                            ExternalFileWrites.WaitIfInTask();
                             var didReact = await FlushChangedFile(fileChangeCopy);
                             if (didReact)
                             {
