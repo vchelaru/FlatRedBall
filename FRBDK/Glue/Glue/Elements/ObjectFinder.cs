@@ -301,8 +301,64 @@ public class ObjectFinder : IObjectFinder, IObjectFinderCore
     }
 
 
+    // Each object's element, while a CacheContainingElements scope is open.
+    Dictionary<NamedObjectSave, GlueElement> containingElementCache;
+
+    /// <summary>
+    /// Remembers which element holds each object until the returned scope is disposed, so
+    /// <see cref="GetElementContaining(NamedObjectSave)"/> stops searching the whole project per call.
+    /// A remembered answer is checked against its element before it is returned, and anything not
+    /// confirmed falls back to the search, so objects added, moved or removed inside the scope are still right.
+    /// For passes that look up many containers, like generating all code.
+    /// </summary>
+    public IDisposable CacheContainingElements()
+    {
+        var previous = containingElementCache;
+        var cache = new Dictionary<NamedObjectSave, GlueElement>(ReferenceEqualityComparer.Instance);
+        var project = GlueProject;
+        if (project != null)
+        {
+            // Screens before entities and first match wins, the same order the search uses.
+            foreach (var screen in project.Screens) AddToCache(screen.NamedObjects, screen);
+            foreach (var entity in project.Entities) AddToCache(entity.NamedObjects, entity);
+        }
+        containingElementCache = cache;
+        return new ContainingElementCacheScope(this, previous);
+
+        void AddToCache(List<NamedObjectSave> namedObjects, GlueElement element)
+        {
+            foreach (var nos in namedObjects)
+            {
+                cache.TryAdd(nos, element);
+                if (nos.ContainedObjects?.Count > 0 && IsListOrShapeCollection(nos))
+                {
+                    AddToCache(nos.ContainedObjects, element);
+                }
+            }
+        }
+    }
+
+    private sealed class ContainingElementCacheScope : IDisposable
+    {
+        private readonly ObjectFinder _owner;
+        private readonly Dictionary<NamedObjectSave, GlueElement> _previous;
+        public ContainingElementCacheScope(ObjectFinder owner, Dictionary<NamedObjectSave, GlueElement> previous)
+        {
+            _owner = owner;
+            _previous = previous;
+        }
+        public void Dispose() => _owner.containingElementCache = _previous;
+    }
+
     public GlueElement GetElementContaining(NamedObjectSave namedObjectSave)
     {
+        var cache = containingElementCache;
+        if (cache != null && namedObjectSave != null && cache.TryGetValue(namedObjectSave, out var cached)
+            && IsContainedIn(cached, namedObjectSave))
+        {
+            return cached;
+        }
+
         for (int i = 0; i < ObjectFinder.Self.GlueProject.Screens.Count; i++)
         {
             var screen = ObjectFinder.Self.GlueProject.Screens[i];
@@ -378,6 +434,20 @@ public class ObjectFinder : IObjectFinder, IObjectFinderCore
 
     }
         
+    static bool IsListOrShapeCollection(NamedObjectSave nos)
+    {
+        if (nos.IsList)
+        {
+            return true;
+        }
+        else if (nos.SourceType == SourceType.FlatRedBallType)
+        {
+            var sourceClassType = nos.SourceClassType;
+            return sourceClassType == "ShapeCollection" || sourceClassType == "FlatRedBall.Math.Geometry.ShapeCollection";
+        }
+        return false;
+    }
+
     bool IsContainedInListOrAsChild(List<NamedObjectSave> namedObjects, NamedObjectSave objectToFind)
     {
         // This was done before to prevent access of objects during tasks.
@@ -386,32 +456,13 @@ public class ObjectFinder : IObjectFinder, IObjectFinderCore
         //foreach (NamedObjectSave nos in namedObjects.ToArray())
         foreach (NamedObjectSave nos in namedObjects)
         {
-            bool isListOrShapeCollection()
-            {
-                if (nos.IsList)
-                {
-                    return true;
-                }
-                else if (nos.SourceType == SourceType.FlatRedBallType)
-                {
-                    var sourceClassType = nos.SourceClassType;
-
-                    return sourceClassType == "ShapeCollection" || sourceClassType == "FlatRedBall.Math.Geometry.ShapeCollection";
-
-                }
-                return false;
-
-
-            }
-
-
             if (nos == objectToFind)
             {
                 return true;
             }
             // Most objects contain nothing, and the type check is far slower than the count check. This runs for every object
             // in the project each time an object's container is looked up, which code generation does for every object.
-            else if (nos.ContainedObjects?.Count > 0 && isListOrShapeCollection() && IsContainedInListOrAsChild(nos.ContainedObjects, objectToFind))
+            else if (nos.ContainedObjects?.Count > 0 && IsListOrShapeCollection(nos) && IsContainedInListOrAsChild(nos.ContainedObjects, objectToFind))
             {
                 return true;
             }

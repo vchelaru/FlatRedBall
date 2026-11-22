@@ -68,4 +68,61 @@ public class ObjectFinderGetElementContainingTests : IDisposable
 
         ObjectFinder.Self.GetElementContaining(child).ShouldBeNull();
     }
+
+    [Fact]
+    public void CacheContainingElements_GivesTheSameAnswersAsTheSearch()
+    {
+        var sprite = FrbObject("Sprite1", "Sprite");
+        _entity.NamedObjects.Add(sprite);
+        var list = FrbObject("List", "FlatRedBall.Math.PositionedObjectList<T>");
+        var inList = FrbObject("InList", "Circle");
+        list.ContainedObjects.Add(inList);
+        _screen.NamedObjects.Add(list);
+        var notAList = FrbObject("NotAList", "Sprite");
+        var underNotAList = FrbObject("UnderNotAList", "Circle");
+        notAList.ContainedObjects.Add(underNotAList);
+        _entity.NamedObjects.Add(notAList);
+        var nowhere = FrbObject("Nowhere", "Sprite");
+
+        using (ObjectFinder.Self.CacheContainingElements())
+        {
+            ObjectFinder.Self.GetElementContaining(sprite).ShouldBe(_entity);
+            ObjectFinder.Self.GetElementContaining(list).ShouldBe(_screen);
+            ObjectFinder.Self.GetElementContaining(inList).ShouldBe(_screen);
+            ObjectFinder.Self.GetElementContaining(underNotAList).ShouldBeNull();
+            ObjectFinder.Self.GetElementContaining(nowhere).ShouldBeNull();
+        }
+    }
+
+    [Fact]
+    public void CacheContainingElements_ObjectAddedOrMovedInsideTheScope_IsFoundWhereItIsNow()
+    {
+        var moved = FrbObject("Moved", "Sprite");
+        _entity.NamedObjects.Add(moved);
+
+        using (ObjectFinder.Self.CacheContainingElements())
+        {
+            var added = FrbObject("Added", "Sprite");
+            _screen.NamedObjects.Add(added);
+            _entity.NamedObjects.Remove(moved);
+            _screen.NamedObjects.Add(moved);
+
+            ObjectFinder.Self.GetElementContaining(added).ShouldBe(_screen);
+            ObjectFinder.Self.GetElementContaining(moved).ShouldBe(_screen);
+        }
+    }
+
+    [Fact]
+    public void CacheContainingElements_ObjectRemovedInsideTheScope_IsNotFound()
+    {
+        var removed = FrbObject("Removed", "Sprite");
+        _entity.NamedObjects.Add(removed);
+
+        using (ObjectFinder.Self.CacheContainingElements())
+        {
+            _entity.NamedObjects.Remove(removed);
+
+            ObjectFinder.Self.GetElementContaining(removed).ShouldBeNull();
+        }
+    }
 }
