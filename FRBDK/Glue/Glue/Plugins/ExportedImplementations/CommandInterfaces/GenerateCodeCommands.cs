@@ -192,49 +192,15 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             CameraSetupCodeGenerator.GenerateCallInGame1(ProjectManager.GameClassFileName, true);
 
-            foreach (var screen in glueProject.Screens)
+            bool wasStopped;
+            // Element generation asks whether each variable is a CSV type, which otherwise walks every file each time.
+            using (CustomVariableExtensionMethods.CacheCsvTypes())
             {
-                #region Check for exiting the function becuase Glue is closing
-
-                if (ProjectManager.WantsToCloseProject)
-                {
-                    PluginManager.ReceiveOutput("Stopping generation because the project is closing");
-                    return;
-                }
-
-                #endregion
-
-                ReportIfGenerationFails(CodeWriter.GenerateCode(screen), screen);
+                wasStopped = GenerateAllElementCode(glueProject);
             }
-
-
-            // not sure which is faster:
-            // Currently the referenced file dictionary makes this not work well:
-            //Parallel.ForEach(GlueState.Self.CurrentGlueProject.Entities, (entity) =>
-            //    {
-            //        CodeWriter.GenerateCode(entity);
-            //    });
-
-            // Let's make this thread safe:
-            IEnumerable<EntitySave> entityList = null;
-            lock (glueProject.Entities)
+            if (wasStopped)
             {
-                entityList = glueProject.Entities.Where(item => true).ToList();
-            }
-
-            foreach (var entity in entityList)
-            {
-                #region Check for exiting the function becuase Glue is closing
-
-                if (ProjectManager.WantsToCloseProject)
-                {
-                    PluginManager.ReceiveOutput("Stopping generation because the project is closing");
-                    return;
-                }
-
-                #endregion
-
-                ReportIfGenerationFails(CodeWriter.GenerateCode(entity), entity);
+                return;
             }
 
             #region Check for exiting the function becuase Glue is closing
@@ -272,6 +238,59 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             GlobalContentCodeGenerator.SuppressGlobalContentDictionaryRefresh = false;
 
+        }
+
+        /// <summary>
+        /// Generates every screen and entity. Returns true if generation stopped because the project is closing.
+        /// </summary>
+        static bool GenerateAllElementCode(GlueProjectSave glueProject)
+        {
+            foreach (var screen in glueProject.Screens)
+            {
+                #region Check for exiting the function becuase Glue is closing
+
+                if (ProjectManager.WantsToCloseProject)
+                {
+                    PluginManager.ReceiveOutput("Stopping generation because the project is closing");
+                    return true;
+                }
+
+                #endregion
+
+                ReportIfGenerationFails(CodeWriter.GenerateCode(screen), screen);
+            }
+
+
+            // not sure which is faster:
+            // Currently the referenced file dictionary makes this not work well:
+            //Parallel.ForEach(GlueState.Self.CurrentGlueProject.Entities, (entity) =>
+            //    {
+            //        CodeWriter.GenerateCode(entity);
+            //    });
+
+            // Let's make this thread safe:
+            IEnumerable<EntitySave> entityList = null;
+            lock (glueProject.Entities)
+            {
+                entityList = glueProject.Entities.Where(item => true).ToList();
+            }
+
+            foreach (var entity in entityList)
+            {
+                #region Check for exiting the function becuase Glue is closing
+
+                if (ProjectManager.WantsToCloseProject)
+                {
+                    PluginManager.ReceiveOutput("Stopping generation because the project is closing");
+                    return true;
+                }
+
+                #endregion
+
+                ReportIfGenerationFails(CodeWriter.GenerateCode(entity), entity);
+            }
+
+            return false;
         }
 
         public void GenerateCustomClassesCode()
