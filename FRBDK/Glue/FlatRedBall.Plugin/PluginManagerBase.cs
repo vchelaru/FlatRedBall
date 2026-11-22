@@ -281,38 +281,119 @@ namespace FlatRedBall.Glue.Plugins
 
             var pluginDirectories = GetPluginDirectories(filePath);
 
+            // Loading stays in directory order: IsAssemblyAlreadyReferenced depends on what earlier
+            // directories loaded.
+            var loadedDirectories = new List<LoadedPluginDirectory>();
             foreach (var directory in pluginDirectories)
             {
-                AddPluginsFromDirectory(pluginsToIgnore, returnValue, directory);
+                var loaded = LoadPluginsFromDirectory(pluginsToIgnore, directory);
+                if (loaded != null)
+                {
+                    loadedDirectories.Add(loaded);
+                }
             }
 
+            var globalCatalogs = new List<AssemblyCatalog>();
             if (mGlobal)
             {
                 Assembly executingAssembly = System.Reflection.Assembly.GetExecutingAssembly();
-                var newCatalog = new AssemblyCatalog(executingAssembly);
-                returnValue.Catalogs.Add(newCatalog);
-
-
+                globalCatalogs.Add(new AssemblyCatalog(executingAssembly));
 
                 Assembly entryAssembly = System.Reflection.Assembly.GetEntryAssembly();
                 if (entryAssembly != executingAssembly && entryAssembly != null)
                 {
-                    newCatalog = new AssemblyCatalog(entryAssembly);
-                    returnValue.Catalogs.Add(newCatalog);
-
-
+                    globalCatalogs.Add(new AssemblyCatalog(entryAssembly));
                 }
 
                 foreach (var assembly in AddGlobalOnInitialize)
                 {
-                    newCatalog = new AssemblyCatalog(assembly);
-
-                    returnValue.Catalogs.Add(newCatalog);
-
+                    globalCatalogs.Add(new AssemblyCatalog(assembly));
                 }
             }
 
+            // Discovering a catalog's parts reflects over every member of every type in its assemblies,
+            // which is most of plugin load time. The catalogs share nothing, so discover them in parallel.
+            var discoveries = loadedDirectories
+                .Where(item => !item.Failed)
+                .Select(item => (Action)item.CheckThatExportsLoad)
+                .Concat(globalCatalogs.Select(catalog => (Action)(() => DiscoverPartsIgnoringErrors(catalog))))
+                .ToArray();
+            Parallel.Invoke(discoveries);
+
+            foreach (var loaded in loadedDirectories)
+            {
+                CompileOutput.AddRange(loaded.Output);
+                CompileErrors.AddRange(loaded.Errors);
+                if (!loaded.Failed)
+                {
+                    foreach (var assemblyCatalog in loaded.Catalog.Catalogs)
+                    {
+                        returnValue.Catalogs.Add(assemblyCatalog);
+                    }
+                }
+            }
+
+            foreach (var catalog in globalCatalogs)
+            {
+                returnValue.Catalogs.Add(catalog);
+            }
+
             return returnValue;
+        }
+
+        // Only warms the catalog's cached parts. A failure here repeats, and is reported, when the parts are
+        // composed in PopulateCatalog.
+        private static void DiscoverPartsIgnoringErrors(AssemblyCatalog catalog)
+        {
+            try
+            {
+                _ = catalog.Parts.Count();
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        /// <summary>
+        /// One plugin directory's assemblies, loaded but not yet checked, with the messages it produced
+        /// held back so they reach CompileOutput/CompileErrors in directory order.
+        /// </summary>
+        private class LoadedPluginDirectory
+        {
+            public string Directory;
+            public AggregateCatalog Catalog = new AggregateCatalog();
+            public List<string> Output = new List<string>();
+            public List<string> Errors = new List<string>();
+            public bool Failed;
+
+            public void CheckThatExportsLoad()
+            {
+                try
+                {
+                    var container = new CompositionContainer(Catalog);
+                    container.GetExports<object>();
+                }
+                catch (Exception e)
+                {
+                    string message = "";
+                    message += "Error trying to load plugins from directory:     " + Directory;
+
+                    if (e is ReflectionTypeLoadException)
+                    {
+                        foreach (var innerException in (e as ReflectionTypeLoadException).LoaderExceptions)
+                        {
+                            message += "\r\n" + innerException.ToString();
+                        }
+                    }
+                    else
+                    {
+                        message += "\r\n" + e.ToString();
+                    }
+                    Errors.Add(message);
+
+                    Failed = true;
+                }
+            }
         }
 
         private List<string> GetPluginDirectories(FilePath filePath)
@@ -346,8 +427,10 @@ namespace FlatRedBall.Glue.Plugins
             return pluginDirectories;
         }
 
-        private void AddPluginsFromDirectory(List<string> pluginsToIgnore, AggregateCatalog returnValue, string plugin)
+        // Returns null when the directory is skipped or ignored.
+        private LoadedPluginDirectory LoadPluginsFromDirectory(List<string> pluginsToIgnore, string plugin)
         {
+            var loaded = new LoadedPluginDirectory { Directory = plugin };
             try
             {
                 bool shouldProcessPlugin = true;
@@ -367,18 +450,23 @@ namespace FlatRedBall.Glue.Plugins
 
                     if (!isIgnored)
                     {
-                        HandleAddingPluginInDirectory(returnValue, plugin);
+                        LoadAssembliesInDirectory(loaded);
+                        return loaded;
                     }
                 }
             }
             catch (Exception ex)
             {
-                CompileErrors.Add("Error loading plugin at " + plugin + "\r\n\r\n" + ex);
+                loaded.Errors.Add("Error loading plugin at " + plugin + "\r\n\r\n" + ex);
+                loaded.Failed = true;
+                return loaded;
             }
+            return null;
         }
 
-        private void HandleAddingPluginInDirectory(AggregateCatalog returnValue, string pluginDirectory)
+        private void LoadAssembliesInDirectory(LoadedPluginDirectory loaded)
         {
+            var pluginDirectory = loaded.Directory;
             var assemblies = new HashSet<Assembly>();
 
             var assembliesFiles = Directory.GetFiles(pluginDirectory, "*.dll");
@@ -391,63 +479,26 @@ namespace FlatRedBall.Glue.Plugins
                     {
                         string message = $"Info: {pluginDirectory} - Skipping over assembly {assemblyName} because it is already loaded by a different plugin. If you are working on this plugin, you may not need to have this .dll copied. Otherwise, you can ignore this message.";
 
-                        CompileOutput.Add(message);
+                        loaded.Output.Add(message);
                     }
                     else
                     {
                         assembly = AssemblyContext.LoadFromAssemblyPath(assemblyName);
                     }
-                    
+
                     assemblies.Add(assembly);
                 }
                 catch (Exception ex)
                 {
-                    CompileErrors.Add(string.Format("Failed to load {0}: {1}", assemblyName, ex.Message));
+                    loaded.Errors.Add(string.Format("Failed to load {0}: {1}", assemblyName, ex.Message));
                 }
             }
 
-            AggregateCatalog catalogToMakeSureStuffIsLinked = new AggregateCatalog();
             foreach (var assembly in assemblies)
             {
                 var catalog = new AssemblyCatalog(assembly);
-                catalogToMakeSureStuffIsLinked.Catalogs.Add(catalog);
+                loaded.Catalog.Catalogs.Add(catalog);
             }
-
-            bool failed = false;
-            try
-            {
-                var container = new CompositionContainer(catalogToMakeSureStuffIsLinked);
-                container.GetExports<object>();
-            }
-            catch (Exception e)
-            {
-                string message = "";
-                message += "Error trying to load plugins from directory:     " + pluginDirectory;
-
-                if (e is ReflectionTypeLoadException)
-                {
-                    foreach (var innerException in (e as ReflectionTypeLoadException).LoaderExceptions)
-                    {
-                        message += "\r\n" + innerException.ToString();
-                    }
-                }
-                else
-                {
-                    message += "\r\n" + e.ToString();
-                }
-                CompileErrors.Add(message);
-
-                failed = true;
-            }
-
-            if (!failed)
-            {
-                foreach (var assemblyCatalog in catalogToMakeSureStuffIsLinked.Catalogs)
-                {
-                    returnValue.Catalogs.Add(assemblyCatalog);
-                }
-            }
-
         }
 
         private void HandleAddingDynamicallyCompiledPlugin(AggregateCatalog returnValue, string plugin, CompilerResults compileResult)
