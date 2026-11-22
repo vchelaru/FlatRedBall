@@ -35,7 +35,19 @@ namespace OfficialPlugins.AnimationChainPlugin.Errors
             Details = $"{namedObject} references animation {AnimationName} which is missing from {AchxFilePath}";
         }
 
-        public static bool GetIfHasError(GlueElement owner, NamedObjectSave namedObject, out FilePath filePath, out string animationName)
+        /// <summary>
+        /// Reads an animation file. Tests replace it to count reads.
+        /// </summary>
+        internal static Func<FilePath, AnimationChainListSave> ReadAnimationFile = achxFilePath =>
+            achxFilePath.Extension == "aseprite"
+                ? AsepriteAnimationChainLoader.ToAnimationChainListSave(achxFilePath)
+                : AnimationChainListSave.FromFile(achxFilePath.FullPath);
+
+        /// <param name="animationNamesByFile">Animation names of each file already read in this scan, null for a
+        /// file that couldn't be parsed. A file many objects reference is then parsed once per scan rather than
+        /// once per object. Null reads the file every call.</param>
+        public static bool GetIfHasError(GlueElement owner, NamedObjectSave namedObject, out FilePath filePath, out string animationName,
+            Dictionary<string, HashSet<string>> animationNamesByFile = null)
         {
             filePath = null;
             animationName = null;
@@ -57,7 +69,7 @@ namespace OfficialPlugins.AnimationChainPlugin.Errors
                             {
                                 filePath = GlueCommands.Self.GetAbsoluteFilePath(rfs);
 
-                                return GetIfHasError(owner, namedObject, filePath, animationName);
+                                return GetIfHasError(owner, namedObject, filePath, animationName, animationNamesByFile);
                             }
                         }
                     }
@@ -66,7 +78,8 @@ namespace OfficialPlugins.AnimationChainPlugin.Errors
             return false;
         }
 
-        public static bool GetIfHasError(GlueElement owner, NamedObjectSave namedObject, FilePath achxFilePath, string animationName)
+        public static bool GetIfHasError(GlueElement owner, NamedObjectSave namedObject, FilePath achxFilePath, string animationName,
+            Dictionary<string, HashSet<string>> animationNamesByFile = null)
         {
             // todo - need to handle a situation where the user changes which .achx file is referenced by the nos
             // Not doing that yet because it's more work and it can be added later
@@ -108,27 +121,27 @@ namespace OfficialPlugins.AnimationChainPlugin.Errors
             }
 
             // If the .achx now includes this animation:
+            HashSet<string> animationNames = null;
+            if (animationNamesByFile == null || !animationNamesByFile.TryGetValue(achxFilePath.FullPath, out animationNames))
+            {
+                animationNames = ReadAnimationNames(achxFilePath);
+                animationNamesByFile?.Add(achxFilePath.FullPath, animationNames);
+            }
+
+            // A file that can't be parsed reports no missing animation; the parse error isn't this error's to report.
+            return animationNames != null && animationNames.Contains(animationName) == false;
+        }
+
+        static HashSet<string> ReadAnimationNames(FilePath achxFilePath)
+        {
             try
             {
-                AnimationChainListSave achSave;
-                if (achxFilePath.Extension == "aseprite")
-                {
-                    achSave = AsepriteAnimationChainLoader.ToAnimationChainListSave(achxFilePath);
-                }
-                else
-                {
-                    achSave = AnimationChainListSave.FromFile(achxFilePath.FullPath);
-                }
-
-                return achSave.AnimationChains.Any(item => item.Name == animationName) == false;
+                return ReadAnimationFile(achxFilePath).AnimationChains.Select(item => item.Name).ToHashSet();
             }
             catch
             {
-                // this could be a parse error, but that's not the responsibility of this error to report
+                return null;
             }
-
-
-            return false;
         }
 
         public override bool GetIfIsFixed()

@@ -19,11 +19,15 @@ namespace OfficialPlugins.AnimationChainPlugin.Errors
 
             var project = GlueState.Self.CurrentGlueProject;
 
+            // Many objects reference the same few animation files; read each once for the whole scan.
+            var animationNamesByFile = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
+
             void AddBadReferencesFrom(GlueElement glueElement)
             {
                 foreach(var namedObject in glueElement.AllNamedObjects)
                 {
-                    if(AnimationReferenceErrorViewModel.GetIfHasError(glueElement, namedObject, out FilePath filePath, out string animationName))
+                    if(AnimationReferenceErrorViewModel.GetIfHasError(glueElement, namedObject, out FilePath filePath, out string animationName,
+                        animationNamesByFile))
                     {
                         var error = new AnimationReferenceErrorViewModel(filePath, namedObject, animationName);
                         errors.Add(error);
