@@ -569,6 +569,8 @@ namespace OfficialPlugins.MonoGameContent
                     // If the user closes the project while the startup is happening, just skip the task - no need to build
                     if (GlueState.CurrentGlueProject != null && GlueState.IsProjectLoaded(project))
                     {
+                        // The source may be a font image gumcli is still writing.
+                        FlatRedBall.Glue.IO.ExternalFileWrites.WaitIfInTask();
 
                         if (contentItem.GetIfNeedsBuild(destinationDirectory) || rebuild)
                         {

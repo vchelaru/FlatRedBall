@@ -593,59 +593,48 @@ public class MainGumPlugin : PluginBase
         tab = this.CreateTab(control, Localization.Texts.GumProperties);
     }
 
-    public static async Task HandleBuildMissingFonts()
+    public static Task HandleBuildMissingFonts() => BuildMissingFontsAsync(
+        new FilePath(AppState.Self.GumProjectSave.FullFileName),
+        GumCliRunner.RunFontsProcessAsync,
+        () => TaskManager.Self.AddAsync(AddGumFilesToProject, "Adding generated Gum fonts to the project"));
+
+    /// <summary>
+    /// Builds the fonts that are missing (it doesn't rebuild existing ones) with gumcli, then adds them to
+    /// the project. gumcli is a separate process that takes over a second even when nothing is missing
+    /// and touches no Glue project file, so it runs outside the TaskManager queue: awaiting it inside a
+    /// queued task would hold every other task until it exits. Only the project update runs as a task.
+    ///
+    /// gumcli is started and awaited on the thread pool, never the task thread. A continuation on the task
+    /// thread would make TaskManager think it was already inside a task and run the project update inline,
+    /// in the middle of whatever task was awaiting at that moment.
+    ///
+    /// While gumcli runs, queued tasks that read font files wait for it (ExternalFileWrites), so they see
+    /// the fonts fully written, as they did when this was a queued task. The tracked task is only the
+    /// process; its output is reported after, so the wait never depends on any Glue code.
+    /// </summary>
+    internal static async Task BuildMissingFontsAsync(FilePath gumProjectFile,
+        Func<FilePath, Task<GumCliResult>> runGumCliFontsProcess, Func<Task> addFontsToProject)
     {
-        // --rebuildfonts "C:\Users\Victor\Documents\TestProject2\TestProject2\Content\GumProject\GumProject.gumx"
-        var gumFileName = AppState.Self.GumProjectSave.FullFileName;
-
-        //string executable = GetGumExecutableLocation();
-
-        await TaskManager.Self.AddAsync(async () =>
+        GumCliResult result;
+        try
         {
-            {
-                //var startInfo = new System.Diagnostics.ProcessStartInfo();
+            var gumCli = Task.Run(() => runGumCliFontsProcess(gumProjectFile));
+            FlatRedBall.Glue.IO.ExternalFileWrites.Track(gumCli);
+            result = await gumCli.ConfigureAwait(false);
+        }
+        catch (Exception e)
+        {
+            GlueCommands.Self.PrintError("Could not build missing Gum fonts:\n" + e);
+            return;
+        }
 
-                //// Even though this is "rebuildfonts" it actually doesn't "rebuild". It's just a "build"
-                //startInfo.Arguments = $@"--rebuildfonts ""{gumFileName}""";
-                //startInfo.FileName = executable;
-                //startInfo.UseShellExecute = false;
+        GumCliRunner.Report(result, GumCliRunner.FontsDescription);
 
-                //GlueCommands.Self.PrintOutput($"{startInfo.FileName} {startInfo.Arguments}");
+        await addFontsToProject();
+    }
 
-                //var gumStart = DateTime.Now;
-                //var process = System.Diagnostics.Process.Start(startInfo);
-                //await process.WaitForExitAsync();
-                //var gumEnd = DateTime.Now;
-
-                //var exitCode = process.ExitCode;
-
-                //if(exitCode != 0)
-                //{
-                //    if(exitCode == 2)
-                //    {
-                //        GlueCommands.Self.PrintError("Gum has exited unexpected. Do you have the XNA runtime installed?");
-                //    }
-                //    else 
-                //    {
-                //        // Unknown error:
-                //        GlueCommands.Self.PrintError("Gum has exited with an unknown error so fonts were not generated.");
-                //    }
-                //}
-                //GlueCommands.Self.PrintOutput("Old font building: " + (gumEnd - gumStart).TotalSeconds + " seconds");
-
-            }
-
-
-
-            {
-                // Only builds the fonts that are missing; it doesn't rebuild existing ones.
-                await GumCliRunner.FontsAsync(new FilePath(gumFileName));
-            }
-
-
-        },
-        "Rebuilding Fonts");
-
+    static void AddGumFilesToProject()
+    {
         var gumRfs = GumProjectManager.Self.GetRfsForGumProject();
         if (gumRfs != null)
         {
@@ -765,7 +754,7 @@ public class MainGumPlugin : PluginBase
 
             GumPluginCommands.Self.UpdateGumToGlueResolution();
 
-            TaskManager.Self.Add(() => HandleBuildMissingFonts(), "Building missing Gum fonts");
+            _ = HandleBuildMissingFonts();
         }
     }
 

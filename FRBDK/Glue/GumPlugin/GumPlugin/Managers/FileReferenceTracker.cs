@@ -470,6 +470,12 @@ namespace GumPlugin.Managers
 
                 listToFill.Add(fontFileName);
 
+                if (topLevelOrRecursive == TopLevelOrRecursive.Recursive)
+                {
+                    // gumcli may be writing this font right now.
+                    FlatRedBall.Glue.IO.ExternalFileWrites.WaitIfInTask();
+                }
+
                 if (topLevelOrRecursive == TopLevelOrRecursive.Recursive && System.IO.File.Exists(fontFileName))
                 {
                     string fontDirectory = FileManager.GetDirectory(fontFileName);
@@ -1008,6 +1014,9 @@ namespace GumPlugin.Managers
 
         {
             string fontCacheFolder = FileManager.GetDirectory(gumProject.FullFileName) + "FontCache/";
+
+            // FontCache items are kept or removed based on the fonts on disk, which gumcli may be writing.
+            FlatRedBall.Glue.IO.ExternalFileWrites.WaitIfInTask();
 
             string[] referencedGumFiles = null;
 
