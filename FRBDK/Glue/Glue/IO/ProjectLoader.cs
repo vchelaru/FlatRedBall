@@ -45,6 +45,45 @@ namespace FlatRedBall.Glue.IO
         /// </summary>
         public EarlyProjectEvaluation EarlyEvaluation { get; set; } = new EarlyProjectEvaluation();
 
+        // The .gluj next to the .csproj Glue.exe is about to open, read during startup; taken by LoadProject.
+        (string CsprojFullPath, Task<GlueProjectSaveExtensions.PrefetchedGlueProject> Read)? earlyGlueProjectRead;
+
+        /// <summary>
+        /// Starts the .csproj evaluation and the read of the .gluj next to it, so both overlap the rest of
+        /// startup. MSBUILD_EXE_PATH must already be final. <see cref="LoadProject"/> uses each only if it opens
+        /// the same file and nothing it read has changed; otherwise it does that work itself as before.
+        /// </summary>
+        public void StartEarlyReads(string csprojFileName)
+        {
+            EarlyEvaluation.Start(csprojFileName);
+            if (!string.IsNullOrEmpty(csprojFileName) && File.Exists(csprojFileName))
+            {
+                var gluj = new FilePath(FileManager.RemoveExtension(csprojFileName) + ".gluj");
+                earlyGlueProjectRead = (Path.GetFullPath(csprojFileName), Task.Run(() => GlueProjectSaveExtensions.Prefetch(gluj)));
+            }
+        }
+
+        /// <summary>
+        /// Gives up whatever <see cref="StartEarlyReads"/> started, so a later load can't pick it up.
+        /// </summary>
+        public void DiscardEarlyReads()
+        {
+            EarlyEvaluation.TryTake(null);
+            earlyGlueProjectRead = null;
+        }
+
+        internal Task<GlueProjectSaveExtensions.PrefetchedGlueProject> TakeEarlyGlueProjectRead(string csprojFileName)
+        {
+            var taken = earlyGlueProjectRead;
+            earlyGlueProjectRead = null;
+            if (taken == null ||
+                !string.Equals(taken.Value.CsprojFullPath, Path.GetFullPath(csprojFileName), StringComparison.OrdinalIgnoreCase))
+            {
+                return null;
+            }
+            return taken.Value.Read;
+        }
+
         #endregion
 
         #region Properties
@@ -83,8 +122,7 @@ namespace FlatRedBall.Glue.IO
             ////////////////// EARLY OUT!!!!!!!!!
             if (!File.Exists(projectFileName))
             {
-                // Give up any early evaluation so a later load can't pick it up.
-                EarlyEvaluation.TryTake(null);
+                DiscardEarlyReads();
                 GlueGui.ShowException("Could not find the project " + projectFileName + "\n\nOpening Glue without a project.", "Error Loading Project", null);
                 return;
             }
@@ -111,6 +149,7 @@ namespace FlatRedBall.Glue.IO
             // Null unless startup evaluated this same, unchanged file ahead of time; CreateProject then
             // evaluates it itself.
             var earlyEvaluatedProject = EarlyEvaluation.TryTake(projectFileName);
+            var earlyGlueProject = TakeEarlyGlueProjectRead(projectFileName);
 
             TaskManager.Self.RecordTaskHistory($"--Received Load project Command {projectFileName}--");
 
@@ -137,12 +176,14 @@ namespace FlatRedBall.Glue.IO
 
             SetInitWindowText("Loading code project", initializationWindow);
 
-            // Evaluating the .csproj takes over a second, and reading the .gluj and its element files doesn't
-            // need it, so read them meanwhile. Which .gluj the project uses is only known once the .csproj
-            // is loaded; the usual one sits next to it, and Load ignores the prefetch if it turns out to be
-            // another. A failed prefetch is dropped and Load reads the files itself, reporting any error.
+            // Reading the .gluj and its element files doesn't need the .csproj, so it starts during startup
+            // (StartEarlyReads) or, failing that, here alongside the evaluation. Which .gluj the project uses is
+            // only known once the .csproj is loaded; the usual one sits next to it, and Load ignores the
+            // prefetch if it turns out to be another. A failed or stale prefetch is dropped and Load reads the
+            // files itself, reporting any error.
             var glujNextToCsproj = new FilePath(FileManager.RemoveExtension(projectFileName) + ".gluj");
-            var prefetchedGlueProject = Task.Run(() => GlueProjectSaveExtensions.Prefetch(glujNextToCsproj));
+            var prefetchedGlueProject = earlyGlueProject ??
+                Task.Run(() => GlueProjectSaveExtensions.Prefetch(glujNextToCsproj));
 
             var result = ProjectCreator.CreateProject(projectFileName, earlyEvaluatedProject);
             GlueState.Self.CurrentMainProject = (VisualStudioProject)result.Project;
@@ -302,18 +343,21 @@ namespace FlatRedBall.Glue.IO
             return FileManager.Standardize(Assembly.GetAssembly(typeof(MainGlueWindow)).Location.ToLowerInvariant());
         }
 
-        static GlueProjectSaveExtensions.PrefetchedGlueProject TakePrefetchIgnoringErrors(
+        internal static GlueProjectSaveExtensions.PrefetchedGlueProject TakePrefetchIgnoringErrors(
             Task<GlueProjectSaveExtensions.PrefetchedGlueProject> prefetch)
         {
+            GlueProjectSaveExtensions.PrefetchedGlueProject prefetched;
             try
             {
-                return prefetch.GetAwaiter().GetResult();
+                prefetched = prefetch.GetAwaiter().GetResult();
             }
             catch (Exception)
             {
                 // Load reads the files again without it and reports whatever went wrong.
                 return null;
             }
+            // A prefetch started at startup is seconds old by now; a file it read may have changed since.
+            return prefetched?.IsUnchangedOnDisk() == true ? prefetched : null;
         }
 
         private void PerformGluxLoad(string projectFileName, string glueProjectFile, InitializationWindowWpf initializationWindow,
