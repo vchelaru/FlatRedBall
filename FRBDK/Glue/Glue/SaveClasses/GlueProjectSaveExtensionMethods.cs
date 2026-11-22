@@ -224,11 +224,14 @@ public static class GlueProjectSaveExtensionMethods
 
     private static void FixCapitalizationErrors(GlueProjectSave instance, ChangedObjects changedObjects)
     {
+        // Most files share their folders, so folders are only looked up on disk once for the whole pass.
+        var exactPathResolver = new ExactPathResolver();
+
         foreach (var screen in instance.Screens)
         {
             foreach(var rfs in screen.ReferencedFiles)
             {
-                if(FixCapitalizationAccordingToFileOnDisk(rfs))
+                if(FixCapitalizationAccordingToFileOnDisk(rfs, exactPathResolver))
                 {
                     changedObjects.ChangedScreenSaves.Add(screen);
                 }
@@ -238,7 +241,7 @@ public static class GlueProjectSaveExtensionMethods
         {
             foreach (var rfs in entity.ReferencedFiles)
             {
-                if(FixCapitalizationAccordingToFileOnDisk(rfs))
+                if(FixCapitalizationAccordingToFileOnDisk(rfs, exactPathResolver))
                 {
                     changedObjects.ChangedEntitiySaves.Add(entity);
                 }
@@ -247,14 +250,14 @@ public static class GlueProjectSaveExtensionMethods
 
         foreach(var file in instance.GlobalFiles)
         {
-            if(FixCapitalizationAccordingToFileOnDisk(file))
+            if(FixCapitalizationAccordingToFileOnDisk(file, exactPathResolver))
             {
                 changedObjects.DidGlobalContentChange = true;
             }
         }
     }
 
-    private static bool FixCapitalizationAccordingToFileOnDisk(ReferencedFileSave rfs)
+    private static bool FixCapitalizationAccordingToFileOnDisk(ReferencedFileSave rfs, ExactPathResolver exactPathResolver)
     {
         //////////////////////Early Out//////////////////////////////
         if (rfs.IsCreatedByWildcard) return false;
@@ -268,7 +271,7 @@ public static class GlueProjectSaveExtensionMethods
 
         if (isFileOnDisk)
         {
-            if (TryGetExactPath(fullPath.FullPath, out string exactPath))
+            if (exactPathResolver.TryGetExactPath(fullPath.FullPath, out string exactPath))
             {
                 var relative = FileManager.MakeRelative(exactPath, GlueState.Self.ContentDirectory);
 
@@ -281,49 +284,6 @@ public static class GlueProjectSaveExtensionMethods
             }
         }
         return didChange;
-    }
-
-    static bool TryGetExactPath(string path, out string exactPath)
-    {
-        bool result = false;
-        exactPath = null;
-
-        // DirectoryInfo accepts either a file path or a directory path, and most of its properties work for either.
-        // However, its Exists property only works for a directory path.
-        DirectoryInfo directory = new DirectoryInfo(path);
-        if (File.Exists(path) || directory.Exists)
-        {
-            List<string> parts = new List<string>();
-
-            DirectoryInfo parentDirectory = directory.Parent;
-            while (parentDirectory != null)
-            {
-                FileSystemInfo entry = parentDirectory.EnumerateFileSystemInfos(directory.Name).First();
-                parts.Add(entry.Name);
-
-                directory = parentDirectory;
-                parentDirectory = directory.Parent;
-            }
-
-            // Handle the root part (i.e., drive letter or UNC \\server\share).
-            string root = directory.FullName;
-            if (root.Contains(':'))
-            {
-                root = root.ToUpper();
-            }
-            else
-            {
-                string[] rootParts = root.Split('\\');
-                root = string.Join("\\", rootParts.Select(part => CultureInfo.CurrentCulture.TextInfo.ToTitleCase(part)));
-            }
-
-            parts.Add(root);
-            parts.Reverse();
-            exactPath = Path.Combine(parts.ToArray());
-            result = true;
-        }
-
-        return result;
     }
 
     private static void FixEmptyReferencedFileSaves(this GlueProjectSave instance, bool showPopupsOnFixedErrors)
