@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
@@ -126,41 +125,33 @@ public class StateInterpolationCodegenScalingTests : IDisposable
     }
 
     [Fact]
-    public void GenerateCodeFor_ComponentWithManyVariables_GeneratesInTimeThatIsNotQuadratic()
+    public void GenerateCodeFor_ComponentWithManyVariables_ComputesMemberNamesInLinearCount()
     {
         GlueTestBootstrap.EnsureGumPluginCodeGeneratorsInitialized();
 
-        // A ratio of two sizes measured back to back, not a wall-clock bound, so a busy machine slows both
-        // alike. Ten times the variables measured 46-79 times as long with the lookup by name (the rest of
-        // component generation is not linear either) and about 350 times with the old rescan.
-        TimeGeneration(instanceCount: 150);
-        var small = TimeGeneration(instanceCount: 150);
-        var large = TimeGeneration(instanceCount: 1500);
+        // Counts member-name computations rather than timing, so it does not depend on machine load. The old
+        // lookup recomputed the name of every earlier variable for each new one, so ten times the variables
+        // meant about a hundred times the computations; a lookup by name keeps it about ten times.
+        var small = CountMemberNameComputations(instanceCount: 100);
+        var large = CountMemberNameComputations(instanceCount: 1000);
 
-        var ratio = large / small;
-        ratio.ShouldBeLessThan(150, $"150 variables: {small:F1} ms, 1500 variables: {large:F1} ms");
+        ((double)large / small).ShouldBeLessThan(15, $"100 variables: {small} names, 1000 variables: {large} names");
     }
 
-    // Best of three, so one stall on a busy machine doesn't count.
-    private double TimeGeneration(int instanceCount)
+    private int CountMemberNameComputations(int instanceCount)
     {
-        var best = double.MaxValue;
-        for (int attempt = 0; attempt < 3; attempt++)
+        Gum.Managers.ObjectFinder.Self.GumProjectSave = new GumProjectSave
         {
-            Gum.Managers.ObjectFinder.Self.GumProjectSave = new GumProjectSave
-            {
-                FullFileName = System.IO.Path.Combine(_tempProjectDirectory, "GumProject", "GumProject.gumx"),
-                Version = (int)GumProjectSave.GumxVersions.ShapeVariableExpansion
-            };
-            var component = BuildComponent(instanceCount, xValue: 5);
+            FullFileName = System.IO.Path.Combine(_tempProjectDirectory, "GumProject", "GumProject.gumx"),
+            Version = (int)GumProjectSave.GumxVersions.ShapeVariableExpansion
+        };
+        var component = BuildComponent(instanceCount, xValue: 5);
 
-            var stopwatch = Stopwatch.StartNew();
-            var source = GueDerivingClassCodeGenerator.Self.GenerateCodeFor(component);
-            stopwatch.Stop();
+        var before = SaveObjectExtensionMethods.MemberNameInCodeCallCount;
+        var source = GueDerivingClassCodeGenerator.Self.GenerateCodeFor(component);
+        var count = SaveObjectExtensionMethods.MemberNameInCodeCallCount - before;
 
-            source.ShouldContain($"bool setInst{instanceCount - 1}XFirstValue = false;");
-            best = Math.Min(best, stopwatch.Elapsed.TotalMilliseconds);
-        }
-        return best;
+        source.ShouldContain($"bool setInst{instanceCount - 1}XFirstValue = false;");
+        return count;
     }
 }
