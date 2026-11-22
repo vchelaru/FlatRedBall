@@ -184,13 +184,15 @@ namespace FlatRedBall.Graphics.Animation
         internal void Advance(double seconds)
         {
             double previous = Time;
+            int previousPass = mPass;
             Time = System.Math.Max(0, Time + seconds * Speed);
             if (Save.Loop && Length > 0)
             {
                 mPass += (int)(Time / Length) - (int)(previous / Length);
                 mPass = System.Math.Max(0, mPass);
             }
-            ApplyTracks(false);
+            // A step of exactly the sequence's length wraps without the shown time going down, so the pass says it wrapped.
+            ApplyTracks(mPass != previousPass);
         }
 
         internal void TrackVisibilityChanged()

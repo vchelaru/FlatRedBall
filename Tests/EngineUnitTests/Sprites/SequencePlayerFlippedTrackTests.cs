@@ -59,7 +59,7 @@ public class SequencePlayerFlippedTrackTests
     static Sprite PlayedTrack(AnimationChainList source, bool flipHorizontal)
     {
         var track = new SequenceTrackSave { Name = "Leg", FlipHorizontal = flipHorizontal };
-        track.Chains.Add(new SequenceChainReferenceSave { Source = "leg.achj", Chain = "Leg", Start = 0, Loops = 1 });
+        track.Chains.Add(new SequenceChainReferenceSave { Source = "leg.achj", Chain = "Leg", Start = 0 });
         var sequence = new SequenceSave { Name = "Idle", Loop = true };
         sequence.Tracks.Add(track);
         var file = new SequenceListSave();

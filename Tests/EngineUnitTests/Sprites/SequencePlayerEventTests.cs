@@ -23,10 +23,10 @@ public class SequencePlayerEventTests
         return new AnimationChainList { walk };
     }
 
-    static SequenceTrackSave Track(string name, double start, float loops, string chain = "Walk")
+    static SequenceTrackSave Track(string name, double start, double? length, string chain = "Walk")
     {
         var track = new SequenceTrackSave { Name = name };
-        track.Chains.Add(new SequenceChainReferenceSave { Source = "s", Chain = chain, Start = start, Loops = loops });
+        track.Chains.Add(new SequenceChainReferenceSave { Source = "s", Chain = chain, Start = start, Length = length });
         return track;
     }
 
@@ -45,7 +45,7 @@ public class SequencePlayerEventTests
     [Fact]
     public void Play_RaisesTheFirstFramesEventsAtOnce()
     {
-        var (sequence, raised) = Setup(Source(), Track("Body", 0, 1));
+        var (sequence, raised) = Setup(Source(), Track("Body", 0, null));
 
         sequence.Play();
 
@@ -55,7 +55,7 @@ public class SequencePlayerEventTests
     [Fact]
     public void Update_RaisesAFramesEventsWhenPlaybackEntersIt()
     {
-        var (sequence, raised) = Setup(Source(), Track("Body", 0, 1));
+        var (sequence, raised) = Setup(Source(), Track("Body", 0, null));
         sequence.Play();
         raised.Clear();
 
@@ -70,7 +70,7 @@ public class SequencePlayerEventTests
     [Fact]
     public void Update_ABigStep_RaisesEverySkippedFramesEventsInOrder()
     {
-        var (sequence, raised) = Setup(Source(), Track("Body", 0, 1));
+        var (sequence, raised) = Setup(Source(), Track("Body", 0, null));
 
         sequence.Play();
         sequence.Update(0.7);
@@ -81,7 +81,7 @@ public class SequencePlayerEventTests
     [Fact]
     public void Update_OnlyTheFirstCycleOfABlockRaisesEvents()
     {
-        var (sequence, raised) = Setup(Source(), Track("Body", 0, 3));
+        var (sequence, raised) = Setup(Source(), Track("Body", 0, 2.25));
         sequence.Play();
 
         sequence.Update(0.7);
@@ -97,7 +97,7 @@ public class SequencePlayerEventTests
     public void Update_AChainWhoseBlockIsCutShortNeverRaisesTheCutOffFrames()
     {
         // The next chain on the track (a missing one) starts at 0.2, before frame 1 would be entered at 0.25.
-        var track = Track("Body", 0, 1);
+        var track = Track("Body", 0, null);
         track.Chains.Add(new SequenceChainReferenceSave { Source = "s", Chain = "Deleted", Start = 0.2 });
         var (sequence, raised) = Setup(Source(), track);
 
@@ -110,7 +110,7 @@ public class SequencePlayerEventTests
     [Fact]
     public void ATrackThatStartsLater_RaisesItsFirstFramesEventsWhenItStarts()
     {
-        var (sequence, raised) = Setup(Source(), Track("Body", 1, 1));
+        var (sequence, raised) = Setup(Source(), Track("Body", 1, null));
 
         sequence.Play();
         sequence.Update(0.9);
@@ -123,7 +123,7 @@ public class SequencePlayerEventTests
     [Fact]
     public void ATrackThatIsOff_RaisesNothing_AndTurningItOnMidwayDoesNotCatchUp()
     {
-        var off = Track("Body", 0, 1);
+        var off = Track("Body", 0, null);
         off.Visible = false;
         var (sequence, raised) = Setup(Source(), off);
 
@@ -140,7 +140,7 @@ public class SequencePlayerEventTests
     public void PingPong_TheTurnaroundRaisesNothing_AndTheWayBackRaisesFramesAgain()
     {
         // Three 0.25 s frames: visits 0 1 2 | 3 4 5 show frames 0 1 2 | 2 1 0, so the cycle is 1.5 s.
-        var (sequence, raised) = Setup(Source(pingPong: true), Track("Body", 0, 1));
+        var (sequence, raised) = Setup(Source(pingPong: true), Track("Body", 0, null));
 
         sequence.Play();
         sequence.Update(1.4);
@@ -151,7 +151,7 @@ public class SequencePlayerEventTests
     [Fact]
     public void Rewinding_RaisesNothing()
     {
-        var (sequence, raised) = Setup(Source(), Track("Body", 0, 1));
+        var (sequence, raised) = Setup(Source(), Track("Body", 0, null));
         sequence.Play();
         sequence.SetTime(0.6);
         raised.Clear();
@@ -164,7 +164,7 @@ public class SequencePlayerEventTests
     [Fact]
     public void PlayingAgain_RaisesTheFirstFramesEventsAgain()
     {
-        var (sequence, raised) = Setup(Source(), Track("Body", 0, 1));
+        var (sequence, raised) = Setup(Source(), Track("Body", 0, null));
         sequence.Play();
         sequence.Update(0.3);
         raised.Clear();
@@ -177,7 +177,7 @@ public class SequencePlayerEventTests
     [Fact]
     public void AHandlerThatStopsTheSequence_EndsTheRestOfThatUpdate()
     {
-        var (sequence, raised) = Setup(Source(), Track("Body", 0, 1));
+        var (sequence, raised) = Setup(Source(), Track("Body", 0, null));
         sequence.EventRaised += (name, data) =>
         {
             if (name == "A")

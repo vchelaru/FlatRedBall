@@ -7,8 +7,8 @@ namespace EngineUnitTests.Graphics.Animation;
 /// <summary>The sequence timing rules. The cases are the FRB2 SequenceTimelineTests vectors, so both engines agree.</summary>
 public class SequenceTimelineTests
 {
-    static SequenceChainReferenceSave Ref(string chain, double start, float loops = 1) =>
-        new() { Source = "a.achj", Chain = chain, Start = start, Loops = loops };
+    static SequenceChainReferenceSave Ref(string chain, double start, double? length = null) =>
+        new() { Source = "a.achj", Chain = chain, Start = start, Length = length };
 
     static SequenceTrackSave Track(params SequenceChainReferenceSave[] chains)
     {
@@ -36,7 +36,7 @@ public class SequenceTimelineTests
     [Fact]
     public void PlayedLength_InterrupterMovesAway_EarlierChainPlaysInFullAgain()
     {
-        var charge = Ref("Charge", start: 0, loops: 2);
+        var charge = Ref("Charge", start: 0, length: 6);
         var hurt = Ref("Hurt", start: 1);
         var track = Track(charge, hurt);
 
@@ -71,13 +71,24 @@ public class SequenceTimelineTests
     }
 
     [Fact]
-    public void Length_FloatLoops_EndsPartWayThroughTheLastCycle()
+    public void Length_ExplicitLength_EndsThereWhateverTheCycle()
     {
         var sequence = new SequenceSave();
-        sequence.Tracks.Add(Track(Ref("Walk", start: 1, loops: 2.5f)));
+        sequence.Tracks.Add(Track(Ref("Walk", start: 1, length: 4.3)));
 
-        // A ping-pong chain of 0.4 s forward has a 0.8 s cycle.
-        SequenceTimeline.Length(sequence, _ => 0.8).ShouldBe(3, 1e-6);
+        // Editing the chain's frames changes its cycle; a set length keeps the block's end.
+        SequenceTimeline.Length(sequence, _ => 0.25).ShouldBe(5.3, 1e-9);
+        SequenceTimeline.Length(sequence, _ => 0.4).ShouldBe(5.3, 1e-9);
+    }
+
+    [Fact]
+    public void Length_NoLength_IsOneCycleOfTheCurrentChain()
+    {
+        var sequence = new SequenceSave();
+        sequence.Tracks.Add(Track(Ref("Walk", start: 1)));
+
+        SequenceTimeline.Length(sequence, _ => 0.8).ShouldBe(1.8, 1e-9);
+        SequenceTimeline.Length(sequence, _ => 1.5).ShouldBe(2.5, 1e-9);
     }
 
     [Theory]
@@ -93,9 +104,10 @@ public class SequenceTimelineTests
     }
 
     [Fact]
-    public void FullLength_NegativeLoops_IsZero()
+    public void FullLength_NegativeLengthOrMissingChain_IsZero()
     {
-        SequenceTimeline.FullLength(loops: -2, cycleLength: 3).ShouldBe(0);
+        SequenceTimeline.FullLength(length: -2, cycleLength: 3).ShouldBe(0);
+        SequenceTimeline.FullLength(length: 5, cycleLength: 0).ShouldBe(0);
     }
 
     [Fact]
@@ -125,7 +137,7 @@ public class SequenceTimelineTests
     [Fact]
     public void Length_AMissingChainCutsTheOneBeforeIt_AndNoChainsIsZero()
     {
-        var long_ = Ref("Long", start: 0, loops: 10);
+        var long_ = Ref("Long", start: 0, length: 10);
         var missing = Ref("Deleted", start: 1);
         var sequence = new SequenceSave();
         sequence.Tracks.Add(Track(long_, missing));

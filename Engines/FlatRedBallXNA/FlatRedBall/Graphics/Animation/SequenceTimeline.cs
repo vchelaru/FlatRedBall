@@ -8,7 +8,7 @@ namespace FlatRedBall.Graphics.Animation
     /// <summary>
     /// The timing rules of a sequence, matching the FlatRedBall2 AnimationEditor's SequenceTimeline so both agree.
     /// <list type="bullet">
-    /// <item>A chain reference lasts Loops cycles, or until the next chain on its track starts, whichever is first.
+    /// <item>A chain reference lasts its Length (one cycle of the chain when unset), or until the next chain on its track starts, whichever is first.
     /// The cut part never plays and is not resumed.</item>
     /// <item>The next chain is the one with the next later start. On a tie, list order decides: of two chains starting
     /// together, the earlier one in the track's list plays for zero seconds.</item>
@@ -19,10 +19,13 @@ namespace FlatRedBall.Graphics.Animation
     /// </summary>
     public static class SequenceTimeline
     {
-        /// <summary>Authored length in seconds: loops cycles of cycleLength. Never negative.</summary>
-        public static double FullLength(float loops, double cycleLength)
+        /// <summary>
+        /// Authored length in seconds: length when set, else one cycleLength. Never negative, and 0 when cycleLength is not
+        /// positive (a missing chain or target never plays).
+        /// </summary>
+        public static double FullLength(double? length, double cycleLength)
         {
-            return System.Math.Max(0, loops) * cycleLength;
+            return cycleLength > 0 ? System.Math.Max(0, length ?? cycleLength) : 0;
         }
 
         /// <summary>Seconds a chain actually plays: fullLength, cut where nextStart begins. Pass null when it is last on its track.</summary>
@@ -38,7 +41,7 @@ namespace FlatRedBall.Graphics.Animation
         /// <summary>Seconds reference plays on track after the cut rule.</summary>
         public static double PlayedLength(SequenceTrackSave track, SequenceChainReferenceSave reference, double cycleLength)
         {
-            return PlayedLength(reference.Start, FullLength(reference.Loops, cycleLength), NextStart(track, reference));
+            return PlayedLength(reference.Start, FullLength(reference.Length, cycleLength), NextStart(track, reference));
         }
 
         /// <summary>The track's references in playback order: by start, ties kept in list order.</summary>
@@ -88,7 +91,7 @@ namespace FlatRedBall.Graphics.Animation
                 }
 
                 double? next = i + 1 < ordered.Count ? ordered[i + 1].Start : (double?)null;
-                double played = PlayedLength(reference.Start, FullLength(reference.Loops, cycleLength(reference)), next);
+                double played = PlayedLength(reference.Start, FullLength(reference.Length, cycleLength(reference)), next);
                 if (time >= reference.Start + played)
                 {
                     return null;
@@ -164,7 +167,7 @@ namespace FlatRedBall.Graphics.Animation
 
         /// <summary>
         /// Seconds until the sequence ends: the latest end of any clip on any track. A chain ends where it stops playing; a
-        /// reference clip ends <see cref="SequenceReferenceSave.Loops"/> cycles of its target's own length after its start,
+        /// reference clip ends its <see cref="SequenceReferenceSave.Length"/> (one run of its target when unset) after its start,
         /// measured the same way, through every level. A reference that does not <see cref="SequenceReferences.Plays"/> (a
         /// missing target or a cycle) adds nothing. 0 when nothing plays.
         /// </summary>
@@ -201,7 +204,7 @@ namespace FlatRedBall.Graphics.Animation
                 stack.Add(target);
                 double targetLength = LengthWithin(sequences, target, cycleLength, stack);
                 stack.RemoveAt(stack.Count - 1);
-                end = System.Math.Max(end, clip.Start + FullLength(clip.Loops, targetLength));
+                end = System.Math.Max(end, clip.Start + FullLength(clip.Length, targetLength));
             }
             return end;
         }
@@ -235,7 +238,7 @@ namespace FlatRedBall.Graphics.Animation
         /// <summary>
         /// The time to sample <paramref name="target"/> at when the sequence holding <paramref name="reference"/> is at
         /// <paramref name="parentTime"/>, or null when the clip is not playing: before its start, after
-        /// <see cref="SequenceReferenceSave.Loops"/> cycles of <paramref name="targetLength"/>, or when the target has no
+        /// its <see cref="SequenceReferenceSave.Length"/> (one <paramref name="targetLength"/> when unset), or when the target has no
         /// length. The target restarts with the holder (its clock is the holder's minus the clip start). A looping target
         /// wraps at its length; one with Loop off plays once and then holds its final pose (<see cref="PoseTime"/>) until the
         /// clip ends.
@@ -251,7 +254,7 @@ namespace FlatRedBall.Graphics.Animation
                 return null;
             }
             double local = System.Math.Max(0, parentTime - reference.Start);
-            if (parentTime + Slack(parentTime) >= reference.Start + FullLength(reference.Loops, targetLength))
+            if (parentTime + Slack(parentTime) >= reference.Start + FullLength(reference.Length, targetLength))
             {
                 return null;
             }

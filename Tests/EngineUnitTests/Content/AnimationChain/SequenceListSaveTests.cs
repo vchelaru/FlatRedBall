@@ -19,7 +19,7 @@ public class SequenceListSaveTests
                 {
                   "name": "Body", "x": 10.5, "y": -4,"flipHorizontal": true, "visible": false, "continuous": true,
                   "chains": [
-                    { "source": "body/body.achj", "chain": "Walk", "start": 0.25, "loops": 2.5 }
+                    { "source": "body/body.achj", "chain": "Walk", "start": 0.25, "length": 1.25 }
                   ]
                 }
               ]
@@ -49,7 +49,7 @@ public class SequenceListSaveTests
         chain.Source.ShouldBe("body/body.achj");
         chain.Chain.ShouldBe("Walk");
         chain.Start.ShouldBe(0.25);
-        chain.Loops.ShouldBe(2.5f);
+        chain.Length.ShouldBe(1.25);
     }
 
     [Fact]
@@ -70,7 +70,7 @@ public class SequenceListSaveTests
         track.Continuous.ShouldBeFalse();
         var chain = track.Chains.Single();
         chain.Start.ShouldBe(0);
-        chain.Loops.ShouldBe(1f);
+        chain.Length.ShouldBeNull();
     }
 
     [Fact]
@@ -119,18 +119,18 @@ public class SequenceListSaveTests
     }
 
     [Fact]
-    public void FromJsonString_ReferenceTrack_ReadsSequenceStartAndLoops()
+    public void FromJsonString_ReferenceTrack_ReadsSequenceStartAndLength()
     {
         const string json = """
             { "sequences": [ { "name": "A", "tracks": [
-              { "name": "Earth", "reference": { "sequence": "B", "start": 0.5, "loops": 2 } } ] } ] }
+              { "name": "Earth", "reference": { "sequence": "B", "start": 0.5, "length": 2 } } ] } ] }
             """;
 
         var reference = SequenceListSave.FromJsonString(json).Sequences.Single().Tracks.Single().Reference!;
 
         reference.Sequence.ShouldBe("B");
         reference.Start.ShouldBe(0.5);
-        reference.Loops.ShouldBe(2);
+        reference.Length.ShouldBe(2);
     }
 
     [Fact]

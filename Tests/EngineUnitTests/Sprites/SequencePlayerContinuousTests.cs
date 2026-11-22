@@ -28,12 +28,12 @@ public class SequencePlayerContinuousTests
         return chain;
     }
 
-    static SequenceTrackSave Track(bool continuous, params (string Chain, double Start, float Loops)[] chains)
+    static SequenceTrackSave Track(bool continuous, params (string Chain, double Start, double? Length)[] chains)
     {
         var track = new SequenceTrackSave { Name = "Body", Continuous = continuous };
-        foreach (var (chain, start, loops) in chains)
+        foreach (var (chain, start, length) in chains)
         {
-            track.Chains.Add(new SequenceChainReferenceSave { Source = "body.achj", Chain = chain, Start = start, Loops = loops });
+            track.Chains.Add(new SequenceChainReferenceSave { Source = "body.achj", Chain = chain, Start = start, Length = length });
         }
         return track;
     }
@@ -53,7 +53,7 @@ public class SequencePlayerContinuousTests
     public void Update_ContinuousFractionalBlock_KeepsItsPhaseOverThreeWraps()
     {
         // Walk x 2.4 = 1.2 s, the whole sequence, so every wrap lands mid-cycle.
-        var idle = Looping(Track(true, ("Walk", 0, 2.4f)));
+        var idle = Looping(Track(true, ("Walk", 0, 1.2)));
         var sprite = idle.Tracks[0].Sprite;
 
         idle.Update(0.15);
@@ -69,7 +69,7 @@ public class SequencePlayerContinuousTests
     [Fact]
     public void Update_UnflaggedTrack_RestartsAtEveryWrap()
     {
-        var idle = Looping(Track(false, ("Walk", 0, 2.4f)));
+        var idle = Looping(Track(false, ("Walk", 0, 1.2)));
         var sprite = idle.Tracks[0].Sprite;
 
         idle.Update(1.35);
@@ -81,7 +81,7 @@ public class SequencePlayerContinuousTests
     public void Update_ContinuousTrack_ADifferentChainAtTheWrap_Restarts()
     {
         // Walk 0 to 0.5 s, then Hold x 1.4 = 0.7 s: Hold is playing when the 1.2 s sequence wraps.
-        var idle = Looping(Track(true, ("Walk", 0, 1), ("Hold", 0.5, 1.4f)));
+        var idle = Looping(Track(true, ("Walk", 0, null), ("Hold", 0.5, 0.7)));
         var sprite = idle.Tracks[0].Sprite;
 
         idle.Update(1.3);
@@ -93,7 +93,7 @@ public class SequencePlayerContinuousTests
     [Fact]
     public void SetTime_ResetsThePass_SoACarriedPhaseIsNotKept()
     {
-        var idle = Looping(Track(true, ("Walk", 0, 2.4f)));
+        var idle = Looping(Track(true, ("Walk", 0, 1.2)));
         var sprite = idle.Tracks[0].Sprite;
         idle.Update(1.35);
 

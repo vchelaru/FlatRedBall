@@ -24,15 +24,15 @@ public class SequencePlayerReferenceTests
         return new AnimationChainList { walk, spark };
     }
 
-    static SequenceTrackSave Chain(string name, string chain, double start = 0, float loops = 1)
+    static SequenceTrackSave Chain(string name, string chain, double start = 0, double? length = null)
     {
         var track = new SequenceTrackSave { Name = name };
-        track.Chains.Add(new SequenceChainReferenceSave { Source = "s", Chain = chain, Start = start, Loops = loops });
+        track.Chains.Add(new SequenceChainReferenceSave { Source = "s", Chain = chain, Start = start, Length = length });
         return track;
     }
 
-    static SequenceTrackSave Ref(string name, string sequence, double start = 0, float loops = 1, bool visible = true) =>
-        new() { Name = name, Visible = visible, Reference = new SequenceReferenceSave { Sequence = sequence, Start = start, Loops = loops } };
+    static SequenceTrackSave Ref(string name, string sequence, double start = 0, double? length = null, bool visible = true) =>
+        new() { Name = name, Visible = visible, Reference = new SequenceReferenceSave { Sequence = sequence, Start = start, Length = length } };
 
     static SequenceSave Sequence(string name, bool loop, params SequenceTrackSave[] tracks)
     {
@@ -54,7 +54,7 @@ public class SequencePlayerReferenceTests
         // Inner: 0.5 s of Walk, looping. Mid plays Inner twice from 0.5 s (ends at 1.5). Outer plays Mid once from 1 s (ends at 2.5).
         var player = Player(
             Sequence("Inner", true, Chain("Body", "Walk")),
-            Sequence("Mid", true, Ref("Dust", "Inner", start: 0.5, loops: 2)),
+            Sequence("Mid", true, Ref("Dust", "Inner", start: 0.5, length: 1.0)),
             Sequence("Outer", false, Chain("Front", "Spark"), Ref("Earth", "Mid", start: 1), Chain("Back", "Spark")));
         var outer = player["Outer"];
 
@@ -80,7 +80,7 @@ public class SequencePlayerReferenceTests
     {
         var player = Player(
             Sequence("Once", false, Chain("Body", "Walk")),
-            Sequence("Outer", false, Ref("Ref", "Once", loops: 3)));
+            Sequence("Outer", false, Ref("Ref", "Once", length: 1.5)));
         var outer = player["Outer"];
         outer.Play();
         var body = outer.Tracks["Ref/Body"].Sprite;
@@ -101,7 +101,7 @@ public class SequencePlayerReferenceTests
     {
         var player = Player(
             Sequence("Inner", true, Chain("Body", "Walk")),
-            Sequence("Outer", false, Ref("Ref", "Inner", loops: 3)));
+            Sequence("Outer", false, Ref("Ref", "Inner", length: 1.5)));
         var outer = player["Outer"];
         var raised = new List<string>();
         outer.EventRaised += (name, _) => raised.Add(name);
@@ -118,7 +118,7 @@ public class SequencePlayerReferenceTests
     [Fact]
     public void MissingTarget_PlaysNothingAndAddsNoLength()
     {
-        var player = Player(Sequence("Outer", false, Chain("Fx", "Spark"), Ref("Ghost", "NoSuchSequence", loops: 4)));
+        var player = Player(Sequence("Outer", false, Chain("Fx", "Spark"), Ref("Ghost", "NoSuchSequence", length: 4)));
         var outer = player["Outer"];
 
         outer.Play();
@@ -130,7 +130,7 @@ public class SequencePlayerReferenceTests
     [Fact]
     public void Cycle_TheReferenceThatClosesItPlaysNothing()
     {
-        var a = Sequence("A", true, Chain("Body", "Walk"), Ref("ToB", "B", loops: 2));
+        var a = Sequence("A", true, Chain("Body", "Walk"), Ref("ToB", "B", length: 1.0));
         var b = Sequence("B", true, Chain("Fx", "Spark"), Ref("ToA", "A"));
         var player = Player(a, b);
 

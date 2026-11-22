@@ -44,10 +44,10 @@ public class SequencePlayerShapeTests
         return new AnimationChainList { chain };
     }
 
-    static SequenceTrackSave Track(string chain, double start = 0, float loops = 1)
+    static SequenceTrackSave Track(string chain, double start = 0, double? length = null)
     {
         var track = new SequenceTrackSave { Name = chain };
-        track.Chains.Add(new SequenceChainReferenceSave { Source = "s", Chain = chain, Start = start, Loops = loops });
+        track.Chains.Add(new SequenceChainReferenceSave { Source = "s", Chain = chain, Start = start, Length = length });
         return track;
     }
 
@@ -70,7 +70,7 @@ public class SequencePlayerShapeTests
 
         var file = new SequenceListSave();
         var sequence = new SequenceSave { Name = "Attack" };
-        sequence.Tracks.AddRange(tracks.Length > 0 ? tracks : new[] { Track("Swing", loops: 2) });
+        sequence.Tracks.AddRange(tracks.Length > 0 ? tracks : new[] { Track("Swing", length: 2) });
         file.Sequences.Add(sequence);
         var player = new SequencePlayer(entity, new SequenceList(file, _ => swing));
         player["Attack"].Play();
@@ -168,7 +168,7 @@ public class SequencePlayerShapeTests
     public void SetTime_ACutChainsShapesDoNotDrive_AndAHiddenTracksShapesDoNotEither()
     {
         // Swing asks for 2 cycles (2 s) but is cut at 0.3 s by a missing chain on the same track.
-        var cut = Track("Swing", loops: 2);
+        var cut = Track("Swing", length: 2);
         cut.Chains.Add(new SequenceChainReferenceSave { Source = "s", Chain = "Deleted", Start = 0.3 });
         var (_, attack, entity, hitbox, _) = Setup(cut);
 
@@ -187,7 +187,7 @@ public class SequencePlayerShapeTests
     [Fact]
     public void Visible_TurningATrackOn_LetsItsFrameShapesDriveTheEntityShape()
     {
-        var off = Track("Swing", loops: 2);
+        var off = Track("Swing", length: 2);
         off.Visible = false;
         var (player, attack, entity, hitbox, _) = Setup(off);
         attack.SetTime(0.1);
