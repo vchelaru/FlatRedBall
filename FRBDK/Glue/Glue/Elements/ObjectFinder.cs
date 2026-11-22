@@ -402,7 +402,9 @@ public class ObjectFinder : IObjectFinder, IObjectFinderCore
             {
                 return true;
             }
-            else if (isListOrShapeCollection() && IsContainedInListOrAsChild(nos.ContainedObjects, objectToFind))
+            // Most objects contain nothing, and the type check is far slower than the count check. This runs for every object
+            // in the project each time an object's container is looked up, which code generation does for every object.
+            else if (nos.ContainedObjects?.Count > 0 && isListOrShapeCollection() && IsContainedInListOrAsChild(nos.ContainedObjects, objectToFind))
             {
                 return true;
             }
