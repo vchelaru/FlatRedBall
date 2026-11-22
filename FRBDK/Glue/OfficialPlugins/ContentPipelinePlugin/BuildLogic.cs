@@ -53,8 +53,19 @@ namespace OfficialPlugins.MonoGameContent
         /// </summary>
         internal Action<IReadOnlyList<ContentItem>, VisualStudioProject> BuildContentItems;
 
+        /// <summary>
+        /// Brings one file's built content up to date when a project loads. Builds here aren't caused by an edit,
+        /// so they skip the watcher reaction that live edit uses to copy a newly built file into a running game.
+        /// Tests replace it to see when each file's build starts.
+        /// </summary>
+        internal Func<VisualStudioProject, ReferencedFileSave, bool, Task> RefreshBuiltFile;
+
         public BuildLogic()
         {
+            RefreshBuiltFile = (project, referencedFile, forcePngsToContentPipeline) =>
+                UpdateFileMembershipAndBuildReferencedFile(project, referencedFile, forcePngsToContentPipeline,
+                    ignoreWatcherReactionsToBuiltFiles: true);
+
             BuildContentItem = (contentItem, project, rebuild) =>
             {
                 InstallBuilderIfNecessary(project);
@@ -147,14 +158,12 @@ namespace OfficialPlugins.MonoGameContent
                 // (reporting its error) any file the batch could not build.
                 await BuildStaleFilesInBatches(project, allReferencedFileSaves, forcePngsToContentPipeline);
 
-                foreach (var fileToBeBuilt in allReferencedFileSaves)
-                {
-                    // Builds here bring a project's content up to date when it loads. A build caused by an
-                    // edited source file still gets its watcher reaction, which live edit uses to copy the
-                    // new built file and restart the screen of a running game.
-                    await UpdateFileMembershipAndBuildReferencedFile(project, fileToBeBuilt, forcePngsToContentPipeline,
-                        ignoreWatcherReactionsToBuiltFiles: true);
-                }
+                // Every file's task is queued up front and awaited together. Awaiting each before queuing the
+                // next left the task thread idle between files (its loop waits 50 ms when the queue is empty),
+                // which on a project with 100 sounds for two platforms was most of the load's last 5 seconds.
+                await Task.WhenAll(allReferencedFileSaves
+                    .Select(fileToBeBuilt => RefreshBuiltFile(project, fileToBeBuilt, forcePngsToContentPipeline))
+                    .ToList());
             }
 
             if(forcePngsToContentPipeline)
