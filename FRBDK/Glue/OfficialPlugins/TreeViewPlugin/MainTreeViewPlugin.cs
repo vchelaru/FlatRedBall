@@ -121,12 +121,20 @@ class MainTreeViewPlugin : PluginBase
 
     private void HandleGluxLoadLate()
     {
-        GlueCommands.Self.DoOnUiThread(() =>
+        // Posted rather than run in place: the project load calls this on the UI thread, and building
+        // every node there held up the rest of the load and the queued tasks waiting on it. Posted, it
+        // runs as soon as the load returns, alongside the tasks the load queued.
+        FlatRedBall.Glue.Managers.TaskManager.UiThreadMarshaller.BeginInvoke(() =>
         {
+            var project = GlueState.Self.CurrentGlueProject;
+            if (project == null)
+            {
+                // closed before the post ran
+                return;
+            }
             pluginTab.Show();
             MainViewModel.AddDirectoryNodes();
             MainViewModel.RefreshGlobalContentTreeNodes();
-            var project = GlueState.Self.CurrentGlueProject;
             var entities = project.Entities.ToArray();
             var screens = project.Screens.ToArray();
 
