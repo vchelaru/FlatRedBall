@@ -194,7 +194,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             bool wasStopped;
             // Element generation asks whether each variable is a CSV type, which otherwise walks every file each time.
+            // It also looks up the element holding each object many times over, which otherwise searches the whole project.
             using (CustomVariableExtensionMethods.CacheCsvTypes())
+            using (ObjectFinder.Self.CacheContainingElements())
             {
                 wasStopped = GenerateAllElementCode(glueProject);
             }
