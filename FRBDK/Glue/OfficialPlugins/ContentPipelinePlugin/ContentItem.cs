@@ -156,34 +156,45 @@ namespace OfficialPlugins.MonoGameContent
 
         #endregion
 
-        public string GenerateCommandLine(VisualStudioProject project, bool rebuild = false)
+        public string GenerateCommandLine(VisualStudioProject project, bool rebuild = false) =>
+            GenerateCommandLine(new[] { this }, rebuild);
+
+        /// <summary>
+        /// One MGCB command line that builds every item. The output, intermediate and platform options apply to
+        /// the whole run, so the items must share them (see <see cref="GetBatchKey"/>); the importer, processor
+        /// and its parameters apply to the /build that follows them, and MGCB clears the processor parameters
+        /// whenever /processor is set.
+        /// </summary>
+        public static string GenerateCommandLine(IReadOnlyList<ContentItem> items, bool rebuild = false)
         {
             var stringBuilder = new StringBuilder();
+            var first = items[0];
 
-            stringBuilder.Append($"/outputDir:\"{OutputDirectory}\" /intermediateDir:\"{IntermediateDirectory}\" /platform:{Platform} /importer:{Importer} /processor:{Processor} ");
-            foreach(var parameter in ProcessorParameters)
+            stringBuilder.Append($"/outputDir:\"{first.OutputDirectory}\" /intermediateDir:\"{first.IntermediateDirectory}\" /platform:{first.Platform} ");
+
+            for (int i = 0; i < items.Count; i++)
             {
-                stringBuilder.Append($"/processorParam:{parameter} ");
+                var item = items[i];
+                if (i > 0)
+                {
+                    stringBuilder.Append(' ');
+                }
+                stringBuilder.Append($"/importer:{item.Importer} /processor:{item.Processor} ");
+                foreach (var parameter in item.ProcessorParameters)
+                {
+                    stringBuilder.Append($"/processorParam:{parameter} ");
+                }
+
+                foreach (var parameter in item.AdditionalParameters)
+                {
+                    stringBuilder.Append($"/{parameter} ");
+                }
+
+                // Keeps the case as-is: Glue no longer lower-cases paths (April 21, 2025), which matters for
+                // the case-sensitive file systems of iOS and Android.
+                stringBuilder.Append($"/build:\"{item.BuildFileName.FullPath}\"");
             }
 
-            foreach(var parameter in AdditionalParameters)
-            {
-                stringBuilder.Append($"/{parameter} ");
-            }
-
-            // iOS and Android have case sensitive file systems, so we'll to-lower it here
-            // Update April 21, 2025
-            // We no longer to-lower things
-            // throughout Glue, so we should
-            // keep the case for everything as-is.
-            string buildArgument = BuildFileName.FullPath;
-            //if(Platform == "Android" || Platform == "iOS")
-            //{
-            //    buildArgument = buildArgument.ToLowerInvariant();
-            //}
-
-
-            stringBuilder.Append($"/build:\"{buildArgument}\"");
             if(rebuild == false)
             {
                 stringBuilder.Append(" /incremental");
@@ -195,6 +206,14 @@ namespace OfficialPlugins.MonoGameContent
             return stringBuilder.ToString();
         }
 
+
+        /// <summary>
+        /// Items with the same key can be built by one MGCB run: they share the options that apply to the whole run
+        /// (/outputDir, /intermediateDir, /platform, and global switches such as /compress) and the working directory.
+        /// </summary>
+        public string GetBatchKey() => string.Join("|",
+            BuildFileName.GetDirectoryContainingThis().FullPath, OutputDirectory, IntermediateDirectory, Platform,
+            string.Join(" ", AdditionalParameters));
 
         public bool GetIfNeedsBuild(string destinationDirectory)
         {
