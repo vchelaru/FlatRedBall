@@ -59,7 +59,7 @@ full run.
 `GoldProject`/`GoldProjectCompileTests` (`GlueUnitTests/TestSupport`, `GlueUnitTests/Projects`) drive a
 checked-in sample through the real `ProjectLoader.LoadProject`, regenerate, and build. That is the only way
 to cover generators that ask *another* plugin something at generation time. Needs
-`GlueTestBootstrap.EnsureGameProjectPluginsRegistered()` and `[StaFact]`. Two non-obvious requirements:
+`GlueTestBootstrap.EnsureGameProjectPluginsRegistered()` and `[StaFact]`. Three non-obvious requirements:
 
 - **Delete `*.Generated.cs` first.** Glue doesn't rewrite a file whose content is unchanged, so otherwise
   "codegen produced this" and "codegen never ran" are indistinguishable.
@@ -68,6 +68,9 @@ to cover generators that ask *another* plugin something at generation time. Need
   nothing about these files *existing beforehand* — your working copy has them from earlier runs and a
   fresh CI clone does not. Before pushing, `find Samples -name "*.Generated.cs" -delete` and re-run, or
   CI is the first thing to see the real starting state.
+- **Load from a `TestSupport.TempDir`.** Its `Dispose` unloads the project. A project left loaded (Gum's
+  `AppState.GumProjectSave`, the project's asset types) changes the output of every later in-memory codegen
+  test in the run.
 
 ## Landmine — a WinForms sync context plus SynchronousMode deadlocks the run with no timeout
 
