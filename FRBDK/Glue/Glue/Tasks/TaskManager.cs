@@ -51,6 +51,9 @@ namespace FlatRedBall.Glue.Managers
 
         readonly BlockingCollection<KeyValuePair<ulong, GlueTaskBase>> taskQueue = new BlockingCollection<KeyValuePair<ulong, GlueTaskBase>>(new ConcurrentPriorityQueue<ulong, GlueTaskBase>());
 
+        // Released when a task is queued so an idle task loop wakes at once instead of at its next poll.
+        readonly SemaphoreSlim taskQueuedSignal = new SemaphoreSlim(0, 1);
+
         ConcurrentDictionary<string, GlueTaskBase> addOrMoveToEndTaskQueueTaskIds = new ();
 
         const string RestartTaskDisplay = "Restarting due to Glue or file change";
@@ -282,8 +285,16 @@ namespace FlatRedBall.Glue.Managers
 
         #endregion
 
-        public TaskManager()
+        public TaskManager() : this(idleLoopDelayMs: 50)
         {
+        }
+
+        /// <param name="idleLoopDelayMs">How long the task loop waits, with the queue empty, before it checks
+        /// again on its own. Queuing a task wakes it sooner.</param>
+        internal TaskManager(int idleLoopDelayMs)
+        {
+            this.idleLoopDelayMs = idleLoopDelayMs;
+
             if (SynchronousMode)
             {
                 // Tests run everything inline on the calling thread rather than a dedicated
@@ -320,13 +331,35 @@ namespace FlatRedBall.Glue.Managers
             }
         }
 
-        const int TaskManagerLoopDelayMs = 50;
+        readonly int idleLoopDelayMs;
+        volatile bool isLoopStopped;
+
+        /// <summary>
+        /// Ends the task loop and its thread. For tests that run a TaskManager of their own.
+        /// </summary>
+        internal void StopLoop()
+        {
+            isLoopStopped = true;
+            SignalTaskQueued();
+        }
+
+        void SignalTaskQueued()
+        {
+            try
+            {
+                taskQueuedSignal.Release();
+            }
+            catch (SemaphoreFullException)
+            {
+                // Already signaled; the loop takes every queued task once it wakes.
+            }
+        }
 
         async void DoTaskManagerLoop()
         {
             SyncTaskThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
 
-            while (true)
+            while (!isLoopStopped)
             {
                 // `taskQueue` is a blocking collection, which means if we call `GetConsumingEnumerable()` it will 
                 // sit here and block the thread while waiting for an item to be added to the collection. However, 
@@ -387,7 +420,9 @@ namespace FlatRedBall.Glue.Managers
                 }
                 else
                 {
-                    await Task.Delay(TaskManagerLoopDelayMs);
+                    // Wakes as soon as a task is queued. Otherwise a caller awaiting queued tasks one at a
+                    // time waited up to the whole delay for each. The timeout keeps the periodic wake.
+                    await taskQueuedSignal.WaitAsync(idleLoopDelayMs);
                 }
             }
         }
@@ -705,6 +740,7 @@ namespace FlatRedBall.Glue.Managers
 
             taskQueueCount++;
 
+            SignalTaskQueued();
         }
 
 
