@@ -451,6 +451,7 @@ namespace FlatRedBall.Glue.Managers
                     // TaskCount uses a null object.
                     if (markAsCurrent) CurrentlyRunningTask = previouslyRunningTask;
                     TaskAddedOrRemoved?.Invoke(TaskEvent.Removed, task);
+                    task.MarkFinished();
                 }
             }
 
@@ -799,10 +800,25 @@ namespace FlatRedBall.Glue.Managers
 
                 while(!IsTaskDone())
                 {
-                    const int waitDelay = 30;
-                    await Task.Delay(waitDelay);
+                    await WaitForFinishedOrRecheck(glueTask);
                 }
             }
+        }
+
+        /// <summary>
+        /// How long a waiter goes before checking a task again on its own. Waiters normally wake when the
+        /// task runs or is cancelled; this covers any other way a task stops needing to finish (a parallel
+        /// task found by name). Tests set it high.
+        /// </summary>
+        internal int WaitRecheckDelayMs { get; set; } = 1000;
+
+        Task WaitForFinishedOrRecheck(GlueTaskBase glueTask)
+        {
+            // Once Finished has completed, waiting on it again would return at once, so fall back to a short
+            // delay rather than spin.
+            return glueTask.Finished.IsCompleted
+                ? Task.Delay(30)
+                : Task.WhenAny(glueTask.Finished, Task.Delay(WaitRecheckDelayMs));
         }
 
         public async Task<T> WaitForTaskToFinish<T>(GlueTask<T> glueTask)
@@ -828,7 +844,7 @@ namespace FlatRedBall.Glue.Managers
 
                 while (!IsTaskDone())
                 {
-                    await Task.Delay(150);
+                    await WaitForFinishedOrRecheck(glueTask);
                 }
                 return (T)glueTask.Result;
             }

@@ -55,7 +55,28 @@ public abstract class GlueTaskBase
 
     public object Result { get; set; }
 
-    public bool IsCancelled { get; set; }
+    bool isCancelled;
+    public bool IsCancelled
+    {
+        get => isCancelled;
+        set
+        {
+            isCancelled = value;
+            if (value)
+            {
+                MarkFinished();
+            }
+        }
+    }
+
+    readonly TaskCompletionSource finished = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+    /// <summary>
+    /// Completes once the task has run or been cancelled, so a waiter needn't poll for it.
+    /// </summary>
+    internal Task Finished => finished.Task;
+
+    internal void MarkFinished() => finished.TrySetResult();
 
     // Named in a very particular way so that it can be checked
     // in the TaskManager and not have any name collision.
