@@ -113,6 +113,45 @@ public class ObjectFinderGetElementContainingTests : IDisposable
     }
 
     [Fact]
+    public void CacheContainingElements_Variables_GiveTheSameAnswersAsTheSearch()
+    {
+        var onEntity = new CustomVariable { Name = "Speed", Type = "float" };
+        _entity.CustomVariables.Add(onEntity);
+        var onScreen = new CustomVariable { Name = "Score", Type = "int" };
+        _screen.CustomVariables.Add(onScreen);
+        var nowhere = new CustomVariable { Name = "Nowhere", Type = "int" };
+
+        using (ObjectFinder.Self.CacheContainingElements())
+        {
+            ObjectFinder.Self.GetElementContaining(onEntity).ShouldBe(_entity);
+            ObjectFinder.Self.GetElementContaining(onScreen).ShouldBe(_screen);
+            ObjectFinder.Self.GetElementContaining(nowhere).ShouldBeNull();
+        }
+    }
+
+    [Fact]
+    public void CacheContainingElements_VariableAddedMovedOrRemovedInsideTheScope_IsFoundWhereItIsNow()
+    {
+        var moved = new CustomVariable { Name = "Moved", Type = "float" };
+        _entity.CustomVariables.Add(moved);
+        var removed = new CustomVariable { Name = "Removed", Type = "float" };
+        _entity.CustomVariables.Add(removed);
+
+        using (ObjectFinder.Self.CacheContainingElements())
+        {
+            var added = new CustomVariable { Name = "Added", Type = "float" };
+            _screen.CustomVariables.Add(added);
+            _entity.CustomVariables.Remove(moved);
+            _screen.CustomVariables.Add(moved);
+            _entity.CustomVariables.Remove(removed);
+
+            ObjectFinder.Self.GetElementContaining(added).ShouldBe(_screen);
+            ObjectFinder.Self.GetElementContaining(moved).ShouldBe(_screen);
+            ObjectFinder.Self.GetElementContaining(removed).ShouldBeNull();
+        }
+    }
+
+    [Fact]
     public void CacheContainingElements_ObjectRemovedInsideTheScope_IsNotFound()
     {
         var removed = FrbObject("Removed", "Sprite");
