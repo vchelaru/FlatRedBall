@@ -126,6 +126,13 @@ namespace FlatRedBall.Glue.IO
 
             SetInitWindowText("Loading code project", initializationWindow);
 
+            // Evaluating the .csproj takes over a second, and reading the .gluj and its element files doesn't
+            // need it, so read them meanwhile. Which .gluj the project uses is only known once the .csproj
+            // is loaded; the usual one sits next to it, and Load ignores the prefetch if it turns out to be
+            // another. A failed prefetch is dropped and Load reads the files itself, reporting any error.
+            var glujNextToCsproj = new FilePath(FileManager.RemoveExtension(projectFileName) + ".gluj");
+            var prefetchedGlueProject = Task.Run(() => GlueProjectSaveExtensions.Prefetch(glujNextToCsproj));
+
             var result = ProjectCreator.CreateProject(projectFileName);
             GlueState.Self.CurrentMainProject = (VisualStudioProject)result.Project;
 
@@ -215,7 +222,8 @@ namespace FlatRedBall.Glue.IO
 
                 var section = Section.GetAndStartContextAndTime("ProjectLoader.LoadProject");
 
-                PerformGluxLoad(projectFileName, glueProjectFile.FullPath, initializationWindow);
+                PerformGluxLoad(projectFileName, glueProjectFile.FullPath, initializationWindow,
+                    TakePrefetchIgnoringErrors(prefetchedGlueProject));
 
                 Section.EndContextAndTime();
 
@@ -283,14 +291,29 @@ namespace FlatRedBall.Glue.IO
             return FileManager.Standardize(Assembly.GetAssembly(typeof(MainGlueWindow)).Location.ToLowerInvariant());
         }
 
-        private void PerformGluxLoad(string projectFileName, string glueProjectFile, InitializationWindowWpf initializationWindow)
+        static GlueProjectSaveExtensions.PrefetchedGlueProject TakePrefetchIgnoringErrors(
+            Task<GlueProjectSaveExtensions.PrefetchedGlueProject> prefetch)
+        {
+            try
+            {
+                return prefetch.GetAwaiter().GetResult();
+            }
+            catch (Exception)
+            {
+                // Load reads the files again without it and reports whatever went wrong.
+                return null;
+            }
+        }
+
+        private void PerformGluxLoad(string projectFileName, string glueProjectFile, InitializationWindowWpf initializationWindow,
+            GlueProjectSaveExtensions.PrefetchedGlueProject prefetchedGlueProject = null)
         {
             SetInitWindowText("Loading FlatRedBall Project", initializationWindow);
 
 
             bool succeeded = true;
 
-            succeeded = DeserializeGlueProjectInternal(projectFileName, glueProjectFile, initializationWindow);
+            succeeded = DeserializeGlueProjectInternal(projectFileName, glueProjectFile, initializationWindow, prefetchedGlueProject);
 
             if (succeeded)
             {
@@ -568,12 +591,13 @@ namespace FlatRedBall.Glue.IO
             return closeInitWindow;
         }
 
-        private bool DeserializeGlueProjectInternal(string projectFileName, string glueProjectFile, InitializationWindowWpf initializationWindow)
+        private bool DeserializeGlueProjectInternal(string projectFileName, string glueProjectFile, InitializationWindowWpf initializationWindow,
+            GlueProjectSaveExtensions.PrefetchedGlueProject prefetchedGlueProject)
         {
             bool succeeded = true;
             try
             {
-                ProjectManager.GlueProjectSave = GlueProjectSaveExtensions.Load(glueProjectFile);
+                ProjectManager.GlueProjectSave = GlueProjectSaveExtensions.Load(glueProjectFile, prefetchedGlueProject);
 
                 string errors;
                 ProjectManager.GlueProjectSave.PostLoadInitialize(out errors);

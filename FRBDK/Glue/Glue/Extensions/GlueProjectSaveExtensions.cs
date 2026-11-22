@@ -511,14 +511,81 @@ public static class GlueProjectSaveExtensions
         return newFileName;
     }
 
-    public static GlueProjectSave Load(FilePath fileName)
+    /// <summary>
+    /// A .gluj and its screen and entity files, read and deserialized ahead of <see cref="Load"/>. It holds only
+    /// what reading the files produces: no plugin is notified and nothing global is touched, so it can run on
+    /// another thread while the .csproj is evaluated.
+    /// </summary>
+    public class PrefetchedGlueProject
     {
+        internal FilePath File;
+        internal string MainText;
+        internal GlueProjectSave Main;
+        internal List<(string Name, string Text, ScreenSave Screen)> Screens = new();
+        internal List<(string Name, string Text, EntitySave Entity)> Entities = new();
+    }
+
+    /// <summary>
+    /// Reads <paramref name="glujFile"/> and its element files for a later <see cref="Load"/>, or returns null
+    /// if there is no such .gluj.
+    /// </summary>
+    public static PrefetchedGlueProject Prefetch(FilePath glujFile)
+    {
+        if (glujFile.Extension != "gluj" || !glujFile.Exists())
+        {
+            return null;
+        }
+
+        var prefetched = new PrefetchedGlueProject { File = glujFile };
+        prefetched.MainText = System.IO.File.ReadAllText(glujFile.FullPath);
+        prefetched.Main = JsonConvert.DeserializeObject<GlueProjectSave>(prefetched.MainText);
+
+        if (prefetched.Main.FileVersion >= (int)GlueProjectSave.GluxVersions.SeparateJsonFilesForElements)
+        {
+            var glueDirectory = glujFile.GetDirectoryContainingThis();
+            foreach (var screenReference in prefetched.Main.ScreenReferences)
+            {
+                var path = new FilePath(glueDirectory + screenReference.Name + "." + GlueProjectSave.ScreenExtension);
+                if (path.Exists())
+                {
+                    var text = System.IO.File.ReadAllText(path.FullPath);
+                    prefetched.Screens.Add((screenReference.Name, text, JsonConvert.DeserializeObject<ScreenSave>(text)));
+                }
+            }
+            foreach (var entityReference in prefetched.Main.EntityReferences)
+            {
+                var path = new FilePath(glueDirectory + entityReference.Name + "." + GlueProjectSave.EntityExtension);
+                if (path.Exists())
+                {
+                    var text = System.IO.File.ReadAllText(path.FullPath);
+                    prefetched.Entities.Add((entityReference.Name, text, JsonConvert.DeserializeObject<EntitySave>(text)));
+                }
+            }
+        }
+
+        return prefetched;
+    }
+
+    /// <param name="prefetched">The result of <see cref="Prefetch"/>. Used only if it read
+    /// <paramref name="fileName"/>; otherwise the files are read here.</param>
+    public static GlueProjectSave Load(FilePath fileName, PrefetchedGlueProject prefetched = null)
+    {
+        if (prefetched != null && prefetched.File != fileName)
+        {
+            prefetched = null;
+        }
+
         WildcardReferencedFileSaveLogic wildcardSaveLogic = new WildcardReferencedFileSaveLogic(
             GlueCommands.Self,
             GlueCommands.Self.FileCommands);
 
         GlueProjectSave mainGlueProjectSave = null;
-        if(fileName.Extension == "glux")
+        if (prefetched != null)
+        {
+            PluginManager.ReactToGlueJsonLoadAsync(prefetched.MainText);
+            mainGlueProjectSave = prefetched.Main;
+        }
+        else if(fileName.Extension == "glux")
         {
             mainGlueProjectSave = FileManager.XmlDeserialize<GlueProjectSave>(fileName.FullPath);
         }
@@ -556,12 +623,43 @@ public static class GlueProjectSaveExtensions
 
         if(mainGlueProjectSave.FileVersion >= (int)GlueProjectSave.GluxVersions.SeparateJsonFilesForElements)
         {
-            LoadReferencedScreensAndEntities(fileName, mainGlueProjectSave);
+            if (prefetched != null)
+            {
+                AddPrefetchedScreensAndEntities(prefetched, mainGlueProjectSave);
+            }
+            else
+            {
+                LoadReferencedScreensAndEntities(fileName, mainGlueProjectSave);
+            }
 
             wildcardSaveLogic.LoadWildcardReferencedFiles(fileName, mainGlueProjectSave);
         }
 
         return mainGlueProjectSave;
+    }
+
+    // Same order, plugin notifications and null checks as LoadReferencedScreensAndEntities.
+    private static void AddPrefetchedScreensAndEntities(PrefetchedGlueProject prefetched, GlueProjectSave main)
+    {
+        foreach (var (name, text, screen) in prefetched.Screens)
+        {
+            PluginManager.ReactToScreenJsonLoadAsync(name, text);
+            if (screen != null)
+            {
+                main.Screens.Add(screen);
+            }
+        }
+        foreach (var (name, text, entity) in prefetched.Entities)
+        {
+            PluginManager.ReactToEntityJsonLoadAsync(name, text);
+            if (entity != null)
+            {
+                main.Entities.Add(entity);
+            }
+        }
+
+        main.ScreenReferences.Clear();
+        main.EntityReferences.Clear();
     }
 
     private static void LoadReferencedScreensAndEntities(FilePath glujFilePath, GlueProjectSave main)
