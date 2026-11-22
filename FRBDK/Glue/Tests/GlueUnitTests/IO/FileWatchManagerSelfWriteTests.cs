@@ -129,9 +129,11 @@ public class FileWatchManagerSelfWriteTests : IDisposable
         finally
         {
             TaskManager.Self.TaskAddedOrRemoved -= OnTask;
+            // Turns the watcher off rather than back on: an earlier test's project folder may be gone already.
+            GlueState.Self.CurrentMainProject = null;
+            FileWatchManager.UpdateToProjectDirectory();
             GlueState.Self.CurrentMainProject = originalProject;
             FileManager.DefaultRelativeDirectory = originalRelativeDirectory;
-            FileWatchManager.UpdateToProjectDirectory();
         }
     }
 
