@@ -99,6 +99,26 @@ public class CodeNodeTests : IDisposable
         files.Select(file => file.NoPath).ShouldContain("BearFactory.Generated.cs");
     }
 
+    [Fact]
+    public void GetAllCodeFilesFor_ListsOnlyTheElementsOwnFiles()
+    {
+        // Only Bear.cs and Bear.*.cs beside the element count: not another element whose name starts
+        // the same, not other file types, and not files in subfolders.
+        UseProject(p => new ClassLibraryProject(p), "Frb1Game");
+        var entities = Path.Combine(_directory, "Entities");
+        Directory.CreateDirectory(Path.Combine(entities, "Bear"));
+        foreach (var name in new[] { "Bear.cs", "Bear.Generated.cs", "Bear.Generated.Event.cs", "BearCub.cs",
+            "BearCub.Generated.cs", "Bear.glej", "Wolf.cs", @"Bear\Bear.Other.cs" })
+        {
+            File.WriteAllText(Path.Combine(entities, name), "");
+        }
+
+        var files = CodeWriter.GetAllCodeFilesFor(new EntitySave { Name = @"Entities\Bear" });
+
+        files.Select(file => file.NoPath).OrderBy(name => name)
+            .ShouldBe(new[] { "Bear.cs", "Bear.Generated.cs", "Bear.Generated.Event.cs" });
+    }
+
     [StaFact]
     public void AnEntityInAnFrb2Project_HasNoCodeNode()
     {
