@@ -129,15 +129,38 @@ public class StateInterpolationCodegenScalingTests : IDisposable
     public void GenerateCodeFor_ComponentWithManyVariables_GeneratesInTimeThatIsNotQuadratic()
     {
         GlueTestBootstrap.EnsureGumPluginCodeGeneratorsInitialized();
-        var component = BuildComponent(instanceCount: 1500, xValue: 5);
 
-        var stopwatch = Stopwatch.StartNew();
-        var source = GueDerivingClassCodeGenerator.Self.GenerateCodeFor(component);
-        stopwatch.Stop();
+        // A ratio of two sizes measured back to back, not a wall-clock bound, so a busy machine slows both
+        // alike. Ten times the variables measured 46-79 times as long with the lookup by name (the rest of
+        // component generation is not linear either) and about 350 times with the old rescan.
+        TimeGeneration(instanceCount: 150);
+        var small = TimeGeneration(instanceCount: 150);
+        var large = TimeGeneration(instanceCount: 1500);
 
-        source.ShouldContain("bool setInst1499XFirstValue = false;");
-        // Linear generation takes a few hundred ms at this size; scanning every earlier variable for each new
-        // one (the old behavior) takes many seconds.
-        stopwatch.Elapsed.TotalSeconds.ShouldBeLessThan(4, $"took {stopwatch.ElapsedMilliseconds} ms");
+        var ratio = large / small;
+        ratio.ShouldBeLessThan(150, $"150 variables: {small:F1} ms, 1500 variables: {large:F1} ms");
+    }
+
+    // Best of three, so one stall on a busy machine doesn't count.
+    private double TimeGeneration(int instanceCount)
+    {
+        var best = double.MaxValue;
+        for (int attempt = 0; attempt < 3; attempt++)
+        {
+            Gum.Managers.ObjectFinder.Self.GumProjectSave = new GumProjectSave
+            {
+                FullFileName = System.IO.Path.Combine(_tempProjectDirectory, "GumProject", "GumProject.gumx"),
+                Version = (int)GumProjectSave.GumxVersions.ShapeVariableExpansion
+            };
+            var component = BuildComponent(instanceCount, xValue: 5);
+
+            var stopwatch = Stopwatch.StartNew();
+            var source = GueDerivingClassCodeGenerator.Self.GenerateCodeFor(component);
+            stopwatch.Stop();
+
+            source.ShouldContain($"bool setInst{instanceCount - 1}XFirstValue = false;");
+            best = Math.Min(best, stopwatch.Elapsed.TotalMilliseconds);
+        }
+        return best;
     }
 }
