@@ -114,7 +114,11 @@ namespace OfficialPlugins.MonoGameContent
 
                 foreach (var fileToBeBuilt in allReferencedFileSaves)
                 {
-                    await UpdateFileMembershipAndBuildReferencedFile(project, fileToBeBuilt, forcePngsToContentPipeline);
+                    // Builds here bring a project's content up to date when it loads. A build caused by an
+                    // edited source file still gets its watcher reaction, which live edit uses to copy the
+                    // new built file and restart the screen of a running game.
+                    await UpdateFileMembershipAndBuildReferencedFile(project, fileToBeBuilt, forcePngsToContentPipeline,
+                        ignoreWatcherReactionsToBuiltFiles: true);
                 }
             }
 
@@ -137,13 +141,16 @@ namespace OfficialPlugins.MonoGameContent
         }
 
 
-        public async Task<List<FilePath>> UpdateFileMembershipAndBuildReferencedFile(VisualStudioProject project, ReferencedFileSave referencedFile, bool forcePngsToContentPipeline)
+        public async Task<List<FilePath>> UpdateFileMembershipAndBuildReferencedFile(VisualStudioProject project, ReferencedFileSave referencedFile, bool forcePngsToContentPipeline,
+            bool ignoreWatcherReactionsToBuiltFiles = false)
         {
             bool isBuilt = IsBuiltByContentPipeline(referencedFile, forcePngsToContentPipeline);
             List<FilePath> newFiles = new List<FilePath>();
             if(isBuilt)
             {
-                newFiles = await TryAddXnbReferencesAndBuild(referencedFile, project, save:true);
+                var fullFileName = GlueCommands.FileCommands.GetFullFileName(referencedFile);
+                newFiles = await TryAddXnbReferencesAndBuild(fullFileName, project, saveProjectAfterAdd: true,
+                    ignoreWatcherReactionsToBuiltFiles: ignoreWatcherReactionsToBuiltFiles);
             }
             else if(DoesProjectSupportContentPipeline(project))
             {
@@ -460,15 +467,11 @@ namespace OfficialPlugins.MonoGameContent
             }
         }
 
-        private async Task<List<FilePath>> TryAddXnbReferencesAndBuild(ReferencedFileSave referencedFile, VisualStudioProject project, bool save)
-        {
-            var fullFileName = GlueCommands.FileCommands.GetFullFileName(referencedFile);
-
-            return await TryAddXnbReferencesAndBuild(fullFileName, project, save);
-
-        }
-
-        public async Task<List<FilePath>> TryAddXnbReferencesAndBuild(FilePath rfsFilePath, VisualStudioProject project, bool saveProjectAfterAdd, bool rebuild = false)
+        /// <param name="ignoreWatcherReactionsToBuiltFiles">Whether Glue's file watcher should skip the files this
+        /// build writes. Glue registers them itself, so a reaction only regenerates code; but live edit reacts to a
+        /// built file changing, so only builds not caused by an edit pass true.</param>
+        public async Task<List<FilePath>> TryAddXnbReferencesAndBuild(FilePath rfsFilePath, VisualStudioProject project, bool saveProjectAfterAdd, bool rebuild = false,
+            bool ignoreWatcherReactionsToBuiltFiles = false)
         {
             List<FilePath> toReturn = new List<FilePath>();
 
@@ -578,12 +581,13 @@ namespace OfficialPlugins.MonoGameContent
 
                             PerformBuild(contentItem, project, rebuild);
 
-                            // Glue registers what it built below, so its own watcher reacting to these
-                            // writes would only regenerate global content code once per built file.
-                            foreach (var extension in contentItem.GetBuiltExtensions())
+                            if (ignoreWatcherReactionsToBuiltFiles)
                             {
-                                FlatRedBall.Glue.IO.FileWatchManager.IgnoreChangesWhileUnchanged(
-                                    destinationDirectory + contentItem.BuildFileName.NoPathNoExtension + "." + extension);
+                                foreach (var extension in contentItem.GetBuiltExtensions())
+                                {
+                                    FlatRedBall.Glue.IO.FileWatchManager.IgnoreChangesWhileUnchanged(
+                                        destinationDirectory + contentItem.BuildFileName.NoPathNoExtension + "." + extension);
+                                }
                             }
                         }
 
