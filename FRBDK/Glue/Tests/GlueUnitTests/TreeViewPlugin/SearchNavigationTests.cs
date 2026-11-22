@@ -255,6 +255,35 @@ public class SearchNavigationTests
     }
 
     [WpfFact]
+    public void GetTreeNodeByTag_Element_IsFoundInItsFolder()
+    {
+        var folder = AddDir(_vm.EntityRootNode, "Enemies");
+        var grunt = new FlatRedBall.Glue.SaveClasses.EntitySave { Name = "Entities\\Enemies\\Grunt" };
+        var node = new GlueElementNodeViewModel(folder, grunt, createChildrenNodes: false) { Text = "Grunt" };
+        folder.Add(node);
+
+        _vm.GetTreeNodeByTag(grunt).ShouldBeSameAs(node);
+    }
+
+    [WpfFact]
+    public void GetTreeNodeByTag_Element_DoesNotSearchInsideOtherElements()
+    {
+        // Element nodes only sit under the Screens/Entities roots and their folders. Building the tree
+        // looks up every element, so searching inside each element's objects/files/states too made the
+        // build quadratic in project size (#2422). A node tagged with an element inside another
+        // element is therefore never reached; the lookup returns the folder-level node.
+        var player = new FlatRedBall.Glue.SaveClasses.EntitySave { Name = "Entities\\Player" };
+        var grunt = new FlatRedBall.Glue.SaveClasses.EntitySave { Name = "Entities\\Grunt" };
+        var playerNode = new GlueElementNodeViewModel(_vm.EntityRootNode, player, createChildrenNodes: false) { Text = "Player" };
+        _vm.EntityRootNode.Add(playerNode);
+        AddTagged(playerNode, "GruntInsidePlayer", grunt);
+        var gruntNode = new GlueElementNodeViewModel(_vm.EntityRootNode, grunt, createChildrenNodes: false) { Text = "Grunt" };
+        _vm.EntityRootNode.Add(gruntNode);
+
+        _vm.GetTreeNodeByTag(grunt).ShouldBeSameAs(gruntNode);
+    }
+
+    [WpfFact]
     public void GetTreeNodeByTag_NullTag_DoesNotMatchUntaggedFolderNodes()
     {
         // Folder/category nodes (like a Screen's directory node) have a null Tag. An unresolved
