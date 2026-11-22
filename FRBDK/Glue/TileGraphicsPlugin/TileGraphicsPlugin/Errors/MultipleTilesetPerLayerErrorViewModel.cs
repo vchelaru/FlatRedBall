@@ -97,7 +97,13 @@ namespace TiledPlugin.Errors
         }
 
 
-        public static bool GetIfHasError(FilePath filePath, string layerName, out int? tileIndex, out int? columnCount)
+        public static bool GetIfHasError(FilePath filePath, string layerName, out int? tileIndex, out int? columnCount) =>
+            GetIfHasError(filePath, layerName, loadedMap: null, out tileIndex, out columnCount);
+
+        /// <param name="loadedMap">The map already read from <paramref name="filePath"/>, so a caller checking
+        /// every layer of a map does not parse the file again per layer. Null reads the file.</param>
+        public static bool GetIfHasError(FilePath filePath, string layerName, TiledMapSave loadedMap,
+            out int? tileIndex, out int? columnCount)
         {
             tileIndex = null;
             columnCount = null;
@@ -116,7 +122,7 @@ namespace TiledPlugin.Errors
 
 
             // 3. Layer doesn't exist in the TMX
-            var tms = TiledMapSave.FromFile(filePath.FullPath);
+            var tms = loadedMap ?? TiledMapSave.FromFile(filePath.FullPath);
             var layer = tms.Layers.FirstOrDefault(item => item.Name == layerName);
             if (layer == null)
             {
