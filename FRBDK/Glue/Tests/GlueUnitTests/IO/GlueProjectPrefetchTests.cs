@@ -81,6 +81,92 @@ public class GlueProjectPrefetchTests : IDisposable
         loaded.Entities.ShouldHaveSingleItem().Name.ShouldBe("Entities\\Boss");
     }
 
+    // Glue.exe starts reading the .gluj of the project it will open during startup (#2422), seconds before
+    // LoadProject takes it, so the load has to drop that read when anything it read has changed since.
+    FlatRedBall.Glue.IO.ProjectLoader StartEarlyReadsOfGame(out string csproj)
+    {
+        SaveProject("Level1", "Boss", Path.Combine(_tempProjectDirectory, "Game.gluj"));
+        csproj = Path.Combine(_tempProjectDirectory, "Game.csproj");
+        File.WriteAllText(csproj, "<Project />");
+
+        var loader = FlatRedBall.Glue.IO.ProjectLoader.Self;
+        _originalEarlyEvaluation ??= loader.EarlyEvaluation;
+        // Only the .gluj read is under test; MSBuild isn't needed for it.
+        loader.EarlyEvaluation = new FlatRedBall.Glue.VSHelpers.Projects.EarlyProjectEvaluation(_ => null!);
+        loader.StartEarlyReads(csproj);
+        return loader;
+    }
+
+    FlatRedBall.Glue.VSHelpers.Projects.EarlyProjectEvaluation? _originalEarlyEvaluation;
+
+    void RestoreEarlyEvaluation()
+    {
+        if (_originalEarlyEvaluation != null)
+        {
+            FlatRedBall.Glue.IO.ProjectLoader.Self.DiscardEarlyReads();
+            FlatRedBall.Glue.IO.ProjectLoader.Self.EarlyEvaluation = _originalEarlyEvaluation;
+        }
+    }
+
+    [Fact]
+    public void StartupRead_ShouldBeTakenByTheLoad_WhenNothingChanged()
+    {
+        try
+        {
+            var loader = StartEarlyReadsOfGame(out var csproj);
+
+            var prefetched = FlatRedBall.Glue.IO.ProjectLoader.TakePrefetchIgnoringErrors(loader.TakeEarlyGlueProjectRead(csproj));
+
+            prefetched.ShouldNotBeNull();
+            GlueProjectSaveExtensions.Load(new FilePath(Path.Combine(_tempProjectDirectory, "Game.gluj")), prefetched)
+                .Entities.ShouldHaveSingleItem().Name.ShouldBe("Entities\\Boss");
+            // Taken once only.
+            loader.TakeEarlyGlueProjectRead(csproj).ShouldBeNull();
+        }
+        finally
+        {
+            RestoreEarlyEvaluation();
+        }
+    }
+
+    [Fact]
+    public void StartupRead_ShouldBeDropped_WhenAnElementFileChangedSince()
+    {
+        try
+        {
+            var loader = StartEarlyReadsOfGame(out var csproj);
+            var read = loader.TakeEarlyGlueProjectRead(csproj);
+            read.ShouldNotBeNull();
+            read.Wait();
+
+            var entityFile = Directory.GetFiles(_tempProjectDirectory, "Boss.glej", SearchOption.AllDirectories).ShouldHaveSingleItem();
+            File.SetLastWriteTimeUtc(entityFile, File.GetLastWriteTimeUtc(entityFile).AddSeconds(5));
+
+            FlatRedBall.Glue.IO.ProjectLoader.TakePrefetchIgnoringErrors(read).ShouldBeNull();
+        }
+        finally
+        {
+            RestoreEarlyEvaluation();
+        }
+    }
+
+    [Fact]
+    public void StartupRead_ShouldNotBeTaken_ForAnotherProject()
+    {
+        try
+        {
+            var loader = StartEarlyReadsOfGame(out _);
+            var other = Path.Combine(_tempProjectDirectory, "Other.csproj");
+            File.WriteAllText(other, "<Project />");
+
+            loader.TakeEarlyGlueProjectRead(other).ShouldBeNull();
+        }
+        finally
+        {
+            RestoreEarlyEvaluation();
+        }
+    }
+
     [Fact]
     public void Prefetch_ShouldReturnNull_WhenThereIsNoGluj()
     {

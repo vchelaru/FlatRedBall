@@ -523,6 +523,16 @@ public static class GlueProjectSaveExtensions
         internal GlueProjectSave Main;
         internal List<(string Name, string Text, ScreenSave Screen)> Screens = new();
         internal List<(string Name, string Text, EntitySave Entity)> Entities = new();
+        // Every file the prefetch looked at, with its write time before it was read (MinValue if missing).
+        internal List<(string Path, DateTime LastWriteTimeUtc)> FilesRead = new();
+
+        internal static DateTime Stamp(string path) =>
+            System.IO.File.Exists(path) ? System.IO.File.GetLastWriteTimeUtc(path) : DateTime.MinValue;
+
+        /// <summary>
+        /// Whether no file the prefetch read (or found missing) has been written, created or deleted since.
+        /// </summary>
+        public bool IsUnchangedOnDisk() => FilesRead.All(file => Stamp(file.Path) == file.LastWriteTimeUtc);
     }
 
     /// <summary>
@@ -537,6 +547,7 @@ public static class GlueProjectSaveExtensions
         }
 
         var prefetched = new PrefetchedGlueProject { File = glujFile };
+        prefetched.FilesRead.Add((glujFile.FullPath, PrefetchedGlueProject.Stamp(glujFile.FullPath)));
         prefetched.MainText = System.IO.File.ReadAllText(glujFile.FullPath);
         prefetched.Main = JsonConvert.DeserializeObject<GlueProjectSave>(prefetched.MainText);
 
@@ -546,6 +557,7 @@ public static class GlueProjectSaveExtensions
             foreach (var screenReference in prefetched.Main.ScreenReferences)
             {
                 var path = new FilePath(glueDirectory + screenReference.Name + "." + GlueProjectSave.ScreenExtension);
+                prefetched.FilesRead.Add((path.FullPath, PrefetchedGlueProject.Stamp(path.FullPath)));
                 if (path.Exists())
                 {
                     var text = System.IO.File.ReadAllText(path.FullPath);
@@ -555,6 +567,7 @@ public static class GlueProjectSaveExtensions
             foreach (var entityReference in prefetched.Main.EntityReferences)
             {
                 var path = new FilePath(glueDirectory + entityReference.Name + "." + GlueProjectSave.EntityExtension);
+                prefetched.FilesRead.Add((path.FullPath, PrefetchedGlueProject.Stamp(path.FullPath)));
                 if (path.Exists())
                 {
                     var text = System.IO.File.ReadAllText(path.FullPath);
