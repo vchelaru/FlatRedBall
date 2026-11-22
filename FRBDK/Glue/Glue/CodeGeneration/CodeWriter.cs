@@ -2433,8 +2433,21 @@ namespace FlatRedBallAddOns.Entities
         string directory = FileManager.GetDirectory(GlueCommands.Self.GetAbsoluteFileName(element.Name + "/", false));
 
 
-        List<FilePath> foundCsFiles = FileManager.GetAllFilesInDirectory(directory, "cs")
-            .Select(item => new FilePath(item)).ToList();
+        // Only files named after the element, directly in its own folder, can pass the check below, so
+        // ask the file system for just those. Enumerating the whole folder tree here cost the tree view
+        // a full scan of Entities\ or Screens\ per element when a project loads.
+        List<FilePath> foundCsFiles = new List<FilePath>();
+        if (System.IO.Directory.Exists(directory))
+        {
+            string namePattern = FileManager.RemovePath(element.Name) + ".*";
+            foreach (var file in System.IO.Directory.GetFiles(directory, namePattern))
+            {
+                if (FileManager.GetExtension(file) == "cs")
+                {
+                    foundCsFiles.Add(new FilePath(file));
+                }
+            }
+        }
 
         for (int i = foundCsFiles.Count - 1; i > -1; i--)
         {
