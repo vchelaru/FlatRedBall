@@ -11,6 +11,16 @@ section covers the `SynchronousMode` test seam that collapses this to inline seq
 which is why ordering bugs here are invisible under that mode and need a real (non-synchronous) queue
 to pin.
 
+## Only project-file work has to be serial
+
+Every plugin reads and writes the same project files: the `.gluj`/`.glej` files, the `.csproj`, and the
+`.gumx` and its element files. The single queue thread is what stops one plugin's change to those files
+from wiping out another's, so anything that reads or modifies them runs as a queued task. Work that
+touches none of them (generating Gum fonts, writing other files to disk, running an external tool) can
+run off the queue and in parallel, then queue a short follow-up task that registers the result, such as
+adding the files to the `.csproj` or reloading the Gum project. Keeping a task slot for the whole of such
+work stalls every plugin for nothing (see "An awaited task holds the whole queue" below).
+
 ## Tiers beat enqueue order
 
 `TaskExecutionPreference` (`Asap` / `Fifo` / `AddOrMoveToEnd`) are fixed numeric tiers far apart
