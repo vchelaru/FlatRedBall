@@ -18,7 +18,6 @@ namespace FlatRedBall.Glue.CodeGeneration
         // and a NamedObjectSave to have the NamedObjectSaveCodeGenerator
         // handle that code generation for us.
         static NamedObjectSaveCodeGenerator mNamedObjectCodeGenerator = new NamedObjectSaveCodeGenerator();
-        static NamedObjectSave mListNamedObjectSave = new NamedObjectSave();
 
         public override ICodeBlock GenerateFields(ICodeBlock codeBlock, IElement element)
         {
@@ -175,13 +174,16 @@ namespace FlatRedBall.Glue.CodeGeneration
                 {
                     codeBlock.Line("ScrollableListActivity();");
 
-                    mListNamedObjectSave.SourceType = SourceType.FlatRedBallType;
-                    mListNamedObjectSave.SourceClassType = "PositionedObjectList<>";
-                    mListNamedObjectSave.SourceClassGenericType = entitySave.ItemType;
+                    // A new one per call: several elements are built at once.
+                    var listNamedObjectSave = new NamedObjectSave
+                    {
+                        SourceType = SourceType.FlatRedBallType,
+                        SourceClassType = "PositionedObjectList<>",
+                        SourceClassGenericType = entitySave.ItemType,
+                        InstanceName = "mScrollableItems"
+                    };
 
-                    mListNamedObjectSave.InstanceName = "mScrollableItems";
-
-                    NamedObjectSaveCodeGenerator.GetActivityForNamedObject(mListNamedObjectSave, codeBlock);
+                    NamedObjectSaveCodeGenerator.GetActivityForNamedObject(listNamedObjectSave, codeBlock);
                 }
             }
 

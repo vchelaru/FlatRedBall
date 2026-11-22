@@ -160,9 +160,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         }
         
         /// <summary>
-        /// Reports a failure from <see cref="CodeWriter.GenerateCode"/> instead of letting it disappear.
+        /// Reports a failure from <see cref="CodeWriter.SaveGeneratedCode"/> instead of letting it disappear.
         ///
-        /// GenerateCode is an <c>async Task</c> and the loops below cannot await it - they run on
+        /// SaveGeneratedCode is an <c>async Task</c> and the loop below cannot await it - they run on
         /// TaskManager's own thread, which Nito.AsyncEx's <c>AsyncContext.Run</c> gives a synchronization
         /// context, so blocking on the returned task would deadlock a real project load. Discarding the task
         /// is what used to happen, and it meant an exception mid-generation was captured into that task and
@@ -245,54 +245,78 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         /// <summary>
         /// Generates every screen and entity. Returns true if generation stopped because the project is closing.
         /// </summary>
-        static bool GenerateAllElementCode(GlueProjectSave glueProject)
+        internal static bool GenerateAllElementCode(GlueProjectSave glueProject)
         {
-            foreach (var screen in glueProject.Screens)
-            {
-                #region Check for exiting the function becuase Glue is closing
-
-                if (ProjectManager.WantsToCloseProject)
-                {
-                    PluginManager.ReceiveOutput("Stopping generation because the project is closing");
-                    return true;
-                }
-
-                #endregion
-
-                ReportIfGenerationFails(CodeWriter.GenerateCode(screen), screen);
-            }
-
-
-            // not sure which is faster:
-            // Currently the referenced file dictionary makes this not work well:
-            //Parallel.ForEach(GlueState.Self.CurrentGlueProject.Entities, (entity) =>
-            //    {
-            //        CodeWriter.GenerateCode(entity);
-            //    });
-
+            List<GlueElement> elements;
             // Let's make this thread safe:
-            IEnumerable<EntitySave> entityList = null;
             lock (glueProject.Entities)
             {
-                entityList = glueProject.Entities.Where(item => true).ToList();
+                elements = glueProject.Screens.Cast<GlueElement>().Concat(glueProject.Entities).ToList();
             }
 
-            foreach (var entity in entityList)
-            {
-                #region Check for exiting the function becuase Glue is closing
+            // Same as CodeWriter.GenerateCode for each element, except that building each element's code, the
+            // bulk of the time, runs for several elements at once. Everything that changes the element, calls
+            // plugins, writes files or adds to the project still runs here on the task thread, in element order,
+            // so files and project entries come out exactly as they did one element at a time.
+            var failures = new Exception[elements.Count];
+            var contents = new string[elements.Count];
 
-                if (ProjectManager.WantsToCloseProject)
+            for (int i = 0; i < elements.Count; i++)
+            {
+                if (StopBecauseProjectIsClosing())
                 {
-                    PluginManager.ReceiveOutput("Stopping generation because the project is closing");
+                    return true;
+                }
+                try
+                {
+                    CodeWriter.PrepareToGenerateCode(elements[i]);
+                }
+                catch (Exception e)
+                {
+                    failures[i] = e;
+                }
+            }
+
+            TaskManager.Self.RunInParallel(Enumerable.Range(0, elements.Count), i =>
+            {
+                if (failures[i] != null || ProjectManager.WantsToCloseProject)
+                {
+                    return;
+                }
+                try
+                {
+                    contents[i] = CodeWriter.GetGeneratedCode(elements[i]);
+                }
+                catch (Exception e)
+                {
+                    failures[i] = e;
+                }
+            });
+
+            for (int i = 0; i < elements.Count; i++)
+            {
+                if (StopBecauseProjectIsClosing())
+                {
                     return true;
                 }
 
-                #endregion
-
-                ReportIfGenerationFails(CodeWriter.GenerateCode(entity), entity);
+                var save = failures[i] != null
+                    ? Task.FromException(failures[i])
+                    : CodeWriter.SaveGeneratedCode(elements[i], contents[i]);
+                ReportIfGenerationFails(save, elements[i]);
             }
 
             return false;
+
+            static bool StopBecauseProjectIsClosing()
+            {
+                if (ProjectManager.WantsToCloseProject)
+                {
+                    PluginManager.ReceiveOutput("Stopping generation because the project is closing");
+                    return true;
+                }
+                return false;
+            }
         }
 
         public void GenerateCustomClassesCode()

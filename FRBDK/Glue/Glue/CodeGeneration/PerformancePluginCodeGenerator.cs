@@ -12,19 +12,25 @@ namespace FlatRedBall.Glue.Plugins.Performance
 {
     internal class PerformancePluginCodeGenerator
     {
+        // Per-thread: these hold the element being built, and several elements are built at once.
+        [ThreadStatic]
+        static IElement saveObject;
+        [ThreadStatic]
+        static ICodeBlock codeBlock;
+        [ThreadStatic]
+        static string mLastName;
+
         public static IElement SaveObject
         {
-            get;
-            set;
+            get => saveObject;
+            set => saveObject = value;
         }
 
         public static ICodeBlock CodeBlock
         {
-            get;
-            set;
+            get => codeBlock;
+            set => codeBlock = value;
         }
-
-        static string mLastName;
 
         public static bool IsEnabled
         {
