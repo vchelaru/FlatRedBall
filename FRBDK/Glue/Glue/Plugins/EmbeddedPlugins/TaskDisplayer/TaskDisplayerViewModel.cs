@@ -79,8 +79,21 @@ public class TaskDisplayerViewModel : ViewModel
         }
     }
 
+    // A project load runs hundreds of tasks, each raising several events. Refreshing the display on
+    // every one posted thousands of UI messages from the task thread, so the display refreshes at most
+    // every 100 ms instead, and always once after the last change.
+    readonly ThrottledAction refreshTaskTexts;
+
     public TaskDisplayerViewModel()
     {
+        refreshTaskTexts = new ThrottledAction(
+            () => TaskManager.Self.BeginOnUiThread(() =>
+            {
+                this.NotifyPropertyChanged(nameof(StatusText));
+                this.NotifyPropertyChanged(nameof(CurrentTaskText));
+            }),
+            TimeSpan.FromMilliseconds(100));
+
         TaskManager.Self.TaskAddedOrRemoved += HandleSyncTaskAddedOrRemoved;
         PluginManager.PluginMethodCalled += HandlePluginMethodCalled;
     }
@@ -108,8 +121,7 @@ public class TaskDisplayerViewModel : ViewModel
 
     private void HandleSyncTaskAddedOrRemoved(TaskEvent taskEvent, GlueTaskBase glueTask)
     {
-        this.NotifyPropertyChanged(nameof(StatusText));
-        this.NotifyPropertyChanged(nameof(CurrentTaskText));
+        refreshTaskTexts.Request();
 
         if(LogTaskDetailsToOutput)
         {
