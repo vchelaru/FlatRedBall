@@ -40,6 +40,11 @@ namespace FlatRedBall.Glue.IO
         private static string mLastLoadedFilename; //to prevent projects from loading/syncing twice
         private IProjectCommands _projectCommands;
 
+        /// <summary>
+        /// Started by Glue.exe's startup for the project it is about to open, taken by <see cref="LoadProject"/>.
+        /// </summary>
+        public EarlyProjectEvaluation EarlyEvaluation { get; set; } = new EarlyProjectEvaluation();
+
         #endregion
 
         #region Properties
@@ -78,6 +83,8 @@ namespace FlatRedBall.Glue.IO
             ////////////////// EARLY OUT!!!!!!!!!
             if (!File.Exists(projectFileName))
             {
+                // Give up any early evaluation so a later load can't pick it up.
+                EarlyEvaluation.TryTake(null);
                 GlueGui.ShowException("Could not find the project " + projectFileName + "\n\nOpening Glue without a project.", "Error Loading Project", null);
                 return;
             }
@@ -100,6 +107,10 @@ namespace FlatRedBall.Glue.IO
                     $"{FileManager.RemovePath(projectFileName)} - it is the FlatRedBall project of the two.");
                 projectFileName = frb2GameProject;
             }
+
+            // Null unless startup evaluated this same, unchanged file ahead of time; CreateProject then
+            // evaluates it itself.
+            var earlyEvaluatedProject = EarlyEvaluation.TryTake(projectFileName);
 
             TaskManager.Self.RecordTaskHistory($"--Received Load project Command {projectFileName}--");
 
@@ -133,7 +144,7 @@ namespace FlatRedBall.Glue.IO
             var glujNextToCsproj = new FilePath(FileManager.RemoveExtension(projectFileName) + ".gluj");
             var prefetchedGlueProject = Task.Run(() => GlueProjectSaveExtensions.Prefetch(glujNextToCsproj));
 
-            var result = ProjectCreator.CreateProject(projectFileName);
+            var result = ProjectCreator.CreateProject(projectFileName, earlyEvaluatedProject);
             GlueState.Self.CurrentMainProject = (VisualStudioProject)result.Project;
 
             bool shouldLoad = result.Project != null;

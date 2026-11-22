@@ -352,6 +352,11 @@ public partial class MainGlueWindow : Form, IMainGlueWindow
         // Plugins may evaluate projects in StartUp, so MSBUILD_EXE_PATH must be final first.
         MsBuildEnvironmentStep.EnsureCompleted();
 
+        // Evaluating the game .csproj takes over a second and needs only MSBUILD_EXE_PATH, so it runs
+        // while plugins load. The load uses it only if it opens this same file.
+        ProjectLoader.Self.GetCsprojToLoad(out var csprojToEvaluateEarly);
+        ProjectLoader.Self.EarlyEvaluation.Start(csprojToEvaluateEarly);
+
         SetScreenMessage("Loading Plugins");
 
         var pluginsToIgnore = (GlueState.Self.CurrentPluginSettings != null)
@@ -653,6 +658,10 @@ public partial class MainGlueWindow : Form, IMainGlueWindow
             }
 
             await ProjectLoader.Self.LoadProject(csprojToLoad, initializationWindow);
+        }
+        else
+        {
+            ProjectLoader.Self.EarlyEvaluation.TryTake(null);
         }
     }
 
