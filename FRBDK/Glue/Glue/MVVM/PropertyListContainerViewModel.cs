@@ -329,6 +329,8 @@ namespace FlatRedBall.Glue.MVVM
 
         public virtual void UpdateFromGlueObject()
         {
+            // Restored rather than cleared at the end, so a caller that set it around a larger refresh keeps it.
+            var wasUpdatingFromGlueObject = IsUpdatingFromGlueObject;
             IsUpdatingFromGlueObject = true;
 
             var syncedKvps =
@@ -468,7 +470,7 @@ namespace FlatRedBall.Glue.MVVM
                 }
             }
 
-            IsUpdatingFromGlueObject = false;
+            IsUpdatingFromGlueObject = wasUpdatingFromGlueObject;
 
         }
 
