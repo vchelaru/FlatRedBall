@@ -46,7 +46,12 @@ public class ErrorCreateRemoveLogic : ErrorReporterBase
         AddFileParseErrors(filePath, errorListViewModel);
     }
 
-    private static void TryAddIndirectMissingFileErrors(List<ErrorViewModel> errorList, ReferencedFileSave file)
+    // A scan over every referenced file walks the same reference trees again from each file that
+    // references them (one Gum project is reached from many files). cleanFiles holds the files whose whole
+    // tree a walk in the same scan already checked and found nothing in, so later walks skip them: walking
+    // them again could only find nothing again. Pass null to check without remembering.
+    private static void TryAddIndirectMissingFileErrors(List<ErrorViewModel> errorList, ReferencedFileSave file,
+        HashSet<FilePath> cleanFiles = null)
     {
 
         List<FilePath> referenceStack = new List<FilePath>();
@@ -54,19 +59,32 @@ public class ErrorCreateRemoveLogic : ErrorReporterBase
         var absoluteFile = GlueCommands.Self.GetAbsoluteFileName(file);
         referenceStack.Add(absoluteFile);
 
-        TryAddIndirectMissingFileErrors(errorList, file, absoluteFile, referenceStack);
+        TryAddIndirectMissingFileErrors(errorList, file, absoluteFile, referenceStack, cleanFiles);
     }
 
-    private static void TryAddOutOfProjectFileErrors(List<ErrorViewModel> errorList, ReferencedFileSave file)
+    private static void TryAddOutOfProjectFileErrors(List<ErrorViewModel> errorList, ReferencedFileSave file,
+        HashSet<FilePath> cleanFiles = null)
     {
         List<FilePath> referenceStack = new List<FilePath>();
         var absoluteFile = GlueCommands.Self.GetAbsoluteFileName(file);
         referenceStack.Add(absoluteFile);
-        TryAddOutOfProjectFileErrors(errorList, file, absoluteFile, referenceStack);
+        TryAddOutOfProjectFileErrors(errorList, file, absoluteFile, referenceStack, cleanFiles);
     }
 
-    private static void TryAddIndirectMissingFileErrors(List<ErrorViewModel> errorList, ReferencedFileSave rootRfs, FilePath absoluteFile, List<FilePath> referenceStack)
+    /// <returns>Whether the walk below absoluteFile found no error and skipped no file for already being on
+    /// the stack. Only then does the same walk from another file find nothing either, so only then is
+    /// absoluteFile remembered as clean.</returns>
+    private static bool TryAddIndirectMissingFileErrors(List<ErrorViewModel> errorList, ReferencedFileSave rootRfs, FilePath absoluteFile, List<FilePath> referenceStack,
+        HashSet<FilePath> cleanFiles)
     {
+        if (cleanFiles != null && cleanFiles.Contains(absoluteFile))
+        {
+            return true;
+        }
+
+        var errorCountBefore = errorList.Count;
+        var skippedAny = false;
+
         var referencedFiles = GlueCommands.Self.FileCommands.GetFilesReferencedBy(absoluteFile.FullPath, EditorObjects.Parsing.TopLevelOrRecursive.TopLevel);
 
         foreach(var referencedFile in referencedFiles)
@@ -86,16 +104,40 @@ public class ErrorCreateRemoveLogic : ErrorReporterBase
                 {
                     referenceStack.Add(referencedFile);
 
-                    TryAddIndirectMissingFileErrors(errorList, rootRfs, referencedFile, referenceStack);
+                    if (!TryAddIndirectMissingFileErrors(errorList, rootRfs, referencedFile, referenceStack, cleanFiles))
+                    {
+                        skippedAny = true;
+                    }
 
                     referenceStack.RemoveAt(referenceStack.Count - 1);
                 }
             }
+            else
+            {
+                skippedAny = true;
+            }
         }
+
+        var isClean = !skippedAny && errorList.Count == errorCountBefore;
+        if (isClean)
+        {
+            cleanFiles?.Add(absoluteFile);
+        }
+        return isClean;
     }
 
-    private static void TryAddOutOfProjectFileErrors(List<ErrorViewModel> errorList, ReferencedFileSave rootRfs, FilePath absoluteFile, List<FilePath> referenceStack)
+    /// <returns>See the indirect-missing overload.</returns>
+    private static bool TryAddOutOfProjectFileErrors(List<ErrorViewModel> errorList, ReferencedFileSave rootRfs, FilePath absoluteFile, List<FilePath> referenceStack,
+        HashSet<FilePath> cleanFiles)
     {
+        if (cleanFiles != null && cleanFiles.Contains(absoluteFile))
+        {
+            return true;
+        }
+
+        var errorCountBefore = errorList.Count;
+        var skippedAny = false;
+
         var referencedFiles = GlueCommands.Self.FileCommands.GetFilesReferencedBy(absoluteFile.FullPath, EditorObjects.Parsing.TopLevelOrRecursive.TopLevel);
 
         var projectDirectory = GlueState.Self.CurrentGlueProjectDirectory;
@@ -117,12 +159,26 @@ public class ErrorCreateRemoveLogic : ErrorReporterBase
                 {
                     referenceStack.Add(referencedFile);
 
-                    TryAddOutOfProjectFileErrors(errorList, rootRfs, referencedFile, referenceStack);
+                    if (!TryAddOutOfProjectFileErrors(errorList, rootRfs, referencedFile, referenceStack, cleanFiles))
+                    {
+                        skippedAny = true;
+                    }
 
                     referenceStack.RemoveAt(referenceStack.Count - 1);
                 }
             }
+            else
+            {
+                skippedAny = true;
+            }
         }
+
+        var isClean = !skippedAny && errorList.Count == errorCountBefore;
+        if (isClean)
+        {
+            cleanFiles?.Add(absoluteFile);
+        }
+        return isClean;
     }
 
 
@@ -188,9 +244,10 @@ public class ErrorCreateRemoveLogic : ErrorReporterBase
         // The easiest way to do this is to perform a full scan and not add dupes:
         var indirectErrorsFound = new List<ErrorViewModel>();
         var allFiles = GlueState.Self.GetAllReferencedFiles();
+        var cleanFiles = new HashSet<FilePath>();
         foreach (var file in allFiles)
         {
-            TryAddIndirectMissingFileErrors(indirectErrorsFound, file);
+            TryAddIndirectMissingFileErrors(indirectErrorsFound, file, cleanFiles);
         }
 
         // now add them:
@@ -213,10 +270,11 @@ public class ErrorCreateRemoveLogic : ErrorReporterBase
         var errorsFound = new List<ErrorViewModel>();
 
         var allFiles = GlueState.Self.GetAllReferencedFiles();
+        var cleanFiles = new HashSet<FilePath>();
 
         foreach (var file in allFiles)
         {
-            TryAddOutOfProjectFileErrors(errorsFound, file);
+            TryAddOutOfProjectFileErrors(errorsFound, file, cleanFiles);
         }
 
         // now add them:
@@ -313,14 +371,16 @@ public class ErrorCreateRemoveLogic : ErrorReporterBase
         List<ErrorViewModel> errorList = new List<ErrorViewModel>();
 
         var allFiles = GlueState.Self.GetAllReferencedFiles();
+        var cleanForMissingFiles = new HashSet<FilePath>();
+        var cleanForOutOfProject = new HashSet<FilePath>();
 
         foreach (var file in allFiles)
         {
             TryAddDirectMissingFileError(errorList, file);
 
-            TryAddIndirectMissingFileErrors(errorList, file);
+            TryAddIndirectMissingFileErrors(errorList, file, cleanForMissingFiles);
 
-            TryAddOutOfProjectFileErrors(errorList, file);
+            TryAddOutOfProjectFileErrors(errorList, file, cleanForOutOfProject);
         }
 
         AddAllFileParseErrors(errorList);
