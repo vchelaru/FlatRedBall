@@ -820,7 +820,21 @@ public class PluginManager : PluginManagerBase
         return generalResponse;
     }
 
-    internal static void GetFilesNeededOnDiskBy(string absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive, HashSet<FilePath> listToFill)
+    /// <summary>
+    /// Whether the files a file needs on disk are its referenced files (<see cref="GetFilesReferencedBy"/>) plus
+    /// what the plugins with their own <see cref="PluginBase.GetFilesNeededOnDiskBy"/> add. True unless a plugin
+    /// has both handlers, since such a plugin's referenced files are not part of what it needs on disk.
+    /// </summary>
+    internal static bool AreFilesNeededOnDiskAReferencedFilesSuperset =>
+        !mInstances.ToList().Any(manager => manager.PluginContainers.Any(pair =>
+            pair.Value.IsEnabled &&
+            pair.Key is PluginBase plugin &&
+            plugin.GetFilesNeededOnDiskBy != null && plugin.FillWithReferencedFiles != null));
+
+    /// <param name="referencedFilesAlreadyIncluded">True when <paramref name="listToFill"/> already holds the
+    /// file's referenced files, so only plugins with their own GetFilesNeededOnDiskBy are asked.</param>
+    internal static void GetFilesNeededOnDiskBy(string absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive, HashSet<FilePath> listToFill,
+        bool referencedFilesAlreadyIncluded = false)
     {
         SaveRelativeDirectory();
         CallMethodOnPluginNotUiThread(
@@ -830,7 +844,7 @@ public class PluginManager : PluginManagerBase
                 {
                     plugin.GetFilesNeededOnDiskBy(absoluteName, listToFill);
                 }
-                else if (plugin.FillWithReferencedFiles != null)
+                else if (plugin.FillWithReferencedFiles != null && !referencedFilesAlreadyIncluded)
                 {
                     HashSet<FilePath> innerList = new ();
                     plugin.FillWithReferencedFiles(absoluteName, innerList);

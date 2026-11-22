@@ -179,9 +179,21 @@ public class FileReferenceManager : Singleton<FileReferenceManager>
 
         if (!handledByCache)
         {
-            // todo: do we want to change this to use 
-            topLevelOnly = ContentParser.GetFilesReferencedByAsset(absoluteName, TopLevelOrRecursive.TopLevel);
-            PluginManager.GetFilesNeededOnDiskBy(absoluteName.FullPath, TopLevelOrRecursive.TopLevel, topLevelOnly);
+            // A file needs on disk the files it references plus what the plugins with their own
+            // GetFilesNeededOnDiskBy add, so reuse the referenced files when they are already known instead of
+            // parsing the file and asking every plugin again.
+            if (fileReferences.TryGetValue(absoluteName, out var referenceInformation) &&
+                PluginManager.AreFilesNeededOnDiskAReferencedFilesSuperset)
+            {
+                topLevelOnly = referenceInformation.References.ToHashSet();
+                PluginManager.GetFilesNeededOnDiskBy(absoluteName.FullPath, TopLevelOrRecursive.TopLevel, topLevelOnly,
+                    referencedFilesAlreadyIncluded: true);
+            }
+            else
+            {
+                topLevelOnly = ContentParser.GetFilesReferencedByAsset(absoluteName, TopLevelOrRecursive.TopLevel);
+                PluginManager.GetFilesNeededOnDiskBy(absoluteName.FullPath, TopLevelOrRecursive.TopLevel, topLevelOnly);
+            }
 
             filesNeededOnDisk[absoluteName] = new FileReferenceInformation
             {
