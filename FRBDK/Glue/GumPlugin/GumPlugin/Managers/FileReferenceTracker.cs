@@ -618,7 +618,7 @@ namespace GumPlugin.Managers
                             {
                                 try
                                 {
-                                    LoadGumxIfNecessaryFromDirectory(FileManager.RelativeDirectory, force:true);
+                                    LoadGumxIfNecessaryFromDirectory(FileManager.RelativeDirectory, force:true, skipForcedReloadIfUnchanged:true);
 
                                     var gumProject = Gum.Managers.ObjectFinder.Self.GumProjectSave;
                                     if(gumProject != null)
@@ -708,7 +708,43 @@ namespace GumPlugin.Managers
             return generalResponse;
         }
 
-        public void LoadGumxIfNecessaryFromDirectory(string gumxDirectory, bool force = false)
+        // The project file and the stamp of the Gum data files on disk as of the last load through
+        // LoadGumxIfNecessaryFromDirectory. Lets a lookup skip a reload when nothing changed.
+        string lastLoadedGumxFile;
+        int lastLoadedGumxStamp;
+
+        static readonly HashSet<string> GumDataExtensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ".gumx", ".gusx", ".gucx", ".gutx", ".behx", ".ganx",
+            ".gumj", ".gusj", ".gucj", ".gutj", ".behj", ".ganj",
+        };
+
+        /// <summary>
+        /// A value that changes whenever a Gum project, element, behavior, or animation file under the
+        /// directory is added, removed, or rewritten.
+        /// </summary>
+        static int GetGumDataStamp(string gumxDirectory)
+        {
+            var hash = new HashCode();
+            foreach (var file in System.IO.Directory.EnumerateFiles(gumxDirectory, "*", System.IO.SearchOption.AllDirectories)
+                .Where(item => GumDataExtensions.Contains(System.IO.Path.GetExtension(item)))
+                .OrderBy(item => item, StringComparer.OrdinalIgnoreCase))
+            {
+                var info = new System.IO.FileInfo(file);
+                hash.Add(file, StringComparer.OrdinalIgnoreCase);
+                hash.Add(info.LastWriteTimeUtc.Ticks);
+                hash.Add(info.Length);
+            }
+            return hash.ToHashCode();
+        }
+
+        /// <summary>
+        /// Loads the Gum project if none is loaded, or reloads it from disk when force is true.
+        /// </summary>
+        /// <param name="skipForcedReloadIfUnchanged">When force is true, keeps the already-loaded project if it came
+        /// from this same file and no Gum data file under the directory has changed since. For lookups that force a
+        /// reload only to be sure they see the disk's state, which a full reload of a large project makes expensive.</param>
+        public void LoadGumxIfNecessaryFromDirectory(string gumxDirectory, bool force = false, bool skipForcedReloadIfUnchanged = false)
         {
             lock(this)
             {
@@ -716,6 +752,21 @@ namespace GumPlugin.Managers
                 {
 
                     string gumxFile = GetGumProjectFile(gumxDirectory);
+
+                    // Taken before the load so an edit made during the load is seen as a change next time.
+                    int stamp = 0;
+                    if (!string.IsNullOrEmpty(gumxFile))
+                    {
+                        stamp = GetGumDataStamp(gumxDirectory);
+
+                        if (force && skipForcedReloadIfUnchanged &&
+                            Gum.Managers.ObjectFinder.Self.GumProjectSave != null &&
+                            string.Equals(lastLoadedGumxFile, gumxFile, StringComparison.OrdinalIgnoreCase) &&
+                            lastLoadedGumxStamp == stamp)
+                        {
+                            return;
+                        }
+                    }
 
                     // This can occur if the user has added a gumx file, then removed it, but the project still
                     // references gum files like gum screens or components.  This is an invalid setup, but we're
@@ -733,6 +784,8 @@ namespace GumPlugin.Managers
                             GlueCommands.Self.PrintError(result.ErrorMessage);
                         }
 
+                        lastLoadedGumxFile = gumxFile;
+                        lastLoadedGumxStamp = stamp;
                     }
                     if(Gum.Managers.ObjectFinder.Self.GumProjectSave != null)
                     {
