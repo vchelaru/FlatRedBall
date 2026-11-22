@@ -524,8 +524,9 @@ namespace FlatRedBall.Glue.CodeGeneration
                 // The file may exist.  If it does, we want to make sure it's empty:
                 if (File.Exists(fullGeneratedFileName))
                 {
-                    FileWatchManager.IgnoreNextChangeOnFile(fullGeneratedFileName);
-                    FileManager.SaveText("", fullGeneratedFileName);
+                    // Only when it isn't empty already: rewriting it on every load made the game project
+                    // recompile it.
+                    GlueCommands.Self.FileCommands.SaveIfDiffers(generatedFilePath, "", ignoreNextChange: true);
                 }
 
 
@@ -549,13 +550,13 @@ namespace FlatRedBall.Glue.CodeGeneration
             // Let's try this a few times:
             int numberOfFailures = 0;
             bool succeeded = false;
-            FileWatchManager.IgnoreNextChangeOnFile(fullGeneratedFileName);
+            var contents = codeBlock.ToString();
 
             while (numberOfFailures < 3)
             {
                 try
                 {
-                    FileManager.SaveText(codeBlock.ToString(), fullGeneratedFileName);
+                    GlueCommands.Self.FileCommands.SaveIfDiffers(generatedFilePath, contents, ignoreNextChange: true);
                     succeeded = true;
                     break;
                 }
