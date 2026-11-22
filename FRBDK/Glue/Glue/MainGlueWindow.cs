@@ -453,25 +453,12 @@ public partial class MainGlueWindow : Form, IMainGlueWindow
         this.PerformLayout();
     }
 
-    private readonly HashSet<string> _checkedAssemblies = new();
-    private readonly HashSet<string> _addedWindowTypes = new();
+    private readonly ImplicitWindowTypeFinder _windowTypeFinder = new();
     private readonly Wpf.ResourceDictionary _implicitWindowTypeDictionary = new();
 
     public void TryGenerateImplicitWindowStylesFor(Assembly assembly)
     {
-        if (!_checkedAssemblies.Add(assembly.FullName))
-        {
-            return;
-        }
-
-        List<Type> windowTypes = GetAllReferencedAssemblies(assembly)
-            .Concat(new[] { assembly })
-            .SelectMany(x => x.GetTypes())
-            .Where(t => t.IsSubclassOf(typeof(Wpf.Window)) && !t.IsAbstract && _addedWindowTypes.Add(t.AssemblyQualifiedName))
-            .ToList();
-
-
-        foreach (Type windowType in windowTypes)
+        foreach (Type windowType in _windowTypeFinder.FindNewWindowTypes(assembly))
         {
             Wpf.Style style = new ()
             {
@@ -479,40 +466,6 @@ public partial class MainGlueWindow : Form, IMainGlueWindow
                 BasedOn = (Wpf.Style)MainWpfControl.TryFindResource(typeof(Wpf.Window))
             };
             _implicitWindowTypeDictionary.Add(windowType, style);
-        }
-
-
-        IEnumerable<Assembly> GetAllReferencedAssemblies(Assembly assembly)
-        {
-            HashSet<string> visitedAssemblies = new();
-            Queue<Assembly> assembliesToCheck = new();
-
-            assembliesToCheck.Enqueue(assembly);
-
-            while (assembliesToCheck.Count > 0)
-            {
-                Assembly currentAssembly = assembliesToCheck.Dequeue();
-
-                if (!visitedAssemblies.Add(currentAssembly.FullName)) continue;
-
-                yield return currentAssembly;
-
-                foreach (AssemblyName referencedAssemblyName in currentAssembly.GetReferencedAssemblies())
-                {
-                    try
-                    {
-                        Assembly referencedAssembly = Assembly.Load(referencedAssemblyName);
-                        if (!visitedAssemblies.Contains(referencedAssembly.FullName))
-                        {
-                            assembliesToCheck.Enqueue(referencedAssembly);
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        _ = e;
-                    }
-                }
-            }
         }
     }
 
