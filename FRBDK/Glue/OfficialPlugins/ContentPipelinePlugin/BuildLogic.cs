@@ -37,6 +37,26 @@ namespace OfficialPlugins.MonoGameContent
         // this session so the log line only prints once per missing tool.
         static HashSet<string> reportedMissingBuildExePaths = new HashSet<string>();
 
+        /// <summary>
+        /// Finds the content builder for a project. Tests replace this and <see cref="BuildContentItem"/> so a
+        /// build needs no MGCB.
+        /// </summary>
+        internal Func<VisualStudioProject, string> GetBuildExe = GetCommandLineBuildExe;
+
+        /// <summary>
+        /// Builds one content file: installs MGCB if needed, then runs it.
+        /// </summary>
+        internal Action<ContentItem, VisualStudioProject, bool> BuildContentItem;
+
+        public BuildLogic()
+        {
+            BuildContentItem = (contentItem, project, rebuild) =>
+            {
+                InstallBuilderIfNecessary(project);
+                PerformBuild(contentItem, project, rebuild);
+            };
+        }
+
         static string KniRootDirectory => Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + @"\KNI";
 
         // The KNI installer names its install folder after the installed SDK release (e.g. v4.2), not
@@ -81,7 +101,7 @@ namespace OfficialPlugins.MonoGameContent
         public async Task RefreshBuiltFilesFor(VisualStudioProject project, bool forcePngsToContentPipeline, ContentPipelineController controller)
         {
 
-            var mgcbToUse = GetCommandLineBuildExe(project);
+            var mgcbToUse = GetBuildExe(project);
 
             /////////////Early Out///////////////////
             
@@ -114,7 +134,11 @@ namespace OfficialPlugins.MonoGameContent
 
                 foreach (var fileToBeBuilt in allReferencedFileSaves)
                 {
-                    await UpdateFileMembershipAndBuildReferencedFile(project, fileToBeBuilt, forcePngsToContentPipeline);
+                    // Builds here bring a project's content up to date when it loads. A build caused by an
+                    // edited source file still gets its watcher reaction, which live edit uses to copy the
+                    // new built file and restart the screen of a running game.
+                    await UpdateFileMembershipAndBuildReferencedFile(project, fileToBeBuilt, forcePngsToContentPipeline,
+                        ignoreWatcherReactionsToBuiltFiles: true);
                 }
             }
 
@@ -137,13 +161,16 @@ namespace OfficialPlugins.MonoGameContent
         }
 
 
-        public async Task<List<FilePath>> UpdateFileMembershipAndBuildReferencedFile(VisualStudioProject project, ReferencedFileSave referencedFile, bool forcePngsToContentPipeline)
+        public async Task<List<FilePath>> UpdateFileMembershipAndBuildReferencedFile(VisualStudioProject project, ReferencedFileSave referencedFile, bool forcePngsToContentPipeline,
+            bool ignoreWatcherReactionsToBuiltFiles = false)
         {
             bool isBuilt = IsBuiltByContentPipeline(referencedFile, forcePngsToContentPipeline);
             List<FilePath> newFiles = new List<FilePath>();
             if(isBuilt)
             {
-                newFiles = await TryAddXnbReferencesAndBuild(referencedFile, project, save:true);
+                var fullFileName = GlueCommands.FileCommands.GetFullFileName(referencedFile);
+                newFiles = await TryAddXnbReferencesAndBuild(fullFileName, project, saveProjectAfterAdd: true,
+                    ignoreWatcherReactionsToBuiltFiles: ignoreWatcherReactionsToBuiltFiles);
             }
             else if(DoesProjectSupportContentPipeline(project))
             {
@@ -460,19 +487,15 @@ namespace OfficialPlugins.MonoGameContent
             }
         }
 
-        private async Task<List<FilePath>> TryAddXnbReferencesAndBuild(ReferencedFileSave referencedFile, VisualStudioProject project, bool save)
-        {
-            var fullFileName = GlueCommands.FileCommands.GetFullFileName(referencedFile);
-
-            return await TryAddXnbReferencesAndBuild(fullFileName, project, save);
-
-        }
-
-        public async Task<List<FilePath>> TryAddXnbReferencesAndBuild(FilePath rfsFilePath, VisualStudioProject project, bool saveProjectAfterAdd, bool rebuild = false)
+        /// <param name="ignoreWatcherReactionsToBuiltFiles">Whether Glue's file watcher should skip the files this
+        /// build writes. Glue registers them itself, so a reaction only regenerates code; but live edit reacts to a
+        /// built file changing, so only builds not caused by an edit pass true.</param>
+        public async Task<List<FilePath>> TryAddXnbReferencesAndBuild(FilePath rfsFilePath, VisualStudioProject project, bool saveProjectAfterAdd, bool rebuild = false,
+            bool ignoreWatcherReactionsToBuiltFiles = false)
         {
             List<FilePath> toReturn = new List<FilePath>();
 
-            var commandLineBuildExe = GetCommandLineBuildExe(project);
+            var commandLineBuildExe = GetBuildExe(project);
 
             var contentDirectory = GlueState.ContentDirectory;
 
@@ -574,9 +597,16 @@ namespace OfficialPlugins.MonoGameContent
 
                         if (contentItem.GetIfNeedsBuild(destinationDirectory) || rebuild)
                         {
-                            InstallBuilderIfNecessary(project);
+                            BuildContentItem(contentItem, project, rebuild);
 
-                            PerformBuild(contentItem, project, rebuild);
+                            if (ignoreWatcherReactionsToBuiltFiles)
+                            {
+                                foreach (var extension in contentItem.GetBuiltExtensions())
+                                {
+                                    FlatRedBall.Glue.IO.FileWatchManager.IgnoreChangesWhileUnchanged(
+                                        destinationDirectory + contentItem.BuildFileName.NoPathNoExtension + "." + extension);
+                                }
+                            }
                         }
 
                         toReturn.AddRange(AddBuiltXnbReferences(project, rfsFilePath, contentDirectory,
