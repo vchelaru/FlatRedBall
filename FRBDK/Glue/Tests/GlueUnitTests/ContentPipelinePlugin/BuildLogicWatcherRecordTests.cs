@@ -25,6 +25,7 @@ public class BuildLogicWatcherRecordTests : IDisposable
     readonly string originalRelativeDirectory;
     readonly Func<VisualStudioProject, string> originalGetBuildExe;
     readonly Action<ContentItem, VisualStudioProject, bool> originalBuildContentItem;
+    readonly Action<System.Collections.Generic.IReadOnlyList<ContentItem>, VisualStudioProject> originalBuildContentItems;
     readonly MonoGameDesktopGlNetCoreProject project;
     readonly FilePath sound;
     readonly FilePath builtSound;
@@ -37,6 +38,7 @@ public class BuildLogicWatcherRecordTests : IDisposable
         originalRelativeDirectory = FileManager.RelativeDirectory;
         originalGetBuildExe = BuildLogic.Self.GetBuildExe;
         originalBuildContentItem = BuildLogic.Self.BuildContentItem;
+        originalBuildContentItems = BuildLogic.Self.BuildContentItems;
 
         Directory.CreateDirectory(directory);
         var classLibrary = TestVisualStudioProjectFactory.CreateInNewTempDirectory(out var projectDirectory, parentDirectory: directory);
@@ -57,17 +59,22 @@ public class BuildLogicWatcherRecordTests : IDisposable
         var fakeBuilder = Path.Combine(directory, "mgcb.exe");
         File.WriteAllText(fakeBuilder, "");
         BuildLogic.Self.GetBuildExe = _ => fakeBuilder;
-        BuildLogic.Self.BuildContentItem = (contentItem, _, _) =>
-        {
-            Directory.CreateDirectory(contentItem.OutputDirectory);
-            File.WriteAllText(Path.Combine(contentItem.OutputDirectory, contentItem.BuildFileName.NoPathNoExtension + ".xnb"), "built");
-        };
+        BuildLogic.Self.BuildContentItem = (contentItem, _, _) => WriteBuiltFile(contentItem);
+        // Fails every file, so a load builds each file on its own, as an edit does.
+        BuildLogic.Self.BuildContentItems = (_, _) => { };
+    }
+
+    static void WriteBuiltFile(ContentItem contentItem)
+    {
+        Directory.CreateDirectory(contentItem.OutputDirectory);
+        File.WriteAllText(Path.Combine(contentItem.OutputDirectory, contentItem.BuildFileName.NoPathNoExtension + ".xnb"), "built");
     }
 
     public void Dispose()
     {
         BuildLogic.Self.GetBuildExe = originalGetBuildExe;
         BuildLogic.Self.BuildContentItem = originalBuildContentItem;
+        BuildLogic.Self.BuildContentItems = originalBuildContentItems;
         GlueState.Self.CurrentMainProject = originalMainProject;
         ObjectFinder.Self.GlueProject = originalGlueProject;
         FileManager.RelativeDirectory = originalRelativeDirectory;

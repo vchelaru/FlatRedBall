@@ -48,12 +48,22 @@ namespace OfficialPlugins.MonoGameContent
         /// </summary>
         internal Action<ContentItem, VisualStudioProject, bool> BuildContentItem;
 
+        /// <summary>
+        /// Builds content files that share a <see cref="ContentItem.GetBatchKey"/> with one MGCB run.
+        /// </summary>
+        internal Action<IReadOnlyList<ContentItem>, VisualStudioProject> BuildContentItems;
+
         public BuildLogic()
         {
             BuildContentItem = (contentItem, project, rebuild) =>
             {
                 InstallBuilderIfNecessary(project);
                 PerformBuild(contentItem, project, rebuild);
+            };
+            BuildContentItems = (contentItems, project) =>
+            {
+                InstallBuilderIfNecessary(project);
+                PerformBuild(contentItems, project, rebuild: false, reportFailuresAsErrors: false);
             };
         }
 
@@ -132,6 +142,11 @@ namespace OfficialPlugins.MonoGameContent
                 // consider all files:
                 //var filesToBeBuilt = allReferencedFileSaves.Where(item => IsBuiltByContentPipeline(item, forcePngsToContentPipeline)).ToList();
 
+                // One MGCB run per folder instead of one per file: starting MGCB is most of a small file's build
+                // time. The loop below then finds those files built and only registers them, and builds alone
+                // (reporting its error) any file the batch could not build.
+                await BuildStaleFilesInBatches(project, allReferencedFileSaves, forcePngsToContentPipeline);
+
                 foreach (var fileToBeBuilt in allReferencedFileSaves)
                 {
                     // Builds here bring a project's content up to date when it loads. A build caused by an
@@ -148,6 +163,68 @@ namespace OfficialPlugins.MonoGameContent
             }
 
             //foreach (var file in GlueState.Self.CurrentGlueProject.GetAllReferencedFiles())
+        }
+
+        private async Task BuildStaleFilesInBatches(VisualStudioProject project, IEnumerable<ReferencedFileSave> referencedFiles, bool forcePngsToContentPipeline)
+        {
+            // Same early outs as TryAddXnbReferencesAndBuild, which reports them per file.
+            var commandLineBuildExe = GetBuildExe(project);
+            if (commandLineBuildExe == null || !System.IO.File.Exists(commandLineBuildExe) ||
+                string.IsNullOrEmpty(GlueState.ContentDirectory) || !DoesProjectSupportContentPipeline(project))
+            {
+                return;
+            }
+
+            var sourceFiles = referencedFiles
+                .Where(item => IsBuiltByContentPipeline(item, forcePngsToContentPipeline))
+                .Select(item => new FilePath(GlueCommands.FileCommands.GetFullFileName(item)))
+                .Distinct()
+                .ToList();
+
+            await TaskManager.Self.AddAsync(() =>
+            {
+                if (GlueState.CurrentGlueProject == null || !GlueState.IsProjectLoaded(project))
+                {
+                    return;
+                }
+
+                // The source may be a font image gumcli is still writing.
+                FlatRedBall.Glue.IO.ExternalFileWrites.WaitIfInTask();
+
+                var staleItems = sourceFiles
+                    .Where(sourceFile => sourceFile.Exists())
+                    .Select(sourceFile => TryGetContentItem(sourceFile, project))
+                    .Where(contentItem => contentItem != null && contentItem.GetIfNeedsBuild(contentItem.OutputDirectory));
+
+                foreach (var batch in staleItems.GroupBy(contentItem => contentItem.GetBatchKey()))
+                {
+                    var contentItems = batch.ToList();
+                    BuildContentItems(contentItems, project);
+
+                    foreach (var contentItem in contentItems)
+                    {
+                        foreach (var extension in contentItem.GetBuiltExtensions())
+                        {
+                            FlatRedBall.Glue.IO.FileWatchManager.IgnoreChangesWhileUnchanged(
+                                contentItem.OutputDirectory + contentItem.BuildFileName.NoPathNoExtension + "." + extension);
+                        }
+                    }
+                }
+            }, $"Building MonoGame Content for {project.Name}");
+        }
+
+        // A file the batch can't describe (one outside every project, say) is left to its own build, which
+        // reports the problem.
+        static ContentItem TryGetContentItem(FilePath sourceFile, VisualStudioProject project)
+        {
+            try
+            {
+                return GetContentItem(sourceFile, project, createEvenIfProjectTypeNotSupported: false);
+            }
+            catch (InvalidOperationException)
+            {
+                return null;
+            }
         }
 
         public static bool GetIfNeedsMonoGameFilesBuilt(ProjectBase project)
@@ -783,17 +860,25 @@ namespace OfficialPlugins.MonoGameContent
             }
         }
 
-        private static void PerformBuild(ContentItem contentItem, VisualStudioProject project, bool rebuild = false)
+        private static void PerformBuild(ContentItem contentItem, VisualStudioProject project, bool rebuild = false) =>
+            PerformBuild(new[] { contentItem }, project, rebuild);
+
+        /// <summary>
+        /// Builds the items with one MGCB run. They must share a <see cref="ContentItem.GetBatchKey"/>.
+        /// </summary>
+        /// <param name="reportFailuresAsErrors">False for a batch run: a file it fails to build is still stale, so its
+        /// own build right after reports the error for that file alone.</param>
+        private static void PerformBuild(IReadOnlyList<ContentItem> contentItems, VisualStudioProject project, bool rebuild = false,
+            bool reportFailuresAsErrors = true)
         {
             StringBuilder stringBuilder = new StringBuilder();
-            string contentDirectory = GlueState.ContentDirectory;
             string workingDirectory = "";
-            
-            // There's an issue with the kni content pipeline where it appends directories if you don't set the 
-            // working directory to your content file...actually this might be the normal pipeline too
-            workingDirectory = contentItem.BuildFileName.GetDirectoryContainingThis().FullPath;
 
-            string commandLine = contentItem.GenerateCommandLine(project, rebuild);
+            // There's an issue with the kni content pipeline where it appends directories if you don't set the
+            // working directory to your content file...actually this might be the normal pipeline too
+            workingDirectory = contentItems[0].BuildFileName.GetDirectoryContainingThis().FullPath;
+
+            string commandLine = ContentItem.GenerateCommandLine(contentItems, rebuild);
             var process = new Process();
 
             var commandLineBuildExe = GetCommandLineBuildExe(project);
@@ -838,7 +923,7 @@ namespace OfficialPlugins.MonoGameContent
                 stringBuilder.AppendLine(str);
             }
 
-            if (builtCorrectly)
+            if (builtCorrectly || !reportFailuresAsErrors)
             {
                 GlueCommands.PrintOutput(stringBuilder.ToString());
             }
@@ -849,7 +934,14 @@ namespace OfficialPlugins.MonoGameContent
 
             while ((str = process.StandardError.ReadLine()) != null)
             {
-                GlueCommands.PrintError(str);
+                if (reportFailuresAsErrors)
+                {
+                    GlueCommands.PrintError(str);
+                }
+                else
+                {
+                    GlueCommands.PrintOutput(str);
+                }
             }
         }
 
