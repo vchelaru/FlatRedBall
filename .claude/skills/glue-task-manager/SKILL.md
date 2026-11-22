@@ -21,6 +21,12 @@ run off the queue and in parallel, then queue a short follow-up task that regist
 adding the files to the `.csproj` or reloading the Gum project. Keeping a task slot for the whole of such
 work stalls every plugin for nothing (see "An awaited task holds the whole queue" below).
 
+A task can also split its own read-only work across threads with `TaskManager.RunInParallel`: the
+workers count as inside the task (`IsInTask` and `AddOrRunIfTasked` behave as on the task thread) and
+inherit `FileManager.RelativeDirectory`. `GenerateAllCodeSync` uses it to generate elements in parallel,
+then saves files and adds them to the `.csproj` back on the task thread. Code that runs on those workers
+must not use a static as per-element scratch space; such fields are `[ThreadStatic]`.
+
 ## Tiers beat enqueue order
 
 `TaskExecutionPreference` (`Asap` / `Fifo` / `AddOrMoveToEnd`) are fixed numeric tiers far apart
