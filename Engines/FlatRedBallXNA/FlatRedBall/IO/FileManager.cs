@@ -649,8 +649,9 @@ namespace FlatRedBall.IO
                 // Folders in the path might have a period in them. We need to make sure
                 // the period is after the last slash or we could end up with an "extension"
                 // that is a large chunk of the path
-                bool hasSlashAfterDot = i < fileName.LastIndexOf("/", StringComparison.OrdinalIgnoreCase) 
-                                        || i < fileName.LastIndexOf(@"\", StringComparison.OrdinalIgnoreCase);
+                // char overloads: the string overloads with OrdinalIgnoreCase are far slower, and this runs per file name in many loops
+                bool hasSlashAfterDot = i < fileName.LastIndexOf('/')
+                                        || i < fileName.LastIndexOf('\\');
 
                 if (hasDotSlash || hasSlashAfterDot)
                 {
