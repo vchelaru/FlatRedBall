@@ -23,7 +23,7 @@ public class SequencePlayerBoundSpriteTests
     {
         var sequence = new SequenceSave { Name = name, Loop = true };
         var trackSave = new SequenceTrackSave { Name = track };
-        trackSave.Chains.Add(new SequenceChainReferenceSave { Source = "a.achj", Chain = "Loop", Loops = 1 });
+        trackSave.Chains.Add(new SequenceChainReferenceSave { Source = "a.achj", Chain = "Loop" });
         sequence.Tracks.Add(trackSave);
         return sequence;
     }

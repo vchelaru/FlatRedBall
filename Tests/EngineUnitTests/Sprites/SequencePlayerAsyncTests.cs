@@ -34,7 +34,7 @@ public class SequencePlayerAsyncTests
             if (name != "Empty")
             {
                 var track = new SequenceTrackSave { Name = "Body" };
-                track.Chains.Add(new SequenceChainReferenceSave { Source = "s", Chain = "Walk", Start = 0, Loops = 1 });
+                track.Chains.Add(new SequenceChainReferenceSave { Source = "s", Chain = "Walk", Start = 0 });
                 sequence.Tracks.Add(track);
             }
             file.Sequences.Add(sequence);

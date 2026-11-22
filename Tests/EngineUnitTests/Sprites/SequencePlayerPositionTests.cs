@@ -23,7 +23,7 @@ public class SequencePlayerPositionTests
         var sequence = new SequenceSave { Name = "Idle", Loop = true };
         // A flipped track can't use the Sprite's own animation, so the player sets its frames and its position itself.
         var track = new SequenceTrackSave { Name = "Body", FlipHorizontal = true };
-        track.Chains.Add(new SequenceChainReferenceSave { Source = "body.achj", Chain = "Bob", Start = 0, Loops = 1 });
+        track.Chains.Add(new SequenceChainReferenceSave { Source = "body.achj", Chain = "Bob", Start = 0 });
         sequence.Tracks.Add(track);
         file.Sequences.Add(sequence);
 

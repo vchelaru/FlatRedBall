@@ -33,8 +33,8 @@ public class SequencePlayerAnimationTests
         return chain;
     }
 
-    static SequenceChainReferenceSave Ref(string chain, double start, float loops) =>
-        new SequenceChainReferenceSave { Source = "body.achj", Chain = chain, Start = start, Loops = loops };
+    static SequenceChainReferenceSave Ref(string chain, double start, double? length = null) =>
+        new SequenceChainReferenceSave { Source = "body.achj", Chain = chain, Start = start, Length = length };
 
     static SequencePlayer Player(bool loop, params SequenceChainReferenceSave[] chains)
     {
@@ -73,7 +73,7 @@ public class SequencePlayerAnimationTests
     [Fact]
     public void Update_DoesNotWriteTheSpritesTimeBetweenChainSwitches()
     {
-        var player = Player(false, Ref("Walk", 0, 4));
+        var player = Player(false, Ref("Walk", 0, 2.0));
         player["S"].Play();
         var sprite = SpriteOf(player);
 
@@ -86,7 +86,7 @@ public class SequencePlayerAnimationTests
     [Fact]
     public void BetweenSwitches_TheSpriteAnimatesAndLoopsItself()
     {
-        var player = Player(false, Ref("Walk", 0, 4));
+        var player = Player(false, Ref("Walk", 0, 2.0));
         player["S"].Play();
         var sprite = SpriteOf(player);
 
@@ -100,7 +100,7 @@ public class SequencePlayerAnimationTests
     [Fact]
     public void AMatchingNextBlock_SwitchesTheChain_AndRestartsIt()
     {
-        var player = Player(false, Ref("Walk", 0, 1), Ref("Hold", 0.6, 1));
+        var player = Player(false, Ref("Walk", 0), Ref("Hold", 0.6));
         player["S"].Play();
         var sprite = SpriteOf(player);
         sprite.CurrentChain.Name.ShouldBe("Walk");
@@ -117,7 +117,7 @@ public class SequencePlayerAnimationTests
     [Fact]
     public void ABlockThatEnds_HidesTheSprite()
     {
-        var player = Player(false, Ref("Walk", 0, 1));
+        var player = Player(false, Ref("Walk", 0));
         player["S"].Play();
         var sprite = SpriteOf(player);
 
@@ -131,7 +131,7 @@ public class SequencePlayerAnimationTests
     [Fact]
     public void AChainWithLoopOff_HoldsItsLastFrame_InsteadOfLoopingWithTheSprite()
     {
-        var player = Player(false, Ref("Hold", 0, 4));
+        var player = Player(false, Ref("Hold", 0, 2.0));
         player["S"].Play();
         var sprite = SpriteOf(player);
 
@@ -147,7 +147,7 @@ public class SequencePlayerAnimationTests
     [Fact]
     public void ALoopingSequenceWrapping_PutsTheSpriteBackAtTheStart()
     {
-        var player = Player(true, Ref("Walk", 0, 1));
+        var player = Player(true, Ref("Walk", 0));
         player["S"].Play();
         var sprite = SpriteOf(player);
 
@@ -161,7 +161,7 @@ public class SequencePlayerAnimationTests
     [Fact]
     public void SetTime_WritesTheExactTimeIntoTheChain()
     {
-        var player = Player(false, Ref("Walk", 0, 4));
+        var player = Player(false, Ref("Walk", 0, 2.0));
         player["S"].Play();
 
         player["S"].SetTime(0.3);
@@ -172,7 +172,7 @@ public class SequencePlayerAnimationTests
     [Fact]
     public void Speed_IsGivenToTheSprite()
     {
-        var player = Player(false, Ref("Walk", 0, 4));
+        var player = Player(false, Ref("Walk", 0, 2.0));
         player["S"].Speed = 2;
         player["S"].Play();
 

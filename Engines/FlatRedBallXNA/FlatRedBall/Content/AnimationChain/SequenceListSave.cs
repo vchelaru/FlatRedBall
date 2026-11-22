@@ -109,7 +109,7 @@ namespace FlatRedBall.Content.AnimationChain
                             {
                                 Sequence = String(referenceObject, "sequence"),
                                 Start = Double(referenceObject, "start", 0),
-                                Loops = Float(referenceObject, "loops", 1),
+                                Length = OptionalDouble(referenceObject, "length"),
                             };
                         }
 
@@ -120,7 +120,7 @@ namespace FlatRedBall.Content.AnimationChain
                                 Source = String(chainObject, "source"),
                                 Chain = String(chainObject, "chain"),
                                 Start = Double(chainObject, "start", 0),
-                                Loops = Float(chainObject, "loops", 1),
+                                Length = OptionalDouble(chainObject, "length"),
                             });
                         }
 
@@ -228,6 +228,12 @@ namespace FlatRedBall.Content.AnimationChain
             throw new JsonException("The \"" + name + "\" property must be a number.");
         }
 
+        // Absent (or null) is null: an unset length.
+        private static double? OptionalDouble(JsonObject parent, string name)
+        {
+            return parent[name] == null ? (double?)null : Double(parent, name, 0);
+        }
+
         private static double Double(JsonObject parent, string name, double fallback)
         {
             JsonNode node = parent[name];
@@ -298,8 +304,8 @@ namespace FlatRedBall.Content.AnimationChain
 
     /// <summary>
     /// A track that plays another sequence of the same .seqj instead of chains: the target's tracks are inlined under this
-    /// track's name. It is a clip like a chain placement, with a <see cref="Start"/> and a length in <see cref="Loops"/>
-    /// cycles of the target, and it extends the sequence that holds it to its end. The target restarts whenever the holding
+    /// track's name. It is a clip like a chain placement, with a <see cref="Start"/> and a <see cref="Length"/> (one run of
+    /// the target unless set), and it extends the sequence that holds it to its end. The target restarts whenever the holding
     /// sequence starts. A missing target, or one that plays the holder back (a cycle), plays nothing. Matches the
     /// FlatRedBall2 AnimationEditor's SequenceReferenceSave.
     /// </summary>
@@ -312,10 +318,10 @@ namespace FlatRedBall.Content.AnimationChain
         public double Start { get; set; }
 
         /// <summary>
-        /// The clip's length in cycles of the target's length. A target with Loop on repeats across it; one with Loop off
-        /// plays once, then holds its final pose until the clip ends.
+        /// The clip's length in seconds (JSON "length"), or null for one run of the target at its current length. A target
+        /// with Loop on repeats across it; one with Loop off plays once, then holds its final pose until the clip ends.
         /// </summary>
-        public float Loops { get; set; } = 1;
+        public double? Length { get; set; }
     }
 
     /// <summary>One placement of an animation chain on a track. The next chain on the track can cut it short.</summary>
@@ -331,9 +337,10 @@ namespace FlatRedBall.Content.AnimationChain
         public double Start { get; set; }
 
         /// <summary>
-        /// The block's length in playback cycles (a ping-pong cycle is twice the chain). A chain with Loop on repeats across
-        /// the length; one with Loop off plays one cycle, then holds its last frame until the length ends.
+        /// The block's length in seconds (JSON "length"), or null for one playback cycle of the chain as it is now (twice the
+        /// chain for ping-pong), so the block follows edits to the chain. A chain with Loop on repeats across the length; one
+        /// with Loop off plays one cycle, then holds its last frame until the length ends.
         /// </summary>
-        public float Loops { get; set; } = 1;
+        public double? Length { get; set; }
     }
 }
