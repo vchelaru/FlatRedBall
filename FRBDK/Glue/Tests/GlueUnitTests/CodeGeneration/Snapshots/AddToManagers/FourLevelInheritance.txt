@@ -20,7 +20,14 @@ public virtual void AssignCustomVariables (bool callOnContainedElements)
     if (callOnContainedElements)
     {
     }
-    S0.Z = 0f;
+    if (S0.Parent == null)
+    {
+        S0.Z = 0f;
+    }
+    else
+    {
+        S0.RelativeZ = 0f;
+    }
 }
 
 //==== Entities\L1 ====
@@ -45,7 +52,14 @@ public override void AssignCustomVariables (bool callOnContainedElements)
     if (callOnContainedElements)
     {
     }
-    S1.Z = 0f;
+    if (S1.Parent == null)
+    {
+        S1.Z = 0f;
+    }
+    else
+    {
+        S1.RelativeZ = 0f;
+    }
 }
 
 //==== Entities\L2 ====
@@ -70,7 +84,14 @@ public override void AssignCustomVariables (bool callOnContainedElements)
     if (callOnContainedElements)
     {
     }
-    S2.Z = 0f;
+    if (S2.Parent == null)
+    {
+        S2.Z = 0f;
+    }
+    else
+    {
+        S2.RelativeZ = 0f;
+    }
 }
 
 //==== Entities\L3 ====
@@ -95,5 +116,12 @@ public override void AssignCustomVariables (bool callOnContainedElements)
     if (callOnContainedElements)
     {
     }
-    S3.Z = 0f;
+    if (S3.Parent == null)
+    {
+        S3.Z = 0f;
+    }
+    else
+    {
+        S3.RelativeZ = 0f;
+    }
 }

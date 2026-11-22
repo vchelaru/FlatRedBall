@@ -836,6 +836,13 @@ namespace FlatRedBall.Glue.Plugins
         {
             var tray = PluginManager.ToolBarTray;
 
+            // Null in a headless host, same as AddToToolBar. Without this, a plugin removing its toolbar on
+            // glux unload throws, and PluginManager disables it for the rest of the process.
+            if (tray == null)
+            {
+                return false;
+            }
+
             var toRemoveFrom = tray.ToolBars.FirstOrDefault(item => item.Name == toolbarName);
 
             bool wasRemoved = false;

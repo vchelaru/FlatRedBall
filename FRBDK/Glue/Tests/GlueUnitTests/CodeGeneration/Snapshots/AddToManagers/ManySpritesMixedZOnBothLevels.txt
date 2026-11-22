@@ -22,8 +22,22 @@ public virtual void AssignCustomVariables (bool callOnContainedElements)
     if (callOnContainedElements)
     {
     }
-    BaseA.Z = 0f;
-    BaseB.Z = 1f;
+    if (BaseA.Parent == null)
+    {
+        BaseA.Z = 0f;
+    }
+    else
+    {
+        BaseA.RelativeZ = 0f;
+    }
+    if (BaseB.Parent == null)
+    {
+        BaseB.Z = 1f;
+    }
+    else
+    {
+        BaseB.RelativeZ = 1f;
+    }
 }
 
 //==== Entities\Derived ====
@@ -50,6 +64,20 @@ public override void AssignCustomVariables (bool callOnContainedElements)
     if (callOnContainedElements)
     {
     }
-    DerivedA.Z = 0f;
-    DerivedB.Z = 1f;
+    if (DerivedA.Parent == null)
+    {
+        DerivedA.Z = 0f;
+    }
+    else
+    {
+        DerivedA.RelativeZ = 0f;
+    }
+    if (DerivedB.Parent == null)
+    {
+        DerivedB.Z = 1f;
+    }
+    else
+    {
+        DerivedB.RelativeZ = 1f;
+    }
 }

@@ -116,6 +116,14 @@ namespace FlatRedBall.Instructions
         {
             //mInstructionBuffer = new ListBuffer<Instruction>(mInstructions);
 
+            // Only fills static tables, so a second call (Glue's test host initializes it the way Glue does,
+            // then a test initializes the engine in the same process) has nothing to do. Without this it
+            // throws on the duplicate interpolator key.
+            if (mInterpolators.Count > 0)
+            {
+                return;
+            }
+
             CreateInterpolators();
 
             CreateValueRelationships();

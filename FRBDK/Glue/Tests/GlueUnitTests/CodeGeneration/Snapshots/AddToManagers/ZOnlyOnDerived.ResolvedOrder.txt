@@ -5,6 +5,9 @@
 [Base.AddToManagers] FlatRedBall.SpriteManager.AddToLayer(BaseSprite, LayerProvidedByContainer);
 [Base.AssignCustomVariables] if (callOnContainedElements)
 [Derived.AssignCustomVariables] if (callOnContainedElements)
+[Derived.AssignCustomVariables] if (DerivedSprite.Parent == null)
 [Derived.AssignCustomVariables] DerivedSprite.Z = 3f;
+[Derived.AssignCustomVariables] else
+[Derived.AssignCustomVariables] DerivedSprite.RelativeZ = 3f;
 [Base.AddToManagers] CustomInitialize();
 [Derived.AddToManagers] CustomInitialize();

@@ -20,7 +20,14 @@ public virtual void AssignCustomVariables (bool callOnContainedElements)
     if (callOnContainedElements)
     {
     }
-    BaseSprite.Z = 3f;
+    if (BaseSprite.Parent == null)
+    {
+        BaseSprite.Z = 3f;
+    }
+    else
+    {
+        BaseSprite.RelativeZ = 3f;
+    }
 }
 
 //==== Entities\Derived ====

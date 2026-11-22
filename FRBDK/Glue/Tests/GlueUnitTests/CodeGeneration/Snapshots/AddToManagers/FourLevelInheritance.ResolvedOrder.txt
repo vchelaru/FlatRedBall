@@ -8,13 +8,25 @@
 [L0.AddToManagers] FlatRedBall.SpriteManager.AddPositionedObject(this);
 [L0.AddToManagers] FlatRedBall.SpriteManager.AddToLayer(S0, LayerProvidedByContainer);
 [L0.AssignCustomVariables] if (callOnContainedElements)
+[L0.AssignCustomVariables] if (S0.Parent == null)
 [L0.AssignCustomVariables] S0.Z = 0f;
+[L0.AssignCustomVariables] else
+[L0.AssignCustomVariables] S0.RelativeZ = 0f;
 [L1.AssignCustomVariables] if (callOnContainedElements)
+[L1.AssignCustomVariables] if (S1.Parent == null)
 [L1.AssignCustomVariables] S1.Z = 0f;
+[L1.AssignCustomVariables] else
+[L1.AssignCustomVariables] S1.RelativeZ = 0f;
 [L2.AssignCustomVariables] if (callOnContainedElements)
+[L2.AssignCustomVariables] if (S2.Parent == null)
 [L2.AssignCustomVariables] S2.Z = 0f;
+[L2.AssignCustomVariables] else
+[L2.AssignCustomVariables] S2.RelativeZ = 0f;
 [L3.AssignCustomVariables] if (callOnContainedElements)
+[L3.AssignCustomVariables] if (S3.Parent == null)
 [L3.AssignCustomVariables] S3.Z = 0f;
+[L3.AssignCustomVariables] else
+[L3.AssignCustomVariables] S3.RelativeZ = 0f;
 [L0.AddToManagers] CustomInitialize();
 [L1.AddToManagers] CustomInitialize();
 [L2.AddToManagers] CustomInitialize();

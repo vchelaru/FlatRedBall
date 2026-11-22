@@ -20,7 +20,14 @@ public virtual void AssignCustomVariables (bool callOnContainedElements)
     if (callOnContainedElements)
     {
     }
-    BaseSprite.Z = 1f;
+    if (BaseSprite.Parent == null)
+    {
+        BaseSprite.Z = 1f;
+    }
+    else
+    {
+        BaseSprite.RelativeZ = 1f;
+    }
 }
 
 //==== Entities\Derived ====
@@ -45,5 +52,12 @@ public override void AssignCustomVariables (bool callOnContainedElements)
     if (callOnContainedElements)
     {
     }
-    DerivedSprite.Z = 1f;
+    if (DerivedSprite.Parent == null)
+    {
+        DerivedSprite.Z = 1f;
+    }
+    else
+    {
+        DerivedSprite.RelativeZ = 1f;
+    }
 }
