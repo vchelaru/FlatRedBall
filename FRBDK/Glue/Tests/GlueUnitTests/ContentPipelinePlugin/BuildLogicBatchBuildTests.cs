@@ -214,6 +214,44 @@ public class BuildLogicBatchBuildTests : IDisposable
     }
 
     [Fact]
+    public async Task RefreshBuiltFilesFor_ShouldStartEveryFilesBuild_BeforeWaitingOnAny()
+    {
+        // Awaiting each file's queued task before queuing the next left the task thread idle between files,
+        // most of the last 5 seconds of loading a game with 100 sounds for two platforms (#2422).
+        AddSound(@"Sfx\A.wav");
+        AddSound(@"Music\D.wav");
+        var started = new List<TaskCompletionSource>();
+        var original = BuildLogic.Self.RefreshBuiltFile;
+        BuildLogic.Self.RefreshBuiltFile = (_, _, _) =>
+        {
+            var build = new TaskCompletionSource();
+            lock (started) started.Add(build);
+            return build.Task;
+        };
+        try
+        {
+            var refresh = BuildLogic.Self.RefreshBuiltFilesFor(project);
+
+            var deadline = DateTime.Now.AddSeconds(5);
+            while (StartedCount() < 2 && DateTime.Now < deadline)
+            {
+                await Task.Delay(20);
+            }
+            StartedCount().ShouldBe(2);
+
+            lock (started) started.ForEach(build => build.SetResult());
+            await refresh;
+        }
+        finally
+        {
+            BuildLogic.Self.RefreshBuiltFile = original;
+            lock (started) started.ForEach(build => build.TrySetResult());
+        }
+
+        int StartedCount() { lock (started) return started.Count; }
+    }
+
+    [Fact]
     public void GenerateCommandLine_ShouldBeUnchanged_ForOneItem()
     {
         var item = ContentItem.CreateWavBuild();
