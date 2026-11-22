@@ -22,9 +22,10 @@ namespace FlatRedBall.Glue.Parsing
 
         static Dictionary<string, Type> mCommonTypes;
 
-        static Type[] FlatRedBallTypes;
-        static Type[] mTypesInMicrosoftXnaFramework;
-        static Type[] mTypesInMicrosoftXnaFrameworkGame;
+        // Indexed by name: code generation resolves type names constantly, and scanning these was slow.
+        static IndexedTypeList FlatRedBallTypes;
+        static IndexedTypeList mTypesInMicrosoftXnaFramework;
+        static IndexedTypeList mTypesInMicrosoftXnaFrameworkGame;
 #if XNA4
         static Type[] mTypesInMicrosoftXnaFrameworkGraphics;
 #endif
@@ -148,7 +149,7 @@ namespace FlatRedBall.Glue.Parsing
 
                     Assembly frbAssembly = Assembly.GetAssembly(typeof(Sprite));
 
-                    FlatRedBallTypes = frbAssembly.GetTypes();
+                    FlatRedBallTypes = new IndexedTypeList(frbAssembly.GetTypes());
                     #endregion
 
 
@@ -156,14 +157,14 @@ namespace FlatRedBall.Glue.Parsing
 #region Microsoft.Xna.Framework
 
                     assembly = Assembly.GetAssembly(typeof(Microsoft.Xna.Framework.Matrix));
-                    mTypesInMicrosoftXnaFramework = assembly.GetTypes();
+                    mTypesInMicrosoftXnaFramework = new IndexedTypeList(assembly.GetTypes());
 
 #endregion
 
 #region Microsoft.Xna.Framework.Game
 
                     assembly = Assembly.GetAssembly(typeof(Microsoft.Xna.Framework.Game));// Assembly.LoadFile(location);
-                    mTypesInMicrosoftXnaFrameworkGame = assembly.GetTypes();
+                    mTypesInMicrosoftXnaFrameworkGame = new IndexedTypeList(assembly.GetTypes());
 
 #endregion
 
@@ -285,13 +286,7 @@ namespace FlatRedBall.Glue.Parsing
 
                 LoadAssembliesIfNecessary();
 
-                foreach (Type type in FlatRedBallTypes)
-                {
-                    if (type.Name == typeString)
-                    {
-                        return type;
-                    }
-                }
+                return FlatRedBallTypes.FirstWithName(typeString);
 
             }
             return null;
