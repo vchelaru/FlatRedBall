@@ -175,18 +175,27 @@ namespace FlatRedBall.Glue.Parsing
 
                 if (typeToReturn == null)
                 {
-                    foreach (Type type in flatRedBallTypes)
+                    if (flatRedBallTypes is IndexedTypeList indexedFlatRedBallTypes)
                     {
-                        if (isFullyQualified && type.FullName == typeString)
+                        typeToReturn = isFullyQualified
+                            ? indexedFlatRedBallTypes.FirstWithFullName(typeString)
+                            : indexedFlatRedBallTypes.FirstWithName(unqualifiedType);
+                    }
+                    else
+                    {
+                        foreach (Type type in flatRedBallTypes)
                         {
-                            typeToReturn = type;
-                            break;
-                        }
-                        // If it's fully qualified, then we want to prevent false matches
-                        else if (isFullyQualified == false && type.Name == unqualifiedType)
-                        {
-                            typeToReturn = type;
-                            break;
+                            if (isFullyQualified && type.FullName == typeString)
+                            {
+                                typeToReturn = type;
+                                break;
+                            }
+                            // If it's fully qualified, then we want to prevent false matches
+                            else if (isFullyQualified == false && type.Name == unqualifiedType)
+                            {
+                                typeToReturn = type;
+                                break;
+                            }
                         }
                     }
                 }
@@ -206,11 +215,22 @@ namespace FlatRedBall.Glue.Parsing
                         ati.QualifiedRuntimeTypeName.QualifiedType == typeString
                         )
                     {
-                        foreach (Type type in flatRedBallTypes)
+                        if (flatRedBallTypes is IndexedTypeList indexed)
                         {
-                            if (type.FullName == ati.QualifiedRuntimeTypeName.QualifiedType)
+                            var found = indexed.FirstWithFullName(ati.QualifiedRuntimeTypeName.QualifiedType);
+                            if (found != null)
                             {
-                                return type;
+                                return found;
+                            }
+                        }
+                        else
+                        {
+                            foreach (Type type in flatRedBallTypes)
+                            {
+                                if (type.FullName == ati.QualifiedRuntimeTypeName.QualifiedType)
+                                {
+                                    return type;
+                                }
                             }
                         }
                     }
@@ -218,26 +238,12 @@ namespace FlatRedBall.Glue.Parsing
 
                 if (typeToReturn == null)
                 {
-                    foreach (Type type in xnaFrameworkTypes)
-                    {
-                        if (type.Name == typeString || type.FullName == typeString)
-                        {
-                            typeToReturn = type;
-                            break;
-                        }
-                    }
+                    typeToReturn = FirstWithNameOrFullName(xnaFrameworkTypes, typeString);
                 }
 
                 if (typeToReturn == null)
                 {
-                    foreach (Type type in xnaFrameworkGameTypes)
-                    {
-                        if (type.Name == typeString || type.FullName == typeString)
-                        {
-                            typeToReturn = type;
-                            break;
-                        }
-                    }
+                    typeToReturn = FirstWithNameOrFullName(xnaFrameworkGameTypes, typeString);
                 }
 
                 if (typeToReturn == null)
@@ -255,6 +261,22 @@ namespace FlatRedBall.Glue.Parsing
             {
                 return typeToReturn;
             }
+        }
+
+        private static Type FirstWithNameOrFullName(IReadOnlyList<Type> types, string typeString)
+        {
+            if (types is IndexedTypeList indexed)
+            {
+                return indexed.FirstWithNameOrFullName(typeString);
+            }
+            foreach (Type type in types)
+            {
+                if (type.Name == typeString || type.FullName == typeString)
+                {
+                    return type;
+                }
+            }
+            return null;
         }
 
         /// <summary>
