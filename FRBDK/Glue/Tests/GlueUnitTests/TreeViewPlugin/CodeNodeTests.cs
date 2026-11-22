@@ -119,6 +119,36 @@ public class CodeNodeTests : IDisposable
             .ShouldBe(new[] { "Bear.cs", "Bear.Generated.cs", "Bear.Generated.Event.cs" });
     }
 
+    [Fact]
+    public void GetAllCodeFilesFor_DoesNotReadSubfolders()
+    {
+        // The tree view calls this once per element on load, and it used to scan the element's whole
+        // folder tree each time. A subfolder that can't be listed proves it is never opened now.
+        UseProject(p => new ClassLibraryProject(p), "Frb1Game");
+        var entities = Path.Combine(_directory, "Entities");
+        File.WriteAllText(Path.Combine(Directory.CreateDirectory(entities).FullName, "Bear.cs"), "");
+        var locked = new DirectoryInfo(Path.Combine(entities, "Enemies"));
+        locked.Create();
+        var user = System.Security.Principal.WindowsIdentity.GetCurrent().User;
+        var deny = new System.Security.AccessControl.FileSystemAccessRule(user,
+            System.Security.AccessControl.FileSystemRights.ListDirectory,
+            System.Security.AccessControl.AccessControlType.Deny);
+        var acl = locked.GetAccessControl();
+        acl.AddAccessRule(deny);
+        locked.SetAccessControl(acl);
+        try
+        {
+            var files = CodeWriter.GetAllCodeFilesFor(new EntitySave { Name = @"Entities\Bear" });
+
+            files.Select(file => file.NoPath).ShouldBe(new[] { "Bear.cs" });
+        }
+        finally
+        {
+            acl.RemoveAccessRule(deny);
+            locked.SetAccessControl(acl);
+        }
+    }
+
     [StaFact]
     public void AnEntityInAnFrb2Project_HasNoCodeNode()
     {
