@@ -7,9 +7,15 @@
 [Base.AddToManagers] FlatRedBall.SpriteManager.AddToLayer(BaseSprite, LayerProvidedByContainer);
 [Base.AssignCustomVariables] if (callOnContainedElements)
 [Base.AssignCustomVariables] BaseChild.AssignCustomVariables(true);
+[Base.AssignCustomVariables] if (BaseSprite.Parent == null)
 [Base.AssignCustomVariables] BaseSprite.Z = 1f;
+[Base.AssignCustomVariables] else
+[Base.AssignCustomVariables] BaseSprite.RelativeZ = 1f;
 [Derived.AssignCustomVariables] if (callOnContainedElements)
 [Derived.AssignCustomVariables] DerivedChild.AssignCustomVariables(true);
+[Derived.AssignCustomVariables] if (DerivedSprite.Parent == null)
 [Derived.AssignCustomVariables] DerivedSprite.Z = 1f;
+[Derived.AssignCustomVariables] else
+[Derived.AssignCustomVariables] DerivedSprite.RelativeZ = 1f;
 [Base.AddToManagers] CustomInitialize();
 [Derived.AddToManagers] CustomInitialize();

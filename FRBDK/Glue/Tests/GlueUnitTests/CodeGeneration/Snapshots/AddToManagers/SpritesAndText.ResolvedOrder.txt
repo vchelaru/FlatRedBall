@@ -10,10 +10,22 @@
 [Base.AddToManagers] BaseText.SetPixelPerfectScale(LayerProvidedByContainer);
 [Base.AddToManagers] FlatRedBall.SpriteManager.AddToLayer(BaseSprite, LayerProvidedByContainer);
 [Base.AssignCustomVariables] if (callOnContainedElements)
+[Base.AssignCustomVariables] if (BaseText.Parent == null)
 [Base.AssignCustomVariables] BaseText.Z = 1f;
+[Base.AssignCustomVariables] else
+[Base.AssignCustomVariables] BaseText.RelativeZ = 1f;
+[Base.AssignCustomVariables] if (BaseSprite.Parent == null)
 [Base.AssignCustomVariables] BaseSprite.Z = 1f;
+[Base.AssignCustomVariables] else
+[Base.AssignCustomVariables] BaseSprite.RelativeZ = 1f;
 [Derived.AssignCustomVariables] if (callOnContainedElements)
+[Derived.AssignCustomVariables] if (DerivedText.Parent == null)
 [Derived.AssignCustomVariables] DerivedText.Z = 1f;
+[Derived.AssignCustomVariables] else
+[Derived.AssignCustomVariables] DerivedText.RelativeZ = 1f;
+[Derived.AssignCustomVariables] if (DerivedSprite.Parent == null)
 [Derived.AssignCustomVariables] DerivedSprite.Z = 1f;
+[Derived.AssignCustomVariables] else
+[Derived.AssignCustomVariables] DerivedSprite.RelativeZ = 1f;
 [Base.AddToManagers] CustomInitialize();
 [Derived.AddToManagers] CustomInitialize();

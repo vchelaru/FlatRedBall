@@ -62,7 +62,7 @@ public class EditModeReleaseBuildTests
             new GameJsonCommunicationPlugin.Common.GameConnectionManager((_, __) => { }, 0);
 
         var originalNotifier = ProjectCreationHelper.Notifier;
-        using var temp = new TempDir();
+        using var temp = new TempDir("FrbEditMode_");
         try
         {
             var repoRoot = GoldProject.FindRepoRoot();
@@ -181,19 +181,6 @@ public class EditModeReleaseBuildTests
         foreach (var file in Directory.GetFiles(source, "*", SearchOption.AllDirectories))
         {
             File.Copy(file, file.Replace(source, destination), overwrite: true);
-        }
-    }
-
-    sealed class TempDir : IDisposable
-    {
-        public string Root { get; } = Path.Combine(Path.GetTempPath(), "FrbEditMode_" + Guid.NewGuid().ToString("N"));
-
-        public TempDir() => Directory.CreateDirectory(Root);
-
-        public void Dispose()
-        {
-            try { Directory.Delete(Root, recursive: true); }
-            catch { /* best-effort cleanup */ }
         }
     }
 }

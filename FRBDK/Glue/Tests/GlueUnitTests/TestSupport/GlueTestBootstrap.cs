@@ -192,6 +192,12 @@ internal static class GlueTestBootstrap
 
             WireGlueCommonSeams();
 
+            // MainGlueWindow.cs makes this call at startup. It fills the absolute/relative table
+            // (X -> RelativeX) that codegen reads to emit `if (X.Parent == null) ... else ...RelativeX`.
+            // Skipped, in-memory codegen tests generate text real Glue never does, and change output
+            // once any test initializes the engine in the same process (#2429).
+            FlatRedBall.Instructions.InstructionManager.Initialize();
+
             if (FlatRedBall.Glue.Reflection.ExposedVariableManager.PositionedObjectMembers == null)
             {
                 FlatRedBall.Glue.Reflection.ExposedVariableManager.Initialize();

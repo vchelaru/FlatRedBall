@@ -46,7 +46,7 @@ public class ScreenRegistryProjectTests
         var generators = Game1CodeGeneratorManager.Generators.ToList();
         Game1CodeGeneratorManager.Generators.Add(new Game1GlueControlGenerator());
         var originalNotifier = ProjectCreationHelper.Notifier;
-        using var temp = new TempDir();
+        using var temp = new TempDir("FrbRegistry_");
         try
         {
             var repoRoot = GoldProject.FindRepoRoot();
@@ -154,18 +154,5 @@ public class ScreenRegistryProjectTests
             new XElement(ns + "ProjectReference", new XAttribute("Include",
                 Path.Combine(repoRoot, "Engines", "Forms", "FlatRedBall.Forms", "StateInterpolation", "StateInterpolation.DesktopGlNet6", "StateInterpolation.DesktopNet6.csproj")))));
         doc.Save(csproj);
-    }
-
-    sealed class TempDir : IDisposable
-    {
-        public string Root { get; } = Path.Combine(Path.GetTempPath(), "FrbRegistry_" + Guid.NewGuid().ToString("N"));
-
-        public TempDir() => Directory.CreateDirectory(Root);
-
-        public void Dispose()
-        {
-            try { Directory.Delete(Root, recursive: true); }
-            catch { /* best-effort cleanup */ }
-        }
     }
 }

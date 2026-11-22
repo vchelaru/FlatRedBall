@@ -141,6 +141,16 @@ public class NamedObjectSaveCodeGeneratorTests
         return (baseEntity, derivedEntity, derivedNos);
     }
 
+    /// <summary>
+    /// Generated text for an entire-file object depends on its ATI (LayeredTileMap adds .Clone()), which
+    /// only the Tiled plugin registers. Plugin registration is process-wide and never undone, so a test
+    /// that skips this generates different text depending on which test ran first (#2429). Registering
+    /// pins the text to what real Glue generates. Callers need [StaFact]: plugin StartUp methods build
+    /// WPF toolbars.
+    /// </summary>
+    private static void RegisterPluginsThatOwnTheTileMapAti() =>
+        GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
+
     private static string GenerateInitializeCodeFor(NamedObjectSave namedObject, EntitySave container)
     {
         NamedObjectSaveCodeGenerator.ReusableEntireFileRfses ??= new Dictionary<string, string>();
@@ -156,15 +166,16 @@ public class NamedObjectSaveCodeGeneratorTests
     /// supposed to produce, so mis-wiring the predicate into WriteCodeForNamedObjectInitialize still
     /// fails a test.
     /// </summary>
-    [Fact]
+    [StaFact]
     public void WriteCodeForNamedObjectInitialize_ShouldAssignFromDerivedsOwnFile_WhenDerivedSourceFileDiffersFromBase()
     {
+        RegisterPluginsThatOwnTheTileMapAti();
         var (_, derivedEntity, derivedNos) =
             CreateExposedInDerivedTileMapPair("Content/BaseMap.tmx", "Content/DerivedMap.tmx");
 
         var generatedCode = GenerateInitializeCodeFor(derivedNos, derivedEntity);
 
-        generatedCode.ShouldContain("Map = DerivedMap;");
+        generatedCode.ShouldContain("Map = DerivedMap.Clone();", Case.Sensitive);
         generatedCode.ShouldNotContain("BaseMap");
     }
 
@@ -172,9 +183,10 @@ public class NamedObjectSaveCodeGeneratorTests
     /// The unchanged InstantiatedByBase path: a derived object still pointing at the base's file must
     /// keep deferring to the base's single instantiation rather than emitting a duplicate one.
     /// </summary>
-    [Fact]
+    [StaFact]
     public void WriteCodeForNamedObjectInitialize_ShouldGenerateNoInstantiation_WhenDerivedSourceFileMatchesBase()
     {
+        RegisterPluginsThatOwnTheTileMapAti();
         var (_, derivedEntity, derivedNos) =
             CreateExposedInDerivedTileMapPair("Content/BaseMap.tmx", "Content/BaseMap.tmx");
 
@@ -192,9 +204,10 @@ public class NamedObjectSaveCodeGeneratorTests
     /// showPopupAboutObjectErrors: false - the true default reaches DialogService and would block the run
     /// on a real modal dialog.
     /// </summary>
-    [Fact]
+    [StaFact]
     public void UpdateFromBaseType_ThenChangingDerivedSourceFile_ShouldGenerateCodeLoadingTheDerivedsOwnFile()
     {
+        RegisterPluginsThatOwnTheTileMapAti();
         var (baseEntity, derivedEntity) = CreateBaseAndDerivedEntities();
 
         var baseNos = CreateFileSourcedNamedObject("Content/BaseMap.tmx", instantiatedByBase: false);
@@ -220,7 +233,7 @@ public class NamedObjectSaveCodeGeneratorTests
 
         var generatedCode = GenerateInitializeCodeFor(derivedNos, derivedEntity);
 
-        generatedCode.ShouldContain("Map = DerivedMap;");
+        generatedCode.ShouldContain("Map = DerivedMap.Clone();", Case.Sensitive);
         generatedCode.ShouldNotContain("BaseMap");
     }
 }

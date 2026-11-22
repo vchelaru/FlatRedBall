@@ -44,5 +44,12 @@ public override void AssignCustomVariables (bool callOnContainedElements)
     if (callOnContainedElements)
     {
     }
-    DerivedSprite.Z = 3f;
+    if (DerivedSprite.Parent == null)
+    {
+        DerivedSprite.Z = 3f;
+    }
+    else
+    {
+        DerivedSprite.RelativeZ = 3f;
+    }
 }
