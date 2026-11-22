@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
@@ -126,18 +125,33 @@ public class StateInterpolationCodegenScalingTests : IDisposable
     }
 
     [Fact]
-    public void GenerateCodeFor_ComponentWithManyVariables_GeneratesInTimeThatIsNotQuadratic()
+    public void GenerateCodeFor_ComponentWithManyVariables_ComputesMemberNamesInLinearCount()
     {
         GlueTestBootstrap.EnsureGumPluginCodeGeneratorsInitialized();
-        var component = BuildComponent(instanceCount: 1500, xValue: 5);
 
-        var stopwatch = Stopwatch.StartNew();
+        // Counts member-name computations rather than timing, so it does not depend on machine load. The old
+        // lookup recomputed the name of every earlier variable for each new one, so ten times the variables
+        // meant about a hundred times the computations; a lookup by name keeps it about ten times.
+        var small = CountMemberNameComputations(instanceCount: 100);
+        var large = CountMemberNameComputations(instanceCount: 1000);
+
+        ((double)large / small).ShouldBeLessThan(15, $"100 variables: {small} names, 1000 variables: {large} names");
+    }
+
+    private int CountMemberNameComputations(int instanceCount)
+    {
+        Gum.Managers.ObjectFinder.Self.GumProjectSave = new GumProjectSave
+        {
+            FullFileName = System.IO.Path.Combine(_tempProjectDirectory, "GumProject", "GumProject.gumx"),
+            Version = (int)GumProjectSave.GumxVersions.ShapeVariableExpansion
+        };
+        var component = BuildComponent(instanceCount, xValue: 5);
+
+        var before = SaveObjectExtensionMethods.MemberNameInCodeCallCount;
         var source = GueDerivingClassCodeGenerator.Self.GenerateCodeFor(component);
-        stopwatch.Stop();
+        var count = SaveObjectExtensionMethods.MemberNameInCodeCallCount - before;
 
-        source.ShouldContain("bool setInst1499XFirstValue = false;");
-        // Linear generation takes a few hundred ms at this size; scanning every earlier variable for each new
-        // one (the old behavior) takes many seconds.
-        stopwatch.Elapsed.TotalSeconds.ShouldBeLessThan(4, $"took {stopwatch.ElapsedMilliseconds} ms");
+        source.ShouldContain($"bool setInst{instanceCount - 1}XFirstValue = false;");
+        return count;
     }
 }

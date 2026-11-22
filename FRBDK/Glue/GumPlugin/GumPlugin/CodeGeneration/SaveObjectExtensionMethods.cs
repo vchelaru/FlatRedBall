@@ -88,8 +88,16 @@ namespace GumPlugin.CodeGeneration
         
 
 
+        /// <summary>
+        /// How many times this thread has computed a variable's member name. Lets a test check that codegen
+        /// computes a number of names proportional to the variable count, without timing anything.
+        /// </summary>
+        [ThreadStatic]
+        internal static int MemberNameInCodeCallCount;
+
         public static string MemberNameInCode(this VariableSave variableSave, ElementSave container, Dictionary<string, string> replacements = null)
         {
+            MemberNameInCodeCallCount++;
             if(replacements == null)
             {
                 replacements = StateCodeGenerator.VariableNamesToReplaceForStates;
