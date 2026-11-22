@@ -20,6 +20,43 @@ public partial class StateCodeGenerator
         CantInterpolate
     }
 
+    /// <summary>
+    /// The variables generated so far for one InterpolateBetween method, in the order they were added, also
+    /// indexed by their member name in code so a lookup by name doesn't have to recompute every earlier name.
+    /// </summary>
+    private class InterpolationCharacteristics : IEnumerable<KeyValuePair<VariableSave, InterpolationCharacteristic>>
+    {
+        private readonly Dictionary<VariableSave, InterpolationCharacteristic> byVariable =
+            new Dictionary<VariableSave, InterpolationCharacteristic>();
+
+        private readonly Dictionary<string, InterpolationCharacteristic> byMemberName =
+            new Dictionary<string, InterpolationCharacteristic>();
+
+        public bool ContainsMember(string memberName) => byMemberName.ContainsKey(memberName);
+
+        public void Add(VariableSave variable, string memberName, InterpolationCharacteristic characteristic)
+        {
+            byVariable.Add(variable, characteristic);
+            // The first variable with a given name wins, which is what scanning the variables in order found.
+            if (!byMemberName.ContainsKey(memberName))
+            {
+                byMemberName.Add(memberName, characteristic);
+            }
+        }
+
+        public InterpolationCharacteristic GetValue(string memberName)
+        {
+            // This could be a variable tunneling in to a disabled NOS. Let's just say we can't interpolate it.
+            return byMemberName.TryGetValue(memberName, out var characteristic)
+                ? characteristic
+                : InterpolationCharacteristic.CantInterpolate;
+        }
+
+        public IEnumerator<KeyValuePair<VariableSave, InterpolationCharacteristic>> GetEnumerator() => byVariable.GetEnumerator();
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
+    }
+
     #endregion
 
     #region Fields
@@ -44,8 +81,7 @@ public partial class StateCodeGenerator
 
             GenerateDebugCheckForInterpolationValueNaN(currentBlock);
 
-            Dictionary<VariableSave, InterpolationCharacteristic> interpolationCharacteristics =
-               new Dictionary<VariableSave, InterpolationCharacteristic>();
+            var interpolationCharacteristics = new InterpolationCharacteristics();
 
             CreateStartingValueVariables(elementSave, states, currentBlock, interpolationCharacteristics);
 
@@ -271,7 +307,7 @@ public partial class StateCodeGenerator
         codeBlock.Line("#endif");
     }
 
-    private void CreateStartingValueVariables(ElementSave element, IEnumerable<StateSave> states, ICodeBlock curBlock, Dictionary<VariableSave, InterpolationCharacteristic> interpolationCharacteristics)
+    private void CreateStartingValueVariables(ElementSave element, IEnumerable<StateSave> states, ICodeBlock curBlock, InterpolationCharacteristics interpolationCharacteristics)
     {
         foreach (StateSave state in states)
         {
@@ -281,13 +317,13 @@ public partial class StateCodeGenerator
             {
                 string member = variableSave.MemberNameInCode(element, VariableNamesToReplaceForStates);
 
-                if (!ContainsKey(interpolationCharacteristics, member, element))
+                if (!interpolationCharacteristics.ContainsMember(member))
                 {
 
                     InterpolationCharacteristic interpolationCharacteristic =
                                                     GetInterpolationCharacteristic(variableSave, element);
 
-                    interpolationCharacteristics.Add(variableSave, interpolationCharacteristic);
+                    interpolationCharacteristics.Add(variableSave, member, interpolationCharacteristic);
 
                     if (interpolationCharacteristic != InterpolationCharacteristic.CantInterpolate)
                     {
@@ -345,7 +381,7 @@ public partial class StateCodeGenerator
         }
     }
 
-    private ICodeBlock AssignValuesUsingStartingValues(ElementSave element, ICodeBlock curBlock, Dictionary<VariableSave, InterpolationCharacteristic> mInterpolationCharacteristics)
+    private ICodeBlock AssignValuesUsingStartingValues(ElementSave element, ICodeBlock curBlock, InterpolationCharacteristics mInterpolationCharacteristics)
     {
         foreach (KeyValuePair<VariableSave, InterpolationCharacteristic> kvp in mInterpolationCharacteristics)
         {
@@ -398,7 +434,7 @@ public partial class StateCodeGenerator
         }
     }
 
-    private ICodeBlock SetInterpolateBetweenValuesForStates(ElementSave element, string enumType, IEnumerable<StateSave> states, ICodeBlock curBlock, Dictionary<VariableSave, InterpolationCharacteristic> mInterpolationCharacteristics, string firstOrSecondValue)
+    private ICodeBlock SetInterpolateBetweenValuesForStates(ElementSave element, string enumType, IEnumerable<StateSave> states, ICodeBlock curBlock, InterpolationCharacteristics mInterpolationCharacteristics, string firstOrSecondValue)
     {
         foreach (StateSave state in states)
         {
@@ -408,7 +444,7 @@ public partial class StateCodeGenerator
             {
                 var nameInCode = variable.MemberNameInCode(element, VariableNamesToReplaceForStates);
 
-                if (GetValue(mInterpolationCharacteristics, nameInCode, element) != InterpolationCharacteristic.CantInterpolate)
+                if (mInterpolationCharacteristics.GetValue(nameInCode) != InterpolationCharacteristic.CantInterpolate)
                 {
                     string stringSuffix = variable.MemberNameInCode(element, VariableNamesToReplaceForStates).Replace(".", "");
                     if (variable.Value == null)
@@ -468,24 +504,6 @@ public partial class StateCodeGenerator
         return curBlock;
     }
 
-    private InterpolationCharacteristic GetValue(Dictionary<VariableSave, InterpolationCharacteristic> dictionary, string value, ElementSave container)
-    {
-        foreach (var kvp in dictionary)
-        {
-            if (kvp.Key.MemberNameInCode(container, VariableNamesToReplaceForStates) == value)
-            {
-                return kvp.Value;
-            }
-        }
-
-        // This could be a variable tunneling in to 
-        // a disabled NOS.  Let's just say we can't interpolate
-        // it:
-        //throw new ArgumentException();
-        return InterpolationCharacteristic.CantInterpolate;
-
-    }
-
     private InterpolationCharacteristic GetInterpolationCharacteristic(VariableSave variableSave, ElementSave container)
     {
         string variableType = null;
@@ -529,18 +547,6 @@ public partial class StateCodeGenerator
         }
         return InterpolationCharacteristic.CantInterpolate;
 
-    }
-
-    private bool ContainsKey(Dictionary<VariableSave, InterpolationCharacteristic> dictionary, string member, ElementSave container)
-    {
-        foreach (KeyValuePair<VariableSave, InterpolationCharacteristic> kvp in dictionary)
-        {
-            if (kvp.Key.MemberNameInCode(container, VariableNamesToReplaceForStates) == member)
-            {
-                return true;
-            }
-        }
-        return false;
     }
 
     private void GenerateInterpolateTo(ElementSave elementSave, ICodeBlock codeBlock, IEnumerable<StateSave> states, string enumName)
