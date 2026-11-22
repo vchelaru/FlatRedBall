@@ -23,7 +23,7 @@ namespace FlatRedBall.Glue.MVVM
 
     public class ViewModel : INotifyPropertyChanged
     {
-        Dictionary<string, List<string>> notifyRelationships = new Dictionary<string, List<string>>();
+        readonly Dictionary<string, List<string>> notifyRelationships;
         protected Dictionary<string, object> propertyDictionary = new Dictionary<string, object>();
 
         protected T Get<T>([CallerMemberName]string propertyName = null)
@@ -103,10 +103,19 @@ namespace FlatRedBall.Glue.MVVM
             return didSet;
         }
 
+        // The DependsOn map depends only on the type, and reading the attributes by reflection for every
+        // instance was a large part of building the tree view (one view model per node). Never modified
+        // after it is built, so instances of the same type share it.
+        static readonly System.Collections.Concurrent.ConcurrentDictionary<Type, Dictionary<string, List<string>>> notifyRelationshipsByType = new();
+
         public ViewModel()
         {
-            var derivedType = this.GetType();
+            notifyRelationships = notifyRelationshipsByType.GetOrAdd(this.GetType(), BuildNotifyRelationships);
+        }
 
+        static Dictionary<string, List<string>> BuildNotifyRelationships(Type derivedType)
+        {
+            var relationships = new Dictionary<string, List<string>>();
             var properties = derivedType.GetRuntimeProperties();
 
             foreach (var property in properties)
@@ -123,14 +132,14 @@ namespace FlatRedBall.Glue.MVVM
                         string parent = attribute.ParentProperty;
 
                         List<string> childrenProps = null;
-                        if (notifyRelationships.ContainsKey(parent) == false)
+                        if (relationships.ContainsKey(parent) == false)
                         {
                             childrenProps = new List<string>();
-                            notifyRelationships[parent] = childrenProps;
+                            relationships[parent] = childrenProps;
                         }
                         else
                         {
-                            childrenProps = notifyRelationships[parent];
+                            childrenProps = relationships[parent];
                         }
 
                         childrenProps.Add(child);
@@ -138,6 +147,7 @@ namespace FlatRedBall.Glue.MVVM
                 }
             }
 
+            return relationships;
         }
         protected void ChangeAndNotify<T>(ref T property, T value, [CallerMemberName] string propertyName = null) 
         {
