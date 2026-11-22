@@ -36,6 +36,7 @@ using System.IO;
 using System.ServiceModel.Channels;
 using System.Windows.Media;
 using FlatRedBall.Glue.Themes;
+using FlatRedBall.Glue.Utilities;
 using System.Reflection;
 using Wpf = System.Windows;
 
@@ -69,7 +70,18 @@ public partial class MainGlueWindow : Form, IMainGlueWindow
     // without MSBUILD_EXE_PATH pointed at an SDK whose MSBuild matches the one Glue loads,
     // Microsoft.Build.Evaluation.Project can't resolve the SDK imports in any SDK-style .csproj, so no real
     // game project can be loaded. MsBuildSdkSelector documents which SDKs qualify and why.
-    internal static void SetMsBuildEnvironmentVariable()
+    internal static void SetMsBuildEnvironmentVariable() => ApplyMsBuildEnvironmentVariable(ListSdks());
+
+    // Glue.exe starts this at the top of the constructor: `dotnet --list-sdks` takes over half a second,
+    // which now overlaps the rest of startup. It is completed before plugins load and before any project
+    // load, because the MSBuild engine reads MSBUILD_EXE_PATH once, on first use.
+    internal static readonly BackgroundStartupStep<ListSdksResult> MsBuildEnvironmentStep =
+        new(ListSdks, ApplyMsBuildEnvironmentVariable);
+
+    internal record ListSdksResult(string Output, bool IsDotnetMissing, string? ErrorMessage);
+
+    // Touches no UI or Glue state, so it can run off the UI thread.
+    static ListSdksResult ListSdks()
     {
         // This only matters for SDK-style (.NET 6 and up) projects - older .NET 4.7 projects evaluate
         // without it. But this runs once at startup, before we know which kind of project will be loaded
@@ -83,7 +95,7 @@ public partial class MainGlueWindow : Form, IMainGlueWindow
         process.WaitForExit(1000);
 
         var output = process.StandardOutput.ReadToEnd();
-
+        string? errorMessage = null;
 
         if (String.IsNullOrEmpty(output))
         {
@@ -91,8 +103,7 @@ public partial class MainGlueWindow : Form, IMainGlueWindow
             // Any further checks on .NET usage are not required.
             if (!System.IO.File.Exists(@"C:\Program Files\dotnet\dotnet.exe"))
             {
-                DialogService.ShowMessage(Localization.Texts.ErrorDotNetIsNotInstalledOrEnvironmentVariables);
-                return;
+                return new ListSdksResult(output, IsDotnetMissing: true, ErrorMessage: null);
             }
 
             // This can fail for some reason, so let's try/catch it:
@@ -114,15 +125,28 @@ public partial class MainGlueWindow : Form, IMainGlueWindow
             }
             catch(Exception e)
             {
-                var message = $"Error running command {commandToRun} {arguments}";
-
-                message += e.ToString();
-
-                GlueCommands.Self.PrintOutput(message);
-
+                errorMessage = $"Error running command {commandToRun} {arguments}" + e.ToString();
             }
 
         }
+
+        return new ListSdksResult(output, IsDotnetMissing: false, errorMessage);
+    }
+
+    static void ApplyMsBuildEnvironmentVariable(ListSdksResult result)
+    {
+        if (result.IsDotnetMissing)
+        {
+            DialogService.ShowMessage(Localization.Texts.ErrorDotNetIsNotInstalledOrEnvironmentVariables);
+            return;
+        }
+
+        if (result.ErrorMessage != null)
+        {
+            GlueCommands.Self.PrintOutput(result.ErrorMessage);
+        }
+
+        var output = result.Output;
 
         if (String.IsNullOrEmpty(output))
         {
@@ -161,21 +185,20 @@ public partial class MainGlueWindow : Form, IMainGlueWindow
 
     public MainGlueWindow()
     {
+        // Vic says - this makes Glue use the latest MSBuild environments
+        // Running on AnyCPU means we run in 64 bit and can load VS 22 64 bit libs.
+        MsBuildEnvironmentStep.Start();
+
         // Because we are hosting in a WinForms application, we need to ensure Application.Current is set
         // This is required for various aspects of WPF controls to work correctly.
         _ = new Wpf.Application() { ShutdownMode = Wpf.ShutdownMode.OnExplicitShutdown };
 
-        // Must be set before anything below can show a dialog (e.g. SetMsBuildEnvironmentVariable on a
-        // failed SDK lookup) - DialogService routes through TaskManager.OnUiThread, which checks
-        // IsOnUiThread against UiThreadId and falls back to MainGlueWindow.Self.Invoke otherwise. Setting
-        // both late meant a dialog shown from this early in the constructor NullReferenceException'd on
-        // Self instead of displaying.
+        // Must be set before anything can show a dialog (e.g. MsBuildEnvironmentStep on a failed SDK
+        // lookup) - DialogService routes through TaskManager.OnUiThread, which checks IsOnUiThread against
+        // UiThreadId and falls back to MainGlueWindow.Self.Invoke otherwise. Setting both late meant a
+        // dialog shown early in startup NullReferenceException'd on Self instead of displaying.
         Self = this;
         UiThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
-
-        // Vic says - this makes Glue use the latest MSBuild environments
-        // Running on AnyCPU means we run in 64 bit and can load VS 22 64 bit libs.
-        SetMsBuildEnvironmentVariable();
 
         InitializeComponent();
 
@@ -325,6 +348,9 @@ public partial class MainGlueWindow : Form, IMainGlueWindow
         FlatRedBall.Glue.Controls.DialogService.EnsureErrorReportingSeamWired();
         FlatRedBall.Glue.Plugins.PluginManager.EnsurePluginSeamWired();
         FlatRedBall.Glue.Managers.BuildToolAssociationManager.EnsureBuildToolAssociationSeamWired();
+
+        // Plugins may evaluate projects in StartUp, so MSBUILD_EXE_PATH must be final first.
+        MsBuildEnvironmentStep.EnsureCompleted();
 
         SetScreenMessage("Loading Plugins");
 
