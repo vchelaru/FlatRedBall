@@ -429,14 +429,18 @@ namespace FlatRedBall.Glue.CodeGeneration
                         NamedObjectSaveCodeGenerator.AddIfConditionalSymbolIfNecesssary(curBlock, nos);
                     }
 
-                    string relativeValue = InstructionManager.GetRelativeForAbsolute(kvp.Key);
-
                     string variableToAssign = kvp.Key;
 
 
                     string leftSideOfEqualsWithRelative = GetLeftSideOfEquals(element, variable, kvp.Key, true);
 
-                    if (!string.IsNullOrEmpty(leftSideOfEqualsWithRelative) && leftSideOfEqualsWithRelative != kvp.Key)
+                    // Decides both the opening of the Parent/else branch and its closing below. Closing on
+                    // a different condition (the relative name of the variable's own name, which is null for
+                    // a tunneled variable like "CircleX") left the else open, nesting every later variable's
+                    // assignment inside it.
+                    var writesRelativeBranch = !string.IsNullOrEmpty(leftSideOfEqualsWithRelative) && leftSideOfEqualsWithRelative != kvp.Key;
+
+                    if (writesRelativeBranch)
                     {
                         string beforeDotParent = variable.SourceObject;
 
@@ -455,7 +459,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                     AddAssignmentForInterpolationForVariable(curBlock, variable, variableToAssign, variableToAssign);
 
-                    if (!string.IsNullOrEmpty(relativeValue))
+                    if (writesRelativeBranch)
                     {
                         curBlock = curBlock.End(); // end the else
                     }
