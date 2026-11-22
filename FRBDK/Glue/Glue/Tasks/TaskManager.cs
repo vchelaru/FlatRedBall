@@ -51,6 +51,9 @@ namespace FlatRedBall.Glue.Managers
 
         readonly BlockingCollection<KeyValuePair<ulong, GlueTaskBase>> taskQueue = new BlockingCollection<KeyValuePair<ulong, GlueTaskBase>>(new ConcurrentPriorityQueue<ulong, GlueTaskBase>());
 
+        // Released when a task is queued so an idle task loop wakes at once instead of at its next poll.
+        readonly SemaphoreSlim taskQueuedSignal = new SemaphoreSlim(0, 1);
+
         ConcurrentDictionary<string, GlueTaskBase> addOrMoveToEndTaskQueueTaskIds = new ();
 
         const string RestartTaskDisplay = "Restarting due to Glue or file change";
@@ -387,7 +390,9 @@ namespace FlatRedBall.Glue.Managers
                 }
                 else
                 {
-                    await Task.Delay(TaskManagerLoopDelayMs);
+                    // Wakes as soon as a task is queued. Otherwise a caller awaiting queued tasks one at a
+                    // time waited up to the whole delay for each. The timeout keeps the periodic wake.
+                    await taskQueuedSignal.WaitAsync(TaskManagerLoopDelayMs);
                 }
             }
         }
@@ -705,6 +710,14 @@ namespace FlatRedBall.Glue.Managers
 
             taskQueueCount++;
 
+            try
+            {
+                taskQueuedSignal.Release();
+            }
+            catch (SemaphoreFullException)
+            {
+                // Already signaled; the loop takes every queued task once it wakes.
+            }
         }
 
 
