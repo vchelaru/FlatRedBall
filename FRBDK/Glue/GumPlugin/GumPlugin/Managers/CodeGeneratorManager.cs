@@ -167,16 +167,21 @@ public class CodeGeneratorManager : Singleton<CodeGeneratorManager>
         }
     }
 
-    public void GenerateCodeForcedTask(ElementSave element, bool saveProjects, GenerationVerbosity generationVerbosity = GenerationVerbosity.Minimal)
+    public void GenerateCodeForcedTask(ElementSave element, bool saveProjects, GenerationVerbosity generationVerbosity = GenerationVerbosity.Minimal) =>
+        GenerateCodeForcedTask(element, saveProjects, generationVerbosity, generateRuntimeAssociations: true);
+
+    /// <param name="generateRuntimeAssociations">Whether to regenerate GumIdb.Generated.cs after the element. It
+    /// lists every element in the project, so a pass over all elements writes it once up front instead.</param>
+    private void GenerateCodeForcedTask(ElementSave element, bool saveProjects, GenerationVerbosity generationVerbosity, bool generateRuntimeAssociations)
     {
         if(AppState.Self.GumProjectSave != null)
         {
-            TaskManager.Self.Add(() => GenerateCode(element, saveProjects, generationVerbosity),
+            TaskManager.Self.Add(() => GenerateCode(element, saveProjects, generationVerbosity, generateRuntimeAssociations),
                 $"Generating Gum {element}", TaskExecutionPreference.AddOrMoveToEnd);
         }
     }
 
-    private void GenerateCode(ElementSave changedElement, bool saveProjects, GenerationVerbosity generationVerbosity)
+    private void GenerateCode(ElementSave changedElement, bool saveProjects, GenerationVerbosity generationVerbosity, bool generateRuntimeAssociations)
     {
         if(changedElement == null)
         {
@@ -198,7 +203,7 @@ public class CodeGeneratorManager : Singleton<CodeGeneratorManager>
 
             foreach (var container in whatContainsThisElement)
             {
-                GenerateCodeForcedTask(container, saveProjects, generationVerbosity);
+                GenerateCodeForcedTask(container, saveProjects, generationVerbosity, generateRuntimeAssociations);
             }
 
             if(changedElement is Gum.DataTypes.ScreenSave)
@@ -207,7 +212,7 @@ public class CodeGeneratorManager : Singleton<CodeGeneratorManager>
                 {
                     if(screenSave != changedElement && screenSave.IsOfType(changedElement.Name))
                     {
-                        GenerateCodeForcedTask(screenSave, saveProjects, generationVerbosity);
+                        GenerateCodeForcedTask(screenSave, saveProjects, generationVerbosity, generateRuntimeAssociations);
                     }
                 }
             }
@@ -219,13 +224,16 @@ public class CodeGeneratorManager : Singleton<CodeGeneratorManager>
                 {
                     if (component != changedElement && component.IsOfType(changedElement.Name))
                     {
-                        GenerateCodeForcedTask(component, saveProjects, generationVerbosity);
+                        GenerateCodeForcedTask(component, saveProjects, generationVerbosity, generateRuntimeAssociations);
                     }
                 }
             }
         }
 
-        GenerateAndSaveRuntimeAssociations();
+        if (generateRuntimeAssociations)
+        {
+            GenerateAndSaveRuntimeAssociations();
+        }
     }
 
     public static ElementSave GetElementFrom(ReferencedFileSave rfs)
@@ -346,7 +354,8 @@ public class CodeGeneratorManager : Singleton<CodeGeneratorManager>
         {
             try
             {
-                GenerateCodeForcedTask(element, saveProjects:false, generationVerbosity);
+                // The caller already wrote GumIdb.Generated.cs for this set of elements.
+                GenerateCodeForcedTask(element, saveProjects:false, generationVerbosity, generateRuntimeAssociations: false);
             }
             catch (Exception e)
             {
@@ -636,8 +645,14 @@ public class CodeGeneratorManager : Singleton<CodeGeneratorManager>
         }
     }
 
+    /// <summary>
+    /// How many times GumIdb.Generated.cs has been generated. Lets tests pin how often a pass regenerates it.
+    /// </summary>
+    internal int RuntimeAssociationsGenerationCount { get; private set; }
+
     public bool GenerateAndSaveRuntimeAssociations()
     {
+        RuntimeAssociationsGenerationCount++;
         bool wasAdded = false;
 
         var shouldGenerateComponentsToFormsAssociation = false;
