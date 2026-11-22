@@ -22,4 +22,37 @@ public class GumViewModelSetFromTests
 
         Should.NotThrow(() => viewModel.SetFrom(null, rfs));
     }
+
+    [StaFact]
+    public void SetFrom_WhileUpdatingFromGlueObject_StaysUpdatingForEveryPropertyItRaises()
+    {
+        // MainGumPlugin saves the whole Glue project for any GumViewModel property change raised while
+        // IsUpdatingFromGlueObject is false. RefreshGumViewModel sets the flag around SetFrom, but
+        // UpdateFromGlueObject cleared it partway through, so GumProjectInfo saved the project on every load.
+        var viewModel = new GumViewModel();
+        var rfs = new ReferencedFileSave { Name = "GlobalContent/GumProject.gumx" };
+        var raisedWhileNotUpdating = new System.Collections.Generic.List<string>();
+        viewModel.PropertyChanged += (_, e) =>
+        {
+            if (!viewModel.IsUpdatingFromGlueObject) raisedWhileNotUpdating.Add(e.PropertyName);
+        };
+
+        viewModel.IsUpdatingFromGlueObject = true;
+        viewModel.SetFrom(new Gum.DataTypes.GumProjectSave(), rfs);
+
+        raisedWhileNotUpdating.ShouldBeEmpty();
+        viewModel.IsUpdatingFromGlueObject.ShouldBeTrue();
+    }
+
+    [StaFact]
+    public void UpdateFromGlueObject_WhenNotAlreadyUpdating_EndsNotUpdating()
+    {
+        // Callers such as MainSongControlViewModel set properties right after the base call and expect them to persist.
+        var viewModel = new GumViewModel();
+        viewModel.GlueObject = new ReferencedFileSave { Name = "GlobalContent/GumProject.gumx" };
+
+        viewModel.UpdateFromGlueObject();
+
+        viewModel.IsUpdatingFromGlueObject.ShouldBeFalse();
+    }
 }
