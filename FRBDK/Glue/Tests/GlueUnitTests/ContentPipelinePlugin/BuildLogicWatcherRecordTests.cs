@@ -25,7 +25,7 @@ public class BuildLogicWatcherRecordTests : IDisposable
     readonly string originalRelativeDirectory;
     readonly Func<VisualStudioProject, string> originalGetBuildExe;
     readonly Action<ContentItem, VisualStudioProject, bool> originalBuildContentItem;
-    readonly Action<System.Collections.Generic.IReadOnlyList<ContentItem>, VisualStudioProject> originalBuildContentItems;
+    readonly Action<System.Collections.Generic.IReadOnlyList<ContentItem>, VisualStudioProject, Action<string>> originalBuildContentItems;
     readonly MonoGameDesktopGlNetCoreProject project;
     readonly FilePath sound;
     readonly FilePath builtSound;
@@ -61,7 +61,7 @@ public class BuildLogicWatcherRecordTests : IDisposable
         BuildLogic.Self.GetBuildExe = _ => fakeBuilder;
         BuildLogic.Self.BuildContentItem = (contentItem, _, _) => WriteBuiltFile(contentItem);
         // Fails every file, so a load builds each file on its own, as an edit does.
-        BuildLogic.Self.BuildContentItems = (_, _) => { };
+        BuildLogic.Self.BuildContentItems = (_, _, _) => { };
     }
 
     static void WriteBuiltFile(ContentItem contentItem)

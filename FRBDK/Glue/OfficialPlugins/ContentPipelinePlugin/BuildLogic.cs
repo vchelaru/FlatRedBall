@@ -49,9 +49,10 @@ namespace OfficialPlugins.MonoGameContent
         internal Action<ContentItem, VisualStudioProject, bool> BuildContentItem;
 
         /// <summary>
-        /// Builds content files that share a <see cref="ContentItem.GetBatchKey"/> with one MGCB run.
+        /// Builds content files that share a <see cref="ContentItem.GetBatchKey"/> with one MGCB run, writing what
+        /// MGCB prints to the given output. Batches run on several threads at once.
         /// </summary>
-        internal Action<IReadOnlyList<ContentItem>, VisualStudioProject> BuildContentItems;
+        internal Action<IReadOnlyList<ContentItem>, VisualStudioProject, Action<string>> BuildContentItems;
 
         public BuildLogic()
         {
@@ -60,10 +61,10 @@ namespace OfficialPlugins.MonoGameContent
                 InstallBuilderIfNecessary(project);
                 PerformBuild(contentItem, project, rebuild);
             };
-            BuildContentItems = (contentItems, project) =>
+            BuildContentItems = (contentItems, project, printOutput) =>
             {
                 InstallBuilderIfNecessary(project);
-                PerformBuild(contentItems, project, rebuild: false, reportFailuresAsErrors: false);
+                PerformBuild(contentItems, project, rebuild: false, reportFailuresAsErrors: false, printOutput);
             };
         }
 
@@ -196,12 +197,33 @@ namespace OfficialPlugins.MonoGameContent
                     .Select(sourceFile => TryGetContentItem(sourceFile, project))
                     .Where(contentItem => contentItem != null && contentItem.GetIfNeedsBuild(contentItem.OutputDirectory));
 
-                foreach (var batch in staleItems.GroupBy(contentItem => contentItem.GetBatchKey()))
-                {
-                    var contentItems = batch.ToList();
-                    BuildContentItems(contentItems, project);
+                var batches = staleItems.GroupBy(contentItem => contentItem.GetBatchKey())
+                    .Select(batch => batch.ToList())
+                    .ToList();
 
-                    foreach (var contentItem in contentItems)
+                // Each batch is its own MGCB process, so they run in parallel. MGCB keeps its cache in the
+                // intermediate directory, so batches that share one (same folder, different global switches)
+                // run one after another.
+                var lanes = batches.GroupBy(batch => batch[0].IntermediateDirectory).Select(lane => lane.ToList()).ToList();
+                var outputs = batches.ToDictionary(batch => batch, batch => new StringBuilder());
+
+                System.Threading.Tasks.Parallel.ForEach(lanes,
+                    new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount },
+                    lane =>
+                    {
+                        foreach (var batch in lane)
+                        {
+                            var output = outputs[batch];
+                            BuildContentItems(batch, project, line => output.AppendLine(line));
+                        }
+                    });
+
+                // Printed afterwards, in batch order, so the runs' output doesn't interleave.
+                foreach (var batch in batches)
+                {
+                    GlueCommands.PrintOutput(outputs[batch].ToString());
+
+                    foreach (var contentItem in batch)
                     {
                         foreach (var extension in contentItem.GetBuiltExtensions())
                         {
@@ -765,8 +787,18 @@ namespace OfficialPlugins.MonoGameContent
 
         // todo - this can be slow - like 100 ms. This only needs to happen 1 time per run per project type.
         static bool HasInstalledBuilder = false;
+        static readonly object installBuilderLock = new object();
 
+        // Batches build in parallel, so only the first one checks.
         private void InstallBuilderIfNecessary(VisualStudioProject visualStudioProject)
+        {
+            lock (installBuilderLock)
+            {
+                InstallBuilderIfNecessaryUnlocked(visualStudioProject);
+            }
+        }
+
+        private void InstallBuilderIfNecessaryUnlocked(VisualStudioProject visualStudioProject)
         {
             var needs3_8_1_Builder = visualStudioProject.DotNetVersion.Major >= 6;
 
@@ -868,9 +900,12 @@ namespace OfficialPlugins.MonoGameContent
         /// </summary>
         /// <param name="reportFailuresAsErrors">False for a batch run: a file it fails to build is still stale, so its
         /// own build right after reports the error for that file alone.</param>
+        /// <param name="printOutput">Where output goes instead of Glue's output window, such as a buffer for a batch
+        /// running in parallel with others.</param>
         private static void PerformBuild(IReadOnlyList<ContentItem> contentItems, VisualStudioProject project, bool rebuild = false,
-            bool reportFailuresAsErrors = true)
+            bool reportFailuresAsErrors = true, Action<string> printOutput = null)
         {
+            printOutput ??= text => GlueCommands.PrintOutput(text);
             StringBuilder stringBuilder = new StringBuilder();
             string workingDirectory = "";
 
@@ -895,7 +930,7 @@ namespace OfficialPlugins.MonoGameContent
 
             process.Start();
 
-            GlueCommands.PrintOutput($"Building: \"{commandLineBuildExe}\" {commandLine}");
+            printOutput($"Building: \"{commandLineBuildExe}\" {commandLine}");
 
             // Note - the process may print errors while it is running before it reports that it has an error.
             // Therefore, if we immediately display output as it is printing from monogame, we won't
@@ -925,7 +960,7 @@ namespace OfficialPlugins.MonoGameContent
 
             if (builtCorrectly || !reportFailuresAsErrors)
             {
-                GlueCommands.PrintOutput(stringBuilder.ToString());
+                printOutput(stringBuilder.ToString());
             }
             else
             {
@@ -940,7 +975,7 @@ namespace OfficialPlugins.MonoGameContent
                 }
                 else
                 {
-                    GlueCommands.PrintOutput(str);
+                    printOutput(str);
                 }
             }
         }

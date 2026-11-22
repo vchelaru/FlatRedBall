@@ -27,13 +27,14 @@ public class BuildLogicBatchBuildTests : IDisposable
     readonly string originalRelativeDirectory;
     readonly Func<VisualStudioProject, string> originalGetBuildExe;
     readonly Action<ContentItem, VisualStudioProject, bool> originalBuildContentItem;
-    readonly Action<IReadOnlyList<ContentItem>, VisualStudioProject> originalBuildContentItems;
+    readonly Action<IReadOnlyList<ContentItem>, VisualStudioProject, Action<string>> originalBuildContentItems;
     readonly MonoGameDesktopGlNetCoreProject project;
     readonly string projectDirectory;
 
     readonly List<string[]> batchBuilds = new();
     readonly List<string> singleBuilds = new();
     readonly HashSet<string> filesTheBatchFails = new();
+    Action<IReadOnlyList<ContentItem>> duringBatch = _ => { };
 
     public BuildLogicBatchBuildTests()
     {
@@ -57,9 +58,14 @@ public class BuildLogicBatchBuildTests : IDisposable
         var fakeBuilder = Path.Combine(directory, "mgcb.exe");
         File.WriteAllText(fakeBuilder, "");
         BuildLogic.Self.GetBuildExe = _ => fakeBuilder;
-        BuildLogic.Self.BuildContentItems = (contentItems, _) =>
+        BuildLogic.Self.BuildContentItems = (contentItems, _, _) =>
         {
-            batchBuilds.Add(contentItems.Select(item => item.BuildFileName.NoPath).ToArray());
+            // Batches run on several threads at once.
+            lock (batchBuilds)
+            {
+                batchBuilds.Add(contentItems.Select(item => item.BuildFileName.NoPath).ToArray());
+            }
+            duringBatch(contentItems);
             foreach (var item in contentItems.Where(item => !filesTheBatchFails.Contains(item.BuildFileName.NoPath)))
             {
                 WriteBuiltFile(item);
@@ -95,6 +101,55 @@ public class BuildLogicBatchBuildTests : IDisposable
         Directory.CreateDirectory(Path.GetDirectoryName(path)!);
         File.WriteAllText(path, "source");
         ObjectFinder.Self.GlueProject.GlobalFiles.Add(new ReferencedFileSave { Name = relativeToContent.Replace('\\', '/'), UseContentPipeline = true });
+    }
+
+    [Fact]
+    public async Task RefreshBuiltFilesFor_ShouldRunTheBatchesOfDifferentFolders_AtTheSameTime()
+    {
+        AddSound(@"Sfx\A.wav");
+        AddSound(@"Music\B.wav");
+        // Each batch waits for the other: built one after another, the first one would wait out the timeout.
+        using var bothRunning = new System.Threading.Barrier(2);
+        var sawTheOtherBatch = new List<bool>();
+        duringBatch = _ =>
+        {
+            var arrived = bothRunning.SignalAndWait(TimeSpan.FromSeconds(10));
+            lock (sawTheOtherBatch) { sawTheOtherBatch.Add(arrived); }
+        };
+
+        await BuildLogic.Self.RefreshBuiltFilesFor(project);
+        await TaskManager.Self.WaitForAllTasksFinished();
+
+        sawTheOtherBatch.ShouldBe(new[] { true, true });
+    }
+
+    [Fact]
+    public async Task RefreshBuiltFilesFor_ShouldNotRunBatchesThatShareAnIntermediateDirectory_AtTheSameTime()
+    {
+        // A KNI texture builds with /compress and a sound without, so a folder holding both is two batches
+        // that share the folder's intermediate directory, where MGCB keeps its cache.
+        var kniProject = new KniWebProject(project.Project);
+        kniProject.ContentProject = kniProject;
+        GlueState.Self.CurrentMainProject = kniProject;
+        AddSound(@"Mixed\A.wav");
+        var png = Path.Combine(projectDirectory, "Content", "Mixed", "B.png");
+        File.WriteAllText(png, "source");
+        ObjectFinder.Self.GlueProject.GlobalFiles.Add(new ReferencedFileSave { Name = "Mixed/B.png", UseContentPipeline = true });
+        var running = 0;
+        var mostRunning = 0;
+        duringBatch = _ =>
+        {
+            var now = System.Threading.Interlocked.Increment(ref running);
+            lock (batchBuilds) { mostRunning = Math.Max(mostRunning, now); }
+            System.Threading.Thread.Sleep(300);
+            System.Threading.Interlocked.Decrement(ref running);
+        };
+
+        await BuildLogic.Self.RefreshBuiltFilesFor(kniProject);
+        await TaskManager.Self.WaitForAllTasksFinished();
+
+        batchBuilds.Count.ShouldBe(2);
+        mostRunning.ShouldBe(1);
     }
 
     [Fact]
