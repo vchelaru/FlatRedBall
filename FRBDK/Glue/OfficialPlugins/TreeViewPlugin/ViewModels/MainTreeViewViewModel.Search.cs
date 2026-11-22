@@ -305,9 +305,33 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
 
 
-        private NodeViewModel GetElementTreeNode(GlueElement element)
+        // An element's node is always a child of the Screens or Entities root or of one of their folders,
+        // never inside another element, so this skips element subtrees (their files, objects, states...).
+        // Building the tree looks up every element, and searching the whole tree each time made the build
+        // quadratic in project size.
+        private NodeViewModel? GetElementTreeNode(GlueElement element)
         {
-            return GetTreeNodeByTag(element);
+            return FindElementNode(element is ScreenSave ? ScreenRootNode : EntityRootNode, element);
+        }
+
+        static NodeViewModel? FindElementNode(NodeViewModel folder, GlueElement element)
+        {
+            foreach (var child in folder.Children)
+            {
+                if (child.Tag == element)
+                {
+                    return child;
+                }
+                if (child is not GlueElementNodeViewModel)
+                {
+                    var found = FindElementNode(child, element);
+                    if (found != null)
+                    {
+                        return found;
+                    }
+                }
+            }
+            return null;
         }
 
         public NodeViewModel? TreeNodeForDirectoryOrEntityNode(string containingDirection, NodeViewModel containingNode)
@@ -488,6 +512,10 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         public NodeViewModel GetTreeNodeByTag(object tag)
         {
+            if (tag is GlueElement element)
+            {
+                return GetElementTreeNode(element);
+            }
             var found =
                 ScreenRootNode.GetNodeByTag(tag) ??
                 EntityRootNode.GetNodeByTag(tag) ??
