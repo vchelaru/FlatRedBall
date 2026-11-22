@@ -301,26 +301,29 @@ public class ObjectFinder : IObjectFinder, IObjectFinderCore
     }
 
 
-    // Each object's element, while a CacheContainingElements scope is open.
-    Dictionary<NamedObjectSave, GlueElement> containingElementCache;
+    // Each object's and variable's element, while a CacheContainingElements scope is open.
+    Dictionary<object, GlueElement> containingElementCache;
 
     /// <summary>
-    /// Remembers which element holds each object until the returned scope is disposed, so
-    /// <see cref="GetElementContaining(NamedObjectSave)"/> stops searching the whole project per call.
+    /// Remembers which element holds each object and variable until the returned scope is disposed, so
+    /// <see cref="GetElementContaining(NamedObjectSave)"/> and <see cref="GetElementContaining(CustomVariable)"/>
+    /// stop searching the whole project per call.
     /// A remembered answer is checked against its element before it is returned, and anything not
-    /// confirmed falls back to the search, so objects added, moved or removed inside the scope are still right.
+    /// confirmed falls back to the search, so items added, moved or removed inside the scope are still right.
     /// For passes that look up many containers, like generating all code.
     /// </summary>
     public IDisposable CacheContainingElements()
     {
         var previous = containingElementCache;
-        var cache = new Dictionary<NamedObjectSave, GlueElement>(ReferenceEqualityComparer.Instance);
+        var cache = new Dictionary<object, GlueElement>(ReferenceEqualityComparer.Instance);
         var project = GlueProject;
         if (project != null)
         {
-            // Screens before entities and first match wins, the same order the search uses.
+            // First match wins, in the same order each search uses: objects screens first, variables entities first.
             foreach (var screen in project.Screens) AddToCache(screen.NamedObjects, screen);
             foreach (var entity in project.Entities) AddToCache(entity.NamedObjects, entity);
+            foreach (var entity in project.Entities) AddVariablesToCache(entity);
+            foreach (var screen in project.Screens) AddVariablesToCache(screen);
         }
         containingElementCache = cache;
         return new ContainingElementCacheScope(this, previous);
@@ -336,13 +339,21 @@ public class ObjectFinder : IObjectFinder, IObjectFinderCore
                 }
             }
         }
+
+        void AddVariablesToCache(GlueElement element)
+        {
+            foreach (var variable in element.CustomVariables)
+            {
+                cache.TryAdd(variable, element);
+            }
+        }
     }
 
     private sealed class ContainingElementCacheScope : IDisposable
     {
         private readonly ObjectFinder _owner;
-        private readonly Dictionary<NamedObjectSave, GlueElement> _previous;
-        public ContainingElementCacheScope(ObjectFinder owner, Dictionary<NamedObjectSave, GlueElement> previous)
+        private readonly Dictionary<object, GlueElement> _previous;
+        public ContainingElementCacheScope(ObjectFinder owner, Dictionary<object, GlueElement> previous)
         {
             _owner = owner;
             _previous = previous;
@@ -477,6 +488,13 @@ public class ObjectFinder : IObjectFinder, IObjectFinderCore
 
     public GlueElement GetElementContaining(CustomVariable customVariable)
     {
+        var cache = containingElementCache;
+        if (cache != null && customVariable != null && cache.TryGetValue(customVariable, out var cached)
+            && cached.CustomVariables.Contains(customVariable))
+        {
+            return cached;
+        }
+
         if (GlueProject != null)
         {
 
