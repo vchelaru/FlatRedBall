@@ -135,7 +135,7 @@ public class WizardProjectLogicAddGameScreenTests : IDisposable
     // AddSolidCollision/AddCloudCollision were blocked by two separate NREs, both now fixed:
     // AvailableAssetTypes.CommonAtis (see GlueTestBootstrap.EnsureInitialized) and
     // MainGlueWindow.Self.PropertyGrid.Refresh() (AddNewNamedObjectToAsync always runs with updateUi:true -
-    // see IMainGlueWindow/FakeMainGlueWindow and REFACTORING.md). Covered end-to-end below.
+    // see IMainGlueWindow/HeadlessMainGlueWindow and REFACTORING.md). Covered end-to-end below.
     [Fact]
     public async Task HandleAddGameScreen_ShouldAddSolidAndCloudCollision_WhenRequested()
     {
@@ -154,8 +154,8 @@ public class WizardProjectLogicAddGameScreenTests : IDisposable
         gameScreen.NamedObjects.ShouldContain(cloudCollisionNos);
 
         // AddNamedObjectToAsync's updateUi:true path (MainGlueWindow.Self.PropertyGrid.Refresh()) ran
-        // against the fake window instead of NRE-ing - this is the assertion that matters for #1894.
-        ((FakeMainGlueWindow)MainGlueWindow.Self).PropertyGrid.ShouldNotBeNull();
+        // against the headless window instead of NRE-ing - this is the assertion that matters for #1894.
+        ((FlatRedBall.Glue.Headless.HeadlessMainGlueWindow)MainGlueWindow.Self).PropertyGrid.ShouldNotBeNull();
 
         // Confirms code generation for the screen actually completed for both new objects.
         var generatedCodeFile = Path.Combine(_tempProjectDirectory, "Screens", "GameScreen.Generated.cs");

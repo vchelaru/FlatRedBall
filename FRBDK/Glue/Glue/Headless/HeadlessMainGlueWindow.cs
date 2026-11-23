@@ -4,22 +4,22 @@ using System.Reflection;
 using System.Threading.Tasks;
 using FlatRedBall.Glue.Managers;
 
-namespace GlueUnitTests.TestSupport;
+namespace FlatRedBall.Glue.Headless;
 
 /// <summary>
-/// Test-only <see cref="IMainGlueWindow"/> that doesn't require a live WinForms message loop. Wired in by
-/// <see cref="GlueTestBootstrap"/> so any production code path that reads <c>MainGlueWindow.Self</c> - e.g.
+/// <see cref="IMainGlueWindow"/> for a headless host, which has no live WinForms message loop. Wired in by
+/// <see cref="GlueHeadlessHost"/> so any production code path that reads <c>MainGlueWindow.Self</c> - e.g.
 /// <c>PropertyGrid.Refresh()</c>, <c>HasErrorOccurred</c>, <c>Invoke</c>/<c>BeginInvoke</c> - gets a harmless
-/// object instead of NRE-ing (Self is null in a plain xunit host, since only Program.cs ever constructs the
+/// object instead of NRE-ing (Self is null without a window, since only Program.cs ever constructs the
 /// real WinForms window).
 ///
-/// <c>Invoke</c>/<c>BeginInvoke</c> just run the delegate synchronously on the calling thread - fine for
-/// tests, which are always single-threaded here. <see cref="PropertyGrid"/> is a real (not mocked)
+/// <c>Invoke</c>/<c>BeginInvoke</c> just run the delegate synchronously on the calling thread - fine for a
+/// headless host, which is single-threaded here. <see cref="PropertyGrid"/> is a real (not mocked)
 /// <see cref="System.Windows.Forms.PropertyGrid"/> instance: constructing one doesn't require a running
 /// message loop, and a real control means <c>PropertyGrid.Refresh()</c>/<c>SelectedObject</c> writes behave
-/// exactly like production instead of needing a special test-only no-op path.
+/// exactly like production instead of needing a special headless no-op path.
 /// </summary>
-internal class FakeMainGlueWindow : IMainGlueWindow
+internal class HeadlessMainGlueWindow : IMainGlueWindow
 {
     public System.Windows.Forms.PropertyGrid PropertyGrid { get; set; } = new();
     public bool HasErrorOccurred { get; set; }

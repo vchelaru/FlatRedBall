@@ -18,9 +18,11 @@ Call it in the test's constructor. It's idempotent (safe to call every test, che
 Skipping it is what produces the NRE chain: DI container not built, legacy `EditorObjects.IoC.Container`
 locator not registered, `ProjectManager.CodeProjectHelper` null, `FileWatchManager` not initialized.
 
-None of this is faked — `GlueTestBootstrap` runs the same production init calls Glue.exe makes, just
-outside a live WinForms app. See its doc comment at
-`FRBDK/Glue/Tests/GlueUnitTests/TestSupport/GlueTestBootstrap.cs` for exactly what it registers.
+None of this is faked. `GlueTestBootstrap` delegates to the shipped `GlueHeadlessHost`
+(`FRBDK/Glue/Glue/Headless/`), which runs the same production init calls Glue.exe makes outside a live
+WinForms app; its doc comment lists exactly what it registers. The bootstrap keeps only test-side pieces:
+the repo `ContentTypes.csv` path, `RecordedDialogMessages`, `ErrorRecordingPlugin`, and the per-plugin
+`Ensure*` helpers. Startup changes that a headless tool also needs belong in the host.
 
 `RegisterPluginForTesting` adds a plugin to both `mPluginContainers` *and* `ImportedPlugins`. Those back
 different dispatch paths: `CallPluginMethod` walks the containers, but every `ReactTo*` event enumerates
@@ -75,7 +77,7 @@ to cover generators that ask *another* plugin something at generation time. Need
 ## Landmine — a WinForms sync context plus SynchronousMode deadlocks the run with no timeout
 
 WinForms installs a `WindowsFormsSynchronizationContext` on a thread the moment the first control is created
-there — `FakeMainGlueWindow`'s `PropertyGrid`, a `MenuStrip`, a plugin toolbar. Continuations then post back
+there — `HeadlessMainGlueWindow`'s `PropertyGrid`, a `MenuStrip`, a plugin toolbar. Continuations then post back
 to it and only run while a message loop pumps, which no test host does. Combined with
 `TaskManager.SynchronousMode` (whose `RunSynchronously` blocks the caller on the awaited task), the first
 plugin that awaits during a load hangs forever: one blocked thread, no child process, nothing executing, and
@@ -121,7 +123,7 @@ in practice a `git stash`/`git rebase`/repeated edit-and-rerun cycle can leave i
 just changed — the run reports the *previous* binary's result, not the current source's. This produced a
 green "317/317" locally on issue #2016's PR while the actual pushed source had two `CS0103` compile errors
 (missing `using`s) that only CI's from-scratch build caught, plus masked a real regression (a broadened
-`FakeFindManager` behavior that broke two unrelated tests) for the same reason.
+`HeadlessFindManager` (then `FakeFindManager`) behavior that broke two unrelated tests) for the same reason.
 
 Before reporting "full suite green" as a claim someone will act on (a PR description, a "tests pass"
 verdict, this file), rebuild from scratch at least once: `rm -rf FRBDK/Glue/Tests/GlueUnitTests/obj FRBDK/Glue/Tests/GlueUnitTests/bin`

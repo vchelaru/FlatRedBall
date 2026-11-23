@@ -40,10 +40,10 @@ public class BuildToolAssociationSeamTests : IDisposable
         GlueState.Self.GlueSettingsSave = new GlueSettingsSave();
 
         // Simulate a fresh Glue process: nothing has read BuildToolAssociationManager.Self yet, so the
-        // seam holds only what startup wired. WireGlueCommonSeams is the same set of calls
-        // MainGlueWindow makes before loading a project.
+        // seam holds only what startup wired. MainGlueWindow calls WireGlueCommonSeams itself before
+        // loading a project.
         BuildToolAssociationCore.Self = null;
-        GlueTestBootstrap.WireGlueCommonSeams();
+        FlatRedBall.Glue.Headless.GlueHeadlessHost.WireGlueCommonSeams();
     }
 
     public void Dispose()

@@ -1505,3 +1505,15 @@ Consequences worth knowing:
 - `PluginManager.HandleExceptions` swallows a throwing selection handler *and disables the plugin for the
   rest of the process*, so a test exercising real plugin selection should turn it off (the Wizard tests and
   `CollisionPluginHeadlessSelectionTests` do) or a failure reads as "the plugin did nothing" from then on.
+
+### 2026-11-22 — Headless startup moves from the tests into Glue (`GlueHeadlessHost`)
+
+Step 1 of `glue-cli.md`. The production half of `GlueTestBootstrap` now ships in Glue as
+`FlatRedBall.Glue.Headless.GlueHeadlessHost` (`EnsureInitialized`, `EnsureProjectLoadReady`,
+`EnsureMsBuildEnvironmentVariable`, `WireGlueCommonSeams`), with `FakeMainGlueWindow`/`FakeFindManager`
+renamed to `HeadlessMainGlueWindow`/`HeadlessFindManager`. `GlueTestBootstrap` is now a thin wrapper that
+adds the test-only parts (repo `ContentTypes.csv` path, `RecordedDialogMessages`, `ErrorRecordingPlugin`,
+per-plugin `Ensure*` helpers). `MainGlueWindow` calls `GlueHeadlessHost.WireGlueCommonSeams` too, so the
+editor and headless startup cannot wire different seams. The rest of the two startups is not shared yet:
+the editor's IoC set-up registers more objects than the host, so pointing both at one method would change
+behavior.
