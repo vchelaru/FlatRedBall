@@ -1560,3 +1560,13 @@ content folder unless `--copy` (the editor copies without asking, overwriting), 
 existing file, the file may not already be referenced, and the name goes through `NameVerifier`. An unknown
 extension needs `--allow-unknown-type`, which adds the extension to `AdditionalExtensionsToTreatAsAssets`,
 the same state the editor's "add it anyway?" Yes leaves. No Glue changes.
+
+### 2026-11-23 — GlueCli `add-entity` and `add-screen`
+
+`add-entity` fills an `AddEntityViewModel` the way the Add Entity dialog's checkboxes do and calls
+`ElementCommands.AddEntityAsync`; `add-screen` calls `AddScreenAsync`, then sets `BaseScreen` through
+`ReactToPropertyChanged` for `--base`. The dialogs' `*CreatedWithUi` plugin reactions read the window, so
+they do not run headless: platformer/top-down go through the Entity Input Movement plugin's
+`MakeEntityPlatformer`/`MakeEntityTopDown`, as the wizard does, and the Add Screen level options are not
+offered. Fix: those two methods used the plugin's tab view model, which exists only once the tab was shown,
+so they threw headless; they now use the controllers' view model, the same object the tab binds to.

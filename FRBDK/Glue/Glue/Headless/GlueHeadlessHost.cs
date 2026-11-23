@@ -237,6 +237,7 @@ public static class GlueHeadlessHost
             }
 
             Container.Set(new FlatRedBall.Glue.SetVariable.EntitySaveSetPropertyLogic());
+            Container.Set(new FlatRedBall.Glue.SetVariable.ScreenSaveSetVariableLogic());
             Container.Set(new FlatRedBall.Glue.SetVariable.NamedObjectSetVariableLogic());
             Container.Set(new FlatRedBall.Glue.Errors.GlueErrorManager());
         }
