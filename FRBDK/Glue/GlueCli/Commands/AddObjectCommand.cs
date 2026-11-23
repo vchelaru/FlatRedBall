@@ -360,7 +360,7 @@ sourceName, list}, where list is the list it went into or null.",
         return lists.Distinct().ToList();
     }
 
-    static bool IsGum(AssetTypeInfo ati) => PluginManager.CallPluginMethod("Gum Plugin", "IsAssetTypeInfoGum", ati) is true;
+    static bool IsGum(AssetTypeInfo ati) => GlueCommands.Self.GumCommands?.IsAssetTypeInfoGum(ati) == true;
 
     // Compared by name so GlueCli needs no reference to Gum's data types. The editor leaves Gum screens out
     // of Add Object too.

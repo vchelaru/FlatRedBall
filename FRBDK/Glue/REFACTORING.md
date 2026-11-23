@@ -57,9 +57,6 @@ The view model keeps only view-model work (syncing its collections, choosing whe
 
 Remaining `CallPluginMethod`/`CallPluginMethodAsync` callers, by plugin (caller count per method), each a candidate for the same treatment:
 
-- **"Gum Plugin"**: `IsAssetTypeInfoGum` (2: `DialogCommands`, GlueCli `AddObjectCommand`), `GetFormsGeneratedRelativePaths` (1: `ProjectLoadOperations`), `AskToCreateGumProject` (1: QuickActionPlugin `MainView`), `CreateGumProjectWithForms` and `CreateGumProjectNoForms` (1 each: `WizardProjectLogic`). `IGumCommands` exists; add these to it.
-- **"Glue Compiler"** (GameCommunicationPlugin's `MainCompilerPlugin`): `SetIsLoggingSentCommands`, `SetIsLoggingReceivedCommands` (1 each: `TaskDisplayerViewModel`), `GetIfIsRunning` (1: `ProjectCommands`), `BuildAndRun` (1: `HotkeyManager`), `ShowState` (1: StateDataPlugin `StateDataControl`).
-- **"Tiled Plugin"**: `SaveFileWithVisuals` (2), `SaveTilesetFilesToDisk`, `AddStandardTilesetOnCurrentFile`, `AddGameplayLayerToCurrentFile`, `AddCollisionBorderToCurrentFile` (1 each), all in `WizardProjectLogic`.
 - **"Collision Plugin"**: `FixNamedObjectCollisionType` (3: `ElementCommands`, `WizardProjectLogic` twice). `ICollisionRelationshipCommands` exists.
 - **"Main Property Grid Plugin"**: `FixNamedObjectCollisionType`, `RefreshVariables` (1 each: `RefreshCommands`).
 - **"FRB Source"**: `HasFrbAndGumReposInDefaultLocation` (1), `AddFrbSourceToDefaultLocation` (2), all in `NewProjectHelper`.
@@ -373,6 +370,16 @@ models to it. Still UI-bound: `set-property` builds `NamedObjectPropertyGridDisp
 `EntitySavePropertyGridDisplayer` and `ScreenSavePropertyGridDisplayer`, and the plugins' `AdjustDisplayedEntity`
 hooks (Gum, Collision, DamageDealing) take the displayer type; those are the next family to move.
 `AdjustDisplayedReferencedFile` now has no subscribers, and `AdjustDisplayedCustomVariable` was never called.
+
+### 2026-11-23 — Gum, Glue Compiler and Tiled calls typed
+
+The rest of the Gum Plugin's `CallPluginMethod` targets moved onto `IGumCommands` (`IsAssetTypeInfoGum`,
+`GetFormsGeneratedRelativePaths`, `AskToCreateGumProjectAsync`, `CreateGumProjectAsync`). The "Glue Compiler"
+plugin (`MainCompilerPlugin` in GameCommunicationPlugin) registers `IGameHostCommands` (is the game running,
+build and run, show a state in the game, command logging), and the Tiled Plugin registers `ITiledCommands` for the
+wizard's level steps. The Tiled methods take the TMX file instead of reading `GlueState.CurrentReferencedFileSave`,
+so the wizard no longer selects each level's TMX to call them. `CreateGumProjectAsync` and `BuildAndRunAsync` still
+run as TaskManager tasks, as `CallPluginMethodAsync` did, and print an exception instead of throwing.
 
 ### 2026-11-23 — Compiler, Gum `HasGum` and Game Communication calls typed
 

@@ -171,7 +171,8 @@ partial class DialogCommands : IDialogCommands
                 .OrderBy(item => item.FriendlyName)
                 .ToArray();
 
-            var gumTypes = addableTypes.Where(item => ((bool)PluginManager.CallPluginMethod("Gum Plugin", "IsAssetTypeInfoGum", item)) == true)
+            var gumCommands = GlueCommands.Self.GumCommands;
+            var gumTypes = addableTypes.Where(item => gumCommands?.IsAssetTypeInfoGum(item) == true)
                 .ToArray();
             var flatRedBallTypes = addableTypes.Except(gumTypes).ToArray();
 

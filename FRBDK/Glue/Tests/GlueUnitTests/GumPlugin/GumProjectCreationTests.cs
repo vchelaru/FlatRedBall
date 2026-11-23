@@ -16,20 +16,10 @@ using Shouldly;
 // silently breaking unrelated "GumPlugin.X" references elsewhere in this test project.
 namespace GlueUnitTests.GumPluginTests;
 
-// Follow-up to GitHub issue #1894 (reopened): WizardProjectLogic.HandleAddGum's two call sites
-// (~line 279/283) go through PluginManager.CallPluginMethodAsync("Gum Plugin",
-// "CreateGumProjectWithForms"/"CreateGumProjectNoForms", false), which silently no-ops in a test host
-// (no plugin registered with PluginManager) - the same false-coverage risk PR #1901 fixed for the
-// Collision Plugin's FixNamedObjectCollisionType.
-//
-// MainGumPlugin.CreateGumProjectWithForms/CreateGumProjectNoForms are already thin forwarders to the
-// public NewGumProjectCreationLogic.CreateGumProjectInternal(shouldAlsoAddForms, askToOverwrite) - same
-// "thin forwarder to directly-callable logic" shape as MainCollisionPlugin.FixNamedObjectCollisionType.
-// NewGumProjectCreationLogic itself only depends on a GumxPropertiesManager (a plain class with a
-// parameterless constructor, no UI dependency) - it does not need a live, StartUp'd MainGumPlugin
-// instance at all. This test constructs NewGumProjectCreationLogic directly and calls
-// CreateGumProjectInternal, bypassing both MainGumPlugin and PluginManager.CallPluginMethodAsync
-// entirely - real production logic, not a fake.
+// WizardProjectLogic.HandleAddGum calls IGumCommands.CreateGumProjectAsync, which the Gum Plugin forwards to
+// NewGumProjectCreationLogic.CreateGumProjectInternal(shouldAlsoAddForms, askToOverwrite). WizardTypedPluginCallsTests
+// covers the wizard's call; these tests construct NewGumProjectCreationLogic directly (it only needs a
+// GumxPropertiesManager, no started MainGumPlugin) and drive the real creation logic.
 [Collection(nameof(TaskManagerSequentialCollection))]
 public class GumProjectCreationTests : IDisposable
 {

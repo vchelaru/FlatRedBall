@@ -274,16 +274,13 @@ namespace OfficialPlugins.Wizard.Managers
 
         #region Add Gum
 
-        private static async Task HandleAddGum(WizardViewModel vm)
+        // internal so GlueUnitTests can check the Gum Plugin call
+        internal static async Task HandleAddGum(WizardViewModel vm)
         {
-            if (vm.AddFlatRedBallForms)
+            var gumCommands = GlueCommands.Self.GumCommands;
+            if (gumCommands != null)
             {
-                // false argument is for askToOverwrite parameter
-                await PluginManager.CallPluginMethodAsync("Gum Plugin", "CreateGumProjectWithForms", false);
-            }
-            else
-            {
-                await PluginManager.CallPluginMethodAsync("Gum Plugin", "CreateGumProjectNoForms", false);
+                await gumCommands.CreateGumProjectAsync(includeForms: vm.AddFlatRedBallForms, askToOverwrite: false);
             }
         }
 
@@ -370,7 +367,8 @@ namespace OfficialPlugins.Wizard.Managers
             }
         }
 
-        private static async Task CreateLevel(WizardViewModel vm, ScreenSave gameScreen, int levelIndex0Based, string levelName)
+        // internal so GlueUnitTests can check the Tiled Plugin calls
+        internal static async Task CreateLevel(WizardViewModel vm, ScreenSave gameScreen, int levelIndex0Based, string levelName)
         {
             var levelScreen = await GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(levelName);
             levelScreen.BaseScreen = gameScreen.Name;
@@ -395,6 +393,7 @@ namespace OfficialPlugins.Wizard.Managers
                 addNewFileVm.ForcedType = tmxAti;
                 addNewFileVm.FileName = levelName + "Map";
                 var newRfs = await GlueCommands.Self.GluxCommands.CreateNewFileAndReferencedFileSaveAsync(addNewFileVm, levelScreen);
+                var tiledCommands = GlueCommands.Self.TiledCommands;
 
                 var mapObject = levelScreen.NamedObjects.FirstOrDefault(item => item.InstanceName == "Map" && item.GetAssetTypeInfo().FriendlyName.StartsWith("LayeredTileMap"));
                 if (mapObject != null)
@@ -419,14 +418,12 @@ namespace OfficialPlugins.Wizard.Managers
 
                     if(vm.PlayerControlType == GameType.TopDown)
                     {
-                        PluginManager.CallPluginMethod("Tiled Plugin", "SaveFileWithVisuals",
-                            newRfs, $"OverworldTopDown{suffix}");
+                        tiledCommands?.SaveTmxWithVisuals(newRfs, $"OverworldTopDown{suffix}");
                     }
                     // make platformer default if no other type is set
                     else // if(vm.PlayerControlType == GameType.Platformer)
                     {
-                        PluginManager.CallPluginMethod("Tiled Plugin", "SaveFileWithVisuals", 
-                            newRfs, $"OverworldPlatformer{suffix}");
+                        tiledCommands?.SaveTmxWithVisuals(newRfs, $"OverworldPlatformer{suffix}");
                     }
                 }
                 else
@@ -446,7 +443,7 @@ namespace OfficialPlugins.Wizard.Managers
 
                         if (hasPremade)
                         {
-                            PluginManager.CallPluginMethod("Tiled Plugin", "SaveTilesetFilesToDisk");
+                            tiledCommands?.SaveTilesetFilesToDisk();
 
                             try
                             {
@@ -464,28 +461,21 @@ namespace OfficialPlugins.Wizard.Managers
 
 
 
-                    if (!handledByPremadeLevel)
+                    if (!handledByPremadeLevel && tiledCommands != null)
                     {
+                        var tmxFile = levelScreen.ReferencedFiles
+                            .FirstOrDefault(item => item.GetAssetTypeInfo()?.Extension == "tmx");
                         if (vm.IncludStandardTilesetInLevels)
                         {
-                            SelectTmxRfs();
-                            PluginManager.CallPluginMethod("Tiled Plugin", "AddStandardTilesetOnCurrentFile");
+                            tiledCommands.AddStandardTileset(tmxFile);
                         }
                         if (vm.IncludeGameplayLayerInLevels)
                         {
-                            SelectTmxRfs();
-                            PluginManager.CallPluginMethod("Tiled Plugin", "AddGameplayLayerToCurrentFile");
+                            tiledCommands.AddGameplayLayer(tmxFile);
                         }
-
                         if (vm.IncludeCollisionBorderInLevels)
                         {
-                            SelectTmxRfs();
-                            PluginManager.CallPluginMethod("Tiled Plugin", "AddCollisionBorderToCurrentFile");
-                        }
-                        void SelectTmxRfs()
-                        {
-                            GlueState.Self.CurrentReferencedFileSave = levelScreen.ReferencedFiles
-                                .FirstOrDefault(Item => Item.GetAssetTypeInfo()?.Extension == "tmx");
+                            tiledCommands.AddCollisionBorder(tmxFile);
                         }
                     }
                 }

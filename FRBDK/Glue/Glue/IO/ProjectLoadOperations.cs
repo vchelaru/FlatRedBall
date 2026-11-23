@@ -171,8 +171,7 @@ namespace FlatRedBall.Glue.IO
 
             var allElements = project.Screens.Cast<GlueElement>().Concat(project.Entities);
 
-            var formsOwnedRelativePaths =
-                PluginManager.CallPluginMethod("Gum Plugin", "GetFormsGeneratedRelativePaths") as IEnumerable<string>;
+            var formsOwnedRelativePaths = GlueCommands.Self.GumCommands?.GetFormsGeneratedRelativePaths();
 
             var removed = mainProject.RemoveOrphanedGeneratedCompileItems(allElements, formsOwnedRelativePaths);
 
