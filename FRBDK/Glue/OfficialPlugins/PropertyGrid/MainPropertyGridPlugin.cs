@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text;
+using FlatRedBall.Glue.AutomatedGlue;
 using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins;
@@ -105,6 +106,14 @@ namespace OfficialPlugins.VariableDisplay
 
         private void HandleItemSelect(ITreeNode selectedTreeNode)
         {
+            // Headless (GlueCli, tests) there is no grid to fill, and filling it is not read-only: showing
+            // an element's variables adds its missing ATI variables (a screen's DefaultLayer) and saves the
+            // element, so a command that only selected its target would write it (#2476).
+            if (!GlueGui.ShowGui)
+            {
+                return;
+            }
+
             var namedObjectSaves = GlueState.Self.CurrentNamedObjectSaves;
             var element = GlueState.Self.CurrentElement;
 

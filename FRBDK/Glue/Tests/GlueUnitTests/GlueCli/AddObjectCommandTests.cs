@@ -108,7 +108,7 @@ public class AddObjectCommandTests
         using var project = GoldProject.CopyOutOfRepo("Samples/Beefball");
         var screenFile = Path.Combine(project.Root, "Beefball", "Screens", "GameScreen.glsj");
         var gluj = Path.Combine(project.Root, "Beefball", "Beefball.gluj");
-        var screenBefore = File.ReadAllText(screenFile);
+        var screenBefore = File.ReadAllBytes(screenFile);
         var glujBefore = File.ReadAllText(gluj);
 
         var (exitCode, output) = Run("add-object", project.Root, "--element", "GameScreen", "--type", "Circle",
@@ -118,8 +118,28 @@ public class AddObjectCommandTests
         var result = Parse(output);
         result.EditFailures.ShouldHaveSingleItem().ShouldContain("PuckList", Case.Sensitive);
         result.Edit.ShouldBeNull();
-        File.ReadAllText(screenFile).ShouldBe(screenBefore);
+        // Selecting GameScreen must not save it either: the property grid plugin used to add the screen's
+        // DefaultLayer variable and save on selection, even headless (#2476).
+        result.FilesWritten.ShouldNotContain("Screens/GameScreen.glsj");
+        File.ReadAllBytes(screenFile).ShouldBe(screenBefore);
         File.ReadAllText(gluj).ShouldBe(glujBefore);
+    }
+
+    [StaFact]
+    public void AddObject_ShouldLeaveTheEntityFileUntouched_WhenTheNameIsInvalid()
+    {
+        // Entities get their own selection reactions (input movement, performance), on top of the
+        // property grid a screen gets (#2476).
+        using var project = GoldProject.CopyOutOfRepo("Samples/Beefball");
+        var entityFile = Path.Combine(project.Root, "Beefball", "Entities", "Puck.glej");
+        var entityBefore = File.ReadAllBytes(entityFile);
+
+        var (exitCode, output) = Run("add-object", project.Root, "--element", "Puck", "--type", "Circle",
+            "--name", "Puck", "--json");
+
+        exitCode.ShouldBe(GlueCliRunner.ExitErrors, output);
+        Parse(output).FilesWritten.ShouldNotContain("Entities/Puck.glej");
+        File.ReadAllBytes(entityFile).ShouldBe(entityBefore);
     }
 
     [StaFact]
