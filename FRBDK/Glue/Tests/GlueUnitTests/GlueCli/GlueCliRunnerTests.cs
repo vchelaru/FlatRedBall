@@ -4,16 +4,15 @@ using System.IO;
 using System.Text.Json;
 using GlueCli;
 using GlueUnitTests.TestSupport;
+using static GlueUnitTests.Cli.GlueCliTestRun;
 using Shouldly;
 using Xunit;
 
 namespace GlueUnitTests.Cli;
 
 /// <summary>
-/// GlueCli's commands, run in-process through <see cref="GlueCliRunner.Run"/> against a temp copy of
-/// Samples/Beefball. The test host registers plugins through <see cref="GlueTestBootstrap"/> rather than
-/// GlueCli's MEF scan of the Plugins folder, since that scan would load every plugin into the test process
-/// for the rest of the run; the real exe is what exercises the scan.
+/// GlueCli's check and regen, run in-process (<see cref="GlueCliTestRun"/>) against a temp copy of
+/// Samples/Beefball.
 /// </summary>
 [Trait("Category", "BuildSmoke")]
 public class GlueCliRunnerTests
@@ -63,31 +62,6 @@ public class GlueCliRunnerTests
         result.FilesWritten.ShouldContain("Entities/PlayerBall.Generated.cs");
         File.Exists(Path.Combine(project.Root, "Beefball", "Screens", "GameScreen.Generated.cs")).ShouldBeTrue();
     }
-
-    static (int exitCode, string output) Run(params string[] args)
-    {
-        var stdout = new StringWriter();
-        var stderr = new StringWriter();
-        var exitCode = GlueCliRunner.Run(args, stdout, stderr, new TestHost());
-        return (exitCode, stdout + Environment.NewLine + "stderr:" + Environment.NewLine + stderr);
-    }
-
-    static CliResult Parse(string output)
-    {
-        var json = output.Substring(0, output.IndexOf(Environment.NewLine + "stderr:", StringComparison.Ordinal));
-        return JsonSerializer.Deserialize<CliResult>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
-    }
-
-    sealed class TestHost : IGlueCliHost
-    {
-        public IReadOnlyList<string> Prepare(string gameProjectDirectory, Action<string> reportMessage)
-        {
-            GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
-            GlueTestBootstrap.EnsureErrorReportingPluginRegisteredWithPluginManager();
-            GlueTestBootstrap.EnsureMsBuildEnvironmentVariable();
-            return Array.Empty<string>();
-        }
-    }
 }
 
 /// <summary>
@@ -100,6 +74,12 @@ public class GlueCliRunnerArgumentTests
     [InlineData("check")]
     [InlineData("check", "a", "b")]
     [InlineData("check", "x", "--overwrite")]
+    [InlineData("add-object", "x", "--type", "Sprite")]
+    [InlineData("add-object", "x", "--element", "GameScreen")]
+    [InlineData("add-object", "x", "--element")]
+    [InlineData("add-object", "x", "--element", "GameScreen", "--type", "Sprite", "--list", "L", "--no-list")]
+    [InlineData("add-object", "x", "--element", "GameScreen", "--type", "Sprite", "--source-file", "a.png", "--source-name", "n")]
+    [InlineData("add-object", "x", "--element", "GameScreen", "--type", "Sprite", "--as-list=yes")]
     public void Run_ShouldExitTwo_WithoutStartingGlue_WhenTheArgumentsAreWrong(params string[] args)
     {
         var stderr = new StringWriter();
@@ -108,6 +88,34 @@ public class GlueCliRunnerArgumentTests
 
         exitCode.ShouldBe(GlueCliRunner.ExitUsageOrLoadFailure);
         stderr.ToString().ShouldContain("Usage:");
+    }
+
+    [Fact]
+    public void Help_ShouldListEveryCommand()
+    {
+        var stdout = new StringWriter();
+
+        GlueCliRunner.Run(new[] { "--help" }, stdout, new StringWriter(), new ThrowingHost()).ShouldBe(GlueCliRunner.ExitSuccess);
+
+        foreach (var command in GlueCliRunner.Commands)
+        {
+            stdout.ToString().ShouldContain("  " + command.Name + " ");
+        }
+    }
+
+    [Theory]
+    [InlineData("add-object", "--help")]
+    [InlineData("help", "add-object")]
+    public void CommandHelp_ShouldShowOptionsAndExamples(params string[] args)
+    {
+        var stdout = new StringWriter();
+
+        GlueCliRunner.Run(args, stdout, new StringWriter(), new ThrowingHost()).ShouldBe(GlueCliRunner.ExitSuccess);
+
+        var help = stdout.ToString();
+        help.ShouldContain("--element <element>");
+        help.ShouldContain("Examples:");
+        help.ShouldContain("GlueCli add-object MyGame --element GameScreen --type Sprite");
     }
 
     [Fact]

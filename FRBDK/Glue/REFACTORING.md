@@ -1530,3 +1530,12 @@ became `RegisterPlugin`; `PluginManager.Initialize` can skip applying pending pl
 `GlueErrorManager.GetAllCurrentErrors`; `HeadlessMainGlueWindow` implements `ISynchronizeInvoke` (the live
 edit plugin uses the window as a timer synchronizing object); `ErrorRecordingPlugin` became a subclass of
 the shipped `HeadlessOutputRecorder`.
+
+### 2026-11-22 — GlueCli `add-object` and the edit-command pattern
+
+Step 3 of `glue-cli.md` starts. Commands are now `CliCommand` definitions in `GlueCli/Commands`, with
+per-command options and help. Edit commands get a baseline of the errors present after load (only new
+ones fail the run) and a save through `GluxCommands.SaveProjectAndElements`. `add-object` calls
+`GluxCommands.AddNewNamedObjectToAsync` after the checks the Add Object dialog makes. One seam in Glue:
+`GlueGui.SuppressedMessageHandler` receives `GlueGui.ShowMessageBox` text while `ShowGui` is off, which
+used to vanish headless; the editor (`ShowGui` on) is unchanged.

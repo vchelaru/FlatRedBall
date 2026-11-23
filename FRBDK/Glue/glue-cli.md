@@ -37,15 +37,40 @@ before the next step builds on it.
 - One invocation loads the project, runs one command, waits for queued tasks, saves, regenerates code,
   and exits. Batch mode (several commands per load) comes only if load time makes single commands too
   slow.
-- Exit code 0 means the edit applied and the project has no new errors. Non-zero means it didn't, with
-  the reason on stderr.
+- Exit code 0 means the edit applied and left no new errors. 1 means the edit was not applied (bad
+  input, a Glue rule it breaks) or it added errors. 2 means bad arguments or a project that would not
+  load. Errors the project had before the edit are reported as `preexistingErrors` and do not fail the
+  run, so an agent can edit a project that already has problems.
 - Output is plain text by default and JSON with `--json`, so agents can parse it.
 - A command never shows a dialog. Every MessageBox or yes/no prompt on a command's path goes through a
   dialog seam. In CLI mode the seam either answers from an explicit flag (for example `--overwrite`) or
   fails with a message naming the question it would have asked. Fix these one command at a time, on the
-  path the command actually takes.
+  path the command actually takes. Messages sent to `GlueGui.ShowMessageBox` while `ShowGui` is off are
+  reported too (`GlueGui.SuppressedMessageHandler`), and count as failures.
+- Edits call the `GluxCommands`/`ElementCommands` method the UI's dialog ends in, not the dialog. What
+  the dialog checks before that call (names through `NameVerifier`, recursion, list placement) the
+  command checks itself, before changing anything, and fails with a message that lists close matches.
 - Each command gets a test that runs it against a temp copy of a sample project and checks the saved
   JSON and generated code.
+
+### Writing a command
+
+`AddObjectCommand` is the pattern. A command is a `CliCommand` in `GlueCli/Commands/<Name>Command.cs`,
+listed once in `GlueCliRunner.Commands`:
+
+- `Options` declares every option; the runner parses `--name value`, `--name=value` and flags, rejects
+  unknown ones, and builds `GlueCli <command> --help` from `Usage`, `Description`, `Options` and
+  `Examples`. Agents in other repos learn the CLI only from this help, so give real examples and say
+  what `--json` puts in `edit`.
+- `ValidateArguments` checks option combinations before Glue starts (exit 2 with the help).
+- `IsEdit = true` makes the runner record the errors present after load, regenerate code for every
+  element the edit changed (headless `TaskManager.SynchronousMode` runs an edit's queued codegen before
+  the plugin reactions that follow it in the same task), and save the .gluj, element files and .csproj
+  through `GluxCommands.SaveProjectAndElements` after `Run`.
+- `Run` resolves names with `CliLookup` (elements, close matches), sets `GlueState.CurrentElement` to
+  the target, calls `context.Fail(message)` and returns on bad input, applies the edit with
+  `selectNewNos: false` where the call takes it, and calls `context.Report(data, text)`.
+- Tests go in `Tests/GlueUnitTests/GlueCli/<Name>CommandTests.cs` through `GlueCliTestRun`.
 
 ## Steps
 
@@ -91,6 +116,6 @@ commands; tests call it in-process with their own `IGlueCliHost`.
 | --- | --- | --- |
 | 1. Headless host | Done | #2470 |
 | 2. `check` / `regen` | Done | #2471 |
-| 3. Edit commands | Not started | |
+| 3. Edit commands | In progress | add-object: #PRNUM |
 | 4. Agent skill | Not started | |
 | 5. Extraction | Ongoing, separate from the CLI | |
