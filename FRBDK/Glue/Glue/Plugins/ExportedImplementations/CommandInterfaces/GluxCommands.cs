@@ -1299,7 +1299,8 @@ public class GluxCommands : IGluxCommands
                 if (first == null)
                 {
                     // Remove the class
-                    string whatToRemove = "DataTypes/" + name + ".Generated.cs";
+                    // name is namespace-qualified; the file is named after the class alone.
+                    string whatToRemove = CsvCodeGenerator.GetFullDataFileNameFor(referencedFileToRemove);
 
                     additionalFilesToRemove.Add(whatToRemove);
 

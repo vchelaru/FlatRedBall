@@ -334,7 +334,8 @@ namespace FlatRedBall.Glue.Elements
 
             if (!otherCsvOfSameType)
             {
-                toReturn.Add(ToCanonicalPath("DataTypes/" + typeName + ".Generated.cs"));
+                // typeName is namespace-qualified; the file is named after the class alone.
+                toReturn.Add(ToCanonicalPath(CsvCodeGenerator.GetFullDataFileNameFor(file)));
             }
         }
 

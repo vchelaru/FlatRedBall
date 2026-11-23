@@ -209,4 +209,26 @@ public class DeleteFileTests : DeleteDialogTestBase
         TheOnlyDeleteDialog.FilesToRemove.ShouldContain(
             DeletionPlanner.ToCanonicalPath(file.GetRelativePath()));
     }
+
+    // The data class file is named after the unqualified class (DataTypes/Enemy.Generated.cs). The planner
+    // used the namespace-qualified type, so it listed a file that never exists and left the real one behind.
+    [StaFact]
+    public async Task ThePlannedFileList_ShouldNameTheCsvDataClassFileGlueGenerated()
+    {
+        using var project = await LoadFormsSampleAsync();
+
+        var screen = await GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen("CsvDataClassScreen");
+        var csv = Path.Combine(project.Root, "FormsSampleProject", "Content", "PlannedEnemyData.csv");
+        File.WriteAllText(csv, "Name (string, required),Speed (float)\r\nSlow,1\r\n");
+        var response = await GlueCommands.Self.GluxCommands.CreateReferencedFileSaveForExistingFileAsync(screen, new FilePath(csv));
+        response.Succeeded.ShouldBeTrue(response.Message);
+        var dataClass = new FilePath(GlueState.Self.CurrentGlueProjectDirectory + "DataTypes/PlannedEnemyData.Generated.cs");
+        dataClass.Exists().ShouldBeTrue("the CSV's data class should have been generated");
+
+        AnswerDeleteDialog(confirm: false);
+
+        await DeleteSelectedFileAsync(response.Data);
+
+        TheOnlyDeleteDialog.FilesToRemove.ShouldContain(DeletionPlanner.ToCanonicalPath(dataClass.FullPath));
+    }
 }
