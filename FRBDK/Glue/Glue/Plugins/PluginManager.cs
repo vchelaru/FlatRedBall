@@ -1479,6 +1479,8 @@ public class PluginManager : PluginManagerBase
     #endregion
     public static void ReceiveOutput(string output)
     {
+        FlatRedBall.Glue.Managers.AutomationLog.Write(FlatRedBall.Glue.Managers.AutomationLog.OutputTag, output);
+
         if (ProjectManager.WantsToCloseProject == false)
         {
             var time = System.DateTime.Now;
@@ -1527,6 +1529,8 @@ public class PluginManager : PluginManagerBase
 
     public static void ReceiveError(string output)
     {
+        FlatRedBall.Glue.Managers.AutomationLog.Write(FlatRedBall.Glue.Managers.AutomationLog.ErrorTag, output);
+
         if (!string.IsNullOrEmpty(output))
         {
             output = System.DateTime.Now.ToLongTimeString() + " - " + output;
