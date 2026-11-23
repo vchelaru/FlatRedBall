@@ -830,8 +830,15 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             string methodContents = codeBlock.ToString();
 
+            // GetLastLocationInClass returns the end of the class's last line. When that line holds code (the
+            // closing brace of a hand-written method), the stub would start on the same line, where ParsedClass
+            // does not see it, so the next code generation would add the stub again and the project would not compile.
+            if (parsedMethod == null && indexToAddAt > 0 && fileContents[indexToAddAt - 1] != '\n')
+            {
+                methodContents = "\r\n" + methodContents;
+            }
 
-            fileContents = fileContents.Insert(indexToAddAt, codeBlock.ToString());
+            fileContents = fileContents.Insert(indexToAddAt, methodContents);
 
             eventResponseSave.Contents = null;
             try

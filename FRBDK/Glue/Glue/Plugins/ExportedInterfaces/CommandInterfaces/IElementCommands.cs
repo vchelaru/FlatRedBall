@@ -92,6 +92,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         void AddEventToElement(GlueElement currentElement, EventResponseSave eventResponseSave);
 
+        /// <summary>
+        /// Removes the event from the element and lets plugins react (the last event takes the element's
+        /// .Generated.Event.cs out of the project). The handler method in the element's .Event.cs stays, as it
+        /// is hand-written code. Does not regenerate or save.
+        /// </summary>
+        void RemoveEventFromElement(GlueElement element, EventResponseSave eventResponseSave);
+
         #endregion
 
         #region Property Set

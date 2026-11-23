@@ -3904,8 +3904,7 @@ public class GluxCommands : IGluxCommands
                     {
                         var element = GlueState.Self.CurrentElement;
                         var eventResponse = GlueState.Self.CurrentEventResponseSave;
-                        GlueState.Self.CurrentElement.Events.Remove(eventResponse);
-                        PluginManager.ReactToEventResponseRemoved(element, eventResponse);
+                        GlueCommands.Self.GluxCommands.ElementCommands.RemoveEventFromElement(element, eventResponse);
                         GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
                     }
                     #endregion
