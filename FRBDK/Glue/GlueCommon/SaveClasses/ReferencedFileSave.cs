@@ -226,7 +226,9 @@ namespace FlatRedBall.Glue.SaveClasses
             set;
         }
 
-        [Category("Memory and Performance")]
+        // The constructor sets this to true, so the default must say so too: element files are saved ignoring
+        // defaults, and without this a false was left out and loaded back as true.
+        [Category("Memory and Performance"), DefaultValue(true)]
         public bool IsSharedStatic
         {
             get;
