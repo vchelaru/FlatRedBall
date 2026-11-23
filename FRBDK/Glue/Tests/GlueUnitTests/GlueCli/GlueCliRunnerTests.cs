@@ -219,7 +219,7 @@ public class GlueCliRunnerArgumentTests
 
     sealed class ThrowingHost : IGlueCliHost
     {
-        public IReadOnlyList<string> Prepare(string gameProjectDirectory, Action<string> reportMessage) =>
+        public IReadOnlyList<string> Prepare(string csproj, Action<string> reportMessage) =>
             throw new InvalidOperationException("Argument errors must be reported before Glue starts.");
     }
 }

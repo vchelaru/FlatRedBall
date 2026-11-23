@@ -400,6 +400,21 @@ the property list itself comes from the WinForms `ReferencedFileSavePropertyGrid
 `AdjustDisplayedReferencedFile`, which take that type), and its type converters; the selection lives in
 `GlueState`; tree refresh and saving stay in `SetPropertyManager`.
 
+### 2026-11-23 — GlueCli evaluates the `.csproj` while plugins load
+
+GlueCli's host now calls `ProjectLoader.StartEarlyReads` right after MSBuild is located, as Glue.exe's startup
+does, so the `.csproj` evaluation and the `.gluj` read overlap the plugin scan and the load takes both.
+`IGlueCliHost.Prepare` takes the `.csproj` instead of its folder for this.
+
+Making the evaluation lazy instead does not work yet: the model load itself reads the evaluated items
+(`ProjectManager.FindGameClass`, `VerifyAllElementsCustomCodeIsPartOfProject` in `FixErrors`, Gum's
+engine-version flags in `ReactToLoadedGluxEarly`, wildcard files), and so does `check`'s own output
+(`ReferencedFileSaveErrorReporter`'s missing and unreferenced `.csproj` files, out-of-project file errors).
+Every command therefore still evaluates. Of the ~1.1s a cold evaluation costs, about 0.6s is MSBuild's
+first use in the process (assembly load and JIT), 0.2s SDK resolution and file reads, and 0.3s the
+evaluation proper; Glue's own work on the result is under 50ms. A cached `ProjectCollection` or toolset
+would save nothing, since each command is a new process.
+
 ### 2026-11-23 — Plugin load reactions split into model setup and `GenerateProjectCode`
 
 `PluginBase.GenerateProjectCode` is a hook for a plugin's project-level output: generated code no single

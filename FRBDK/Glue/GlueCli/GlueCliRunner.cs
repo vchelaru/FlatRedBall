@@ -227,7 +227,7 @@ public static class GlueCliRunner
         IReadOnlyList<string> pluginFailures;
         try
         {
-            pluginFailures = host.Prepare(Path.GetDirectoryName(csproj)! + Path.DirectorySeparatorChar, ReportMessage);
+            pluginFailures = host.Prepare(csproj, ReportMessage);
         }
         catch (Exception e)
         {
