@@ -152,6 +152,27 @@ public class SetVariableCommandTests
     }
 
     [StaFact]
+    public void SetVariable_ShouldMoveTheObjectsToTheNewDefaultLayer_WithMoveObjects()
+    {
+        using var project = GoldProject.CopyOutOfRepo("Samples/Beefball");
+        var gluj = Path.Combine(project.Root, "Beefball", "Beefball.gluj");
+        File.WriteAllText(gluj, File.ReadAllText(gluj).Replace("\"FileVersion\": 42", "\"FileVersion\": 56"));
+        Run("add-object", project.Root, "--element", "GameScreen", "--type", "Layer", "--name", "GameLayer").exitCode
+            .ShouldBe(GlueCliRunner.ExitSuccess);
+
+        var (exitCode, output) = Run("set-variable", project.Root, "--element", "GameScreen",
+            "--variable", "DefaultLayer", "--value", "GameLayer", "--move-objects", "--json");
+
+        exitCode.ShouldBe(GlueCliRunner.ExitSuccess, output);
+        var result = Parse(output);
+        result.DialogMessages.ShouldBeEmpty();
+        ((JsonElement)result.Edit!).GetProperty("movedObjects").EnumerateArray().Select(item => item.GetString())
+            .ShouldContain("Screens\\GameScreen.PlayerBall1");
+        var screen = ReadJson(project, "Screens", "GameScreen.glsj");
+        FindObject(screen, "PlayerBall1").GetProperty("LayerOn").GetString().ShouldBe("GameLayer");
+    }
+
+    [StaFact]
     public void SetVariable_ShouldRefuseAnObjectProperty()
     {
         using var project = GoldProject.CopyOutOfRepo("Samples/Beefball");
