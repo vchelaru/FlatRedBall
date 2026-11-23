@@ -12,18 +12,13 @@ using FlatRedBall.IO;
 
 namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
 {
+    /// <summary>
+    /// Shows a screen or entity in the WinForms Properties grid. The derived displayers render the element's property
+    /// model; this adds the grid's own reaction to UseGlobalContent, and <see cref="IncludeCustomPropertyMember"/> for
+    /// plugins still on the obsolete AdjustDisplayed* hooks.
+    /// </summary>
     public class ElementPropertyGridDisplayer : PropertyGridDisplayer
     {
-        protected async void SetClassName(object sender, MemberChangeArgs args)
-        {
-            var element = (GlueElement)Instance;
-
-            var oldName = element.Name;
-            var newName = oldName.Substring(0, oldName.LastIndexOf("\\") + 1) + (string)args.Value;
-
-            await GlueCommands.Self.GluxCommands.ElementCommands.RenameElement(element, newName);
-        }
-
         protected void HandleMemberSet(object sender, MemberChangeArgs args)
         {
             string name = args.Member;
@@ -52,21 +47,6 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
                 );
 
             return newMember;
-        }
-
-        protected string GetClassName()
-        {
-            return ((IElement)Instance).ClassName;
-        }
-
-        protected void UpdateIncludedAndExcludedBase(IElement element)
-        {
-            ResetToDefault();
-
-            ExcludeMember("Properties");
-
-            ExcludeMember("ClassName");
-
         }
 
         protected virtual void SetAfterMemberChangedEvents()

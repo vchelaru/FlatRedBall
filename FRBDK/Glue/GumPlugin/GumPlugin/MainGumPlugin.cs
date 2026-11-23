@@ -123,7 +123,7 @@ public class MainGumPlugin : PluginBase
     {
         this.AddEventsForObject += EventsManager.Self.HandleAddEventsForObject;
 
-        this.AdjustDisplayedEntity += GumCollidableManager.HandleDisplayedEntity;
+        this.AdjustEntityProperties += GumCollidableManager.HandleEntityProperties;
 
         #region File-related
 

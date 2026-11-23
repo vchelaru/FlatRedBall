@@ -131,7 +131,7 @@ namespace OfficialPlugins.CollisionPlugin
 
             this.ReactToNamedObjectChangedValue += HandleNamedObjectChangedValue;
 
-            this.AdjustDisplayedEntity += StackableEntityManager.Self.HandleDisplayedEntity;
+            this.AdjustEntityProperties += StackableEntityManager.Self.HandleEntityProperties;
 
             this.ReactToCreateCollisionRelationshipsBetween += async (NamedObjectSave first, NamedObjectSave second) =>
             {

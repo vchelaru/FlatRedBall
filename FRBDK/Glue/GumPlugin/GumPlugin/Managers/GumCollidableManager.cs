@@ -1,9 +1,6 @@
-﻿using FlatRedBall.Glue.FormHelpers.PropertyGrids;
+﻿using FlatRedBall.Glue.EditorProperties;
 using FlatRedBall.Glue.Plugins.ICollidablePlugins;
 using FlatRedBall.Glue.SaveClasses;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace GumPlugin.Managers
 {
@@ -11,14 +8,12 @@ namespace GumPlugin.Managers
     {
         public const string ImplementsIGumCollidable = "ImplementsIGumCollidable";
 
-        internal static void HandleDisplayedEntity(EntitySave entitySave, EntitySavePropertyGridDisplayer displayer)
+        internal static void HandleEntityProperties(EntitySave entitySave, EditorPropertyListBuilder properties)
         {
             // Only show this if this is an ICollidable
             if(entitySave.IsICollidableRecursive())
             {
-                var member = displayer.IncludeCustomPropertyMember(ImplementsIGumCollidable, typeof(bool));
-
-                member.SetCategory("Inheritance and Interfaces");
+                properties.Set(ElementPropertyModel.CustomProperty(entitySave, ImplementsIGumCollidable, typeof(bool), "Inheritance and Interfaces"));
             }
         }
     }

@@ -37,7 +37,7 @@ Adding an FRB Screen in Glue auto-creates a paired Gum screen so anything placed
 
 ## World-space Gum objects (health bars, icons, in-world dialog)
 
-Placing a Gum object at fixed screen-space UI coordinates is the default. To have it track an FRB entity's world position instead (health bar over an enemy, lock icon over a door), Glue exposes **`NamedObjectSave.AttachToContainer`** — a bool property under the object's "Creation" category, only shown when the object's container is an `EntitySave` and it isn't a list (`NamedObjectPropertyGridDisplayer.cs:330-338`). A sibling property, **`AttachToCamera`** (shown only for Screen-level objects, not Entity), sticks a Gum object to the camera instead of the world.
+Placing a Gum object at fixed screen-space UI coordinates is the default. To have it track an FRB entity's world position instead (health bar over an enemy, lock icon over a door), Glue exposes **`NamedObjectSave.AttachToContainer`** — a bool property under the object's "Creation" category, only shown when the object's container is an `EntitySave` and it isn't a list (`Glue/EditorProperties/NamedObjectSavePropertyModel.cs`). A sibling property, **`AttachToCamera`** (shown only for Screen-level objects, not Entity), sticks a Gum object to the camera instead of the world.
 
 This is **not** a plain FRB-attach and **not** pure coordinate conversion — it's a hybrid, and the mechanism matters if you're debugging drift:
 

@@ -1,7 +1,7 @@
 ﻿using FlatRedBall.Entities;
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Glue.Elements;
-using FlatRedBall.Glue.FormHelpers.PropertyGrids;
+using FlatRedBall.Glue.EditorProperties;
 using FlatRedBall.Glue.GuiDisplay;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
@@ -31,12 +31,11 @@ namespace OfficialPlugins.DamageDealingPlugin
 
         public override void StartUp()
         {
-            this.AdjustDisplayedEntity += HandleDisplayedEntity;
+            this.AdjustEntityProperties += HandleEntityProperties;
             RegisterCodeGenerator(new DamageDealingCodeGenerator());
 
             this.ReactToChangedPropertyHandler += HandleChangedProperty;
             this.ReactToVariableRemoved += HandleVariableRemoved;
-            //this.AdjustDisplayedNamedObject += HandleAdjustNamedObjectDisplayed;
 
             //this.GetVariableDefinitionsForElement += HandleGetVariableDefinitionsForElement;
         }
@@ -259,24 +258,22 @@ namespace OfficialPlugins.DamageDealingPlugin
         public const string ImplementsIDamageable = nameof(ImplementsIDamageable);
         public const string SuppressDamagePropertyCodeGeneration = nameof(SuppressDamagePropertyCodeGeneration);
 
-        internal static void HandleDisplayedEntity(EntitySave entitySave, EntitySavePropertyGridDisplayer displayer)
+        const string DamageCategory = "Damage";
+
+        internal static void HandleEntityProperties(EntitySave entitySave, EditorPropertyListBuilder properties)
         {
             // Only show this if this is an ICollidable
             if (entitySave.IsICollidableRecursive())
             {
-                var member = displayer.IncludeCustomPropertyMember(ImplementsIDamageArea, typeof(bool));
-
-                member.SetCategory("Damage");
+                properties.Set(ElementPropertyModel.CustomProperty(entitySave, ImplementsIDamageArea, typeof(bool), DamageCategory));
             }
 
-            var damageableMember = displayer.IncludeCustomPropertyMember(ImplementsIDamageable, typeof(bool));
-            damageableMember.SetCategory("Damage");
+            properties.Set(ElementPropertyModel.CustomProperty(entitySave, ImplementsIDamageable, typeof(bool), DamageCategory));
 
             if(DamageDealingCodeGenerator.ImplementsIDamageArea(entitySave) ||
                 DamageDealingCodeGenerator.ImplementsIDamageable(entitySave))
             {
-                var suppressCodeGenMember = displayer.IncludeCustomPropertyMember(SuppressDamagePropertyCodeGeneration, typeof(bool));
-                suppressCodeGenMember.SetCategory("Damage");
+                properties.Set(ElementPropertyModel.CustomProperty(entitySave, SuppressDamagePropertyCodeGeneration, typeof(bool), DamageCategory));
             }
         }
     }

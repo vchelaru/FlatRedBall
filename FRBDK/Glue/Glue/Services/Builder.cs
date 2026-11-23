@@ -54,6 +54,13 @@ public class Builder
         builder.Services.AddSingleton(sp => new ReferencedFileSavePropertyModel(
             AvailableAssetTypes.Self, EditorData.FileAssociationSettings, sp.GetRequiredService<IGlueCommands>(),
             PluginManager.GetAvailableAssetTypes));
+        builder.Services.AddSingleton(sp => new NamedObjectSavePropertyModel(
+            sp.GetRequiredService<IGlueState>(), AvailableAssetTypes.Self, PluginManager.AdjustNamedObjectProperties));
+        builder.Services.AddSingleton(sp => new EntitySavePropertyModel(
+            sp.GetRequiredService<IGlueState>(), sp.GetRequiredService<IGlueCommands>(), AvailableAssetTypes.Self,
+            PluginManager.AdjustEntityProperties));
+        builder.Services.AddSingleton(sp => new ScreenSavePropertyModel(
+            sp.GetRequiredService<IGlueState>(), sp.GetRequiredService<IGlueCommands>(), PluginManager.AdjustScreenProperties));
 
         App = builder.Build();
 

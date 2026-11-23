@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Reflection;
+using FlatRedBall.Glue.EditorProperties;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.GuiDisplay;
 using FlatRedBall.Glue.Managers;
@@ -223,7 +224,7 @@ movedObjects lists the objects --move-objects put on the new layer.",
             name = match;
             typeName = string.IsNullOrEmpty(variable.OverridingPropertyType) ? variable.Type : variable.OverridingPropertyType;
             keepsText = variable.GetIsVariableState(entity) || variable.GetIsFile() || variable.GetIsObjectType() || IsColor(variable.Type) ||
-                NamedObjectPropertyGridDisplayer.GetIfIsCsv(nos, match);
+                NamedObjectSavePropertyModel.GetIfIsCsv(nos, match);
         }
         else
         {
@@ -241,7 +242,7 @@ movedObjects lists the objects --move-objects put on the new layer.",
             typeName = definition.Type;
             // The same types SetVariableOnInner leaves as text.
             keepsText = typeName == null || IsColor(typeName) || CustomVariableTypeExtensions.GetIsFile(typeName) ||
-                CustomVariableTypeExtensions.GetIsObjectType(typeName) || NamedObjectPropertyGridDisplayer.GetIfIsCsv(nos, name);
+                CustomVariableTypeExtensions.GetIsObjectType(typeName) || NamedObjectSavePropertyModel.GetIfIsCsv(nos, name);
         }
 
         var oldValue = nos.GetCustomVariable(name)?.Value;
