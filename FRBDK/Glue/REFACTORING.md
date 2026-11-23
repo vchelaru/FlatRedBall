@@ -8,6 +8,11 @@ This document tracks the refactoring philosophy, process checklist, and progress
 - **Test before and after**: Write or identify unit tests that cover the area being touched before refactoring, then verify they still pass after.
 - **Preserve behavior**: Refactoring should not change observable behavior. New features come after the refactor, not during.
 - **Follow the seam**: When you find code that's hard to refactor, look for a natural seam to split it rather than forcing a restructure.
+- **Glue will run on every platform.** Logic belongs in UI-free code (`GlueCommon`, or a plain class with no WPF/WinForms types), never in a view model, displayer or control. When GlueCli or a test needs logic that lives in a UI type, move the logic out and have the UI call it. Don't drive the UI type headless.
+- **GlueCli does only what the command asks.** Loading a project reads it and nothing else; code generation, saves and `.csproj` fixups are explicit operations a command calls when it needs them. The editor composes the same operations, so its behavior stays the same.
+- **Inject dependencies.** New classes take their dependencies through constructors or interfaces. Don't add new `Xyz.Self` reach-ins, and replace them with injected ones when touching the code.
+- **Boy Scout, never worse.** Every PR leaves the code it touches at least as clean as it found it. A feature never lands by copying logic, adding a string-based plugin call, or adding a new static.
+- **Unify.** The editor and GlueCli share one implementation of each operation. The same problem gets the same pattern everywhere.
 - **Retyping a static `Xyz.Self` from a concrete class to an interface can silently change overload resolution** — a delegate-typed call site (e.g. `Self.Invoke((MethodInvoker)x)`) may have been resolving to a base-class overload only reachable through the concrete type; once `Self` is interface-typed, that overload disappears from resolution with no compiler warning pointing at the real cause. After this kind of retype, grep for delegate casts (`MethodInvoker`, `Action`, `Func`) at call sites of the retyped member and rebuild — don't assume a clean compile plus green tests caught every semantic shift.
 
 ## Checklist for New Feature Work

@@ -23,3 +23,4 @@ Key principles:
 - Preserve existing functionality — do not break things while improving them
 - Verify changes with unit tests
 - When starting a new feature, do an incremental refactor pass first to move the affected code in the right direction before adding new behavior
+- Long-term direction, read before any change: cross-platform (logic out of WPF/WinForms), a fast GlueCli that does only what a command asks, dependency injection, Boy Scouting, one shared implementation per operation. Details are in REFACTORING.md's Philosophy.
