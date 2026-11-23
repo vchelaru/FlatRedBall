@@ -155,9 +155,9 @@ namespace OfficialPlugins.CollisionPlugin
                         {
                             var message = "You are creating a collision relationship in the screen " +
                                 $"{parentScreen}. Usually CollisionRelationships are created in the GameScreen. Are you sure you want to continue?";
-                            var result = MessageBox.Show(message, "Create collision relationship?", MessageBoxButtons.YesNo);
+                            var result = DialogService.ShowConfirm(message);
 
-                            if(result == DialogResult.No)
+                            if(result != DialogButton.Yes)
                             {
                                 shouldCreate = false;
                             }
