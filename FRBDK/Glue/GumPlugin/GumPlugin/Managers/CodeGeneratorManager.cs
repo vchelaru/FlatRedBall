@@ -238,6 +238,12 @@ public class CodeGeneratorManager : Singleton<CodeGeneratorManager>
 
     public static ElementSave GetElementFrom(ReferencedFileSave rfs)
     {
+        // A file's absolute path needs a loaded Glue project, and the element needs a loaded Gum project.
+        if (GlueState.Self.CurrentMainProject == null || Gum.Managers.ObjectFinder.Self.GumProjectSave == null)
+        {
+            return null;
+        }
+
         FilePath filePath = GlueCommands.Self.GetAbsoluteFileName(rfs);
 
         return GetElementFromFile(filePath);
