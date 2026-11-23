@@ -983,7 +983,7 @@ namespace OfficialPlugins.Wizard.Managers
                         nos.Properties.SetValue("CollisionType", 4);
                     }
 
-                    PluginManager.CallPluginMethod("Collision Plugin", "FixNamedObjectCollisionType", nos);
+                    GlueCommands.Self.CollisionRelationshipCommands?.FixNamedObjectCollisionType(nos);
                 }
 
                 if (vm.CollideAgainstSolidCollision && vm.AddSolidCollision)
@@ -1020,7 +1020,7 @@ namespace OfficialPlugins.Wizard.Managers
 
                     }
 
-                    PluginManager.CallPluginMethod("Collision Plugin", "FixNamedObjectCollisionType", nos);
+                    GlueCommands.Self.CollisionRelationshipCommands?.FixNamedObjectCollisionType(nos);
                 }
             }
         }

@@ -7,7 +7,6 @@ using FlatRedBall.Glue.VSHelpers.Projects;
 using FlatRedBall.IO;
 using GlueUnitTests.TestSupport;
 using OfficialPlugins.FrbSourcePlugin.Managers;
-using PluginTestbed.GlobalContentManagerPlugins;
 using Xunit;
 
 namespace GlueUnitTests.Projects;
@@ -246,7 +245,7 @@ public class Frb2SourceLinkingTests
         Frb2AddSourceManager.GithubFilePathOverrideForTesting = githubRoot;
         try
         {
-            await new FrbSourcePlugin().AddFrbSourceToDefaultLocation(frb2Project);
+            await new FrbSourceCommands().AddFrbSourceToDefaultLocationAsync(frb2Project);
         }
         finally
         {
@@ -266,7 +265,7 @@ public class Frb2SourceLinkingTests
         Frb2AddSourceManager.GithubFilePathOverrideForTesting = temp.Root;
         try
         {
-            Assert.True(new FrbSourcePlugin().HasFrbAndGumReposInDefaultLocation());
+            Assert.True(new FrbSourceCommands().HasFrbAndGumReposInDefaultLocation());
         }
         finally
         {

@@ -37,10 +37,24 @@ class MainTreeViewPlugin : PluginBase
 
     PluginTab pluginTab;
 
+    TreeViewCommands treeViewCommands;
+
     #endregion
+
+    public override bool ShutDown(PluginShutDownReason shutDownReason)
+    {
+        if (GlueCommands.Self.TreeViewCommands == treeViewCommands)
+        {
+            GlueCommands.Self.TreeViewCommands = null;
+        }
+        return base.ShutDown(shutDownReason);
+    }
 
     public override void StartUp()
     {
+        treeViewCommands = new TreeViewCommands(AddBookmark);
+        GlueCommands.Self.TreeViewCommands = treeViewCommands;
+
         MainViewModel = new MainTreeViewViewModel(GlueState.Self, GlueCommands.Self);
 
         var pixelHeight = GlueState.Self.GlueSettingsSave.BookmarkRowHeight > 0
@@ -348,7 +362,7 @@ class MainTreeViewPlugin : PluginBase
 
     #region Bookmarks
 
-    public void AddBookmark(ITreeNode treeNode)
+    private void AddBookmark(ITreeNode treeNode)
     {
         mainView.AddBookmark(treeNode);
         MainViewModel.IsBookmarkListVisible = true;

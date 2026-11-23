@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.Plugins;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using OfficialPlugins.UndoPlugin.NewFolder;
 using OfficialPlugins.UndoPlugin.Views;
@@ -21,14 +22,21 @@ namespace OfficialPlugins.UndoPlugin
 
         UndoDisplay view;
         ViewModels.UndoViewModel ViewModel;
+        readonly UndoCommands undoCommands = new UndoCommands();
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
         {
+            if (GlueCommands.Self.UndoCommands == undoCommands)
+            {
+                GlueCommands.Self.UndoCommands = null;
+            }
             return true;
         }
 
         public override void StartUp()
         {
+            GlueCommands.Self.UndoCommands = undoCommands;
+
             AssignEvents();
             CreateView();
             CreateViewModel();
@@ -55,7 +63,5 @@ namespace OfficialPlugins.UndoPlugin
 
             this.ReactToLoadedGlux += () => ViewModel?.Undos.Clear();
         }
-
-        public void Undo() => UndoManager.HandleUndo();
     }
 }

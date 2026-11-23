@@ -738,40 +738,6 @@ public class PluginManager : PluginManagerBase
         }
     }
 
-    public static object CallPluginMethod(string pluginFriendlyName, string methodName, params object[] parameters)
-    {
-        object toReturn = null;
-        CallMethodOnPlugin((plugin) =>
-        {
-            var method = plugin.GetType().GetMethod(methodName);
-            if (method != null)
-            {
-                if(toReturn is Task)
-                {
-                    throw new InvalidOperationException("Need to call CallPluginMethodAsync");
-                }
-                toReturn = method.Invoke(plugin, parameters: parameters);
-            }
-        }, (plugin) => plugin.FriendlyName == pluginFriendlyName,
-        $"CallPluginMethod {methodName}");
-
-        return toReturn;
-    }
-
-    public static async Task CallPluginMethodAsync(string pluginFriendlyName, string methodName, params object[] parameters)
-    {
-        await CallMethodOnPluginAsync(async (plugin) =>
-        {
-            var method = plugin.GetType().GetMethod(methodName);
-            if (method != null)
-            {
-                var task = method.Invoke(plugin, parameters: parameters) as Task;
-                await task;
-            }
-        }, (plugin) => plugin.FriendlyName == pluginFriendlyName,
-        $"CallPluginMethod {methodName}");
-    }
-
     internal static void PrintPreInitializeOutput()
     {
         if (mPreInitializeOutput.Length != 0)
@@ -1016,8 +982,8 @@ public class PluginManager : PluginManagerBase
         }
 
         // MEF populates ImportedPlugins during the real LoadPlugins discovery pass, and StartupPlugin only
-        // fills mPluginContainers. The two lists back different dispatch paths: CallMethodOnPlugin (and so
-        // CallPluginMethod) walks the containers, but every ReactTo* event - ReactToLoadedGluxEarly,
+        // fills mPluginContainers. The two lists back different dispatch paths: CallMethodOnPlugin walks
+        // the containers, but every ReactTo* event - ReactToLoadedGluxEarly,
         // ReactToLoadedGlux, ReactToStateRemoved, and ~20 others - enumerates ImportedPlugins. Registering
         // into the containers alone therefore produced a plugin that answered direct method calls but was
         // never notified of anything, which reads as "the plugin ran and chose to do nothing" rather than as

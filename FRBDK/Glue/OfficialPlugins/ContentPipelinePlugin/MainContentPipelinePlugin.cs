@@ -35,6 +35,7 @@ namespace OfficialPlugins.MonoGameContent
         AliasCodeGenerator aliasCodeGenerator;
 
         ContentPipelineController controller;
+        ContentPipelineCommands contentPipelineCommands;
 
         IGlueState GlueState => Container.Get<IGlueState>();
         PluginTab tab;
@@ -68,6 +69,10 @@ namespace OfficialPlugins.MonoGameContent
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
         {
+            if (GlueCommands.Self.ContentPipelineCommands == contentPipelineCommands)
+            {
+                GlueCommands.Self.ContentPipelineCommands = null;
+            }
             return true;
         }
 
@@ -97,6 +102,9 @@ namespace OfficialPlugins.MonoGameContent
             this.AddMenuItemTo("Content Pipeline Settings", Localization.MenuIds.ContentPipelineSettingsId, HandleContentPipelineSettings, Localization.MenuIds.ContentId);
 
             CreateController();
+
+            contentPipelineCommands = new ContentPipelineCommands(() => viewModel.UseContentPipelineOnPngs, controller);
+            GlueCommands.Self.ContentPipelineCommands = contentPipelineCommands;
 
             // must come after the controller
             CreateAliasCodeGenerator();
@@ -308,9 +316,6 @@ namespace OfficialPlugins.MonoGameContent
             aliasCodeGenerator.GenerateFileAliasLogicCode();
             _ = BuildLogic.Self.RefreshBuiltFilesFor(GlueState.CurrentMainProject, viewModel.UseContentPipelineOnPngs, controller);
         }
-
-        public Task RefreshXnbsForProject(VisualStudioProject visualStudioProject) =>
-            BuildLogic.Self.RefreshBuiltFilesFor(visualStudioProject, viewModel.UseContentPipelineOnPngs, controller);
 
         private void HandleLoadedSyncedProject(ProjectBase project)
         {

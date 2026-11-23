@@ -35,15 +35,23 @@ namespace OfficialPlugins.Wizard
 
         public override Version Version => new Version(1, 1);
 
+        readonly WizardCommands wizardCommands = new WizardCommands();
+
         #endregion
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
         {
+            if (GlueCommands.Self.WizardCommands == wizardCommands)
+            {
+                GlueCommands.Self.WizardCommands = null;
+            }
             return true;
         }
 
         public override void StartUp()
         {
+            GlueCommands.Self.WizardCommands = wizardCommands;
+
             AssignEvents();
             
             AddMenuItemTo("Create Objects JSON", Localization.MenuIds.CreateObjectsJsonId, HandleCreateObjectsJsonClicked, Localization.MenuIds.ProjectId);
@@ -184,18 +192,6 @@ namespace OfficialPlugins.Wizard
                     FlatRedBall.Glue.Managers.ClipboardService.SetText(serialized);
                 });
             }
-        }
-
-        public void RunWizard()
-        {
-
-            var window = new WizardWindow();
-
-            GlueCommands.Self.DialogCommands.MoveToCursor(window);
-
-            window.DoneClicked += () => WizardProjectLogic.Self.Apply(window.WizardData);
-
-            window.ShowDialog();
         }
     }
 }

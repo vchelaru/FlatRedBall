@@ -234,10 +234,8 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
                     }
                     else if (nos.IsCollisionRelationship())
                     {
-                        var didChange = (bool)PluginManager.CallPluginMethod(
-                            "Collision Plugin",
-                            "FixNamedObjectCollisionType",
-                            new object[] { nos });
+                        var didChange = GlueCommands.Self.CollisionRelationshipCommands?
+                            .FixNamedObjectCollisionType(nos) == true;
 
                         if (didChange)
                         {

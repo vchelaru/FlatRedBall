@@ -41,9 +41,8 @@ public class NewProjectHelper
             commandLineArguments += " emptyprojects";
         }
 
-        var responseAsObject = PluginManager.CallPluginMethod("FRB Source", "HasFrbAndGumReposInDefaultLocation");
-        var hasDefaultRepositories = responseAsObject as bool? ;
-        if(hasDefaultRepositories == true)
+        var hasDefaultRepositories = GlueCommands.Self.FrbSourceCommands?.HasFrbAndGumReposInDefaultLocation() == true;
+        if(hasDefaultRepositories)
         {
             commandLineArguments += " showsourcecheckbox";
         }
@@ -131,20 +130,27 @@ public class NewProjectHelper
             else
             {
 
-                if(viewModel.IsAddGitIgnoreChecked)
+                if(viewModel.IsAddGitIgnoreChecked && GlueCommands.Self.GitCommands != null)
                 {
-                    PluginManager.CallPluginMethod("Git Plugin", "AddGitIgnore");
+                    try
+                    {
+                        GlueCommands.Self.GitCommands.AddGitIgnore();
+                    }
+                    catch (Exception e)
+                    {
+                        GlueCommands.Self.PrintError($"Could not add .gitignore\n{e}");
+                    }
                 }
 
-                if(viewModel.IsIncludeSourceEffectivelyChecked)
+                if(viewModel.IsIncludeSourceEffectivelyChecked && GlueCommands.Self.FrbSourceCommands != null)
                 {
-                    await PluginManager.CallPluginMethodAsync("FRB Source", "AddFrbSourceToDefaultLocation", GlueState.Self.CurrentMainProject);
+                    await GlueCommands.Self.FrbSourceCommands.AddFrbSourceToDefaultLocationAsync(GlueState.Self.CurrentMainProject);
                 }
 
                 // open the project
-                if (viewModel.IsOpenNewProjectWizardChecked)
+                if (viewModel.IsOpenNewProjectWizardChecked && GlueCommands.Self.WizardCommands != null)
                 {
-                    PluginManager.CallPluginMethod("New Project Wizard", "RunWizard");
+                    GlueCommands.Self.DoOnUiThread(GlueCommands.Self.WizardCommands.RunWizard);
                 }
             }
 
@@ -179,11 +185,14 @@ public class NewProjectHelper
 
             RemoveDuplicateFiles(newProjectBase);
 
-            await PluginManager.CallPluginMethodAsync("MonoGame Content Plugin", "RefreshXnbsForProject", newProjectBase);
-
-            if (viewModel.IsIncludeSourceEffectivelyChecked)
+            if (GlueCommands.Self.ContentPipelineCommands != null)
             {
-                await PluginManager.CallPluginMethodAsync("FRB Source", "AddFrbSourceToDefaultLocation", newProjectBase);
+                await GlueCommands.Self.ContentPipelineCommands.RefreshXnbsForProjectAsync(newProjectBase);
+            }
+
+            if (viewModel.IsIncludeSourceEffectivelyChecked && GlueCommands.Self.FrbSourceCommands != null)
+            {
+                await GlueCommands.Self.FrbSourceCommands.AddFrbSourceToDefaultLocationAsync(newProjectBase);
             }
 
             // This line is slow. Not sure why..maybe the project is saving after every file is added?
