@@ -70,6 +70,9 @@ listed once in `GlueCliRunner.Commands`:
 - `Run` resolves names with `CliLookup` (elements, close matches), sets `GlueState.CurrentElement` to
   the target, calls `context.Fail(message)` and returns on bad input, applies the edit with
   `selectNewNos: false` where the call takes it, and calls `context.Report(data, text)`.
+- A question the edit asks is answered from a flag by wrapping the call in `CliDialogs` (see
+  `RenameCommand`), which can also take informational messages the command reports itself. Dispose it
+  after `TaskManager.Self.WaitForAllTasksFinished()`; whatever it does not claim still fails the run.
 - Tests go in `Tests/GlueUnitTests/GlueCli/<Name>CommandTests.cs` through `GlueCliTestRun`.
 
 ## Steps
@@ -116,6 +119,6 @@ commands; tests call it in-process with their own `IGlueCliHost`.
 | --- | --- | --- |
 | 1. Headless host | Done | #2470 |
 | 2. `check` / `regen` | Done | #2471 |
-| 3. Edit commands | In progress | add-object: #2472, set-variable: #2474, add-file: #2473, add-entity/add-screen: #2475 |
+| 3. Edit commands | In progress | add-object: #2472, set-variable: #2474, add-file: #2473, add-entity/add-screen: #2475, rename: #2477 |
 | 4. Agent skill | Not started | |
 | 5. Extraction | Ongoing, separate from the CLI | |

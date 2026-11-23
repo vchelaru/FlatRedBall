@@ -111,6 +111,12 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
     /// <returns>A task which completes when all logic and UI are finished.</returns>
     public async Task RenameElement(GlueElement elementToRename, string newFullElementName, bool showRenameWindow = true)
     {
+        await RenameElementAndGetModifications(elementToRename, newFullElementName, showRenameWindow);
+    }
+
+    public async Task<RenameModifications> RenameElementAndGetModifications(GlueElement elementToRename, string newFullElementName, bool showRenameWindow = true)
+    {
+        RenameModifications modifications = null;
         newFullElementName = newFullElementName.Replace("/", "\\");
         // GitHub issue #2085: AddEntity queues its follow-up codegen (GenerateElementCode) at
         // AddOrMoveToEnd. A rename immediately following an add must queue at the same tier, or the
@@ -136,12 +142,14 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
             }
             else
             {
-                DoRenameInner(elementToRename, newFullElementName, showRenameWindow);
+                modifications = DoRenameInner(elementToRename, newFullElementName, showRenameWindow);
             }
         }, $"Renaming {elementToRename} to {newFullElementName}", TaskExecutionPreference.AddOrMoveToEnd);
+        return modifications;
     }
 
-    private void DoRenameInner(GlueElement elementToRename, string newElementName, bool showRenameWindow)
+    /// <returns>What the rename changed, or null when it did not happen (the overwrite question was declined).</returns>
+    private RenameModifications DoRenameInner(GlueElement elementToRename, string newElementName, bool showRenameWindow)
     {
         RenameModifications renameModifications = new RenameModifications();
 
@@ -349,7 +357,9 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
                     window.ShowDialog();
                 });
             }
+            return renameModifications;
         }
+        return null;
     }
 
     private ToolsUtilities.GeneralResponse<List<FileChange>> ChangeClassNamesAndNamespaceInCodeAndFileName(List<FilePath> validFiles, string oldName, string newName)

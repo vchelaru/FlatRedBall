@@ -62,6 +62,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// <returns>A task which completes when all logic and UI are finished.</returns>
         Task RenameElement(GlueElement elementToRename, string fullNewName, bool showRenameWindow = true);
 
+        /// <summary>
+        /// <see cref="RenameElement"/>, returning what the rename changed (the summary window's contents), or null
+        /// when the name was invalid or the overwrite question was declined.
+        /// </summary>
+        Task<ExportedImplementations.CommandInterfaces.RenameModifications> RenameElementAndGetModifications(GlueElement elementToRename, string fullNewName, bool showRenameWindow = true);
+
         #endregion
 
         #region Add CustomVariable
