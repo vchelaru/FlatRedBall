@@ -633,7 +633,7 @@ partial class DialogCommands : IDialogCommands
             // A block body so the lambda is a Func<Task>: AddAsync<T>(Func<T>) would take Task<CustomVariable> as
             // its result and free the task slot before the add finished.
             await TaskManager.Self.AddAsync(async () => { await AddVariableFromViewModelAsync(viewModel, currentElement); },
-                String.Format(L.Texts.VariableAddThroughUI, resultName));
+                $"Adding variable {resultName} through UI");
         }
     }
 
