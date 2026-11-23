@@ -86,6 +86,31 @@ public class StartUpUiTests
         }
     }
 
+    // Loading a project runs every plugin's ReactToLoadedGlux. A handler that touches a view StartUpUi never
+    // built would throw here instead of quietly disabling its plugin.
+    [StaFact]
+    [Trait("Category", "BuildSmoke")]
+    public async System.Threading.Tasks.Task LoadProject_Headless_NoPluginFails()
+    {
+        GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
+        using var project = GoldProject.CopyOutOfRepo("Samples/Beefball");
+
+        PluginManager.HandleExceptions = false;
+        try
+        {
+            await GoldProject.LoadInGlueAsync(System.IO.Path.Combine(project.Root, "Beefball", "Beefball.csproj"));
+        }
+        finally
+        {
+            PluginManager.HandleExceptions = true;
+        }
+
+        PluginManagerBase.AllPluginContainers
+            .Where(container => container.FailureException != null || !container.IsEnabled)
+            .Select(container => $"{container.Name}: {container.FailureException}")
+            .ShouldBeEmpty();
+    }
+
     static T Registered<T>() where T : PluginBase
     {
         var container = PluginManagerBase.AllPluginContainers.Single(item => item.Plugin is T);
