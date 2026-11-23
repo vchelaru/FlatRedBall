@@ -1,0 +1,203 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Security.Cryptography;
+using System.Text.Json;
+using GlueCli;
+using GlueCli.Commands;
+using GlueUnitTests.TestSupport;
+using Shouldly;
+using Xunit;
+using static GlueUnitTests.Cli.GlueCliTestRun;
+
+namespace GlueUnitTests.Cli;
+
+/// <summary>
+/// <c>batch</c> against temp copies of Samples/Beefball: several commands on one load give what running them
+/// one by one gives, a failure stops the batch unless --keep-going, and --dry-run covers the whole batch.
+/// </summary>
+[Trait("Category", "BuildSmoke")]
+public class BatchCommandTests
+{
+    const string ThreeEdits =
+@"# Comments and blank lines are skipped.
+
+add-object --element GameScreen --type Sprite --name S1
+set-variable --element 'Screens\GameScreen' --object S1 --variable X --value ""120.5""
+add-object --element Entities\PlayerBall --type Circle --name C1
+";
+
+    [StaFact]
+    public void ThreeCommands_ShouldMatchRunningThemOneByOne()
+    {
+        using var batchCopy = GoldProject.CopyOutOfRepo("Samples/Beefball");
+        using var singleCopy = GoldProject.CopyOutOfRepo("Samples/Beefball");
+
+        var (exitCode, output) = RunWithStdin(ThreeEdits, "batch", batchCopy.Root, "--stdin", "--json");
+
+        exitCode.ShouldBe(GlueCliRunner.ExitSuccess, output);
+        var batch = ParseBatch(output);
+        batch.Results.Select(result => result.Command).ShouldBe(new[] { "add-object", "set-variable", "add-object" });
+
+        var singles = new[]
+        {
+            Run("add-object", singleCopy.Root, "--element", "GameScreen", "--type", "Sprite", "--name", "S1", "--json"),
+            Run("set-variable", singleCopy.Root, "--element", "Screens\\GameScreen", "--object", "S1", "--variable", "X",
+                "--value", "120.5", "--json"),
+            Run("add-object", singleCopy.Root, "--element", "Entities\\PlayerBall", "--type", "Circle", "--name", "C1", "--json"),
+        };
+        for (var i = 0; i < singles.Length; i++)
+        {
+            singles[i].exitCode.ShouldBe(GlueCliRunner.ExitSuccess, singles[i].output);
+            var single = Parse(singles[i].output);
+            // Compact, since the batch nests each result one level deeper in its indented output.
+            JsonSerializer.Serialize(batch.Results[i].Edit).ShouldBe(JsonSerializer.Serialize(single.Edit));
+            batch.Results[i].FilesWritten.ShouldBe(single.FilesWritten);
+        }
+        HashFolder(batchCopy.Root).ShouldBe(HashFolder(singleCopy.Root));
+    }
+
+    [StaFact]
+    public void FailingMiddleCommand_ShouldStopTheBatch_AndKeepWhatRanBeforeIt()
+    {
+        using var project = GoldProject.CopyOutOfRepo("Samples/Beefball");
+
+        var (exitCode, output) = RunWithStdin(FailingMiddle, "batch", project.Root, "--stdin", "--json");
+
+        exitCode.ShouldBe(GlueCliRunner.ExitErrors, output);
+        var batch = ParseBatch(output);
+        batch.CommandCount.ShouldBe(3);
+        batch.Results.Count.ShouldBe(2);
+        batch.Results[1].EditFailures.ShouldNotBeEmpty();
+        var screen = ReadGameScreen(project.Root);
+        screen.ShouldContain("\"S1\"");
+        screen.ShouldNotContain("\"S2\"");
+    }
+
+    [StaFact]
+    public void FailingMiddleCommand_ShouldRunTheRest_WithKeepGoing()
+    {
+        using var project = GoldProject.CopyOutOfRepo("Samples/Beefball");
+
+        var (exitCode, output) = RunWithStdin(FailingMiddle, "batch", project.Root, "--stdin", "--keep-going", "--json");
+
+        exitCode.ShouldBe(GlueCliRunner.ExitErrors, output);
+        var batch = ParseBatch(output);
+        batch.Results.Select(result => result.ExitCode).ShouldBe(new[] { 0, 1, 0 });
+        ReadGameScreen(project.Root).ShouldContain("\"S2\"");
+    }
+
+    [StaFact]
+    public void DryRun_ShouldLeaveTheFolderByteIdentical_AndReportTheCombinedChanges()
+    {
+        using var project = GoldProject.CopyOutOfRepo("Samples/Beefball");
+        var file = Path.Combine(project.Root, "edits.txt");
+        File.WriteAllText(file, ThreeEdits);
+        var before = HashFolder(project.Root);
+
+        var (exitCode, output) = Run("batch", project.Root, "--file", file, "--dry-run", "--json");
+
+        exitCode.ShouldBe(GlueCliRunner.ExitSuccess, output);
+        HashFolder(project.Root).ShouldBe(before, "a dry run must not write to the project");
+        var batch = ParseBatch(output);
+        batch.DryRun.ShouldBeTrue();
+        batch.Results.Count.ShouldBe(3);
+        var screen = batch.Changes!.Single(change => change.Path == "Screens/GameScreen.glsj");
+        screen.Diff!.ShouldContain("\"S1\"", Case.Sensitive);
+        screen.Diff.ShouldContain("120.5");
+        batch.Changes!.ShouldContain(change => change.Path == "Entities/PlayerBall.glej");
+        output.ShouldNotContain("GlueCliDryRun_", Case.Insensitive, "paths should name the real project, not the temp copy");
+    }
+
+    const string FailingMiddle =
+@"add-object --element GameScreen --type Sprite --name S1
+add-object --element GameScreen --type PlayerBal --name P1
+add-object --element GameScreen --type Sprite --name S2
+";
+
+    static string ReadGameScreen(string root) =>
+        File.ReadAllText(Path.Combine(root, "Beefball", "Screens", "GameScreen.glsj"));
+
+    static CliBatchResult ParseBatch(string output)
+    {
+        var json = output.Substring(0, output.IndexOf(Environment.NewLine + "stderr:", StringComparison.Ordinal));
+        return JsonSerializer.Deserialize<CliBatchResult>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+    }
+
+    static Dictionary<string, string> HashFolder(string root) =>
+        Directory.EnumerateFiles(root, "*", SearchOption.AllDirectories)
+            .ToDictionary(file => Path.GetRelativePath(root, file),
+                file => Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(file))));
+}
+
+/// <summary>Reading and checking a batch's lines, which happens before Glue starts.</summary>
+public class BatchCommandParseTests
+{
+    [Theory]
+    [InlineData("add-object --element GameScreen --type Sprite", new[] { "add-object", "--element", "GameScreen", "--type", "Sprite" })]
+    [InlineData("  set-variable   --value \"a b\"  ", new[] { "set-variable", "--value", "a b" })]
+    [InlineData("x --source-name 'Entire File (\"Map\")'", new[] { "x", "--source-name", "Entire File (\"Map\")" })]
+    [InlineData("x --element Entities\\Enemy --name=\"A B\"", new[] { "x", "--element", "Entities\\Enemy", "--name=A B" })]
+    [InlineData("x --value \"\"", new[] { "x", "--value", "" })]
+    public void SplitArguments_ShouldHandleQuotes_AndKeepBackslashes(string line, string[] expected)
+    {
+        BatchCommand.SplitArguments(line, out var error).ShouldBe(expected);
+        error.ShouldBeNull();
+    }
+
+    [Fact]
+    public void ParseSteps_ShouldSkipBlankLinesAndComments()
+    {
+        var steps = BatchCommand.ParseSteps("# first\r\n\r\n  check\r\n# add-object\r\ndescribe --element GameScreen\r\n",
+            "Game.csproj", out var error);
+
+        error.ShouldBeNull();
+        steps!.Select(step => step.Command.Name).ShouldBe(new[] { "check", "describe" });
+    }
+
+    [Theory]
+    [InlineData("frobnicate", "Batch line 1: unknown command 'frobnicate'")]
+    [InlineData("check\nadd-object --element \"GameScreen", "Batch line 2: the \" quote is not closed")]
+    [InlineData("add-object --type Sprite", "Batch line 1: add-object needs --element")]
+    [InlineData("add-object MyGame --element GameScreen --type Sprite", "takes no project in a batch")]
+    [InlineData("check --json", "--json applies to the whole batch")]
+    [InlineData("check --dry-run", "--dry-run applies to the whole batch")]
+    [InlineData("batch --stdin", "a batch cannot run batch")]
+    [InlineData("check --frob", "Unknown option --frob")]
+    [InlineData("# nothing\n\n", "The batch has no commands")]
+    public void Run_ShouldExitTwo_WithoutStartingGlue_WhenALineIsBad(string text, string expectedMessage)
+    {
+        using var temp = new TempDir("GlueCliBatch_");
+        File.WriteAllText(Path.Combine(temp.Root, "Game.gluj"), "{}");
+        File.WriteAllText(Path.Combine(temp.Root, "Game.csproj"), "<Project />");
+        var stdout = new StringWriter();
+        var stderr = new StringWriter();
+
+        var exitCode = GlueCliRunner.Run(new[] { "batch", temp.Root, "--stdin", "--json" }, stdout, stderr,
+            new ThrowingHost(), stdin: new StringReader(text));
+
+        exitCode.ShouldBe(GlueCliRunner.ExitUsageOrLoadFailure);
+        stderr.ToString().ShouldContain(expectedMessage, Case.Sensitive);
+        stdout.ToString().ShouldContain("\"command\": \"batch\"", Case.Sensitive);
+    }
+
+    [Theory]
+    [InlineData("batch", "x")]
+    [InlineData("batch", "x", "--stdin", "--file", "a.txt")]
+    public void Run_ShouldExitTwo_WhenTheBatchHasNoSingleSource(params string[] args)
+    {
+        var stderr = new StringWriter();
+
+        GlueCliRunner.Run(args, new StringWriter(), stderr, new ThrowingHost())
+            .ShouldBe(GlueCliRunner.ExitUsageOrLoadFailure);
+
+        stderr.ToString().ShouldContain("batch needs exactly one of --file or --stdin.");
+    }
+
+    sealed class ThrowingHost : IGlueCliHost
+    {
+        public IReadOnlyList<string> Prepare(string csproj, Action<string> reportMessage) =>
+            throw new InvalidOperationException("Batch syntax errors must be reported before Glue starts.");
+    }
+}

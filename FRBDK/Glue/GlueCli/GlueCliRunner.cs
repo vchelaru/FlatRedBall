@@ -59,6 +59,7 @@ public static class GlueCliRunner
         RemoveEventCommand.Definition,
         AddCollisionRelationshipCommand.Definition,
         SetCollisionPropertyCommand.Definition,
+        BatchCommand.Definition,
     };
 
     public static readonly IReadOnlyList<CliOption> GlobalOptions = new CliOption[]
@@ -114,6 +115,9 @@ public static class GlueCliRunner
             "GlueCli.exe, plus the project's own Plugins folder, as in the editor. The editor's settings are read but",
             "never saved. The project can stay open in the Glue editor: its file watcher reloads what an edit saved.",
             "",
+            "To make several edits, put them in a file, one command per line, and run batch: Glue starts and loads",
+            "the project once, and each command runs as it would alone. See GlueCli batch --help.",
+            "",
             "To preview an edit, add --dry-run: the command runs exactly as it would (same checks, plugin reactions",
             "and codegen) against a temp copy, and the run reports the files it would change instead of changing",
             "them. The exit code is the one the real edit would get.",
@@ -135,8 +139,9 @@ public static class GlueCliRunner
     }
 
     /// <param name="dryRunCopier">Makes the temp copy for --dry-run. Null uses the default temp location.</param>
+    /// <param name="stdin">What <c>batch --stdin</c> reads. Null reads <see cref="Console.In"/>.</param>
     public static int Run(string[] args, TextWriter stdout, TextWriter stderr, IGlueCliHost host,
-        CliDryRunCopier? dryRunCopier = null)
+        CliDryRunCopier? dryRunCopier = null, TextReader? stdin = null)
     {
         var wantsJson = args.Any(arg => string.Equals(arg, "--json", StringComparison.OrdinalIgnoreCase));
         if (args.Length == 0)
@@ -165,6 +170,8 @@ public static class GlueCliRunner
             return ExitSuccess;
         }
 
+        var isBatch = command == BatchCommand.Definition;
+        ICliOutcome outcome = isBatch ? new CliBatchResult() : result;
         var options = ParseOptions(command, args.Skip(1).ToList(), out var positional, out var parseError);
         if (parseError == null && positional.Count != 1)
         {
@@ -176,16 +183,32 @@ public static class GlueCliRunner
         parseError ??= command.ValidateArguments?.Invoke(context);
         if (parseError != null)
         {
-            return Fail(result, parseError, wantsJson, stdout, stderr, command.GetHelp());
+            return Fail(outcome, parseError, wantsJson, stdout, stderr, command.GetHelp());
         }
         var json = options.ContainsKey("json");
 
         var csproj = ResolveCsproj(positional[0], out var resolveError);
         if (csproj == null)
         {
-            return Fail(result, resolveError!, json, stdout, stderr);
+            return Fail(outcome, resolveError!, json, stdout, stderr);
         }
-        result.Project = csproj;
+        outcome.Project = csproj;
+
+        List<CliStep> steps;
+        if (isBatch)
+        {
+            var batchSteps = BatchCommand.ReadSteps(context, stdin ?? Console.In, csproj, out var batchError);
+            if (batchSteps == null)
+            {
+                return Fail(outcome, batchError!, json, stdout, stderr);
+            }
+            steps = batchSteps;
+            ((CliBatchResult)outcome).CommandCount = steps.Count;
+        }
+        else
+        {
+            steps = new List<CliStep> { new(command, context, result) };
+        }
 
         var stopwatch = Stopwatch.StartNew();
         CliDryRunCopy? dryRun = null;
@@ -197,15 +220,20 @@ public static class GlueCliRunner
             }
             catch (Exception e) when (e is IOException or UnauthorizedAccessException)
             {
-                return Fail(result, "Could not make the temp copy for --dry-run: " + e.Message, json, stdout, stderr);
+                return Fail(outcome, "Could not make the temp copy for --dry-run: " + e.Message, json, stdout, stderr);
             }
-            result.DryRun = true;
-            result.DryRunCopy = dryRun;
+            outcome.DryRun = true;
+            outcome.DryRunCopy = dryRun;
+            foreach (var step in steps)
+            {
+                step.Result.DryRunCopy = dryRun;
+            }
         }
 
         try
         {
-            return RunLoaded(command, context, result, dryRun?.Csproj ?? csproj, dryRun, stopwatch, json, stdout, stderr, host);
+            return RunLoaded(steps, outcome, dryRun?.Csproj ?? csproj, dryRun, stopwatch, json,
+                keepGoing: options.ContainsKey("keep-going"), stdout, stderr, host);
         }
         finally
         {
@@ -213,10 +241,16 @@ public static class GlueCliRunner
         }
     }
 
-    static int RunLoaded(CliCommand command, CliContext context, CliResult result, string csproj, CliDryRunCopy? dryRun,
-        Stopwatch stopwatch, bool json, TextWriter stdout, TextWriter stderr, IGlueCliHost host)
+    /// <summary>
+    /// Starts Glue, loads the project once, and runs <paramref name="steps"/> in order through
+    /// <see cref="RunStep"/>. A single command is a list of one, reported as <paramref name="outcome"/> itself;
+    /// a batch (<see cref="CliBatchResult"/>) stops at the first step that does not exit 0 unless
+    /// <paramref name="keepGoing"/>.
+    /// </summary>
+    static int RunLoaded(IReadOnlyList<CliStep> steps, ICliOutcome outcome, string csproj, CliDryRunCopy? dryRun,
+        Stopwatch stopwatch, bool json, bool keepGoing, TextWriter stdout, TextWriter stderr, IGlueCliHost host)
     {
-
+        var batch = outcome as CliBatchResult;
         var dialogMessages = new List<string>();
         void ReportMessage(string message)
         {
@@ -231,14 +265,14 @@ public static class GlueCliRunner
         }
         catch (Exception e)
         {
-            return Fail(result, "Glue failed to start: " + e, json, stdout, stderr);
+            return Fail(outcome, "Glue failed to start: " + e, json, stdout, stderr);
         }
         if (pluginFailures.Count > 0)
         {
-            return Fail(result, "These plugins failed to start, so results would be incomplete:" + Environment.NewLine +
+            return Fail(outcome, "These plugins failed to start, so results would be incomplete:" + Environment.NewLine +
                 string.Join(Environment.NewLine, pluginFailures), json, stdout, stderr);
         }
-        result.StartupSeconds = stopwatch.Elapsed.TotalSeconds;
+        outcome.StartupSeconds = stopwatch.Elapsed.TotalSeconds;
 
         var previousDialogs = (DialogService.ShowMessageImpl, DialogService.ShowConfirmImpl,
             DialogService.ShowChoiceImpl, DialogService.ShowDeleteImpl, GlueGui.SuppressedMessageHandler);
@@ -252,11 +286,12 @@ public static class GlueCliRunner
         var previousContext = SynchronizationContext.Current;
         SynchronizationContext.SetSynchronizationContext(null);
 
+        var current = steps[0];
         try
         {
             var projectRoot = Path.GetDirectoryName(csproj)!;
             HeadlessOutputRecorder.Clear();
-            var before = SnapshotFiles(projectRoot);
+            var before = dryRun == null ? SnapshotFiles(projectRoot) : null;
             var projectBefore = GlueState.Self.CurrentGlueProject;
 
             // Only the model: generating code, saving, and .csproj fix-ups are ProjectLoader.Operations steps a
@@ -267,73 +302,70 @@ public static class GlueCliRunner
             // LoadProject reports a failure (a missing file, an unreadable .csproj) by not loading anything.
             if (GlueState.Self.CurrentGlueProject == null || GlueState.Self.CurrentGlueProject == projectBefore)
             {
-                return Fail(result, $"Glue could not load {csproj}." + DescribeCollected(dialogMessages), json, stdout, stderr);
+                return Fail(outcome, $"Glue could not load {csproj}." + DescribeCollected(dialogMessages), json, stdout, stderr);
             }
-            result.LoadSeconds = stopwatch.Elapsed.TotalSeconds - result.StartupSeconds;
+            outcome.LoadSeconds = stopwatch.Elapsed.TotalSeconds - outcome.StartupSeconds;
 
-            // For an edit, what the project already had is reported but does not fail the run.
-            var baseline = command.IsEdit ? Collect(dialogMessages) : Collected.Empty;
-            var elementsBefore = command.IsEdit ? SerializeElements() : null;
-
-            if (command.Run != null)
+            // The first command reports what the load printed; a later read-only command only its own output.
+            var earlierOutput = Collected.Empty;
+            for (var i = 0; i < steps.Count; i++)
             {
-                command.Run(context).GetAwaiter().GetResult();
-                TaskManager.Self.WaitForAllTasksFinished().GetAwaiter().GetResult();
-            }
+                current = steps[i];
+                var stepStart = stopwatch.Elapsed.TotalSeconds;
+                var result = current.Result;
+                RunStep(current.Command, current.Context, result, earlierOutput, dialogMessages);
 
-            if (command.IsEdit && !context.HasFailed)
-            {
-                // Headless, TaskManager.SynchronousMode runs the AddOrMoveToEnd codegen an edit queues inline,
-                // before the rest of the edit's task, where the editor's queue runs it after. Plugin reactions
-                // later in that task (NewNamedObjectPlugin making a new list ExposedInDerived) would then be
-                // missing from the generated code, so regenerate every element the edit changed.
-                var elementsAfter = SerializeElements();
-                foreach (var (element, elementJson) in elementsAfter)
+                if (dryRun == null)
                 {
-                    if (!elementsBefore!.TryGetValue(element, out var jsonBefore) || jsonBefore != elementJson)
-                    {
-                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
-                    }
+                    result.FilesWritten = ChangedFiles(projectRoot, before!);
                 }
-                TaskManager.Self.WaitForAllTasksFinished().GetAwaiter().GetResult();
+                else if (batch == null)
+                {
+                    result.Changes = dryRun.ComputeChanges();
+                }
+                result.ExitCode = result.ProblemCount == 0 ? ExitSuccess : ExitErrors;
 
-                // The editor's save after an edit: the .gluj and every element file, then the .csproj. Most
-                // GluxCommands edits queue this themselves; doing it here means no command can forget it.
-                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
-                TaskManager.Self.WaitForAllTasksFinished().GetAwaiter().GetResult();
-                GlueCommands.Self.ProjectCommands.SaveProjects();
-                TaskManager.Self.WaitForAllTasksFinished().GetAwaiter().GetResult();
+                if (batch == null)
+                {
+                    result.ElapsedSeconds = stopwatch.Elapsed.TotalSeconds;
+                    Write(result, current.Command, json, stdout);
+                    return result.ExitCode;
+                }
+
+                result.ElapsedSeconds = stopwatch.Elapsed.TotalSeconds - stepStart;
+                batch.Results.Add(result);
+                if (!json)
+                {
+                    Write(result, current.Command, json: false, stdout, inBatch: true);
+                }
+                if (batch.ExitCode == ExitSuccess)
+                {
+                    batch.ExitCode = result.ExitCode;
+                }
+                if (result.ExitCode != ExitSuccess && !keepGoing)
+                {
+                    break;
+                }
+                if (i + 1 < steps.Count)
+                {
+                    before = dryRun == null ? SnapshotFiles(projectRoot) : null;
+                    earlierOutput = Collect(dialogMessages) with { Errors = new() };
+                }
             }
 
-            var after = Collect(dialogMessages);
-            var baselineErrorKeys = baseline.Errors.Select(ErrorKey).ToHashSet();
-            result.Errors = after.Errors.Where(error => !baselineErrorKeys.Contains(ErrorKey(error))).ToList();
-            result.OutputErrors = after.OutputErrors.Skip(baseline.OutputErrors.Count).ToList();
-            result.DialogMessages = after.DialogMessages.Skip(baseline.DialogMessages.Count).ToList();
-            result.PreexistingErrors = after.Errors.Where(error => baselineErrorKeys.Contains(ErrorKey(error)))
-                .Concat(baseline.OutputErrors.Select(line => new CliError("ErrorOutput", line)))
-                .Concat(baseline.DialogMessages.Select(line => new CliError("DialogMessage", line)))
-                .ToList();
-
+            batch!.ElapsedSeconds = stopwatch.Elapsed.TotalSeconds;
             if (dryRun != null)
             {
-                result.Changes = dryRun.ComputeChanges();
+                batch.Changes = dryRun.ComputeChanges();
             }
-            else
-            {
-                result.FilesWritten = ChangedFiles(projectRoot, before);
-            }
-            result.ElapsedSeconds = stopwatch.Elapsed.TotalSeconds;
-            result.ExitCode = result.ProblemCount == 0 ? ExitSuccess : ExitErrors;
-
-            Write(result, command, json, stdout);
-            return result.ExitCode;
+            WriteBatch(batch, json, stdout);
+            return batch.ExitCode;
         }
         catch (Exception e)
         {
             // What Glue reported before throwing usually names the cause better than the exception does
             // (a .gluj that does not parse surfaces as an unanswered question, then an NRE).
-            return Fail(result, $"'{result.Command}' failed: {e}" + DescribeCollected(dialogMessages), json, stdout, stderr);
+            return Fail(outcome, $"'{current.Command.Name}' failed: {e}" + DescribeCollected(dialogMessages), json, stdout, stderr);
         }
         finally
         {
@@ -358,7 +390,62 @@ public static class GlueCliRunner
         }
     }
 
-    static CliCommand? FindCommand(string name) =>
+    /// <summary>
+    /// One command against the loaded project, shared by a single run and each line of a batch: run it, and for
+    /// an edit regenerate and save what it changed and report only the errors it added to what the project had
+    /// right before it. <paramref name="earlierOutput"/> is the error output and dialog messages a read-only
+    /// command leaves out because an earlier command in the batch produced them.
+    /// </summary>
+    static void RunStep(CliCommand command, CliContext context, CliResult result, Collected earlierOutput,
+        List<string> dialogMessages)
+    {
+        // For an edit, what the project already had is reported but does not fail the run.
+        var baseline = command.IsEdit ? Collect(dialogMessages) : earlierOutput;
+        var elementsBefore = command.IsEdit ? SerializeElements() : null;
+
+        if (command.Run != null)
+        {
+            command.Run(context).GetAwaiter().GetResult();
+            TaskManager.Self.WaitForAllTasksFinished().GetAwaiter().GetResult();
+        }
+
+        if (command.IsEdit && !context.HasFailed)
+        {
+            // Headless, TaskManager.SynchronousMode runs the AddOrMoveToEnd codegen an edit queues inline,
+            // before the rest of the edit's task, where the editor's queue runs it after. Plugin reactions
+            // later in that task (NewNamedObjectPlugin making a new list ExposedInDerived) would then be
+            // missing from the generated code, so regenerate every element the edit changed.
+            var elementsAfter = SerializeElements();
+            foreach (var (element, elementJson) in elementsAfter)
+            {
+                if (!elementsBefore!.TryGetValue(element, out var jsonBefore) || jsonBefore != elementJson)
+                {
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
+                }
+            }
+            TaskManager.Self.WaitForAllTasksFinished().GetAwaiter().GetResult();
+
+            // The editor's save after an edit: the .gluj and every element file, then the .csproj. Most
+            // GluxCommands edits queue this themselves; doing it here means no command can forget it.
+            GlueCommands.Self.GluxCommands.SaveProjectAndElements();
+            TaskManager.Self.WaitForAllTasksFinished().GetAwaiter().GetResult();
+            GlueCommands.Self.ProjectCommands.SaveProjects();
+            TaskManager.Self.WaitForAllTasksFinished().GetAwaiter().GetResult();
+        }
+
+        var after = Collect(dialogMessages);
+        var baselineErrorKeys = baseline.Errors.Select(ErrorKey).ToHashSet();
+        result.Errors = after.Errors.Where(error => !baselineErrorKeys.Contains(ErrorKey(error))).ToList();
+        result.OutputErrors = after.OutputErrors.Skip(baseline.OutputErrors.Count).ToList();
+        result.DialogMessages = after.DialogMessages.Skip(baseline.DialogMessages.Count).ToList();
+        // A read-only command's baseline is only output an earlier batch command printed, not the project's.
+        result.PreexistingErrors = !command.IsEdit ? new() : after.Errors.Where(error => baselineErrorKeys.Contains(ErrorKey(error)))
+            .Concat(baseline.OutputErrors.Select(line => new CliError("ErrorOutput", line)))
+            .Concat(baseline.DialogMessages.Select(line => new CliError("DialogMessage", line)))
+            .ToList();
+    }
+
+    internal static CliCommand? FindCommand(string name) =>
         Commands.FirstOrDefault(command => string.Equals(command.Name, name, StringComparison.OrdinalIgnoreCase));
 
     /// <summary>
@@ -564,21 +651,21 @@ public static class GlueCliRunner
         return lines.Count == 0 ? "" : Environment.NewLine + string.Join(Environment.NewLine, lines);
     }
 
-    static int Fail(CliResult result, string message, bool json, TextWriter stdout, TextWriter stderr, string? help = null)
+    static int Fail(ICliOutcome outcome, string message, bool json, TextWriter stdout, TextWriter stderr, string? help = null)
     {
-        result.ExitCode = ExitUsageOrLoadFailure;
-        result.Failure = result.DryRunCopy?.MapPaths(message) ?? message;
+        outcome.ExitCode = ExitUsageOrLoadFailure;
+        outcome.Failure = outcome.DryRunCopy?.MapPaths(message) ?? message;
         if (json)
         {
-            Write(result, command: null, json: true, stdout);
+            WriteJson(outcome, stdout);
         }
-        stderr.WriteLine(result.Failure);
+        stderr.WriteLine(outcome.Failure);
         if (help != null)
         {
             stderr.WriteLine();
             stderr.WriteLine(help);
         }
-        return result.ExitCode;
+        return outcome.ExitCode;
     }
 
     static readonly JsonSerializerOptions JsonOptions = new()
@@ -589,35 +676,48 @@ public static class GlueCliRunner
         Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
     };
 
-    static void Write(CliResult result, CliCommand? command, bool json, TextWriter stdout)
+    /// <summary>
+    /// Prints the --json object. A dry run loaded the temp copy; the report names the real project, so every
+    /// path is mapped back, including the command-specific <c>edit</c> objects in the serialized text.
+    /// </summary>
+    static void WriteJson(ICliOutcome outcome, TextWriter stdout)
     {
-        // A dry run loaded the temp copy; the report names the real project.
-        result.DryRunCopy?.MapResultPaths(result);
+        var results = outcome is CliBatchResult batch ? batch.Results : new List<CliResult> { (CliResult)outcome };
+        foreach (var result in results)
+        {
+            outcome.DryRunCopy?.MapResultPaths(result);
+        }
+        var serialized = JsonSerializer.Serialize(outcome, outcome.GetType(), JsonOptions);
+        stdout.WriteLine(outcome.DryRunCopy?.MapPaths(serialized) ?? serialized);
+    }
+
+    /// <param name="inBatch">One block of a batch's text output: the timing line is the command's own, and the
+    /// batch's summary says the rest.</param>
+    static void Write(CliResult result, CliCommand? command, bool json, TextWriter stdout, bool inBatch = false)
+    {
         if (json)
         {
-            var serialized = JsonSerializer.Serialize(result, JsonOptions);
-            stdout.WriteLine(result.DryRunCopy?.MapPaths(serialized) ?? serialized);
+            WriteJson(result, stdout);
             return;
         }
+        result.DryRunCopy?.MapResultPaths(result);
 
         stdout.WriteLine($"{result.Command} {result.Project}");
-        stdout.WriteLine($"Glue started in {result.StartupSeconds:0.0}s, project loaded in {result.LoadSeconds:0.0}s, " +
-            $"{result.ElapsedSeconds:0.0}s total.");
+        stdout.WriteLine(inBatch
+            ? $"Ran in {result.ElapsedSeconds:0.0}s."
+            : $"Glue started in {result.StartupSeconds:0.0}s, project loaded in {result.LoadSeconds:0.0}s, " +
+              $"{result.ElapsedSeconds:0.0}s total.");
         if (result.EditSummary != null)
         {
             stdout.WriteLine(result.EditSummary);
         }
-        WriteSection(command?.IsEdit == false ? "Failed" : "Edit not applied", result.EditFailures);
-        WriteSection("Errors", result.Errors.Select(error => $"{error.Type}: {error.Details}"));
-        WriteSection("Error output", result.OutputErrors);
-        WriteSection("Dialog messages", result.DialogMessages);
-        WriteSection("Errors the project already had (not counted)", result.PreexistingErrors.Select(error => $"{error.Type}: {error.Details}"));
-        WriteSection("Files written", result.FilesWritten);
-        if (result.Changes != null)
-        {
-            WriteSection("Would change", result.Changes.Select(change =>
-                $"{change.Kind} {change.Path}" + (change.Diff == null ? "" : "\n" + change.Diff)));
-        }
+        WriteSection(stdout, command?.IsEdit == false ? "Failed" : "Edit not applied", result.EditFailures);
+        WriteSection(stdout, "Errors", result.Errors.Select(error => $"{error.Type}: {error.Details}"));
+        WriteSection(stdout, "Error output", result.OutputErrors);
+        WriteSection(stdout, "Dialog messages", result.DialogMessages);
+        WriteSection(stdout, "Errors the project already had (not counted)", result.PreexistingErrors.Select(error => $"{error.Type}: {error.Details}"));
+        WriteSection(stdout, "Files written", result.FilesWritten);
+        WriteChanges(stdout, result.Changes);
         var problemCount = result.ProblemCount;
         stdout.WriteLine(problemCount > 0 ? $"{problemCount} problem(s)."
             : command?.IsEdit == true ? "No new errors." : "No errors.");
@@ -625,21 +725,98 @@ public static class GlueCliRunner
         {
             stdout.WriteLine("Dry run: the project on disk was not changed.");
         }
-
-        void WriteSection(string title, IEnumerable<string> lines)
+        if (inBatch)
         {
-            var list = lines.ToList();
-            if (list.Count == 0)
-            {
-                return;
-            }
-            stdout.WriteLine($"{title} ({list.Count}):");
-            foreach (var line in list)
-            {
-                stdout.WriteLine("  " + line.Replace("\n", "\n    "));
-            }
+            stdout.WriteLine();
         }
     }
+
+    /// <summary>The batch's text summary, after each command's block.</summary>
+    static void WriteBatch(CliBatchResult batch, bool json, TextWriter stdout)
+    {
+        if (json)
+        {
+            WriteJson(batch, stdout);
+            return;
+        }
+        stdout.WriteLine($"batch {batch.Project}");
+        stdout.WriteLine($"Glue started in {batch.StartupSeconds:0.0}s, project loaded in {batch.LoadSeconds:0.0}s, " +
+            $"{batch.ElapsedSeconds:0.0}s total.");
+        WriteChanges(stdout, batch.Changes);
+        var ran = batch.Results.Count;
+        stdout.WriteLine(ran == batch.CommandCount
+            ? $"Ran all {ran} command(s), exit code {batch.ExitCode}."
+            : $"Stopped after command {ran} of {batch.CommandCount} failed, exit code {batch.ExitCode}. " +
+              "The commands before it stay applied; --keep-going runs the rest.");
+        if (batch.DryRun)
+        {
+            stdout.WriteLine("Dry run: the project on disk was not changed.");
+        }
+    }
+
+    static void WriteChanges(TextWriter stdout, List<CliFileChange>? changes)
+    {
+        if (changes != null)
+        {
+            WriteSection(stdout, "Would change", changes.Select(change =>
+                $"{change.Kind} {change.Path}" + (change.Diff == null ? "" : "\n" + change.Diff)));
+        }
+    }
+
+    static void WriteSection(TextWriter stdout, string title, IEnumerable<string> lines)
+    {
+        var list = lines.ToList();
+        if (list.Count == 0)
+        {
+            return;
+        }
+        stdout.WriteLine($"{title} ({list.Count}):");
+        foreach (var line in list)
+        {
+            stdout.WriteLine("  " + line.Replace("\n", "\n    "));
+        }
+    }
+}
+
+/// <summary>One command a run executes, with the options parsed for it and the result it fills.</summary>
+internal sealed record CliStep(CliCommand Command, CliContext Context, CliResult Result);
+
+/// <summary>What every run reports, a single command (<see cref="CliResult"/>) or a batch (<see cref="CliBatchResult"/>).</summary>
+internal interface ICliOutcome
+{
+    string? Project { get; set; }
+    int ExitCode { get; set; }
+    string? Failure { get; set; }
+    bool DryRun { get; set; }
+    CliDryRunCopy? DryRunCopy { get; set; }
+    double StartupSeconds { get; set; }
+    double LoadSeconds { get; set; }
+    double ElapsedSeconds { get; set; }
+}
+
+/// <summary>What <c>batch</c> reports. Serialized as-is for --json.</summary>
+public sealed class CliBatchResult : ICliOutcome
+{
+    public string Command => "batch";
+    public string? Project { get; set; }
+    /// <summary>The first non-zero exit code of the commands that ran, or 2 when the batch itself failed.</summary>
+    public int ExitCode { get; set; }
+    /// <summary>Set when the batch could not run (bad syntax, a failed load), or a command threw (exit code 2).</summary>
+    public string? Failure { get; set; }
+    /// <summary>How many commands the batch has; <see cref="Results"/> is shorter when it stopped early.</summary>
+    public int CommandCount { get; set; }
+    /// <summary>Each command's result, in order, as the command reports it on its own.</summary>
+    public List<CliResult> Results { get; set; } = new();
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)]
+    public bool DryRun { get; set; }
+    /// <summary>--dry-run only: what the whole batch would have changed, relative to the .csproj folder.</summary>
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public List<CliFileChange>? Changes { get; set; }
+    [System.Text.Json.Serialization.JsonIgnore]
+    public CliDryRunCopy? DryRunCopy { get; set; }
+    public double StartupSeconds { get; set; }
+    public double LoadSeconds { get; set; }
+    public double ElapsedSeconds { get; set; }
 }
 
 public sealed record CliError(string Type, string Details);
@@ -647,7 +824,7 @@ public sealed record CliError(string Type, string Details);
 /// <summary>
 /// What a run reports. Serialized as-is for --json.
 /// </summary>
-public sealed class CliResult
+public sealed class CliResult : ICliOutcome
 {
     public string Command { get; set; } = "";
     public string? Project { get; set; }
@@ -681,7 +858,8 @@ public sealed class CliResult
     /// <summary>--dry-run only: what the run would have changed, relative to the .csproj folder.</summary>
     [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public List<CliFileChange>? Changes { get; set; }
-    internal CliDryRunCopy? DryRunCopy { get; set; }
+    [System.Text.Json.Serialization.JsonIgnore]
+    public CliDryRunCopy? DryRunCopy { get; set; }
     public double StartupSeconds { get; set; }
     public double LoadSeconds { get; set; }
     public double ElapsedSeconds { get; set; }
