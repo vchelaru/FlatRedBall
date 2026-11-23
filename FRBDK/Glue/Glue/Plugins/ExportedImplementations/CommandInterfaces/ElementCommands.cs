@@ -156,29 +156,31 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
         var newDirectory = FileManager.GetDirectory(newElementName, RelativeType.Relative);
         var didChangeDirectory = oldDirectory != newDirectory;
 
-        if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.SeparateJsonFilesForElements)
-        {
-            // delete the old file (put it in recycle bin)
-            // From https://stackoverflow.com/questions/2342628/deleting-file-to-recycle-bin-on-windows-x64-in-c-sharp
-
-            if (fileNameBeforeMove?.Exists() == true)
-            {
-                try
-                {
-                    Microsoft.VisualBasic.FileIO.FileSystem.DeleteFile(
-                        fileNameBeforeMove.FullPath,
-                        Microsoft.VisualBasic.FileIO.UIOption.OnlyErrorDialogs,
-                        Microsoft.VisualBasic.FileIO.RecycleOption.SendToRecycleBin);
-                }
-                catch (Exception e)
-                {
-                    GlueCommands.Self.PrintError(e.ToString());
-                }
-            }
-        }
-
         if (changeClassNamesResponse.Succeeded)
         {
+            // Only once the rename is going ahead: declining the "files would be overwritten" question used to
+            // leave the element under its old name with its .glsj/.glej already in the recycle bin.
+            if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.SeparateJsonFilesForElements)
+            {
+                // delete the old file (put it in recycle bin)
+                // From https://stackoverflow.com/questions/2342628/deleting-file-to-recycle-bin-on-windows-x64-in-c-sharp
+
+                if (fileNameBeforeMove?.Exists() == true)
+                {
+                    try
+                    {
+                        Microsoft.VisualBasic.FileIO.FileSystem.DeleteFile(
+                            fileNameBeforeMove.FullPath,
+                            Microsoft.VisualBasic.FileIO.UIOption.OnlyErrorDialogs,
+                            Microsoft.VisualBasic.FileIO.RecycleOption.SendToRecycleBin);
+                    }
+                    catch (Exception e)
+                    {
+                        GlueCommands.Self.PrintError(e.ToString());
+                    }
+                }
+            }
+
             renameModifications.CodeFilesAffectedByRename.AddRange(changeClassNamesResponse.Data);
 
             // Set the name first because that's going
