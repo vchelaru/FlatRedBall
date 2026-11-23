@@ -7,7 +7,7 @@ using Shouldly;
 namespace GlueUnitTests.Controls;
 
 // DialogService is the shared seam for all simple message/confirm/choice dialogs in Glue (added to fix a
-// cross-thread WPF crash class - see ProjectLoader.CheckForMissingCustomFile and #1921's
+// cross-thread WPF crash class - see ProjectLoadOperations.CheckForMissingCustomCodeFiles and #1921's
 // DuplicateProjectEntryDialog). Every public method routes through TaskManager.Self.OnUiThread, so these
 // tests share TaskManagerSequentialCollection with the other TaskManager-state tests (see
 // TaskManagerSynchronousModeTests.cs) since both mutate TaskManager's process-wide UiThreadMarshaller state.

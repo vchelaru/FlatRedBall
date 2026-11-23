@@ -73,6 +73,7 @@ public class RenameCommandTests
     public void Rename_ShouldRenameAnEntity_ItsFilesAndTheObjectsThatUseIt_AndTheProjectShouldBuild()
     {
         using var project = GoldProject.CopyOutOfRepo("Samples/Beefball");
+        Regen(project.Root);
         var beefball = Path.Combine(project.Root, "Beefball");
 
         var (exitCode, output) = Run("rename", project.Root, "--element", "Entities\\ScoreHud", "--to", "Scoreboard", "--json");

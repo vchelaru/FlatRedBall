@@ -320,7 +320,7 @@ public static class GlueHeadlessHost
 
             RegisterEmbeddedPlugins();
 
-            ProjectLoader.Self.Initialize(GlueCommands.Self.ProjectCommands);
+            ProjectLoader.Self.Initialize(GlueCommands.Self.ProjectCommands, Builder.Get<ProjectLoadOperations>());
         }
     }
 
@@ -397,7 +397,7 @@ public static class GlueHeadlessHost
             PluginManager.RegisterPlugin(new HeadlessOutputRecorder());
             PluginManager.PrintPreInitializeOutput();
 
-            ProjectLoader.Self.Initialize(GlueCommands.Self.ProjectCommands);
+            ProjectLoader.Self.Initialize(GlueCommands.Self.ProjectCommands, Builder.Get<ProjectLoadOperations>());
 
             return PluginManagerBase.AllPluginContainers
                 .Where(container => container.FailureException != null)

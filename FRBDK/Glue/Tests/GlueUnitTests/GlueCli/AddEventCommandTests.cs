@@ -23,6 +23,7 @@ public class AddEventCommandTests
     public void AddEvent_ShouldTunnelACollisionRelationshipsEvent_AndAddOneHandler_AndTheProjectShouldBuild()
     {
         using var project = GoldProject.CopyOutOfRepo("Samples/Beefball");
+        Regen(project.Root);
         var beefball = Path.Combine(project.Root, "Beefball");
 
         var (exitCode, output) = Run("add-event", project.Root, "--element", "GameScreen", "--object", "PlayerBallVsPuck",
@@ -63,6 +64,7 @@ public class AddEventCommandTests
     public void AddEvent_ShouldExposeAVariablesChangeEvent_AndCreateTheEventFiles_AndTheProjectShouldBuild()
     {
         using var project = GoldProject.CopyOutOfRepo("Samples/Beefball");
+        Regen(project.Root);
         var beefball = Path.Combine(project.Root, "Beefball");
         // The Add Event window offers a variable's change events only once the variable creates events.
         var glejPath = Path.Combine(beefball, "Entities", "PlayerBall.glej");

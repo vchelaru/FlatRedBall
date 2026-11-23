@@ -360,6 +360,28 @@ internal static class GlueTestBootstrap
         }
     }
 
+    static bool _missingFileErrorReporterRegistered;
+
+    /// <summary>
+    /// Opt-in: adds the error reporter <see cref="OfficialPlugins.ErrorPlugin.MainErrorPlugin"/>'s StartUp adds,
+    /// which reports referenced files missing from disk. The plugin itself is not registered: its StartUp builds
+    /// a WPF ErrorWindow.
+    /// </summary>
+    public static void EnsureMissingFileErrorReporterRegistered()
+    {
+        lock (_lock)
+        {
+            if (_missingFileErrorReporterRegistered)
+            {
+                return;
+            }
+            _missingFileErrorReporterRegistered = true;
+
+            Container.Get<FlatRedBall.Glue.Errors.GlueErrorManager>()
+                .Add(new OfficialPlugins.ErrorPlugin.Logic.ErrorCreateRemoveLogic());
+        }
+    }
+
     /// <summary>
     /// The instance <see cref="EnsureCollisionPluginRegisteredWithPluginManager"/> registered, for asserting
     /// on its view models after a selection.
