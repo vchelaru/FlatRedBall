@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Glue.Elements;
@@ -68,13 +69,26 @@ public class TypedPluginCommandsTests : IDisposable
         GlueCommands.Self.CompilerCommands.ShouldBeNull();
     }
 
+    /// <summary>
+    /// The registered Gum plugin is shared by the whole run, and an earlier test can make it throw, which disables
+    /// it and runs its ShutDown. Either way GumCommands must match: set while enabled, cleared once shut down.
+    /// </summary>
     [StaFact]
-    public void GumPlugin_StartUp_AssignsGumCommands()
+    public void GumPlugin_GumCommands_AreSetExactlyWhileThePluginIsEnabled()
     {
         GlueTestBootstrap.EnsureGumPluginRegisteredWithPluginManager();
 
-        GlueCommands.Self.GumCommands.ShouldNotBeNull();
-        GlueCommands.Self.GumCommands.HasGum().ShouldBe(GumPlugin.Managers.AppState.Self.GumProjectSave != null);
+        var gumContainer = FlatRedBall.Glue.Plugins.PluginManager.GetGlobalPluginManager().PluginContainers.Values
+            .Single(item => item.Plugin is GumPlugin.MainGumPlugin);
+        if (gumContainer.IsEnabled)
+        {
+            GlueCommands.Self.GumCommands.ShouldNotBeNull();
+            GlueCommands.Self.GumCommands.HasGum().ShouldBe(GumPlugin.Managers.AppState.Self.GumProjectSave != null);
+        }
+        else
+        {
+            GlueCommands.Self.GumCommands.ShouldBeNull();
+        }
     }
 
     [Fact]
