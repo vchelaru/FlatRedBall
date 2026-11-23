@@ -109,6 +109,27 @@ public class GlueCommands : IGlueCommands
     /// <summary>Assigned by the Tiled Plugin when it starts; null when that plugin is not loaded.</summary>
     public ITiledCommands TiledCommands { get; set; }
 
+    /// <summary>Assigned by the Main Property Grid Plugin when it starts; null when that plugin is not loaded.</summary>
+    public IPropertyGridCommands PropertyGridCommands { get; set; }
+
+    /// <summary>Assigned by the FRB Source plugin when it starts; null when that plugin is not loaded.</summary>
+    public IFrbSourceCommands FrbSourceCommands { get; set; }
+
+    /// <summary>Assigned by the New Project Wizard plugin when it starts; null when that plugin is not loaded.</summary>
+    public IWizardCommands WizardCommands { get; set; }
+
+    /// <summary>Assigned by the Git plugin when it starts; null when that plugin is not loaded.</summary>
+    public IGitCommands GitCommands { get; set; }
+
+    /// <summary>Assigned by the MonoGame Content plugin when it starts; null when that plugin is not loaded.</summary>
+    public IContentPipelineCommands ContentPipelineCommands { get; set; }
+
+    /// <summary>Assigned by the Undo plugin when it starts; null when that plugin is not loaded.</summary>
+    public IUndoCommands UndoCommands { get; set; }
+
+    /// <summary>Assigned by the Tree View plugin when it starts; null when that plugin is not loaded.</summary>
+    public ITreeViewCommands TreeViewCommands { get; set; }
+
     public ISelectCommands SelectCommands { get; private set; }
 
     #endregion
@@ -437,7 +458,12 @@ public class GlueCommands : IGlueCommands
 
     public void Undo()
     {
-        PluginManager.CallPluginMethod(pluginFriendlyName: "Undo Plugin", methodName: "Undo");
+        var undoCommands = UndoCommands;
+        if (undoCommands != null)
+        {
+            // Live edit calls this from the game connection's thread.
+            DoOnUiThread(undoCommands.Undo);
+        }
     }
 
     public void LoadGlueSettings()

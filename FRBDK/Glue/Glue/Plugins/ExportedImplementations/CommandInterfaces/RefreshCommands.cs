@@ -155,8 +155,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void RefreshVariables()
         {
-            PluginManager.CallPluginMethod("Main Property Grid Plugin", "FixNamedObjectCollisionType");
-            PluginManager.CallPluginMethod("Main Property Grid Plugin", "RefreshVariables");
+            var propertyGridCommands = GlueCommands.Self.PropertyGridCommands;
+            if (propertyGridCommands != null)
+            {
+                // Callers include TaskManager tasks; the grid is UI.
+                GlueCommands.Self.DoOnUiThread(propertyGridCommands.RefreshVariables);
+            }
         }
 
 

@@ -24,6 +24,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         bool IsCollisionRelationship(NamedObjectSave nos);
 
+        /// <summary>
+        /// Recomputes the relationship's SourceClassType from its two objects and settings, after one of them changed
+        /// (a rename, a new collision type). Returns whether the type changed.
+        /// </summary>
+        bool FixNamedObjectCollisionType(NamedObjectSave relationship);
+
         /// <summary>Whether <paramref name="nos"/> can be in a relationship: an ICollidable entity instance, a list of
         /// them, a ShapeCollection or a TileShapeCollection.</summary>
         bool CanCollide(NamedObjectSave nos);

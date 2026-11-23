@@ -74,6 +74,8 @@ namespace OfficialPlugins.CollisionPlugin.Managers
 
         public bool IsCollisionRelationship(NamedObjectSave nos) => nos.IsCollisionRelationship();
 
+        public bool FixNamedObjectCollisionType(NamedObjectSave relationship) => TryFixSourceClassType(relationship);
+
         public bool CanCollide(NamedObjectSave nos) => GetIfCanBeReferencedByRelationship(nos);
 
         public IReadOnlyList<string> GetSubCollisionOptions(NamedObjectSave collidable) =>

@@ -457,10 +457,5 @@ namespace OfficialPlugins.CollisionPlugin
         {
             CollidableNamedObjectController.RefreshViewModelTo(element, selectedNos, collidableViewModel);
         }
-
-        public bool FixNamedObjectCollisionType(NamedObjectSave selectedNos)
-        {
-            return CollisionRelationshipViewModelController.TryFixSourceClassType(selectedNos);
-        }
     }
 }

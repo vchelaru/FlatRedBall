@@ -8,6 +8,7 @@ using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Plugins.Interfaces;
 using WpfDataUi;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.SaveClasses;
@@ -41,8 +42,22 @@ namespace OfficialPlugins.VariableDisplay
 
         #endregion
 
+        PropertyGridCommands propertyGridCommands;
+
+        public override bool ShutDown(PluginShutDownReason shutDownReason)
+        {
+            if (GlueCommands.Self.PropertyGridCommands == propertyGridCommands)
+            {
+                GlueCommands.Self.PropertyGridCommands = null;
+            }
+            return base.ShutDown(shutDownReason);
+        }
+
         public override void StartUp()
         {
+            propertyGridCommands = new PropertyGridCommands(RefreshVariables);
+            GlueCommands.Self.PropertyGridCommands = propertyGridCommands;
+
             VariableDisplayerTypeManager.FillTypeNameAssociations();
 
             this.ReactToItemsSelected += HandleItemsSelected;
@@ -95,7 +110,7 @@ namespace OfficialPlugins.VariableDisplay
         //    }
         //}
 
-        public void RefreshVariables()
+        private void RefreshVariables()
         {
             // This used to duplicate HandleItemSelect's single-object-only branch (nos != null,
             // element != null), which ignored multi-select entirely. Since this is called after every

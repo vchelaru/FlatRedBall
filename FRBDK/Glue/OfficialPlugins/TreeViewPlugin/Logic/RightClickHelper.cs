@@ -685,7 +685,7 @@ public static class RightClickHelper
         if (action == MenuShowingAction.RegularRightClick)
         {
             list.Add(RightClickItemDescriptor.Separator);
-            list.Add(new RightClickItemDescriptor { Text = "Bookmark", Handler = () => PluginManager.CallPluginMethod("Tree View Plugin", "AddBookmark", targetNode), Image = BookmarkImage });
+            list.Add(new RightClickItemDescriptor { Text = "Bookmark", Handler = () => GlueCommands.Self.TreeViewCommands?.AddBookmark(targetNode), Image = BookmarkImage });
         }
 
         #endregion
