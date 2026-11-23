@@ -36,6 +36,12 @@ namespace FlatRedBall.Glue
             mPreferenceSettings = PreferenceSettings.LoadSettings();
         }
 
+        /// <param name="settingsDirectory">The folder holding the settings file, with a trailing separator.</param>
+        public static void LoadPreferenceSettings(string settingsDirectory)
+        {
+            mPreferenceSettings = PreferenceSettings.LoadSettings(settingsDirectory);
+        }
+
         public static void LoadGlueLayoutSettings()
         {
             mGlueLayoutSettings = GlueLayoutSettings.LoadSettings();

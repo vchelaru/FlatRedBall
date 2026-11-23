@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>GlueCli</AssemblyName>
+    <RootNamespace>GlueCli</RootNamespace>
+    <!-- Next to Glue.exe (GlueFormsCore.exe), so Content\ContentTypes.csv, the Plugins folder the plugin
+         projects copy themselves into, and every dependency resolve exactly as they do for the editor. -->
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <OutputPath>..\Glue\bin\$(Configuration)\</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Glue\Glue.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="GlueUnitTests" />
+  </ItemGroup>
+
+</Project>

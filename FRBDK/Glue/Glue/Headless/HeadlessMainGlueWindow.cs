@@ -19,7 +19,7 @@ namespace FlatRedBall.Glue.Headless;
 /// message loop, and a real control means <c>PropertyGrid.Refresh()</c>/<c>SelectedObject</c> writes behave
 /// exactly like production instead of needing a special headless no-op path.
 /// </summary>
-internal class HeadlessMainGlueWindow : IMainGlueWindow
+internal class HeadlessMainGlueWindow : IMainGlueWindow, ISynchronizeInvoke
 {
     public System.Windows.Forms.PropertyGrid PropertyGrid { get; set; } = new();
     public bool HasErrorOccurred { get; set; }
@@ -48,6 +48,27 @@ internal class HeadlessMainGlueWindow : IMainGlueWindow
             method.DynamicInvoke();
         }
         return null!;
+    }
+
+    // The real window is a Form, so plugins use it as a System.Timers.Timer.SynchronizingObject (the live
+    // edit plugin's ModalReportingService does). Headless there is no UI thread to marshal to: run inline.
+    bool ISynchronizeInvoke.InvokeRequired => false;
+    IAsyncResult ISynchronizeInvoke.BeginInvoke(Delegate method, object?[]? args)
+    {
+        var result = method.DynamicInvoke(args);
+        return new CompletedAsyncResult(result);
+    }
+    object? ISynchronizeInvoke.EndInvoke(IAsyncResult result) => ((CompletedAsyncResult)result).Result;
+    object? ISynchronizeInvoke.Invoke(Delegate method, object?[]? args) => method.DynamicInvoke(args);
+
+    sealed class CompletedAsyncResult : IAsyncResult
+    {
+        public CompletedAsyncResult(object? result) => Result = result;
+        public object? Result { get; }
+        public object? AsyncState => null;
+        public System.Threading.WaitHandle AsyncWaitHandle { get; } = new System.Threading.ManualResetEvent(true);
+        public bool CompletedSynchronously => true;
+        public bool IsCompleted => true;
     }
 
     public void Close() => IsDisposed = true;

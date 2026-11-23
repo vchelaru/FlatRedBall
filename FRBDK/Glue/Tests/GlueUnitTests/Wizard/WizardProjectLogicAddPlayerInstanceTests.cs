@@ -33,7 +33,7 @@ namespace GlueUnitTests.Wizard;
 //    calls) is a static event with no subscriber unless a real MainCollisionPlugin has run StartUp - true
 //    in this test host, since PluginManager.LoadPlugins' reflection/directory-scan plugin discovery never
 //    runs here. GlueTestBootstrap.EnsureCollisionPluginRegisteredWithPluginManager constructs a real
-//    MainCollisionPlugin and registers it via the new PluginManager.RegisterPluginForTesting - the same
+//    MainCollisionPlugin and registers it via the new PluginManager.RegisterPlugin - the same
 //    dispatch-table registration StartupPlugin does for a discovered plugin, just without the discovery
 //    step in front of it. That, in turn, surfaced one more real gap: PluginManager's synchronous plugin
 //    dispatch (used by PluginManager.CallPluginMethod, e.g. "FixNamedObjectCollisionType") unconditionally

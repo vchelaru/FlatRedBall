@@ -302,11 +302,8 @@ public partial class MainGlueWindow : Form, IMainGlueWindow
 
         SetScreenMessage("Initializing FlatRedBall");
 
-        // Add Glue.Common
-        PropertyValuePair.AdditionalAssemblies.Add(typeof(PlatformSpecificType).Assembly);
-
-        // Monogame:
-        PropertyValuePair.AdditionalAssemblies.Add(typeof(SoundEffectInstance).Assembly);
+        // Glue.Common and MonoGame. Shared with GlueCli's startup.
+        FlatRedBall.Glue.Headless.GlueHeadlessHost.AddPropertyValuePairAssemblies();
 
         // Event manager
         SetScreenSubMessage("Initializing EventManager");
@@ -619,12 +616,8 @@ public partial class MainGlueWindow : Form, IMainGlueWindow
     private T RunOnUiThreadTasked<T>(Func<T> action) => action();
     private Task<T> RunOnUiThreadTasked<T>(Func<Task<T>> action) => action();
 
-    private static void AddErrorReporters()
-    {
-        EditorObjects.IoC.Container.Get<GlueErrorManager>()
-            .Add(new CsvErrorReporter());
-
-    }
+    // Shared with GlueCli's startup.
+    private static void AddErrorReporters() => FlatRedBall.Glue.Headless.GlueHeadlessHost.AddErrorReporters();
 
     private static void AddObjectsToIocContainer()
     {

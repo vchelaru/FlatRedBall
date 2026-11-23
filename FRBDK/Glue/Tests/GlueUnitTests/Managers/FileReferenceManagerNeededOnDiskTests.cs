@@ -83,8 +83,8 @@ public class FileReferenceManagerNeededOnDiskTests : IDisposable
         {
             if (!registered)
             {
-                PluginManager.RegisterPluginForTesting(new ReferencingPlugin());
-                PluginManager.RegisterPluginForTesting(new BuiltFilePlugin());
+                PluginManager.RegisterPlugin(new ReferencingPlugin());
+                PluginManager.RegisterPlugin(new BuiltFilePlugin());
                 registered = true;
             }
         }

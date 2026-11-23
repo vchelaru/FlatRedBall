@@ -1,13 +1,21 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
 using EditorObjects.IoC;
 using FlatRedBall.Glue.AutomatedGlue;
 using FlatRedBall.Glue.Controls;
+using FlatRedBall.Glue.Data;
 using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Errors;
+using FlatRedBall.Glue.Events;
 using FlatRedBall.Glue.IO;
+using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Instructions.Reflection;
+using FlatRedBall.IO;
+using Microsoft.Xna.Framework.Audio;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins;
@@ -85,7 +93,7 @@ namespace FlatRedBall.Glue.Headless;
 ///  - The legacy <see cref="Container"/> is also given a real
 ///    <see cref="FlatRedBall.Glue.Errors.GlueErrorManager"/> (only ever set by MainGlueWindow.cs's real
 ///    startup) so <c>PluginBase.AddErrorReporter</c> - called from a real plugin's <c>StartUp</c>, e.g.
-///    <see cref="PluginManager.RegisterPluginForTesting"/> - can resolve it instead of throwing "container
+///    <see cref="PluginManager.RegisterPlugin"/> - can resolve it instead of throwing "container
 ///    does not contain an entry". A plain in-memory list, no live UI needed.
 ///  - <see cref="TaskManager.SynchronousMode"/> is forced on, process-wide, for the lifetime of the
 ///    process (set here, first, before anything else touches <c>TaskManager.Self</c>). Individual
@@ -281,42 +289,194 @@ public static class GlueHeadlessHost
             }
             _projectLoadReady = true;
 
-            // EnsureInitialized turns AutoInstall off, but it only runs once and this method may be the
-            // first thing a different (STA) thread calls, so clear this thread's context too.
-            SynchronizationContext.SetSynchronizationContext(null);
-
-            DialogService.ShowMessageImpl = reportMessage;
-
-            EnsureMsBuildEnvironmentVariable();
-
-            // A plugin's ReactToLoadedGlux handler is often `async void` (MainGumPlugin.HandleGluxLoad is),
-            // and an exception in one of those does not reach PluginManager's try/catch - it gets posted to
-            // the synchronization context, where WinForms turns it into a modal "Unhandled exception" dialog
-            // on the user's desktop and the plugin container still reports no failure. Reporting these
-            // makes that class of failure visible instead of a popup nobody expects. Attaching a handler is
-            // enough: WinForms only falls back to its own dialog when there is none.
-            // (SetUnhandledExceptionMode is not an option - EnsureInitialized has already constructed
-            // HeadlessMainGlueWindow's PropertyGrid on this thread, and the mode is fixed once a control exists.)
-            Application.ThreadException += (_, e) =>
-                reportMessage("Unhandled exception on the UI thread: " + e.Exception);
-
-            // Only GlueGui gets the menu strip. PluginManager must NOT: its PluginCommand dispatch reads
-            // its own mMenuStrip and, when that is non-null, marshals every plugin call through
-            // mMenuStrip.Invoke - which needs a created window handle and a running message loop, so calls
-            // silently never execute and CallPluginMethod returns null (e.g. "HasGum returns null").
-            // Leaving PluginManager's null keeps its existing "no live menu strip means run inline" guard
-            // doing the right thing.
-            GlueGui.Initialize(new MenuStrip());
+            PrepareForProjectLoad(reportMessage);
 
             foreach (var plugin in pluginsToRegisterFirst)
             {
-                PluginManager.RegisterPluginForTesting(plugin);
+                PluginManager.RegisterPlugin(plugin);
             }
 
             RegisterEmbeddedPlugins();
 
             ProjectLoader.Self.Initialize(GlueCommands.Self.ProjectCommands);
         }
+    }
+
+    /// <summary>
+    /// The alternative to <see cref="EnsureProjectLoadReady"/> for a headless tool (GlueCli) that should get
+    /// the editor's results: everything that method sets up, plus the editor's own startup reads, and the
+    /// plugins loaded the way Glue.exe loads them - <see cref="PluginManager"/>'s MEF scan of the
+    /// <c>Plugins</c> folder next to the running exe, plus Glue's embedded plugins. Run in a process that
+    /// has not loaded or registered any plugin yet (not the test process); runs once per process.
+    ///
+    /// Differences from Glue.exe, each deliberate:
+    ///  - The editor's settings (settings.xml, PreferenceSettings.xml) are read from the editor's own
+    ///    AppData folder, since <c>FileManager.UserApplicationDataForThisApplication</c> is named after the
+    ///    entry exe, and saving them is then switched off, so a headless run never rewrites the user's
+    ///    recent-project list or last-opened project.
+    ///  - Pending plugin installs and uninstalls are left for the editor to apply.
+    ///  - <see cref="SkippedEmbeddedPlugins"/> are dropped before they start, as in the test host.
+    ///  - <c>PluginManager.ShareMenuStripReference</c> is never called (see <see cref="EnsureProjectLoadReady"/>),
+    ///    so plugins get no <c>InitializeMenuHandler</c> call; the buffered startup output is flushed directly.
+    ///  - <c>FileErrorReporter</c> has no timer; call <c>FileErrorReporter.FlushPendingErrors</c> after a load.
+    ///
+    /// <b>Must be called from an STA thread</b>, after <see cref="EnsureInitialized"/>.
+    /// </summary>
+    /// <param name="reportMessage">See <see cref="EnsureProjectLoadReady"/>.</param>
+    /// <param name="gameProjectDirectory">The folder of the .csproj about to be loaded, whose
+    /// plugin settings (PluginsToIgnore) apply, the way the editor applies its last project's.</param>
+    /// <returns>One line per plugin that failed to start, naming the plugin and the exception. Glue.exe
+    /// disables such a plugin and carries on; a headless tool should refuse to report results without
+    /// it.</returns>
+    public static IReadOnlyList<string> EnsureProjectLoadReadyWithInstalledPlugins(Action<string> reportMessage, string gameProjectDirectory)
+    {
+        lock (_lock)
+        {
+            if (!_initialized)
+            {
+                throw new InvalidOperationException(
+                    $"Call {nameof(GlueHeadlessHost)}.{nameof(EnsureInitialized)} before {nameof(EnsureProjectLoadReadyWithInstalledPlugins)}.");
+            }
+
+            if (_projectLoadReady)
+            {
+                throw new InvalidOperationException("The headless host already prepared a project load in this process.");
+            }
+            _projectLoadReady = true;
+
+            PrepareForProjectLoad(reportMessage);
+
+            LoadEditorSettingsReadOnly();
+
+            ProjectManager.PluginSettings = PluginSettings.FileExists(gameProjectDirectory)
+                ? PluginSettings.Load(gameProjectDirectory)
+                : new PluginSettings();
+
+            AddPropertyValuePairAssemblies();
+            EventManager.Initialize();
+            FileErrorReporter.InitializeHeadless();
+            AddErrorReporters();
+
+            // PluginManagerBase's MEF catalog takes the embedded plugins from the entry assembly, which is
+            // Glue itself only in Glue.exe.
+            var glueAssembly = typeof(GlueHeadlessHost).Assembly;
+            if (Assembly.GetEntryAssembly() != glueAssembly && !PluginManagerBase.AddGlobalOnInitialize.Contains(glueAssembly))
+            {
+                PluginManagerBase.AddGlobalOnInitialize.Add(glueAssembly);
+            }
+
+            FileManager.PreserveCase = true;
+
+            PluginManager.PluginTypesToSkip.UnionWith(SkippedEmbeddedPlugins);
+            PluginManager.Initialize(isStartup: true, ProjectManager.PluginSettings.PluginsToIgnore, applyPendingPluginInstalls: false);
+
+            // Registered after the scan because RegisterPlugin creates the global plugin manager, which makes
+            // Initialize skip the scan. Output printed before any manager existed is buffered, and flushed here.
+            PluginManager.RegisterPlugin(new HeadlessOutputRecorder());
+            PluginManager.PrintPreInitializeOutput();
+
+            ProjectLoader.Self.Initialize(GlueCommands.Self.ProjectCommands);
+
+            return PluginManagerBase.AllPluginContainers
+                .Where(container => container.FailureException != null)
+                .Select(container => $"{container.Name}: {container.FailureDetails}{Environment.NewLine}{container.FailureException}")
+                .ToList();
+        }
+    }
+
+    /// <summary>
+    /// The assemblies <c>PropertyValuePair</c> resolves type names from, beyond its defaults. Glue.exe's
+    /// startup calls this too.
+    /// </summary>
+    public static void AddPropertyValuePairAssemblies()
+    {
+        // Glue.Common
+        AddOnce(typeof(PlatformSpecificType).Assembly);
+        // MonoGame
+        AddOnce(typeof(SoundEffectInstance).Assembly);
+
+        static void AddOnce(Assembly assembly)
+        {
+            if (!PropertyValuePair.AdditionalAssemblies.Contains(assembly))
+            {
+                PropertyValuePair.AdditionalAssemblies.Add(assembly);
+            }
+        }
+    }
+
+    /// <summary>
+    /// The error reporters that live in Glue itself rather than in a plugin. Glue.exe's startup calls this too.
+    /// </summary>
+    public static void AddErrorReporters()
+    {
+        Container.Get<GlueErrorManager>()
+            .Add(new CsvErrorReporter());
+    }
+
+    /// <summary>
+    /// The folder Glue.exe keeps its user settings in. <c>FileManager.UserApplicationDataForThisApplication</c>
+    /// is named after the entry exe, so it is this folder only inside Glue.exe.
+    /// </summary>
+    public static string EditorUserDataDirectory =>
+        FileManager.UserApplicationData + typeof(GlueHeadlessHost).Assembly.GetName().Name + "\\";
+
+    /// <summary>
+    /// Reads the editor's settings.xml and PreferenceSettings.xml from <see cref="EditorUserDataDirectory"/>,
+    /// then switches settings saving off for the rest of the process.
+    /// </summary>
+    static void LoadEditorSettingsReadOnly()
+    {
+        var settingsFile = new FilePath(EditorUserDataDirectory + "settings.xml");
+        GlueSettingsSave? settings = null;
+        if (settingsFile.Exists())
+        {
+            settings = GlueCommands.TryLoadSettingsFromFile(settingsFile, out var error);
+            if (error != null)
+            {
+                GlueCommands.Self.PrintError($"Could not read the editor settings at {settingsFile}, using defaults:\n{error}");
+            }
+        }
+        GlueState.Self.GlueSettingsSave = settings ?? new GlueSettingsSave();
+
+        EditorData.LoadPreferenceSettings(EditorUserDataDirectory);
+
+        GlueSettingsSave.StopSavesAndLoads = true;
+        FlatRedBall.Glue.Settings.FileAssociationSettings.StopSavesAndLoads = true;
+        FlatRedBall.Glue.Settings.GlueLayoutSettings.StopSavesAndLoads = true;
+    }
+
+    /// <summary>
+    /// What both project-load set-ups share: no dialogs, MSBuild located, UI-thread exceptions reported, and
+    /// the menu strip plugins hang items off of.
+    /// </summary>
+    static void PrepareForProjectLoad(Action<string> reportMessage)
+    {
+        // EnsureInitialized turns AutoInstall off, but it only runs once and this method may be the
+        // first thing a different (STA) thread calls, so clear this thread's context too.
+        SynchronizationContext.SetSynchronizationContext(null);
+
+        DialogService.ShowMessageImpl = reportMessage;
+
+        EnsureMsBuildEnvironmentVariable();
+
+        // A plugin's ReactToLoadedGlux handler is often `async void` (MainGumPlugin.HandleGluxLoad is),
+        // and an exception in one of those does not reach PluginManager's try/catch - it gets posted to
+        // the synchronization context, where WinForms turns it into a modal "Unhandled exception" dialog
+        // on the user's desktop and the plugin container still reports no failure. Reporting these
+        // makes that class of failure visible instead of a popup nobody expects. Attaching a handler is
+        // enough: WinForms only falls back to its own dialog when there is none.
+        // (SetUnhandledExceptionMode is not an option - EnsureInitialized has already constructed
+        // HeadlessMainGlueWindow's PropertyGrid on this thread, and the mode is fixed once a control exists.)
+        Application.ThreadException += (_, e) =>
+            reportMessage("Unhandled exception on the UI thread: " + e.Exception);
+
+        // Only GlueGui gets the menu strip. PluginManager must NOT: its PluginCommand dispatch reads
+        // its own mMenuStrip and, when that is non-null, marshals every plugin call through
+        // mMenuStrip.Invoke - which needs a created window handle and a running message loop, so calls
+        // silently never execute and CallPluginMethod returns null (e.g. "HasGum returns null").
+        // Leaving PluginManager's null keeps its existing "no live menu strip means run inline" guard
+        // doing the right thing.
+        GlueGui.Initialize(new MenuStrip());
     }
 
     /// <summary>
@@ -358,7 +518,7 @@ public static class GlueHeadlessHost
 
             try
             {
-                PluginManager.RegisterPluginForTesting(plugin);
+                PluginManager.RegisterPlugin(plugin);
             }
             catch (Exception e)
             {

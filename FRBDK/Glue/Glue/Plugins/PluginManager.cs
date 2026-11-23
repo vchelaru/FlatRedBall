@@ -173,8 +173,19 @@ public class PluginManager : PluginManagerBase
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
     }
 
+    /// <summary>
+    /// Full type names of discovered plugins to drop before any of them starts, as if they had not been
+    /// found. Empty in Glue.exe; a headless host fills it with plugins that cannot start without a window.
+    /// </summary>
+    internal static HashSet<string> PluginTypesToSkip { get; } = new();
+
     protected override void StartAllPlugins(List<string> pluginsToIgnore = null)
     {
+        if (PluginTypesToSkip.Count > 0)
+        {
+            importedPlugins.RemoveAll(plugin => PluginTypesToSkip.Contains(plugin.GetType().FullName));
+        }
+
         var allPlugins = new List<IEnumerable<IPlugin>>
         {
             MenuStripPlugins,
@@ -241,12 +252,19 @@ public class PluginManager : PluginManagerBase
         CodeGeneratorPlugins = new List<ICodeGeneratorPlugin>();
     }
 
-    internal static void Initialize(bool isStartup, List<string> pluginsToIgnore = null)
+    /// <param name="applyPendingPluginInstalls">Only read when <paramref name="isStartup"/> is true. Moves
+    /// plugins installed since the last start into the plugin folder and deletes uninstalled ones. Glue.exe
+    /// does this; a headless tool must not, since it would rewrite the editor's plugin folder while an editor
+    /// may be running from it.</param>
+    internal static void Initialize(bool isStartup, List<string> pluginsToIgnore = null, bool applyPendingPluginInstalls = true)
     {
         if (isStartup)
         {
-            MoveInstalledPluginsToPluginDirectory();
-            UninstallPlugins();
+            if (applyPendingPluginInstalls)
+            {
+                MoveInstalledPluginsToPluginDirectory();
+                UninstallPlugins();
+            }
 
             EditorObjects.IoC.Container.Get<GlueErrorManager>()
                 .Add(new PluginErrors.PluginErrorReporter());
@@ -975,19 +993,19 @@ public class PluginManager : PluginManagerBase
     }
 
     /// <summary>
-    /// Test-only seam (issue #1894 follow-up): registers an already-constructed plugin instance with
-    /// this process's global <see cref="PluginManager"/> the same way <see cref="StartupPlugin"/> does
-    /// for a real, discovered plugin - just without <see cref="LoadPlugins"/>'s reflection/directory-scan
-    /// discovery step in front of it. Once registered this way, every dispatch path plugins normally run
-    /// through - <see cref="CallMethodOnPlugin"/>, <see cref="CallMethodOnPluginAsync(Action{PluginBase}, Predicate{PluginBase}, string)"/>,
-    /// the various <c>ReactTo*</c>/event methods - finds and invokes the plugin for real, so a test can
+    /// Registers an already-constructed plugin instance with this process's global
+    /// <see cref="PluginManager"/> the same way <see cref="StartupPlugin"/> does for a real, discovered
+    /// plugin - just without <see cref="LoadPlugins"/>'s reflection/directory-scan discovery step in front
+    /// of it. Used by the tests and by headless hosts (GlueHeadlessHost). Once registered this way, every
+    /// dispatch path plugins normally run through - <see cref="CallMethodOnPlugin"/>, <see cref="CallMethodOnPluginAsync(Action{PluginBase}, Predicate{PluginBase}, string)"/>,
+    /// the various <c>ReactTo*</c>/event methods - finds and invokes the plugin for real, so a caller can
     /// exercise a compiled-in official plugin's real event-subscriber behavior (e.g.
     /// <see cref="PluginBase.ReactToCreateCollisionRelationshipsBetween"/>, only ever wired by a plugin's
     /// own <c>StartUp</c>) instead of silently no-oping because <c>PluginContainers</c> is empty.
     /// Third-party plugin discovery via <see cref="LoadPlugins"/> is completely untouched - this is purely
     /// an alternate, direct way to populate the same dispatch table for one plugin at a time.
     /// </summary>
-    internal static void RegisterPluginForTesting(PluginBase plugin)
+    internal static void RegisterPlugin(PluginBase plugin)
     {
         globalPluginsManager ??= new PluginManager(true);
         var manager = (PluginManager)globalPluginsManager;
@@ -1019,7 +1037,7 @@ public class PluginManager : PluginManagerBase
         if (failure != null)
         {
             throw new InvalidOperationException(
-                $"{plugin.GetType().Name}.StartUp() failed during PluginManager.RegisterPluginForTesting - the plugin is now registered but disabled, so it will never be dispatched to.",
+                $"{plugin.GetType().Name}.StartUp() failed during PluginManager.RegisterPlugin - the plugin is now registered but disabled, so it will never be dispatched to.",
                 failure);
         }
     }
@@ -2056,7 +2074,7 @@ public class PluginManager : PluginManagerBase
             // possible). However, some commands
             // do not require UI thread, and they can
             // mMenuStrip is null outside a live MainGlueWindow (e.g. a test host that registers a plugin
-            // via PluginManager.RegisterPluginForTesting without ever calling ShareMenuStripReference) -
+            // via PluginManager.RegisterPlugin without ever calling ShareMenuStripReference) -
             // treat that the same as "no UI thread available", same as the !doOnUiThread branch, rather
             // than NRE-ing on a menu strip that will never exist in that host.
             if (mMenuStrip == null || mMenuStrip.IsDisposed || !doOnUiThread)

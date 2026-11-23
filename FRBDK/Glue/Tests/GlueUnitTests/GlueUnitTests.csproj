@@ -31,6 +31,7 @@
     <ProjectReference Include="..\..\EntityInputMovementPlugin\EntityInputMovementPlugin.csproj" />
     <ProjectReference Include="..\..\GameCommunicationPlugin\GameCommunicationPlugin.csproj" />
     <ProjectReference Include="..\..\CompilerPlugin\CompilerPlugin.csproj" />
+    <ProjectReference Include="..\..\GlueCli\GlueCli.csproj" />
   </ItemGroup>
 
   <ItemGroup>

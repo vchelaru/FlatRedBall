@@ -32,6 +32,41 @@ namespace FlatRedBall.Glue.Errors
             PluginManager.CallPluginMethod("Error Window Plugin", "RefreshAllErrors");
         }
 
+        /// <summary>
+        /// Every current error: what each reporter's <see cref="ErrorReporterBase.GetAllErrors"/> returns now,
+        /// plus errors added directly that are not fixed. The same set the Errors tab shows after a refresh,
+        /// computed without touching the tab. A reporter that throws is returned in
+        /// <paramref name="reporterFailures"/> rather than stopping the others.
+        /// </summary>
+        public List<ErrorViewModel> GetAllCurrentErrors(out List<string> reporterFailures)
+        {
+            var toReturn = new List<ErrorViewModel>();
+            reporterFailures = new List<string>();
+
+            foreach (var reporter in ErrorReporters.ToList())
+            {
+                try
+                {
+                    var reported = reporter.GetAllErrors();
+                    if (reported != null)
+                    {
+                        toReturn.AddRange(reported);
+                    }
+                }
+                catch (Exception e)
+                {
+                    reporterFailures.Add($"{reporter.GetType().FullName} threw: {e}");
+                }
+            }
+
+            toReturn.AddRange(errors.Where(item => !item.GetIfIsFixed()));
+
+            return toReturn
+                .GroupBy(item => item.UniqueId)
+                .Select(group => group.First())
+                .ToList();
+        }
+
         public void ClearFixedErrors()
         {
             errors.RemoveAll(item => item.GetIfIsFixed());
