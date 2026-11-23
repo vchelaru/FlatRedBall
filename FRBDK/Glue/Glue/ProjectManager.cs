@@ -396,6 +396,10 @@ namespace FlatRedBall.Glue
 
             GlueProjectSave = null;
 
+            // Found on load, relative to the main project. Kept past unload, it sends the next main project's
+            // Game1 edits (GlobalContent.Initialize, camera setup) to a file that project doesn't have.
+            mGameClass = null;
+
             foreach (var syncedProject in GlueState.Self.SyncedProjects)
             {
                 syncedProject.Unload();
