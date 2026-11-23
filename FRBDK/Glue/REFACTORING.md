@@ -1608,3 +1608,12 @@ reaction the grid's change event ends in (`GluxCommands.ReactToPropertyChanged` 
 `ElementCommands.ReactToPropertyChanged`). Glue.dll now has `InternalsVisibleTo` for GlueCli to reach those
 hooks. `UseGlobalContent`'s follow-up question is a WPF window in the displayer, so the command asks it
 itself. `set-variable` gained `--move-objects` for MainScreenPlugin's DefaultLayer question.
+
+### 2026-11-23 — GlueCli state commands
+
+`add-state-category`, `add-state`, `set-state-variable`, `rename-state` and `delete-state` call what the editor
+calls: `ElementCommands.AddStateSaveCategoryAsync`, `GluxCommands.AddStateSave`, the State Data tab's
+`ApplyValueToModel` steps (repeated in the command, since GlueCli does not reference OfficialPlugins), the
+state branch of `SetPropertyManager`, and `DialogCommands.AskToRemoveState*Async`. Category rename is left out
+until the editor's rename updates variables typed as the category (#2485). Shared helpers are in
+`GlueCli/CliStates.cs`.
