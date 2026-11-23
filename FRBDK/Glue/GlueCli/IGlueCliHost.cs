@@ -7,22 +7,23 @@ namespace GlueCli;
 /// </summary>
 public interface IGlueCliHost
 {
-    /// <param name="gameProjectDirectory">The folder of the .csproj about to be loaded.</param>
+    /// <param name="csproj">The .csproj about to be loaded. A host may start reading it while Glue starts.</param>
     /// <param name="reportMessage">Receives messages production code would have shown in a dialog while
     /// starting up.</param>
     /// <returns>One line per plugin that failed to start. Any line makes the run fail.</returns>
-    IReadOnlyList<string> Prepare(string gameProjectDirectory, Action<string> reportMessage);
+    IReadOnlyList<string> Prepare(string csproj, Action<string> reportMessage);
 }
 
 /// <summary>
 /// The real host: Glue's startup with plugins loaded from the Plugins folder next to the exe, as Glue.exe
-/// loads them. See <see cref="GlueHeadlessHost.EnsureProjectLoadReadyWithInstalledPlugins"/>.
+/// loads them, and the .csproj evaluated while they load. See
+/// <see cref="GlueHeadlessHost.EnsureProjectLoadReadyWithInstalledPlugins"/>.
 /// </summary>
 internal sealed class InstalledPluginsHost : IGlueCliHost
 {
-    public IReadOnlyList<string> Prepare(string gameProjectDirectory, Action<string> reportMessage)
+    public IReadOnlyList<string> Prepare(string csproj, Action<string> reportMessage)
     {
         GlueHeadlessHost.EnsureInitialized();
-        return GlueHeadlessHost.EnsureProjectLoadReadyWithInstalledPlugins(reportMessage, gameProjectDirectory);
+        return GlueHeadlessHost.EnsureProjectLoadReadyWithInstalledPlugins(reportMessage, csproj);
     }
 }

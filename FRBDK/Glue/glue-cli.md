@@ -50,6 +50,9 @@ before the next step builds on it.
   the element's regenerated code (a Gum object's code is part of its screen's). A fresh clone has no `*.Generated.cs`, and data changed outside Glue
   leaves generated code stale, so the help tells agents: run `regen` once after cloning or pulling, or
   whenever generated code is out of date; edit commands regenerate only what they change.
+- Every command evaluates the `.csproj` with MSBuild, because the model load and `check`'s errors read its
+  items. As in Glue.exe, the host starts that evaluation and the `.gluj` read (`ProjectLoader.StartEarlyReads`)
+  before the plugin scan, so they cost almost nothing on top of startup.
 - Exit code 0 means the edit applied and left no new errors. 1 means the edit was not applied (bad
   input, a Glue rule it breaks) or it added errors. 2 means bad arguments or a project that would not
   load. Errors the project had before the edit are reported as `preexistingErrors` and do not fail the

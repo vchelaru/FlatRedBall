@@ -345,13 +345,16 @@ public static class GlueHeadlessHost
     /// <b>Must be called from an STA thread</b>, after <see cref="EnsureInitialized"/>.
     /// </summary>
     /// <param name="reportMessage">See <see cref="EnsureProjectLoadReady"/>.</param>
-    /// <param name="gameProjectDirectory">The folder of the .csproj about to be loaded, whose
-    /// plugin settings (PluginsToIgnore) apply, the way the editor applies its last project's.</param>
+    /// <param name="csprojFileName">The .csproj about to be loaded. Its folder's plugin settings
+    /// (PluginsToIgnore) apply, the way the editor applies its last project's, and it is evaluated and its
+    /// .gluj read while plugins load, as Glue.exe does (<c>ProjectLoader.StartEarlyReads</c>).</param>
     /// <returns>One line per plugin that failed to start, naming the plugin and the exception. Glue.exe
     /// disables such a plugin and carries on; a headless tool should refuse to report results without
     /// it.</returns>
-    public static IReadOnlyList<string> EnsureProjectLoadReadyWithInstalledPlugins(Action<string> reportMessage, string gameProjectDirectory)
+    public static IReadOnlyList<string> EnsureProjectLoadReadyWithInstalledPlugins(Action<string> reportMessage, string csprojFileName)
     {
+        var gameProjectDirectory = System.IO.Path.GetDirectoryName(System.IO.Path.GetFullPath(csprojFileName))! +
+            System.IO.Path.DirectorySeparatorChar;
         lock (_lock)
         {
             if (!_initialized)
@@ -367,6 +370,11 @@ public static class GlueHeadlessHost
             _projectLoadReady = true;
 
             PrepareForProjectLoad(reportMessage);
+
+            // As in Glue.exe's startup: evaluating the .csproj takes over a second and needs only
+            // MSBUILD_EXE_PATH (set just above), and reading its .gluj needs nothing, so both run while plugins
+            // load. The load takes them only if nothing they read has changed.
+            ProjectLoader.Self.StartEarlyReads(csprojFileName);
 
             LoadEditorSettingsReadOnly();
 

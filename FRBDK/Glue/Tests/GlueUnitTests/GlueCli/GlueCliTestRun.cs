@@ -74,7 +74,7 @@ public static class GlueCliTestRun
 
     sealed class TestHost : IGlueCliHost
     {
-        public IReadOnlyList<string> Prepare(string gameProjectDirectory, Action<string> reportMessage)
+        public IReadOnlyList<string> Prepare(string csproj, Action<string> reportMessage)
         {
             GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
             GlueTestBootstrap.EnsureErrorReportingPluginRegisteredWithPluginManager();
