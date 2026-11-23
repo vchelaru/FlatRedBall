@@ -31,6 +31,8 @@ static class Program
         // Add proper exception handling so we can handle plugin exceptions:
         CreateExceptionHandlingEvents();
 
+        FlatRedBall.Glue.Managers.AutomationLog.StartIfRequested();
+
         ApplicationConfiguration.Initialize();
 
         var builder = new FlatRedBall.Glue.Services.Builder();

@@ -423,6 +423,8 @@ public partial class MainGlueWindow : Form, IMainGlueWindow
         await Task.Delay(100);
         PluginManager.ReactToCtrlF();
 
+        AutomationLog.Write(AutomationLog.ReadyTag, GlueState.Self.GlueProjectFileName?.FullPath ?? "no project");
+
         StartExitWhenQuietWatcherIfRequested();
 
         return;
@@ -722,6 +724,8 @@ public partial class MainGlueWindow : Form, IMainGlueWindow
         MainWpfControl.ReactToCloseProject(true, true);
 
         PluginManager.ReactToGlueClose();
+
+        AutomationLog.Write(AutomationLog.ExitingTag, "");
 
         GlueCommands.Self.CloseGlue();
     }

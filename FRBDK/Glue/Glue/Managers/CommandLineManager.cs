@@ -11,6 +11,7 @@ namespace FlatRedBall.Glue.Managers
     {
         const string ExitWhenQuietArg = "exitwhenquiet";
         const int DefaultExitWhenQuietSeconds = 5;
+        const string AutomationLogArg = "automationlog";
 
         /// <summary>
         /// What can be passed as the project to open - the same set the Load Project dialog offers,
@@ -38,6 +39,12 @@ namespace FlatRedBall.Glue.Managers
         /// </summary>
         public int? ExitWhenQuietSeconds { get; private set; } = null;
 
+        /// <summary>
+        /// Set by the "automationlog=&lt;path&gt;" argument. Turns on <see cref="AutomationLog"/>, which writes
+        /// output, errors and dialogs to this file instead of only the window. Null (the default) means off.
+        /// </summary>
+        public string AutomationLogPath { get; private set; }
+
 
         public CommandLineManager()
         {
@@ -46,6 +53,11 @@ namespace FlatRedBall.Glue.Managers
 
             foreach(string var in commandLineArgs)
             {
+                if (var.StartsWith(AutomationLogArg + "=", StringComparison.OrdinalIgnoreCase))
+                {
+                    AutomationLogPath = var.Substring((AutomationLogArg + "=").Length);
+                    continue;
+                }
                 if (ProjectExtensions.Contains(FileManager.GetExtension(var)))
                 {
                     mProjectToLoad = ProjectFileResolver.ResolveCsproj(var);
