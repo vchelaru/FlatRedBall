@@ -50,6 +50,8 @@ internal static class GlueTestBootstrap
     static bool _screenPluginRegisteredWithPluginManager;
     static bool _entityInputMovementPluginRegisteredWithPluginManager;
     static bool _axisAlignedRectanglePluginRegisteredWithPluginManager;
+    static bool _circlePluginRegisteredWithPluginManager;
+    static bool _cameraControllingEntityPluginRegisteredWithPluginManager;
     static bool _errorReportingPluginRegisteredWithPluginManager;
     static bool _propertyGridPluginRegisteredWithPluginManager;
 
@@ -180,6 +182,42 @@ internal static class GlueTestBootstrap
             _axisAlignedRectanglePluginRegisteredWithPluginManager = true;
 
             PluginManager.RegisterPlugin(new OfficialPlugins.AxisAlignedRectanglePlugin.MainAxisAlignedRectanglePlugin());
+        }
+    }
+
+    /// <summary>
+    /// Opt-in: registers a real <see cref="OfficialPlugins.CirclePlugin.MainCirclePlugin"/>, whose StartUp
+    /// adds the Circle ATI's <c>AddToManagersFunc</c>. Once only: the plugin adds its handler with <c>+=</c>.
+    /// </summary>
+    public static void EnsureCirclePluginRegisteredWithPluginManager()
+    {
+        lock (_lock)
+        {
+            if (_circlePluginRegisteredWithPluginManager)
+            {
+                return;
+            }
+            _circlePluginRegisteredWithPluginManager = true;
+
+            PluginManager.RegisterPlugin(new OfficialPlugins.CirclePlugin.MainCirclePlugin());
+        }
+    }
+
+    /// <summary>
+    /// Opt-in: registers a real <see cref="OfficialPlugins.CameraControllingEntityPlugin.MainCameraControllingEntityPlugin"/>,
+    /// whose StartUp adds the CameraControllingEntity ATI to <see cref="AvailableAssetTypes"/>.
+    /// </summary>
+    public static void EnsureCameraControllingEntityPluginRegisteredWithPluginManager()
+    {
+        lock (_lock)
+        {
+            if (_cameraControllingEntityPluginRegisteredWithPluginManager)
+            {
+                return;
+            }
+            _cameraControllingEntityPluginRegisteredWithPluginManager = true;
+
+            PluginManager.RegisterPlugin(new OfficialPlugins.CameraControllingEntityPlugin.MainCameraControllingEntityPlugin());
         }
     }
 
