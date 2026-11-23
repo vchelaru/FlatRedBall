@@ -64,6 +64,8 @@ public static class GlueCliRunner
     public static readonly IReadOnlyList<CliOption> GlobalOptions = new CliOption[]
     {
         new("json", null, "Print one JSON object to stdout instead of text. Everything else goes to stderr."),
+        new("dry-run", null, "Run the command in full against a temp copy of the project and report what it would\n" +
+            "change (with a diff of each JSON file), leaving the project on disk exactly as it was."),
         new("help", null, "Show this help."),
     };
 
@@ -96,7 +98,8 @@ public static class GlueCliRunner
             "",
             "Options for every command:",
         });
-        lines.AddRange(GlobalOptions.Select(option => $"  {option.Signature,-8}  {option.Description}"));
+        lines.AddRange(GlobalOptions.Select(option =>
+            $"  {option.Signature,-9}  {option.Description.Replace("\n", Environment.NewLine + new string(' ', 13))}"));
         lines.AddRange(new[]
         {
             "",
@@ -108,7 +111,11 @@ public static class GlueCliRunner
             "added. Run regen once after cloning or pulling, or whenever generated code is out of date; edit",
             "commands regenerate only what they change. Plugins load from the Plugins folder next to",
             "GlueCli.exe, plus the project's own Plugins folder, as in the editor. The editor's settings are read but",
-            "never saved. Do not run an edit while the project is open in the Glue editor.",
+            "never saved. The project can stay open in the Glue editor: its file watcher reloads what an edit saved.",
+            "",
+            "To preview an edit, add --dry-run: the command runs exactly as it would (same checks, plugin reactions",
+            "and codegen) against a temp copy, and the run reports the files it would change instead of changing",
+            "them. The exit code is the one the real edit would get.",
             "",
             "When an edit is not applied, the project's changes are not saved; loading can still write generated",
             "files, so filesWritten may list some.",
@@ -118,14 +125,18 @@ public static class GlueCliRunner
             "text output's one-line version of edit), errors (Glue's error list, each {type, details}),",
             "outputErrors, dialogMessages, preexistingErrors (edits only: what the project already had, not",
             "counted), filesWritten (relative to the .csproj folder), startupSeconds, loadSeconds and",
-            "elapsedSeconds.",
+            "elapsedSeconds. With --dry-run it also has dryRun: true and changes, each {path, kind (modified,",
+            "added or deleted), diff (a unified diff for .gluj, .glsj, .glej and .json files, else null)}, and",
+            "filesWritten is empty.",
             "",
             ExitCodeHelp,
         });
         return string.Join(Environment.NewLine, lines);
     }
 
-    public static int Run(string[] args, TextWriter stdout, TextWriter stderr, IGlueCliHost host)
+    /// <param name="dryRunCopier">Makes the temp copy for --dry-run. Null uses the default temp location.</param>
+    public static int Run(string[] args, TextWriter stdout, TextWriter stderr, IGlueCliHost host,
+        CliDryRunCopier? dryRunCopier = null)
     {
         var wantsJson = args.Any(arg => string.Equals(arg, "--json", StringComparison.OrdinalIgnoreCase));
         if (args.Length == 0)
@@ -177,6 +188,34 @@ public static class GlueCliRunner
         result.Project = csproj;
 
         var stopwatch = Stopwatch.StartNew();
+        CliDryRunCopy? dryRun = null;
+        if (options.ContainsKey("dry-run"))
+        {
+            try
+            {
+                dryRun = (dryRunCopier ?? new CliDryRunCopier()).Copy(csproj);
+            }
+            catch (Exception e) when (e is IOException or UnauthorizedAccessException)
+            {
+                return Fail(result, "Could not make the temp copy for --dry-run: " + e.Message, json, stdout, stderr);
+            }
+            result.DryRun = true;
+            result.DryRunCopy = dryRun;
+        }
+
+        try
+        {
+            return RunLoaded(command, context, result, dryRun?.Csproj ?? csproj, dryRun, stopwatch, json, stdout, stderr, host);
+        }
+        finally
+        {
+            dryRun?.Dispose();
+        }
+    }
+
+    static int RunLoaded(CliCommand command, CliContext context, CliResult result, string csproj, CliDryRunCopy? dryRun,
+        Stopwatch stopwatch, bool json, TextWriter stdout, TextWriter stderr, IGlueCliHost host)
+    {
 
         var dialogMessages = new List<string>();
         void ReportMessage(string message)
@@ -276,7 +315,14 @@ public static class GlueCliRunner
                 .Concat(baseline.DialogMessages.Select(line => new CliError("DialogMessage", line)))
                 .ToList();
 
-            result.FilesWritten = ChangedFiles(projectRoot, before);
+            if (dryRun != null)
+            {
+                result.Changes = dryRun.ComputeChanges();
+            }
+            else
+            {
+                result.FilesWritten = ChangedFiles(projectRoot, before);
+            }
             result.ElapsedSeconds = stopwatch.Elapsed.TotalSeconds;
             result.ExitCode = result.ProblemCount == 0 ? ExitSuccess : ExitErrors;
 
@@ -291,6 +337,21 @@ public static class GlueCliRunner
         }
         finally
         {
+            // The copy is about to be deleted, so nothing in this process may keep pointing at it. Closed here,
+            // before the dialog seams go, because closing a project can ask questions too.
+            try
+            {
+                var loadedFile = GlueState.Self.GlueProjectFileName;
+                if (dryRun != null && FlatRedBall.Glue.ProjectManager.GlueProjectSave != null && loadedFile != null &&
+                    dryRun.Contains(loadedFile.FullPath))
+                {
+                    FlatRedBall.Glue.ProjectManager.UnloadProject(isExiting: false);
+                }
+            }
+            catch (Exception e)
+            {
+                stderr.WriteLine("Closing the --dry-run copy failed: " + e.Message);
+            }
             SynchronizationContext.SetSynchronizationContext(previousContext);
             (DialogService.ShowMessageImpl, DialogService.ShowConfirmImpl,
                 DialogService.ShowChoiceImpl, DialogService.ShowDeleteImpl, GlueGui.SuppressedMessageHandler) = previousDialogs;
@@ -506,12 +567,12 @@ public static class GlueCliRunner
     static int Fail(CliResult result, string message, bool json, TextWriter stdout, TextWriter stderr, string? help = null)
     {
         result.ExitCode = ExitUsageOrLoadFailure;
-        result.Failure = message;
+        result.Failure = result.DryRunCopy?.MapPaths(message) ?? message;
         if (json)
         {
             Write(result, command: null, json: true, stdout);
         }
-        stderr.WriteLine(message);
+        stderr.WriteLine(result.Failure);
         if (help != null)
         {
             stderr.WriteLine();
@@ -530,9 +591,12 @@ public static class GlueCliRunner
 
     static void Write(CliResult result, CliCommand? command, bool json, TextWriter stdout)
     {
+        // A dry run loaded the temp copy; the report names the real project.
+        result.DryRunCopy?.MapResultPaths(result);
         if (json)
         {
-            stdout.WriteLine(JsonSerializer.Serialize(result, JsonOptions));
+            var serialized = JsonSerializer.Serialize(result, JsonOptions);
+            stdout.WriteLine(result.DryRunCopy?.MapPaths(serialized) ?? serialized);
             return;
         }
 
@@ -549,9 +613,18 @@ public static class GlueCliRunner
         WriteSection("Dialog messages", result.DialogMessages);
         WriteSection("Errors the project already had (not counted)", result.PreexistingErrors.Select(error => $"{error.Type}: {error.Details}"));
         WriteSection("Files written", result.FilesWritten);
+        if (result.Changes != null)
+        {
+            WriteSection("Would change", result.Changes.Select(change =>
+                $"{change.Kind} {change.Path}" + (change.Diff == null ? "" : "\n" + change.Diff)));
+        }
         var problemCount = result.ProblemCount;
         stdout.WriteLine(problemCount > 0 ? $"{problemCount} problem(s)."
             : command?.IsEdit == true ? "No new errors." : "No errors.");
+        if (result.DryRun)
+        {
+            stdout.WriteLine("Dry run: the project on disk was not changed.");
+        }
 
         void WriteSection(string title, IEnumerable<string> lines)
         {
@@ -603,6 +676,13 @@ public sealed class CliResult
     public List<CliError> PreexistingErrors { get; set; } = new();
     /// <summary>Files under the project folder created, or changed in content, by the run, relative to it.</summary>
     public List<string> FilesWritten { get; set; } = new();
+    /// <summary>Set by --dry-run: the run used a temp copy and nothing in the project was written.</summary>
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)]
+    public bool DryRun { get; set; }
+    /// <summary>--dry-run only: what the run would have changed, relative to the .csproj folder.</summary>
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public List<CliFileChange>? Changes { get; set; }
+    internal CliDryRunCopy? DryRunCopy { get; set; }
     public double StartupSeconds { get; set; }
     public double LoadSeconds { get; set; }
     public double ElapsedSeconds { get; set; }
