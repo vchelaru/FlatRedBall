@@ -327,6 +327,20 @@ Traversal** (14) groups — 24 methods. Everything else stays on `ObjectFinder`.
 
 ## Completed Refactors
 
+### 2026-11-23 — File and variable properties out of the WinForms displayers
+
+Which properties the editor shows for a selected file or variable, which are read-only, the values each offers
+and how each is set now live in `ReferencedFileSavePropertyModel` and `CustomVariablePropertyModel`
+(`Glue/EditorProperties`), as a list of UI-free `EditorProperty`. The WinForms `ReferencedFileSavePropertyGridDisplayer`
+and `CustomVariablePropertyGridDisplayer` render that list through `EditorPropertyGridMapping`, and GlueCli's
+`set-file-property` and `set-variable-property` use it directly, with no displayer. The converters only those two
+grids used are gone; their value lists are in the models. `PropertyGridParity.golden.txt` holds what the old
+displayers exposed for a set of files and variables, and `EditorPropertyParityTests` pins both the grid and the
+models to it. Still UI-bound: `set-property` builds `NamedObjectPropertyGridDisplayer`,
+`EntitySavePropertyGridDisplayer` and `ScreenSavePropertyGridDisplayer`, and the plugins' `AdjustDisplayedEntity`
+hooks (Gum, Collision, DamageDealing) take the displayer type; those are the next family to move.
+`AdjustDisplayedReferencedFile` now has no subscribers, and `AdjustDisplayedCustomVariable` was never called.
+
 ### 2026-11-23 — File property reaction pulled out of `SetPropertyManager` for GlueCli `set-file-property`
 
 What follows a change to a selected file's property (the file's own handler, the plugins, then its element's

@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FlatRedBall.Glue.EditorProperties;
 using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Managers;
 using GlueFormsCore.Managers;
@@ -48,6 +50,10 @@ public class Builder
         builder.Services.AddSingleton<IGlueCommands>(sp => GlueCommands.Self);
         builder.Services.AddSingleton<IGlueState>(sp => GlueState.Self);
         builder.Services.AddSingleton<ProjectLoadOperations>();
+        builder.Services.AddSingleton<CustomVariablePropertyModel>();
+        builder.Services.AddSingleton(sp => new ReferencedFileSavePropertyModel(
+            AvailableAssetTypes.Self, EditorData.FileAssociationSettings, sp.GetRequiredService<IGlueCommands>(),
+            PluginManager.GetAvailableAssetTypes));
 
         App = builder.Build();
 

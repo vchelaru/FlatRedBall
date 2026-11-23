@@ -2,18 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using FlatRedBall.Glue.EditorProperties;
 using FlatRedBall.Glue.GuiDisplay;
 using FlatRedBall.Glue.SaveClasses;
-using FlatRedBall.IO;
 using System.ComponentModel;
 using FlatRedBall.Glue.Controls;
 using System.Drawing.Design;
-using FlatRedBall.Glue.FormHelpers.StringConverters;
-using Glue.IO;
-using System.IO;
-using FlatRedBall.Content.Particle;
-using FlatRedBall.Glue.Elements;
-using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
 {
@@ -227,9 +221,22 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
     }
     #endregion
 
+    /// <summary>
+    /// Shows a selected file in the WinForms Properties grid. Which properties exist, which can change and the values
+    /// offered come from <see cref="ReferencedFileSavePropertyModel"/>; this renders them and shows the project-specific
+    /// files as a list with its own editor.
+    /// </summary>
     public class ReferencedFileSavePropertyGridDisplayer : PropertyGridDisplayer
     {
+        const string ProjectSpecificFilesDisplayName = "Project Specific Files";
+
+        readonly ReferencedFileSavePropertyModel model;
         ProjectSpecificFileDisplayer mProjectSpecificFileDisplayer = new ProjectSpecificFileDisplayer();
+
+        public ReferencedFileSavePropertyGridDisplayer(ReferencedFileSavePropertyModel model)
+        {
+            this.model = model;
+        }
 
         public override object Instance
         {
@@ -239,46 +246,14 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
             }
             set
             {
+                var rfs = (ReferencedFileSave)value;
+                mProjectSpecificFileDisplayer.Instance = rfs.ProjectSpecificFiles;
 
-                mProjectSpecificFileDisplayer.Instance = ((ReferencedFileSave)value).ProjectSpecificFiles;
-
-                UpdateIncludedAndExcluded(value as ReferencedFileSave);
-
-
+                EditorPropertyGridMapping.Apply(this, rfs, model.GetProperties(rfs));
+                AddProjectSpecificFileMember();
 
                 base.Instance = value;
-
-
-                UpdatePropertyGridMembers();
-
             }
-        }
-
-        private void UpdatePropertyGridMembers()
-        {
-
-            var member = GetPropertyGridMember("BuildTool");
-            if (member != null)
-            {
-                var availableTools = new AvailableBuildTools();
-                availableTools.ShowNewApplication = false;
-
-                ReferencedFileSave instance = ((ReferencedFileSave)Instance);
-                var extension = FileManager.GetExtension(instance.Name);
-
-                availableTools.ShowNoneOption = Elements.AvailableAssetTypes.Self.AllAssetTypes
-                    .Any(item => item.Extension == extension && string.IsNullOrEmpty(item.CustomBuildToolName));
-
-
-                if (instance != null && !string.IsNullOrEmpty(instance.SourceFile))
-                {
-
-                    availableTools.SourceFileExtensionRestriction = FileManager.GetExtension(instance.SourceFile);
-                }
-                member.TypeConverter = availableTools;
-            }
-
-
         }
 
         ProjectSpecificFileDisplayer GetProjectSpecificFileMember()
@@ -291,126 +266,9 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
             // do nothing
         }
 
-        object GetImageWidth()
-        {
-            return ImageHeader.GetDimensions(
-                    GlueCommands.Self.GetAbsoluteFileName((ReferencedFileSave)Instance)).Width;
-        }
-
-        object GetImageHeight()
-        {
-            return ImageHeader.GetDimensions(
-                    GlueCommands.Self.GetAbsoluteFileName((ReferencedFileSave)Instance)).Height;
-        }
-
-        object GetEquilibriumParticleCount()
-        {
-            string fileName = GlueCommands.Self.GetAbsoluteFileName((ReferencedFileSave)Instance);
-            if (File.Exists(fileName))
-            {
-                EmitterSaveList esl = EmitterSaveList.FromFile(fileName);
-
-                return esl.GetEquilibriumParticleCount();
-            }
-            else
-            {
-                return 0;
-            }
-        }
-
-        object GetBurstParticleCount()
-        {
-            EmitterSaveList esl = EmitterSaveList.FromFile(GlueCommands.Self.GetAbsoluteFileName((ReferencedFileSave)Instance));
-            return esl.GetBurstParticleCount();
-        }
-
-        private void UpdateIncludedAndExcluded(ReferencedFileSave instance)
-        {
-            ForcedReadOnlyProperties.Clear();
-            ResetToDefault();
-
-            // Which members apply to this file (container, extension, state) is decided once, in
-            // GetHiddenMemberNames, so this grid and the WPF "Settings (Preview)" grid can't drift apart.
-            foreach (var hiddenMember in instance.GetHiddenMemberNames())
-            {
-                ExcludeMember(hiddenMember);
-            }
-
-            #region Extension-based additions/removals
-            string extension = FileManager.GetExtension(instance.Name);
-
-            if (extension == "csv" || instance.TreatAsCsv)
-            {
-                IncludeMember(nameof(ReferencedFileSave.UniformRowType), typeof(ReferencedFileSave), new AvailablePrimitiveTypeArraysStringConverter());
-            }
-
-            if (extension == "png")
-            {
-                Attribute[] fileDetailsCategoryAttribute = new Attribute[]{
-                    new CategoryAttribute("File Details")};
-                IncludeMember("ImageWidth", typeof(int), null, GetImageWidth, null, fileDetailsCategoryAttribute);
-                IncludeMember("ImageHeight", typeof(int), null, GetImageHeight, null, fileDetailsCategoryAttribute);
-            }
-
-            if (extension == "emix")
-            {
-                Attribute[] fileDetailsCategoryAttribute = new Attribute[]{
-                    new CategoryAttribute("File Details")};
-
-                IncludeMember("EquilibriumParticleCount", typeof(float), null, GetEquilibriumParticleCount, null, fileDetailsCategoryAttribute);
-                IncludeMember("BurstParticleCount", typeof(float), null, GetBurstParticleCount, null, fileDetailsCategoryAttribute);
-                
-            }
-
-            #endregion
-
-            AddProjectSpecificFileMember();
-
-
-            IncludeMember("OpensWith", typeof(ReferencedFileSave), new AvailableApplicationsStringConverters());
-
-            bool shouldShowRuntimeType = instance.LoadedAtRuntime;
-            if (shouldShowRuntimeType)
-            {
-                IncludeMember("RuntimeType", typeof(ReferencedFileSave), new AvailableRuntimeTypeConverter() { ReferencedFileSave = instance });
-            }
-            else
-            {
-                ExcludeMember(nameof(ReferencedFileSave.RuntimeType));
-            }
-
-            if(instance.IsCreatedByWildcard)
-            {
-                ApplyWildcardProperties(instance);
-            }
-            else
-            {
-                ExcludeMember(nameof(ReferencedFileSave.IsCreatedByWildcard));
-                //SetReadOnly(nameof(ReferencedFileSave.IsLoadedThroughWildcard), true);
-            }
-        }
-
-        private void ApplyWildcardProperties(ReferencedFileSave instance)
-        {
-            var propertyInfos = instance.GetType().GetProperties();
-            // We have to use reflection here, it's not yet populated in mNativePropertyGridMembers
-            foreach (var property in propertyInfos)
-            {
-                if(property.Name != nameof(ReferencedFileSave.IsCreatedByWildcard))
-                {
-                    ForcedReadOnlyProperties.Add(property.Name);
-                }
-            }
-            foreach (var property in this.CustomPropertyGridMembers)
-            {
-                ForcedReadOnlyProperties.Add(property.Name);
-            }
-
-        }
-
         private void AddProjectSpecificFileMember()
         {
-            ExcludeMember("ProjectSpecificFiles");
+            ExcludeMember(nameof(ReferencedFileSave.ProjectSpecificFiles));
 
             Attribute[] attributes = new Attribute[]
             {
@@ -418,11 +276,8 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
 
             };
 
-            IncludeMember("Project Specific Files", typeof(ProjectSpecificFileDisplayer),
+            IncludeMember(ProjectSpecificFilesDisplayName, typeof(ProjectSpecificFileDisplayer),
                 SetProjectSpecificFiles, GetProjectSpecificFileMember, new ProjectSpecificFileCollectionConverter(), attributes);
         }
-
-
-
     }
 }

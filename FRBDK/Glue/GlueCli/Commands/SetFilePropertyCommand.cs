@@ -1,8 +1,6 @@
-using System.ComponentModel;
 using FlatRedBall.Glue.Controls;
-using FlatRedBall.Glue.FormHelpers.PropertyGrids;
+using FlatRedBall.Glue.EditorProperties;
 using FlatRedBall.Glue.Managers;
-using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.Services;
@@ -12,9 +10,8 @@ namespace GlueCli.Commands;
 
 /// <summary>
 /// <c>set-file-property</c>: sets a property of a file (a <see cref="ReferencedFileSave"/>) in a screen, an entity or
-/// Global Content, the way the editor's Properties grid does. The grid's own displayer
-/// (<see cref="ReferencedFileSavePropertyGridDisplayer"/> plus the plugins' AdjustDisplayedReferencedFile) decides
-/// which properties the file has in its container and sets the value, then the reaction the grid's change event
+/// Global Content, the way the editor's Properties grid does. <see cref="ReferencedFileSavePropertyModel"/>, which the
+/// grid renders, decides which properties the file has in its container and sets the value, then the reaction the grid's change event
 /// ends in runs (SetPropertyManager.ReactToPropertyChanged's file branch): ReferencedFileSaveSetPropertyManager,
 /// the plugins, and the element's or Global Content's code generation.
 /// </summary>
@@ -85,8 +82,7 @@ the edit changed.",
     /// <summary>ReferencedFileSaveSetPropertyManager, IsDatabaseForLocalizing when it changes whether the project localizes.</summary>
     const string LocalizationMessage = "Because of the change to the \"Is Database For Localizing\"";
 
-    /// <summary>OpensWith's choice that opens a file picker for an application.</summary>
-    const string NewApplication = "New Application...";
+    const string NewApplication = ReferencedFileSavePropertyModel.NewApplication;
 
     static string? ValidateArguments(CliContext context)
     {
@@ -133,13 +129,13 @@ the edit changed.",
             return;
         }
 
-        var descriptors = GetGridProperties(rfs);
-        var descriptor = descriptors.FirstOrDefault(item => item.Name == propertyName) ??
-            descriptors.FirstOrDefault(item => string.Equals(item.Name, propertyName, StringComparison.OrdinalIgnoreCase));
-        var settable = descriptors.Where(item => !item.IsReadOnly && SetPropertyCommand.IsSupportedType(item.PropertyType) &&
+        var members = Builder.Get<ReferencedFileSavePropertyModel>().GetProperties(rfs);
+        var member = members.FirstOrDefault(item => item.Name == propertyName) ??
+            members.FirstOrDefault(item => string.Equals(item.Name, propertyName, StringComparison.OrdinalIgnoreCase));
+        var settable = members.Where(item => !item.IsReadOnly && SetPropertyCommand.IsSupportedType(item.Type) &&
                 item.Name != nameof(ReferencedFileSave.Name))
             .Select(item => item.Name).ToList();
-        if (descriptor == null)
+        if (member == null)
         {
             var property = typeof(ReferencedFileSave).GetProperty(propertyName,
                 System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.IgnoreCase);
@@ -151,19 +147,19 @@ the edit changed.",
                 " Settable: " + string.Join(", ", settable.OrderBy(item => item, StringComparer.OrdinalIgnoreCase)) + ".");
             return;
         }
-        var name = descriptor.Name;
-        if (descriptor.IsReadOnly)
+        var name = member.Name;
+        if (member.IsReadOnly)
         {
             context.Fail($"{name} of {target} is read-only in the editor." +
                 (rfs.IsCreatedByWildcard ? " The file comes from a wildcard, so only IsCreatedByWildcard can change." : ""));
             return;
         }
-        if (!SetPropertyCommand.IsSupportedType(descriptor.PropertyType))
+        if (!SetPropertyCommand.IsSupportedType(member.Type))
         {
-            context.Fail($"{name} of {target} is a {SetPropertyCommand.TypeName(descriptor.PropertyType)}; set-file-property only sets text, true/false, numbers and enum values.");
+            context.Fail($"{name} of {target} is a {SetPropertyCommand.TypeName(member.Type)}; set-file-property only sets text, true/false, numbers and enum values.");
             return;
         }
-        if (!SetPropertyCommand.TryConvert(context, descriptor, context.Get("value")!, $"{name} of {target}", out var value))
+        if (!SetPropertyCommand.TryConvert(context, member, context.Get("value")!, $"{name} of {target}", out var value))
         {
             return;
         }
@@ -173,7 +169,7 @@ the edit changed.",
             return;
         }
 
-        var oldValue = descriptor.GetValue(null);
+        var oldValue = member.GetValue();
         var answers = new List<SetPropertyCommand.Answer>();
         var before = CliChanges.Snapshot();
         var dialogs = new CliDialogs(
@@ -190,7 +186,7 @@ the edit changed.",
             takeMessage: text => text.StartsWith(LocalizationMessage, StringComparison.Ordinal));
         using (dialogs)
         {
-            descriptor.SetValue(null, value);
+            member.SetValue(value);
 
             // The reaction SetPropertyManager.ReactToPropertyChanged runs after either grid's change event.
             await Builder.Get<ReferencedFileSaveSetPropertyManager>().ReactToChangedReferencedFileAndGenerateCode(name, oldValue!);
@@ -198,7 +194,7 @@ the edit changed.",
         }
 
         var messages = dialogs.TakenMessages.ToList();
-        var newValue = descriptor.GetValue(null);
+        var newValue = member.GetValue();
         if (!SetPropertyCommand.SameValue(newValue, value))
         {
             context.Fail($"Glue did not set {name} of {target} to {SetPropertyCommand.Describe(value)}; it is {SetPropertyCommand.Describe(newValue)}.");
@@ -213,20 +209,8 @@ the edit changed.",
             messages.Add("Regenerated all code, since the change to IsDatabaseForLocalizing changes whether the project localizes.");
         }
 
-        Report(context, new SetFileProperty(element?.Name, rfs.Name, name, SetPropertyCommand.TypeName(descriptor.PropertyType),
+        Report(context, new SetFileProperty(element?.Name, rfs.Name, name, SetPropertyCommand.TypeName(member.Type),
             oldValue, newValue, answers, messages, CliChanges.ChangedElements(before)));
-    }
-
-    /// <summary>
-    /// The properties the editor's Properties grid shows for <paramref name="rfs"/>, built by the grid's own displayer
-    /// and the plugins that add to it. Each descriptor sets its member as the grid does.
-    /// </summary>
-    static List<PropertyDescriptor> GetGridProperties(ReferencedFileSave rfs)
-    {
-        var displayer = new ReferencedFileSavePropertyGridDisplayer { Instance = rfs };
-        PluginManager.AdjustDisplayedReferencedFile(rfs, displayer);
-        displayer.RefreshOnTimer = false;
-        return ((ICustomTypeDescriptor)displayer).GetProperties(Array.Empty<Attribute>()).Cast<PropertyDescriptor>().ToList();
     }
 
     static void Report(CliContext context, SetFileProperty result)

@@ -169,7 +169,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
                             // should ever be any loaded file, in fact,
                             // so we should prob make sure it's not a file
                             // by adding a check.
-                            if (CustomVariablePropertyGridDisplayer.GetShouldCustomVariableBeConvertedToType(args, customVariable))
+                            if (FlatRedBall.Glue.EditorProperties.CustomVariablePropertyModel.ShouldConvertFromText(customVariable, args.Value))
                             {
                                 value = PropertyValuePair.ConvertStringToType((string)args.Value, customVariable.GetRuntimeType());
                             }

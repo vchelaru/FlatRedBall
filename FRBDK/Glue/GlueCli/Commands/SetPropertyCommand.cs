@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Reflection;
 using FlatRedBall.Glue.Controls;
+using FlatRedBall.Glue.EditorProperties;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.FormHelpers.PropertyGrids;
 using FlatRedBall.Glue.GuiDisplay;
@@ -478,11 +479,18 @@ changedElements every screen and entity the edit changed.",
     /// standard values) must be one of them, matched as <see cref="CliLookup.SameName"/> does and returned as the
     /// list spells it.
     /// </summary>
-    internal static bool TryConvert(CliContext context, PropertyDescriptor descriptor, string text, string target, out object? value)
+    internal static bool TryConvert(CliContext context, PropertyDescriptor descriptor, string text, string target, out object? value) =>
+        TryConvert(context, descriptor.PropertyType, () => StandardValues(descriptor), text, target, out value);
+
+    /// <summary><paramref name="text"/> as <paramref name="property"/>'s type; a property with options must take one of them.</summary>
+    internal static bool TryConvert(CliContext context, EditorProperty property, string text, string target, out object? value) =>
+        TryConvert(context, property.Type, () => property.Options?.Invoke().ToList(), text, target, out value);
+
+    static bool TryConvert(CliContext context, Type propertyType, Func<List<string>?> standardValues, string text, string target, out object? value)
     {
         value = text;
-        var nullable = Nullable.GetUnderlyingType(descriptor.PropertyType);
-        var type = nullable ?? descriptor.PropertyType;
+        var nullable = Nullable.GetUnderlyingType(propertyType);
+        var type = nullable ?? propertyType;
         if (nullable != null && text.Length == 0)
         {
             value = null;
@@ -491,7 +499,7 @@ changedElements every screen and entity the edit changed.",
 
         if (type == typeof(string))
         {
-            var allowed = StandardValues(descriptor);
+            var allowed = standardValues();
             if (allowed == null || text.Length == 0)
             {
                 return true;

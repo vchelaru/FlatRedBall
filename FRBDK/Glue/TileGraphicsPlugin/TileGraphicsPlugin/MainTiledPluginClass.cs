@@ -294,8 +294,6 @@ public class MainTiledPluginClass : PluginBase
         // Adds all objects contained within a file (like TMX)
         this.TryAddContainedObjects += HandleTryAddContainedObjects;
 
-        this.AdjustDisplayedReferencedFile += HandleAdjustDisplayedReferencedFile;
-
         this.ReactToItemSelectHandler += HandleItemSelect;
         this.ReactToFileChange += HandleFileChange;
 
@@ -864,13 +862,6 @@ public class MainTiledPluginClass : PluginBase
     //    }
     //}
 
-    void HandleAdjustDisplayedReferencedFile(ReferencedFileSave rfs, ReferencedFileSavePropertyGridDisplayer displayer)
-    {
-        if (rfs.IsCsvOrTreatedAsCsv && !string.IsNullOrEmpty(rfs.SourceFile))
-        {
-
-        }
-    }
 
     void HandleGluxLoad()
     {
