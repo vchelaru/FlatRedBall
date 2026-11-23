@@ -9,6 +9,7 @@ using FlatRedBall.Glue.Managers;
 using GlueFormsCore.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using FlatRedBall.Glue.Projects;
 using FlatRedBall.Glue.SaveClasses;
@@ -44,12 +45,15 @@ public class Builder
         builder.Services.AddSingleton<DragDropManager>(DragDropManager.Self);
         builder.Services.AddSingleton<IDialogCommands>(sp => GlueCommands.Self.DialogCommands);
         builder.Services.AddSingleton<IFileCommands>(sp => GlueCommands.Self.FileCommands);
+        builder.Services.AddSingleton<IGlueCommands>(sp => GlueCommands.Self);
+        builder.Services.AddSingleton<IGlueState>(sp => GlueState.Self);
+        builder.Services.AddSingleton<ProjectLoadOperations>();
 
         App = builder.Build();
 
         // These methods are needed until we kill singletons:
         InheritanceManager.Self = new InheritanceManager(ReferenceService.Self);
-        ProjectLoader.Self.Initialize(Get<IProjectCommands>());
+        ProjectLoader.Self.Initialize(Get<IProjectCommands>(), Get<ProjectLoadOperations>());
         (GlueCommands.Self.ProjectCommands as ProjectCommands).Initialize(Get<FileReferenceManager>());
 
 

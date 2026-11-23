@@ -34,9 +34,18 @@ before the next step builds on it.
 
 ## Command rules
 
-- One invocation loads the project, runs one command, waits for queued tasks, saves, regenerates code,
-  and exits. Batch mode (several commands per load) comes only if load time makes single commands too
-  slow.
+- One invocation loads the project, runs one command, waits for queued tasks, and exits. Batch mode
+  (several commands per load) comes only if load time makes single commands too slow.
+- Loading reads the project and nothing else: `ProjectLoader.LoadProject` with `ProjectLoadScope.ModelOnly`.
+  What the editor's open does on top (generate all code, save what the load fix-ups changed, `.csproj`
+  fix-ups, the unreferenced-file list) is `ProjectLoader.Operations` (`ProjectLoadOperations`), and a
+  command calls the steps it needs: `regen` the generate-all steps, `delete` the unreferenced-file list,
+  edit commands nothing (the runner regenerates and saves what the edit changed). Plugin
+  `ReactToLoadedGlux` handlers still run in the load, and Gum and Tiled generate their code there, so
+  `check` writes nothing only on a project whose code was generated before. A fresh clone has no
+  `*.Generated.cs`, and data changed outside Glue leaves generated code stale, so the help tells agents:
+  run `regen` once after cloning or pulling, or whenever generated code is out of date; edit commands
+  regenerate only what they change.
 - Exit code 0 means the edit applied and left no new errors. 1 means the edit was not applied (bad
   input, a Glue rule it breaks) or it added errors. 2 means bad arguments or a project that would not
   load. Errors the project had before the edit are reported as `preexistingErrors` and do not fail the

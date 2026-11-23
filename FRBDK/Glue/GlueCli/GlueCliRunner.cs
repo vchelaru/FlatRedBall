@@ -16,8 +16,9 @@ using GlueCli.Commands;
 namespace GlueCli;
 
 /// <summary>
-/// Parses a GlueCli command line and runs it in-process: load the project the way the editor's File >
-/// Load Project does, run the command, wait for queued tasks, save, and report every error Glue knows of.
+/// Parses a GlueCli command line and runs it in-process: load the project's model
+/// (<see cref="ProjectLoadScope.ModelOnly"/>), run the command, wait for queued tasks, save, and report every
+/// error Glue knows of.
 /// Tests call <see cref="Run"/> directly with their own <see cref="IGlueCliHost"/>; Program.Main passes
 /// the real one.
 ///
@@ -98,9 +99,12 @@ public static class GlueCliRunner
         {
             "",
             "Every run loads the project, runs one command, waits for Glue's queued work, and reports what Glue's",
-            "error reporters, its error output, and any would-be dialog produced. Edit commands save the .gluj and",
-            "element files and regenerate code, as the editor does after an edit, and report errors the project",
-            "already had separately from the ones the edit added. Plugins load from the Plugins folder next to",
+            "error reporters, its error output, and any would-be dialog produced. Loading reads the project and does",
+            "not regenerate or save it (plugins such as Gum and Tiled still write code they have never generated).",
+            "Edit commands save the .gluj and element files and regenerate the code of what they changed, as the",
+            "editor does after an edit, and report errors the project already had separately from the ones the edit",
+            "added. Run regen once after cloning or pulling, or whenever generated code is out of date; edit",
+            "commands regenerate only what they change. Plugins load from the Plugins folder next to",
             "GlueCli.exe, plus the project's own Plugins folder, as in the editor. The editor's settings are read but",
             "never saved. Do not run an edit while the project is open in the Glue editor.",
             "",
@@ -214,7 +218,9 @@ public static class GlueCliRunner
             var before = SnapshotFiles(projectRoot);
             var projectBefore = GlueState.Self.CurrentGlueProject;
 
-            ProjectLoader.Self.LoadProject(csproj).GetAwaiter().GetResult();
+            // Only the model: generating code, saving, and .csproj fix-ups are ProjectLoader.Operations steps a
+            // command calls when it needs them, so check and describe write nothing.
+            ProjectLoader.Self.LoadProject(csproj, ProjectLoadScope.ModelOnly).GetAwaiter().GetResult();
             TaskManager.Self.WaitForAllTasksFinished().GetAwaiter().GetResult();
 
             // LoadProject reports a failure (a missing file, an unreadable .csproj) by not loading anything.

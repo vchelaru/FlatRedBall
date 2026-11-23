@@ -14,7 +14,7 @@ namespace GlueUnitTests.Managers;
 // Regression from #2315, which moved GetIsFileOutOfDate into GlueCommon behind the
 // BuildToolAssociationCore seam. The seam was assigned only inside BuildToolAssociationManager.Self's
 // lazy getter, and nothing on the project-load path reads that getter before
-// ProjectLoader.BuildAllOutOfDateFiles asks every built file (non-empty SourceFile) whether it is out of
+// ProjectLoadOperations.BuildAllOutOfDateFiles asks every built file (non-empty SourceFile) whether it is out of
 // date - so a fresh Glue launch threw NullReferenceException on the first built file of any project.
 // The GlueCommon tests can't see this: they pre-assign a fake seam in their setup.
 //

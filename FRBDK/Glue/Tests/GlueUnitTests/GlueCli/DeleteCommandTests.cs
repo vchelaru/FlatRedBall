@@ -44,6 +44,8 @@ public class DeleteCommandTests
     public void Delete_ShouldRemoveAnEntityItsInstancesAndFactory_KeepingItsFilesOnDiskByDefault()
     {
         using var project = GoldProject.CopyOutOfRepo("Samples/Beefball");
+        // The factory's generated file only exists once code has been generated.
+        Regen(project.Root);
 
         var (exitCode, output) = Run("delete", project.Root, "--element", "Puck", "--json");
 

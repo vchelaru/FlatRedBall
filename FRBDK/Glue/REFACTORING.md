@@ -337,6 +337,22 @@ the property list itself comes from the WinForms `ReferencedFileSavePropertyGrid
 `AdjustDisplayedReferencedFile`, which take that type), and its type converters; the selection lives in
 `GlueState`; tree refresh and saving stay in `SetPropertyManager`.
 
+### 2026-11-23 — Project load split into a model load plus named operations
+
+`ProjectLoader.LoadProject` takes a `ProjectLoadScope`. `EditorSession` (the default, what Glue.exe uses) runs
+the same sequence as before. `ModelOnly` runs it without the steps that write files, fix up the `.csproj` or
+prepare editor UI, which now live in `ProjectLoadOperations` (injected through the DI `Builder`, reached as
+`ProjectLoader.Operations`). GlueCli loads `ModelOnly`, `regen` calls the generate-all operations, and `delete`
+records the unreferenced-file list that file removal compares against. The scope is a flag inside one sequence
+because model steps and session steps interleave around the plugin `ReactToLoadedGlux` call, and the editor's
+order has to stay exactly as it was.
+
+Still in the model-only load, in cost order (FormsSampleProject): MSBuild evaluation of the `.csproj`
+(~1.1s), Gum's `.gumx` load in `ReactToLoadedGluxEarly` (~0.9s), Gum's runtime codegen in its
+`ReactToLoadedGlux` (~0.7s), and the other plugin `ReactToLoadedGlux` handlers (~0.4s; Tiled and the camera
+plugin write code there). Next cut: split plugin load reactions into model setup and code generation, so
+`regen` and edits generate plugin code and the load does not.
+
 ### 2026-11-23 — GlueCli `delete` answers the editor's delete dialog instead of bypassing it
 
 `DeleteCommand` calls the same `DialogCommands.AskToRemove*Async` the editor's Delete does and swaps

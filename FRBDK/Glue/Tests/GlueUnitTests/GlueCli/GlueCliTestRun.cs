@@ -59,6 +59,17 @@ public static class GlueCliTestRun
         return value.ToString();
     }
 
+    /// <summary>
+    /// Runs <c>regen</c>, as an agent does once after cloning. A sample copied out of the repo has no generated
+    /// code, and edit commands regenerate only what they change, so a test that builds the game or checks a
+    /// generated file the edit does not touch calls this first.
+    /// </summary>
+    public static void Regen(string projectRoot)
+    {
+        var (exitCode, output) = Run("regen", projectRoot);
+        Shouldly.ShouldBeTestExtensions.ShouldBe(exitCode, GlueCliRunner.ExitSuccess, output);
+    }
+
     const string StderrMarker = "stderr:";
 
     sealed class TestHost : IGlueCliHost
@@ -67,8 +78,11 @@ public static class GlueCliTestRun
         {
             GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
             GlueTestBootstrap.EnsureErrorReportingPluginRegisteredWithPluginManager();
+            // Missing files, as the real exe's Error plugin reports them.
+            GlueTestBootstrap.EnsureMissingFileErrorReporterRegistered();
             // Reacts to the element each command selects, as in the real exe (#2476).
-            GlueTestBootstrap.EnsurePropertyGridPluginRegisteredWithPluginManager();            GlueTestBootstrap.EnsureMsBuildEnvironmentVariable();
+            GlueTestBootstrap.EnsurePropertyGridPluginRegisteredWithPluginManager();
+            GlueTestBootstrap.EnsureMsBuildEnvironmentVariable();
             return Array.Empty<string>();
         }
     }

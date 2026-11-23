@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using GlueCli;
 using GlueUnitTests.TestSupport;
@@ -44,6 +45,43 @@ public class GlueCliRunnerTests
         var result = Parse(output);
         result.ExitCode.ShouldBe(GlueCliRunner.ExitErrors);
         result.Errors.ShouldContain(error => error.Details.Contains("DoesNotExist.png"), output);
+    }
+
+    [StaFact]
+    public void Check_ShouldLeaveEveryFileByteIdentical_WhenGeneratedCodeIsStale()
+    {
+        using var project = GoldProject.CopyOutOfRepo("Samples/Beefball");
+        // regen first, so plugins that write code on load (Tiled, the camera) have nothing left to write.
+        Regen(project.Root);
+        // Opening the project in the editor would regenerate this file; check must not.
+        var generated = Path.Combine(project.Root, "Beefball", "Screens", "GameScreen.Generated.cs");
+        File.AppendAllText(generated, "// stale" + Environment.NewLine);
+        var before = ReadAllFiles(project.Root);
+
+        var (exitCode, output) = Run("check", project.Root, "--json");
+
+        exitCode.ShouldBe(GlueCliRunner.ExitSuccess, output);
+        Parse(output).FilesWritten.ShouldBeEmpty(output);
+        var after = ReadAllFiles(project.Root);
+        after.Keys.ShouldBe(before.Keys, ignoreOrder: true);
+        foreach (var (file, bytes) in before)
+        {
+            after[file].ShouldBe(bytes, file);
+        }
+    }
+
+    static Dictionary<string, byte[]> ReadAllFiles(string root)
+    {
+        var files = new Dictionary<string, byte[]>(StringComparer.OrdinalIgnoreCase);
+        foreach (var file in Directory.EnumerateFiles(root, "*", SearchOption.AllDirectories))
+        {
+            var relative = Path.GetRelativePath(root, file);
+            if (!relative.Split(Path.DirectorySeparatorChar).Any(segment => segment is "bin" or "obj" or ".vs"))
+            {
+                files[relative] = File.ReadAllBytes(file);
+            }
+        }
+        return files;
     }
 
     [StaFact]

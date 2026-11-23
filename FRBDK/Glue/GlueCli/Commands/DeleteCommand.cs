@@ -1,6 +1,8 @@
 using System.IO;
 using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.IO;
+using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
@@ -181,6 +183,11 @@ folder.",
             (kind, name) = ("entity", entity.Name);
             delete = () => dialogs.AskToRemoveEntityAsync(entity);
         }
+
+        // Removing a file takes the content files it leaves unreferenced out of the .csproj, found by comparing
+        // against this list. The editor records it when it opens the project; the CLI's model-only load does not.
+        ProjectLoader.Self.Operations.RefreshUnreferencedFiles();
+        await TaskManager.Self.WaitForAllTasksFinished();
 
         var fileAction = FileActions[context.Get("files") ?? "remove-from-project"];
         DeleteOptionsViewModel? answered = null;
