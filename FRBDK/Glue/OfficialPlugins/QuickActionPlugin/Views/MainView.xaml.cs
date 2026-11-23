@@ -56,7 +56,7 @@ namespace OfficialPlugins.QuickActionPlugin.Views
 
         private void RunWizard_Clicked(object sender, RoutedEventArgs e)
         {
-            PluginManager.CallPluginMethod(Localization.Texts.ProjectWizardNew, "RunWizard");
+            GlueCommands.Self.WizardCommands?.RunWizard();
         }
 
         private void CreateNewProjectButton_Clicked(object sender, RoutedEventArgs e)
