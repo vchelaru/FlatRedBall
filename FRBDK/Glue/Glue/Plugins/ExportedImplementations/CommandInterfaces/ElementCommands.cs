@@ -111,6 +111,12 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
     /// <returns>A task which completes when all logic and UI are finished.</returns>
     public async Task RenameElement(GlueElement elementToRename, string newFullElementName, bool showRenameWindow = true)
     {
+        await RenameElementAndGetModifications(elementToRename, newFullElementName, showRenameWindow);
+    }
+
+    public async Task<RenameModifications> RenameElementAndGetModifications(GlueElement elementToRename, string newFullElementName, bool showRenameWindow = true)
+    {
+        RenameModifications modifications = null;
         newFullElementName = newFullElementName.Replace("/", "\\");
         // GitHub issue #2085: AddEntity queues its follow-up codegen (GenerateElementCode) at
         // AddOrMoveToEnd. A rename immediately following an add must queue at the same tier, or the
@@ -136,12 +142,14 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
             }
             else
             {
-                DoRenameInner(elementToRename, newFullElementName, showRenameWindow);
+                modifications = DoRenameInner(elementToRename, newFullElementName, showRenameWindow);
             }
         }, $"Renaming {elementToRename} to {newFullElementName}", TaskExecutionPreference.AddOrMoveToEnd);
+        return modifications;
     }
 
-    private void DoRenameInner(GlueElement elementToRename, string newElementName, bool showRenameWindow)
+    /// <returns>What the rename changed, or null when it did not happen (the overwrite question was declined).</returns>
+    private RenameModifications DoRenameInner(GlueElement elementToRename, string newElementName, bool showRenameWindow)
     {
         RenameModifications renameModifications = new RenameModifications();
 
@@ -156,29 +164,31 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
         var newDirectory = FileManager.GetDirectory(newElementName, RelativeType.Relative);
         var didChangeDirectory = oldDirectory != newDirectory;
 
-        if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.SeparateJsonFilesForElements)
-        {
-            // delete the old file (put it in recycle bin)
-            // From https://stackoverflow.com/questions/2342628/deleting-file-to-recycle-bin-on-windows-x64-in-c-sharp
-
-            if (fileNameBeforeMove?.Exists() == true)
-            {
-                try
-                {
-                    Microsoft.VisualBasic.FileIO.FileSystem.DeleteFile(
-                        fileNameBeforeMove.FullPath,
-                        Microsoft.VisualBasic.FileIO.UIOption.OnlyErrorDialogs,
-                        Microsoft.VisualBasic.FileIO.RecycleOption.SendToRecycleBin);
-                }
-                catch (Exception e)
-                {
-                    GlueCommands.Self.PrintError(e.ToString());
-                }
-            }
-        }
-
         if (changeClassNamesResponse.Succeeded)
         {
+            // Only once the rename is going ahead: declining the "files would be overwritten" question used to
+            // leave the element under its old name with its .glsj/.glej already in the recycle bin.
+            if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.SeparateJsonFilesForElements)
+            {
+                // delete the old file (put it in recycle bin)
+                // From https://stackoverflow.com/questions/2342628/deleting-file-to-recycle-bin-on-windows-x64-in-c-sharp
+
+                if (fileNameBeforeMove?.Exists() == true)
+                {
+                    try
+                    {
+                        Microsoft.VisualBasic.FileIO.FileSystem.DeleteFile(
+                            fileNameBeforeMove.FullPath,
+                            Microsoft.VisualBasic.FileIO.UIOption.OnlyErrorDialogs,
+                            Microsoft.VisualBasic.FileIO.RecycleOption.SendToRecycleBin);
+                    }
+                    catch (Exception e)
+                    {
+                        GlueCommands.Self.PrintError(e.ToString());
+                    }
+                }
+            }
+
             renameModifications.CodeFilesAffectedByRename.AddRange(changeClassNamesResponse.Data);
 
             // Set the name first because that's going
@@ -347,7 +357,9 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
                     window.ShowDialog();
                 });
             }
+            return renameModifications;
         }
+        return null;
     }
 
     private ToolsUtilities.GeneralResponse<List<FileChange>> ChangeClassNamesAndNamespaceInCodeAndFileName(List<FilePath> validFiles, string oldName, string newName)

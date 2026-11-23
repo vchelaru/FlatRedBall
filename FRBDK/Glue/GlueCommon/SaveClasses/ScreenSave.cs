@@ -223,9 +223,17 @@ namespace FlatRedBall.Glue.SaveClasses
                 }
             }
 
-            for (int i = 0; i < NamedObjects.Count; i++)
+            // Objects inside lists and ShapeCollections are members too, and FieldName is "m" + InstanceName for
+            // an object with a public property.
+            return HasNamedObjectWithName(NamedObjects, memberName);
+        }
+
+        static bool HasNamedObjectWithName(List<NamedObjectSave> namedObjects, string memberName)
+        {
+            for (int i = 0; i < namedObjects.Count; i++)
             {
-                if (NamedObjects[i].FieldName == memberName)
+                if (namedObjects[i].FieldName == memberName || namedObjects[i].InstanceName == memberName ||
+                    HasNamedObjectWithName(namedObjects[i].ContainedObjects, memberName))
                 {
                     return true;
                 }

@@ -1570,3 +1570,13 @@ they do not run headless: platformer/top-down go through the Entity Input Moveme
 `MakeEntityPlatformer`/`MakeEntityTopDown`, as the wizard does, and the Add Screen level options are not
 offered. Fix: those two methods used the plugin's tab view model, which exists only once the tab was shown,
 so they threw headless; they now use the controllers' view model, the same object the tab binds to.
+
+### 2026-11-23 — GlueCli `rename`
+
+`rename` calls what the tree's in-place rename calls: `ElementCommands.RenameElement`,
+`GluxCommands.RenameNamedObjectSave`, `FileCommands.RenameReferencedFileSave`. `GlueCli/CliDialogs` answers a
+command's questions from its flags (`--overwrite`, `--use-existing-file`) and takes the informational messages
+it reports itself; anything else still fails the run. `IElementCommands.RenameElementAndGetModifications`
+returns the rename summary window's contents. Two editor bug fixes: declining "overwrite existing files?"
+no longer leaves the element's .glsj/.glej in the recycle bin, and the object name check now catches a taken
+name on an object with a public property or inside a screen's list.

@@ -40,6 +40,7 @@ public static class GlueCliRunner
         AddFileCommand.Definition,
         AddEntityCommand.Definition,
         AddScreenCommand.Definition,
+        RenameCommand.Definition,
     };
 
     public static readonly IReadOnlyList<CliOption> GlobalOptions = new CliOption[]
