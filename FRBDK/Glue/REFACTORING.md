@@ -1550,3 +1550,13 @@ conversion passes the type name, which does not resolve aliases like `float`, an
 ATI-defined variables (`DefaultLayer`) get their `CustomVariable` created as `ElementVariableShowingLogic`
 does. One seam in Glue: `MainScreenPlugin`'s "move objects to the new default layer" question asks through
 `DialogService.ShowConfirm` while `ShowGui` is off instead of opening a WPF window; the editor is unchanged.
+
+### 2026-11-23 — GlueCli `add-file`
+
+`add-file` calls `GluxCommands.CreateReferencedFileSaveForExistingFileAsync`, where drag-drop and Add
+Existing File end (through `AddExistingFileManager.AddSingleFile`, whose only extra step is the build-tool
+window, which the command refuses). What that path decides silently it checks first: the file must be in the
+content folder unless `--copy` (the editor copies without asking, overwriting), a copy may not replace an
+existing file, the file may not already be referenced, and the name goes through `NameVerifier`. An unknown
+extension needs `--allow-unknown-type`, which adds the extension to `AdditionalExtensionsToTreatAsAssets`,
+the same state the editor's "add it anyway?" Yes leaves. No Glue changes.
