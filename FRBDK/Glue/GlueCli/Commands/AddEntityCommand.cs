@@ -12,8 +12,7 @@ namespace GlueCli.Commands;
 /// <see cref="FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces.IElementCommands.AddEntityAsync"/>,
 /// the call the editor's Add Entity dialog ends in, with an <see cref="AddEntityViewModel"/> set the way the
 /// dialog's checkboxes set it. Platformer and top-down movement, which the Entity Input Movement plugin adds to
-/// the dialog, go through the plugin's <c>MakeEntityPlatformer</c>/<c>MakeEntityTopDown</c>, as the new
-/// project wizard does.
+/// the dialog, go through <see cref="GlueCommands.EntityInputMovementCommands"/>, as the new project wizard does.
 /// </summary>
 public static class AddEntityCommand
 {
@@ -174,11 +173,25 @@ Platformer, TopDown or null, and addedToScreens lists the objects added to scree
         if (movement != null)
         {
             // The dialog's movement radio buttons are the Entity Input Movement plugin's, applied after the entity
-            // exists (NewEntityCreatedReactionLogic); MakeEntityPlatformer/TopDown are that plugin's non-UI entry.
-            var method = movement == "Platformer" ? "MakeEntityPlatformer" : "MakeEntityTopDown";
-            await TaskManager.Self.AddAsync(() => PluginManager.CallPluginMethod("Entity Input Movement Plugin", method, entity),
-                $"Making {entity} {movement}");
-            await TaskManager.Self.WaitForAllTasksFinished();
+            // exists (NewEntityCreatedReactionLogic). The plugin registers EntityInputMovementCommands, its non-UI
+            // entry, and leaves it null when it is not loaded.
+            var movementCommands = GlueCommands.Self.EntityInputMovementCommands;
+            if (movementCommands != null)
+            {
+                await TaskManager.Self.AddAsync(() =>
+                    {
+                        if (movement == "Platformer")
+                        {
+                            movementCommands.MakeEntityPlatformer(entity);
+                        }
+                        else
+                        {
+                            movementCommands.MakeEntityTopDown(entity);
+                        }
+                    },
+                    $"Making {entity} {movement}");
+                await TaskManager.Self.WaitForAllTasksFinished();
+            }
 
             var property = movement == "Platformer" ? "IsPlatformer" : "IsTopDown";
             if (!entity.Properties.GetValue<bool>(property))

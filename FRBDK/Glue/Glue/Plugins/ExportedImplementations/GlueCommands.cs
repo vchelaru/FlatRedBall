@@ -83,6 +83,11 @@ public class GlueCommands : IGlueCommands
 
     public IFileCommands FileCommands { get; private set; }
 
+    /// <summary>
+    /// Assigned by the Entity Input Movement plugin when it starts; null when that plugin is not loaded.
+    /// </summary>
+    public IEntityInputMovementCommands EntityInputMovementCommands { get; set; }
+
     public ISelectCommands SelectCommands { get; private set; }
 
     #endregion

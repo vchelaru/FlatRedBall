@@ -266,45 +266,22 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
         {
             if (value == null || value as string == String.Empty)
             {
-
-                var existingInstruction = stateSave?.InstructionSaves.FirstOrDefault(item => item.Member == variable.Name);
-
-                if (existingInstruction != null)
-                {
-                    stateSave.InstructionSaves.Remove(existingInstruction);
-                }
-
+                // CheckForStateRemoval reads only the view model, so it can run first. A state it removes
+                // leaves the project, so its instruction no longer matters and plugins are not told.
                 var wasRemoved = CheckForStateRemoval(stateViewModel);
 
                 if(!wasRemoved)
                 {
-                    // The state wasn't removed, so a variable on the state was changed
-                    PluginManager.ReactToStateVariableChanged(stateSave, category, variable.Name);
+                    GlueCommands.Self.GluxCommands.ElementCommands.SetStateVariableValue(stateSave, category, variable.Name, null);
                 }
             }
             else
             {
                 try
                 {
+                    // A null convertedValue means the conversion failed, which clears the value.
                     var convertedValue = Convert(value, variable);
-                    // This could have converted incorrectly.
-                    if(convertedValue != null)
-                    {
-                        stateSave.SetValue(variable.Name, convertedValue);
-                    }
-                    else
-                    {
-                        var existingInstruction = stateSave?.InstructionSaves.FirstOrDefault(item => item.Member == variable.Name);
-
-                        if (existingInstruction != null)
-                        {
-                            stateSave.InstructionSaves.Remove(existingInstruction);
-                        }
-
-                    }
-
-                    PluginManager.ReactToStateVariableChanged(stateSave, category, variable.Name);
-
+                    GlueCommands.Self.GluxCommands.ElementCommands.SetStateVariableValue(stateSave, category, variable.Name, convertedValue);
                 }
                 catch (Exception e)
                 {
@@ -524,28 +501,11 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
             ////////////////////End Early Out/////////////////////////
 
 
-            // Probably easier to just blast and refresh the list:
-            var newlyExcludedVariables = this.ExcludedVariables.Except(category.ExcludedVariables).ToArray();
-            var newlyIncludedVariables = category.ExcludedVariables.Except(this.ExcludedVariables).ToArray();
+            var changed = await GlueCommands.Self.GluxCommands.ElementCommands.SetStateCategoryExcludedVariablesAsync(
+                category, this.ExcludedVariables);
 
-            var addedNewExclusions = newlyExcludedVariables.Length > 0;
-            var addedNewInclusions = newlyIncludedVariables.Length > 0;
-
-            if (addedNewExclusions || addedNewInclusions)
+            if (changed)
             {
-                category.ExcludedVariables.Clear();
-                category.ExcludedVariables.AddRange(this.ExcludedVariables);
-
-                foreach(var newExclusion in newlyExcludedVariables)
-                {
-                    await PluginManager.ReactToStateCategoryExcludedVariablesChangedAsync(category, newExclusion, StateCategoryVariableAction.Excluded);
-                }
-                foreach(var newInclusion in newlyIncludedVariables)
-                {
-                    await PluginManager.ReactToStateCategoryExcludedVariablesChangedAsync(category, newInclusion, StateCategoryVariableAction.Included);
-                }
-                //PluginManager.ReactToStateCategoryExcludedVariablesChangedAsync()
-
                 GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
                 GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                 // I guess this isn't needed because the states in the tree view didn't change

@@ -8,9 +8,9 @@ namespace GlueCli.Commands;
 
 /// <summary>
 /// <c>set-state-variable</c>: sets or clears one variable's value in a state, the way a cell of the State Data
-/// tab does (StateCategoryViewModel.ApplyValueToModel: StateSave.SetValue or removing the instruction, then
-/// PluginManager.ReactToStateVariableChanged). The tab lives in OfficialPlugins, which GlueCli does not
-/// reference, so the few lines it runs are repeated here. The text is converted the way set-variable converts it.
+/// tab does: both call ElementCommands.SetStateVariableValue, and --include calls
+/// ElementCommands.SetStateCategoryExcludedVariablesAsync like the tab's include button. The text is converted
+/// the way set-variable converts it.
 /// </summary>
 public static class SetStateVariableCommand
 {
@@ -159,27 +159,14 @@ includedVariable is true when --include added the variable to the category.",
         var before = CliStates.SerializeElements();
         var oldValue = state.InstructionSaves.FirstOrDefault(item => item.Member == variable.Name)?.Value;
 
+        var elementCommands = GlueCommands.Self.GluxCommands.ElementCommands;
         if (include)
         {
-            // StateCategoryViewModel.HandleExcludedVariablesChanged
-            category.ExcludedVariables.Remove(variable.Name);
-            await PluginManager.ReactToStateCategoryExcludedVariablesChangedAsync(category, variable.Name, StateCategoryVariableAction.Included);
+            await elementCommands.SetStateCategoryExcludedVariablesAsync(category,
+                category.ExcludedVariables.Where(item => item != variable.Name).ToList());
         }
 
-        // StateCategoryViewModel.ApplyValueToModel
-        if (value == null)
-        {
-            var existing = state.InstructionSaves.FirstOrDefault(item => item.Member == variable.Name);
-            if (existing != null)
-            {
-                state.InstructionSaves.Remove(existing);
-            }
-        }
-        else
-        {
-            state.SetValue(variable.Name, value);
-        }
-        PluginManager.ReactToStateVariableChanged(state, category, variable.Name);
+        elementCommands.SetStateVariableValue(state, category, variable.Name, value);
         // StateViewModel.HandleStateVariablePropertyChanged
         GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
         await TaskManager.Self.WaitForAllTasksFinished();

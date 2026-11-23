@@ -658,7 +658,7 @@ namespace OfficialPlugins.Wizard.Managers
                     if (vm.PlayerControlType == GameType.Platformer)
                     {
                         // mark as platformer
-                        PluginManager.CallPluginMethod("Entity Input Movement Plugin", "MakeEntityPlatformer", playerEntity);
+                        GlueCommands.Self.DoOnUiThread(() => GlueCommands.Self.EntityInputMovementCommands?.MakeEntityPlatformer(playerEntity));
 
                         if (vm.ShowAddPlayerSpritePlatformerAnimations && vm.AddPlayerSpritePlatformerAnimations)
                         {
@@ -674,7 +674,7 @@ namespace OfficialPlugins.Wizard.Managers
                     else if (vm.PlayerControlType == GameType.TopDown)
                     {
                         // mark as top down
-                        PluginManager.CallPluginMethod("Entity Input Movement Plugin", "MakeEntityTopDown", playerEntity);
+                        GlueCommands.Self.DoOnUiThread(() => GlueCommands.Self.EntityInputMovementCommands?.MakeEntityTopDown(playerEntity));
 
                         if (vm.ShowAddPlayerSpriteTopDownAnimations && vm.AddPlayerSpriteTopDownAnimations)
                         {
