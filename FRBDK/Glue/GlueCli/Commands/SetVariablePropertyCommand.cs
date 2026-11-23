@@ -1,7 +1,6 @@
-using System.ComponentModel;
 using FlatRedBall.Glue.Controls;
+using FlatRedBall.Glue.EditorProperties;
 using FlatRedBall.Glue.Elements;
-using FlatRedBall.Glue.FormHelpers.PropertyGrids;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
@@ -13,8 +12,8 @@ namespace GlueCli.Commands;
 
 /// <summary>
 /// <c>set-variable-property</c>: sets one of a variable's own properties (Type, SetByDerived, Category, IsShared,
-/// Scope, SourceObject, Name...) the way the Properties grid does when the variable is selected. The grid's
-/// displayer (<see cref="CustomVariablePropertyGridDisplayer"/>) decides which properties exist and sets the
+/// Scope, SourceObject, Name...) the way the Properties grid does when the variable is selected.
+/// <see cref="CustomVariablePropertyModel"/>, which the grid renders, decides which properties exist and sets the
 /// value; then the reactions <c>SetPropertyManager.ReactToPropertyChanged</c> runs for a variable follow:
 /// <see cref="CustomVariableSaveSetPropertyLogic.ReactToCustomVariableChangedValue"/>, the plugins' changed-property
 /// event, and code generation for the element and the elements using it.
@@ -152,15 +151,13 @@ changed.",
 
         // The grid shows the selected variable; the reactions read the selection too (Name, Scope).
         GlueState.Self.CurrentCustomVariable = variable;
-        var displayer = new CustomVariablePropertyGridDisplayer { CurrentElement = element, RefreshOnTimer = false };
-        displayer.Instance = variable;
-        var descriptors = ((ICustomTypeDescriptor)displayer).GetProperties(Array.Empty<Attribute>()).Cast<PropertyDescriptor>()
+        var members = Builder.Get<CustomVariablePropertyModel>().GetProperties(variable, element)
             .Where(item => item.Name != nameof(CustomVariable.DefaultValue)).ToList();
-        var descriptor = descriptors.FirstOrDefault(item => item.Name == propertyName) ??
-            descriptors.FirstOrDefault(item => string.Equals(item.Name, propertyName, StringComparison.OrdinalIgnoreCase));
-        var settable = descriptors.Where(item => !item.IsReadOnly && SetPropertyCommand.IsSupportedType(item.PropertyType))
+        var member = members.FirstOrDefault(item => item.Name == propertyName) ??
+            members.FirstOrDefault(item => string.Equals(item.Name, propertyName, StringComparison.OrdinalIgnoreCase));
+        var settable = members.Where(item => !item.IsReadOnly && SetPropertyCommand.IsSupportedType(item.Type))
             .Select(item => item.Name).ToList();
-        if (descriptor == null)
+        if (member == null)
         {
             var exists = typeof(CustomVariable).GetProperty(propertyName,
                 System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.IgnoreCase);
@@ -169,25 +166,25 @@ changed.",
                 : $"{target} has no property '{propertyName}'.") + CliLookup.DescribeCloseMatches(propertyName, settable));
             return;
         }
-        var name = descriptor.Name;
-        if (descriptor.IsReadOnly)
+        var name = member.Name;
+        if (member.IsReadOnly)
         {
             context.Fail($"{name} of {target} is read-only in the editor." + (name == nameof(CustomVariable.Type)
                 ? $" Only a new variable's type changes; {variable.Name} " + (variable.GetIsTunneling() ? "tunnels into an object." : "exposes a built-in variable.")
                 : ""));
             return;
         }
-        if (!SetPropertyCommand.IsSupportedType(descriptor.PropertyType))
+        if (!SetPropertyCommand.IsSupportedType(member.Type))
         {
-            context.Fail($"{name} of {target} is a {SetPropertyCommand.TypeName(descriptor.PropertyType)}; set-variable-property only sets text, true/false, numbers and enum values.");
+            context.Fail($"{name} of {target} is a {SetPropertyCommand.TypeName(member.Type)}; set-variable-property only sets text, true/false, numbers and enum values.");
             return;
         }
-        if (!SetPropertyCommand.TryConvert(context, descriptor, context.Get("value")!, $"{name} of {target}", out var value))
+        if (!SetPropertyCommand.TryConvert(context, member, context.Get("value")!, $"{name} of {target}", out var value))
         {
             return;
         }
 
-        var oldValue = descriptor.GetValue(null);
+        var oldValue = member.GetValue();
         var answers = new List<SetPropertyCommand.Answer>();
         var unanswered = new List<(Question question, string text)>();
         var before = CliChanges.Snapshot();
@@ -212,7 +209,7 @@ changed.",
                 ReactionMessages.Any(prefix => text.StartsWith(prefix, StringComparison.Ordinal)));
         using (dialogs)
         {
-            descriptor.SetValue(null, value);
+            member.SetValue(value);
 
             // What SetPropertyManager.ReactToPropertyChanged does for a selected variable.
             await Builder.Get<CustomVariableSaveSetPropertyLogic>().ReactToCustomVariableChangedValue(name, variable, oldValue!);
@@ -231,7 +228,7 @@ changed.",
             return;
         }
 
-        var newValue = descriptor.GetValue(null);
+        var newValue = member.GetValue();
         if (!SetPropertyCommand.SameValue(newValue, value))
         {
             context.Fail($"Glue did not set {name} of {target} to {SetPropertyCommand.Describe(value)}; it is {SetPropertyCommand.Describe(newValue)}." +
@@ -239,7 +236,7 @@ changed.",
             return;
         }
 
-        var result = new SetVariableProperty(element.Name, variable.Name, name, SetPropertyCommand.TypeName(descriptor.PropertyType),
+        var result = new SetVariableProperty(element.Name, variable.Name, name, SetPropertyCommand.TypeName(member.Type),
             oldValue, newValue, answers, messages, CliChanges.ChangedElements(before));
         var lines = new List<string>
         {

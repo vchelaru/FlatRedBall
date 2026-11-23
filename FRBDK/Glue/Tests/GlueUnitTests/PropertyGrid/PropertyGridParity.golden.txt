@@ -1,0 +1,260 @@
+# file: entity png
+AddToManagers | System.Boolean | editable | 
+CachedInstanceName | System.String | editable | 
+FilePath | FlatRedBall.IO.FilePath | editable | 
+HasPublicProperty | System.Boolean | editable | 
+ImageHeight | System.Int32 | read-only | 
+ImageWidth | System.Int32 | read-only | 
+IncludeDirectoryRelativeToContainer | System.Boolean | editable | 
+LoadedAtRuntime | System.Boolean | editable | 
+LoadedOnlyWhenReferenced | System.Boolean | editable | 
+Name | System.String | editable | 
+OpensWith | System.String | editable | <DEFAULT>; New Application...
+Project Specific Files | FlatRedBall.Glue.FormHelpers.PropertyGrids.ProjectSpecificFileDisplayer | editable | 
+ProjectsToExcludeFrom | System.Collections.Generic.List`1[System.String] | editable | 
+RuntimeType | System.String | editable | Microsoft.Xna.Framework.Graphics.Texture2D
+SourceFile | System.String | editable | 
+Summary | System.String | editable | 
+UseContentPipeline | System.Boolean | editable | 
+# file: screen png
+AddToManagers | System.Boolean | editable | 
+CachedInstanceName | System.String | editable | 
+FilePath | FlatRedBall.IO.FilePath | editable | 
+HasPublicProperty | System.Boolean | editable | 
+ImageHeight | System.Int32 | read-only | 
+ImageWidth | System.Int32 | read-only | 
+IncludeDirectoryRelativeToContainer | System.Boolean | editable | 
+IsSharedStatic | System.Boolean | editable | 
+LoadedAtRuntime | System.Boolean | editable | 
+LoadedOnlyWhenReferenced | System.Boolean | editable | 
+Name | System.String | editable | 
+OpensWith | System.String | editable | <DEFAULT>; New Application...
+Project Specific Files | FlatRedBall.Glue.FormHelpers.PropertyGrids.ProjectSpecificFileDisplayer | editable | 
+ProjectsToExcludeFrom | System.Collections.Generic.List`1[System.String] | editable | 
+RuntimeType | System.String | editable | Microsoft.Xna.Framework.Graphics.Texture2D
+SourceFile | System.String | editable | 
+Summary | System.String | editable | 
+UseContentPipeline | System.Boolean | editable | 
+# file: screen png not loaded at runtime
+AddToManagers | System.Boolean | editable | 
+CachedInstanceName | System.String | editable | 
+FilePath | FlatRedBall.IO.FilePath | editable | 
+ImageHeight | System.Int32 | read-only | 
+ImageWidth | System.Int32 | read-only | 
+LoadedAtRuntime | System.Boolean | editable | 
+Name | System.String | editable | 
+OpensWith | System.String | editable | <DEFAULT>; New Application...
+Project Specific Files | FlatRedBall.Glue.FormHelpers.PropertyGrids.ProjectSpecificFileDisplayer | editable | 
+ProjectsToExcludeFrom | System.Collections.Generic.List`1[System.String] | editable | 
+SourceFile | System.String | editable | 
+Summary | System.String | editable | 
+UseContentPipeline | System.Boolean | editable | 
+# file: global csv
+AddToManagers | System.Boolean | editable | 
+CachedInstanceName | System.String | editable | 
+CreatesDictionary | System.Boolean | editable | 
+CsvDelimiter | FlatRedBall.Glue.SaveClasses.AvailableDelimiters | editable | 
+FilePath | FlatRedBall.IO.FilePath | editable | 
+HasPublicProperty | System.Boolean | editable | 
+IncludeDirectoryRelativeToContainer | System.Boolean | editable | 
+IsDatabaseForLocalizing | System.Boolean | editable | 
+LoadedAtRuntime | System.Boolean | editable | 
+LoadedOnlyWhenReferenced | System.Boolean | editable | 
+Name | System.String | editable | 
+OpensWith | System.String | editable | <DEFAULT>; New Application...
+Project Specific Files | FlatRedBall.Glue.FormHelpers.PropertyGrids.ProjectSpecificFileDisplayer | editable | 
+ProjectsToExcludeFrom | System.Collections.Generic.List`1[System.String] | editable | 
+RuntimeType | System.String | editable | 
+SourceFile | System.String | editable | 
+Summary | System.String | editable | 
+UniformRowType | System.String | editable | <NONE>; string[]; string
+# file: entity csv
+AddToManagers | System.Boolean | editable | 
+CachedInstanceName | System.String | editable | 
+CreatesDictionary | System.Boolean | editable | 
+CsvDelimiter | FlatRedBall.Glue.SaveClasses.AvailableDelimiters | editable | 
+FilePath | FlatRedBall.IO.FilePath | editable | 
+HasPublicProperty | System.Boolean | editable | 
+IncludeDirectoryRelativeToContainer | System.Boolean | editable | 
+IsDatabaseForLocalizing | System.Boolean | editable | 
+LoadedAtRuntime | System.Boolean | editable | 
+LoadedOnlyWhenReferenced | System.Boolean | editable | 
+Name | System.String | editable | 
+OpensWith | System.String | editable | <DEFAULT>; New Application...
+Project Specific Files | FlatRedBall.Glue.FormHelpers.PropertyGrids.ProjectSpecificFileDisplayer | editable | 
+ProjectsToExcludeFrom | System.Collections.Generic.List`1[System.String] | editable | 
+RuntimeType | System.String | editable | 
+SourceFile | System.String | editable | 
+Summary | System.String | editable | 
+UniformRowType | System.String | editable | <NONE>; string[]; string
+# file: global txt as csv
+AddToManagers | System.Boolean | editable | 
+CachedInstanceName | System.String | editable | 
+CreatesDictionary | System.Boolean | editable | 
+CsvDelimiter | FlatRedBall.Glue.SaveClasses.AvailableDelimiters | editable | 
+FilePath | FlatRedBall.IO.FilePath | editable | 
+HasPublicProperty | System.Boolean | editable | 
+IncludeDirectoryRelativeToContainer | System.Boolean | editable | 
+IsDatabaseForLocalizing | System.Boolean | editable | 
+LoadedAtRuntime | System.Boolean | editable | 
+LoadedOnlyWhenReferenced | System.Boolean | editable | 
+Name | System.String | editable | 
+OpensWith | System.String | editable | <DEFAULT>; New Application...
+Project Specific Files | FlatRedBall.Glue.FormHelpers.PropertyGrids.ProjectSpecificFileDisplayer | editable | 
+ProjectsToExcludeFrom | System.Collections.Generic.List`1[System.String] | editable | 
+RuntimeType | System.String | editable | System.String
+SourceFile | System.String | editable | 
+Summary | System.String | editable | 
+TreatAsCsv | System.Boolean | editable | 
+UniformRowType | System.String | editable | <NONE>; string[]; string
+# file: global txt
+AddToManagers | System.Boolean | editable | 
+CachedInstanceName | System.String | editable | 
+FilePath | FlatRedBall.IO.FilePath | editable | 
+HasPublicProperty | System.Boolean | editable | 
+IncludeDirectoryRelativeToContainer | System.Boolean | editable | 
+LoadedAtRuntime | System.Boolean | editable | 
+LoadedOnlyWhenReferenced | System.Boolean | editable | 
+Name | System.String | editable | 
+OpensWith | System.String | editable | <DEFAULT>; New Application...
+Project Specific Files | FlatRedBall.Glue.FormHelpers.PropertyGrids.ProjectSpecificFileDisplayer | editable | 
+ProjectsToExcludeFrom | System.Collections.Generic.List`1[System.String] | editable | 
+RuntimeType | System.String | editable | System.String
+SourceFile | System.String | editable | 
+Summary | System.String | editable | 
+TreatAsCsv | System.Boolean | editable | 
+# file: screen achx
+AddToManagers | System.Boolean | editable | 
+CachedInstanceName | System.String | editable | 
+FilePath | FlatRedBall.IO.FilePath | editable | 
+HasPublicProperty | System.Boolean | editable | 
+IncludeDirectoryRelativeToContainer | System.Boolean | editable | 
+IsSharedStatic | System.Boolean | editable | 
+LoadedAtRuntime | System.Boolean | editable | 
+LoadedOnlyWhenReferenced | System.Boolean | editable | 
+Name | System.String | editable | 
+OpensWith | System.String | editable | <DEFAULT>; New Application...
+Project Specific Files | FlatRedBall.Glue.FormHelpers.PropertyGrids.ProjectSpecificFileDisplayer | editable | 
+ProjectsToExcludeFrom | System.Collections.Generic.List`1[System.String] | editable | 
+RuntimeType | System.String | editable | FlatRedBall.Graphics.Animation.AnimationChainList
+SourceFile | System.String | editable | 
+Summary | System.String | editable | 
+UseContentPipeline | System.Boolean | editable | 
+# file: entity png from wildcard
+AddToManagers | System.Boolean | read-only | 
+CachedInstanceName | System.String | editable | 
+FilePath | FlatRedBall.IO.FilePath | editable | 
+HasPublicProperty | System.Boolean | read-only | 
+ImageHeight | System.Int32 | read-only | 
+ImageWidth | System.Int32 | read-only | 
+IncludeDirectoryRelativeToContainer | System.Boolean | read-only | 
+IsCreatedByWildcard | System.Boolean | editable | 
+LoadedAtRuntime | System.Boolean | read-only | 
+LoadedOnlyWhenReferenced | System.Boolean | read-only | 
+Name | System.String | read-only | 
+OpensWith | System.String | editable | <DEFAULT>; New Application...
+Project Specific Files | FlatRedBall.Glue.FormHelpers.PropertyGrids.ProjectSpecificFileDisplayer | editable | 
+ProjectsToExcludeFrom | System.Collections.Generic.List`1[System.String] | read-only | 
+RuntimeType | System.String | editable | Microsoft.Xna.Framework.Graphics.Texture2D
+SourceFile | System.String | read-only | 
+Summary | System.String | read-only | 
+UseContentPipeline | System.Boolean | read-only | 
+# variable: new float
+Category | System.String | editable | 
+CreatesEvent | System.Boolean | editable | 
+CreatesProperty | System.Boolean | editable | 
+CustomGetForcedOptionsFunc | System.Func`2[FlatRedBall.Glue.SaveClasses.GlueElement,System.Collections.Generic.List`1[System.String]] | editable | 
+DefaultValue | System.Single | editable | 
+DefinedByBase | System.Boolean | editable | 
+HasAccompanyingVelocityProperty | System.Boolean | editable | 
+IsShared | System.Boolean | editable | 
+IsTunneling | System.Boolean | read-only | 
+Name | System.String | editable | 
+OverridingPropertyType | System.String | editable | <NONE>; int; long; string; float
+PreferredDisplayerTypeName | System.String | editable | 
+Scope | FlatRedBall.Glue.SaveClasses.Scope | editable | 
+SetByDerived | System.Boolean | editable | 
+SourceFile | FlatRedBall.Glue.SaveClasses.ReferencedFileReference | editable | 
+SourceObject | System.String | editable | <NONE>; SpriteInstance; Texture; Waves; Wildcard
+Summary | System.String | editable | 
+Type | System.String | editable | float; float?; decimal; decimal?; string; bool; bool?; int; int?; double; byte; long; Microsoft.Xna.Framework.Color; Microsoft.Xna.Framework.Graphics.Texture2D; Microsoft.Xna.Framework.Input.Keys; .DataTypes.EnemyInfo; .DataTypes.Notes; .DataTypes.Waves; Entities.EnemyType
+VariableDefinition | FlatRedBall.Glue.Elements.VariableDefinition | editable | 
+# variable: tunneling
+Category | System.String | editable | 
+CreatesEvent | System.Boolean | editable | 
+CreatesProperty | System.Boolean | editable | 
+CustomGetForcedOptionsFunc | System.Func`2[FlatRedBall.Glue.SaveClasses.GlueElement,System.Collections.Generic.List`1[System.String]] | editable | 
+DefaultValue | System.Single | editable | 
+DefinedByBase | System.Boolean | editable | 
+HasAccompanyingVelocityProperty | System.Boolean | editable | 
+IsShared | System.Boolean | editable | 
+IsTunneling | System.Boolean | read-only | 
+Name | System.String | editable | 
+OverridingPropertyType | System.String | editable | <NONE>; int; long; string; float
+PreferredDisplayerTypeName | System.String | editable | 
+Scope | FlatRedBall.Glue.SaveClasses.Scope | editable | 
+SetByDerived | System.Boolean | editable | 
+SourceFile | FlatRedBall.Glue.SaveClasses.ReferencedFileReference | editable | 
+SourceObject | System.String | editable | <NONE>; SpriteInstance; Texture; Waves; Wildcard
+SourceObjectProperty | System.String | editable | <NONE>; X; Y; Z; Texture; LeftTexturePixel; RightTexturePixel; TopTexturePixel; BottomTexturePixel; FlipHorizontal; FlipVertical; TextureAddressMode; TextureScale; Width; Height; UseAnimationRelativePosition; Animate; AnimationChains; CurrentChainName; CurrentFrameIndex; AnimationSpeed; IgnoreAnimationChainTextureFlip; Visible; ColorOperation; Red; Green; Blue; BlendOperation; Alpha; RotationX; RotationY; RotationZ; IgnoreParentPosition; IgnoresParentVisibility; ParentRotationChangesPosition; ParentRotationChangesRotation
+Summary | System.String | editable | 
+Type | System.String | read-only | 
+VariableDefinition | FlatRedBall.Glue.Elements.VariableDefinition | editable | 
+# variable: type converter
+Category | System.String | editable | 
+CreatesEvent | System.Boolean | editable | 
+CreatesProperty | System.Boolean | editable | 
+CustomGetForcedOptionsFunc | System.Func`2[FlatRedBall.Glue.SaveClasses.GlueElement,System.Collections.Generic.List`1[System.String]] | editable | 
+DefaultValue | System.String | editable | 
+DefinedByBase | System.Boolean | editable | 
+HasAccompanyingVelocityProperty | System.Boolean | editable | 
+IsShared | System.Boolean | editable | 
+IsTunneling | System.Boolean | read-only | 
+Name | System.String | editable | 
+OverridingPropertyType | System.String | editable | <NONE>; int; long; string; float
+PreferredDisplayerTypeName | System.String | editable | 
+Scope | FlatRedBall.Glue.SaveClasses.Scope | editable | 
+SetByDerived | System.Boolean | editable | 
+SourceFile | FlatRedBall.Glue.SaveClasses.ReferencedFileReference | editable | 
+SourceObject | System.String | editable | <NONE>; SpriteInstance; Texture; Waves; Wildcard
+Summary | System.String | editable | 
+Type | System.String | editable | float; float?; decimal; decimal?; string; bool; bool?; int; int?; double; byte; long; Microsoft.Xna.Framework.Color; Microsoft.Xna.Framework.Graphics.Texture2D; Microsoft.Xna.Framework.Input.Keys; .DataTypes.EnemyInfo; .DataTypes.Notes; .DataTypes.Waves; Entities.EnemyType
+TypeConverter | System.String | editable | <default>; Comma Separating; Minutes:Seconds; Minutes:Seconds.Hundredths
+VariableDefinition | FlatRedBall.Glue.Elements.VariableDefinition | editable | 
+# variable: defined by base
+Category | System.String | editable | 
+CreatesEvent | System.Boolean | editable | 
+CreatesProperty | System.Boolean | editable | 
+CustomGetForcedOptionsFunc | System.Func`2[FlatRedBall.Glue.SaveClasses.GlueElement,System.Collections.Generic.List`1[System.String]] | editable | 
+DefaultValue | System.Single | editable | 
+DefinedByBase | System.Boolean | editable | 
+HasAccompanyingVelocityProperty | System.Boolean | editable | 
+IsShared | System.Boolean | editable | 
+IsTunneling | System.Boolean | read-only | 
+Name | System.String | editable | 
+PreferredDisplayerTypeName | System.String | editable | 
+SetByDerived | System.Boolean | editable | 
+SourceFile | FlatRedBall.Glue.SaveClasses.ReferencedFileReference | editable | 
+Summary | System.String | editable | 
+Type | System.String | read-only | 
+VariableDefinition | FlatRedBall.Glue.Elements.VariableDefinition | editable | 
+# variable: screen string
+Category | System.String | editable | 
+CreatesEvent | System.Boolean | editable | 
+CreatesProperty | System.Boolean | editable | 
+CustomGetForcedOptionsFunc | System.Func`2[FlatRedBall.Glue.SaveClasses.GlueElement,System.Collections.Generic.List`1[System.String]] | editable | 
+DefaultValue | System.String | editable | 
+DefinedByBase | System.Boolean | editable | 
+HasAccompanyingVelocityProperty | System.Boolean | editable | 
+IsShared | System.Boolean | editable | 
+IsTunneling | System.Boolean | read-only | 
+Name | System.String | editable | 
+OverridingPropertyType | System.String | editable | <NONE>; int; long; string; float
+PreferredDisplayerTypeName | System.String | editable | 
+Scope | FlatRedBall.Glue.SaveClasses.Scope | editable | 
+SetByDerived | System.Boolean | editable | 
+SourceFile | FlatRedBall.Glue.SaveClasses.ReferencedFileReference | editable | 
+SourceObject | System.String | editable | <NONE>; Animations; Background; Unused
+Summary | System.String | editable | 
+Type | System.String | editable | float; float?; decimal; decimal?; string; bool; bool?; int; int?; double; byte; long; Microsoft.Xna.Framework.Color; Microsoft.Xna.Framework.Graphics.Texture2D; Microsoft.Xna.Framework.Input.Keys; .DataTypes.EnemyInfo; .DataTypes.Notes; .DataTypes.Waves; Entities.EnemyType
+VariableDefinition | FlatRedBall.Glue.Elements.VariableDefinition | editable | 

@@ -36,10 +36,10 @@ namespace FlatRedBall.Glue.FormHelpers
         private static NamedObjectPropertyGridDisplayer mNosDisplayer = new NamedObjectPropertyGridDisplayer();
         private static StateSavePropertyGridDisplayer mStateSaveDisplayer = new StateSavePropertyGridDisplayer();
         private static StateSaveCategoryPropertyGridDisplayer mStateSaveCategoryDisplayer = new StateSaveCategoryPropertyGridDisplayer();
-        private static CustomVariablePropertyGridDisplayer mCustomVariableDisplayer = new CustomVariablePropertyGridDisplayer();
+        private static CustomVariablePropertyGridDisplayer mCustomVariableDisplayer;
         private static EntitySavePropertyGridDisplayer mEntitySaveDisplayer = new EntitySavePropertyGridDisplayer();
         private static ScreenSavePropertyGridDisplayer mScreenSaveDisplayer = new ScreenSavePropertyGridDisplayer();
-        private static ReferencedFileSavePropertyGridDisplayer mReferencedFileSaveDisplay = new ReferencedFileSavePropertyGridDisplayer();
+        private static ReferencedFileSavePropertyGridDisplayer mReferencedFileSaveDisplay;
         private static EventResponseSavePropertyGridDisplayer mEventResponseSaveDisplayer = new EventResponseSavePropertyGridDisplayer();
 
 
@@ -48,6 +48,8 @@ namespace FlatRedBall.Glue.FormHelpers
 
 		public static void Initialize(System.Windows.Forms.PropertyGrid propertyGrid)
         {
+            mCustomVariableDisplayer = new CustomVariablePropertyGridDisplayer(Services.Builder.Get<EditorProperties.CustomVariablePropertyModel>());
+            mReferencedFileSaveDisplay = new ReferencedFileSavePropertyGridDisplayer(Services.Builder.Get<EditorProperties.ReferencedFileSavePropertyModel>());
 
             mNosDisplayer.RefreshOnTimer = false;
             mStateSaveDisplayer.RefreshOnTimer = false;

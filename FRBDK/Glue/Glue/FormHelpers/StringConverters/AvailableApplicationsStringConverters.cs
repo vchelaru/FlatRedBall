@@ -19,19 +19,12 @@ namespace FlatRedBall.Glue.GuiDisplay
 			return true;
 		}
 
-		List<string> stringToReturn = new List<string>();
 		public override StandardValuesCollection
 					 GetStandardValues(ITypeDescriptorContext context)
 		{
-			stringToReturn.Clear();
-            stringToReturn.AddRange(Facades.FacadeContainer.Self.ApplicationSettings.AvailableApplications);//  EditorData.FileAssociationSettings.AvailableApplications);
-			stringToReturn.Add("New Application...");
-
-
-			StandardValuesCollection svc = new StandardValuesCollection(stringToReturn);
-
-			return svc;
-		} 
+			return new StandardValuesCollection(EditorProperties.ReferencedFileSavePropertyModel
+				.GetApplicationOptions(Facades.FacadeContainer.Self.ApplicationSettings).ToList());
+		}
 
 
 	}

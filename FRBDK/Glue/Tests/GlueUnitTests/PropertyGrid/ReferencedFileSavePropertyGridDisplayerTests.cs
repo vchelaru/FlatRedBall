@@ -1,7 +1,9 @@
 using System;
+using FlatRedBall.Glue.EditorProperties;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.FormHelpers.PropertyGrids;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.Services;
 using GlueUnitTests.TestSupport;
 using Shouldly;
 
@@ -35,7 +37,7 @@ public class ReferencedFileSavePropertyGridDisplayerTests : IDisposable
         screen.ReferencedFiles.Add(rfs);
         ObjectFinder.Self.GlueProject.Screens.Add(screen);
 
-        var displayer = new ReferencedFileSavePropertyGridDisplayer();
+        var displayer = new ReferencedFileSavePropertyGridDisplayer(Builder.Get<ReferencedFileSavePropertyModel>());
         displayer.Instance = rfs;
 
         displayer.GetPropertyGridMember(nameof(ReferencedFileSave.IsSharedStatic)).ShouldNotBeNull();
@@ -49,7 +51,7 @@ public class ReferencedFileSavePropertyGridDisplayerTests : IDisposable
         entity.ReferencedFiles.Add(rfs);
         ObjectFinder.Self.GlueProject.Entities.Add(entity);
 
-        var displayer = new ReferencedFileSavePropertyGridDisplayer();
+        var displayer = new ReferencedFileSavePropertyGridDisplayer(Builder.Get<ReferencedFileSavePropertyModel>());
         displayer.Instance = rfs;
 
         displayer.GetPropertyGridMember(nameof(ReferencedFileSave.IsSharedStatic)).ShouldBeNull();
@@ -61,7 +63,7 @@ public class ReferencedFileSavePropertyGridDisplayerTests : IDisposable
         var rfs = new ReferencedFileSave { Name = "GlobalContent/Test.png" };
         ObjectFinder.Self.GlueProject.GlobalFiles.Add(rfs);
 
-        var displayer = new ReferencedFileSavePropertyGridDisplayer();
+        var displayer = new ReferencedFileSavePropertyGridDisplayer(Builder.Get<ReferencedFileSavePropertyModel>());
         displayer.Instance = rfs;
 
         displayer.GetPropertyGridMember(nameof(ReferencedFileSave.IsSharedStatic)).ShouldBeNull();
@@ -86,7 +88,7 @@ public class ReferencedFileSavePropertyGridDisplayerTests : IDisposable
             ObjectFinder.Self.GlueProject.GlobalFiles.Add(rfs);
         }
 
-        return new ReferencedFileSavePropertyGridDisplayer { Instance = rfs };
+        return new ReferencedFileSavePropertyGridDisplayer(Builder.Get<ReferencedFileSavePropertyModel>()) { Instance = rfs };
     }
 
     [Fact]

@@ -25,7 +25,7 @@ public class SetFilePropertyCommandTests
     static readonly byte[] Wav = Convert.FromBase64String(
         "UklGRjQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YRAAAAAAAAAAAAAAAAAAAAAAAAAA");
 
-    const string Csv ="Name (string, required),Speed (float)\r\nSlow,1\r\nFast,5\r\n";
+    const string Csv = "\"Name (string, required)\",Speed (float)\r\nSlow,1\r\nFast,5\r\n";
 
     [StaFact]
     public void SetFileProperty_ShouldLoadAnEntityPngOnlyWhenReferenced()

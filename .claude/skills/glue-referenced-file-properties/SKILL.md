@@ -23,7 +23,7 @@ holds every container-type, extension and state rule:
 
 | Grid | File | Exclusion mechanism |
 | --- | --- | --- |
-| Legacy WinForms | `Glue/FormHelpers/PropertyGrids/ReferencedFileSavePropertyGridDisplayer.cs` (`UpdateIncludedAndExcluded`) | loops `GetHiddenMemberNames()` calling `ExcludeMember(...)`, then adds its own extras |
+| Legacy WinForms (and GlueCli `set-file-property`) | `Glue/EditorProperties/ReferencedFileSavePropertyModel.cs` (`GetProperties`), rendered by `ReferencedFileSavePropertyGridDisplayer` | excludes `GetHiddenMemberNames()`, then adds its own extras (value lists, image size, wildcard read-only) |
 | WPF "Settings (Preview)" | `OfficialPlugins/PropertyGrid/ReferencedFileSaveSettingsLogic.cs` (`GetMembersToIgnore`, used by `MainPropertyGridPlugin.ShowPropertiesForReferencedFileSave`) | the shared set plus the WPF-only ignores |
 
 The WPF grid ignores `[Browsable(false)]`, so a member that must stay hidden there has to be in the shared set.
