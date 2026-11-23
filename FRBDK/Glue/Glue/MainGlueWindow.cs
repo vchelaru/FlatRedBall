@@ -344,10 +344,8 @@ public partial class MainGlueWindow : Form, IMainGlueWindow
         var startupPath = FileManager.GetDirectory(System.Reflection.Assembly.GetExecutingAssembly().Location);
 
         AvailableAssetTypes.Self.Initialize(startupPath);
-        FlatRedBall.Glue.Parsing.TypeManager.EnsureTypeResolutionSeamWired();
-        FlatRedBall.Glue.Controls.DialogService.EnsureErrorReportingSeamWired();
-        FlatRedBall.Glue.Plugins.PluginManager.EnsurePluginSeamWired();
-        FlatRedBall.Glue.Managers.BuildToolAssociationManager.EnsureBuildToolAssociationSeamWired();
+        // Shared with the headless host so the two startups wire the same seams.
+        FlatRedBall.Glue.Headless.GlueHeadlessHost.WireGlueCommonSeams();
 
         // Plugins may evaluate projects in StartUp, so MSBUILD_EXE_PATH must be final first.
         MsBuildEnvironmentStep.EnsureCompleted();

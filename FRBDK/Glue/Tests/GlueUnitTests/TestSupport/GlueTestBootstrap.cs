@@ -22,88 +22,18 @@ using OfficialPlugins.CollisionPlugin;
 using OfficialPlugins.ScreenPlugin;
 using OfficialPlugins.MonoGameContent;
 using TileGraphicsPlugin;
-using Glue;
+using FlatRedBall.Glue.Headless;
 
 namespace GlueUnitTests.TestSupport;
 
 /// <summary>
-/// One-time, process-wide bootstrap that mirrors the handful of static/DI registrations Glue.exe's real
-/// startup (Program.cs / MainGlueWindow.cs) performs before GlueCommands.Self/GlueState.Self are usable.
-/// None of this is a fake or a mock - it is the same calls production makes, just run in-process for a
-/// test host instead of a live WinForms app:
-///  - <see cref="Builder"/> wires up the app's lightweight DI container (GluxCommands, ElementCommands,
-///    etc. all resolve through it).
-///  - The legacy <see cref="Container"/> (EditorObjects.IoC) is a second, older service locator that
-///    several command classes (GenerateCodeCommands, VisualStudioProject, ...) still read from directly.
-///  - <see cref="FlatRedBall.Glue.ProjectManager"/>.Initialize sets up CodeProjectHelper, used by any
-///    code-file-adding path (e.g. AddScreen).
-///  - <see cref="FileWatchManager"/>.Initialize sets up the self-save-suppression list that
-///    IgnoreNextChangeOnFile writes to.
-///  - <see cref="AvailableAssetTypes"/>.Initialize populates <see cref="AvailableAssetTypes.CommonAtis"/>
-///    (Camera/Text/Sprite/Polygon/etc.) from the same Content/ContentTypes.csv that MainGlueWindow reads -
-///    this is CSV-driven and needs no plugins, unlike the per-plugin ATIs below. Guarded on
-///    <c>AvailableAssetTypes.Self.AdditionalExtensionsToTreatAsAssets == null</c>, not on
-///    <c>CommonAtis == null</c>: when running the full test suite, something upstream of this bootstrap
-///    (outside test code - not yet root-caused) already leaves <c>CommonAtis</c> non-null the first time
-///    this method runs, which made the old <c>CommonAtis == null</c> guard skip calling
-///    <c>Initialize</c> on <c>Self</c> entirely, leaving <c>Self.AdditionalExtensionsToTreatAsAssets</c>
-///    permanently null - surfaced as a NullReferenceException deep in
-///    <c>FileCommands.IsContent</c>/<c>GluxCommands.AddSingleFileTo</c>, which only a real "add a csv
-///    ReferencedFileSave" call chain reaches. Guarding on the exact field this bootstrap needs to have set,
-///    rather than a same-method side effect that can apparently already be true from elsewhere, is correct
-///    regardless of that upstream cause.
-///  - <see cref="FlatRedBall.Glue.Reflection.ExposedVariableManager"/>.Initialize populates the reflected
-///    list of PositionedObject members (X/Y/Z/Velocity/etc.) that code generation uses to decide whether a
-///    CustomVariable is "exposing" an already-existing base member - a plain, UI-free reflection pass over
-///    <c>typeof(PositionedObject)</c>, the same call MainGlueWindow.cs makes. Without it,
-///    CustomVariableCodeGenerator NREs (ArgumentNullException on a null source list) the first time code
-///    generation runs for *any* entity - only reachable once something in a test drives real entity code
-///    generation (e.g. WizardProjectLogic.HandleAddPlayerEntity's AddEntityAsync), which is why this went
-///    unnoticed until the first end-to-end player-entity test.
-///  - <see cref="MainGlueWindow"/>.Self is given a <see cref="FakeMainGlueWindow"/> (only Program.cs ever
-///    constructs the real WinForms window, which this test host never does) so any code path reading
-///    MainGlueWindow.Self - PropertyGrid, HasErrorOccurred, Invoke/BeginInvoke, etc. - gets a harmless
-///    object instead of NRE-ing.
-///  - <see cref="GlueState.Find"/> is given a <see cref="FakeFindManager"/> (only ever set by
-///    MainTreeViewPlugin.StartUp, which this test host never runs) so code that asks for tree nodes gets
-///    "none" instead of NRE-ing. Selection itself does not need it: GlueState's Current* setters work by
-///    model object (GitHub issue #2268).
-///  - <see cref="PluginManager.TabControlViewModel"/> is given a real (not fake) <c>TabControlViewModel</c>
-///    - only ever set by MainPanelControl.xaml.cs's real WPF startup, which this test host never runs.
-///    It's a plain MVVM view model (ObservableCollection-backed tab containers, no live Dispatcher/message
-///    loop needed to construct), so any code path reading it - DialogCommands.FocusTab,
-///    GlueState.CurrentFocusedTabs, GlueCommands.RestoreTabs - gets a real, just permanently empty (no
-///    tabs ever added, since nothing here runs the real WPF tab UI) TabControlViewModel instead of NREing.
-///    Searching for a tab that was never added is not an error case for that code (e.g. FocusTab just
-///    finds nothing and returns).
-///  - The legacy <see cref="Container"/> is also given a real <c>EntitySaveSetPropertyLogic</c> (only ever
-///    set by MainGlueWindow.cs's real startup) so <c>ElementCommands.ReactToPropertyChanged</c> - the path
-///    any "flip an Implements* flag on an EntitySave" call goes through, e.g. ImplementsICollidable - can
-///    resolve it instead of throwing "container does not contain an entry".
-///  - The legacy <see cref="Container"/> is also given a real
-///    <see cref="FlatRedBall.Glue.SetVariable.NamedObjectSetVariableLogic"/> (only ever set by
-///    MainGlueWindow.cs's real startup) so any "a NamedObjectSave's ExposedInDerived/instance name/property
-///    changed" path - e.g. GluxCommands.AddNewNamedObjectToAsync's ExposedInDerived notification - can
-///    resolve it instead of throwing "container does not contain an entry". Its constructor only reads
-///    from the Builder DI container (already built above), no live UI needed.
-///  - The legacy <see cref="Container"/> is also given a real
-///    <see cref="FlatRedBall.Glue.Errors.GlueErrorManager"/> (only ever set by MainGlueWindow.cs's real
-///    startup) so <c>PluginBase.AddErrorReporter</c> - called from a real plugin's <c>StartUp</c>, e.g.
-///    <see cref="PluginManager.RegisterPluginForTesting"/> - can resolve it instead of throwing "container
-///    does not contain an entry". A plain in-memory list, no live UI needed.
-///  - <see cref="TaskManager.SynchronousMode"/> is forced on, process-wide, for the lifetime of the test
-///    run (set here, first, before anything else touches <see cref="TaskManager.Self"/>). Individual tests
-///    still flip it in their own constructor/Dispose for documentation purposes, but if it were left at its
-///    default of false at first access, TaskManager's constructor spins up its real dedicated background
-///    thread, which then runs for the entire process - any *other*, unrelated test whose production code
-///    path enqueues work while SynchronousMode happens to be transiently false (e.g. between two tests that
-///    each toggle it locally) leaves that work to be picked up by this still-live background thread later,
-///    racing against whatever a completely different, currently-running test is doing on the main thread.
-///    This was observed as an intermittent NullReferenceException inside a shared, non-thread-safe
-///    List&lt;string&gt; (AvailableAssetTypes.Self.AdditionalExtensionsToTreatAsAssets) when running the
-///    full suite - not a bug in the plugin/production code under test, but in ever letting that background
-///    thread exist at all in a test host. Forcing it here means the thread is never spun up in the first
-///    place, for any test in the assembly.
+/// Test-side wrapper around <see cref="GlueHeadlessHost"/>, the shipped headless startup that runs the same
+/// static/DI registrations Glue.exe's real startup (Program.cs / MainGlueWindow.cs) performs before
+/// GlueCommands.Self/GlueState.Self are usable. <see cref="GlueHeadlessHost"/>'s doc comment lists what each
+/// step sets up and why. This class adds only what is test-specific: locating the repo's
+/// <c>Glue/Content/ContentTypes.csv</c> from the test output folder, recording dialog messages for tests
+/// to assert on, the <see cref="ErrorRecordingPlugin"/>, and opt-in registration of individual official
+/// plugins.
 ///
 /// Any test that drives production code through GlueCommands.Self/GlueState.Self (rather than calling a
 /// pure static method directly) needs this. Call <see cref="EnsureInitialized"/> once per test.
@@ -111,12 +41,10 @@ namespace GlueUnitTests.TestSupport;
 internal static class GlueTestBootstrap
 {
     static readonly object _lock = new();
-    static bool _initialized;
     static bool _collisionPluginAssetTypesRegistered;
     static bool _collisionPluginRegisteredWithPluginManager;
     static bool _gumPluginStandardElementsInitialized;
     static bool _gumPluginCodeGeneratorsInitialized;
-    static bool _headlessProjectLoadReady;
     static bool _gumPluginRegisteredWithPluginManager;
     static bool _tiledPluginRegisteredWithPluginManager;
     static bool _screenPluginRegisteredWithPluginManager;
@@ -132,132 +60,17 @@ internal static class GlueTestBootstrap
     public static List<string> RecordedDialogMessages { get; } = new();
 
     /// <summary>
-    /// The GlueCommon seams MainGlueWindow wires at startup, in the same order. GlueCommon can't reference
-    /// Glue.csproj, so each of these points a GlueCommon static at its Glue implementation before any
-    /// project-load code reads it. Public so a test can clear one seam and re-run exactly the startup
-    /// wiring, proving startup (not some earlier caller in the process) is what populates it.
+    /// <see cref="GlueHeadlessHost.EnsureInitialized"/>, with Glue's startup path pointed at the repo's
+    /// <c>Glue</c> folder, since the test output folder has no <c>Content/ContentTypes.csv</c>.
     /// </summary>
-    public static void WireGlueCommonSeams()
-    {
-        FlatRedBall.Glue.Parsing.TypeManager.EnsureTypeResolutionSeamWired();
-        FlatRedBall.Glue.Controls.DialogService.EnsureErrorReportingSeamWired();
-        FlatRedBall.Glue.Plugins.PluginManager.EnsurePluginSeamWired();
-        FlatRedBall.Glue.Managers.BuildToolAssociationManager.EnsureBuildToolAssociationSeamWired();
-    }
-
-    public static void EnsureInitialized()
-    {
-        lock (_lock)
-        {
-            if (_initialized)
-            {
-                return;
-            }
-            _initialized = true;
-
-            // Must run before any other line here (or in any test): see the SynchronousMode bullet above.
-            TaskManager.SynchronousMode = true;
-
-            // Must also run before anything constructs a WinForms control. WinForms installs a
-            // WindowsFormsSynchronizationContext on a thread the first time a control is created there -
-            // FakeMainGlueWindow's PropertyGrid below, the MenuStrip and plugin toolbars in
-            // EnsureHeadlessProjectLoadReady. Once it exists, async continuations post back to it, and it
-            // only runs them while a message loop pumps. No test host runs one. Combined with
-            // SynchronousMode - whose RunSynchronously blocks the calling thread on the awaited task - the
-            // first plugin that awaits during a real project load deadlocks the entire run: one blocked
-            // thread, no child process, nothing else executing, and no timeout anywhere. Sending
-            // continuations to the thread pool instead is what every non-STA test already gets.
-            WindowsFormsSynchronizationContext.AutoInstall = false;
-            SynchronizationContext.SetSynchronizationContext(null);
-
-            if (Builder.App == null)
-            {
-                new Builder().Build();
-            }
-
-            Container.Set<IGlueCommands>(GlueCommands.Self);
-            Container.Set<IGlueState>(GlueState.Self);
-
-            if (FlatRedBall.Glue.ProjectManager.CodeProjectHelper == null)
-            {
-                FlatRedBall.Glue.ProjectManager.Initialize();
-            }
-
-            FileWatchManager.Initialize();
-
-            if (AvailableAssetTypes.Self.AdditionalExtensionsToTreatAsAssets == null)
-            {
-                AvailableAssetTypes.Self.Initialize(FindGlueStartupPath());
-            }
-
-            WireGlueCommonSeams();
-
-            // MainGlueWindow.cs makes this call at startup. It fills the absolute/relative table
-            // (X -> RelativeX) that codegen reads to emit `if (X.Parent == null) ... else ...RelativeX`.
-            // Skipped, in-memory codegen tests generate text real Glue never does, and change output
-            // once any test initializes the engine in the same process (#2429).
-            FlatRedBall.Instructions.InstructionManager.Initialize();
-
-            if (FlatRedBall.Glue.Reflection.ExposedVariableManager.PositionedObjectMembers == null)
-            {
-                FlatRedBall.Glue.Reflection.ExposedVariableManager.Initialize();
-            }
-
-            // Populates the built-in CustomVariable type converters ("Minutes:Seconds", etc.), the same call
-            // MainGlueWindow.cs makes at startup. Only reachable once a real project containing a variable
-            // with a TypeConverter is generated: CustomVariableCodeGenerator NREs in TypeConverterHelper.Convert
-            // on the null converter table. Worth knowing how that failure presents - CodeWriter.GenerateCode is
-            // an async Task that GenerateAllCodeSync calls without awaiting, so the exception is captured into
-            // a discarded Task and lost. The symptom is an empty .Generated.cs (the placeholder from
-            // CreateGeneratedFileIfNecessary) for that one element, no error output anywhere, and every later
-            // step for it (e.g. its factory) silently skipped.
-            FlatRedBall.Glue.TypeConversions.TypeConverterHelper.InitializeClasses();
-
-            MainGlueWindow.Self ??= new FakeMainGlueWindow();
-            GlueState.Self.Find ??= new FakeFindManager();
-
-            // Headless: no dialogs, no load window, and no plugin views. Selection through GlueState runs
-            // every registered plugin's selection handler for real (GitHub issue #2268), and a plugin that
-            // builds its WPF view on selection needs a UI thread this host doesn't have - so plugins skip
-            // the view (not the view model) when this is off, the way MainCollisionPlugin does.
-            GlueGui.ShowGui = false;
-
-            if (PluginManager.TabControlViewModel == null)
-            {
-                PluginManager.SetTabs(new TabControlViewModel());
-            }
-
-            Container.Set(new FlatRedBall.Glue.SetVariable.EntitySaveSetPropertyLogic());
-            Container.Set(new FlatRedBall.Glue.SetVariable.NamedObjectSetVariableLogic());
-            Container.Set(new FlatRedBall.Glue.Errors.GlueErrorManager());
-        }
-    }
+    public static void EnsureInitialized() => GlueHeadlessHost.EnsureInitialized(FindGlueStartupPath);
 
     /// <summary>
-    /// Opt-in, on top of <see cref="EnsureInitialized"/>: everything a headless host needs before
-    /// <see cref="FlatRedBall.Glue.IO.ProjectLoader"/>.<c>LoadProject</c> can run a real, checked-in game
-    /// project end to end (deserialize the .gluj, dispatch ReactToLoadedGlux to registered plugins, then
-    /// GenerateAllCode). Nothing here is a fake - it is the same set-up Glue.exe's own startup performs:
-    ///  - <see cref="GlueGui.ShowGui"/> is already off (<see cref="EnsureInitialized"/>), so
-    ///    <c>ProjectLoader.PrepareInitializationWindow</c> skips constructing <c>InitializationWindowWpf</c>
-    ///    (constructing a WPF Window, not just showing it, needs a live WPF app) and every
-    ///    <c>GlueGui.ShowMessageBox</c>/<c>TryShowDialog</c> is a no-op rather than a modal dialog on the
-    ///    developer's actual desktop.
-    ///  - <see cref="DialogService.ShowMessageImpl"/> pointed at <see cref="RecordedDialogMessages"/>. That
-    ///    seam is *not* covered by ShowGui - several production paths call DialogService directly - so
-    ///    without it a load that hits an error path pops a real modal and wedges the run.
-    ///  - <see cref="MainGlueWindow"/>.<c>SetMsBuildEnvironmentVariable</c>, Glue's real SDK discovery. It
-    ///    points MSBUILD_EXE_PATH at a compatible SDK; without it <c>Microsoft.Build.Evaluation.Project</c> cannot
-    ///    resolve the SDK imports of any SDK-style .csproj ("The SDK
-    ///    'Microsoft.NET.SDK.WorkloadAutoImportPropsLocator' specified could not be found"), which is what
-    ///    previously forced <see cref="TestVisualStudioProjectFactory"/> to use a bare non-SDK-style project.
-    ///  - A real WinForms <see cref="MenuStrip"/> handed to <see cref="GlueGui"/> and to
-    ///    <see cref="PluginManager"/>, then the embedded <c>MainMenuStripPlugin</c> registered to populate it
-    ///    with the top-level items (File/Edit/Project/Content/...) that other plugins hang their menu items
-    ///    off of. <c>PluginBase.AddMenuItemTo</c> reads <c>GlueGui.MenuStrip.Items</c> directly, so a plugin
-    ///    whose StartUp adds a menu item (e.g. MainGumPlugin's "New Gum Project") NREs without this.
-    ///    Constructing a MenuStrip needs no message loop, same as FakeMainGlueWindow's real PropertyGrid.
-    ///  - <c>ProjectLoader.Self.Initialize</c>, normally called from MainGlueWindow's IoC set-up.
+    /// Opt-in, on top of <see cref="EnsureInitialized"/>: <see cref="GlueHeadlessHost.EnsureProjectLoadReady"/>,
+    /// so <see cref="FlatRedBall.Glue.IO.ProjectLoader"/>.<c>LoadProject</c> can run a real, checked-in game
+    /// project end to end. Dialog messages and unhandled UI-thread exceptions go to
+    /// <see cref="RecordedDialogMessages"/>, and an <see cref="ErrorRecordingPlugin"/> is registered before
+    /// the embedded plugins so it captures anything they print while starting up.
     ///
     /// <b>Must be called from an STA thread</b> - use <c>[StaFact]</c>, not <c>[Fact]</c>. Plugin StartUp
     /// methods build real WPF toolbars (MainTiledPluginClass.CreateToolbar and friends), which throw
@@ -267,136 +80,24 @@ internal static class GlueTestBootstrap
     {
         EnsureInitialized();
 
-        lock (_lock)
-        {
-            if (_headlessProjectLoadReady)
-            {
-                return;
-            }
-            _headlessProjectLoadReady = true;
-
-            // EnsureInitialized turns AutoInstall off, but it only runs once and this method may be the
-            // first thing a different (STA) test thread calls, so clear this thread's context too.
-            SynchronizationContext.SetSynchronizationContext(null);
-
-            DialogService.ShowMessageImpl = message => RecordedDialogMessages.Add(message);
-
-            EnsureMsBuildEnvironmentVariable();
-
-            // A plugin's ReactToLoadedGlux handler is often `async void` (MainGumPlugin.HandleGluxLoad is),
-            // and an exception in one of those does not reach PluginManager's try/catch - it gets posted to
-            // the synchronization context, where WinForms turns it into a modal "Unhandled exception" dialog
-            // on the developer's actual desktop and the plugin container still reports no failure. Recording
-            // these makes that class of failure visible to the test instead of a popup nobody expects.
-            // Attaching a handler is enough: WinForms only falls back to its own dialog when there is none.
-            // (SetUnhandledExceptionMode is not an option - EnsureInitialized has already constructed
-            // FakeMainGlueWindow's PropertyGrid on this thread, and the mode is fixed once a control exists.)
-            Application.ThreadException += (_, e) =>
-                RecordedDialogMessages.Add("Unhandled exception on the UI thread: " + e.Exception);
-
-            // Only GlueGui gets the menu strip. PluginManager must NOT: its PluginCommand dispatch reads
-            // its own mMenuStrip and, when that is non-null, marshals every plugin call through
-            // mMenuStrip.Invoke - which needs a created window handle and a running message loop, so calls
-            // silently never execute and CallPluginMethod returns null (exactly the "HasGum returns null"
-            // symptom this issue is about). Leaving PluginManager's null keeps its existing
-            // "no live menu strip means run inline" guard doing the right thing.
-            GlueGui.Initialize(new MenuStrip());
-
-            // Registered before the rest so it captures anything they print while starting up.
-            PluginManager.RegisterPluginForTesting(new ErrorRecordingPlugin());
-
-            RegisterEmbeddedPlugins();
-
-            FlatRedBall.Glue.IO.ProjectLoader.Self.Initialize(GlueCommands.Self.ProjectCommands);
-        }
+        GlueHeadlessHost.EnsureProjectLoadReady(
+            message => RecordedDialogMessages.Add(message),
+            new ErrorRecordingPlugin());
     }
 
     /// <summary>
-    /// Registers every <see cref="EmbeddedPlugin"/> in the Glue assembly, in <c>DesiredOrder</c>, the same
-    /// set and order <c>PluginManager.LoadPlugins</c> gives them in Glue.exe.
-    ///
-    /// These are not optional extras: big pieces of what looks like "core" code generation are embedded
-    /// plugins. <c>ICollidablePlugins</c> is what makes an entity's generated class implement
-    /// <c>ICollidable</c>, and <c>FactoryPlugin</c> is what writes the <c>*Factory.Generated.cs</c> files.
-    /// Skip them and a project regenerates almost completely, then fails to compile in ways that read like
-    /// engine or sample bugs (CS0311 on a collision relationship, a missing factory file) rather than like
-    /// missing plugins.
-    ///
-    /// Reflecting over the assembly is not the directory scan this test infrastructure deliberately avoids
-    /// (see <see cref="EnsureGameProjectPluginsRegistered"/>). These are compile-time-known types in an
-    /// assembly this test project already references; MEF finds exactly the same set. What is avoided is
-    /// discovering *external* plugin DLLs off disk.
-    /// </summary>
-    static void RegisterEmbeddedPlugins()
-    {
-        var embeddedPlugins = typeof(EmbeddedPlugin).Assembly
-            .GetTypes()
-            .Where(type => typeof(EmbeddedPlugin).IsAssignableFrom(type)
-                && !type.IsAbstract
-                && type.GetConstructor(Type.EmptyTypes) != null)
-            .Select(type => (EmbeddedPlugin)Activator.CreateInstance(type)!)
-            .OrderBy(plugin => plugin.DesiredOrder)
-            .ToList();
-
-        var failures = new List<string>();
-
-        foreach (var plugin in embeddedPlugins)
-        {
-            if (SkippedEmbeddedPlugins.Contains(plugin.GetType().FullName))
-            {
-                continue;
-            }
-
-            try
-            {
-                PluginManager.RegisterPluginForTesting(plugin);
-            }
-            catch (Exception e)
-            {
-                failures.Add($"{plugin.GetType().FullName}: {e.InnerException?.Message ?? e.Message}");
-            }
-        }
-
-        if (failures.Count > 0)
-        {
-            throw new InvalidOperationException(
-                "Embedded plugins failed to start in the test host. Either seam whatever they need (the way " +
-                "this bootstrap already does for the menu strip and toolbar tray) or add them to " +
-                nameof(SkippedEmbeddedPlugins) + " with a reason:" +
-                Environment.NewLine + string.Join(Environment.NewLine, failures));
-        }
-    }
-
-    /// <summary>
-    /// Embedded plugins deliberately not started in the test host, each with the reason. Keep this as short
-    /// as possible - anything skipped is codegen or behavior a gold project silently does not get.
-    /// </summary>
-    static readonly HashSet<string> SkippedEmbeddedPlugins = new()
-    {
-        // Its StartUp builds a WPF control whose XAML cannot resolve its resources without a real WPF
-        // application context ("Provide value on TypeConverterMarkupExtension threw an exception"). It only
-        // manages synced (multi-platform) projects, which a single-project gold project does not have, so
-        // nothing it would contribute to code generation is lost.
-        "FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects.MainPlugin",
-    };
-
-    /// <summary>
-    /// Points MSBUILD_EXE_PATH at a compatible SDK by running Glue.exe's own discovery, unless it is already set.
-    ///
-    /// Called before every gold-project load rather than once per process on purpose: production clears this
-    /// variable around its own nested dotnet invocations (CompilerPlugin's Compiler.cs, SyncedProjects'
-    /// ProjectListEntry.xaml.cs), so another test in the same run can leave it unset. Without it,
-    /// Microsoft.Build.Evaluation cannot resolve the SDK imports of any SDK-style .csproj and the load fails
-    /// with "The SDK 'Microsoft.NET.SDK.WorkloadAutoImportPropsLocator' specified could not be found".
+    /// <see cref="GlueHeadlessHost.EnsureMsBuildEnvironmentVariable"/>, running <see cref="EnsureInitialized"/>
+    /// first only when the variable still needs setting. Call before anything touches MSBuild; see the
+    /// host's comment for why it must precede the first evaluation and why it is safe to call repeatedly.
     /// </summary>
     public static void EnsureMsBuildEnvironmentVariable()
     {
-        if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("MSBUILD_EXE_PATH")))
+        if (!GlueHeadlessHost.IsMsBuildEnvironmentVariableSet)
         {
             // SetMsBuildEnvironmentVariable reports through GlueCommands.Self, whose type initializer needs
             // the DI container, so the base bootstrap has to have run first.
             EnsureInitialized();
-            MainGlueWindow.SetMsBuildEnvironmentVariable();
+            GlueHeadlessHost.EnsureMsBuildEnvironmentVariable();
         }
     }
 
