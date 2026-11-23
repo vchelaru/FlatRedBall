@@ -21,10 +21,13 @@ locator not registered, `ProjectManager.CodeProjectHelper` null, `FileWatchManag
 None of this is faked. `GlueTestBootstrap` delegates to the shipped `GlueHeadlessHost`
 (`FRBDK/Glue/Glue/Headless/`), which runs the same production init calls Glue.exe makes outside a live
 WinForms app; its doc comment lists exactly what it registers. The bootstrap keeps only test-side pieces:
-the repo `ContentTypes.csv` path, `RecordedDialogMessages`, `ErrorRecordingPlugin`, and the per-plugin
-`Ensure*` helpers. Startup changes that a headless tool also needs belong in the host.
+the repo `ContentTypes.csv` path, `RecordedDialogMessages`, `ErrorRecordingPlugin` (a subclass of the host's
+`HeadlessOutputRecorder`, sharing its static lists), and the per-plugin `Ensure*` helpers. Startup changes that
+a headless tool also needs belong in the host. GlueCli (`FRBDK/Glue/GlueCli`) uses the host's other entry,
+`EnsureProjectLoadReadyWithInstalledPlugins`, which loads plugins by MEF scan and must never run in the test
+process; its tests pass their own `IGlueCliHost` instead.
 
-`RegisterPluginForTesting` adds a plugin to both `mPluginContainers` *and* `ImportedPlugins`. Those back
+`RegisterPlugin` adds a plugin to both `mPluginContainers` *and* `ImportedPlugins`. Those back
 different dispatch paths: `CallPluginMethod` walks the containers, but every `ReactTo*` event enumerates
 `ImportedPlugins`. A plugin in only the first answers direct calls and is never notified of anything —
 which reads as "the plugin ran and chose to do nothing," not as a wiring bug.

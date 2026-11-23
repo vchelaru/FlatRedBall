@@ -75,15 +75,22 @@ into logic and UI, plus a cross-platform UI toolkit. This plan does not cover ei
 - What happens when the CLI saves a project that Glue's editor has open? The editor's file watch should
   reload it, but that is unverified, and the editor may have unsaved changes. The CLI may need to detect
   an open editor and refuse or warn.
-- Where the project lives. The proposal is `FRBDK/Glue/GlueCli/`, added to `Glue with All.sln`.
-- How it ships: alongside Glue.exe in the release, as a dotnet tool, or both.
+- How it ships: alongside Glue.exe in the release, as a dotnet tool, or both. It already builds into
+  Glue's output folder, so a release zip of that folder carries `GlueCli.exe`.
+
+## Where the project lives
+
+`FRBDK/Glue/GlueCli/GlueCli.csproj`, in `Glue with All.sln`. It builds into Glue's own output folder
+(`Glue/bin/<Configuration>/`), so `Content/ContentTypes.csv`, the `Plugins` folder the plugin projects copy
+themselves into, and every dependency resolve exactly as they do for Glue.exe. `GlueCliRunner` holds the
+commands; tests call it in-process with their own `IGlueCliHost`.
 
 ## Status
 
 | Step | State | PR |
 | --- | --- | --- |
-| 1. Headless host | Not started | |
-| 2. `check` / `regen` | Not started | |
+| 1. Headless host | Done | #2470 |
+| 2. `check` / `regen` | Done | #2471 |
 | 3. Edit commands | Not started | |
 | 4. Agent skill | Not started | |
 | 5. Extraction | Ongoing, separate from the CLI | |

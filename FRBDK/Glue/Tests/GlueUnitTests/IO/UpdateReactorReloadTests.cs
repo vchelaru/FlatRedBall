@@ -105,7 +105,7 @@ public class UpdateReactorReloadTests : IDisposable
                 if (!_registered)
                 {
                     _registered = true;
-                    PluginManager.RegisterPluginForTesting(new OutputRecordingPlugin());
+                    PluginManager.RegisterPlugin(new OutputRecordingPlugin());
                 }
             }
         }

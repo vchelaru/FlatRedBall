@@ -61,9 +61,13 @@ namespace FlatRedBall.Glue.Settings
             }
         }
 
-        public static PreferenceSettings LoadSettings()
+        public static PreferenceSettings LoadSettings() =>
+            LoadSettings(FileManager.UserApplicationDataForThisApplication);
+
+        /// <param name="settingsDirectory">The folder holding the settings file, with a trailing separator.</param>
+        public static PreferenceSettings LoadSettings(string settingsDirectory)
         {
-            var fileName = FileManager.UserApplicationDataForThisApplication + Filename;
+            var fileName = settingsDirectory + Filename;
 
             if (!FileManager.FileExists(fileName))
             {

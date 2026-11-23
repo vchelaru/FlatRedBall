@@ -50,6 +50,7 @@ internal static class GlueTestBootstrap
     static bool _screenPluginRegisteredWithPluginManager;
     static bool _entityInputMovementPluginRegisteredWithPluginManager;
     static bool _axisAlignedRectanglePluginRegisteredWithPluginManager;
+    static bool _errorReportingPluginRegisteredWithPluginManager;
 
     /// <summary>
     /// Every message production code sent through <see cref="DialogService"/> since
@@ -103,7 +104,7 @@ internal static class GlueTestBootstrap
 
     /// <summary>
     /// Opt-in: constructs a real <see cref="MainGumPlugin"/> and registers it with
-    /// <see cref="PluginManager.RegisterPluginForTesting"/>, running its real <c>StartUp</c>. This is what
+    /// <see cref="PluginManager.RegisterPlugin"/>, running its real <c>StartUp</c>. This is what
     /// makes <c>PluginManager.CallPluginMethod("Gum Plugin", "HasGum")</c> return an actual bool instead of
     /// null - the null is what silently compiles out every <c>#if HasGum</c> branch of the GlueControl
     /// embedded code, so a compile-based test would pass with the bug present (GitHub issue #1973).
@@ -123,7 +124,7 @@ internal static class GlueTestBootstrap
             }
             _gumPluginRegisteredWithPluginManager = true;
 
-            PluginManager.RegisterPluginForTesting(new MainGumPlugin());
+            PluginManager.RegisterPlugin(new MainGumPlugin());
         }
     }
 
@@ -154,14 +155,14 @@ internal static class GlueTestBootstrap
             }
             _tiledPluginRegisteredWithPluginManager = true;
 
-            PluginManager.RegisterPluginForTesting(new MainTiledPluginClass());
-            PluginManager.RegisterPluginForTesting(new MainContentPipelinePlugin());
+            PluginManager.RegisterPlugin(new MainTiledPluginClass());
+            PluginManager.RegisterPlugin(new MainContentPipelinePlugin());
         }
     }
 
     /// <summary>
     /// Opt-in: constructs a real <see cref="OfficialPlugins.AxisAlignedRectanglePlugin.MainAxisAlignedRectanglePlugin"/>
-    /// and registers it with <see cref="PluginManager.RegisterPluginForTesting"/>, running its real
+    /// and registers it with <see cref="PluginManager.RegisterPlugin"/>, running its real
     /// <c>StartUp</c>. That StartUp adds the XVelocity/YVelocity/ZVelocity <c>VariableDefinition</c>s to the
     /// AxisAlignedRectangle ATI - without it, any entity with an AxisAlignedRectangle NamedObjectSave whose
     /// CustomVariables tunnel one of those (e.g. a collision-driven "bounce" entity) fails code generation
@@ -177,13 +178,13 @@ internal static class GlueTestBootstrap
             }
             _axisAlignedRectanglePluginRegisteredWithPluginManager = true;
 
-            PluginManager.RegisterPluginForTesting(new OfficialPlugins.AxisAlignedRectanglePlugin.MainAxisAlignedRectanglePlugin());
+            PluginManager.RegisterPlugin(new OfficialPlugins.AxisAlignedRectanglePlugin.MainAxisAlignedRectanglePlugin());
         }
     }
 
     /// <summary>
     /// Opt-in: constructs a real <see cref="MainScreenPlugin"/> and registers it with
-    /// <see cref="PluginManager.RegisterPluginForTesting"/>, running its real <c>StartUp</c>.
+    /// <see cref="PluginManager.RegisterPlugin"/>, running its real <c>StartUp</c>.
     ///
     /// Its whole StartUp is one <c>VariableDefinition</c> added to the Screen ATI, which is easy to read as
     /// editor-only polish and is not: <c>DefaultLayer</c> is declared <c>UsesCustomCodeGeneration</c>, and
@@ -203,13 +204,13 @@ internal static class GlueTestBootstrap
             }
             _screenPluginRegisteredWithPluginManager = true;
 
-            PluginManager.RegisterPluginForTesting(new MainScreenPlugin());
+            PluginManager.RegisterPlugin(new MainScreenPlugin());
         }
     }
 
     /// <summary>
     /// Opt-in: constructs a real <see cref="MainEntityInputMovementPlugin"/> and registers it with
-    /// <see cref="PluginManager.RegisterPluginForTesting"/>, running its real <c>StartUp</c>. This is what
+    /// <see cref="PluginManager.RegisterPlugin"/>, running its real <c>StartUp</c>. This is what
     /// writes a platformer/top-down project's <c>Platformer/*.Generated.cs</c> and <c>TopDown/*.Generated.cs</c>
     /// files - which the .csproj still lists, so a project regenerated without it fails to build with
     /// CS2001 on the missing sources rather than with anything naming a plugin.
@@ -224,7 +225,7 @@ internal static class GlueTestBootstrap
             }
             _entityInputMovementPluginRegisteredWithPluginManager = true;
 
-            PluginManager.RegisterPluginForTesting(new MainEntityInputMovementPlugin());
+            PluginManager.RegisterPlugin(new MainEntityInputMovementPlugin());
         }
     }
 
@@ -254,7 +255,7 @@ internal static class GlueTestBootstrap
     /// <summary>
     /// Opt-in, separate from <see cref="EnsureInitialized"/> and <see cref="EnsureCollisionPluginAssetTypesRegistered"/>:
     /// constructs a real <see cref="MainCollisionPlugin"/> and registers it with
-    /// <see cref="PluginManager.RegisterPluginForTesting"/>, running its real <c>StartUp</c> (asset types,
+    /// <see cref="PluginManager.RegisterPlugin"/>, running its real <c>StartUp</c> (asset types,
     /// code generators, view model, and - the piece this exists for - wiring
     /// <see cref="FlatRedBall.Glue.Plugins.PluginBase.ReactToCreateCollisionRelationshipsBetween"/> to the
     /// real <c>CollidableNamedObjectController.CreateCollisionRelationshipBetweenObjects</c> handler).
@@ -276,7 +277,26 @@ internal static class GlueTestBootstrap
             _collisionPluginRegisteredWithPluginManager = true;
 
             RegisteredCollisionPlugin = new MainCollisionPlugin();
-            PluginManager.RegisterPluginForTesting(RegisteredCollisionPlugin);
+            PluginManager.RegisterPlugin(RegisteredCollisionPlugin);
+        }
+    }
+
+    /// <summary>
+    /// Opt-in: registers a real <see cref="OfficialPlugins.ErrorReportingPlugin.MainErrorReportingPlugin"/>,
+    /// whose StartUp adds the NamedObjectSave, ReferencedFileSave, CustomVariable and element-inheritance
+    /// error reporters - the ones that report a broken reference in a project's JSON.
+    /// </summary>
+    public static void EnsureErrorReportingPluginRegisteredWithPluginManager()
+    {
+        lock (_lock)
+        {
+            if (_errorReportingPluginRegisteredWithPluginManager)
+            {
+                return;
+            }
+            _errorReportingPluginRegisteredWithPluginManager = true;
+
+            PluginManager.RegisterPlugin(new OfficialPlugins.ErrorReportingPlugin.MainErrorReportingPlugin());
         }
     }
 

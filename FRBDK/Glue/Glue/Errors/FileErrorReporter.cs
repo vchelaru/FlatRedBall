@@ -10,8 +10,7 @@ namespace FlatRedBall.Glue.Errors
     public static class FileErrorReporter
     {
         static List<string> mFilesAlreadyReported = new List<string>();
-        // used to invoke.
-        static Form mForm;
+        static bool mInitialized;
 
         static Timer mTimer;
 
@@ -19,7 +18,7 @@ namespace FlatRedBall.Glue.Errors
 
         public static void Initialize(Form form)
         {
-            mForm = form;
+            mInitialized = true;
             mTimer = new Timer();
             mTimer.Tick += mTimer_Tick;
             mTimer.Interval = 250;
@@ -27,9 +26,29 @@ namespace FlatRedBall.Glue.Errors
 
         }
 
+        /// <summary>
+        /// For a host with no message loop, where the WinForms timer would never tick. Errors queue until
+        /// <see cref="FlushPendingErrors"/>.
+        /// </summary>
+        public static void InitializeHeadless()
+        {
+            mInitialized = true;
+        }
+
         static void mTimer_Tick(object sender, EventArgs e)
         {
             mTimer.Stop();
+            FlushPendingErrors();
+            mTimer.Start();
+
+        }
+
+        /// <summary>
+        /// Reports every queued error to the dialog service and the error output. The editor's timer calls
+        /// this every 250ms.
+        /// </summary>
+        public static void FlushPendingErrors()
+        {
             lock (mFilesAlreadyReported)
             {
                 while (mErrorMessageAndFiles.Count != 0)
@@ -42,8 +61,6 @@ namespace FlatRedBall.Glue.Errors
 
                 }
             }
-            mTimer.Start();
-
         }
 
         public static void ReportError(string fileName, string error, bool forceError)
@@ -53,9 +70,14 @@ namespace FlatRedBall.Glue.Errors
             // June 15, 2024 
             // Sometimes there is a CSV error reported here with an empty string. Not sure why,
             // so I have a breakpoint here to see if I can figure it out.
-            System.Diagnostics.Debugger.Break();
+            // Only with a debugger attached: without one, Debugger.Break asks the user to attach a debugger
+            // (a dialog that blocks a headless host) or ends the process.
+            if (System.Diagnostics.Debugger.IsAttached)
+            {
+                System.Diagnostics.Debugger.Break();
+            }
 
-            if (mForm == null)
+            if (!mInitialized)
             {
                 throw new Exception("Initialize must be called first");
             }

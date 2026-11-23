@@ -1517,3 +1517,16 @@ per-plugin `Ensure*` helpers). `MainGlueWindow` calls `GlueHeadlessHost.WireGlue
 editor and headless startup cannot wire different seams. The rest of the two startups is not shared yet:
 the editor's IoC set-up registers more objects than the host, so pointing both at one method would change
 behavior.
+
+### 2026-11-22 — GlueCli `check` and `regen`
+
+Step 2 of `glue-cli.md`. `FRBDK/Glue/GlueCli` is a console app built into Glue's output folder.
+`GlueHeadlessHost.EnsureProjectLoadReadyWithInstalledPlugins` loads plugins the way Glue.exe does (MEF scan,
+plus the Glue assembly added to `AddGlobalOnInitialize` since the entry assembly is no longer Glue), reads
+the editor's settings read-only, and returns plugins that failed to start. Shared with the editor:
+`AddPropertyValuePairAssemblies`, `AddErrorReporters`. Smaller seams: `PluginManager.RegisterPluginForTesting`
+became `RegisterPlugin`; `PluginManager.Initialize` can skip applying pending plugin installs;
+`PluginManager.PluginTypesToSkip`; `FileErrorReporter.InitializeHeadless`/`FlushPendingErrors`;
+`GlueErrorManager.GetAllCurrentErrors`; `HeadlessMainGlueWindow` implements `ISynchronizeInvoke` (the live
+edit plugin uses the window as a timer synchronizing object); `ErrorRecordingPlugin` became a subclass of
+the shipped `HeadlessOutputRecorder`.

@@ -19,7 +19,7 @@ public class FrbSourcePluginSyncedProjectDropdownTests
         GlueTestBootstrap.EnsureHeadlessProjectLoadReady();
 
         var plugin = new FrbSourcePlugin();
-        FlatRedBall.Glue.Plugins.PluginManager.RegisterPluginForTesting(plugin);
+        FlatRedBall.Glue.Plugins.PluginManager.RegisterPlugin(plugin);
 
         var mainProject = TestVisualStudioProjectFactory.CreateInNewTempDirectory(out var mainDirectory, "MainProject");
         var syncedProject = TestVisualStudioProjectFactory.CreateInNewTempDirectory(out var syncedDirectory, "SyncedProject");

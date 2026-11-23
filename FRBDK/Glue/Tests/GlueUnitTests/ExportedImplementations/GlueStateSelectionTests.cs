@@ -127,7 +127,7 @@ public class GlueStateSelectionTests : IDisposable
         {
             if (!_registered)
             {
-                PluginManager.RegisterPluginForTesting(new SelectionRecordingPlugin());
+                PluginManager.RegisterPlugin(new SelectionRecordingPlugin());
                 _registered = true;
             }
         }
