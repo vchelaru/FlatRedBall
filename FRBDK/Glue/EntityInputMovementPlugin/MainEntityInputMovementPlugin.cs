@@ -204,6 +204,12 @@ namespace EntityInputMovementPlugin
 
         private void HandleItemsSelected(List<ITreeNode> list)
         {
+            // The tab and its view models are UI only. Headless (GlueCli, tests) there is nothing to show (#2476).
+            if (!FlatRedBall.Glue.AutomatedGlue.GlueGui.ShowGui)
+            {
+                return;
+            }
+
             bool shouldShow = GlueState.Self.CurrentEntitySave != null &&
                 // So this only shows if the entity itself is selected:
                 list.Any(item => item?.Tag == GlueState.Self.CurrentEntitySave);

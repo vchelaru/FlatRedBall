@@ -88,7 +88,7 @@ public class SetVariableCommandTests
     {
         using var project = GoldProject.CopyOutOfRepo("Samples/Beefball");
         var screenFile = Path.Combine(project.Root, "Beefball", "Screens", "GameScreen.glsj");
-        var screenBefore = File.ReadAllText(screenFile);
+        var screenBefore = File.ReadAllBytes(screenFile);
 
         var (exitCode, output) = Run("set-variable", project.Root, "--element", "GameScreen", "--object", "Wall1",
             "--variable", "Width", "--value", "wide", "--json");
@@ -97,7 +97,8 @@ public class SetVariableCommandTests
         var result = Parse(output);
         result.EditFailures.ShouldHaveSingleItem().ShouldBe("'wide' is not a valid float for Wall1.Width.");
         result.Edit.ShouldBeNull();
-        File.ReadAllText(screenFile).ShouldBe(screenBefore);
+        result.FilesWritten.ShouldNotContain("Screens/GameScreen.glsj");
+        File.ReadAllBytes(screenFile).ShouldBe(screenBefore);
     }
 
     [StaFact]

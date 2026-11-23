@@ -51,6 +51,7 @@ internal static class GlueTestBootstrap
     static bool _entityInputMovementPluginRegisteredWithPluginManager;
     static bool _axisAlignedRectanglePluginRegisteredWithPluginManager;
     static bool _errorReportingPluginRegisteredWithPluginManager;
+    static bool _propertyGridPluginRegisteredWithPluginManager;
 
     /// <summary>
     /// Every message production code sent through <see cref="DialogService"/> since
@@ -278,6 +279,27 @@ internal static class GlueTestBootstrap
 
             RegisteredCollisionPlugin = new MainCollisionPlugin();
             PluginManager.RegisterPlugin(RegisteredCollisionPlugin);
+        }
+    }
+
+    /// <summary>
+    /// Opt-in: registers a real <see cref="OfficialPlugins.VariableDisplay.MainPropertyGridPlugin"/>, which
+    /// reacts to every selection. GlueCli tests register it so a command that selects its target sees the
+    /// same selection side effects as the real exe (GitHub issue #2476). It decides what to show from the
+    /// selected tree node, so a test also needs a <see cref="GlueState.Find"/> that returns one; see
+    /// <see cref="GlueUnitTests.Cli.ElementTreeNodeFinder"/>.
+    /// </summary>
+    public static void EnsurePropertyGridPluginRegisteredWithPluginManager()
+    {
+        lock (_lock)
+        {
+            if (_propertyGridPluginRegisteredWithPluginManager)
+            {
+                return;
+            }
+            _propertyGridPluginRegisteredWithPluginManager = true;
+
+            PluginManager.RegisterPlugin(new OfficialPlugins.VariableDisplay.MainPropertyGridPlugin());
         }
     }
 
