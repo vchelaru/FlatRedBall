@@ -327,11 +327,9 @@ public partial class MainGlueWindow : Form, IMainGlueWindow
         SetScreenSubMessage("Initializing Property Grids");
         PropertyGridRightClickHelper.Initialize();
 
+        // InstructionManager and TypeConverter tables. Shared with the headless host.
         SetScreenSubMessage("Initializing InstructionManager");
-        InstructionManager.Initialize();
-
-        SetScreenSubMessage("Initializing TypeConverter");
-        TypeConverterHelper.InitializeClasses();
+        FlatRedBall.Glue.Headless.GlueHeadlessHost.InitializeCodeGenerationTables();
 
         SetScreenMessage("Loading Settings");
 
@@ -619,23 +617,9 @@ public partial class MainGlueWindow : Form, IMainGlueWindow
     // Shared with GlueCli's startup.
     private static void AddErrorReporters() => FlatRedBall.Glue.Headless.GlueHeadlessHost.AddErrorReporters();
 
-    private static void AddObjectsToIocContainer()
-    {
-        // obsolete, this shouldn't be used - we are moving to builder.cs
-        EditorObjects.IoC.Container.Set(new SetPropertyManager());
-        EditorObjects.IoC.Container.Set(new NamedObjectSetVariableLogic());
-        EditorObjects.IoC.Container.Set(new StateSaveCategorySetVariableLogic());
-
-        EditorObjects.IoC.Container.Set(new EntitySaveSetPropertyLogic());
-        EditorObjects.IoC.Container.Set(new ScreenSaveSetVariableLogic());
-
-        EditorObjects.IoC.Container.Set(new PluginUpdater());
-
-        EditorObjects.IoC.Container.Set<IGlueState>(GlueState.Self);
-        EditorObjects.IoC.Container.Set<IGlueCommands>(GlueCommands.Self);
-
-        EditorObjects.IoC.Container.Set(new GlueErrorManager());
-    }
+    // The legacy container is obsolete (we are moving to Builder.cs). Shared with the headless host so the
+    // two startups register the same types.
+    private static void AddObjectsToIocContainer() => FlatRedBall.Glue.Headless.GlueHeadlessHost.RegisterContainerServices();
 
     private static async Task LoadProjectConsideringSettingsAndArgs(InitializationWindowWpf initializationWindow)
     {

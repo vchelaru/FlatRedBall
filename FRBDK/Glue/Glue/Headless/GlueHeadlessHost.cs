@@ -80,21 +80,8 @@ namespace FlatRedBall.Glue.Headless;
 ///    tabs ever added, since nothing here runs the real WPF tab UI) TabControlViewModel instead of NREing.
 ///    Searching for a tab that was never added is not an error case for that code (e.g. FocusTab just
 ///    finds nothing and returns).
-///  - The legacy <see cref="Container"/> is also given a real <c>EntitySaveSetPropertyLogic</c> (only ever
-///    set by MainGlueWindow.cs's real startup) so <c>ElementCommands.ReactToPropertyChanged</c> - the path
-///    any "flip an Implements* flag on an EntitySave" call goes through, e.g. ImplementsICollidable - can
-///    resolve it instead of throwing "container does not contain an entry".
-///  - The legacy <see cref="Container"/> is also given a real
-///    <see cref="FlatRedBall.Glue.SetVariable.NamedObjectSetVariableLogic"/> (only ever set by
-///    MainGlueWindow.cs's real startup) so any "a NamedObjectSave's ExposedInDerived/instance name/property
-///    changed" path - e.g. GluxCommands.AddNewNamedObjectToAsync's ExposedInDerived notification - can
-///    resolve it instead of throwing "container does not contain an entry". Its constructor only reads
-///    from the Builder DI container (already built above), no live UI needed.
-///  - The legacy <see cref="Container"/> is also given a real
-///    <see cref="FlatRedBall.Glue.Errors.GlueErrorManager"/> (only ever set by MainGlueWindow.cs's real
-///    startup) so <c>PluginBase.AddErrorReporter</c> - called from a real plugin's <c>StartUp</c>, e.g.
-///    <see cref="PluginManager.RegisterPlugin"/> - can resolve it instead of throwing "container
-///    does not contain an entry". A plain in-memory list, no live UI needed.
+///  - The legacy <see cref="Container"/> is filled by <see cref="RegisterContainerServices"/>, the same
+///    method MainGlueWindow.cs calls, so the editor and a headless host register the same types.
 ///  - <see cref="TaskManager.SynchronousMode"/> is forced on, process-wide, for the lifetime of the
 ///    process (set here, first, before anything else touches <c>TaskManager.Self</c>). Individual
 ///    tests still flip it in their own constructor/Dispose for documentation purposes, but if it were left
@@ -181,8 +168,7 @@ public static class GlueHeadlessHost
                 new Builder().Build();
             }
 
-            Container.Set<IGlueCommands>(GlueCommands.Self);
-            Container.Set<IGlueState>(GlueState.Self);
+            RegisterContainerServices();
 
             if (FlatRedBall.Glue.ProjectManager.CodeProjectHelper == null)
             {
@@ -201,26 +187,12 @@ public static class GlueHeadlessHost
 
             WireGlueCommonSeams();
 
-            // MainGlueWindow.cs makes this call at startup. It fills the absolute/relative table
-            // (X -> RelativeX) that codegen reads to emit `if (X.Parent == null) ... else ...RelativeX`.
-            // Skipped, in-memory codegen tests generate text real Glue never does, and change output
-            // once any test initializes the engine in the same process (#2429).
-            FlatRedBall.Instructions.InstructionManager.Initialize();
-
             if (FlatRedBall.Glue.Reflection.ExposedVariableManager.PositionedObjectMembers == null)
             {
                 FlatRedBall.Glue.Reflection.ExposedVariableManager.Initialize();
             }
 
-            // Populates the built-in CustomVariable type converters ("Minutes:Seconds", etc.), the same call
-            // MainGlueWindow.cs makes at startup. Only reachable once a real project containing a variable
-            // with a TypeConverter is generated: CustomVariableCodeGenerator NREs in TypeConverterHelper.Convert
-            // on the null converter table. Worth knowing how that failure presents - CodeWriter.GenerateCode is
-            // an async Task that GenerateAllCodeSync calls without awaiting, so the exception is captured into
-            // a discarded Task and lost. The symptom is an empty .Generated.cs (the placeholder from
-            // CreateGeneratedFileIfNecessary) for that one element, no error output anywhere, and every later
-            // step for it (e.g. its factory) silently skipped.
-            FlatRedBall.Glue.TypeConversions.TypeConverterHelper.InitializeClasses();
+            InitializeCodeGenerationTables();
 
             MainGlueWindow.Self ??= new HeadlessMainGlueWindow();
             GlueState.Self.Find ??= new HeadlessFindManager();
@@ -235,12 +207,61 @@ public static class GlueHeadlessHost
             {
                 PluginManager.SetTabs(new TabControlViewModel());
             }
-
-            Container.Set(new FlatRedBall.Glue.SetVariable.EntitySaveSetPropertyLogic());
-            Container.Set(new FlatRedBall.Glue.SetVariable.ScreenSaveSetVariableLogic());
-            Container.Set(new FlatRedBall.Glue.SetVariable.NamedObjectSetVariableLogic());
-            Container.Set(new FlatRedBall.Glue.Errors.GlueErrorManager());
         }
+    }
+
+    /// <summary>
+    /// Every type the last <see cref="RegisterContainerServices"/> call put in the legacy <see cref="Container"/>,
+    /// in registration order. Empty until startup runs.
+    /// </summary>
+    public static IReadOnlyList<Type> RegisteredContainerServiceTypes { get; private set; } = Array.Empty<Type>();
+
+    /// <summary>
+    /// Fills the legacy <see cref="Container"/>. Glue.exe and every headless host call this one method, so a
+    /// type registered for the editor is registered headless too: a missing entry throws "container does not
+    /// contain an entry" the first time a command reaches it. Nothing here needs a live window, so there is no
+    /// editor-only half. A registration that does need one goes in MainGlueWindow behind its own named call,
+    /// and <c>ContainerRegistrationTests</c> must be told about it.
+    /// Must run after the <see cref="Builder"/> DI container is built (NamedObjectSetVariableLogic reads it)
+    /// and before <see cref="AddErrorReporters"/>.
+    /// </summary>
+    public static void RegisterContainerServices()
+    {
+        var registered = new List<Type>();
+
+        void Set<T>(T instance)
+        {
+            Container.Set(instance);
+            registered.Add(typeof(T));
+        }
+
+        Set(new FlatRedBall.Glue.SetVariable.SetPropertyManager());
+        Set(new FlatRedBall.Glue.SetVariable.NamedObjectSetVariableLogic());
+        Set(new FlatRedBall.Glue.SetVariable.StateSaveCategorySetVariableLogic());
+        Set(new FlatRedBall.Glue.SetVariable.EntitySaveSetPropertyLogic());
+        Set(new FlatRedBall.Glue.SetVariable.ScreenSaveSetVariableLogic());
+        // Only the plugin-manager UI downloads plugins, but the class has no UI of its own.
+        Set(new PluginUpdater());
+        Set<IGlueState>(GlueState.Self);
+        Set<IGlueCommands>(GlueCommands.Self);
+        Set(new GlueErrorManager());
+
+        RegisteredContainerServiceTypes = registered;
+    }
+
+    /// <summary>
+    /// Static tables code generation reads, filled the same way by Glue.exe and every headless host:
+    ///  - InstructionManager's absolute/relative table (X -> RelativeX), which codegen reads to emit
+    ///    <c>if (X.Parent == null) ... else ...RelativeX</c>. Skipped, in-memory codegen tests generate text
+    ///    real Glue never does, and change output once any test initializes the engine in the process (#2429).
+    ///  - The built-in CustomVariable type converters ("Minutes:Seconds", etc.). Skipped, CustomVariableCodeGenerator
+    ///    NREs in TypeConverterHelper.Convert, and because GenerateAllCodeSync does not await CodeWriter.GenerateCode
+    ///    the only symptom is an empty .Generated.cs for that element.
+    /// </summary>
+    public static void InitializeCodeGenerationTables()
+    {
+        FlatRedBall.Instructions.InstructionManager.Initialize();
+        FlatRedBall.Glue.TypeConversions.TypeConverterHelper.InitializeClasses();
     }
 
     /// <summary>
