@@ -119,6 +119,6 @@ commands; tests call it in-process with their own `IGlueCliHost`.
 | --- | --- | --- |
 | 1. Headless host | Done | #2470 |
 | 2. `check` / `regen` | Done | #2471 |
-| 3. Edit commands | In progress | add-object: #2472, set-variable: #2474, add-file: #2473, add-entity/add-screen: #2475, rename: #2477, delete: #2478 |
+| 3. Edit commands | In progress | add-object: #2472, set-variable: #2474, add-file: #2473, add-entity/add-screen: #2475, rename: #2477, delete: #2478, set-property: #2483 |
 | 4. Agent skill | Not started | |
 | 5. Extraction | Ongoing, separate from the CLI | |
