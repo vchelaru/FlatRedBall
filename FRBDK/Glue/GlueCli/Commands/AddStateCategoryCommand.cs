@@ -11,7 +11,7 @@ namespace GlueCli.Commands;
 /// <c>add-state-category</c>: adds a state category through ElementCommands.AddStateSaveCategoryAsync, the call
 /// the tree view's "Add State Category" dialog ends in. A new category excludes every variable; --include and
 /// --exclude then move variables into it the way the State Data tab's include/exclude buttons do
-/// (ElementCommands.CanVariableBeIncludedInStates, then PluginManager.ReactToStateCategoryExcludedVariablesChangedAsync).
+/// (ElementCommands.CanVariableBeIncludedInStates, then ElementCommands.SetStateCategoryExcludedVariablesAsync).
 /// </summary>
 public static class AddStateCategoryCommand
 {
@@ -164,12 +164,8 @@ With --json, ""edit"" holds {element, category, includedVariables, excludedVaria
 
         if (toInclude.Count > 0)
         {
-            // StateCategoryViewModel.HandleExcludedVariablesChanged
-            category.ExcludedVariables.RemoveAll(toInclude.Contains);
-            foreach (var included in toInclude)
-            {
-                await PluginManager.ReactToStateCategoryExcludedVariablesChangedAsync(category, included, StateCategoryVariableAction.Included);
-            }
+            await GlueCommands.Self.GluxCommands.ElementCommands.SetStateCategoryExcludedVariablesAsync(category,
+                category.ExcludedVariables.Where(item => !toInclude.Contains(item)).ToList());
             GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
             await TaskManager.Self.WaitForAllTasksFinished();
         }

@@ -293,8 +293,8 @@ public class GoldProjectCompileTests
     // already references.
     //
     // FormsSampleProject has no Platformer entity of its own, so one is added here through the same real
-    // production path WizardProjectLogic uses (PluginManager.CallPluginMethod("Entity Input Movement
-    // Plugin", "MakeEntityPlatformer", ...) -> PlatformerPlugin.Controllers.MainController.Self.GetViewModel()
+    // production path WizardProjectLogic uses (EntityInputMovementCommands.MakeEntityPlatformer
+    // -> PlatformerPlugin.Controllers.MainController.Self.GetViewModel()
     // -> IsPlatformer = true - see EntityInputMovementTests for the same call chain) rather than by adding a
     // new checked-in gold project. Deliberately not TestProjectDesktopNet6, even though it already has real
     // Platformer entities: it has ~180 entities/screens covering unrelated Glue features, several of which

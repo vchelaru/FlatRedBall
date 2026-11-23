@@ -44,6 +44,15 @@ Some plugins call methods on other plugins **by method name** (string-based invo
 - Be especially careful around the **main plugin class** of any plugin — its public interface is the most likely target for cross-plugin calls.
 - Before renaming or removing a public method, search the codebase for string references to that method name, not just symbol references.
 
+### Typed command interfaces (the pattern to copy)
+
+When code outside a plugin (another plugin, GlueCli) needs an operation the plugin owns, or when GlueCli needs logic that sits in a view model, move the logic into a UI-free class and reach it through a typed interface instead of `PluginManager.CallPluginMethod` or a copy:
+
+- **Logic owned by Glue itself** goes on the existing command interfaces. Example: `IElementCommands.SetStateVariableValue` and `SetStateCategoryExcludedVariablesAsync`, which the State Data tab's `StateCategoryViewModel` and GlueCli's `set-state-variable`/`add-state-category` both call.
+- **Logic owned by a plugin** gets an interface in `Glue/Plugins/ExportedInterfaces/CommandInterfaces`, a property on `GlueCommands`, and an implementation in the plugin that the plugin assigns in `StartUp` (and clears in `ShutDown`). Callers null-check the property, since the plugin may not be loaded. Example: `IEntityInputMovementCommands`, which the wizard and `add-entity --platformer/--top-down` call.
+
+The view model keeps only view-model work (syncing its collections, choosing when to generate code and save); the shared method does the model change and the plugin notifications. Remaining `CallPluginMethod` uses (mostly "Compiler Plugin" output and run calls, "Gum Plugin" `HasGum`, "Error Window Plugin" `RefreshAllErrors`) are candidates for the same treatment.
+
 ## TreeViewPlugin — Refactoring Goals and Status
 
 The `TreeViewPlugin` is a self-contained plugin that owns the explorer panel (Screens / Entities / Global Content). It is the most active UI area of the editor and has a number of architectural issues.
@@ -1668,3 +1677,10 @@ State Data tab and GlueCli's `rename-state-category` call it. Validation stays w
 reports it through `context.Report`, so the description is the `edit` property of `--json`. Without
 `--element` it lists screens, entities and Global Content; with one it prints that element's own object
 tree, variables, states, events and files. It prints names as `CliLookup` resolves them. No Glue code changed.
+
+### 2026-11-23 — GlueCli shortcuts replaced with shared commands
+
+The state commands repeated the State Data tab's value and include steps, and `add-entity` and the wizard called
+the Entity Input Movement plugin by method name. Both now go through typed commands (see "Typed command
+interfaces" above): `IElementCommands.SetStateVariableValue` and `SetStateCategoryExcludedVariablesAsync`, and
+`GlueCommands.EntityInputMovementCommands`, which the plugin assigns at startup. No behavior change.

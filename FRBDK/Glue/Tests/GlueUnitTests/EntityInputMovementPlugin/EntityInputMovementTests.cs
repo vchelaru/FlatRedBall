@@ -18,27 +18,12 @@ using TopDownPlugin.ViewModels;
 // GlueUnitTests.* - same reasoning as GlueUnitTests.TiledPluginTests/GumPluginTests.
 namespace GlueUnitTests.EntityInputMovementPluginTests;
 
-// Follow-up to GitHub issue #1894 (reopened): WizardProjectLogic.HandleAddPlayerEntity's two call sites
-// (~lines 661/677) go through PluginManager.CallPluginMethod("Entity Input Movement Plugin",
-// "MakeEntityPlatformer"/"MakeEntityTopDown", playerEntity) - the same silent-no-op false-coverage risk
-// PRs #1901/#1902/#1903 fixed for the Collision/Gum/Tiled plugins.
-//
-// Unlike those three, MainEntityInputMovementPlugin.MakeEntityPlatformer/MakeEntityTopDown are NOT thin
-// forwarders to directly-callable logic - they route through the plugin's own `mainViewModel` field, which
-// is only populated by CreateMainView() (constructs a real WPF UserControl and calls this.CreateTab(...),
-// the exact PluginManager.TabControlViewModel-coupled path already flagged as out-of-scope in
-// REFACTORING.md from PR #1901). So this test does NOT call MainEntityInputMovementPlugin at all.
-//
-// Instead it calls what MakeEntityPlatformer/MakeEntityTopDown themselves delegate real work to:
+// Covers the logic behind GlueCommands.EntityInputMovementCommands, which WizardProjectLogic and GlueCli's
+// add-entity call. Most tests set BackingData + IsPlatformer/IsTopDown = true on
 // FlatRedBall.PlatformerPlugin.Controllers.MainController.Self.GetViewModel() /
-// TopDownPlugin.Controllers.MainController.Self.GetViewModel() - the same singleton view-model source the
-// plugin's own mainViewModel.PlatformerViewModel/TopDownViewModel is initialized from
-// (MainEntityInputMovementPlugin.CreateMainView). Setting BackingData + IsPlatformer/IsTopDown = true on
-// that view model fires the exact same PropertyChanged handler
-// (PlatformerPlugin.Controllers.MainController.HandleViewModelPropertyChanged /
-// TopDownPlugin.Controllers.MainController.HandleViewModelPropertyChanged) that production wires up in
-// GetViewModel() - real production logic, not a fake, just reached one layer below the WPF-view-owning
-// plugin class.
+// TopDownPlugin.Controllers.MainController.Self.GetViewModel(), which is what EntityInputMovementCommands
+// does: it fires the PropertyChanged handler (MainController.HandleViewModelPropertyChanged) that holds the
+// real logic. The EntityInputMovementCommands tests at the end go through the class itself.
 //
 // No MessageBox.Show/dialog in this call chain: verified by inspection of PlatformerPlugin/TopDownPlugin
 // (no MessageBox.Show anywhere in either plugin folder) and of
@@ -119,9 +104,7 @@ public class EntityInputMovementTests : IDisposable
 
         entity.ImplementsICollidable.ShouldBeFalse();
 
-        // The real logic behind WizardProjectLogic's
-        // PluginManager.CallPluginMethod("Entity Input Movement Plugin", "MakeEntityPlatformer", playerEntity)
-        // - see the class-level comment for why this bypasses MainEntityInputMovementPlugin itself.
+        // What EntityInputMovementCommands.MakeEntityPlatformer does.
         var viewModel = FlatRedBall.PlatformerPlugin.Controllers.MainController.Self.GetViewModel();
         viewModel.BackingData = entity;
         viewModel.IsPlatformer = true;
@@ -310,9 +293,7 @@ public class EntityInputMovementTests : IDisposable
 
         entity.ImplementsICollidable.ShouldBeFalse();
 
-        // The real logic behind WizardProjectLogic's
-        // PluginManager.CallPluginMethod("Entity Input Movement Plugin", "MakeEntityTopDown", playerEntity)
-        // - see the class-level comment for why this bypasses MainEntityInputMovementPlugin itself.
+        // What EntityInputMovementCommands.MakeEntityTopDown does.
         var viewModel = TopDownPlugin.Controllers.MainController.Self.GetViewModel();
         viewModel.BackingData = entity;
         viewModel.IsTopDown = true;
@@ -490,6 +471,41 @@ public class EntityInputMovementTests : IDisposable
     }
 
     #endregion
+
+    [Fact]
+    public void StartUp_ShouldRegisterEntityInputMovementCommands()
+    {
+        GlueTestBootstrap.EnsureEntityInputMovementPluginRegisteredWithPluginManager();
+
+        GlueCommands.Self.EntityInputMovementCommands.ShouldBeOfType<global::EntityInputMovementPlugin.Logic.EntityInputMovementCommands>();
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task EntityInputMovementCommands_MakeEntityPlatformer_ShouldMarkEntityAsPlatformer()
+    {
+        var entity = new EntitySave { Name = "Entities\\Player" };
+        GlueState.Self.CurrentGlueProject.Entities.Add(entity);
+        GlueState.Self.CurrentElement = entity;
+
+        new global::EntityInputMovementPlugin.Logic.EntityInputMovementCommands().MakeEntityPlatformer(entity);
+        await TaskManager.Self.WaitForAllTasksFinished();
+
+        entity.Properties.GetValue<bool>(nameof(PlatformerEntityViewModel.IsPlatformer)).ShouldBeTrue();
+        entity.ImplementsICollidable.ShouldBeTrue();
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task EntityInputMovementCommands_MakeEntityTopDown_ShouldMarkEntityAsTopDown()
+    {
+        var entity = new EntitySave { Name = "Entities\\Player" };
+        GlueState.Self.CurrentGlueProject.Entities.Add(entity);
+        GlueState.Self.CurrentElement = entity;
+
+        new global::EntityInputMovementPlugin.Logic.EntityInputMovementCommands().MakeEntityTopDown(entity);
+        await TaskManager.Self.WaitForAllTasksFinished();
+
+        entity.Properties.GetValue<bool>(nameof(TopDownEntityViewModel.IsTopDown)).ShouldBeTrue();
+    }
 
     private class InlineUiThreadMarshaller : IUiThreadMarshaller
     {

@@ -36,6 +36,7 @@ namespace EntityInputMovementPlugin
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
         {
+            GlueCommands.Self.EntityInputMovementCommands = null;
             return true;
         }
 
@@ -44,6 +45,7 @@ namespace EntityInputMovementPlugin
         public override void StartUp()
         {
             _projectCommands = Builder.Get<IProjectCommands>();
+            GlueCommands.Self.EntityInputMovementCommands = new Logic.EntityInputMovementCommands();
 
             base.RegisterCodeGenerator(new TopDownPlugin.CodeGenerators.EntityCodeGenerator());
             base.RegisterCodeGenerator(new FlatRedBall.PlatformerPlugin.Generators.EntityCodeGenerator());
@@ -293,27 +295,10 @@ namespace EntityInputMovementPlugin
             mainViewModel.PlatformerViewModel.IsPlatformer = true;
         }
 
-        // MakeEntityPlatformer and MakeEntityTopDown are called by name (the wizard, GlueCli). They use the
-        // controllers' view models, which are the ones mainViewModel holds once the tab exists (CreateMainView),
-        // because mainViewModel is null until the tab is first shown and always null headless.
-        public void MakeEntityPlatformer(EntitySave entity)
-        {
-            var viewModel = FlatRedBall.PlatformerPlugin.Controllers.MainController.Self.GetViewModel();
-            viewModel.BackingData = entity;
-            viewModel.IsPlatformer = true;
-        }
-
         public void MakeCurrentEntityTopDown()
         {
             mainViewModel.TopDownViewModel.BackingData = GlueState.Self.CurrentEntitySave;
             mainViewModel.TopDownViewModel.IsTopDown = true;
-        }
-
-        public void MakeEntityTopDown(EntitySave entity)
-        {
-            var viewModel = TopDownPlugin.Controllers.MainController.Self.GetViewModel();
-            viewModel.BackingData = entity;
-            viewModel.IsTopDown = true;
         }
     }
 }

@@ -45,6 +45,19 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         GeneralResponse CanVariableBeIncludedInStates(string variableName, GlueElement element);
 
+        /// <summary>
+        /// Replaces the variables <paramref name="category"/> excludes from its states with
+        /// <paramref name="excludedVariables"/>, then notifies plugins of each newly excluded and newly included
+        /// variable. Does not generate code or save. Returns whether the list changed.
+        /// </summary>
+        Task<bool> SetStateCategoryExcludedVariablesAsync(StateSaveCategory category, IEnumerable<string> excludedVariables);
+
+        /// <summary>
+        /// Sets the value <paramref name="state"/> gives <paramref name="variableName"/>, or removes it when
+        /// <paramref name="value"/> is null, then notifies plugins. Does not generate code or save.
+        /// </summary>
+        void SetStateVariableValue(StateSave state, StateSaveCategory category, string variableName, object value);
+
 
         #endregion
 

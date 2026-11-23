@@ -1389,6 +1389,49 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
         return GeneralResponse.SuccessfulResponse;
     }
 
+    public async Task<bool> SetStateCategoryExcludedVariablesAsync(StateSaveCategory category, IEnumerable<string> excludedVariables)
+    {
+        var newExcludedVariables = excludedVariables.ToList();
+        var newlyExcludedVariables = newExcludedVariables.Except(category.ExcludedVariables).ToArray();
+        var newlyIncludedVariables = category.ExcludedVariables.Except(newExcludedVariables).ToArray();
+
+        if (newlyExcludedVariables.Length == 0 && newlyIncludedVariables.Length == 0)
+        {
+            return false;
+        }
+
+        category.ExcludedVariables.Clear();
+        category.ExcludedVariables.AddRange(newExcludedVariables);
+
+        foreach (var newExclusion in newlyExcludedVariables)
+        {
+            await PluginManager.ReactToStateCategoryExcludedVariablesChangedAsync(category, newExclusion, StateCategoryVariableAction.Excluded);
+        }
+        foreach (var newInclusion in newlyIncludedVariables)
+        {
+            await PluginManager.ReactToStateCategoryExcludedVariablesChangedAsync(category, newInclusion, StateCategoryVariableAction.Included);
+        }
+        return true;
+    }
+
+    public void SetStateVariableValue(StateSave state, StateSaveCategory category, string variableName, object value)
+    {
+        if (value == null)
+        {
+            var existingInstruction = state.InstructionSaves.FirstOrDefault(item => item.Member == variableName);
+            if (existingInstruction != null)
+            {
+                state.InstructionSaves.Remove(existingInstruction);
+            }
+        }
+        else
+        {
+            state.SetValue(variableName, value);
+        }
+
+        PluginManager.ReactToStateVariableChanged(state, category, variableName);
+    }
+
     #endregion
 
     #region ReferencedFile
