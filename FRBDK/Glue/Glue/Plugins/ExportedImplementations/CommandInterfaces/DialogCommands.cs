@@ -561,6 +561,27 @@ partial class DialogCommands : IDialogCommands
             throw new NullReferenceException("The current element is null)");
         }
 
+        var viewModel = CreateAddVariableViewModel(container, variableType, tunnelingObject, tunneledVariableName);
+
+        var window = new AddVariableWindowWpf();
+        window.DataContext = viewModel;
+
+        var result = window.ShowDialog();
+
+        if (result == true)
+        {
+            HandleAddVariableOk(viewModel, container);
+        }
+    }
+
+    /// <summary>
+    /// The Add Variable window's view model with the window's defaults: SetByDerived checked, the categories the
+    /// element and its bases use, the first new-variable type, and IsStatic checked when every other variable is
+    /// static. GlueCli fills the same view model from flags.
+    /// </summary>
+    internal static AddCustomVariableViewModel CreateAddVariableViewModel(GlueElement container,
+        CustomVariableType variableType, string tunnelingObject, string tunneledVariableName)
+    {
         var viewModel = new AddCustomVariableViewModel(container)
         {
             SetByDerived = true,
@@ -595,25 +616,33 @@ partial class DialogCommands : IDialogCommands
             viewModel.IsStatic = true;
         }
 
-        var window = new AddVariableWindowWpf();
-        window.DataContext = viewModel;
-
-        var result = window.ShowDialog();
-
-        if (result == true)
-        {
-            HandleAddVariableOk(viewModel, container);
-        }
+        return viewModel;
     }
 
     private static async void HandleAddVariableOk(AddCustomVariableViewModel viewModel, GlueElement currentElement)
     {
-
         string resultName = viewModel.ResultName;
-        string failureMessage;
+        var failureMessage = GetAddVariableFailure(viewModel, currentElement);
 
-        bool didFailureOccur = IsVariableInvalid(viewModel, currentElement, out failureMessage);
+        if (failureMessage != null)
+        {
+            DialogService.ShowMessage(failureMessage);
+        }
+        else
+        {
+            // A block body so the lambda is a Func<Task>: AddAsync<T>(Func<T>) would take Task<CustomVariable> as
+            // its result and free the task slot before the add finished.
+            await TaskManager.Self.AddAsync(async () => { await AddVariableFromViewModelAsync(viewModel, currentElement); },
+                String.Format(L.Texts.VariableAddThroughUI, resultName));
+        }
+    }
 
+    /// <summary>
+    /// Why the Add Variable window's OK refuses <paramref name="viewModel"/>, or null when it accepts it.
+    /// </summary>
+    internal static string GetAddVariableFailure(AddCustomVariableViewModel viewModel, GlueElement currentElement)
+    {
+        bool didFailureOccur = IsVariableInvalid(viewModel, currentElement, out var failureMessage);
 
         if (!didFailureOccur)
         {
@@ -624,107 +653,103 @@ partial class DialogCommands : IDialogCommands
             }
         }
 
-        if (didFailureOccur)
-        {
-            DialogService.ShowMessage(failureMessage);
-        }
-        else
-        {
+        return didFailureOccur ? failureMessage : null;
+    }
 
-            await TaskManager.Self.AddAsync(async () =>
+    /// <summary>
+    /// Adds the variable <paramref name="viewModel"/> describes, as the Add Variable window's OK does once
+    /// <see cref="GetAddVariableFailure"/> accepts it. Returns the new variable, or null when a base element
+    /// already has a variable of that name which is not SetByDerived (shown as a message).
+    /// </summary>
+    internal static async Task<CustomVariable> AddVariableFromViewModelAsync(AddCustomVariableViewModel viewModel, GlueElement currentElement)
+    {
+        string resultName = viewModel.ResultName;
+
+        // See if there is already a variable in the base with this name
+        CustomVariable existingVariableInBase = currentElement.GetCustomVariableRecursively(resultName);
+
+        bool isDefinedByBase = false;
+        if (existingVariableInBase != null)
+        {
+            if (existingVariableInBase.SetByDerived)
             {
-                // See if there is already a variable in the base with this name
-                CustomVariable existingVariableInBase = currentElement.GetCustomVariableRecursively(resultName);
-
-                bool canCreate = true;
-                bool isDefinedByBase = false;
-                if (existingVariableInBase != null)
-                {
-                    if (existingVariableInBase.SetByDerived)
-                    {
-                        isDefinedByBase = true;
-                    }
-                    else
-                    {
-                        DialogService.ShowMessage(String.Format(L.Texts.VariableInBaseAlreadyExists, resultName));
-                        canCreate = false;
-                    }
-                }
-
-                if (canCreate)
-                {
-                    string type = viewModel.ResultType;
-                    string sourceObject = viewModel.SelectedTunneledObject;
-                    if(string.IsNullOrEmpty(sourceObject))
-                    {
-                        sourceObject = null;
-                    }
-                    string sourceObjectProperty = null;
-                    if (!string.IsNullOrEmpty(sourceObject))
-                    {
-                        sourceObjectProperty = viewModel.SelectedTunneledVariableName;
-                    }
-                    string overridingType = viewModel.SelectedOverridingType;
-                    if(overridingType == "<none>")
-                    {
-                        overridingType = null;
-                    }
-                    string typeConverter = viewModel.SelectedTypeConverter;
-
-                    var newVariable = new CustomVariable
-                    {
-                        Name = resultName
-                    };
-
-                    newVariable.Type = viewModel.IsList ? $"List<{type}>" : type;
-                    newVariable.SourceObject = sourceObject;
-                    newVariable.SourceObjectProperty = sourceObjectProperty;
-
-                    newVariable.IsShared = viewModel.IsStatic && 
-                        // User could have checked a source object after checking IsStatic 
-                        string.IsNullOrEmpty(sourceObject);
-
-                    if(!viewModel.IsStatic)
-                    {
-                        newVariable.SetByDerived = viewModel.SetByDerived;
-                    }
-
-                    newVariable.DefinedByBase = isDefinedByBase;
-
-
-
-                    if (!string.IsNullOrEmpty(overridingType))
-                    {
-                        newVariable.OverridingPropertyType = overridingType;
-                        newVariable.TypeConverter = typeConverter;
-                    }
-
-                    object defaultValue = null;
-
-                    newVariable.Summary = viewModel.NewVariableSummary;
-                    newVariable.Category = viewModel.NewVariableCategory;
-
-                    if (!string.IsNullOrEmpty(sourceObject))
-                    {
-                        var namedObjectSource = currentElement.GetNamedObjectRecursively(sourceObject);
-                        if (namedObjectSource != null)
-                        {
-                            var ati = namedObjectSource.GetAssetTypeInfo();
-
-                            var variableDefinition = ati?.VariableDefinitions.FirstOrDefault(item => item.Name == sourceObjectProperty);
-
-                            newVariable.Category = variableDefinition?.Category;
-
-                            defaultValue = namedObjectSource.GetCustomVariable(sourceObjectProperty)?.Value;
-                        }
-                    }
-
-                    newVariable.DefaultValue = defaultValue;
-
-                    await GlueCommands.Self.GluxCommands.ElementCommands.AddCustomVariableToElementAsync(newVariable, currentElement);
-                }
-            }, String.Format(L.Texts.VariableAddThroughUI, resultName));
+                isDefinedByBase = true;
+            }
+            else
+            {
+                DialogService.ShowMessage(String.Format(L.Texts.VariableInBaseAlreadyExists, resultName));
+                return null;
+            }
         }
+
+        string type = viewModel.ResultType;
+        string sourceObject = viewModel.SelectedTunneledObject;
+        if(string.IsNullOrEmpty(sourceObject))
+        {
+            sourceObject = null;
+        }
+        string sourceObjectProperty = null;
+        if (!string.IsNullOrEmpty(sourceObject))
+        {
+            sourceObjectProperty = viewModel.SelectedTunneledVariableName;
+        }
+        string overridingType = viewModel.SelectedOverridingType;
+        if(overridingType == "<none>")
+        {
+            overridingType = null;
+        }
+        string typeConverter = viewModel.SelectedTypeConverter;
+
+        var newVariable = new CustomVariable
+        {
+            Name = resultName
+        };
+
+        newVariable.Type = viewModel.IsList ? $"List<{type}>" : type;
+        newVariable.SourceObject = sourceObject;
+        newVariable.SourceObjectProperty = sourceObjectProperty;
+
+        newVariable.IsShared = viewModel.IsStatic &&
+            // User could have checked a source object after checking IsStatic
+            string.IsNullOrEmpty(sourceObject);
+
+        if(!viewModel.IsStatic)
+        {
+            newVariable.SetByDerived = viewModel.SetByDerived;
+        }
+
+        newVariable.DefinedByBase = isDefinedByBase;
+
+        if (!string.IsNullOrEmpty(overridingType))
+        {
+            newVariable.OverridingPropertyType = overridingType;
+            newVariable.TypeConverter = typeConverter;
+        }
+
+        object defaultValue = null;
+
+        newVariable.Summary = viewModel.NewVariableSummary;
+        newVariable.Category = viewModel.NewVariableCategory;
+
+        if (!string.IsNullOrEmpty(sourceObject))
+        {
+            var namedObjectSource = currentElement.GetNamedObjectRecursively(sourceObject);
+            if (namedObjectSource != null)
+            {
+                var ati = namedObjectSource.GetAssetTypeInfo();
+
+                var variableDefinition = ati?.VariableDefinitions.FirstOrDefault(item => item.Name == sourceObjectProperty);
+
+                newVariable.Category = variableDefinition?.Category;
+
+                defaultValue = namedObjectSource.GetCustomVariable(sourceObjectProperty)?.Value;
+            }
+        }
+
+        newVariable.DefaultValue = defaultValue;
+
+        await GlueCommands.Self.GluxCommands.ElementCommands.AddCustomVariableToElementAsync(newVariable, currentElement);
+        return newVariable;
     }
 
     public static bool IsVariableInvalid(AddCustomVariableViewModel viewModel, IElement currentElement, out string failureMessage)
