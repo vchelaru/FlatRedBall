@@ -6,7 +6,7 @@ namespace GlueCli;
 
 /// <summary>
 /// Lookups and change tracking shared by the state commands (add-state-category, add-state, set-state-variable,
-/// rename-state, delete-state): find a category or state by name with close matches, and list the elements an
+/// rename-state, rename-state-category, delete-state): find a category or state by name with close matches, and list the elements an
 /// edit changed.
 /// </summary>
 public static class CliStates

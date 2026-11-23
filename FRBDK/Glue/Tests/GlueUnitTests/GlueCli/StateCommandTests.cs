@@ -10,7 +10,7 @@ using static GlueUnitTests.Cli.GlueCliTestRun;
 namespace GlueUnitTests.Cli;
 
 /// <summary>
-/// The state commands (add-state-category, add-state, set-state-variable, rename-state, delete-state) against a
+/// The state commands (add-state-category, add-state, set-state-variable, rename-state, rename-state-category, delete-state) against a
 /// temp copy of Samples/Beefball, whose PlayerBall entity has a DashCategory with Tired and Rested states that
 /// set CooldownCircleRadius (0 and 16), and excludes every other variable.
 /// </summary>
@@ -126,6 +126,63 @@ public class StateCommandTests
         var generated = Generated(project);
         generated.ShouldContain("public static DashCategory Exhausted = new DashCategory()", Case.Sensitive);
         generated.ShouldNotContain("public static DashCategory Tired", Case.Sensitive);
+    }
+
+    [StaFact]
+    public void RenameStateCategory_ShouldRenameTheCategory_AndTheInstanceVariablesThatSetIt()
+    {
+        using var project = GoldProject.CopyOutOfRepo("Samples/Beefball");
+        // Expose the category on PlayerBall the way the editor's "Expose" saves it; GlueCli has no command for that.
+        var entity = System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(EntityFile(project)))!;
+        entity["CustomVariables"]!.AsArray().Add(System.Text.Json.Nodes.JsonNode.Parse(
+            """{"Properties":[{"Name":"Type","Value":"Entities.PlayerBall.DashCategory","Type":"String"}],"Name":"CurrentDashCategoryState","SetByDerived":true}"""));
+        File.WriteAllText(EntityFile(project), entity.ToJsonString());
+        var (exitCode, output) = Run("set-variable", project.Root, "--element", "GameScreen", "--object", "PlayerBall1",
+            "--variable", "CurrentDashCategoryState", "--value", "Tired");
+        exitCode.ShouldBe(GlueCliRunner.ExitSuccess, output);
+
+        (exitCode, output) = Run("rename-state-category", project.Root, "--element", "PlayerBall", "--category", "DashCategory",
+            "--to", "Dash", "--json");
+
+        exitCode.ShouldBe(GlueCliRunner.ExitSuccess, output);
+        var result = Parse(output);
+        EditProperty(result, "oldName").ShouldBe("DashCategory");
+        EditProperty(result, "newName").ShouldBe("Dash");
+        ((JsonElement)result.Edit!).GetProperty("changedElements").EnumerateArray().Select(item => item.GetString())
+            .ShouldBe(new[] { "Entities\\PlayerBall", "Screens\\GameScreen" });
+        Category(project, "Dash").GetProperty("States").GetArrayLength().ShouldBe(2);
+        ReadEntity(project).GetProperty("CustomVariables").EnumerateArray().Select(item => item.GetProperty("Name").GetString())
+            .ShouldContain("CurrentDashState");
+        var screen = File.ReadAllText(Path.Combine(project.Root, "Beefball", "Screens", "GameScreen.glsj"));
+        screen.ShouldContain("\"CurrentDashState\"", Case.Sensitive);
+        screen.ShouldNotContain("CurrentDashCategoryState", Case.Sensitive);
+        Generated(project).ShouldContain("public static Dash Tired = new Dash()", Case.Sensitive);
+        File.ReadAllText(Path.Combine(project.Root, "Beefball", "Screens", "GameScreen.Generated.cs"))
+            .ShouldContain("PlayerBall1.CurrentDashState = Entities.PlayerBall.Dash.Tired;", Case.Sensitive);
+    }
+
+    [StaFact]
+    public void RenameStateCategory_ShouldExitOneAndSaveNothing_OnADuplicateOrInvalidName()
+    {
+        using var project = GoldProject.CopyOutOfRepo("Samples/Beefball");
+        var (exitCode, output) = Run("add-state-category", project.Root, "--element", "PlayerBall", "--name", "Speed");
+        exitCode.ShouldBe(GlueCliRunner.ExitSuccess, output);
+        var entityFile = EntityFile(project);
+        var entityBefore = File.ReadAllBytes(entityFile);
+
+        void ShouldFail(string to, string expected)
+        {
+            var (exitCode, output) = Run("rename-state-category", project.Root, "--element", "PlayerBall", "--category", "DashCategory",
+                "--to", to, "--json");
+            exitCode.ShouldBe(GlueCliRunner.ExitErrors, output);
+            Parse(output).EditFailures.ShouldHaveSingleItem().ShouldContain(expected, Case.Sensitive);
+            Parse(output).FilesWritten.ShouldNotContain("Entities/PlayerBall.glej");
+            File.ReadAllBytes(entityFile).ShouldBe(entityBefore);
+        }
+
+        ShouldFail("speed", "Entities\\PlayerBall already has a category with that name.");
+        ShouldFail("Dash Category", "Cannot rename DashCategory to Dash Category:");
+        ShouldFail("DashCategory", "DashCategory already has that name.");
     }
 
     [StaFact]
