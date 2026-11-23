@@ -57,6 +57,10 @@ A typed call runs on the caller's thread and lets exceptions reach the caller: m
 
 String dispatch by plugin name and method name (`PluginManager.CallPluginMethod`/`CallPluginMethodAsync`) is gone; every cross-plugin call goes through one of these interfaces.
 
+### Views go in `StartUpUi`, not `StartUp`
+
+`StartUp` registers what the plugin adds to the model: event handlers, code generators, asset types, error reporters, menu items, view models. Tabs, toolbars and any other WPF or WinForms control go in `PluginBase.StartUpUi`, which `PluginManager` calls right after `StartUp` and only when `GlueGui.ShowGui` is on. GlueCli and the tests never run it, so they never pay for XAML (the first XAML control in a process costs about 400ms). Code outside `StartUpUi` treats the views as optional: `tab?.Show()`, `if (toolbar != null) AddToToolBar(...)`. A view model that holds model state (the tree view's nodes, the error list) is created in `StartUp`, and the view attaches to it in `StartUpUi`.
+
 ## TreeViewPlugin — Refactoring Goals and Status
 
 The `TreeViewPlugin` is a self-contained plugin that owns the explorer panel (Screens / Entities / Global Content). It is the most active UI area of the editor and has a number of architectural issues.
@@ -391,6 +395,22 @@ run as TaskManager tasks, as `CallPluginMethodAsync` did, and print an exception
 and kill commands still run as TaskManager tasks, as `CallPluginMethodAsync` did. "Error Window Plugin"
 `RefreshAllErrors` had no target method since the plugin dropped it; `GlueErrorManager.Add` now refreshes through
 `IRefreshCommands.RefreshErrors`. The remaining callers are listed under "Typed command interfaces".
+
+### 2026-11-23 — Plugin views moved to `StartUpUi`; plain DI container
+
+GlueCli spent about 2.4s starting before it loaded anything. The largest share was XAML: plugins built their
+tabs and toolbars in `StartUp`, and the first XAML control in a process costs about 400ms wherever it lands.
+`PluginBase.StartUpUi` now holds the views (see "Views go in `StartUpUi`" above), and the Output, Tasks,
+Points, Build, Game/Editor Settings/Profiling (GlueControl), Explorer, Quick Actions, Undo and Errors tabs plus
+the Camera, Gum and Tiled toolbars moved there. A headless host loads no XAML. `Builder` also dropped
+`Host.CreateApplicationBuilder` for a plain `ServiceCollection`, since nothing used the host's logging,
+configuration or hosted services. GlueCli startup went from about 2.4s to 1.4s (Beefball, median of 5).
+
+What is left, in cost order: the MEF scan and composition of the Plugins folder (~540ms), plugin `StartUp`
+JIT spread over ~90 plugins (~500ms), reading the editor settings XML (~130ms), `HeadlessMainGlueWindow`'s
+PropertyGrid (~90ms), the menu strip and MSBuild lookup (~80ms), and the old Properties tab, whose
+`StartUp` still builds a WinForms PropertyGrid (~80ms). JIT settings (TieredPGO off, tiered compilation off,
+OSR) measured no better.
 
 ### 2026-11-23 — File property reaction pulled out of `SetPropertyManager` for GlueCli `set-file-property`
 

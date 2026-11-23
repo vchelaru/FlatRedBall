@@ -37,7 +37,16 @@ namespace OfficialPlugins.PointEditingPlugin
             this.ReactToNamedObjectChangedValue += HandleNamedObjectValueChange;
             this.ReactToSelectedSubIndexChanged += HandleSelectedSubIndexChanged;
 
-            InitializeTab();
+            ViewModel = new PointEditingViewModel();
+            ViewModel.PropertyChanged += HandleDataChanged;
+        }
+
+        public override void StartUpUi()
+        {
+            pointEditControl = new PointEditControl();
+            pointEditControl.DataContext = ViewModel;
+
+            mTab = this.CreateTab(pointEditControl, "Points");
         }
 
         // Vic asks - why do we need this? Who else will modify points?
@@ -112,25 +121,12 @@ namespace OfficialPlugins.PointEditingPlugin
                 }
                 respondToVmChanges = true;
 
-                mTab.Show();
+                mTab?.Show();
             }
             else
             {
                 mTab?.Hide();
             }
-        }
-
-        void InitializeTab()
-        {
-
-            pointEditControl = new PointEditControl();
-
-            ViewModel = new PointEditingViewModel();
-            ViewModel.PropertyChanged += HandleDataChanged;
-            pointEditControl.DataContext = ViewModel;
-
-            mTab = this.CreateTab(pointEditControl, "Points");
-
         }
 
         bool respondToVmChanges = true;

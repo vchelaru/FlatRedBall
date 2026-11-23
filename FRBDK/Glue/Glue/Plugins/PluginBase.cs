@@ -704,7 +704,19 @@ namespace FlatRedBall.Glue.Plugins
 
         #endregion
 
+        /// <summary>
+        /// Registers everything the plugin contributes to the model: event handlers, code generators, asset
+        /// types, menu items. Runs in every host, including GlueCli and the tests. Views go in
+        /// <see cref="StartUpUi"/>.
+        /// </summary>
         public abstract void StartUp();
+
+        /// <summary>
+        /// Builds the plugin's views: tabs, toolbars, WPF controls. Called right after <see cref="StartUp"/>, and
+        /// only when Glue shows its GUI (<c>GlueGui.ShowGui</c>), so a headless host never pays for XAML. Code
+        /// outside this method must treat the views as optional (null headless).
+        /// </summary>
+        public virtual void StartUpUi() { }
 
         public virtual bool ShutDown(PluginShutDownReason shutDownReason)
         {

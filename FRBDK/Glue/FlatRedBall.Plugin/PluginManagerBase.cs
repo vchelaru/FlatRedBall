@@ -676,6 +676,13 @@ namespace FlatRedBall.Glue.Plugins
             return null;
         }
 
+        /// <summary>
+        /// Runs right after a plugin's StartUp, in the same try: builds the plugin's views when the host shows a GUI.
+        /// </summary>
+        protected virtual void StartUpUi(IPlugin plugin)
+        {
+        }
+
         protected void StartupPlugin(IPlugin plugin)
         {
             // See if the plugin already exists - it may implement multiple interfaces
@@ -688,6 +695,7 @@ namespace FlatRedBall.Glue.Plugins
                 try
                 {
                     plugin.StartUp();
+                    StartUpUi(plugin);
                     plugin.ReactToPluginEventAction += HandlePluginEvent;
                     plugin.ReactToPluginEventWithReturnAction += HandlePluginEventWithReturn;
                 }

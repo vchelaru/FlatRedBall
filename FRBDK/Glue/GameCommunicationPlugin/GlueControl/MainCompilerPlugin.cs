@@ -136,9 +136,10 @@ namespace GameCommunicationPlugin.GlueControl
                 () => gameHostView?.EmbeddedGameWindowHandle ?? IntPtr.Zero);
             _embeddedInputAllowedService.Initialize();
 
-            CreateBuildControl();
+            InitializeViewModels();
 
-            CreateToolbar();
+            // The toolbar's view model tracks the screen list and startup screen headless too.
+            ToolbarController.Self.GetViewModel();
 
             Output.Initialize(PrintToBuildTab);
 
@@ -153,17 +154,39 @@ namespace GameCommunicationPlugin.GlueControl
             ToolbarEntityViewModelManager.ReactToPluginEventWithReturn = ReactToPluginEventWithReturn;
             ToolbarEntityViewModelManager.SaveCompilerSettingsModel = SaveCompilerSettingsModel;
 
+            // do this after creating the compiler and view models
+            AssignEvents();
+
+            GlueCommands.Self.GameHostCommands = new GameHostCommands(CompilerViewModel, BuildAndRun, _refreshManager);
+        }
+
+        public override void StartUpUi()
+        {
+            CreateEditorSettingsTab();
+
+            CreateToolbar();
 
             CreateGameTab();
 
             CreateProfileTab();
 
-            // do this after creating the compiler, view model, and control
-            AssignEvents();
+            AssignViewEvents();
+        }
 
-            GlueCommands.Self.GameHostCommands = new GameHostCommands(CompilerViewModel, BuildAndRun, _refreshManager);
+        private void AssignViewEvents()
+        {
+            //this.ReactToMainWindowMoved += gameHostView.ReactToMainWindowMoved;
+            this.ReactToMainWindowResizeEnd += gameHostView.ReactToMainWindowResizeEnd;
+            // Keeps the embedded fixed-size preview in sync when Display Settings' Resolution/Scale
+            // change while the game is running - otherwise the preview only picks up the new size
+            // on the next resize/restart (issue #2035).
+            this.ResolutionChanged += gameHostView.SetGameToEmbeddedGameWindow;
+            this.ScaleChanged += gameHostView.SetGameToEmbeddedGameWindow;
+            // Resolution (not Scale) also changes what the fixed-size camera lock targets.
+            this.ResolutionChanged += gameHostView.UpdateFixedSizePreviewLock;
 
-
+            this.ReactToLoadedGlux += () => pluginTab.Show();
+            this.ReactToUnloadedGlux += () => pluginTab.Hide();
         }
 
         private void AssignEvents()
@@ -220,20 +243,9 @@ namespace GameCommunicationPlugin.GlueControl
             this.ReactToStateCreated += _refreshManager.HandleStateCreated;
             this.ReactToStateVariableChanged += _refreshManager.HandleStateVariableChanged;
             this.ReactToStateCategoryExcludedVariablesChanged += _refreshManager.HandleStateCategoryExcludedVariablesChanged;
-            //this.ReactToMainWindowMoved += gameHostView.ReactToMainWindowMoved;
-            this.ReactToMainWindowResizeEnd += gameHostView.ReactToMainWindowResizeEnd;
-            // Keeps the embedded fixed-size preview in sync when Display Settings' Resolution/Scale
-            // change while the game is running - otherwise the preview only picks up the new size
-            // on the next resize/restart (issue #2035).
-            this.ResolutionChanged += gameHostView.SetGameToEmbeddedGameWindow;
-            this.ScaleChanged += gameHostView.SetGameToEmbeddedGameWindow;
-            // Resolution (not Scale) also changes what the fixed-size camera lock targets.
-            this.ResolutionChanged += gameHostView.UpdateFixedSizePreviewLock;
             this.TryHandleTreeNodeDoubleClicked += _refreshManager.HandleTreeNodeDoubleClicked;
             this.GrabbedTreeNodeChanged += HandleGrabbedTreeNodeChanged;
 
-            this.ReactToLoadedGlux += () => pluginTab.Show();
-            this.ReactToUnloadedGlux += () => pluginTab.Hide();
             this.ReactToTreeViewRightClickHandler += HandleTreeViewRightClick;
 
             this.ReactToSelectedSubIndexChanged += (index) => _refreshManager.ReactToSelectedSubIndexChanged(index);
@@ -363,7 +375,7 @@ namespace GameCommunicationPlugin.GlueControl
         private void HandleItemsSelected(List<ITreeNode> selectedTreeNodes)
         {
             _refreshManager.HandleItemSelected(selectedTreeNodes);
-            this.gameHostView.UpdateToItemSelected();
+            this.gameHostView?.UpdateToItemSelected();
         }
 
 
@@ -432,9 +444,9 @@ namespace GameCommunicationPlugin.GlueControl
             CompilerViewModel.HasLoadedGlux = false;
             CompilerViewModel.ToolbarEntitiesAndStates.Clear();
 
-            glueViewSettingsTab.Hide();
+            glueViewSettingsTab?.Hide();
 
-            gameHostView.HandleGluxUnloaded();
+            gameHostView?.HandleGluxUnloaded();
 
 
             ToolbarController.Self.HandleGluxUnloaded();
@@ -498,7 +510,7 @@ namespace GameCommunicationPlugin.GlueControl
             var model = LoadOrCreateCompilerSettings();
             ignoreViewModelChanges = true;
             GlueViewSettingsViewModel.SetFrom(model);
-            glueViewSettingsView.DataUiGrid.Refresh();
+            glueViewSettingsView?.DataUiGrid.Refresh();
 
             CompilerViewModel.IsGenerateGlueControlManagerInGame1Checked = GlueViewSettingsViewModel.EnableLiveEdit;
             ignoreViewModelChanges = false;
@@ -531,7 +543,7 @@ namespace GameCommunicationPlugin.GlueControl
 
             ToolbarController.Self.HandleGluxLoaded();
 
-            gameHostView.HandleGluxLoaded();
+            gameHostView?.HandleGluxLoaded();
         }
 
         /// <summary>
@@ -670,7 +682,7 @@ namespace GameCommunicationPlugin.GlueControl
 
         #endregion
 
-        private void CreateBuildControl()
+        private void InitializeViewModels()
         {
             CompilerViewModel = CompilerViewModel.Self;
             CompilerViewModel.Configuration = "Debug";
@@ -697,13 +709,16 @@ namespace GameCommunicationPlugin.GlueControl
             CommandSender.Self.PrintOutput = PrintToBuildTab;
 
                 //ReactToPluginEventWithReturn("GameCommunication_Send_OldDTO", value);
-            
+
+            AssignControlEvents();
+        }
+
+        private void CreateEditorSettingsTab()
+        {
             glueViewSettingsView = new Views.GlueViewSettings();
             glueViewSettingsView.ViewModel = GlueViewSettingsViewModel;
 
             glueViewSettingsTab = base.CreateTab(glueViewSettingsView, Localization.Texts.EditorSettings);
-
-            AssignControlEvents();
         }
 
         private async void HandleGlueViewSettingsViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)

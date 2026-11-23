@@ -47,15 +47,8 @@ public class MainErrorPlugin : PluginBase
         EditorObjects.IoC.Container.Get<GlueErrorManager>()
             .Add(new ErrorCreateRemoveLogic());
 
-        control = new ErrorWindow();
-        tab = CreateAndAddTab(control, Localization.Texts.Error, TabLocation.Bottom);
-
         errorListViewModel = GlueState.Self.ErrorList;
-        errorListViewModel.Errors.CollectionChanged += HandleErrorsCollectionChanged;
         errorListViewModel.RefreshClicked += HandleRefreshClicked;
-
-        control.DataContext = errorListViewModel;
-
 
         this.ReactToLoadedGlux += HandleLoadedGlux;
         this.ReactToFileChange += HandleFileChanged;
@@ -64,6 +57,17 @@ public class MainErrorPlugin : PluginBase
         this.ReactToFileReadError += HandleFileReadError ;
 
         RefreshCommands.RefreshErrorsAction = () => RefreshLogic.RefreshAllErrors(errorListViewModel, errorListViewModel.IsOutputErrorCheckingDetailsChecked);
+    }
+
+    public override void StartUpUi()
+    {
+        control = new ErrorWindow();
+        tab = CreateAndAddTab(control, Localization.Texts.Error, TabLocation.Bottom);
+
+        // Only the tab's title and focus follow the error list.
+        errorListViewModel.Errors.CollectionChanged += HandleErrorsCollectionChanged;
+
+        control.DataContext = errorListViewModel;
     }
 
     private void HandleRefreshClicked(object? sender, EventArgs e)

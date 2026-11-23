@@ -84,7 +84,7 @@ public class MainGumPlugin : PluginBase
 
         AssignEvents();
 
-        CreateToolbar();
+        toolbarViewModel = new GumToolbarViewModel(newGumProjectCreationLogic);
 
         CodeGeneratorManager.Self.CreateCodeGenerators(this);
 
@@ -252,10 +252,8 @@ public class MainGumPlugin : PluginBase
         return false;
     }
 
-    private void CreateToolbar()
+    public override void StartUpUi()
     {
-        toolbarViewModel = new GumToolbarViewModel(newGumProjectCreationLogic);
-
         gumToolbar = new GumToolbar();
         gumToolbar.DataContext = toolbarViewModel;
         gumToolbar.GumButtonClicked += (_, _) => toolbarViewModel.OnToolbarClicked();
@@ -442,7 +440,10 @@ public class MainGumPlugin : PluginBase
 
     private void HandleUnloadedGlux()
     {
-        base.RemoveFromToolbar(gumToolbar, Localization.Texts.Tools);
+        if (gumToolbar != null)
+        {
+            base.RemoveFromToolbar(gumToolbar, Localization.Texts.Tools);
+        }
 
         AssetTypeInfoManager.Self.UnloadProjectSpecificAtis();
 
@@ -696,7 +697,10 @@ public class MainGumPlugin : PluginBase
 
     private void HandleGluxLoad()
     {
-        base.AddToToolBar(gumToolbar, "Tools");
+        if (gumToolbar != null)
+        {
+            base.AddToToolBar(gumToolbar, "Tools");
+        }
 
         var gumRfs = GumProjectManager.Self.GetRfsForGumProject();
 

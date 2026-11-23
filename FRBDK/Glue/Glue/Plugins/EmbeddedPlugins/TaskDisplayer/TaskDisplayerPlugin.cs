@@ -16,10 +16,9 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TaskDisplayer
 
         public override void StartUp()
         {
-            HandleInitializeBottomTab();
         }
 
-        private void HandleInitializeBottomTab()
+        public override void StartUpUi()
         {
             TaskDisplayerControl control = new TaskDisplayerControl();
 

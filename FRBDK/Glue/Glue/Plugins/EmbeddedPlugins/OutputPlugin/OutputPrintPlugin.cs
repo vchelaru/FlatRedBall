@@ -11,19 +11,21 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins
 
         public override void StartUp()
         {
-            outputControl = new OutputControl();
-            var tab = base.CreateAndAddTab(outputControl, L.Texts.Output, TabLocation.Bottom);
-
             this.OnOutputHandler += OnOutput;
             this.OnErrorOutputHandler += OnErrorOutput;
         }
 
+        public override void StartUpUi()
+        {
+            outputControl = new OutputControl();
+            base.CreateAndAddTab(outputControl, L.Texts.Output, TabLocation.Bottom);
+        }
 
         public void OnOutput(string output)
         {
             if (!string.IsNullOrWhiteSpace(output))
             {
-                outputControl.OnOutput(output);
+                outputControl?.OnOutput(output);
             }
         }
 

@@ -163,7 +163,7 @@ public static class GlueHeadlessHost
             WindowsFormsSynchronizationContext.AutoInstall = false;
             SynchronizationContext.SetSynchronizationContext(null);
 
-            if (Builder.App == null)
+            if (Builder.Services == null)
             {
                 new Builder().Build();
             }
@@ -287,9 +287,9 @@ public static class GlueHeadlessHost
     ///    a MenuStrip needs no message loop, same as HeadlessMainGlueWindow's real PropertyGrid.
     ///  - <c>ProjectLoader.Self.Initialize</c>, normally called from MainGlueWindow's IoC set-up.
     ///
-    /// <b>Must be called from an STA thread.</b> Plugin StartUp methods build real WPF toolbars
-    /// (MainTiledPluginClass.CreateToolbar and friends), which throw "The calling thread must be STA"
-    /// otherwise.
+    /// <b>Must be called from an STA thread.</b> Plugins build their views in StartUpUi, which a headless
+    /// host skips, but some StartUp methods still create WPF or WinForms controls (the old Properties
+    /// tab's WindowsFormsHost), which throw "The calling thread must be STA" otherwise.
     /// </summary>
     /// <param name="reportMessage">Receives every message production code would have shown in a dialog,
     /// and every unhandled UI-thread exception. A real project load should produce none.</param>
