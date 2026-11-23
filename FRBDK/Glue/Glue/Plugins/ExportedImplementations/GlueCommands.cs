@@ -69,6 +69,12 @@ public class GlueCommands : IGlueCommands
 
     public IGluxCommands GluxCommands { get; private set; }
 
+    /// <summary>
+    /// Set by the Collision Plugin when it starts, null while it is not loaded. Collision relationships are that
+    /// plugin's objects, so their creation and settings live there.
+    /// </summary>
+    public ICollisionRelationshipCommands CollisionRelationshipCommands { get; set; }
+
     public IProjectCommands ProjectCommands { get; private set; }
 
     public IRefreshCommands RefreshCommands { get; private set; }

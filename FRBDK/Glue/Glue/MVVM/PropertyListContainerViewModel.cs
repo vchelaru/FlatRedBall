@@ -188,31 +188,6 @@ namespace FlatRedBall.Glue.MVVM
                 }
                 var modelName = propertyInfo.OverridingPropertyName ?? propertyName;
 
-
-                GlueElement element = null;
-                bool isGlobalContent = false;
-
-                // codegen the object
-                if (GlueObject is GlueElement)
-                {
-                    element = GlueObject as GlueElement;
-                }
-                else if (GlueObject is NamedObjectSave nos)
-                {
-                    element = ObjectFinder.Self.GetElementContaining(nos);
-                }
-                else if (GlueObject is ReferencedFileSave)
-                {
-                    var rfs = GlueObject as ReferencedFileSave;
-
-                    element = ObjectFinder.Self.GetElementContaining(rfs);
-
-                    if (element == null)
-                    {
-                        isGlobalContent = GlueState.Self.CurrentGlueProject.GlobalFiles?.Contains(rfs) == true;
-                    }
-                }
-
                 //// just in case there's some save/generate running:
                 //TaskManager.Self.Add(() =>
                 //{
@@ -265,50 +240,8 @@ namespace FlatRedBall.Glue.MVVM
                     // surrounded by IsUpdatingFromGlueObject.
                     // But if we are updating from glue object, 
                     // why would we ever generate code or notify
-                    // a change has been made? 
-                    if (element != null)
-                    {
-                        TaskManager.Self.Add(() =>
-                        {
-                            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
-                        }, $"Generating code for {element}", TaskExecutionPreference.AddOrMoveToEnd);
-                    }
-                    else if (isGlobalContent)
-                    {
-                        TaskManager.Self.Add(() =>
-                        {
-                            GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCode();
-                        }, "Generating Global Content Code", TaskExecutionPreference.AddOrMoveToEnd);
-                    }
-
-                    // Do this in a task after the codegen so that the compiler can pick up on it and restart
-                    if (GlueObject is NamedObjectSave namedObject)
-                    {
-                        TaskManager.Self.Add(() =>
-                        {
-                            TaskManager.Self.OnUiThread(() =>
-                                EditorObjects.IoC.Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
-                                    propertyName, oldValue, namedObjectSave: namedObject));
-                        },
-                        "Restarting due to change " + namedObject.InstanceName + "." + propertyName, TaskExecutionPreference.AddOrMoveToEnd);
-                    }
-
-                    if(element != null)
-                    {
-                        // add or move to end makes things a little faster, especially when dealing with sliders
-                        GlueCommands.Self.GluxCommands.SaveElementAsync(element, TaskExecutionPreference.AddOrMoveToEnd);
-                    }
-                    else if(GlueObject is ReferencedFileSave rfs)
-                    {
-                        // add or move to end makes things a little faster, especially when dealing with sliders
-                        GlueCommands.Self.GluxCommands.SaveGlujFile(TaskExecutionPreference.AddOrMoveToEnd);
-                    }
-                    else
-                    {
-                        // December 26, 2024 - Not sure if this case can get hit anymore, but keeping it here just in case:
-                        GlueCommands.Self.GluxCommands.SaveProjectAndElements();
-                    }
-
+                    // a change has been made?
+                    PropertyListChangeFollowUp.QueueCodegenReactionAndSave(GlueObject, propertyName, oldValue);
                 }
                 return true;
             }

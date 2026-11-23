@@ -43,6 +43,8 @@ namespace OfficialPlugins.CollisionPlugin
 
         internal CollidableNamedObjectRelationshipViewModel CollidableViewModel => collidableViewModel;
 
+        readonly CollisionRelationshipCommands collisionRelationshipCommands = new CollisionRelationshipCommands();
+
         public override string FriendlyName => "Collision Plugin";
 
         // 1.0
@@ -59,6 +61,11 @@ namespace OfficialPlugins.CollisionPlugin
         {
             UnregisterAllCodeGenerators();
 
+            if (GlueCommands.Self.CollisionRelationshipCommands == collisionRelationshipCommands)
+            {
+                GlueCommands.Self.CollisionRelationshipCommands = null;
+            }
+
             AvailableAssetTypes.Self.RemoveAssetType(
                 AssetTypeInfoManager.Self.CollisionRelationshipAti);
             return true;
@@ -66,6 +73,8 @@ namespace OfficialPlugins.CollisionPlugin
 
         public override void StartUp()
         {
+            GlueCommands.Self.CollisionRelationshipCommands = collisionRelationshipCommands;
+
             collidableViewModel = new CollidableNamedObjectRelationshipViewModel();
             CollidableNamedObjectController.RegisterViewModel(collidableViewModel);
 
@@ -145,19 +154,13 @@ namespace OfficialPlugins.CollisionPlugin
                 {
                     if(firstParent is ScreenSave parentScreen)
                     {
-                        var gameScreen = ObjectFinder.Self.GetScreenSave("GameScreen");
-
-                        var baseScreens = ObjectFinder.Self.GetAllBaseElementsRecursively(parentScreen);
-
-                        var inheritsFromGameScreen = baseScreens.Contains(gameScreen);
-
-                        if(inheritsFromGameScreen)
+                        if(collisionRelationshipCommands.IsUnusualContainer(parentScreen))
                         {
                             var message = "You are creating a collision relationship in the screen " +
                                 $"{parentScreen}. Usually CollisionRelationships are created in the GameScreen. Are you sure you want to continue?";
-                            var result = MessageBox.Show(message, "Create collision relationship?", MessageBoxButtons.YesNo);
+                            var result = DialogService.ShowConfirm(message);
 
-                            if(result == DialogResult.No)
+                            if(result != DialogButton.Yes)
                             {
                                 shouldCreate = false;
                             }

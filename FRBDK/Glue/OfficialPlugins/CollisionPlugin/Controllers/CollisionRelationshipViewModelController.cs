@@ -99,92 +99,12 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             }
         }
 
-        public static bool GetIfCanBeReferencedByRelationship(NamedObjectSave nos)
-        {
-            if(nos == null)
-            {
-                throw new ArgumentNullException(nameof(nos));
-            }
-            var nosElement = nos.GetReferencedElement();
-            var nosAti = nos.GetAssetTypeInfo();
+        // The model rules below live in CollisionRelationshipCommands; these keep the existing callers working.
+        public static bool GetIfCanBeReferencedByRelationship(NamedObjectSave nos) =>
+            CollisionRelationshipCommands.GetIfCanBeReferencedByRelationship(nos);
 
-            var entity = nosElement as EntitySave;
-
-            var shouldConsider = false;
-
-            if (entity?.ImplementsICollidable == true)
-            {
-                shouldConsider = true;
-            }
-
-            if (!shouldConsider)
-            {
-                // See if it's a list of ICollidables
-                shouldConsider = nos != null &&
-                    nos.IsList &&
-                    !string.IsNullOrEmpty(nos.SourceClassGenericType) &&
-                    ObjectFinder.Self.GetEntitySave(nos.SourceClassGenericType)?.IsICollidableRecursive() == true;
-            }
-
-            if (!shouldConsider)
-            {
-                shouldConsider = nosAti?.QualifiedRuntimeTypeName.QualifiedType ==
-                    "FlatRedBall.TileCollisions.TileShapeCollection";
-            }
-
-            if (!shouldConsider)
-            {
-                shouldConsider = nosAti?.QualifiedRuntimeTypeName.QualifiedType ==
-                    "FlatRedBall.Math.Geometry.ShapeCollection";
-            }
-
-            return shouldConsider;
-        }
-
-        static bool CanHaveSubCollisions(NamedObjectSave nos)
-        {
-            if (nos != null)
-            {
-                return GetEntitySaveReferencedBy(nos)?.IsICollidableRecursive() == true;
-            }
-            return false;
-        }
-
-        public static EntitySave GetEntitySaveReferencedBy(NamedObjectSave nos)
-        {
-            if (nos != null)
-            {
-                if (nos.SourceType == SourceType.Entity)
-                {
-                    return ObjectFinder.Self.GetEntitySave(nos.SourceClassType);
-                }
-
-                // if it's a list, make sure it's a list of collidables:
-                if (nos.IsList && !string.IsNullOrEmpty(nos.SourceClassGenericType))
-                {
-                    var sourceClassGenericType = nos.SourceClassGenericType;
-
-                    var entitySave = ObjectFinder.Self.GetEntitySave(sourceClassGenericType);
-                    return entitySave;
-                }
-            }
-            return null;
-        }
-
-        static bool IsShape(NamedObjectSave nos)
-        {
-            if(nos.SourceType == SourceType.FlatRedBallType)
-            {
-                var ati = nos.GetAssetTypeInfo();
-
-                return ati == AvailableAssetTypes.CommonAtis.AxisAlignedRectangle ||
-                    ati == AvailableAssetTypes.CommonAtis.CapsulePolygon ||
-                    ati == AvailableAssetTypes.CommonAtis.Circle ||
-                    ati == AvailableAssetTypes.CommonAtis.Line ||
-                    ati == AvailableAssetTypes.CommonAtis.Polygon;
-            }
-            return false;
-        }
+        public static EntitySave GetEntitySaveReferencedBy(NamedObjectSave nos) =>
+            CollisionRelationshipCommands.GetEntitySaveReferencedBy(nos);
 
         public static void RefreshViewModel(NamedObjectSave collisionRelationship)
         {
@@ -383,30 +303,14 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             }
         }
 
-        private static List<string> GetAvailableSubCollisions(EntitySave firstEntity)
-        {
-            List<string> availableValues = new List<string>();
-            availableValues.Add(CollisionRelationshipViewModel.EntireObject);
+        static bool CanHaveSubCollisions(NamedObjectSave nos) => CollisionRelationshipCommands.CanHaveSubCollisions(nos);
 
-            foreach (var nos in firstEntity.AllNamedObjects)
-            {
-                var canBeSubCollision = IsShape(nos) ||
-                    nos.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.ShapeCollection ||
-                    IsTileShapeCollection(nos) ||
-                    nos.IsCollidableOrCollidableList();
+        static bool IsShape(NamedObjectSave nos) => CollisionRelationshipCommands.IsShape(nos);
 
-                if (canBeSubCollision)
-                {
-                    availableValues.Add(nos.InstanceName);
-                }
-            }
-            return availableValues;
-        }
+        static List<string> GetAvailableSubCollisions(EntitySave entity) => CollisionRelationshipCommands.GetAvailableSubCollisions(entity);
 
-        public static bool IsTileShapeCollection(NamedObjectSave namedObject)
-        {
-            return namedObject?.GetAssetTypeInfo()?.FriendlyName == "TileShapeCollection";
-        }
+        public static bool IsTileShapeCollection(NamedObjectSave namedObject) =>
+            CollisionRelationshipCommands.IsTileShapeCollection(namedObject);
 
         /// <summary>
         /// Whether a NamedObjectSave property change could affect whether CollisionRelationshipErrorViewModel
@@ -581,21 +485,8 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             }
         }
 
-        public static bool TryFixSourceClassType(NamedObjectSave selectedNos)
-        {
-            var didChange = false;
-            if (selectedNos.IsCollisionRelationship())
-            {
-                var oldSourceClassType = selectedNos.SourceClassType;
-
-                selectedNos.SourceClassType = AssetTypeInfoManager.Self.CollisionRelationshipAti
-                    .QualifiedRuntimeTypeName.PlatformFunc(selectedNos);
-
-                didChange = oldSourceClassType != selectedNos.SourceClassType;
-            }
-
-            return didChange;
-        }
+        public static bool TryFixSourceClassType(NamedObjectSave selectedNos) =>
+            CollisionRelationshipCommands.TryFixSourceClassType(selectedNos);
 
         private static void HandleViewModelPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
@@ -609,21 +500,23 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
             //////////////End Early Out/////////////////
 
-            var namedObject = GlueState.Self.CurrentNamedObjectSave;
-
             var element = GlueState.Self.CurrentElement;
             var relationshipNos = (NamedObjectSave)viewModel.GlueObject;
+
+            // SetAndPersist has stored the value; the model rules that follow are shared with GlueCli.
+            CollisionRelationshipCommands.ReactToChangedSetting(element, relationshipNos, e.PropertyName);
+
             switch (e.PropertyName)
             {
                 case nameof(viewModel.FirstCollisionName):
                 case nameof(viewModel.SecondCollisionName):
-                    CollisionRelationshipViewModelController.TryFixSourceClassType(relationshipNos);
-
                     RefreshFirstAndSecondTypes(viewModel, relationshipNos);
 
+                    // The sub-collisions were reconciled in the model above; this only refreshes the lists.
+                    var wasUpdating = viewModel.IsUpdatingFromGlueObject;
+                    viewModel.IsUpdatingFromGlueObject = true;
                     RefreshSubcollisionObjects(element, viewModel);
-
-                    TryApplyAutoName(element, namedObject);
+                    viewModel.IsUpdatingFromGlueObject = wasUpdating;
 
                     RefreshFirstProperties(element, viewModel, out IElement? firstElementType);
                     RefreshSecondProperties(element, ViewModel);
@@ -634,35 +527,12 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
                     RefreshDamageProperties(element, viewModel);
 
-                    if (TryFixMassesForTileShapeCollisionRelationship(element, relationshipNos))
-                    {
-                        viewModel.UpdateFromGlueObject();
-                    }
-
-                    // The relationship's first/second collidable can now be empty or point at a
-                    // missing object (see CollisionRelationshipErrorViewModel.TryGetErrorMessageFor) -
-                    // refresh immediately instead of waiting for the next Error tab refresh/project reload.
-                    GlueCommands.Self.RefreshCommands.RefreshErrors();
-
-                    break;
-                case nameof(viewModel.FirstSubCollisionSelectedItem):
-                    TryApplyAutoName(element, namedObject);
-
-                    break;
-                case nameof(viewModel.SecondSubCollisionSelectedItem):
-                    TryApplyAutoName(element, namedObject);
-
-                    break;
-                case nameof(viewModel.IsAutoNameEnabled):
-                    TryApplyAutoName(element, namedObject);
+                    viewModel.UpdateFromGlueObject();
                     break;
 
                 case nameof(viewModel.CollisionType):
-                    CollisionRelationshipViewModelController.TryFixSourceClassType(relationshipNos);
-                    if (TryFixMassesForTileShapeCollisionRelationship(element, relationshipNos))
-                    {
-                        viewModel.UpdateFromGlueObject();
-                    }
+                    // Picks up TileShapeCollection masses.
+                    viewModel.UpdateFromGlueObject();
                     break;
             }
         }
@@ -736,184 +606,19 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             
             if(viewModel.IsFirstPlatformer && firstNosElementType != null)
             {
-                var rfs = firstNosElementType.ReferencedFiles.FirstOrDefault(item => item.Name.EndsWith("PlatformerValuesStatic.csv"));
-                if(rfs != null)
+                foreach (var platformerValue in CollisionRelationshipCommands.GetPlatformerVariableNames(firstNosElementType))
                 {
-                    var platformerValues = FlatRedBall.Glue.GuiDisplay.AvailableSpreadsheetValueTypeConverter.GetAvailableValues(
-                        GlueCommands.Self.GetAbsoluteFileName(rfs), shouldAppendFileName: true);
-                    foreach (var platformerValue in platformerValues)
-                    {
-                        viewModel.AvailablePlatformerVariableNames.Add(platformerValue);
-                    }
+                    viewModel.AvailablePlatformerVariableNames.Add(platformerValue);
                 }
             }
         }
 
-        public static void TryApplyAutoName(GlueElement element, NamedObjectSave namedObject)
-        {
-            var isAutoNameEnabled = namedObject.Properties.GetValue<bool>(nameof(CollisionRelationshipViewModel.IsAutoNameEnabled));
-            if(isAutoNameEnabled)
-            {
-                var desiredName = GetAutoName(namedObject);
+        public static void TryApplyAutoName(GlueElement element, NamedObjectSave namedObject) =>
+            CollisionRelationshipCommands.TryApplyAutoName(element, namedObject);
 
-                bool nameExists = false;
-                do
-                {
-                    // need to consider base objects not just the current element
-                    var allNamedObjectsRecursive = element.GetAllNamedObjectsRecurisvely().ToArray();
+        public static bool TryFixMassesForTileShapeCollisionRelationship(IElement selectedElement, NamedObjectSave collisionRelationshipNos) =>
+            CollisionRelationshipCommands.TryFixMassesForTileShapeCollisionRelationship(selectedElement, collisionRelationshipNos);
 
-                    nameExists = allNamedObjectsRecursive
-                        .Any(item => item != namedObject &&
-                                     item.InstanceName == desiredName);
-
-                    if(!nameExists)
-                    {
-                        // if we got here, then there are no conflicting names in 
-                        // the current element or any base elements, but we should
-                        // also check derived in case the user made a relationship that
-                        // is level-specific, and now is trying to make a similar one in 
-                        // the base screen
-                        var derivedElements = ObjectFinder.Self.GetAllElementsThatInheritFrom(element);
-
-                        foreach(var derivedElement in derivedElements)
-                        {
-                            nameExists = derivedElement.AllNamedObjects.Any(item => item.DefinedByBase == false && item.InstanceName == desiredName);
-
-                            if(nameExists)
-                            {
-                                break;
-                            }
-                        }
-                    }
-
-                    if(nameExists)
-                    {
-                        if(StringFunctions.HasNumberAtEnd(desiredName))
-                        {
-                            desiredName = StringFunctions.IncrementNumberAtEnd(desiredName);
-                        }
-                        else
-                        {
-                            desiredName = desiredName + "2";
-                        }
-                    }
-                } while (nameExists);
-
-                if (desiredName != namedObject.InstanceName)
-                {
-                    var oldName = namedObject.InstanceName;
-
-                    namedObject.InstanceName = desiredName;
-
-                    // this requires the NOS being selected:
-                    if(namedObject != GlueState.Self.CurrentNamedObjectSave)
-                    {
-                        GlueState.Self.CurrentNamedObjectSave = namedObject;
-                    }
-
-                    // This is important otherwise references to this (like events) won't update their references
-                    EditorObjects.IoC.Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
-                        nameof(NamedObjectSave.InstanceName), oldName, namedObjectSave:namedObject);
-
-
-                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element as GlueElement);
-                    GlueCommands.Self.GluxCommands.SaveProjectAndElements();
-                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element as GlueElement);
-                }
-            }
-        }
-
-        public static bool TryFixMassesForTileShapeCollisionRelationship(IElement selectedElement, NamedObjectSave collisionRelationshipNos)
-        {
-            // at this point "inverting" has already happened so check if the 2nd object is a tile shape collection
-
-            var secondName = collisionRelationshipNos.Properties.GetValue<string>(nameof(CollisionRelationshipViewModel.SecondCollisionName));
-            var secondObjectInstance = selectedElement.GetNamedObjectRecursively(secondName);
-
-            var didMakeChange = false;
-
-            if (secondObjectInstance?.SourceClassType?.Contains("TileShapeCollection") == true)
-            {
-                // set the first object's mass to 1, the 2nd object's mass to 1:
-                var shouldSetTo0 =
-                    collisionRelationshipNos.Properties.Any(item => item.Name == nameof(CollisionRelationshipViewModel.FirstCollisionMass)) == false ||
-                    collisionRelationshipNos.Properties.GetValue<float>(nameof(CollisionRelationshipViewModel.FirstCollisionMass)) != 0;
-
-                if (shouldSetTo0)
-                {
-                    collisionRelationshipNos.Properties.SetValuePersistIfDefault(nameof(CollisionRelationshipViewModel.FirstCollisionMass), 0f);
-                    didMakeChange = true;
-                }
-
-                var shouldSetTo1 =
-                    collisionRelationshipNos.Properties.Any(item => item.Name == nameof(CollisionRelationshipViewModel.SecondCollisionMass)) == false ||
-                    collisionRelationshipNos.Properties.GetValue<float>(nameof(CollisionRelationshipViewModel.SecondCollisionMass)) != 1;
-
-                if (shouldSetTo1)
-                {
-                    collisionRelationshipNos.Properties.SetValue(nameof(CollisionRelationshipViewModel.SecondCollisionMass), 1.0f);
-                    didMakeChange = true;
-                }
-            }
-
-            if(didMakeChange)
-            {
-                GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
-                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
-            }
-
-            return didMakeChange;
-        }
-
-        public static string GetAutoName(NamedObjectSave namedObject)
-        {
-            var element = ObjectFinder.Self.GetElementContaining(namedObject);
-
-            var firstName = namedObject.Properties.GetValue<string>(
-                nameof(CollisionRelationshipViewModel.FirstCollisionName));
-            var firstSub = namedObject.Properties.GetValue<string>(nameof(
-                CollisionRelationshipViewModel.FirstSubCollisionSelectedItem));
-            if(firstSub == CollisionRelationshipViewModel.EntireObject)
-            {
-                firstSub = null;
-            }
-
-            var secondName = namedObject.Properties.GetValue<string>(nameof(
-                CollisionRelationshipViewModel.SecondCollisionName));
-            var secondSub = namedObject.Properties.GetValue<string>(nameof(
-                CollisionRelationshipViewModel.SecondSubCollisionSelectedItem));
-            if(secondSub == CollisionRelationshipViewModel.EntireObject)
-            {
-                secondSub = null;
-            }
-
-            var isFirstList = element?.GetNamedObjectRecursively(firstName)?.IsList == true;
-            var isSecondList = element?.GetNamedObjectRecursively(secondName)?.IsList == true;
-
-            var firstEffectiveName = firstName;
-            var secondEffectiveName = secondName;
-
-            if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.AutoNameCollisionListsAsSingle)
-            {
-                if(isFirstList && firstEffectiveName.EndsWith("List"))
-                {
-                    firstEffectiveName = firstEffectiveName.Substring(0, firstEffectiveName.Length - "List".Length);
-                }
-                if(isSecondList && secondEffectiveName.EndsWith("List"))
-                {
-                    secondEffectiveName = secondEffectiveName.Substring(0, secondEffectiveName.Length - "List".Length);
-                }
-            }
-
-            // special case - always colliding
-            if(secondName == null)
-            {
-                return $"{firstEffectiveName}AlwaysColliding";
-            }
-            else
-            {
-                return $"{firstEffectiveName}{firstSub}Vs{secondEffectiveName}{secondSub}";
-            }
-        }
+        public static string GetAutoName(NamedObjectSave namedObject) => CollisionRelationshipCommands.GetAutoName(namedObject);
     }
 }
