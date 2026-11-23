@@ -285,11 +285,9 @@ public class MainTiledPluginClass : PluginBase
 
         this.ReactToUnloadedGlux += HandleGluxUnload;
 
-        this.ReactToLoadedGlux += async () =>
-        {
-            HandleGluxLoad();
-            await tiledObjectTypeCreator.RefreshFile();
-        };
+        this.ReactToLoadedGlux += HandleGluxLoad;
+
+        this.GenerateProjectCode += HandleGenerateProjectCode;
 
         // Adds all objects contained within a file (like TMX)
         this.TryAddContainedObjects += HandleTryAddContainedObjects;
@@ -869,15 +867,34 @@ public class MainTiledPluginClass : PluginBase
 
         CodeItemAdderManager.Self.RefreshAppendGenerated();
 
+        // Make sure the TileMapInfo CustomClassSave is there, and make sure it has all the right properties
+        tileMapInfoClassNeedsSave = TileMapInfoManager.Self.AddAndModifyTileMapInfoClass();
+
+        _assetTypeInfoAdder.UpdateAtisToLoadedGlueProject();
+    }
+
+    /// <summary>
+    /// True when the load added to the TileMapInfo class and <see cref="HandleGenerateProjectCode"/> has not saved it yet.
+    /// </summary>
+    bool tileMapInfoClassNeedsSave;
+
+    /// <summary>
+    /// Tiled's embedded .cs files (map drawable batch, tile collisions and the like), the TileMapInfo class if the
+    /// load changed it, and the Tiled object types file.
+    /// </summary>
+    async void HandleGenerateProjectCode()
+    {
         // Add the .cs files which include the map drawable batch classes
         FlatRedBall.Glue.Managers.TaskManager.Self.Add( CodeItemAdderManager.Self.UpdateCodePresenceInProject,
             "Adding Tiled .cs files to the project");
 
-        // Make sure the TileMapInfo CustomClassSave is there, and make sure it has all the right properties
-        TileMapInfoManager.Self.AddAndModifyTileMapInfoClass();
+        if (tileMapInfoClassNeedsSave)
+        {
+            tileMapInfoClassNeedsSave = false;
+            TileMapInfoManager.Self.SaveTileMapInfoClass();
+        }
 
-        _assetTypeInfoAdder.UpdateAtisToLoadedGlueProject();
-        
+        await tiledObjectTypeCreator.RefreshFile();
     }
 
     internal void UpdateTilesetDisplay()

@@ -374,6 +374,26 @@ the property list itself comes from the WinForms `ReferencedFileSavePropertyGrid
 `AdjustDisplayedReferencedFile`, which take that type), and its type converters; the selection lives in
 `GlueState`; tree refresh and saving stay in `SetPropertyManager`.
 
+### 2026-11-23 — Plugin load reactions split into model setup and `GenerateProjectCode`
+
+`PluginBase.GenerateProjectCode` is a hook for a plugin's project-level output: generated code no single
+element owns, embedded code files, settings files it creates, and their `.csproj` entries.
+`ProjectLoadOperations.GeneratePluginProjectCode` raises it. The editor's load calls it right after
+`ReactToLoadedGlux`, which keeps the editor's order, and GlueCli's `regen` calls it before generating all code.
+Gum (runtimes, behaviors, embedded code, .gumx fix-ups, fonts), Tiled (embedded classes, TileMapInfo save,
+object types), the camera (camera setup), ContentPipeline (file aliases, .xnb builds) and GameCommunication
+(compiler settings save, live edit code, Newtonsoft) moved their writes there. `ReactToLoadedGlux` and
+`ReactToLoadedGluxEarly` now only set up model and UI, so `check` writes nothing on a never-generated
+project. `ProjectLoaderEditorSessionTests` compares an editor load's written files with lists recorded
+before the split.
+
+`TaskManager` tracked a task run synchronously (headless) through the single `CurrentlyRunningTask` field.
+Two overlapping runs on different threads left it pointing at a finished task, so `WaitForAllTasksFinished`
+never returned. Synchronous runs are now tracked in their own list.
+
+Still in the model-only load (FormsSampleProject): MSBuild evaluation of the `.csproj` (~1.1s) and Gum's
+`.gumx` load in `ReactToLoadedGluxEarly`.
+
 ### 2026-11-23 — Project load split into a model load plus named operations
 
 `ProjectLoader.LoadProject` takes a `ProjectLoadScope`. `EditorSession` (the default, what Glue.exe uses) runs

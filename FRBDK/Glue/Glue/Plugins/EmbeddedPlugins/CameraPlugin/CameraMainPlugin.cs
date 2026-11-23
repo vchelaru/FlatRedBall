@@ -33,6 +33,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             viewModel.PropertyChanged += HandleDisplaySettingsChanged;
 
             this.ReactToLoadedGlux += HandleLoadedGlux;
+            this.GenerateProjectCode += HandleGenerateProjectCode;
             this.ReactToUnloadedGlux += HandleUnloadedGlux;
 
             cameraToolbar = new CameraToolbar();
@@ -49,11 +50,9 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
 
         private void HandleLoadedGlux()
         {
-
-                
             base.AddToToolBar(cameraToolbar, "Standard");
-            
-            // When the project loads, immediately set the ATI so 
+
+            // When the project loads, immediately set the ATI so
             // that Glue behaves properly
             if (GlueState.Self.CurrentGlueProject?.DisplaySettings != null)
             {
@@ -64,7 +63,13 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
                 respondToViewModelChanges = true;
 
                 CameraAtiUpdateLogic.UpdateAtiTo(viewModel);
+            }
+        }
 
+        private void HandleGenerateProjectCode()
+        {
+            if (GlueState.Self.CurrentGlueProject?.DisplaySettings != null)
+            {
                 CameraSetupCodeGenerator.UpdateOrAddCameraSetup();
             }
         }

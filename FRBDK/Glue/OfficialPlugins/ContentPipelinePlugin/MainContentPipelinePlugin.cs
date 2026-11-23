@@ -122,6 +122,7 @@ namespace OfficialPlugins.MonoGameContent
             this.ReactToFileChange += HandleFileChanged;
             this.ReactToBuiltFileChangeHandler += (fileName) => HandleFileChanged(fileName, FileChangeType.Modified);
             this.ReactToLoadedGluxEarly += HandleLoadedGlux;
+            this.GenerateProjectCode += HandleGenerateProjectCode;
             this.ReactToUnloadedGlux += HandleGluxUnloaded;
             this.ReactToLoadedSyncedProject += HandleLoadedSyncedProject;
             this.ReactToNewFileHandler += HandleNewFile;
@@ -297,6 +298,13 @@ namespace OfficialPlugins.MonoGameContent
             viewModel.IsProjectLoaded = true;
             controller.LoadOrCreateSettings();
             viewModel.UseContentPipelineOnPngs = controller.Settings.UseContentPipelineOnAllPngs;
+        }
+
+        /// <summary>
+        /// FileAliases.Generated.cs, plus building the content pipeline files (.xnb) that are missing or stale.
+        /// </summary>
+        private void HandleGenerateProjectCode()
+        {
             aliasCodeGenerator.GenerateFileAliasLogicCode();
             _ = BuildLogic.Self.RefreshBuiltFilesFor(GlueState.CurrentMainProject, viewModel.UseContentPipelineOnPngs, controller);
         }

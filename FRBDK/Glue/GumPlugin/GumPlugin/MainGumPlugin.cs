@@ -145,6 +145,8 @@ public class MainGumPlugin : PluginBase
 
         this.ReactToLoadedGlux += HandleGluxLoad;
 
+        this.GenerateProjectCode += HandleGenerateProjectCode;
+
         this.ReactToUnloadedGlux += HandleUnloadedGlux;
 
         #endregion
@@ -718,7 +720,7 @@ public class MainGumPlugin : PluginBase
         StandardsCodeGenerator.Self.RefreshVariableNamesToSkipForProperties();
     }
 
-    private async void HandleGluxLoad()
+    private void HandleGluxLoad()
     {
         base.AddToToolBar(gumToolbar, "Tools");
 
@@ -729,7 +731,21 @@ public class MainGumPlugin : PluginBase
         if (gumRfs != null)
         {
             FileChangeManager.Self.RegisterAdditionalContentTypes();
+        }
 
+        UpdateMenuItemVisibility();
+    }
+
+    /// <summary>
+    /// The Gum runtimes, Forms classes and behaviors, Gum's embedded code files, and the fix-ups Glue makes to
+    /// the .gumx (parent project root, canvas size) and its fonts.
+    /// </summary>
+    private async void HandleGenerateProjectCode()
+    {
+        var gumRfs = GumProjectManager.Self.GetRfsForGumProject();
+
+        if (gumRfs != null)
+        {
             var behavior = EmbeddedResourceManager.Self.GetBehavior(gumRfs);
 
             // todo: Removing a file should cause this to get called, but I don't think Gum lets us subscribe to that yet.
@@ -743,12 +759,10 @@ public class MainGumPlugin : PluginBase
 
                 FileReferenceTracker.Self.RemoveUnreferencedFilesFromVsProject();
 
-                UpdateMenuItemVisibility();
-
                 // the UpdatecodeInProjectPresence may add new files, so save:
                 GlueCommands.Self.ProjectCommands.SaveProjects();
 
-            }, "Gum Plugin reacting to Glue Project Load");
+            }, "Gum Plugin generating project code");
 
             await UpdateGumParentProject();
 

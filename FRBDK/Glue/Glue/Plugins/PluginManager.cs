@@ -1651,6 +1651,29 @@ public class PluginManager : PluginManagerBase
         ResumeRelativeDirectory("ReactToLoadedGlux");
     }
 
+    /// <summary>
+    /// Raises <see cref="PluginBase.GenerateProjectCode"/> on every enabled plugin, in the order
+    /// <see cref="ReactToLoadedGlux"/> notifies them.
+    /// </summary>
+    internal static void GenerateProjectCode()
+    {
+        SaveRelativeDirectory();
+
+        foreach (PluginManager pluginManager in mInstances)
+        {
+            foreach (var plugin in pluginManager.ImportedPlugins.Where(x => x.GenerateProjectCode != null))
+            {
+                var container = pluginManager.mPluginContainers[plugin];
+                if (container.IsEnabled)
+                {
+                    PluginCommand(() => plugin.GenerateProjectCode(), container, "Failed in GenerateProjectCode");
+                }
+            }
+        }
+
+        ResumeRelativeDirectory("GenerateProjectCode");
+    }
+
     internal static void ReactToVariableAdded(CustomVariable newVariable)
     {
         CallMethodOnPlugin(

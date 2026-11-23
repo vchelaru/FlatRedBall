@@ -141,6 +141,13 @@ namespace FlatRedBall.Glue.IO
             }
         }
 
+        /// <summary>
+        /// Has every plugin write its project-level code and files (<see cref="PluginBase.GenerateProjectCode"/>):
+        /// Gum runtimes, Tiled's embedded classes, the camera setup, file aliases and the like. Plugins queue most
+        /// of this as tasks.
+        /// </summary>
+        public void GeneratePluginProjectCode() => PluginManager.GenerateProjectCode();
+
         public void GenerateAllCode() => glueCommands.GenerateCodeCommands.GenerateAllCode();
 
         /// <summary>

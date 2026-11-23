@@ -7,14 +7,15 @@
     {
         /// <summary>
         /// What the editor's File > Load Project does: the model load plus every <see cref="ProjectLoadOperations"/>
-        /// step (generate all code, save what the fix-ups changed, .csproj fix-ups, unreferenced files, editor UI).
+        /// step (plugin project code, generate all code, save what the fix-ups changed, .csproj fix-ups,
+        /// unreferenced files, editor UI).
         /// </summary>
         EditorSession,
 
         /// <summary>
         /// Reads the .csproj, the .gluj and its element files, applies the in-memory fix-ups, and notifies plugins
-        /// that the project loaded. Glue itself writes nothing; plugin load reactions still run and can write
-        /// (Gum and Tiled generate their code there).
+        /// that the project loaded. Writes nothing: plugins write their project-level code in
+        /// <see cref="ProjectLoadOperations.GeneratePluginProjectCode"/>, which this scope does not call.
         /// </summary>
         ModelOnly,
     }

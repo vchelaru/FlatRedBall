@@ -481,7 +481,7 @@ public static class GlueHeadlessHost
 
         EnsureMsBuildEnvironmentVariable();
 
-        // A plugin's ReactToLoadedGlux handler is often `async void` (MainGumPlugin.HandleGluxLoad is),
+        // A plugin's ReactToLoadedGlux or GenerateProjectCode handler is often `async void` (MainGumPlugin.HandleGenerateProjectCode is),
         // and an exception in one of those does not reach PluginManager's try/catch - it gets posted to
         // the synchronization context, where WinForms turns it into a modal "Unhandled exception" dialog
         // on the user's desktop and the plugin container still reports no failure. Reporting these
