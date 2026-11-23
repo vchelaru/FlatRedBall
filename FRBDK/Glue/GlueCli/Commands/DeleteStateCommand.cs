@@ -29,7 +29,7 @@ variable typed as the category (in any screen or entity) goes with it, as in the
                     variables left with no state (the dialog's ""Remove the variable X..."", checked by
                     default). Categorized states never ask this.
 
-The run fails (exit 1, nothing saved) when the element, category or state is unknown. The message lists
+The run fails (exit 1, changes not saved) when the element, category or state is unknown. The message lists
 close matches.
 
 With --json, ""edit"" holds {kind, element, category, state, alsoRemoved, options, changedElements}: kind is

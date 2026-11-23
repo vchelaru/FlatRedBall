@@ -20,7 +20,7 @@ public static class AddStateCommand
 @"Adds the state the way the editor's ""Add State"" does, then saves the .gluj and element files and
 regenerates the element's code. The new state sets no variables; set them with set-state-variable.
 
-The run fails (exit 1, nothing saved) when the element or category is unknown, or the name is invalid or
+The run fails (exit 1, changes not saved) when the element or category is unknown, or the name is invalid or
 already used by a state in the category (or the same category of the element's base). The message lists
 close matches.
 

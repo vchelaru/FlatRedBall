@@ -24,7 +24,7 @@ regenerates code. Variables typed as the category follow, in any element. So doe
 variable in the element and the elements that inherit it, with the states, events, instance variables and
 tunneled variables that set it. Hand-written code is not changed.
 
-The run fails (exit 1, nothing saved) when the element or category is unknown, the new name is invalid, the
+The run fails (exit 1, changes not saved) when the element or category is unknown, the new name is invalid, the
 element, its base or a derived element already has a category with that name, or Current<new name>State is
 already a variable there. The message lists close matches.
 

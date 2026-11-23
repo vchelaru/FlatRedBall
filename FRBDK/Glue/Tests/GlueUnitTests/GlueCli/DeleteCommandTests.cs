@@ -69,7 +69,9 @@ public class DeleteCommandTests
 
         var files = LeftOverFiles(result);
         files.ShouldContain(file => file.path == "Entities/Puck.cs" && file.onDisk && !file.inProject);
-        files.ShouldContain(file => file.path == "Factories/PuckFactory.Generated.cs" && !file.inProject);
+        files.ShouldContain(file => file.path == "Entities/Puck.Generated.cs" && file.onDisk && !file.inProject);
+        // Glue's entity removal deletes the factory itself, whatever the dialog's file choice (as in the editor).
+        files.ShouldContain(file => file.path == "Factories/PuckFactory.Generated.cs" && !file.onDisk && !file.inProject);
     }
 
     [StaFact]

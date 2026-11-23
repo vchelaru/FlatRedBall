@@ -29,7 +29,7 @@ The editor's delete asks only ""Are you sure?"", which this command answers yes,
 Objects in other elements that set the variable on an instance keep that value, as in the editor; the run
 reports them, and fails if that leaves errors.
 
-The run fails (exit 1, nothing saved) when the element or variable is unknown (the message lists close
+The run fails (exit 1, changes not saved) when the element or variable is unknown (the message lists close
 matches), or when the variable comes from a base element, where it has to be removed.
 
 With --json, ""edit"" holds {element, variable, type, removedEvents, instancesSettingIt, changedElements}:

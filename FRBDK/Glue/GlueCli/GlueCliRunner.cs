@@ -103,10 +103,15 @@ public static class GlueCliRunner
             "GlueCli.exe, plus the project's own Plugins folder, as in the editor. The editor's settings are read but",
             "never saved. Do not run an edit while the project is open in the Glue editor.",
             "",
+            "When an edit is not applied, the project's changes are not saved; loading can still write generated",
+            "files, so filesWritten may list some.",
+            "",
             "--json prints one object: command, project, exitCode, failure (why the run stopped, exit 2),",
-            "editFailures (why an edit was not applied), edit (what it did; shape per command), errors (Glue's",
-            "error list, each {type, details}), outputErrors, dialogMessages, preexistingErrors (edits only: what the",
-            "project already had, not counted), filesWritten (relative to the .csproj folder), and timings.",
+            "editFailures (why an edit was not applied), edit (what it did; shape per command), editSummary (the",
+            "text output's one-line version of edit), errors (Glue's error list, each {type, details}),",
+            "outputErrors, dialogMessages, preexistingErrors (edits only: what the project already had, not",
+            "counted), filesWritten (relative to the .csproj folder), startupSeconds, loadSeconds and",
+            "elapsedSeconds.",
             "",
             ExitCodeHelp,
         });
@@ -567,7 +572,10 @@ public sealed class CliResult
     public int ExitCode { get; set; }
     /// <summary>Set when the run could not get as far as reporting errors (exit code 2).</summary>
     public string? Failure { get; set; }
-    /// <summary>Why an edit command did not apply its edit. Nothing was saved.</summary>
+    /// <summary>
+    /// Why an edit command did not apply its edit. The project's changes were not saved; loading can still
+    /// have written generated files.
+    /// </summary>
     public List<string> EditFailures { get; set; } = new();
     /// <summary>What the edit did, shaped by the command (for add-object, the added object).</summary>
     public object? Edit { get; set; }

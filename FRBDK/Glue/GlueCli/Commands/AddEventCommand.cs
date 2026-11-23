@@ -42,7 +42,7 @@ public static class AddEventCommand
 Glue writes the event into the element's .Generated.Event.cs and adds an empty handler, On<name>, to the
 element's hand-written .Event.cs (creating either file if needed). Then saves and regenerates the element.
 
-The run fails (exit 1, nothing saved) when the element, object, object event or variable is unknown, the
+The run fails (exit 1, changes not saved) when the element, object, object event or variable is unknown, the
 name is taken or not a valid C# name, or the object's event already has an event in the element. The message
 lists close matches or the valid choices.
 

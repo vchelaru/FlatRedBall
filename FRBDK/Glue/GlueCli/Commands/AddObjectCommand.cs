@@ -34,7 +34,7 @@ Layer, TileShapeCollection, FlatRedBall.Sprite, ...), a Gum type, or an entity (
 Without --list, an entity instance goes into the element's list of that entity type (or of a base type) if
 one exists, as in the editor. Everything else is added at the top level.
 
-The run fails (exit 1, nothing saved) when the name is taken or invalid, the type or element is unknown,
+The run fails (exit 1, changes not saved) when the name is taken or invalid, the type or element is unknown,
 the element would contain itself, or the list cannot hold the type. The message lists close matches.
 
 With --json, ""edit"" holds the added object: {element, name, sourceType, type, genericType, sourceFile,

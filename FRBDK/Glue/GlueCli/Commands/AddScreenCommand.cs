@@ -28,7 +28,7 @@ reactions (for a project with Gum, a paired <Name>Gum screen). Then saves the .g
 The dialog's level options (tile map, collision, copying another level's entities, startup screen) are not
 applied; add those objects with add-object. With --base the screen inherits that screen's objects and files.
 
-The run fails (exit 1, nothing saved) when the name is invalid or taken by a screen, entity or file, the folder
+The run fails (exit 1, changes not saved) when the name is invalid or taken by a screen, entity or file, the folder
 name is invalid, or the base screen is unknown. The message lists close matches.
 
 With --json, ""edit"" holds the new screen: {name, baseScreen, isStartupScreen, objects}, where objects are the

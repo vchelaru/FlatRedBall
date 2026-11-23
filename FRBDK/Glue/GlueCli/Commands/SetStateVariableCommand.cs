@@ -31,7 +31,7 @@ A state can only set a variable its category includes. Pass --include to include
 category first (the State Data tab's include button); without it the run fails. Shared (static) variables
 and list-typed variables can never be in a state.
 
-The run fails (exit 1, nothing saved) when the element, category, state or variable is unknown, or the text
+The run fails (exit 1, changes not saved) when the element, category, state or variable is unknown, or the text
 does not convert to the variable's type. The message lists close matches or names the expected type.
 
 With --json, ""edit"" holds {element, category, state, variable, type, oldValue, newValue, includedVariable,

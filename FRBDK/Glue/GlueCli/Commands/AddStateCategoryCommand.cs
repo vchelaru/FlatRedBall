@@ -31,7 +31,7 @@ state, so --exclude skips them and --include fails on them.
 
 Add states with add-state and set their values with set-state-variable.
 
-The run fails (exit 1, nothing saved) when the element is unknown, the name is invalid or already used by a
+The run fails (exit 1, changes not saved) when the element is unknown, the name is invalid or already used by a
 category of the element or its base, or a variable is unknown or cannot be included. The message lists
 close matches.
 

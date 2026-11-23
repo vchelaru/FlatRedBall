@@ -40,7 +40,8 @@ before the next step builds on it.
 - Exit code 0 means the edit applied and left no new errors. 1 means the edit was not applied (bad
   input, a Glue rule it breaks) or it added errors. 2 means bad arguments or a project that would not
   load. Errors the project had before the edit are reported as `preexistingErrors` and do not fail the
-  run, so an agent can edit a project that already has problems.
+  run, so an agent can edit a project that already has problems. When an edit is not applied, the
+  project's changes are not saved; loading can still write generated files, which `filesWritten` lists.
 - Output is plain text by default and JSON with `--json`, so agents can parse it.
 - A command never shows a dialog. Every MessageBox or yes/no prompt on a command's path goes through a
   dialog seam. In CLI mode the seam either answers from an explicit flag (for example `--overwrite`) or

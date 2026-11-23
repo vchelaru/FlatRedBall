@@ -17,7 +17,7 @@ public static class CliLookup
         error = null;
         var project = GlueState.Self.CurrentGlueProject;
         var all = project.Screens.Cast<GlueElement>().Concat(project.Entities).ToList();
-        var normalized = name.Replace('/', '\\').Trim('\\');
+        var normalized = NormalizeSlashes(name);
 
         var exact = all.FirstOrDefault(element => string.Equals(element.Name, normalized, StringComparison.OrdinalIgnoreCase));
         if (exact != null)
@@ -42,6 +42,15 @@ public static class CliLookup
         error = $"No screen or entity named '{name}'." + DescribeCloseMatches(name, all.Select(element => element.Name));
         return null;
     }
+
+    /// <summary>
+    /// Whether <paramref name="a"/> and <paramref name="b"/> name the same thing the way <see cref="FindElement"/>
+    /// compares: case-insensitive, either slash, ignoring leading and trailing slashes.
+    /// </summary>
+    public static bool SameName(string a, string b) =>
+        string.Equals(NormalizeSlashes(a), NormalizeSlashes(b), StringComparison.OrdinalIgnoreCase);
+
+    static string NormalizeSlashes(string name) => name.Replace('/', '\\').Trim('\\');
 
     /// <summary><c>Entities\Enemies\Slime</c> becomes <c>Slime</c>.</summary>
     public static string StripFolders(string name)

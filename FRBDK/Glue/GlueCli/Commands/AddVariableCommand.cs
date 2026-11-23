@@ -45,11 +45,13 @@ The window's other options, as flags (defaults are the window's):
   --category C                  Category it is listed under. The window replaces it with the object's
                                 category for a tunneled variable.
   --summary S                   Summary (the XML doc comment in generated code).
-  --overriding-type T           Tunneled only: expose the variable as another type, converted with
-  --type-converter C            the given converter (the window's first converter by default).
---default sets the default value after adding it, converted to the type as set-variable does.
+  --overriding-type T           Tunneled only: expose the variable as another type.
+  --type-converter C            Tunneled only, with --overriding-type: the converter between the two types.
+                                Default: the window's first converter.
+  --default V                   Default value, set after adding it and converted to the type as
+                                set-variable does.
 
-The run fails (exit 1, nothing saved) when the element, type, object or variable is unknown, the name is
+The run fails (exit 1, changes not saved) when the element, type, object or variable is unknown, the name is
 taken or invalid, the object's variable is already tunneled, or the value does not convert. The message
 says why and lists close matches.
 

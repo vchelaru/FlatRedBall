@@ -45,7 +45,7 @@ variables; set-variable refuses them. set-property sets them.
 Setting a screen's DefaultLayer asks whether to move the objects on the old layer to the new one. Pass
 --move-objects to move them; without it the question goes unanswered and the run fails.
 
-The run fails (exit 1, nothing saved) when the element, object or variable is unknown, or the text does not
+The run fails (exit 1, changes not saved) when the element, object or variable is unknown, or the text does not
 convert to the variable's type. The message lists close matches or names the expected type.
 
 With --json, ""edit"" holds {element, object, variable, type, oldValue, newValue, movedObjects}. object is

@@ -44,11 +44,11 @@ objects on it (for a Layer) and the copies in derived elements follow. Hand-writ
 --file renames a file the element (or Global Content, with --global) references, and the file on disk.
 <new name> may leave out the extension to keep the old one; the file stays in its folder.
 
-The run fails (exit 1, nothing saved) when the target is unknown, the new name is invalid or taken, or a
+The run fails (exit 1, changes not saved) when the target is unknown, the new name is invalid or taken, or a
 question the rename asks is answered no. The message lists close matches or says which flag answers it.
 
 With --json, ""edit"" holds {kind, element, oldName, newName, renamedFiles, updatedReferences,
-changedElements}: kind is element, object or file; renamedFiles is [{from, to}] relative to the .csproj
+changedElements}: kind is screen, entity, object or file; renamedFiles is [{from, to}] relative to the .csproj
 folder; updatedReferences lists what was pointed at the new name; changedElements lists every screen and
 entity the rename changed, by name after the rename.",
         Options = new CliOption[]

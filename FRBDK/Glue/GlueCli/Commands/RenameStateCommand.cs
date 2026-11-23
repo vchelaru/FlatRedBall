@@ -26,7 +26,7 @@ regenerates the changed code. Variables whose value is the old state, objects wh
 variable is the old state, and states in other elements that set it follow. Hand-written code is not changed.
 To rename a category, use rename-state-category.
 
-The run fails (exit 1, nothing saved) when the element, category or state is unknown, or the new name is
+The run fails (exit 1, changes not saved) when the element, category or state is unknown, or the new name is
 invalid or already used in the category. The message lists close matches.
 
 With --json, ""edit"" holds {element, category, oldName, newName, changedElements}.",

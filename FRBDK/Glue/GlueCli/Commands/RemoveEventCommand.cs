@@ -22,7 +22,7 @@ removing the element's last event takes its .Generated.Event.cs out of the .cspr
 (On<name>) stays in the element's hand-written .Event.cs; delete it yourself if you no longer want it. Then
 saves and regenerates the element.
 
-The run fails (exit 1, nothing saved) when the element or event does not exist. The message lists close
+The run fails (exit 1, changes not saved) when the element or event does not exist. The message lists close
 matches.
 
 With --json, ""edit"" holds {element, name, handlerFile, handler}: the handler method left in handlerFile,
