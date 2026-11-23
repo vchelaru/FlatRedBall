@@ -1617,3 +1617,13 @@ calls: `ElementCommands.AddStateSaveCategoryAsync`, `GluxCommands.AddStateSave`,
 state branch of `SetPropertyManager`, and `DialogCommands.AskToRemoveState*Async`. Category rename is left out
 until the editor's rename updates variables typed as the category (#2485). Shared helpers are in
 `GlueCli/CliStates.cs`.
+
+### 2026-11-23 — GlueCli `add-variable`, `set-variable-property`, `remove-variable`
+
+The Add Variable window's code in `DialogCommands` is split into `CreateAddVariableViewModel` (the window's
+defaults), `GetAddVariableFailure` (its OK check) and `AddVariableFromViewModelAsync` (the add). The window
+calls them in the same order as before; `add-variable` fills the same view model from flags and calls the
+same three. `set-variable-property` builds `CustomVariablePropertyGridDisplayer` headless, like
+`set-property`, and runs `CustomVariableSaveSetPropertyLogic.ReactToCustomVariableChangedValue` after the
+set. `remove-variable` answers `AskToRemoveCustomVariableAsync`'s one delete confirm. `CliChanges` reports the
+elements an edit changed.
