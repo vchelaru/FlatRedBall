@@ -61,6 +61,8 @@ public class MainGumPlugin : PluginBase
 
     public override void StartUp()
     {
+        GlueCommands.Self.GumCommands = new GumCommands();
+
         propertiesManager = new GumxPropertiesManager();
 
         AssetTypeInfoManager.Self.AddCommonAtis();
@@ -260,8 +262,6 @@ public class MainGumPlugin : PluginBase
         gumToolbar.DataContext = toolbarViewModel;
         gumToolbar.GumButtonClicked += (_, _) => toolbarViewModel.OnToolbarClicked();
     }
-
-    public bool HasGum() => AppState.Self.GumProjectSave != null;
 
     // Called via PluginManager.CallPluginMethod("Gum Plugin", "GetFormsGeneratedRelativePaths") - see
     // ProjectLoader.RemoveOrphanedGeneratedCsprojEntries (GitHub issue #2185).
@@ -797,6 +797,8 @@ public class MainGumPlugin : PluginBase
 
     public override bool ShutDown(FlatRedBall.Glue.Plugins.Interfaces.PluginShutDownReason shutDownReason)
     {
+        GlueCommands.Self.GumCommands = null;
+
         // Was (MethodInvoker) - changed to (Action) because IMainGlueWindow.Invoke only declares an Action
         // overload. Same method, zero behavior change.
         Glue.MainGlueWindow.Self.Invoke((Action)RemoveAllMenuItems);

@@ -13,7 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CompilerPlugin.ViewModels;
 using CompilerLibrary.ViewModels;
-using CompilerLibrary.Error;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 
 namespace CompilerPlugin.Managers
 {

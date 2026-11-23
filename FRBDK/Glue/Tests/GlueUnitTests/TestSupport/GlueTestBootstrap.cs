@@ -108,8 +108,8 @@ internal static class GlueTestBootstrap
     /// <summary>
     /// Opt-in: constructs a real <see cref="MainGumPlugin"/> and registers it with
     /// <see cref="PluginManager.RegisterPlugin"/>, running its real <c>StartUp</c>. This is what
-    /// makes <c>PluginManager.CallPluginMethod("Gum Plugin", "HasGum")</c> return an actual bool instead of
-    /// null - the null is what silently compiles out every <c>#if HasGum</c> branch of the GlueControl
+    /// assigns <c>GlueCommands.Self.GumCommands</c>; without it that is null and <c>HasGum</c> is never asked,
+    /// which is what silently compiles out every <c>#if HasGum</c> branch of the GlueControl
     /// embedded code, so a compile-based test would pass with the bug present (GitHub issue #1973).
     ///
     /// Requires <see cref="EnsureHeadlessProjectLoadReady"/> first: MainGumPlugin's StartUp adds a menu item

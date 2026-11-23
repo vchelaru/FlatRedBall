@@ -20,7 +20,7 @@ namespace GlueUnitTests.TestSupport;
 ///
 /// This is the only kind of test that exercises code generation as it actually runs. Glue's generators are
 /// plugins, and several of them decide what to emit by asking another plugin a question at generation time
-/// (<c>PluginManager.CallPluginMethod("Gum Plugin", "HasGum")</c> gating <c>#define HasGum</c> is the
+/// (<c>GlueCommands.Self.GumCommands?.HasGum()</c> gating <c>#define HasGum</c> is the
 /// canonical one). Codegen unit tests call a single generator directly and so never cross those seams; a
 /// gold project crosses all of them at once and then proves the result compiles. See GitHub issue #1973.
 ///

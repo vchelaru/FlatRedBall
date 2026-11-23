@@ -95,6 +95,29 @@ public class StateVariableCommandsTests : IDisposable
         StateRecordingPlugin.Events.ShouldBeEmpty();
     }
 
+    [Fact]
+    public async Task DragDropManager_MoveVariableOnStateCategory_ShouldIncludeTheVariable_AndNotifyPlugins()
+    {
+        var (category, _) = CreateState();
+        category.ExcludedVariables.AddRange(new[] { "Speed", "Drag" });
+        var speed = ObjectFinder.Self.GlueProject.Entities[0].CustomVariables.Single(item => item.Name == "Speed");
+        // The move generates the entity's code, which needs a main project to write into.
+        var originalMainProject = GlueState.Self.CurrentMainProject;
+        GlueState.Self.CurrentMainProject = TestVisualStudioProjectFactory.CreateInNewTempDirectory(out var tempDirectory);
+        try
+        {
+            await FlatRedBall.Glue.Managers.DragDropManager.MoveVariableOnStateCategory(speed, category);
+        }
+        finally
+        {
+            GlueState.Self.CurrentMainProject = originalMainProject;
+            try { System.IO.Directory.Delete(tempDirectory, recursive: true); } catch { }
+        }
+
+        category.ExcludedVariables.ShouldBe(new[] { "Drag" });
+        StateRecordingPlugin.Events.ShouldBe(new[] { "Included Speed" });
+    }
+
     private class StateRecordingPlugin : PluginBase
     {
         private static bool _registered;

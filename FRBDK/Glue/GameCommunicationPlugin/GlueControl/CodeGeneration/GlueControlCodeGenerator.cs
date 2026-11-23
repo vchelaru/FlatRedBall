@@ -33,9 +33,7 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration
 
             compilerDirectives += CodeBuildItemAdder.GetGlueVersionsString();
 
-            var hasGumResponse = PluginManager.CallPluginMethod("Gum Plugin", "HasGum");
-            var asBool = hasGumResponse as bool?;
-            if (asBool == true)
+            if (GlueCommands.Self.GumCommands?.HasGum() == true)
             {
                 compilerDirectives += "#define HasGum\r\n";
             }
