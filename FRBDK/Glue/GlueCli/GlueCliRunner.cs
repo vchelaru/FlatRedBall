@@ -35,6 +35,7 @@ public static class GlueCliRunner
     {
         CheckCommand.Definition,
         RegenCommand.Definition,
+        DescribeCommand.Definition,
         AddObjectCommand.Definition,
         SetVariableCommand.Definition,
         AddFileCommand.Definition,
@@ -528,7 +529,7 @@ public static class GlueCliRunner
         {
             stdout.WriteLine(result.EditSummary);
         }
-        WriteSection("Edit not applied", result.EditFailures);
+        WriteSection(command?.IsEdit == false ? "Failed" : "Edit not applied", result.EditFailures);
         WriteSection("Errors", result.Errors.Select(error => $"{error.Type}: {error.Details}"));
         WriteSection("Error output", result.OutputErrors);
         WriteSection("Dialog messages", result.DialogMessages);
