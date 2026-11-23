@@ -316,7 +316,7 @@ namespace GameJsonCommunicationPlugin.Common
                         if (toReturn != null)
                         {
                             // This is a little noisy, but can be uncommented for more diagnostic info:
-                            //PluginManager.CallPluginMethod("Compiler Plugin", "HandleOutput", $"Sending back {toReturn}");
+                            //LogDiagnostic($"Sending back {toReturn}");
                             var sendBytes = Encoding.ASCII.GetBytes(toReturn);
                             long size = sendBytes.LongLength;
 
@@ -436,7 +436,7 @@ namespace GameJsonCommunicationPlugin.Common
         private static void DefaultLogAction(string message)
         {
             System.Diagnostics.Debug.WriteLine(message);
-            try { PluginManager.CallPluginMethod("Compiler Plugin", "HandleOutput", message); } catch { }
+            try { FlatRedBall.Glue.Plugins.ExportedImplementations.GlueCommands.Self.CompilerCommands?.PrintOutput(message); } catch { }
         }
 
         private void LogDiagnostic(string message)

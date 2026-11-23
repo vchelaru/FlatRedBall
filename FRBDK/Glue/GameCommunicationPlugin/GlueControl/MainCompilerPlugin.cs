@@ -104,6 +104,12 @@ namespace GameCommunicationPlugin.GlueControl
 
         #endregion
 
+        /// <summary>Prints to the Build tab. Does nothing when the Compiler Plugin is not loaded.</summary>
+        static void PrintToBuildTab(string value) => GlueCommands.Self.CompilerCommands?.PrintOutput(value);
+
+        static Task RunGame() =>
+            GlueCommands.Self.CompilerCommands?.RunAsync(preventFocus: false, string.Empty) ?? Task.CompletedTask;
+
         #region Startup
 
         public override void StartUp()
@@ -111,7 +117,7 @@ namespace GameCommunicationPlugin.GlueControl
             Self = this;
             _refreshManager = new RefreshManager(ReactToPluginEventWithReturn, ReactToPluginEvent);
             _refreshManager.InitializeEvents(
-                (value) => PluginManager.CallPluginMethod("Compiler Plugin", "HandleOutput", value), 
+                PrintToBuildTab, 
                 (value) => this.ReactToPluginEvent("Compiler_Output_Error", value));
 
             _dragDropManagerGameWindow = new DragDropManagerGameWindow(_refreshManager);
@@ -133,7 +139,7 @@ namespace GameCommunicationPlugin.GlueControl
 
             CreateToolbar();
 
-            Output.Initialize((value) => PluginManager.CallPluginMethod("Compiler Plugin", "HandleOutput", value));
+            Output.Initialize(PrintToBuildTab);
 
 
             game1GlueControlGenerator = new Game1GlueControlGenerator();
@@ -379,9 +385,7 @@ namespace GameCommunicationPlugin.GlueControl
                         
                         if(innerResult == MessageBoxResult.Yes)
                         {
-                            await PluginManager.CallPluginMethodAsync("Compiler Plugin", "DoRun",
-                                false, // preventFocus
-                                string.Empty, new GeneralResponse());
+                            await RunGame();
                             CompilerViewModel.IsEditChecked = false;
                         }
                     }
@@ -390,9 +394,7 @@ namespace GameCommunicationPlugin.GlueControl
                         PluginManager.ReceiveOutput("Building succeeded. Running project...");
 
                         CompilerViewModel.IsEditChecked = false;
-                        await PluginManager.CallPluginMethodAsync("Compiler Plugin", "DoRun",
-                            false, // preventFocus
-                            string.Empty, new GeneralResponse());
+                        await RunGame();
                     }
                 }
                 else
@@ -583,7 +585,7 @@ namespace GameCommunicationPlugin.GlueControl
             //pluginTab = base.CreateAndAddTab(GameHostView, "Game Contrll", TabLocation.Bottom);
 
             _gameHostController = new GameHostController();
-            _gameHostController.Initialize(gameHostView, (value) => PluginManager.CallPluginMethod("Compiler Plugin", "HandleOutput", value),
+            _gameHostController.Initialize(gameHostView, PrintToBuildTab,
                 CompilerViewModel,
                 GlueViewSettingsViewModel,
                 glueViewSettingsTab,
@@ -668,7 +670,7 @@ namespace GameCommunicationPlugin.GlueControl
             _refreshManager.ViewModel = CompilerViewModel;
             _dragDropManagerGameWindow.CompilerViewModel = CompilerViewModel;
             _commandReceiver.CompilerViewModel = CompilerViewModel;
-            _commandReceiver.PrintOutput = (value) => PluginManager.CallPluginMethod("Compiler Plugin", "HandleOutput", value);
+            _commandReceiver.PrintOutput = PrintToBuildTab;
             _refreshManager.GlueViewSettingsViewModel = GlueViewSettingsViewModel;
 
             _variableSendingManager.ViewModel = CompilerViewModel;
@@ -676,7 +678,7 @@ namespace GameCommunicationPlugin.GlueControl
 
             CommandSender.Self.GlueViewSettingsViewModel = GlueViewSettingsViewModel;
             CommandSender.Self.CompilerViewModel = CompilerViewModel;
-            CommandSender.Self.PrintOutput = (value) => PluginManager.CallPluginMethod("Compiler Plugin", "HandleOutput", value);
+            CommandSender.Self.PrintOutput = PrintToBuildTab;
 
                 //ReactToPluginEventWithReturn("GameCommunication_Send_OldDTO", value);
             
@@ -809,7 +811,7 @@ namespace GameCommunicationPlugin.GlueControl
 
             if (failureMessage != null)
             {
-                PluginManager.CallPluginMethod("Compiler Plugin", "HandleOutput", failureMessage);
+                PrintToBuildTab(failureMessage);
 
                 GlueCommands.Self.PrintOutput(failureMessage);
             }
@@ -929,7 +931,7 @@ namespace GameCommunicationPlugin.GlueControl
 
         private async Task HandlePortOrGenerateCheckedChanged(string propertyName)
         {
-            PluginManager.CallPluginMethod("Compiler Plugin", "HandleOutput", "Applying Changes");
+            PrintToBuildTab("Applying Changes");
             game1GlueControlGenerator.IsGlueControlManagerGenerationEnabled = GlueViewSettingsViewModel.EnableLiveEdit && IsFrbNewEnough();
             game1GlueControlGenerator.PortNumber = GlueViewSettingsViewModel.PortNumber;
             _refreshManager.PortNumber = GlueViewSettingsViewModel.PortNumber;
@@ -959,10 +961,10 @@ namespace GameCommunicationPlugin.GlueControl
 
             _refreshManager.CreateStopAndRestartTask($"{propertyName} changed");
 
-            PluginManager.CallPluginMethod("Compiler Plugin", "HandleOutput", "Waiting for tasks to finish...");
+            PrintToBuildTab("Waiting for tasks to finish...");
             await TaskManager.Self.WaitForAllTasksFinished();
 
-            PluginManager.CallPluginMethod("Compiler Plugin", "HandleOutput", "Finished adding/generating code for GlueControlManager");
+            PrintToBuildTab("Finished adding/generating code for GlueControlManager");
         }
 
         private static void AddNewtonsoft()
@@ -1068,12 +1070,12 @@ namespace GameCommunicationPlugin.GlueControl
         {
             if (succeeded)
             {
-                PluginManager.CallPluginMethod("Compiler Plugin", "HandleOutput", $"{DateTime.Now.ToLongTimeString()} Build succeeded");
+                PrintToBuildTab($"{DateTime.Now.ToLongTimeString()} Build succeeded");
 
             }
             else
             {
-                PluginManager.CallPluginMethod("Compiler Plugin", "HandleOutput", $"{DateTime.Now.ToLongTimeString()} Build failed");
+                PrintToBuildTab($"{DateTime.Now.ToLongTimeString()} Build failed");
             }
         }
 

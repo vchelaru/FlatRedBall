@@ -27,7 +27,7 @@ using Newtonsoft.Json.Linq;
 using GameCommunicationPlugin.Common;
 using CompilerLibrary.ViewModels;
 using static FlatRedBall.Glue.Plugins.PluginManager;
-using CompilerLibrary.Error;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using FlatRedBall;
 using FlatRedBall.Content.Instructions;
 
@@ -1312,20 +1312,15 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                         printOutput("Could not get the game's screen, restarting game from startup screen");
                     }
 
-                    await PluginManager.CallPluginMethodAsync("Compiler Plugin", "KillGameProcess");
+                    await (GlueCommands.Self.CompilerCommands?.KillGameProcessAsync() ?? Task.CompletedTask);
                 }
 
                 bool compileSucceeded = false;
                 var wasCancelled = false;
                 if (!DoesTaskManagerHaveAnotherRestartTask())
                 {
-                    var generalResponse = new CompileGeneralResponse();
-
-                    await PluginManager.CallPluginMethodAsync("Compiler Plugin", "Compile",
-                        "Debug",
-                        false,
-                        generalResponse);
-
+                    var generalResponse = await (GlueCommands.Self.CompilerCommands?.CompileAsync("Debug", printMsBuildCommand: false)
+                        ?? Task.FromResult(new CompileGeneralResponse()));
 
                     wasCancelled = generalResponse.WasCancelled;
                     compileSucceeded = generalResponse.Succeeded;
@@ -1338,8 +1333,8 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                         // If we aren't generating Glue, then the game will not be embedded, so prevent focus
                         var preventFocus = ViewModel.IsGenerateGlueControlManagerInGame1Checked == false;
 
-                        GeneralResponse response = new GeneralResponse();
-                        await PluginManager.CallPluginMethodAsync("Compiler Plugin", "DoRun", preventFocus, screenToRestartOn, response);
+                        var response = await (GlueCommands.Self.CompilerCommands?.RunAsync(preventFocus, screenToRestartOn)
+                            ?? Task.FromResult(new GeneralResponse()));
 
 
                         if (response.Succeeded == false)

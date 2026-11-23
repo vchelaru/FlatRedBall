@@ -94,6 +94,15 @@ public class GlueCommands : IGlueCommands
     /// </summary>
     public IEntityInputMovementCommands EntityInputMovementCommands { get; set; }
 
+    /// <summary>Assigned by the Compiler Plugin when it starts; null when that plugin is not loaded.</summary>
+    public ICompilerCommands CompilerCommands { get; set; }
+
+    /// <summary>Assigned by the Gum Plugin when it starts; null when that plugin is not loaded.</summary>
+    public IGumCommands GumCommands { get; set; }
+
+    /// <summary>Assigned by the Game Communication Plugin when it starts; null when that plugin is not loaded.</summary>
+    public IGameCommunicationCommands GameCommunicationCommands { get; set; }
+
     public ISelectCommands SelectCommands { get; private set; }
 
     #endregion

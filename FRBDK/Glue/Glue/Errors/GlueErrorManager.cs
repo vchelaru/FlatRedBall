@@ -16,6 +16,17 @@ namespace FlatRedBall.Glue.Errors
 
         public IEnumerable<ErrorViewModel> Errors => errors;
 
+        readonly Action refreshErrors;
+
+        /// <param name="refreshErrors">
+        /// Refreshes the Errors tab. An error added through <see cref="Add(ErrorViewModel)"/> only shows there
+        /// after a refresh.
+        /// </param>
+        public GlueErrorManager(Action refreshErrors = null)
+        {
+            this.refreshErrors = refreshErrors;
+        }
+
         public void Add(ErrorReporterBase errorReporter) => ErrorReporters.Add(errorReporter);
 
         public void Add(ErrorViewModel error)
@@ -27,9 +38,7 @@ namespace FlatRedBall.Glue.Errors
                 errors.Add(error);
             }
 
-            // Vic says - I don't like this. I think maybe this should get moved out of a plugin?
-            // Need to think about it a bit...
-            PluginManager.CallPluginMethod("Error Window Plugin", "RefreshAllErrors");
+            refreshErrors?.Invoke();
         }
 
         /// <summary>

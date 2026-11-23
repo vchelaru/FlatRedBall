@@ -51,7 +51,21 @@ When code outside a plugin (another plugin, GlueCli) needs an operation the plug
 - **Logic owned by Glue itself** goes on the existing command interfaces. Example: `IElementCommands.SetStateVariableValue` and `SetStateCategoryExcludedVariablesAsync`, which the State Data tab's `StateCategoryViewModel` and GlueCli's `set-state-variable`/`add-state-category` both call.
 - **Logic owned by a plugin** gets an interface in `Glue/Plugins/ExportedInterfaces/CommandInterfaces`, a property on `GlueCommands`, and an implementation in the plugin that the plugin assigns in `StartUp` (and clears in `ShutDown`). Callers null-check the property, since the plugin may not be loaded. Example: `IEntityInputMovementCommands`, which the wizard and `add-entity --platformer/--top-down` call.
 
-The view model keeps only view-model work (syncing its collections, choosing when to generate code and save); the shared method does the model change and the plugin notifications. Remaining `CallPluginMethod` uses (mostly "Compiler Plugin" output and run calls, "Gum Plugin" `HasGum`, "Error Window Plugin" `RefreshAllErrors`) are candidates for the same treatment.
+The view model keeps only view-model work (syncing its collections, choosing when to generate code and save); the shared method does the model change and the plugin notifications.
+
+`CallPluginMethod` dispatch runs on the UI thread, catches exceptions and disables the plugin. A typed call does none of that: marshal with `GlueCommands.Self.DoOnUiThread` where the callee touches UI, and catch where a throw must not reach the caller.
+
+Remaining `CallPluginMethod`/`CallPluginMethodAsync` callers, by plugin (caller count per method), each a candidate for the same treatment:
+
+- **"Gum Plugin"**: `IsAssetTypeInfoGum` (2: `DialogCommands`, GlueCli `AddObjectCommand`), `GetFormsGeneratedRelativePaths` (1: `ProjectLoadOperations`), `AskToCreateGumProject` (1: QuickActionPlugin `MainView`), `CreateGumProjectWithForms` and `CreateGumProjectNoForms` (1 each: `WizardProjectLogic`). `IGumCommands` exists; add these to it.
+- **"Glue Compiler"** (GameCommunicationPlugin's `MainCompilerPlugin`): `SetIsLoggingSentCommands`, `SetIsLoggingReceivedCommands` (1 each: `TaskDisplayerViewModel`), `GetIfIsRunning` (1: `ProjectCommands`), `BuildAndRun` (1: `HotkeyManager`), `ShowState` (1: StateDataPlugin `StateDataControl`).
+- **"Tiled Plugin"**: `SaveFileWithVisuals` (2), `SaveTilesetFilesToDisk`, `AddStandardTilesetOnCurrentFile`, `AddGameplayLayerToCurrentFile`, `AddCollisionBorderToCurrentFile` (1 each), all in `WizardProjectLogic`.
+- **"Collision Plugin"**: `FixNamedObjectCollisionType` (3: `ElementCommands`, `WizardProjectLogic` twice). `ICollisionRelationshipCommands` exists.
+- **"Main Property Grid Plugin"**: `FixNamedObjectCollisionType`, `RefreshVariables` (1 each: `RefreshCommands`).
+- **"FRB Source"**: `HasFrbAndGumReposInDefaultLocation` (1), `AddFrbSourceToDefaultLocation` (2), all in `NewProjectHelper`.
+- **"New Project Wizard"**: `RunWizard` (2: `NewProjectHelper`, QuickActionPlugin `MainView`).
+- **"Git Plugin"** `AddGitIgnore`, **"MonoGame Content Plugin"** `RefreshXnbsForProject` (1 each: `NewProjectHelper`).
+- **"Undo Plugin"** `Undo` (1: `GlueCommands`), **"Tree View Plugin"** `AddBookmark` (1: `RightClickHelper`).
 
 ## TreeViewPlugin — Refactoring Goals and Status
 
@@ -340,6 +354,15 @@ models to it. Still UI-bound: `set-property` builds `NamedObjectPropertyGridDisp
 `EntitySavePropertyGridDisplayer` and `ScreenSavePropertyGridDisplayer`, and the plugins' `AdjustDisplayedEntity`
 hooks (Gum, Collision, DamageDealing) take the displayer type; those are the next family to move.
 `AdjustDisplayedReferencedFile` now has no subscribers, and `AdjustDisplayedCustomVariable` was never called.
+
+### 2026-11-23 — Compiler, Gum `HasGum` and Game Communication calls typed
+
+`ICompilerCommands` (Compiler Plugin: output, compile, run, kill), `IGumCommands.HasGum` and
+`IGameCommunicationCommands.AddReflectionStateAssignmentCode` replace their `CallPluginMethod` calls.
+`CompileGeneralResponse` moved from CompilerLibrary into Glue so the interface can return it. The compile, run
+and kill commands still run as TaskManager tasks, as `CallPluginMethodAsync` did. "Error Window Plugin"
+`RefreshAllErrors` had no target method since the plugin dropped it; `GlueErrorManager.Add` now refreshes through
+`IRefreshCommands.RefreshErrors`. The remaining callers are listed under "Typed command interfaces".
 
 ### 2026-11-23 — File property reaction pulled out of `SetPropertyManager` for GlueCli `set-file-property`
 

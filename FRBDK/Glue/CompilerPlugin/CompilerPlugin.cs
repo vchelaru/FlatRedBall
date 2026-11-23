@@ -14,8 +14,6 @@ using Newtonsoft.Json.Linq;
 using System.ComponentModel;
 using CompilerLibrary.ViewModels;
 using System.Windows.Forms;
-using ToolsUtilities;
-using CompilerLibrary.Error;
 
 namespace CompilerPlugin
 {
@@ -28,6 +26,7 @@ namespace CompilerPlugin
         public override Version Version => new Version(1, 0);
         public override bool ShutDown(PluginShutDownReason shutDownReason)
         {
+            GlueCommands.Self.CompilerCommands = null;
             return true;
         }
 
@@ -53,6 +52,10 @@ namespace CompilerPlugin
             };
 
             CreateBuildTab();
+
+            GlueCommands.Self.CompilerCommands = new CompilerCommands(_compiler, _runner, _compilerViewModel,
+                HandleOutput,
+                value => ReactToPluginEvent("Compiler_Output_Error", value));
         }
 
         private void HandleGluxLoaded()
@@ -217,7 +220,7 @@ namespace CompilerPlugin
 
         #endregion
 
-        public void HandleOutput(string output) => MainControl.PrintOutput(output);
+        void HandleOutput(string output) => MainControl.PrintOutput(output);
 
         #region Overrided Method
 
@@ -248,43 +251,6 @@ namespace CompilerPlugin
                     }
                     break;
             }
-        }
-
-        public Task KillGameProcess() => _runner.KillGameProcess();
-
-        public async Task Compile(string configuration, bool printMsBuildCommand, CompileGeneralResponse generalResponse)
-        {
-
-            try
-            {
-                var result = await _compiler.Compile(
-                    (value) => HandleOutput(value), 
-                    (value) => ReactToPluginEvent("Compiler_Output_Error", value),
-                    !_compilerViewModel.HasDoneNugetRestore,
-                    configuration, 
-                    printMsBuildCommand
-                );
-
-                if(result.Succeeded)
-                {
-                    _compilerViewModel.HasDoneNugetRestore = true;
-                }
-
-                generalResponse.SetFrom(result);
-            }
-            catch (Exception ex)
-            {
-                generalResponse.Succeeded = false;
-                generalResponse.Message = ex.ToString();
-            }
-        }
-
-        public async Task DoRun(bool preventFocus, string runArguments, GeneralResponse generalResponse)
-        {
-
-
-            var response = await _runner.Run(preventFocus, runArguments, numberOfSecondsToWait:20);
-            generalResponse.SetFrom(response);
         }
 
         #endregion

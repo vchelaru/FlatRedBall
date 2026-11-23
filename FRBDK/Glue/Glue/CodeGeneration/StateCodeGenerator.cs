@@ -331,8 +331,7 @@ public partial class StateCodeGenerator : ElementComponentCodeGenerator
 
         if(category != null)
         {
-            PluginManager.CallPluginMethod("Game Communication Plugin", "AddReflectionStateAssignmentCode",
-                setBlock, category);
+            GlueCommands.Self.GameCommunicationCommands?.AddReflectionStateAssignmentCode(setBlock, category);
         }
 
         var ifInternal = setBlock.If("!assignedThroughReflection");

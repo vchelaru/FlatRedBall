@@ -17,7 +17,7 @@ namespace GlueUnitTests.Projects;
 ///
 /// This is the only kind of test that exercises code generation the way it actually runs. Glue's
 /// generators are plugins, and several decide what to emit by asking another plugin a question at
-/// generation time (<c>PluginManager.CallPluginMethod("Gum Plugin", "HasGum")</c> gating
+/// generation time (<c>GlueCommands.Self.GumCommands?.HasGum()</c> gating
 /// <c>#define HasGum</c> is the canonical one). Codegen unit tests call a single generator directly and
 /// never cross those seams. See GitHub issue #1973.
 ///
@@ -101,8 +101,8 @@ public class GoldProjectCompileTests
         GlueTestBootstrap.RecordedDialogMessages.ShouldBeEmpty();
         ErrorRecordingPlugin.Errors.ShouldBeEmpty();
 
-        // With the Gum plugin actually dispatched to, HasGum answers for real instead of returning null.
-        FlatRedBall.Glue.Plugins.PluginManager.CallPluginMethod("Gum Plugin", "HasGum").ShouldBe(true);
+        // With the Gum plugin started, its GumCommands answer HasGum for real.
+        FlatRedBall.Glue.Plugins.ExportedImplementations.GlueCommands.Self.GumCommands.HasGum().ShouldBe(true);
 
         GoldProject.EmbedLiveEditCode();
 
@@ -440,7 +440,7 @@ public class GoldProjectCompileTests
         GlueTestBootstrap.RecordedDialogMessages.ShouldBeEmpty();
         ErrorRecordingPlugin.Errors.ShouldBeEmpty();
 
-        FlatRedBall.Glue.Plugins.PluginManager.CallPluginMethod("Gum Plugin", "HasGum").ShouldBe(true);
+        FlatRedBall.Glue.Plugins.ExportedImplementations.GlueCommands.Self.GumCommands.HasGum().ShouldBe(true);
 
         GoldProject.EmbedLiveEditCode();
 

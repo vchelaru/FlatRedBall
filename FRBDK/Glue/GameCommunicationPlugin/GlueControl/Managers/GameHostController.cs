@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 using ToolsUtilities;
 using CompilerLibrary.ViewModels;
 using FlatRedBall.Glue;
-using CompilerLibrary.Error;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 
 namespace GameCommunicationPlugin.GlueControl.Managers
 {
@@ -43,19 +43,17 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             gameHostView.GumInteractionToggle.DataContext = glueViewSettingsViewModel;
             gameHostView.StopClicked += async (not, used) =>
             {
-                await PluginManager.CallPluginMethodAsync("Compiler Plugin", "KillGameProcess");
+                await KillGameProcess();
             };
 
             gameHostView.RestartGameClicked += async (not, used) =>
             {
                 compilerViewModel.IsPaused = false;
-                await PluginManager.CallPluginMethodAsync("Compiler Plugin", "KillGameProcess");
+                await KillGameProcess();
                 var succeeded = await Compile();
                 if (succeeded)
                 {
-                    await PluginManager.CallPluginMethodAsync("Compiler Plugin", "DoRun", 
-                        false, // preventFocus
-                        string.Empty, new GeneralResponse());
+                    await Run(preventFocus: false, string.Empty);
                 }
                 else
                 {
@@ -77,19 +75,14 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                     isInEditMode:false);
 
                 compilerViewModel.IsPaused = false;
-                await PluginManager.CallPluginMethodAsync("Compiler Plugin", "KillGameProcess");
+                await KillGameProcess();
 
                 var compileSucceeded = await Compile();
                 bool runSucceeded = false;
                 string runError = "";
                 if (compileSucceeded)
                 {
-
-                    GeneralResponse response = new GeneralResponse();
-                    await PluginManager.CallPluginMethodAsync("Compiler Plugin", "DoRun",
-                        false, // prevent focus
-                        commandLineArgs, // RunArguments
-                        response);
+                    var response = await Run(preventFocus: false, commandLineArgs);
 
                     runSucceeded = response.Succeeded;
                 }
@@ -298,11 +291,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 {
                     string commandLineArgs = await GetCommandLineArgs(isRunning:false, isInEditMode:true);
 
-                    GeneralResponse response = new GeneralResponse();
-                    await PluginManager.CallPluginMethodAsync("Compiler Plugin", "DoRun", 
-                        false, // prevent focus
-                        commandLineArgs, // RunArguments
-                        response);
+                    var response = await Run(preventFocus: false, commandLineArgs);
 
                     if (response.Succeeded)
                     {
@@ -333,14 +322,24 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
         public async Task<bool> Compile()
         {
-            var generalResponse = new CompileGeneralResponse();
+            var compilerCommands = GlueCommands.Self.CompilerCommands;
+            if (compilerCommands == null)
+            {
+                return false;
+            }
 
-            await PluginManager.CallPluginMethodAsync("Compiler Plugin", "Compile", 
+            var response = await compilerCommands.CompileAsync(
                 compilerViewModel.Configuration,
-                compilerViewModel.IsPrintMsBuildCommandChecked,
-                generalResponse);
+                compilerViewModel.IsPrintMsBuildCommandChecked);
 
-            return generalResponse.Succeeded;
+            return response.Succeeded;
         }
+
+        static Task<GeneralResponse> Run(bool preventFocus, string runArguments) =>
+            GlueCommands.Self.CompilerCommands?.RunAsync(preventFocus, runArguments)
+            ?? Task.FromResult(new GeneralResponse());
+
+        static Task KillGameProcess() =>
+            GlueCommands.Self.CompilerCommands?.KillGameProcessAsync() ?? Task.CompletedTask;
     }
 }

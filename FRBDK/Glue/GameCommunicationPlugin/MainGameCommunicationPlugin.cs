@@ -44,12 +44,14 @@ namespace GameCommunicationPlugin
             _gameCommunicationManager.Dispose();
             _gameCommunicationManager = null;
             GameConnectionManager.Self = null;
+            FlatRedBall.Glue.Plugins.ExportedImplementations.GlueCommands.Self.GameCommunicationCommands = null;
             return true;
         }
 
         public override void StartUp()
         {
             Self = this;
+            FlatRedBall.Glue.Plugins.ExportedImplementations.GlueCommands.Self.GameCommunicationCommands = new GameCommunicationCommands();
             _gameCommunicationManager = new GameConnectionManager(ReactToPluginEvent, 8888);
             _gameCommunicationManager.OnPacketReceived += HandleOnPacketReceived;
             GameConnectionManager.Self = _gameCommunicationManager;
@@ -97,11 +99,6 @@ namespace GameCommunicationPlugin
                 Debug.WriteLine($"Packet Type: {packet.PacketType}, Payload: {packet.Payload}");
             }
             return toReturn;
-        }
-
-        public void AddReflectionStateAssignmentCode(ICodeBlock codeBlock, StateSaveCategory category)
-        {
-            ReflectionBasedStateCodeGenerator.AddReflectionStateAssignmentCode(codeBlock, category);
         }
     }
 }

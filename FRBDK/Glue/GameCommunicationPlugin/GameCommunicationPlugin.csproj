@@ -112,6 +112,7 @@
     <Compile Include="CodeGeneration\ApplyEditorCommandsCodeGenerator.cs" />
     <Compile Include="CodeGeneration\EmbeddedCodeManager.cs" />
     <Compile Include="CodeGeneration\Game1GlueCommunicationGenerator.cs" />
+    <Compile Include="CodeGeneration\GameCommunicationCommands.cs" />
     <Compile Include="CodeGeneration\ReflectionBasedStateCodeGenerator.cs" />
     <Compile Include="Common\GameCommunicationHelper.cs" />
     <Compile Include="Common\GameConnectionManager.cs" />

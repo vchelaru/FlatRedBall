@@ -562,9 +562,9 @@ public class DragDropManager : Singleton<DragDropManager>
 
     #region ... On State Category
 
-    private static void MoveVariableOnStateCategory(CustomVariable customVariable, StateSaveCategory stateSaveCategory)
+    internal static Task MoveVariableOnStateCategory(CustomVariable customVariable, StateSaveCategory stateSaveCategory)
     {
-        _=TaskManager.Self.AddAsync(() =>
+        return TaskManager.Self.AddAsync(async () =>
         {
             var owner = ObjectFinder.Self.GetElementContaining(customVariable);
 
@@ -579,13 +579,10 @@ public class DragDropManager : Singleton<DragDropManager>
             }
             else
             {
-                if (stateSaveCategory.ExcludedVariables.Contains(customVariable.Name))
-                {
-                    stateSaveCategory.ExcludedVariables.Remove(customVariable.Name);
-                }
-                var container = ObjectFinder.Self.GetElementContaining(stateSaveCategory);
+                await GlueCommands.Self.GluxCommands.ElementCommands.SetStateCategoryExcludedVariablesAsync(stateSaveCategory,
+                    stateSaveCategory.ExcludedVariables.Where(item => item != customVariable.Name));
 
-                PluginManager.ReactToStateCategoryExcludedVariablesChangedAsync(stateSaveCategory, customVariable.Name, StateCategoryVariableAction.Included);
+                var container = ObjectFinder.Self.GetElementContaining(stateSaveCategory);
 
                 GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(container);
                 GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(container);
@@ -612,7 +609,7 @@ public class DragDropManager : Singleton<DragDropManager>
         }
         else if(targetNode.IsStateCategoryNode())
         {
-            MoveVariableOnStateCategory(nodeMoving.Tag as CustomVariable, targetNode.Tag as StateSaveCategory);
+            _ = MoveVariableOnStateCategory(nodeMoving.Tag as CustomVariable, targetNode.Tag as StateSaveCategory);
         }
     }
 
