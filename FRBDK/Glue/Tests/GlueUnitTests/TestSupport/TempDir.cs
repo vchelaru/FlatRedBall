@@ -67,5 +67,13 @@ internal sealed class TempDir : IDisposable
                     Environment.NewLine + string.Join(Environment.NewLine, ErrorRecordingPlugin.Errors.Skip(errorCountBefore)));
             }
         }
+
+        // State found on load that nothing re-finds before the next test uses it. A stale game class sent
+        // later tests' Game1 edits to a Game1.cs their project doesn't have (#2504).
+        if (FlatRedBall.Glue.ProjectManager.GameClassFileName != null)
+        {
+            throw new InvalidOperationException(
+                $"Unloading left ProjectManager.GameClassFileName set to {FlatRedBall.Glue.ProjectManager.GameClassFileName}.");
+        }
     }
 }
