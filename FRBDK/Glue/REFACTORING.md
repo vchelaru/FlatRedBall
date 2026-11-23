@@ -1580,3 +1580,12 @@ it reports itself; anything else still fails the run. `IElementCommands.RenameEl
 returns the rename summary window's contents. Two editor bug fixes: declining "overwrite existing files?"
 no longer leaves the element's .glsj/.glej in the recycle bin, and the object name check now catches a taken
 name on an object with a public property or inside a screen's list.
+
+### 2026-11-23 — One legacy Container registration list for the editor and headless
+
+`MainGlueWindow` and `GlueHeadlessHost` each filled `EditorObjects.IoC.Container` by hand, and headless
+lacked `SetPropertyManager`, `StateSaveCategorySetVariableLogic` and `PluginUpdater`. Both now call
+`GlueHeadlessHost.RegisterContainerServices`, which records the types it registered.
+`ContainerRegistrationTests` checks they resolve headless and fails if any other Glue source calls
+`Container.Set`. `InstructionManager`/`TypeConverterHelper` setup is shared the same way
+(`InitializeCodeGenerationTables`). The `Builder` DI container was already shared.
