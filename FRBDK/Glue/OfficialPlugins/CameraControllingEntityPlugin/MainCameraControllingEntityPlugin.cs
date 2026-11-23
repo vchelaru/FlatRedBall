@@ -40,7 +40,11 @@ namespace OfficialPlugins.CameraControllingEntityPlugin
 
             ati.CanBeObject = true;
             ati.IsPositionedObject = true;
-            ati.AddToManagersFunc += (element, nos, rfs, layerName) => $"FlatRedBall.SpriteManager.AddPositionedObject({nos.InstanceName}); {nos.InstanceName}.Activity();";
+            ati.AddToManagersFunc += (element, nos, rfs, layerName) =>
+            {
+                var instanceName = GetInstanceName(nos);
+                return $"FlatRedBall.SpriteManager.AddPositionedObject({instanceName}); {instanceName}.Activity();";
+            };
             ati.ActivityMethod = "this.Activity()";
             ati.DestroyMethod = "FlatRedBall.SpriteManager.RemovePositionedObject(this);";
 
@@ -164,14 +168,20 @@ namespace OfficialPlugins.CameraControllingEntityPlugin
             return mapObjects.Select(item => item.InstanceName).ToList();
         }
 
-        private string GenerateMapCodeGen(IElement arg1, NamedObjectSave nos, ReferencedFileSave arg3, string memberName)
+        // nos is null when the element itself is the CameraControllingEntity (an entity whose base is that
+        // type). The instance is then "this", and its variables live on the element.
+        private static string GetInstanceName(NamedObjectSave nos) => nos?.InstanceName ?? "this";
+
+        private static string GetVariableValue(IElement element, NamedObjectSave nos, string variableName) =>
+            (nos != null ? nos.GetCustomVariable(variableName)?.Value : element.GetCustomVariable(variableName)?.DefaultValue) as string;
+
+        private string GenerateMapCodeGen(IElement element, NamedObjectSave nos, ReferencedFileSave arg3, string memberName)
         {
-            var value = 
-                nos.GetCustomVariable(nameof(FlatRedBall.Entities.CameraControllingEntity.Map))?.Value as string;
+            var value = GetVariableValue(element, nos, nameof(FlatRedBall.Entities.CameraControllingEntity.Map));
 
             if(!string.IsNullOrEmpty(value))
             {
-                return $"{nos.InstanceName}.Map = {value};";
+                return $"{GetInstanceName(nos)}.Map = {value};";
             }
             else
             {
@@ -181,12 +191,12 @@ namespace OfficialPlugins.CameraControllingEntityPlugin
 
         private string GenerateTargetsCodeGen(IElement nosContainer, NamedObjectSave nos, ReferencedFileSave arg3, string memberName)
         {
-            var value =
-                nos.GetCustomVariable(nameof(FlatRedBall.Entities.CameraControllingEntity.Targets))?.Value as string;
+            var value = GetVariableValue(nosContainer, nos, nameof(FlatRedBall.Entities.CameraControllingEntity.Targets));
 
             if(!string.IsNullOrEmpty(value))
             {
                 var referencedNos = nosContainer.GetNamedObjectRecursively(value);
+                var instanceName = GetInstanceName(nos);
 
                 if(referencedNos == null)
                 {
@@ -195,11 +205,11 @@ namespace OfficialPlugins.CameraControllingEntityPlugin
                 else if(referencedNos.IsList)
                 {
 
-                    return $"{nos.InstanceName}.Targets = {referencedNos.InstanceName};";
+                    return $"{instanceName}.Targets = {referencedNos.InstanceName};";
                 }
                 else
                 {
-                    return $"{nos.InstanceName}.Targets.Clear(); {nos.InstanceName}.Targets.Add({referencedNos.InstanceName});";
+                    return $"{instanceName}.Targets.Clear(); {instanceName}.Targets.Add({referencedNos.InstanceName});";
                 }
             }
             else
