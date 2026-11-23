@@ -35,6 +35,32 @@ namespace FlatRedBall.Glue.SetVariable
             _nameVerifier = Builder.Get<NameVerifier>();
         }
 
+        /// <summary>
+        /// Everything that follows a change to a member of the selected file (<see cref="GlueState.CurrentReferencedFileSave"/>)
+        /// in either Properties grid or GlueCli's set-file-property: the member's own reaction, the plugins, then the code of
+        /// the file's element, or GlobalContent.Generated.cs for a Global Content file. Saving and refreshing the tree are
+        /// left to the caller.
+        /// </summary>
+        /// <returns>Whether the file's tree node needs refreshing.</returns>
+        internal async Task<bool> ReactToChangedReferencedFileAndGenerateCode(string changedMember, object oldValue)
+        {
+            var updateTreeView = true;
+            ReactToChangedReferencedFile(changedMember, oldValue, ref updateTreeView);
+
+            var element = GlueState.Self.CurrentElement;
+            PluginManager.ReactToChangedProperty(changedMember, oldValue, element, null);
+
+            if (element != null)
+            {
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementAndReferencedObjectCode(element);
+            }
+            else
+            {
+                await TaskManager.Self.AddAsync(() => GlobalContentCodeGenerator.UpdateLoadGlobalContentCode(), "Updating load global content code");
+            }
+            return updateTreeView;
+        }
+
         internal void ReactToChangedReferencedFile(string changedMember, object oldValue)
         {
             var throwaway = false;
