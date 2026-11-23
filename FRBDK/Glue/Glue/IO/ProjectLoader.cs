@@ -49,6 +49,14 @@ namespace FlatRedBall.Glue.IO
         (string CsprojFullPath, Task<GlueProjectSaveExtensions.PrefetchedGlueProject> Read)? earlyGlueProjectRead;
 
         /// <summary>
+        /// The project <see cref="StartEarlyReads"/> is reading ahead, for plugins that start their own early
+        /// reads in <c>StartUp</c> (the Gum plugin reads the .gumx). Null when no early read was started, and once
+        /// <see cref="LoadProject"/> has taken the early reads. Such a read is only a guess: the plugin's load must
+        /// check it read the file the load uses, unchanged.
+        /// </summary>
+        public EarlyProjectFiles EarlyProjectFiles { get; private set; }
+
+        /// <summary>
         /// Starts the .csproj evaluation and the read of the .gluj next to it, so both overlap the rest of
         /// startup. MSBUILD_EXE_PATH must already be final. <see cref="LoadProject"/> uses each only if it opens
         /// the same file and nothing it read has changed; otherwise it does that work itself as before.
@@ -59,7 +67,16 @@ namespace FlatRedBall.Glue.IO
             if (!string.IsNullOrEmpty(csprojFileName) && File.Exists(csprojFileName))
             {
                 var gluj = new FilePath(FileManager.RemoveExtension(csprojFileName) + ".gluj");
-                earlyGlueProjectRead = (Path.GetFullPath(csprojFileName), Task.Run(() => GlueProjectSaveExtensions.Prefetch(gluj)));
+                var csprojFullPath = Path.GetFullPath(csprojFileName);
+                var read = Task.Run(() => GlueProjectSaveExtensions.Prefetch(gluj));
+                earlyGlueProjectRead = (csprojFullPath, read);
+                // Copied out as soon as the read finishes, before the load can take and change the project.
+                var globalFileNames = read.ContinueWith(
+                    finished => (IReadOnlyList<string>)(finished.IsCompletedSuccessfully && finished.Result?.Main != null
+                        ? finished.Result.Main.GlobalFiles.Select(file => file.Name).ToList()
+                        : new List<string>()),
+                    TaskContinuationOptions.ExecuteSynchronously);
+                EarlyProjectFiles = new EarlyProjectFiles(csprojFullPath, globalFileNames);
             }
         }
 
@@ -70,12 +87,15 @@ namespace FlatRedBall.Glue.IO
         {
             EarlyEvaluation.TryTake(null);
             earlyGlueProjectRead = null;
+            EarlyProjectFiles = null;
         }
 
         internal Task<GlueProjectSaveExtensions.PrefetchedGlueProject> TakeEarlyGlueProjectRead(string csprojFileName)
         {
             var taken = earlyGlueProjectRead;
             earlyGlueProjectRead = null;
+            // Plugins started after this point would read ahead for a load that has already begun.
+            EarlyProjectFiles = null;
             if (taken == null ||
                 !string.Equals(taken.Value.CsprojFullPath, Path.GetFullPath(csprojFileName), StringComparison.OrdinalIgnoreCase))
             {

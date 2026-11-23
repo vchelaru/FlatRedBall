@@ -91,6 +91,46 @@ public class GlueCliRunnerTests
         }
     }
 
+    // Without atlases, Glue adds the images a Gum project uses to the .csproj. That is a .csproj fix-up, so the
+    // model load leaves it to regen (and the editor's open).
+    [StaFact]
+    public void Check_ShouldLeaveTheCsprojAlone_WhenAGumImageIsMissingFromIt()
+    {
+        using var project = GoldProject.CopyOutOfRepo("Samples/FormsSampleProject");
+        var csproj = RemoveGumSpriteSheetFromCsproj(project.Root);
+        var before = File.ReadAllBytes(csproj);
+
+        var (_, output) = Run("check", project.Root, "--json");
+
+        Parse(output).FilesWritten.ShouldNotContain(file => file.EndsWith(".csproj"), output);
+        File.ReadAllBytes(csproj).ShouldBe(before);
+    }
+
+    [StaFact]
+    public void Regen_ShouldAddAGumImageMissingFromTheCsproj()
+    {
+        using var project = GoldProject.CopyOutOfRepo("Samples/FormsSampleProject");
+        var csproj = RemoveGumSpriteSheetFromCsproj(project.Root);
+
+        Regen(project.Root);
+
+        File.ReadAllText(csproj).ShouldContain(GumSpriteSheetItem);
+    }
+
+    const string GumSpriteSheetItem = @"Include=""Content\GumProject\UISpriteSheet.png""";
+
+    static string RemoveGumSpriteSheetFromCsproj(string projectRoot)
+    {
+        var csproj = Path.Combine(projectRoot, "FormsSampleProject", "FormsSampleProject.csproj");
+        var text = File.ReadAllText(csproj);
+        var start = text.IndexOf("<None " + GumSpriteSheetItem, StringComparison.Ordinal);
+        start.ShouldBeGreaterThan(0);
+        var end = text.IndexOf("</None>", start, StringComparison.Ordinal) + "</None>".Length;
+        File.WriteAllText(csproj, text.Remove(start, end - start));
+        File.ReadAllText(csproj).ShouldNotContain(GumSpriteSheetItem);
+        return csproj;
+    }
+
     static Dictionary<string, byte[]> ReadAllFiles(string root)
     {
         var files = new Dictionary<string, byte[]>(StringComparer.OrdinalIgnoreCase);

@@ -52,12 +52,14 @@ before the next step builds on it.
   whenever generated code is out of date; edit commands regenerate only what they change.
 - Every command evaluates the `.csproj` with MSBuild, because the model load and `check`'s errors read its
   items. As in Glue.exe, the host starts that evaluation and the `.gluj` read (`ProjectLoader.StartEarlyReads`)
-  before the plugin scan, so they cost almost nothing on top of startup.
+  before the plugin scan, so they cost almost nothing on top of startup. The Gum plugin reads the `.gumx`
+  and its element files the same way from its `StartUp` (`GumProjectPrefetch`). The Gum project itself
+  always loads: every command reports the project's errors, and Gum's error reporter reads all of it.
 - Exit code 0 means the edit applied and left no new errors. 1 means the edit was not applied (bad
   input, a Glue rule it breaks) or it added errors. 2 means bad arguments or a project that would not
   load. Errors the project had before the edit are reported as `preexistingErrors` and do not fail the
   run, so an agent can edit a project that already has problems. When an edit is not applied, the
-  project's changes are not saved; loading can still write generated files, which `filesWritten` lists.
+  project's changes are not saved.
 - Output is plain text by default and JSON with `--json`, so agents can parse it.
 - GlueCli works with the editor open on the same project: the editor's file watcher reloads what the CLI
   saved.

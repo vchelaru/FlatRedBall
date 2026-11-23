@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Composition;
+using FlatRedBall.Glue.IO;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -61,6 +62,12 @@ public class MainGumPlugin : PluginBase
 
     public override void StartUp()
     {
+        // Parsing the .gumx and every element file is the largest part of the Gum project load, and needs nothing
+        // but the files, so it overlaps the rest of startup.
+        var prefetch = new GumProjectPrefetch();
+        prefetch.Start(ProjectLoader.Self.EarlyProjectFiles);
+        FileReferenceTracker.Self.Prefetch = prefetch;
+
         propertiesManager = new GumxPropertiesManager();
 
         AssetTypeInfoManager.Self.AddCommonAtis();
@@ -677,7 +684,7 @@ public class MainGumPlugin : PluginBase
     {
         GumProjectManager.Self.ReloadGumProject();
 
-        propertiesManager.UpdateUseAtlases();
+        propertiesManager.ApplyUseAtlases();
 
         // These are needed for code gen
         AssetTypeInfoManager.Self.RefreshProjectSpecificAtis();
@@ -715,8 +722,9 @@ public class MainGumPlugin : PluginBase
     }
 
     /// <summary>
-    /// The Gum runtimes, Forms classes and behaviors, Gum's embedded code files, and the fix-ups Glue makes to
-    /// the .gumx (parent project root, canvas size) and its fonts.
+    /// The Gum runtimes, Forms classes and behaviors, Gum's embedded code files, the Gum project's images in the
+    /// content project when it doesn't use atlases, and the fix-ups Glue makes to the .gumx (parent project root,
+    /// canvas size) and its fonts.
     /// </summary>
     private async void HandleGenerateProjectCode()
     {
@@ -724,6 +732,8 @@ public class MainGumPlugin : PluginBase
 
         if (gumRfs != null)
         {
+            propertiesManager.UpdateGumFileMembershipIfNotAtlased();
+
             var behavior = EmbeddedResourceManager.Self.GetBehavior(gumRfs);
 
             // todo: Removing a file should cause this to get called, but I don't think Gum lets us subscribe to that yet.
