@@ -253,7 +253,9 @@ internal class SelectionLogic
                 }
             }
 
-            if (selectAndScroll)
+            // Headless (GlueCli) there is no window to scroll, and with no UI synchronization context the code
+            // after the delay runs on a pool thread, where touching the tree view throws and ends the process.
+            if (selectAndScroll && FlatRedBall.Glue.AutomatedGlue.GlueGui.ShowGui)
             {
                 // If we don't do this, sometimes it doesn't scroll into view...
                 await System.Threading.Tasks.Task.Delay(120);
