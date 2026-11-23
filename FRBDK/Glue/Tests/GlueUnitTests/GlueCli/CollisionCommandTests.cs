@@ -22,6 +22,7 @@ public class CollisionCommandTests
     {
         using var project = GoldProject.CopyOutOfRepo("Samples/Beefball");
         var beefball = Path.Combine(project.Root, "Beefball");
+        Regen(project.Root);
 
         var (exitCode, output) = Run("add-collision-relationship", project.Root, "--element", "GameScreen",
             "--first", "PlayerBallList", "--second", "GoalList", "--type", "bounce", "--first-mass", "0", "--elasticity", "0.5", "--json");
