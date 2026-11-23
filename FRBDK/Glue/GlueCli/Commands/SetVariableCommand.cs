@@ -293,7 +293,7 @@ movedObjects lists the objects --move-objects put on the new layer.",
     /// <paramref name="text"/> as <paramref name="typeName"/>, or the text itself when the type is null, string,
     /// or one Glue cannot resolve (as the editor stores it). Fails with the expected type when it does not parse.
     /// </summary>
-    static bool TryConvert(CliContext context, string text, string? typeName, string target, out object? value)
+    internal static bool TryConvert(CliContext context, string text, string? typeName, string target, out object? value)
     {
         value = text;
         if (typeName == null || typeName == "string")
