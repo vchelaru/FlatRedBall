@@ -1646,3 +1646,10 @@ generation added it again and the project stopped compiling.
 (qualified or not, nullable or not), the `Current{Category}State` variable in the owner and derived elements, and
 what sets that property by name (states, excluded variables, events, instance variables, tunneled variables). The
 State Data tab and GlueCli's `rename-state-category` call it. Validation stays with the caller (#2485).
+
+### 2026-11-23 — GlueCli `describe`
+
+`describe` is the first read-only command (`IsEdit = false`). It reads the loaded `GlueProjectSave` and
+reports it through `context.Report`, so the description is the `edit` property of `--json`. Without
+`--element` it lists screens, entities and Global Content; with one it prints that element's own object
+tree, variables, states, events and files. It prints names as `CliLookup` resolves them. No Glue code changed.
