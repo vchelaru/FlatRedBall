@@ -258,7 +258,7 @@ folder.",
     /// The file <c>--file</c> names in <paramref name="element"/> (Global Content when null): its Glue name
     /// (either slash), its name in code when only one file has it, or its path on disk.
     /// </summary>
-    static ReferencedFileSave? FindFile(CliContext context, GlueElement? element)
+    internal static ReferencedFileSave? FindFile(CliContext context, GlueElement? element)
     {
         var argument = context.Get("file")!;
         var files = element != null ? element.ReferencedFiles : GlueState.Self.CurrentGlueProject.GlobalFiles;

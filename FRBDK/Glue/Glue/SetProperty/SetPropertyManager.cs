@@ -60,6 +60,7 @@ public class SetPropertyManager
         var element = GlueState.Self.CurrentElement;
 
         bool pushReactToChangedProperty = true;
+        bool generateCode = true;
         bool updateTreeView = true;
 
         #region EventResponseSave
@@ -98,8 +99,11 @@ public class SetPropertyManager
 
         else if (GlueState.Self.CurrentReferencedFileSave != null)
         {
-            Builder.Get<ReferencedFileSaveSetPropertyManager>().ReactToChangedReferencedFile(
-                variableNameAsDisplayed, oldValue, ref updateTreeView);
+            // Also notifies plugins and regenerates code, so the common steps below skip both.
+            updateTreeView = await Builder.Get<ReferencedFileSaveSetPropertyManager>().ReactToChangedReferencedFileAndGenerateCode(
+                variableNameAsDisplayed, oldValue);
+            pushReactToChangedProperty = false;
+            generateCode = false;
         }
 
         #endregion
@@ -163,14 +167,10 @@ public class SetPropertyManager
             }
         }
 
-        if (GlueState.Self.CurrentElement != null)
+        if (generateCode && GlueState.Self.CurrentElement != null)
         {
             GlueCommands.Self.GenerateCodeCommands
                 .GenerateElementAndReferencedObjectCode(GlueState.Self.CurrentElement);
-        }
-        else if (GlueState.Self.CurrentReferencedFileSave != null)
-        {
-            await TaskManager.Self.AddAsync(() => GlobalContentCodeGenerator.UpdateLoadGlobalContentCode(), "Updating load global content code");
         }
 
         // UpdateCurrentObjectReferencedTreeNodes

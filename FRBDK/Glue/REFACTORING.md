@@ -318,6 +318,16 @@ Traversal** (14) groups — 24 methods. Everything else stays on `ObjectFinder`.
 
 ## Completed Refactors
 
+### 2026-11-23 — File property reaction pulled out of `SetPropertyManager` for GlueCli `set-file-property`
+
+What follows a change to a selected file's property (the file's own handler, the plugins, then its element's
+code or GlobalContent.Generated.cs) was spread through `SetPropertyManager.ReactToPropertyChanged`, which also
+reads `MainGlueWindow.PropertyGrid`. It is now `ReferencedFileSaveSetPropertyManager.ReactToChangedReferencedFileAndGenerateCode`,
+called by both grids (through `SetPropertyManager`) and by `set-file-property`. Still UI-bound on that path:
+the property list itself comes from the WinForms `ReferencedFileSavePropertyGridDisplayer` (and plugins'
+`AdjustDisplayedReferencedFile`, which take that type), and its type converters; the selection lives in
+`GlueState`; tree refresh and saving stay in `SetPropertyManager`.
+
 ### 2026-11-23 — GlueCli `delete` answers the editor's delete dialog instead of bypassing it
 
 `DeleteCommand` calls the same `DialogCommands.AskToRemove*Async` the editor's Delete does and swaps

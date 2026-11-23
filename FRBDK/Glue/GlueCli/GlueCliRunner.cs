@@ -44,6 +44,7 @@ public static class GlueCliRunner
         RenameCommand.Definition,
         DeleteCommand.Definition,
         SetPropertyCommand.Definition,
+        SetFilePropertyCommand.Definition,
         AddStateCategoryCommand.Definition,
         AddStateCommand.Definition,
         SetStateVariableCommand.Definition,
