@@ -383,7 +383,7 @@ namespace FlatRedBall.Glue
             // The selection must not outlive the project. Anything that acts on "the current element"
             // (GenerateCurrentElementCode and its many callers) would otherwise reach an element of the
             // closed project and write its code into whichever project is loaded next.
-            GlueState.Self.CurrentElement = null;
+            GlueState.Self.ForgetSelection();
 
             if(GlueState.Self.CurrentMainProject != null)
             {
