@@ -98,6 +98,21 @@ public static class CliLookup
             .ToList();
     }
 
+    /// <summary>
+    /// <c>C:\Users\LONGNA~1\...</c> (an 8.3 name, which %TEMP% often is) as its long form. Glue compares paths
+    /// as strings, so a short-name path would read as outside the content folder. A path that does not exist
+    /// comes back unchanged.
+    /// </summary>
+    public static string ToLongPath(string path)
+    {
+        var buffer = new System.Text.StringBuilder(1024);
+        var length = GetLongPathName(path, buffer, buffer.Capacity);
+        return length > 0 && length < buffer.Capacity ? buffer.ToString() : path;
+    }
+
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", CharSet = System.Runtime.InteropServices.CharSet.Unicode, SetLastError = true)]
+    static extern int GetLongPathName(string shortPath, System.Text.StringBuilder longPath, int bufferLength);
+
     static int EditDistance(string a, string b)
     {
         var previous = Enumerable.Range(0, b.Length + 1).ToArray();
