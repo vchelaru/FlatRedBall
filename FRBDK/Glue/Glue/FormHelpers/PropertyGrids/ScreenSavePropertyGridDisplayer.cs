@@ -1,16 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using FlatRedBall.Glue.GuiDisplay;
+﻿using FlatRedBall.Glue.EditorProperties;
 using FlatRedBall.Glue.SaveClasses;
-using FlatRedBall.Glue.FormHelpers.StringConverters;
-using FlatRedBall.Glue.Parsing;
 
 namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
 {
+    /// <summary>
+    /// Shows a selected screen in the WinForms Properties grid. Which properties exist, which can change and the values
+    /// offered come from <see cref="ScreenSavePropertyModel"/>; this renders them.
+    /// </summary>
     public class ScreenSavePropertyGridDisplayer : ElementPropertyGridDisplayer
     {
+        readonly ScreenSavePropertyModel model;
+
+        public ScreenSavePropertyGridDisplayer(ScreenSavePropertyModel model)
+        {
+            this.model = model;
+        }
 
         public override object Instance
         {
@@ -20,24 +24,13 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
             }
             set
             {
-
-                UpdateIncludedAndExcluded(value as ScreenSave);
+                if (value is ScreenSave screen)
+                {
+                    EditorPropertyGridMapping.Apply(this, screen, model.GetProperties(screen));
+                }
                 base.Instance = value;
                 SetAfterMemberChangedEvents();
             }
         }
-
-        private void UpdateIncludedAndExcluded(ScreenSave instance)
-        {
-            UpdateIncludedAndExcludedBase(instance);
-
-            // instance may not be set yet, so we have to use the argument value
-            IncludeMember(nameof(ScreenSave.BaseScreen), typeof(ScreenSave), new AvailableScreenTypeConverter((ScreenSave)instance));
-            IncludeMember(nameof(ScreenSave.NextScreen), typeof(ScreenSave), new AvailableScreenTypeConverter((ScreenSave)instance));
-
-            IncludeMember(nameof(ScreenSave.Name), typeof(string), SetClassName, GetClassName, null, this.CategoryAttribute("\tScreen"));
-
-        }
-
     }
 }

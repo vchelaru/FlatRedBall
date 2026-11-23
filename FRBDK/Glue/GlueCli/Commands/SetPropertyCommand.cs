@@ -1,24 +1,22 @@
-using System.ComponentModel;
 using System.Globalization;
 using System.Reflection;
 using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.EditorProperties;
 using FlatRedBall.Glue.Elements;
-using FlatRedBall.Glue.FormHelpers.PropertyGrids;
-using FlatRedBall.Glue.GuiDisplay;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.Parsing;
+using FlatRedBall.Glue.Services;
 
 namespace GlueCli.Commands;
 
 /// <summary>
 /// <c>set-property</c>: sets a property (not a variable) of a screen, an entity, or an object in one, the way the
-/// editor's Properties grid does. The grid's own displayer (<see cref="NamedObjectPropertyGridDisplayer"/>,
-/// <see cref="EntitySavePropertyGridDisplayer"/>, <see cref="ScreenSavePropertyGridDisplayer"/>, plus the plugins'
-/// additions) decides which properties exist for the target and sets the value, then the reaction the grid's
+/// editor's Properties grid does. The models the grid renders (<see cref="NamedObjectSavePropertyModel"/>,
+/// <see cref="EntitySavePropertyModel"/>, <see cref="ScreenSavePropertyModel"/>, plus the plugins'
+/// additions) decide which properties exist for the target and set the value, then the reaction the grid's
 /// change event ends in runs: GluxCommands.ReactToPropertyChanged for an object, ElementCommands.ReactToPropertyChanged
 /// for an element. Every question those reactions ask is answered from a flag (<see cref="Questions"/>).
 /// </summary>
@@ -242,32 +240,32 @@ changedElements every screen and entity the edit changed.",
         {
             GlueState.Self.CurrentNamedObjectSave = nos;
         }
-        var descriptors = GetGridProperties(element, nos);
-        var descriptor = descriptors.FirstOrDefault(item => item.Name == propertyName) ??
-            descriptors.FirstOrDefault(item => string.Equals(item.Name, propertyName, StringComparison.OrdinalIgnoreCase));
-        var settable = descriptors.Where(item => !item.IsReadOnly && IsSupportedType(item.PropertyType)).Select(item => item.Name).ToList();
-        if (descriptor == null)
+        var properties = GetProperties(element, nos);
+        var property = properties.FirstOrDefault(item => item.Name == propertyName) ??
+            properties.FirstOrDefault(item => string.Equals(item.Name, propertyName, StringComparison.OrdinalIgnoreCase));
+        var settable = properties.Where(item => !item.IsReadOnly && IsSupportedType(item.Type)).Select(item => item.Name).ToList();
+        if (property == null)
         {
             FailUnknown(context, element, nos, target, propertyName, settable);
             return;
         }
-        var name = descriptor.Name;
-        if (descriptor.IsReadOnly)
+        var name = property.Name;
+        if (property.IsReadOnly)
         {
             context.Fail($"{name} of {target} is read-only in the editor.");
             return;
         }
-        if (!IsSupportedType(descriptor.PropertyType))
+        if (!IsSupportedType(property.Type))
         {
-            context.Fail($"{name} of {target} is a {TypeName(descriptor.PropertyType)}; set-property only sets text, true/false, numbers and enum values.");
+            context.Fail($"{name} of {target} is a {TypeName(property.Type)}; set-property only sets text, true/false, numbers and enum values.");
             return;
         }
-        if (!TryConvert(context, descriptor, context.Get("value")!, $"{name} of {target}", out var value))
+        if (!TryConvert(context, property, context.Get("value")!, $"{name} of {target}", out var value))
         {
             return;
         }
 
-        var oldValue = descriptor.GetValue(null);
+        var oldValue = property.GetValue();
         var answers = new List<Answer>();
         var unanswered = new List<(Question question, string text)>();
         var referencedToMakeGlobal = new List<GlueElement>();
@@ -324,7 +322,7 @@ changedElements every screen and entity the edit changed.",
             }
             else
             {
-                descriptor.SetValue(null, value);
+                property.SetValue(value);
             }
 
             // What SetPropertyManager.ReactToPropertyChanged does after the grid's change event.
@@ -356,7 +354,7 @@ changedElements every screen and entity the edit changed.",
             return;
         }
 
-        var newValue = descriptor.GetValue(null);
+        var newValue = property.GetValue();
         if (!SameValue(newValue, value))
         {
             context.Fail($"Glue did not set {name} of {target} to {Describe(value)}; it is {Describe(newValue)}." +
@@ -369,7 +367,7 @@ changedElements every screen and entity the edit changed.",
         GlueCommands.Self.GenerateCodeCommands.GenerateElementAndReferencedObjectCode(element);
         await TaskManager.Self.WaitForAllTasksFinished();
 
-        Report(context, new SetProperty(element.Name, nos?.InstanceName, name, TypeName(descriptor.PropertyType), oldValue, newValue,
+        Report(context, new SetProperty(element.Name, nos?.InstanceName, name, TypeName(property.Type), oldValue, newValue,
             answers, messages, ChangedElements(before)));
     }
 
@@ -398,35 +396,14 @@ changedElements every screen and entity the edit changed.",
     }
 
     /// <summary>
-    /// The properties the editor's Properties grid shows for <paramref name="nos"/> (or the element), built by the
-    /// grid's own displayer and the plugins that add to it. Each descriptor sets its member as the grid does.
+    /// The properties the editor shows for <paramref name="nos"/> (or the element), with the plugins' additions: the
+    /// same models the Properties grid renders.
     /// </summary>
-    static List<PropertyDescriptor> GetGridProperties(GlueElement element, NamedObjectSave? nos)
-    {
-        PropertyGridDisplayer displayer;
-        if (nos != null)
-        {
-            var nosDisplayer = new NamedObjectPropertyGridDisplayer();
-            nosDisplayer.UpdateToState(GlueState.Self);
-            PluginManager.AdjustDisplayedNamedObject(nos, nosDisplayer);
-            displayer = nosDisplayer;
-        }
-        else if (element is EntitySave entity)
-        {
-            var entityDisplayer = new EntitySavePropertyGridDisplayer { Instance = entity };
-            PluginManager.AdjustDisplayedEntity(entity, entityDisplayer);
-            displayer = entityDisplayer;
-        }
-        else
-        {
-            var screen = (ScreenSave)element;
-            var screenDisplayer = new ScreenSavePropertyGridDisplayer { Instance = screen };
-            PluginManager.AdjustDisplayedScreen(screen, screenDisplayer);
-            displayer = screenDisplayer;
-        }
-        displayer.RefreshOnTimer = false;
-        return ((ICustomTypeDescriptor)displayer).GetProperties(Array.Empty<Attribute>()).Cast<PropertyDescriptor>().ToList();
-    }
+    static IReadOnlyList<EditorProperty> GetProperties(GlueElement element, NamedObjectSave? nos) => nos != null
+        ? Builder.Get<NamedObjectSavePropertyModel>().GetProperties(nos, element)
+        : element is EntitySave entity
+            ? Builder.Get<EntitySavePropertyModel>().GetProperties(entity)
+            : Builder.Get<ScreenSavePropertyModel>().GetProperties((ScreenSave)element);
 
     static void FailUnknown(CliContext context, GlueElement element, NamedObjectSave? nos, string target, string propertyName,
         List<string> settable)
@@ -475,14 +452,9 @@ changedElements every screen and entity the edit changed.",
     }
 
     /// <summary>
-    /// <paramref name="text"/> as the descriptor's type. Text the grid picks from a list (its converter's exclusive
-    /// standard values) must be one of them, matched as <see cref="CliLookup.SameName"/> does and returned as the
-    /// list spells it.
+    /// <paramref name="text"/> as <paramref name="property"/>'s type. A property with options must take one of them,
+    /// matched as <see cref="CliLookup.SameName"/> does and returned as the list spells it.
     /// </summary>
-    internal static bool TryConvert(CliContext context, PropertyDescriptor descriptor, string text, string target, out object? value) =>
-        TryConvert(context, descriptor.PropertyType, () => StandardValues(descriptor), text, target, out value);
-
-    /// <summary><paramref name="text"/> as <paramref name="property"/>'s type; a property with options must take one of them.</summary>
     internal static bool TryConvert(CliContext context, EditorProperty property, string text, string target, out object? value) =>
         TryConvert(context, property.Type, () => property.Options?.Invoke().ToList(), text, target, out value);
 
@@ -552,24 +524,6 @@ changedElements every screen and entity the edit changed.",
         {
             context.Fail($"'{text}' is not a valid {TypeName(type)} for {target}.");
             return false;
-        }
-    }
-
-    static List<string>? StandardValues(PropertyDescriptor descriptor)
-    {
-        try
-        {
-            var converter = descriptor.Converter;
-            if (converter == null || !converter.GetStandardValuesSupported() || !converter.GetStandardValuesExclusive())
-            {
-                return null;
-            }
-            return converter.GetStandardValues()?.Cast<object>().Select(item => item?.ToString() ?? "").ToList();
-        }
-        catch (Exception)
-        {
-            // A converter that needs the grid's context: leave the text as typed, as the grid's text box does.
-            return null;
         }
     }
 

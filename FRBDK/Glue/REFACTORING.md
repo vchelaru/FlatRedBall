@@ -341,6 +341,25 @@ Traversal** (14) groups — 24 methods. Everything else stays on `ObjectFinder`.
 
 ## Completed Refactors
 
+### 2026-11-23 — Object, screen and entity properties out of the WinForms displayers
+
+Same pattern as the file and variable models below, for the rest of the Properties grid:
+`NamedObjectSavePropertyModel`, `EntitySavePropertyModel` and `ScreenSavePropertyModel` (`Glue/EditorProperties`)
+decide which properties exist, which are read-only, the values offered and how each is set. The three WinForms
+displayers render them through `EditorPropertyGridMapping`, and `set-property` uses the models directly.
+Plugins add or hide properties through the typed, UI-free `PluginBase.AdjustEntityProperties`,
+`AdjustScreenProperties` and `AdjustNamedObjectProperties`, which take an `EditorPropertyListBuilder`;
+`ElementPropertyModel.CustomProperty` builds a flag kept in the element's custom properties. Gum, Collision and
+DamageDealing moved to `AdjustEntityProperties`. The old `AdjustDisplayed{Entity,Screen,NamedObject}` hooks are
+`[Obsolete]` and still run in the WinForms grid after the model renders, so plugins outside this repo keep working
+there; GlueCli never calls them, because they take a displayer. `AvailableClassTypeConverter`,
+`AvailableScreenTypeConverter` and `AvailableEntityTypeConverter` are gone; their lists are in the models.
+`ElementPropertyParity.golden.txt` holds what the old displayers exposed, and `ElementPropertyParityTests` pins
+the grid and the models to it. Still UI-bound: the `UseGlobalContent` follow-up question (a WPF window in
+`ElementPropertyGridDisplayer`), and value lists still computed by converter classes the models call statically
+(`AvailableFileStringConverter`, `AvailableNameablesStringConverter`, `AvailableStates`,
+`AvailableClassGenericTypeConverter`, `AvailableLayersTypeConverter`).
+
 ### 2026-11-23 — File and variable properties out of the WinForms displayers
 
 Which properties the editor shows for a selected file or variable, which are read-only, the values each offers

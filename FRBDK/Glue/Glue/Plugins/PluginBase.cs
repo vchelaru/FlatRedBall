@@ -493,9 +493,28 @@ namespace FlatRedBall.Glue.Plugins
         /// </summary>
         public TryAddContainedObjectsDelegate TryAddContainedObjects { get; protected set; }
 
+        /// <summary>Runs only in the WinForms Properties grid, after it shows the screen. GlueCli never calls it.</summary>
+        [Obsolete("Use AdjustScreenProperties, which the Properties grid and GlueCli share. This runs only in the WinForms grid.")]
         public AdjustDisplayedScreenDelegate AdjustDisplayedScreen { get; protected set; }
 
+        /// <summary>Runs only in the WinForms Properties grid, after it shows the entity. GlueCli never calls it.</summary>
+        [Obsolete("Use AdjustEntityProperties, which the Properties grid and GlueCli share. This runs only in the WinForms grid.")]
         public AdjustDisplayedEntityDelegate AdjustDisplayedEntity { get; protected set; }
+
+        /// <summary>
+        /// Adds or hides properties the editor shows for an entity, in the Properties grid and in GlueCli's set-property.
+        /// Add a flag kept in the entity's custom properties with <see cref="EditorProperties.ElementPropertyModel.CustomProperty"/>.
+        /// </summary>
+        public Action<EntitySave, EditorProperties.EditorPropertyListBuilder> AdjustEntityProperties { get; protected set; }
+
+        /// <summary>Adds or hides properties the editor shows for a screen, in the Properties grid and in GlueCli's set-property.</summary>
+        public Action<ScreenSave, EditorProperties.EditorPropertyListBuilder> AdjustScreenProperties { get; protected set; }
+
+        /// <summary>
+        /// Adds or hides properties the editor shows for an object (not its variables), in the Properties grid and in
+        /// GlueCli's set-property.
+        /// </summary>
+        public Action<NamedObjectSave, EditorProperties.EditorPropertyListBuilder> AdjustNamedObjectProperties { get; protected set; }
 
 
         /// <summary>
@@ -538,10 +557,12 @@ namespace FlatRedBall.Glue.Plugins
         public AdjustDisplayedCustomVariableDelegate AdjustDisplayedCustomVariable { get; protected set; }
 
         /// <summary>
-        /// Adjusts the properties for the selected NamedObject (not Variables window).
+        /// Adjusts the properties for the selected NamedObject (not Variables window), only in the WinForms Properties grid
+        /// after it shows the object. GlueCli never calls it.
         /// </summary>
         /// <remarks>
         /// To modify variables, the best way is to change the AssetTypeInfo. There is (currently) no way to dynamically add/remove variables from the property grid.</remarks>
+        [Obsolete("Use AdjustNamedObjectProperties, which the Properties grid and GlueCli share. This runs only in the WinForms grid.")]
         public AdjustDisplayedNamedObjectDelegate AdjustDisplayedNamedObject { get; protected set; }
 
         public Func<IElement, IEnumerable<VariableDefinition>> GetVariableDefinitionsForElement;

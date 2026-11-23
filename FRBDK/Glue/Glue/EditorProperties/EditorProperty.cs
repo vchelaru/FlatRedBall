@@ -47,7 +47,10 @@ namespace FlatRedBall.Glue.EditorProperties
         /// </summary>
         public Func<IReadOnlyList<string>>? Options { get; init; }
 
-        /// <summary>The category the grid lists a property the editor adds under. Owner members use their own attribute.</summary>
+        /// <summary>
+        /// The category the grid lists the property under. An owner member keeps its own attributes and gets this one
+        /// after them.
+        /// </summary>
         public string? Category { get; init; }
 
         public object? GetValue()
@@ -140,13 +143,14 @@ namespace FlatRedBall.Glue.EditorProperties
         }
 
         /// <summary>
-        /// Shows the owner member <paramref name="name"/> as it starts, picked from <paramref name="options"/>. It replaces
-        /// what earlier rules did to it, and includes it again if one excluded it.
+        /// Shows the owner member <paramref name="name"/> as it starts, picked from <paramref name="options"/> when given
+        /// and listed under <paramref name="category"/> when given. It replaces what earlier rules did to it, and includes
+        /// it again if one excluded it.
         /// </summary>
-        public void Include(string name, Func<IReadOnlyList<string>> options)
+        public void Include(string name, Func<IReadOnlyList<string>>? options = null, string? category = null)
         {
             var member = OwnerMember(name) ?? throw new ArgumentException($"{owner.GetType().Name} has no member {name}.", nameof(name));
-            Set(Copy(member, options: options));
+            Set(Copy(member, options: options, category: category));
         }
 
         /// <summary>Gives the property <paramref name="name"/> a list of values to pick from, if it is shown.</summary>
@@ -185,7 +189,8 @@ namespace FlatRedBall.Glue.EditorProperties
             };
         }
 
-        static EditorProperty Copy(EditorProperty source, Func<IReadOnlyList<string>>? options = null, bool? isReadOnly = null) =>
+        static EditorProperty Copy(EditorProperty source, Func<IReadOnlyList<string>>? options = null, bool? isReadOnly = null,
+            string? category = null) =>
             new(source.Owner, source.Name, source.Type)
             {
                 IsOwnerMember = source.IsOwnerMember,
@@ -193,7 +198,7 @@ namespace FlatRedBall.Glue.EditorProperties
                 Getter = source.Getter,
                 Setter = source.Setter,
                 Options = options ?? source.Options,
-                Category = source.Category,
+                Category = category ?? source.Category,
             };
 
         static bool IsDeclaredReadOnly(PropertyInfo property) =>

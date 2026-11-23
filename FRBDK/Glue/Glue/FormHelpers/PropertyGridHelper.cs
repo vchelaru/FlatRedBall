@@ -33,12 +33,21 @@ namespace FlatRedBall.Glue.FormHelpers
 
 		private static System.Windows.Forms.PropertyGrid mPropertyGrid;
 
-        private static NamedObjectPropertyGridDisplayer mNosDisplayer = new NamedObjectPropertyGridDisplayer();
+        private static NamedObjectPropertyGridDisplayer mNosDisplayer;
         private static StateSavePropertyGridDisplayer mStateSaveDisplayer = new StateSavePropertyGridDisplayer();
         private static StateSaveCategoryPropertyGridDisplayer mStateSaveCategoryDisplayer = new StateSaveCategoryPropertyGridDisplayer();
         private static CustomVariablePropertyGridDisplayer mCustomVariableDisplayer;
-        private static EntitySavePropertyGridDisplayer mEntitySaveDisplayer = new EntitySavePropertyGridDisplayer();
-        private static ScreenSavePropertyGridDisplayer mScreenSaveDisplayer = new ScreenSavePropertyGridDisplayer();
+        private static EntitySavePropertyGridDisplayer mEntitySaveDisplayer;
+        private static ScreenSavePropertyGridDisplayer mScreenSaveDisplayer;
+
+        // Created on first use: property reactions refresh the object display headless (GlueCli, tests), where
+        // Initialize never runs.
+        static NamedObjectPropertyGridDisplayer NosDisplayer => mNosDisplayer ??=
+            new NamedObjectPropertyGridDisplayer(Services.Builder.Get<EditorProperties.NamedObjectSavePropertyModel>()) { RefreshOnTimer = false };
+        static EntitySavePropertyGridDisplayer EntitySaveDisplayer => mEntitySaveDisplayer ??=
+            new EntitySavePropertyGridDisplayer(Services.Builder.Get<EditorProperties.EntitySavePropertyModel>()) { RefreshOnTimer = false };
+        static ScreenSavePropertyGridDisplayer ScreenSaveDisplayer => mScreenSaveDisplayer ??=
+            new ScreenSavePropertyGridDisplayer(Services.Builder.Get<EditorProperties.ScreenSavePropertyModel>()) { RefreshOnTimer = false };
         private static ReferencedFileSavePropertyGridDisplayer mReferencedFileSaveDisplay;
         private static EventResponseSavePropertyGridDisplayer mEventResponseSaveDisplayer = new EventResponseSavePropertyGridDisplayer();
 
@@ -51,11 +60,8 @@ namespace FlatRedBall.Glue.FormHelpers
             mCustomVariableDisplayer = new CustomVariablePropertyGridDisplayer(Services.Builder.Get<EditorProperties.CustomVariablePropertyModel>());
             mReferencedFileSaveDisplay = new ReferencedFileSavePropertyGridDisplayer(Services.Builder.Get<EditorProperties.ReferencedFileSavePropertyModel>());
 
-            mNosDisplayer.RefreshOnTimer = false;
             mStateSaveDisplayer.RefreshOnTimer = false;
             mCustomVariableDisplayer.RefreshOnTimer = false;
-            mEntitySaveDisplayer.RefreshOnTimer = false;
-            mScreenSaveDisplayer.RefreshOnTimer = false;
             mReferencedFileSaveDisplay.RefreshOnTimer = false;
             mEventResponseSaveDisplayer.RefreshOnTimer = false;
 
@@ -73,13 +79,14 @@ namespace FlatRedBall.Glue.FormHelpers
 
         public static void UpdateNamedObjectDisplay()
         {
-            bool didInstanceChange = mNosDisplayer.UpdateToState(GlueState.Self);
-            
-            PluginManager.AdjustDisplayedNamedObject(GlueState.Self.CurrentNamedObjectSave, mNosDisplayer);
+            var nosDisplayer = NosDisplayer;
+            bool didInstanceChange = nosDisplayer.UpdateToState(GlueState.Self);
+
+            PluginManager.AdjustDisplayedNamedObject(GlueState.Self.CurrentNamedObjectSave, nosDisplayer);
 
             GlueCommands.Self.DoOnUiThread(() =>
             {
-                mNosDisplayer.PropertyGrid = MainGlueWindow.Self.PropertyGrid;
+                nosDisplayer.PropertyGrid = MainGlueWindow.Self.PropertyGrid;
 
                 // It seems as if the PropertyGrid will scroll to properties when they're added.
                 // That is, the PropertyGrid selects the last property added (I think).
@@ -90,7 +97,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 // to manually do this but it might be the only option.
                 if (didInstanceChange)
                 {
-                    mNosDisplayer.ScrollToTop();
+                    nosDisplayer.ScrollToTop();
                 }
             });
 
@@ -125,19 +132,19 @@ namespace FlatRedBall.Glue.FormHelpers
 
         internal static void UpdateEntitySaveDisplay()
         {
-            mEntitySaveDisplayer.Instance = GlueState.Self.CurrentEntitySave;
-            PluginManager.AdjustDisplayedEntity(GlueState.Self.CurrentEntitySave, mEntitySaveDisplayer);
+            EntitySaveDisplayer.Instance = GlueState.Self.CurrentEntitySave;
+            PluginManager.AdjustDisplayedEntity(GlueState.Self.CurrentEntitySave, EntitySaveDisplayer);
 
-            mEntitySaveDisplayer.PropertyGrid = MainGlueWindow.Self.PropertyGrid;
+            EntitySaveDisplayer.PropertyGrid = MainGlueWindow.Self.PropertyGrid;
 
         }
 
         internal static void UpdateScreenSaveDisplay()
         {
-            mScreenSaveDisplayer.Instance = GlueState.Self.CurrentScreenSave;
-            PluginManager.AdjustDisplayedScreen(GlueState.Self.CurrentScreenSave, mScreenSaveDisplayer);
+            ScreenSaveDisplayer.Instance = GlueState.Self.CurrentScreenSave;
+            PluginManager.AdjustDisplayedScreen(GlueState.Self.CurrentScreenSave, ScreenSaveDisplayer);
 
-            mScreenSaveDisplayer.PropertyGrid = MainGlueWindow.Self.PropertyGrid;
+            ScreenSaveDisplayer.PropertyGrid = MainGlueWindow.Self.PropertyGrid;
 
         }
 

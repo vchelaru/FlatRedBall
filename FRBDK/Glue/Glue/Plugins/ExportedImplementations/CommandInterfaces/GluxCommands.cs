@@ -2528,7 +2528,7 @@ public class GluxCommands : IGluxCommands
                 !CustomVariableTypeExtensions.GetIsObjectType(variableDefinition.Type)
                 )
             {
-                bool isCsv = NamedObjectPropertyGridDisplayer.GetIfIsCsv(nos, memberName);
+                bool isCsv = EditorProperties.NamedObjectSavePropertyModel.GetIfIsCsv(nos, memberName);
                 shouldConvertValue = !isCsv &&
                     variableDefinition.Name != "object" &&
                     // variable could be an object

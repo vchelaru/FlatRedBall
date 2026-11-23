@@ -1,10 +1,7 @@
-﻿using FlatRedBall.Glue.FormHelpers.PropertyGrids;
+﻿using FlatRedBall.Glue.EditorProperties;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ICollidablePlugins;
 using FlatRedBall.Glue.SaveClasses;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace OfficialPlugins.CollisionPlugin.Managers
 {
@@ -12,19 +9,17 @@ namespace OfficialPlugins.CollisionPlugin.Managers
     {
         public const string ImplementsIStackableName = "ImplementsIStackable";
 
-        internal void HandleDisplayedEntity(EntitySave entitySave, EntitySavePropertyGridDisplayer displayer)
+        internal void HandleEntityProperties(EntitySave entitySave, EditorPropertyListBuilder properties)
         {
             if (entitySave.IsICollidableRecursive())
             {
-                var member = displayer.IncludeCustomPropertyMember(ImplementsIStackableName, typeof(bool));
-
-                member.SetCategory("Inheritance and Interfaces");
+                properties.Set(ElementPropertyModel.CustomProperty(entitySave, ImplementsIStackableName, typeof(bool), "Inheritance and Interfaces"));
             }
         }
 
         public bool ImplementsIStackable(GlueElement glueElement)
         {
-            return glueElement is EntitySave && 
+            return glueElement is EntitySave &&
                 glueElement.GetPropertyValue(ImplementsIStackableName) is bool asBool &&
                 asBool;
         }

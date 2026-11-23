@@ -36,7 +36,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
             foreach (var property in properties)
             {
                 var converter = converterFor?.Invoke(property) ?? OptionsConverter(property);
-                if (property.IsOwnerMember && converter == null)
+                if (property.IsOwnerMember && converter == null && property.Category == null)
                 {
                     // The displayer reads the member itself, with its own attributes.
                     if (property.IsReadOnly)
@@ -50,6 +50,10 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
                     if (property.IsReadOnly && !attributes.OfType<ReadOnlyAttribute>().Any(item => item.IsReadOnly))
                     {
                         attributes.Add(new ReadOnlyAttribute(true));
+                    }
+                    if (property.Category != null)
+                    {
+                        attributes.Add(new CategoryAttribute(property.Category));
                     }
                     displayer.IncludeMember(property.Name, property.Type, null, null, converter, attributes.ToArray());
                 }

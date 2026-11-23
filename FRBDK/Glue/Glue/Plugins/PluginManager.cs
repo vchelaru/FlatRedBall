@@ -1882,6 +1882,7 @@ public class PluginManager : PluginManagerBase
         System.Diagnostics.Debugger.Break();
     }
 
+#pragma warning disable CS0618 // The grid still runs the obsolete AdjustDisplayed* hooks for plugins outside this repo.
     internal static void AdjustDisplayedScreen(ScreenSave screenSave, ScreenSavePropertyGridDisplayer screenSaveDisplayer)
     {
         CallMethodOnPlugin(plugin =>
@@ -1890,21 +1891,6 @@ public class PluginManager : PluginManagerBase
         },
         plugin => plugin.AdjustDisplayedScreen != null,
         nameof(AdjustDisplayedScreen));
-    }
-
-    internal static void ModifyAddEntityWindow(AddEntityWindow addEntityWindow)
-    {
-        CallMethodOnPlugin(
-            plugin => plugin.ModifyAddEntityWindow(addEntityWindow),
-            plugin => plugin.ModifyAddEntityWindow != null);
-    }
-
-    internal static void ModifyAddScreenWindow(AddScreenWindow addScreenWindow)
-    {
-
-        CallMethodOnPlugin(
-            plugin => plugin.ModifyAddScreenWindow(addScreenWindow),
-            plugin => plugin.ModifyAddScreenWindow != null);
     }
 
     internal static void AdjustDisplayedEntity(EntitySave entitySave, EntitySavePropertyGridDisplayer entitySaveDisplayer) => CallMethodOnPlugin(
@@ -1919,6 +1905,40 @@ public class PluginManager : PluginManagerBase
                 plugin.AdjustDisplayedNamedObject(namedObject, displayer);
             },
             plugin => plugin.AdjustDisplayedNamedObject != null);
+    }
+#pragma warning restore CS0618
+
+    /// <summary>Lets plugins add or hide the properties the editor shows for <paramref name="entity"/>.</summary>
+    public static void AdjustEntityProperties(EntitySave entity, EditorProperties.EditorPropertyListBuilder builder) => CallMethodOnPlugin(
+        plugin => plugin.AdjustEntityProperties(entity, builder),
+        plugin => plugin.AdjustEntityProperties != null,
+        doOnUiThread: false);
+
+    /// <summary>Lets plugins add or hide the properties the editor shows for <paramref name="screen"/>.</summary>
+    public static void AdjustScreenProperties(ScreenSave screen, EditorProperties.EditorPropertyListBuilder builder) => CallMethodOnPlugin(
+        plugin => plugin.AdjustScreenProperties(screen, builder),
+        plugin => plugin.AdjustScreenProperties != null,
+        doOnUiThread: false);
+
+    /// <summary>Lets plugins add or hide the properties the editor shows for <paramref name="namedObject"/>.</summary>
+    public static void AdjustNamedObjectProperties(NamedObjectSave namedObject, EditorProperties.EditorPropertyListBuilder builder) => CallMethodOnPlugin(
+        plugin => plugin.AdjustNamedObjectProperties(namedObject, builder),
+        plugin => plugin.AdjustNamedObjectProperties != null,
+        doOnUiThread: false);
+
+    internal static void ModifyAddEntityWindow(AddEntityWindow addEntityWindow)
+    {
+        CallMethodOnPlugin(
+            plugin => plugin.ModifyAddEntityWindow(addEntityWindow),
+            plugin => plugin.ModifyAddEntityWindow != null);
+    }
+
+    internal static void ModifyAddScreenWindow(AddScreenWindow addScreenWindow)
+    {
+
+        CallMethodOnPlugin(
+            plugin => plugin.ModifyAddScreenWindow(addScreenWindow),
+            plugin => plugin.ModifyAddScreenWindow != null);
     }
 
     internal static void AdjustDisplayedReferencedFile(ReferencedFileSave referencedFileSave, ReferencedFileSavePropertyGridDisplayer displayer)
