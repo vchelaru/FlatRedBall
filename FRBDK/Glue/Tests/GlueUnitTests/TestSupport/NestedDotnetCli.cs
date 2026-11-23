@@ -52,10 +52,12 @@ internal static class NestedDotnetCli
 
     private static readonly TimeSpan StartupGatePollInterval = TimeSpan.FromMilliseconds(100);
 
+    /// <param name="executable">The program to start. "dotnet" unless a test runs a built .NET app directly
+    /// (GlueCli.exe), which still needs the same stream pumping, timeout and tree kill.</param>
     public static (int exitCode, string output) Run(string arguments, TimeSpan? timeout = null, StartupGate? startupGate = null,
-        IReadOnlyDictionary<string, string>? environment = null)
+        IReadOnlyDictionary<string, string>? environment = null, string executable = "dotnet")
     {
-        var startInfo = new ProcessStartInfo("dotnet", arguments)
+        var startInfo = new ProcessStartInfo(executable, arguments)
         {
             RedirectStandardOutput = true,
             RedirectStandardError = true,
@@ -117,7 +119,7 @@ internal static class NestedDotnetCli
             try { process.WaitForExit((int)StreamFlushTimeout.TotalMilliseconds); } catch { }
 
             return (TimedOutExitCode,
-                $"`dotnet {arguments}` did not finish within {limit.TotalSeconds:0.#} seconds and was killed." +
+                $"`{executable} {arguments}` did not finish within {limit.TotalSeconds:0.#} seconds and was killed." +
                 Environment.NewLine + Snapshot(output));
         }
 

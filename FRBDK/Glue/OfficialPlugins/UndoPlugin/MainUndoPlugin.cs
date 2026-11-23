@@ -38,21 +38,15 @@ namespace OfficialPlugins.UndoPlugin
             GlueCommands.Self.UndoCommands = undoCommands;
 
             AssignEvents();
-            CreateView();
-            CreateViewModel();
-        }
-
-        private void CreateViewModel()
-        {
             ViewModel = new ViewModels.UndoViewModel();
             UndoManager.UndoViewModel = ViewModel;
-            view.DataContext = ViewModel;
         }
 
-        private void CreateView()
+        public override void StartUpUi()
         {
             view = new UndoDisplay();
             this.CreateAndAddTab(view, Localization.Texts.Undo, TabLocation.Bottom);
+            view.DataContext = ViewModel;
         }
 
         private void AssignEvents()

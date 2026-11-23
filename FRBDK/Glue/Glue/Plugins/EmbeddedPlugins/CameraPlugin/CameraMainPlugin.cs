@@ -36,21 +36,30 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             this.GenerateProjectCode += HandleGenerateProjectCode;
             this.ReactToUnloadedGlux += HandleUnloadedGlux;
 
-            cameraToolbar = new CameraToolbar();
-
             base.AddMenuItemTo("Camera Settings", L.MenuIds.CameraSettingsId, HandleCameraSettings, L.MenuIds.SettingsId);
+        }
+
+        public override void StartUpUi()
+        {
+            cameraToolbar = new CameraToolbar();
         }
 
         private void HandleUnloadedGlux()
         {
-            base.RemoveFromToolbar(cameraToolbar, "Standard");
+            if (cameraToolbar != null)
+            {
+                base.RemoveFromToolbar(cameraToolbar, "Standard");
+            }
 
             tab?.Hide();
         }
 
         private void HandleLoadedGlux()
         {
-            base.AddToToolBar(cameraToolbar, "Standard");
+            if (cameraToolbar != null)
+            {
+                base.AddToToolBar(cameraToolbar, "Standard");
+            }
 
             // When the project loads, immediately set the ATI so
             // that Glue behaves properly

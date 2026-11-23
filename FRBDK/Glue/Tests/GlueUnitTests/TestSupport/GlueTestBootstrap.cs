@@ -76,9 +76,9 @@ internal static class GlueTestBootstrap
     /// <see cref="RecordedDialogMessages"/>, and an <see cref="ErrorRecordingPlugin"/> is registered before
     /// the embedded plugins so it captures anything they print while starting up.
     ///
-    /// <b>Must be called from an STA thread</b> - use <c>[StaFact]</c>, not <c>[Fact]</c>. Plugin StartUp
-    /// methods build real WPF toolbars (MainTiledPluginClass.CreateToolbar and friends), which throw
-    /// "The calling thread must be STA" otherwise.
+    /// <b>Must be called from an STA thread</b> - use <c>[StaFact]</c>, not <c>[Fact]</c>. Some plugin StartUp
+    /// methods still create WPF or WinForms controls, which throw "The calling thread must be STA" otherwise.
+    /// Toolbars and tabs moved to StartUpUi, which the test host never runs.
     /// </summary>
     public static void EnsureHeadlessProjectLoadReady()
     {
@@ -112,8 +112,8 @@ internal static class GlueTestBootstrap
     /// which is what silently compiles out every <c>#if HasGum</c> branch of the GlueControl
     /// embedded code, so a compile-based test would pass with the bug present (GitHub issue #1973).
     ///
-    /// Requires <see cref="EnsureHeadlessProjectLoadReady"/> first: MainGumPlugin's StartUp adds a menu item
-    /// and builds a WPF toolbar, so it needs both the populated MenuStrip and an STA thread.
+    /// Requires <see cref="EnsureHeadlessProjectLoadReady"/> first: MainGumPlugin's StartUp adds a menu item,
+    /// so it needs the populated MenuStrip.
     /// </summary>
     public static void EnsureGumPluginRegisteredWithPluginManager()
     {

@@ -29,13 +29,13 @@ class MainTreeViewPlugin : PluginBase
 
     public override Version Version => new Version(1, 0);
 
-    MainTreeViewControl mainView;
+    MainTreeViewControl? mainView;
 
     MainTreeViewViewModel MainViewModel;
 
     SelectionLogic selectionLogic;
 
-    PluginTab pluginTab;
+    PluginTab? pluginTab;
 
     TreeViewCommands treeViewCommands;
 
@@ -69,18 +69,23 @@ class MainTreeViewPlugin : PluginBase
 
         var findManager = new FindManager(MainViewModel);
         GlueState.Self.Find = findManager;
-        mainView = new MainTreeViewControl();
         MainViewModel.HasUserDismissedTips = GlueState.Self.GlueSettingsSave.Properties
             .GetValue<bool>(nameof(MainViewModel.HasUserDismissedTips));
-        mainView.DataContext = MainViewModel;
 
-        selectionLogic = new SelectionLogic(MainViewModel, mainView,
+        selectionLogic = new SelectionLogic(MainViewModel, mainView: null,
             nodes => GlueState.Self.CurrentTreeNodes = nodes);
+
+        AssignEvents();
+    }
+
+    public override void StartUpUi()
+    {
+        mainView = new MainTreeViewControl();
+        mainView.DataContext = MainViewModel;
+        selectionLogic.AttachView(mainView);
 
         pluginTab = CreateTab(mainView, "Explorer", TabLocation.Left);
         pluginTab.CanClose = false;
-        AssignEvents();
-
     }
 
     private void HandleMainViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -118,7 +123,8 @@ class MainTreeViewPlugin : PluginBase
         ReactToCtrlF += HandleCtrlF;
         ReactToItemsSelected += HandleItemsSelected;
         TryHandleTreeNodeDoubleClicked += TryHandleTreeNodeDoubleClick;
-        IsHandlingHotkeys += () => mainView.Bookmarks.IsFocused || mainView.Bookmarks.IsKeyboardFocusWithin;
+        IsHandlingHotkeys += () => mainView != null &&
+            (mainView.Bookmarks.IsFocused || mainView.Bookmarks.IsKeyboardFocusWithin);
     }
 
     private bool TryHandleTreeNodeDoubleClick(ITreeNode arg)
@@ -146,7 +152,7 @@ class MainTreeViewPlugin : PluginBase
                 // closed before the post ran
                 return;
             }
-            pluginTab.Show();
+            pluginTab?.Show();
             MainViewModel.AddDirectoryNodes();
             MainViewModel.RefreshGlobalContentTreeNodes();
             var entities = project.Entities.ToArray();
@@ -272,7 +278,7 @@ class MainTreeViewPlugin : PluginBase
         FillAndSaveTreeViewPluginSettings();
 
 
-        pluginTab.Hide();
+        pluginTab?.Hide();
         MainViewModel.Clear();
     }
 
@@ -357,14 +363,14 @@ class MainTreeViewPlugin : PluginBase
 
     private void HandleCtrlF()
     {
-        mainView.FocusSearchBox();
+        mainView?.FocusSearchBox();
     }
 
     #region Bookmarks
 
     private void AddBookmark(ITreeNode treeNode)
     {
-        mainView.AddBookmark(treeNode);
+        mainView?.AddBookmark(treeNode);
         MainViewModel.IsBookmarkListVisible = true;
     }
 

@@ -179,6 +179,14 @@ public class PluginManager : PluginManagerBase
     /// </summary>
     internal static HashSet<string> PluginTypesToSkip { get; } = new();
 
+    protected override void StartUpUi(IPlugin plugin)
+    {
+        if (FlatRedBall.Glue.AutomatedGlue.GlueGui.ShowGui && plugin is PluginBase pluginBase)
+        {
+            pluginBase.StartUpUi();
+        }
+    }
+
     protected override void StartAllPlugins(List<string> pluginsToIgnore = null)
     {
         if (PluginTypesToSkip.Count > 0)

@@ -19,7 +19,8 @@ internal class SelectionLogic
     public static SelectionLogic Current { get; private set; }
 
     MainTreeViewViewModel mainViewModel;
-    ITreeViewDisplay mainView;
+    // Null headless: selection still runs through the view model, there is just no tree to focus or scroll.
+    ITreeViewDisplay? mainView;
     readonly Action<IReadOnlyList<ITreeNode>> _reportSelection;
 
     List<NodeViewModel> currentNodes = new List<NodeViewModel>();
@@ -75,7 +76,7 @@ internal class SelectionLogic
 
     #endregion
 
-    public SelectionLogic(MainTreeViewViewModel mainViewModel, ITreeViewDisplay mainView,
+    public SelectionLogic(MainTreeViewViewModel mainViewModel, ITreeViewDisplay? mainView,
         Action<IReadOnlyList<ITreeNode>> reportSelection)
     {
         this.mainViewModel = mainViewModel;
@@ -85,6 +86,11 @@ internal class SelectionLogic
         NodeViewModel.NodeSelected = (node, focus, replace) => HandleSelected(node, focus, replace);
         NodeViewModel.NodeDeselected = HandleDeselection;
     }
+
+    /// <summary>
+    /// Gives selection the tree view to focus and scroll, once the GUI builds it.
+    /// </summary>
+    public void AttachView(ITreeViewDisplay view) => mainView = view;
 
     public void HandleDeselection(NodeViewModel nodeViewModel)
     {
@@ -150,7 +156,7 @@ internal class SelectionLogic
 
         if (nodeViewModel != null && nodeViewModel.IsSelected && focus)
         {
-            mainView.FocusNode(nodeViewModel);
+            mainView?.FocusNode(nodeViewModel);
         }
 
         RefreshGlueState(didSelectionChange);
@@ -176,7 +182,7 @@ internal class SelectionLogic
         // We should assign this because if the user directly right-clicks on a new node,
         // we want this to get called
 
-        mainView.RefreshRightClickMenu();
+        mainView?.RefreshRightClickMenu();
     }
 
     internal async Task SelectByPath(string path, bool addToSelection)
@@ -255,7 +261,7 @@ internal class SelectionLogic
 
             // Headless (GlueCli) there is no window to scroll, and with no UI synchronization context the code
             // after the delay runs on a pool thread, where touching the tree view throws and ends the process.
-            if (selectAndScroll && FlatRedBall.Glue.AutomatedGlue.GlueGui.ShowGui)
+            if (selectAndScroll && mainView != null)
             {
                 // If we don't do this, sometimes it doesn't scroll into view...
                 await System.Threading.Tasks.Task.Delay(120);

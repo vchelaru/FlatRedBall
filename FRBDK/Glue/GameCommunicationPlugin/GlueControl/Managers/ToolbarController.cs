@@ -46,7 +46,7 @@ class ToolbarController : Singleton<ToolbarController>
 
                     GlueCommands.Self.DoOnUiThread(() =>
                     {
-                        if(toolbar.IsOpen)
+                        if(toolbar?.IsOpen == true)
                         {
                             toolbar.IsOpen = false;
                         }

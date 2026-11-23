@@ -51,11 +51,17 @@ namespace CompilerPlugin
                 ReactToPluginEvent("Compiler_Output_Error", output);
             };
 
-            CreateBuildTab();
+            _compilerViewModel.Configuration = "Debug";
+            _compilerViewModel.PropertyChanged += HandleCompilerViewModelPropertyChanged;
 
             GlueCommands.Self.CompilerCommands = new CompilerCommands(_compiler, _runner, _compilerViewModel,
                 HandleOutput,
                 value => ReactToPluginEvent("Compiler_Output_Error", value));
+        }
+
+        public override void StartUpUi()
+        {
+            CreateBuildTab();
         }
 
         private void HandleGluxLoaded()
@@ -132,8 +138,6 @@ namespace CompilerPlugin
         {
             MainControl = new BuildTabView();
             MainControl.DataContext = _compilerViewModel;
-            _compilerViewModel.Configuration = "Debug";
-            _compilerViewModel.PropertyChanged += HandleCompilerViewModelPropertyChanged;
 
             buildTab = CreateTab(MainControl, "Build", TabLocation.Bottom);
             buildTab.Show();
@@ -220,7 +224,7 @@ namespace CompilerPlugin
 
         #endregion
 
-        void HandleOutput(string output) => MainControl.PrintOutput(output);
+        void HandleOutput(string output) => MainControl?.PrintOutput(output);
 
         #region Overrided Method
 
@@ -246,7 +250,7 @@ namespace CompilerPlugin
                     break;
                 case "Compiler_Output_Error":
                     {
-                        MainControl.PrintError(payload);
+                        MainControl?.PrintError(payload);
 
                     }
                     break;

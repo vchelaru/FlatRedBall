@@ -35,6 +35,11 @@ namespace OfficialPlugins.QuickActionPlugin
 
         public override void StartUp()
         {
+        }
+
+        // The Quick Actions tab is all this plugin is: every handler only updates its buttons.
+        public override void StartUpUi()
+        {
             CreateUi();
 
             buttonVisibilityManager = new ButtonVisibilityManager(mainView);

@@ -267,8 +267,6 @@ public class MainTiledPluginClass : PluginBase
 
         this.AddErrorReporter(new ErrorReporter(_assetTypeInfoAdder, _tileShapeCollectionsPropertiesController));
 
-        CreateToolbar();
-
         SaveTemplateTmx();
 
         AddCodeGenerators();
@@ -371,10 +369,13 @@ public class MainTiledPluginClass : PluginBase
 
     private void HandleGluxUnload()
     {
-        base.RemoveFromToolbar(tiledToolbar, "Tools");
+        if (tiledToolbar != null)
+        {
+            base.RemoveFromToolbar(tiledToolbar, "Tools");
+        }
     }
 
-    private void CreateToolbar()
+    public override void StartUpUi()
     {
         tiledToolbar = new TiledToolbar();
         tiledToolbar.Opened += HandleToolbarOpened;
@@ -866,7 +867,10 @@ public class MainTiledPluginClass : PluginBase
 
     void HandleGluxLoad()
     {
-        base.AddToToolBar(tiledToolbar, "Tools");
+        if (tiledToolbar != null)
+        {
+            base.AddToToolBar(tiledToolbar, "Tools");
+        }
 
         CodeItemAdderManager.Self.RefreshAppendGenerated();
 
