@@ -12,7 +12,12 @@ namespace TileGraphicsPlugin.Managers
     public class TileMapInfoManager : FlatRedBall.Glue.Managers.Singleton<TileMapInfoManager>
     {
 
-        public void AddAndModifyTileMapInfoClass()
+        /// <summary>
+        /// Makes sure the project has the TileMapInfo custom class with every property the Tiled code needs.
+        /// Changes only the project in memory; returns true when it changed something, which
+        /// <see cref="SaveTileMapInfoClass"/> then writes.
+        /// </summary>
+        public bool AddAndModifyTileMapInfoClass()
         {
             var glux = GlueState.Self.CurrentGlueProject;
 
@@ -58,13 +63,18 @@ namespace TileGraphicsPlugin.Managers
                 wasAnythingAdded = true;
             }
 
-            if (wasAnythingAdded)
-            {
-                // Let's generate this asap:
-                GlueCommands.Self.GenerateCodeCommands.GenerateCustomClassesCode();
-                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
-                GlueCommands.Self.ProjectCommands.SaveProjects();
-            }
+            return wasAnythingAdded;
+        }
+
+        /// <summary>
+        /// Generates the custom classes and saves the project after <see cref="AddAndModifyTileMapInfoClass"/>
+        /// changed the TileMapInfo class.
+        /// </summary>
+        public void SaveTileMapInfoClass()
+        {
+            GlueCommands.Self.GenerateCodeCommands.GenerateCustomClassesCode();
+            GlueCommands.Self.GluxCommands.SaveProjectAndElements();
+            GlueCommands.Self.ProjectCommands.SaveProjects();
         }
 
         bool TryAdd(string memberName, string type, object defaultValue, CustomClassSave tileMapInfoClass, bool forceAdd = false)

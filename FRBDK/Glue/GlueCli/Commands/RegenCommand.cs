@@ -13,7 +13,8 @@ public static class RegenCommand
         Summary = "Load the project, regenerate all code, and report errors.",
         Usage = "regen <project> [--json]",
         Description =
-@"Same load as check, then does to the code what opening the project in the editor does: regenerates the code for
+@"Same load as check, then does to the code what opening the project in the editor does: plugins write their
+project-level code (Gum runtimes, Tiled classes, camera setup, file aliases), then it regenerates the code for
 every screen, entity and global content, removes .csproj entries for generated files no element owns, waits for
 queued tasks, saves the .csproj, and reports.",
         Examples = new[]
@@ -23,10 +24,12 @@ queued tasks, saves the .csproj, and reports.",
         Run = RegenerateAllCodeAsync,
     };
 
+    // The editor's order: performance types, plugin project code, then all code.
     static async Task RegenerateAllCodeAsync(CliContext context)
     {
         var operations = ProjectLoader.Self.Operations;
         operations.GeneratePerformanceTypes();
+        operations.GeneratePluginProjectCode();
         operations.GenerateAllCode();
         await TaskManager.Self.WaitForAllTasksFinished();
         operations.RemoveOrphanedGeneratedCsprojEntries();

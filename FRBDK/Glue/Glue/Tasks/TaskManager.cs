@@ -71,7 +71,15 @@ namespace FlatRedBall.Glue.Managers
 
         GlueTaskBase CurrentlyRunningTask;
 
-        public bool AreAllAsyncTasksDone => 
+        /// <summary>
+        /// Tasks <see cref="RunSynchronously"/> is running. Kept apart from <see cref="CurrentlyRunningTask"/>
+        /// because in <see cref="SynchronousMode"/> two threads can run tasks at once (a plugin's async work
+        /// resumes on the thread pool), and a single field restored on finish ends up pointing at a finished
+        /// task when their runs overlap. Guarded by <see cref="mActiveParallelTasks"/>.
+        /// </summary>
+        readonly List<GlueTaskBase> synchronouslyRunningTasks = new List<GlueTaskBase>();
+
+        public bool AreAllAsyncTasksDone =>
             TaskCountAccurate == 0
 
             ;
@@ -85,7 +93,7 @@ namespace FlatRedBall.Glue.Managers
             {
                 lock (mActiveParallelTasks)
                 {
-                    var toReturn = mActiveParallelTasks.Count + asyncTasks +
+                    var toReturn = mActiveParallelTasks.Count + synchronouslyRunningTasks.Count + asyncTasks +
                         //taskQueue.Where(item => item.Value.IsCancelled == false).Count();
                         // This could be much faster with systems that have a lot of tasks
                         taskQueueCount;
@@ -107,7 +115,7 @@ namespace FlatRedBall.Glue.Managers
             {
                 lock (mActiveParallelTasks)
                 {
-                    var toReturn = mActiveParallelTasks.Count + asyncTasks +
+                    var toReturn = mActiveParallelTasks.Count + synchronouslyRunningTasks.Count + asyncTasks +
                         taskQueue.Where(item => item.Value.IsCancelled == false).Count();
                     // This could be much faster with systems that have a lot of tasks
 
@@ -562,12 +570,20 @@ namespace FlatRedBall.Glue.Managers
             // so continuations resume on the thread pool.
             var originalContext = SynchronizationContext.Current;
             SynchronizationContext.SetSynchronizationContext(null);
+            lock (mActiveParallelTasks)
+            {
+                synchronouslyRunningTasks.Add(glueTask);
+            }
             try
             {
-                RunTask(glueTask, markAsCurrent: true).GetAwaiter().GetResult();
+                RunTask(glueTask, markAsCurrent: false).GetAwaiter().GetResult();
             }
             finally
             {
+                lock (mActiveParallelTasks)
+                {
+                    synchronouslyRunningTasks.Remove(glueTask);
+                }
                 SynchronizationContext.SetSynchronizationContext(originalContext);
             }
         }
@@ -771,7 +787,17 @@ namespace FlatRedBall.Glue.Managers
                     glueTask.TimeStarted == null ||
                     taskQueue.Any(item => item.Value == glueTask) ||
                     mActiveParallelTasks.Contains(glueTask) ||
+                    IsRunningSynchronously(glueTask) ||
                     CurrentlyRunningTask == glueTask;
+            }
+
+        }
+
+        bool IsRunningSynchronously(GlueTaskBase glueTask)
+        {
+            lock (mActiveParallelTasks)
+            {
+                return synchronouslyRunningTasks.Contains(glueTask);
             }
 
         }

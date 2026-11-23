@@ -117,6 +117,35 @@ public class TaskManagerSynchronousModeTests : System.IDisposable
         didWait.ShouldBeFalse();
     }
 
+    // A plugin's fire-and-forget async work resumes on the thread pool and runs its tasks there while the
+    // calling thread runs its own. When their runs overlap, the first to start finishes first, and the last
+    // finished task must not be left counted as running.
+    [Fact]
+    public async Task WaitForAllTasksFinished_ShouldReturn_AfterOverlappingTasksOnTwoThreads()
+    {
+        using var firstStarted = new ManualResetEventSlim();
+        using var secondStarted = new ManualResetEventSlim();
+        using var firstMayFinish = new ManualResetEventSlim();
+
+        var first = Task.Run(() => TaskManager.Self.Add(() =>
+        {
+            firstStarted.Set();
+            firstMayFinish.Wait();
+        }, "first"));
+        firstStarted.Wait();
+
+        var second = Task.Run(() => TaskManager.Self.Add(() =>
+        {
+            secondStarted.Set();
+            first.Wait();
+        }, "second"));
+        secondStarted.Wait();
+        firstMayFinish.Set();
+        await Task.WhenAll(first, second);
+
+        TaskManager.Self.AreAllAsyncTasksDone.ShouldBeTrue();
+    }
+
     [Fact]
     public void Add_ShouldNotRequireALiveMainGlueWindow()
     {

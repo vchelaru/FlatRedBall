@@ -490,6 +490,10 @@ namespace FlatRedBall.Glue.IO
 
 
                 PluginManager.ReactToLoadedGlux(ProjectManager.GlueProjectSave, glueProjectFile, (newString) => SetInitWindowText(newString, initializationWindow));
+                if (isEditorSession)
+                {
+                    Operations.GeneratePluginProjectCode();
+                }
                 Section.EndContextAndTime();
                 Section.GetAndStartContextAndTime("GenerateAllCode");
                 SetInitWindowText("Generating all code", initializationWindow);

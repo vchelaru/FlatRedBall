@@ -93,6 +93,7 @@ namespace GameCommunicationPlugin.GlueControl
         
 
         bool ignoreViewModelChanges = false;
+        bool isFillingToolbarFromSettings;
 
         Timer dragDropTimer;
 
@@ -168,6 +169,7 @@ namespace GameCommunicationPlugin.GlueControl
             var manager = new FileChangeManager((value) => ReactToPluginEvent("Compiler_Output_Standard", value), CompilerViewModel, _refreshManager);
             
             this.ReactToLoadedGlux += HandleGluxLoaded;
+            this.GenerateProjectCode += HandleGenerateProjectCode;
             this.ReactToUnloadedGlux += HandleGluxUnloaded;
             
             this.ReactToNewFileHandler += _refreshManager.HandleNewFile;
@@ -503,6 +505,9 @@ namespace GameCommunicationPlugin.GlueControl
 
             CompilerViewModel.IsGluxVersionNewEnoughForGlueControlGeneration =
                 GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.AddedGeneratedGame1;
+
+            // Filling the toolbar from the settings is not a change to save. HandleGenerateProjectCode saves them.
+            isFillingToolbarFromSettings = true;
             CompilerViewModel.ToolbarEntitiesAndStates.Clear();
 
             CompilerViewModel.HasLoadedGlux = true;
@@ -512,6 +517,7 @@ namespace GameCommunicationPlugin.GlueControl
                 HandleAddToEditToolbar(toolbarModel.NamedObject, toolbarModel.CustomPreviewLocation);
 
             }
+            isFillingToolbarFromSettings = false;
 
             game1GlueControlGenerator.PortNumber = model.PortNumber;
             game1GlueControlGenerator.IsGlueControlManagerGenerationEnabled = model.GenerateGlueControlManagerCode && IsFrbNewEnough();
@@ -525,9 +531,21 @@ namespace GameCommunicationPlugin.GlueControl
 
             ToolbarController.Self.HandleGluxLoaded();
 
+            gameHostView.HandleGluxLoaded();
+        }
+
+        /// <summary>
+        /// Saves the compiler settings (creating the file with the port the load picked, or rewriting it in the
+        /// current format), embeds or removes the live edit code, and adds Newtonsoft.Json to the .csproj.
+        /// </summary>
+        private void HandleGenerateProjectCode()
+        {
+            SaveCompilerSettingsModel();
+
             if(IsFrbNewEnough() && GlueViewSettingsViewModel.EnableLiveEdit)
             {
-                TaskManager.Self.Add(() => EmbeddedCodeManager.EmbedAll(model.GenerateGlueControlManagerCode), "Generate Glue Control Code");
+                var generateGlueControlManagerCode = GlueViewSettingsViewModel.EnableLiveEdit;
+                TaskManager.Self.Add(() => EmbeddedCodeManager.EmbedAll(generateGlueControlManagerCode), "Generate Glue Control Code");
                 TaskManager.Self.Add(() => GlueCallsCodeGenerator.GenerateAll(), "Generate Glue Control Code New");
             }
             else
@@ -538,8 +556,6 @@ namespace GameCommunicationPlugin.GlueControl
             }
 
             AddNewtonsoft();
-
-            gameHostView.HandleGluxLoaded();
         }
 
         #region Game Tab
@@ -771,7 +787,7 @@ namespace GameCommunicationPlugin.GlueControl
 
                     break;
                 case nameof(CompilerViewModel.ToolbarEntitiesAndStates):
-                    if(CompilerViewModel.HasLoadedGlux)
+                    if(CompilerViewModel.HasLoadedGlux && !isFillingToolbarFromSettings)
                     {
                         SaveCompilerSettingsModel();
                     }

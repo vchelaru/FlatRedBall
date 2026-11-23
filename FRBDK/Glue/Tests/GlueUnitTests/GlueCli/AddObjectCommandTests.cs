@@ -41,6 +41,27 @@ public class AddObjectCommandTests
         generated.ShouldContain("FlatRedBall.Sprite SpriteInstance");
     }
 
+    // Edits do not raise the plugins' GenerateProjectCode. A Gum object's generated code uses the Gum runtime
+    // classes regen wrote, so after regen the edit alone must still produce a project that compiles.
+    [StaFact]
+    public void AddObject_ShouldProduceCompilingCode_WhenAddingAGumComponentAfterRegen()
+    {
+        using var project = GoldProject.CopyOutOfRepo("Samples/FormsSampleProject");
+        GoldProject.DeleteGeneratedCode(project.Root);
+        Regen(project.Root);
+
+        var (exitCode, output) = Run("add-object", project.Root, "--element", "MainMenu", "--type", "ButtonCloseRuntime", "--json");
+
+        exitCode.ShouldBe(GlueCliRunner.ExitSuccess, output);
+        EditProperty(Parse(output), "type").ShouldBe("FormsSampleProject.GumRuntimes.Controls.ButtonCloseRuntime");
+        var projectDirectory = Path.Combine(project.Root, "FormsSampleProject");
+        File.ReadAllText(Path.Combine(projectDirectory, "Screens", "MainMenu.Generated.cs"))
+            .ShouldContain("ButtonCloseRuntime ButtonCloseRuntimeInstance");
+
+        var (buildExitCode, buildOutput) = NestedDotnetCli.Run($"build \"{Path.Combine(projectDirectory, "FormsSampleProject.csproj")}\" -c Debug");
+        buildExitCode.ShouldBe(0, buildOutput);
+    }
+
     [StaFact]
     public void AddObject_ShouldPutAnEntityInstanceInTheListOfItsType()
     {

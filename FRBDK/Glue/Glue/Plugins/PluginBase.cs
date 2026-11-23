@@ -459,9 +459,20 @@ namespace FlatRedBall.Glue.Plugins
         public Action ReactToLoadedGluxEarly { get; protected set; }
 
         /// <summary>
-        /// Delegate raised after a project is loaded, but before any code has been generated.
+        /// Delegate raised after a project is loaded, but before any code has been generated. GlueCli's
+        /// <c>check</c> raises it too, so a handler only sets up the plugin's model and UI and writes no
+        /// files. Code and files the plugin writes for the whole project go in <see cref="GenerateProjectCode"/>.
         /// </summary>
         public Action ReactToLoadedGlux { get; protected set; }
+
+        /// <summary>
+        /// Writes the plugin's project-level output: generated code that belongs to no single Screen or Entity,
+        /// embedded code files, settings files the plugin creates, and the .csproj entries for them. Raised by
+        /// <see cref="IO.ProjectLoadOperations.GeneratePluginProjectCode"/>, which the editor's project open
+        /// calls right after <see cref="ReactToLoadedGlux"/> and GlueCli's <c>regen</c> calls before
+        /// generating all code.
+        /// </summary>
+        public Action GenerateProjectCode { get; protected set; }
 
         public Action<AddEntityWindow> ModifyAddEntityWindow { get; protected set; }
         public Action<AddScreenWindow> ModifyAddScreenWindow { get; protected set; }
