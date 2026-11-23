@@ -1678,6 +1678,12 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
 
         GlueState.Self.CurrentEventResponseSave = eventResponseSave;
     }
+
+    public void RemoveEventFromElement(GlueElement element, EventResponseSave eventResponseSave)
+    {
+        element.Events.Remove(eventResponseSave);
+        PluginManager.ReactToEventResponseRemoved(element, eventResponseSave);
+    }
     #endregion
 
     #region Property Set

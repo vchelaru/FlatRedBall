@@ -1627,3 +1627,15 @@ same three. `set-variable-property` builds `CustomVariablePropertyGridDisplayer`
 `set-property`, and runs `CustomVariableSaveSetPropertyLogic.ReactToCustomVariableChangedValue` after the
 set. `remove-variable` answers `AskToRemoveCustomVariableAsync`'s one delete confirm. `CliChanges` reports the
 elements an edit changed.
+
+### 2026-11-23 — GlueCli `add-event` and `remove-event`
+
+`add-event` fills an `AddEventViewModel` the way `DialogCommands.ShowAddNewEventDialog` copies it out of the
+Add Event window and calls `ElementCommands.AddEventToElement`. The window's three choices are `--expose`
+(and `--variable`/`--when` for a variable's change event), `--object`/`--object-event`, and `--custom`; the
+valid values come from the window's own lists (`ExposedEventManager`, `AvailableDelegateTypeConverter`).
+`NameVerifier.IsEventNameValid` does not look at events, so the command checks for a taken event name itself.
+`remove-event` calls the new `ElementCommands.RemoveEventFromElement`, which the editor's Delete now calls
+too. Editor bug fix: a handler stub added to an `.Event.cs` whose class ends in a hand-written method was
+written onto that method's closing-brace line, where `ParsedClass` does not find it, so the next code
+generation added it again and the project stopped compiling.
