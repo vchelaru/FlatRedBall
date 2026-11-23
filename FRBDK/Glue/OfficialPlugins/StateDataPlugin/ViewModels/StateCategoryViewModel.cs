@@ -173,10 +173,14 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
             switch(e.PropertyName)
             {
                 case nameof(Name):
-                    this.category.Name = this.Name;
+                    var changedElements = StateSaveCategoryRenameLogic.Rename(GlueState.Self.CurrentGlueProject, Element, this.category, this.Name);
 
-                    // todo - eventually may need to handle variables renaming here
                     GlueCommands.Self.RefreshCommands.RefreshUi(this.category);
+                    // The rename can rename the Current{Category}State variable, which the tree lists.
+                    foreach (var changedElement in changedElements)
+                    {
+                        GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(changedElement);
+                    }
                     GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
                     GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                     break;

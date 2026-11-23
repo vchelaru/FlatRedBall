@@ -1639,3 +1639,10 @@ valid values come from the window's own lists (`ExposedEventManager`, `Available
 too. Editor bug fix: a handler stub added to an `.Event.cs` whose class ends in a hand-written method was
 written onto that method's closing-brace line, where `ParsedClass` does not find it, so the next code
 generation added it again and the project stopped compiling.
+
+### 2026-11-23 — Category rename follows its references
+
+`StateSaveCategoryRenameLogic.Rename` (GlueCommon) renames a category and what refers to it: variable types
+(qualified or not, nullable or not), the `Current{Category}State` variable in the owner and derived elements, and
+what sets that property by name (states, excluded variables, events, instance variables, tunneled variables). The
+State Data tab and GlueCli's `rename-state-category` call it. Validation stays with the caller (#2485).
