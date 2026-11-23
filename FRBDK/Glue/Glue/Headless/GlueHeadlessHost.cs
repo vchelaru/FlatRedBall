@@ -244,7 +244,7 @@ public static class GlueHeadlessHost
         Set(new PluginUpdater());
         Set<IGlueState>(GlueState.Self);
         Set<IGlueCommands>(GlueCommands.Self);
-        Set(new GlueErrorManager());
+        Set(new GlueErrorManager(() => GlueCommands.Self.RefreshCommands.RefreshErrors()));
 
         RegisteredContainerServiceTypes = registered;
     }

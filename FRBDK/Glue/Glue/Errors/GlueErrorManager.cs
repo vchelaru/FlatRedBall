@@ -16,6 +16,17 @@ namespace FlatRedBall.Glue.Errors
 
         public IEnumerable<ErrorViewModel> Errors => errors;
 
+        readonly Action refreshErrors;
+
+        /// <param name="refreshErrors">
+        /// Refreshes the Errors tab. An error added through <see cref="Add(ErrorViewModel)"/> only shows there
+        /// after a refresh.
+        /// </param>
+        public GlueErrorManager(Action refreshErrors = null)
+        {
+            this.refreshErrors = refreshErrors;
+        }
+
         public void Add(ErrorReporterBase errorReporter) => ErrorReporters.Add(errorReporter);
 
         public void Add(ErrorViewModel error)
@@ -26,6 +37,8 @@ namespace FlatRedBall.Glue.Errors
             {
                 errors.Add(error);
             }
+
+            refreshErrors?.Invoke();
         }
 
         /// <summary>
