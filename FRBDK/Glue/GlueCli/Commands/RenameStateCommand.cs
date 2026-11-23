@@ -24,9 +24,7 @@ public static class RenameStateCommand
 @"Renames the state the way the editor's Properties grid does, then saves the .gluj and element files and
 regenerates the changed code. Variables whose value is the old state, objects whose CurrentState or state
 variable is the old state, and states in other elements that set it follow. Hand-written code is not changed.
-
-Categories cannot be renamed with GlueCli: the editor renames a category without updating the variables
-typed as it (https://github.com/vchelaru/FlatRedBall/issues/2485).
+To rename a category, use rename-state-category.
 
 The run fails (exit 1, nothing saved) when the element, category or state is unknown, or the new name is
 invalid or already used in the category. The message lists close matches.
