@@ -277,7 +277,9 @@ namespace FlatRedBall.Glue.SaveClasses
         {
             for (int i = 0; i < namedObjectList.Count; i++)
             {
-                if (namedObjectList[i].FieldName == memberName)
+                // FieldName is "m" + InstanceName for an object with a public property, so it alone misses
+                // a second object of the same name.
+                if (namedObjectList[i].FieldName == memberName || namedObjectList[i].InstanceName == memberName)
                 {
                     return MembershipInfo.ContainedInThis;
                 }
