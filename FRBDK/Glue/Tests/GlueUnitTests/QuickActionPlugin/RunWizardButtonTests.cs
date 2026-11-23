@@ -26,10 +26,8 @@ public class RunWizardButtonTests : IDisposable
     public RunWizardButtonTests()
     {
         GlueTestBootstrap.EnsureInitialized();
-        WizardRecordingPlugin.EnsureRegistered();
         _originalWizardCommands = GlueCommands.Self.WizardCommands;
         _originalCulture = Localization.Texts.Culture;
-        WizardRecordingPlugin.RunCount = 0;
     }
 
     public void Dispose()
@@ -45,38 +43,20 @@ public class RunWizardButtonTests : IDisposable
     public void RunWizardButton_RunsTheWizard_InEveryLanguage(string culture)
     {
         Localization.Texts.Culture = new CultureInfo(culture);
-        GlueCommands.Self.WizardCommands = new WizardRecordingPlugin();
+        var wizard = new RecordingWizardCommands();
+        GlueCommands.Self.WizardCommands = wizard;
         var view = new MainView();
 
         typeof(MainView)
             .GetMethod("RunWizard_Clicked", BindingFlags.Instance | BindingFlags.NonPublic)!
             .Invoke(view, new object[] { view, new RoutedEventArgs() });
 
-        WizardRecordingPlugin.RunCount.ShouldBe(1);
+        wizard.RunCount.ShouldBe(1);
     }
 
-    /// <summary>Stands in for the New Project Wizard plugin, under its real name, both as a registered plugin and as
-    /// its commands.</summary>
-    private class WizardRecordingPlugin : PluginBase, IWizardCommands
+    private class RecordingWizardCommands : IWizardCommands
     {
-        private static bool _registered;
-
-        public static int RunCount { get; set; }
-
-        public static void EnsureRegistered()
-        {
-            if (!_registered)
-            {
-                PluginManager.RegisterPlugin(new WizardRecordingPlugin());
-                _registered = true;
-            }
-        }
-
-        public override string FriendlyName => "New Project Wizard";
-        public override Version Version => new Version(1, 0);
-
-        public override void StartUp() { }
-
+        public int RunCount { get; private set; }
         public void RunWizard() => RunCount++;
     }
 }

@@ -8,6 +8,7 @@ using FlatRedBall.Glue.SaveClasses;
 using GlueUnitTests.TestSupport;
 using GlueUnitTests.Tasks;
 using OfficialPlugins.CollisionPlugin.Controllers;
+using OfficialPlugins.CollisionPlugin.Managers;
 using OfficialPlugins.CollisionPlugin.ViewModels;
 using OfficialPlugins.Wizard.Managers;
 using OfficialPlugins.Wizard.Models;
@@ -15,34 +16,10 @@ using Shouldly;
 
 namespace GlueUnitTests.CollisionPlugin;
 
-// Follow-up to GitHub issue #1894 (reopened): WizardProjectLogic.HandleAddPlayerInstance's two
-// FixNamedObjectCollisionType call sites (~line 996/1033) go through
-// PluginManager.CallPluginMethod("Collision Plugin", "FixNamedObjectCollisionType", nos), which silently
-// no-ops in a test host (no plugin registered with PluginManager) - exactly the false-coverage risk the
-// issue was reopened for: a naive test could pass without the real fixup ever running.
-//
-// MainCollisionPlugin.FixNamedObjectCollisionType is already a one-line forwarder to the public static
-// CollisionRelationshipViewModelController.TryFixSourceClassType (same "thin forwarder to a directly-
-// callable static method" shape as MainCollisionPlugin.RegisterAssetTypes) - no extraction was needed,
-// it was already directly callable. This test calls that real method directly (bypassing
-// PluginManager.CallPluginMethod, per option (b) in the #1894 follow-up plan - see REFACTORING.md) on a
-// NamedObjectSave whose FirstCollisionName/SecondCollisionName point at real NamedObjectSaves produced by
-// the real WizardProjectLogic.HandleAddGameScreen path, and asserts the real recomputed SourceClassType -
-// not just that the call didn't throw.
-//
-// Registering "Collision Plugin" with PluginManager so CallPluginMethod itself resolves it for real
-// (option (a)) was investigated and rejected here: PluginManager.CallMethodOnPlugin always routes calls
-// through PluginCommand(doOnUiThread: true), which reads the private static PluginManager.mMenuStrip -
-// only ever set by MainGlueWindow's real startup (PluginManager.ShareMenuStripReference), so a registered
-// plugin would still NRE there. And even if that were faked, the real call sites' surrounding method
-// (HandleAddPlayerInstance) is blocked further upstream: PluginManager.ReactToCreateCollisionRelationshipsBetween
-// needs a live MainCollisionPlugin subscriber (only wired by a fully-instantiated, StartUp'd plugin), and
-// its handler (CollidableNamedObjectController.CreateCollisionRelationshipBetweenObjects) then calls
-// DialogCommands.FocusTab, which reads PluginManager.TabControlViewModel - only ever set by a live
-// WinForms MainGlueWindow. That's a PluginManager-wide UI coupling (not Collision-Plugin-specific),
-// already flagged as "deliberately not attempted" in REFACTORING.md's "AvailableAssetTypes.Self.Initialize
-// / Collision Plugin asset-type test seam" entry - out of scope for a Collision-Plugin-only pass. See
-// REFACTORING.md for the full writeup and the precise blocker chain.
+// WizardProjectLogic.HandleAddPlayerInstance and ElementCommands' rename call
+// ICollisionRelationshipCommands.FixNamedObjectCollisionType after changing a relationship's objects or
+// collision type. This runs it on a relationship whose FirstCollisionName/SecondCollisionName point at real
+// NamedObjectSaves from WizardProjectLogic.HandleAddGameScreen, and asserts the recomputed SourceClassType.
 [Collection(nameof(TaskManagerSequentialCollection))]
 public class FixNamedObjectCollisionTypeTests : IDisposable
 {
@@ -120,11 +97,8 @@ public class FixNamedObjectCollisionTypeTests : IDisposable
         relationshipNos.SourceClassType = "FlatRedBall.Math.Collision.CollisionRelationship";
         gameScreen.NamedObjects.Add(relationshipNos);
 
-        // The seam under test: this is exactly what MainCollisionPlugin.FixNamedObjectCollisionType does
-        // (a one-line forward), and exactly what
-        // PluginManager.CallPluginMethod("Collision Plugin", "FixNamedObjectCollisionType", nos) invokes
-        // via reflection in production - real production logic, not a fake.
-        var changedForBounce = CollisionRelationshipViewModelController.TryFixSourceClassType(relationshipNos);
+        var collisionCommands = new CollisionRelationshipCommands();
+        var changedForBounce = collisionCommands.FixNamedObjectCollisionType(relationshipNos);
 
         changedForBounce.ShouldBeTrue();
         var bounceSourceClassType = relationshipNos.SourceClassType;
@@ -135,7 +109,7 @@ public class FixNamedObjectCollisionTypeTests : IDisposable
         // Mirrors WizardProjectLogic.cs's isPlatformer branch (~line 1020): the CollisionType property is
         // changed, then FixNamedObjectCollisionType is called again to recompute SourceClassType to match.
         relationshipNos.Properties.SetValue(nameof(CollisionRelationshipViewModel.CollisionType), (int)OfficialPlugins.CollisionPlugin.ViewModels.CollisionType.PlatformerSolidCollision);
-        var changedForPlatformer = CollisionRelationshipViewModelController.TryFixSourceClassType(relationshipNos);
+        var changedForPlatformer = collisionCommands.FixNamedObjectCollisionType(relationshipNos);
 
         changedForPlatformer.ShouldBeTrue();
         // Platformer CollisionType -> DelegateCollisionRelationship<T1, T2>, a different runtime type -

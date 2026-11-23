@@ -503,7 +503,7 @@ public static class GlueHeadlessHost
         // Only GlueGui gets the menu strip. PluginManager must NOT: its PluginCommand dispatch reads
         // its own mMenuStrip and, when that is non-null, marshals every plugin call through
         // mMenuStrip.Invoke - which needs a created window handle and a running message loop, so calls
-        // silently never execute and CallPluginMethod returns null.
+        // silently never execute.
         // Leaving PluginManager's null keeps its existing "no live menu strip means run inline" guard
         // doing the right thing.
         GlueGui.Initialize(new MenuStrip());

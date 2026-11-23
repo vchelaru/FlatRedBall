@@ -35,16 +35,13 @@ namespace GlueUnitTests.Wizard;
 //    runs here. GlueTestBootstrap.EnsureCollisionPluginRegisteredWithPluginManager constructs a real
 //    MainCollisionPlugin and registers it via the new PluginManager.RegisterPlugin - the same
 //    dispatch-table registration StartupPlugin does for a discovered plugin, just without the discovery
-//    step in front of it. That, in turn, surfaced one more real gap: PluginManager's synchronous plugin
-//    dispatch (used by PluginManager.CallPluginMethod, e.g. "FixNamedObjectCollisionType") unconditionally
-//    read the private static PluginManager.mMenuStrip - null outside a live MainGlueWindow - fixed with a
-//    null-guard (same shape as the earlier MainGlueWindow.Self.HasErrorOccurred fix).
+//    step in front of it. Its StartUp also assigns GlueCommands.CollisionRelationshipCommands, which
+//    HandleAddPlayerInstance calls to fix each relationship's SourceClassType.
 //
 // With those in place, this drives the real, full WizardProjectLogic.Apply(vm) - the exact
 // HandleAddPlayerInstance path #1901 stopped at - and asserts real production side effects: both
 // collision-relationship NamedObjectSaves exist, wired to the real player list and collision objects, with
-// SourceClassType recomputed by the real (now actually-dispatched) FixNamedObjectCollisionType - not just
-// "Apply() didn't throw."
+// SourceClassType recomputed by the real FixNamedObjectCollisionType - not just "Apply() didn't throw."
 [Collection(nameof(TaskManagerSequentialCollection))]
 public class WizardProjectLogicAddPlayerInstanceTests : IDisposable
 {
@@ -165,9 +162,7 @@ public class WizardProjectLogicAddPlayerInstanceTests : IDisposable
         cloudRelationship.Properties.GetValue<string>(nameof(CollisionRelationshipViewModel.SecondCollisionName))
             .ShouldBe(cloudCollisionNos.InstanceName);
 
-        // Real side effect #3: PluginManager.CallPluginMethod("Collision Plugin",
-        // "FixNamedObjectCollisionType", ...) now actually finds and dispatches to the real
-        // MainCollisionPlugin (previously silently no-op'd, since no plugin was registered) - proven by
+        // Real side effect #3: the registered Collision Plugin's FixNamedObjectCollisionType ran - proven by
         // SourceClassType having been recomputed to a real collision-relationship runtime type, not left
         // at whatever CreateCollisionRelationshipBetweenObjects's own initial computation produced.
         solidRelationship.SourceClassType.ShouldStartWith("FlatRedBall.Math.Collision.");

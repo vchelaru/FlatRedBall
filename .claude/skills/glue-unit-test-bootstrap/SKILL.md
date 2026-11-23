@@ -28,7 +28,7 @@ a headless tool also needs belong in the host. GlueCli (`FRBDK/Glue/GlueCli`) us
 process; its tests pass their own `IGlueCliHost` instead.
 
 `RegisterPlugin` adds a plugin to both `mPluginContainers` *and* `ImportedPlugins`. Those back
-different dispatch paths: `CallPluginMethod` walks the containers, but every `ReactTo*` event enumerates
+different dispatch paths: `CallMethodOnPlugin` walks the containers, but every `ReactTo*` event enumerates
 `ImportedPlugins`. A plugin in only the first answers direct calls and is never notified of anything —
 which reads as "the plugin ran and chose to do nothing," not as a wiring bug.
 
@@ -93,7 +93,7 @@ Windows PID) showing exactly one blocked thread and nothing else running is the 
 `GlueGui.Initialize(menuStrip)` is needed (`PluginBase.AddMenuItemTo` reads `GlueGui.MenuStrip.Items`).
 `PluginManager.ShareMenuStripReference` is the opposite: `PluginCommand` marshals every plugin call through
 `mMenuStrip.Invoke` whenever `mMenuStrip` is non-null, so with no message loop the calls silently never run
-and `CallPluginMethod` returns null. Leaving PluginManager's null keeps its "no live menu strip means run
+and return nothing. Leaving PluginManager's null keeps its "no live menu strip means run
 inline" guard doing the right thing.
 
 ## Landmine — code generation swallows its own exceptions
@@ -115,7 +115,7 @@ specified could not be found` — while passing when run alone. Call
 
 ## Landmine — calling a real plugin method for the first time can pop a real dialog on the developer's desktop
 
-`IMainGlueWindow`/`IUiThreadMarshaller` only cover calls that were already routed through `MainGlueWindow.Self`/`TaskManager`. A plugin method you're calling directly for the first time (bypassing `PluginManager.CallPluginMethod`'s silent no-op to get real coverage — see `REFACTORING.md`'s Collision/Gum entries) may still contain its own unseamed `MessageBox.Show(...)` on some branch (e.g. an "already exists, overwrite?" check). That call blocks the test thread on a real, visible modal dialog on the *developer's actual desktop* — not something `GlueTestBootstrap` catches, and not obvious from reading the test in isolation.
+`IMainGlueWindow`/`IUiThreadMarshaller` only cover calls that were already routed through `MainGlueWindow.Self`/`TaskManager`. A plugin method you're calling directly for the first time may still contain its own unseamed `MessageBox.Show(...)` on some branch (e.g. an "already exists, overwrite?" check). That call blocks the test thread on a real, visible modal dialog on the *developer's actual desktop* — not something `GlueTestBootstrap` catches, and not obvious from reading the test in isolation.
 
 Before exercising a plugin method's real logic for the first time: skim it (and what it calls) for `MessageBox.Show`/similar dialog calls, and design the test to never take that branch (fresh unique temp directory per test, `askToOverwrite`/equivalent flags set to avoid the prompt, call the method at most once per test run rather than twice to probe an idempotency branch). If you ever see an unexpected pause or the user reports a popup, stop immediately, confirm no process is still blocked waiting on it, and fix the test to avoid the branch rather than building a dialog seam just to unblock one test.
 

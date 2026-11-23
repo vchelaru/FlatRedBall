@@ -46,23 +46,16 @@ Some plugins call methods on other plugins **by method name** (string-based invo
 
 ### Typed command interfaces (the pattern to copy)
 
-When code outside a plugin (another plugin, GlueCli) needs an operation the plugin owns, or when GlueCli needs logic that sits in a view model, move the logic into a UI-free class and reach it through a typed interface instead of `PluginManager.CallPluginMethod` or a copy:
+When code outside a plugin (another plugin, GlueCli) needs an operation the plugin owns, or when GlueCli needs logic that sits in a view model, move the logic into a UI-free class and reach it through a typed interface instead of a copy:
 
 - **Logic owned by Glue itself** goes on the existing command interfaces. Example: `IElementCommands.SetStateVariableValue` and `SetStateCategoryExcludedVariablesAsync`, which the State Data tab's `StateCategoryViewModel` and GlueCli's `set-state-variable`/`add-state-category` both call.
 - **Logic owned by a plugin** gets an interface in `Glue/Plugins/ExportedInterfaces/CommandInterfaces`, a property on `GlueCommands`, and an implementation in the plugin that the plugin assigns in `StartUp` (and clears in `ShutDown`). Callers null-check the property, since the plugin may not be loaded. Example: `IEntityInputMovementCommands`, which the wizard and `add-entity --platformer/--top-down` call.
 
 The view model keeps only view-model work (syncing its collections, choosing when to generate code and save); the shared method does the model change and the plugin notifications.
 
-`CallPluginMethod` dispatch runs on the UI thread, catches exceptions and disables the plugin. A typed call does none of that: marshal with `GlueCommands.Self.DoOnUiThread` where the callee touches UI, and catch where a throw must not reach the caller.
+A typed call runs on the caller's thread and lets exceptions reach the caller: marshal with `GlueCommands.Self.DoOnUiThread` where the callee touches UI, and catch where a throw must not reach the caller. Long async work (creating a Gum project, linking source, building .xnbs) runs as a TaskManager task inside the implementation.
 
-Remaining `CallPluginMethod`/`CallPluginMethodAsync` callers, by plugin (caller count per method), each a candidate for the same treatment:
-
-- **"Collision Plugin"**: `FixNamedObjectCollisionType` (3: `ElementCommands`, `WizardProjectLogic` twice). `ICollisionRelationshipCommands` exists.
-- **"Main Property Grid Plugin"**: `FixNamedObjectCollisionType`, `RefreshVariables` (1 each: `RefreshCommands`).
-- **"FRB Source"**: `HasFrbAndGumReposInDefaultLocation` (1), `AddFrbSourceToDefaultLocation` (2), all in `NewProjectHelper`.
-- **"New Project Wizard"**: `RunWizard` (2: `NewProjectHelper`, QuickActionPlugin `MainView`).
-- **"Git Plugin"** `AddGitIgnore`, **"MonoGame Content Plugin"** `RefreshXnbsForProject` (1 each: `NewProjectHelper`).
-- **"Undo Plugin"** `Undo` (1: `GlueCommands`), **"Tree View Plugin"** `AddBookmark` (1: `RightClickHelper`).
+String dispatch by plugin name and method name (`PluginManager.CallPluginMethod`/`CallPluginMethodAsync`) is gone; every cross-plugin call goes through one of these interfaces.
 
 ## TreeViewPlugin — Refactoring Goals and Status
 
@@ -370,6 +363,15 @@ models to it. Still UI-bound: `set-property` builds `NamedObjectPropertyGridDisp
 `EntitySavePropertyGridDisplayer` and `ScreenSavePropertyGridDisplayer`, and the plugins' `AdjustDisplayedEntity`
 hooks (Gum, Collision, DamageDealing) take the displayer type; those are the next family to move.
 `AdjustDisplayedReferencedFile` now has no subscribers, and `AdjustDisplayedCustomVariable` was never called.
+
+### 2026-11-23 — Last plugin calls typed, `CallPluginMethod` deleted
+
+`IPropertyGridCommands`, `IFrbSourceCommands`, `IWizardCommands`, `IGitCommands`, `IContentPipelineCommands`,
+`IUndoCommands` and `ITreeViewCommands` cover the remaining callers, and `ICollisionRelationshipCommands` gained
+`FixNamedObjectCollisionType`. `RefreshCommands.RefreshVariables` also called a "Main Property Grid Plugin"
+`FixNamedObjectCollisionType` that never existed; that call is gone. Quick Actions' Run Wizard button looked the
+wizard up by its localized name, so it did nothing outside English; the typed call fixes it.
+`PluginManager.CallPluginMethod` and `CallPluginMethodAsync` are deleted.
 
 ### 2026-11-23 — Gum, Glue Compiler and Tiled calls typed
 
