@@ -752,6 +752,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
         }
 
         /// <summary>
+        /// Forgets the selection without raising a selection event, for when the project it belongs to is being
+        /// unloaded: plugins have already been told the project is going away and must not react to a
+        /// selection change in it.
+        /// </summary>
+        internal void ForgetSelection() => TakeSnapshot(new List<object>(), new List<ITreeNode>());
+
+        /// <summary>
         /// Derives every Current* value from the selected objects. Only a tagless tree node (a folder or
         /// root node) needs the tree: its element is whichever element node it sits under.
         /// </summary>

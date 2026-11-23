@@ -52,12 +52,23 @@ namespace FlatRedBall.Glue.AutomatedGlue
         }
 
 
+        /// <summary>
+        /// Receives the text of every <see cref="ShowMessageBox(string)"/> call made while <see cref="ShowGui"/>
+        /// is off, which would otherwise vanish. GlueCli sets it so a headless run reports these messages
+        /// (validation failures, files it could not save) instead of succeeding silently.
+        /// </summary>
+        public static Action<string> SuppressedMessageHandler { get; set; }
+
         public static void ShowMessageBox(string text, string caption)
         {
             if (ShowGui)
             {
                 // DialogService.ShowMessage has no caption parameter, so the caption is dropped here.
                 DialogService.ShowMessage(text);
+            }
+            else
+            {
+                SuppressedMessageHandler?.Invoke(text);
             }
         }
 
@@ -66,6 +77,10 @@ namespace FlatRedBall.Glue.AutomatedGlue
             if (ShowGui)
             {
                 DialogService.ShowMessage(text);
+            }
+            else
+            {
+                SuppressedMessageHandler?.Invoke(text);
             }
         }
 
