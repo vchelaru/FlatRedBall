@@ -57,6 +57,8 @@ public static class GlueCliRunner
         RemoveVariableCommand.Definition,
         AddEventCommand.Definition,
         RemoveEventCommand.Definition,
+        AddCollisionRelationshipCommand.Definition,
+        SetCollisionPropertyCommand.Definition,
     };
 
     public static readonly IReadOnlyList<CliOption> GlobalOptions = new CliOption[]
