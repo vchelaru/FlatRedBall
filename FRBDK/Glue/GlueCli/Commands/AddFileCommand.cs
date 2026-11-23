@@ -1,6 +1,4 @@
 using System.IO;
-using System.Runtime.InteropServices;
-using System.Text;
 using FlatRedBall.Glue;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Managers;
@@ -200,23 +198,9 @@ copiedFrom is the original path when --copy copied it.",
             var candidate = Path.GetFullPath(Path.Combine(root, argument));
             if (File.Exists(candidate))
             {
-                return new FilePath(ToLongPath(candidate));
+                return new FilePath(CliLookup.ToLongPath(candidate));
             }
         }
         return null;
     }
-
-    /// <summary>
-    /// <c>C:\Users\LONGNA~1\...</c> (an 8.3 name, which %TEMP% often is) as its long form. Glue compares paths
-    /// as strings, so a short-name path would read as outside the content folder.
-    /// </summary>
-    static string ToLongPath(string path)
-    {
-        var buffer = new StringBuilder(1024);
-        var length = GetLongPathName(path, buffer, buffer.Capacity);
-        return length > 0 && length < buffer.Capacity ? buffer.ToString() : path;
-    }
-
-    [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-    static extern int GetLongPathName(string shortPath, StringBuilder longPath, int bufferLength);
 }

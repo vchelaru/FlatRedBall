@@ -313,6 +313,15 @@ Traversal** (14) groups — 24 methods. Everything else stays on `ObjectFinder`.
 
 ## Completed Refactors
 
+### 2026-11-23 — GlueCli `delete` answers the editor's delete dialog instead of bypassing it
+
+`DeleteCommand` calls the same `DialogCommands.AskToRemove*Async` the editor's Delete does and swaps
+`DialogService.ShowDeleteImpl` for the length of the call, answering the `DeleteOptionsViewModel` from flags.
+The plan-ask-execute split from issues #429 and #2032 is what makes this work: every question a delete asks
+is an option on one view model, so a headless caller needs no other seam. A new delete option a plugin adds
+keeps its dialog default in the CLI until it gets a flag. `CliLookup.ToLongPath` moved there from
+`AddFileCommand` so both file commands resolve 8.3 paths the same way.
+
 ### 2026-07-24 — NPC/Wizard test-coverage sweep (issue #1894 follow-up): build-smoke, WizardViewModel, combined scenarios, Gum standard-element audit
 
 Follow-up to the "Make new-project creation (NPC) testable" and "Fix `RectangleCircleCodegenTests`" entries below. Five parallel workstreams closing the specific gaps those entries left open.
