@@ -353,6 +353,21 @@ Still in the model-only load, in cost order (FormsSampleProject): MSBuild evalua
 plugin write code there). Next cut: split plugin load reactions into model setup and code generation, so
 `regen` and edits generate plugin code and the load does not.
 
+### 2026-11-23 — Collision relationship logic out of the view model, GlueCli `add-collision-relationship` and `set-collision-property`
+
+`OfficialPlugins/CollisionPlugin/Managers/CollisionRelationshipCommands` now holds what used to sit in
+`CollisionRelationshipViewModelController` and `CollidableNamedObjectController`: creating a relationship, the
+model rules after a setting changes (source class type, sub-collision reconciliation, auto name, TileShapeCollection
+masses), and reading and setting settings by name. The controllers forward to it and only refresh their view
+models. It implements `ICollisionRelationshipCommands` (Glue), which the plugin assigns to
+`GlueCommands.Self.CollisionRelationshipCommands` at startup, so GlueCli reaches it typed instead of through
+`CallPluginMethod`. `PropertyListContainerViewModel.SetAndPersist`'s follow-up (codegen, named-object change
+reaction, save) moved to `PropertyListChangeFollowUp` so code that sets a stored property without a view model runs
+the same follow-up. The settings list repeats the view model's `[SyncedProperty]` members;
+`CollisionRelationshipCommandsTests` keeps them equal. The forwarding methods on the controllers can go once their
+callers use the commands class directly. The derived-screen confirm in `MainCollisionPlugin` went from a raw
+`MessageBox` to `DialogService`.
+
 ### 2026-11-23 — GlueCli `delete` answers the editor's delete dialog instead of bypassing it
 
 `DeleteCommand` calls the same `DialogCommands.AskToRemove*Async` the editor's Delete does and swaps
