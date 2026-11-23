@@ -3,6 +3,7 @@ using System.Windows;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.MVVM;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Tasks;
 using L = Localization;
 
@@ -60,8 +61,7 @@ public class TaskDisplayerViewModel : ViewModel
         {
             if (Set(value))
             {
-                // send this to the game communication plugin:
-                PluginManager.CallPluginMethod("Glue Compiler", "SetIsLoggingSentCommands", value);
+                GlueCommands.Self.GameHostCommands?.SetIsLoggingSentCommands(value);
             }
         }
     }
@@ -73,8 +73,7 @@ public class TaskDisplayerViewModel : ViewModel
         {
             if (Set(value))
             {
-                // send this to the game communication plugin:
-                PluginManager.CallPluginMethod("Glue Compiler", "SetIsLoggingReceivedCommands", value);
+                GlueCommands.Self.GameHostCommands?.SetIsLoggingReceivedCommands(value);
             }
         }
     }

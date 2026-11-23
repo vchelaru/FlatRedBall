@@ -658,11 +658,7 @@ class ProjectCommands : IProjectCommands
     {
         var taskExecutionPreference = TaskExecutionPreference.AddOrMoveToEnd;
 
-        var isRunning = (bool)PluginManager.CallPluginMethod(
-            "Glue Compiler",
-            "GetIfIsRunning");
-
-        if (isRunning)
+        if (GlueCommands.Self.GameHostCommands?.IsGameRunning() == true)
         {
             taskExecutionPreference = TaskExecutionPreference.Asap;
         }

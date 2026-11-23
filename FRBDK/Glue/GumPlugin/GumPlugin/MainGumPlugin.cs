@@ -61,13 +61,13 @@ public class MainGumPlugin : PluginBase
 
     public override void StartUp()
     {
-        GlueCommands.Self.GumCommands = new GumCommands();
-
         propertiesManager = new GumxPropertiesManager();
 
         AssetTypeInfoManager.Self.AddCommonAtis();
 
         newGumProjectCreationLogic = new NewGumProjectCreationLogic(propertiesManager);
+
+        GlueCommands.Self.GumCommands = new GumCommands(newGumProjectCreationLogic, UpdateAfterProjectCreation);
 
         addGumProjectMenuItem = this.AddMenuItemTo(
             "New Gum Project",
@@ -188,10 +188,6 @@ public class MainGumPlugin : PluginBase
 
     #region Methods
 
-    // This function should not be removed, it is referenced by string name by the Quick Actions MainView.
-    public Task AskToCreateGumProject() =>
-        newGumProjectCreationLogic.AskToCreateGumProject();
-
     private void HandleResolutionChanged()
     {
         if (viewModel?.IsMatchGameResolutionInGumChecked == true)
@@ -264,11 +260,6 @@ public class MainGumPlugin : PluginBase
         gumToolbar.DataContext = toolbarViewModel;
         gumToolbar.GumButtonClicked += (_, _) => toolbarViewModel.OnToolbarClicked();
     }
-
-    // Called via PluginManager.CallPluginMethod("Gum Plugin", "GetFormsGeneratedRelativePaths") - see
-    // ProjectLoader.RemoveOrphanedGeneratedCsprojEntries (GitHub issue #2185).
-    public List<string> GetFormsGeneratedRelativePaths() =>
-        CodeGeneratorManager.Self.GetFormsGeneratedRelativePaths().ToList();
 
     private void HandleFileRemoved(GlueElement container, ReferencedFileSave file)
     {
@@ -556,23 +547,6 @@ public class MainGumPlugin : PluginBase
         UpdateMenuItemVisibility();
     }
 
-    public async Task CreateGumProjectWithForms(bool askToOverwrite)
-    {
-        await newGumProjectCreationLogic.CreateGumProjectInternal(
-            shouldAlsoAddForms: true,
-            askToOverwrite: askToOverwrite);
-
-        UpdateAfterProjectCreation();
-
-    }
-
-    public async Task CreateGumProjectNoForms(bool askToOverwrite)
-    {
-        await newGumProjectCreationLogic.CreateGumProjectInternal(shouldAlsoAddForms: false, askToOverwrite: askToOverwrite);
-
-        UpdateAfterProjectCreation();
-    }
-
     private void UpdateAfterProjectCreation()
     {
         if (control == null)
@@ -827,12 +801,6 @@ public class MainGumPlugin : PluginBase
         }
 
         return true;
-    }
-
-    public bool IsAssetTypeInfoGum(AssetTypeInfo ati)
-    {
-        return ati != null &&
-            AssetTypeInfoManager.Self.IsAssetTypeInfoGum(ati);
     }
 
     #endregion

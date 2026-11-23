@@ -218,13 +218,8 @@ namespace OfficialPlugins.StateDataPlugin.Controls
 
                 if(highlightedState != null)
                 {
-                    // Broadcast that this changed to the level editor plugin:
-                    PluginManager.CallPluginMethod("Glue Compiler", "ShowState",
-                        new object[]
-                        {
-                            highlightedState.Name,
-                            GlueState.Self.CurrentStateSaveCategory?.Name
-                        });
+                    _ = GlueCommands.Self.GameHostCommands?.ShowStateAsync(
+                        GlueState.Self.CurrentStateSaveCategory?.Name, highlightedState.Name);
 
                 }
             }

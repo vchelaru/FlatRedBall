@@ -103,6 +103,12 @@ public class GlueCommands : IGlueCommands
     /// <summary>Assigned by the Game Communication Plugin when it starts; null when that plugin is not loaded.</summary>
     public IGameCommunicationCommands GameCommunicationCommands { get; set; }
 
+    /// <summary>Assigned by the Glue Compiler plugin when it starts; null when that plugin is not loaded.</summary>
+    public IGameHostCommands GameHostCommands { get; set; }
+
+    /// <summary>Assigned by the Tiled Plugin when it starts; null when that plugin is not loaded.</summary>
+    public ITiledCommands TiledCommands { get; set; }
+
     public ISelectCommands SelectCommands { get; private set; }
 
     #endregion

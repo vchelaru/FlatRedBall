@@ -141,6 +141,7 @@
     <Compile Include="GlueControl\MainCompilerPlugin.cs" />
     <Compile Include="GlueControl\Managers\DragDropManagerGameWindow.cs" />
     <Compile Include="GlueControl\Managers\FileChangeManager.cs" />
+    <Compile Include="GlueControl\Managers\GameHostCommands.cs" />
     <Compile Include="GlueControl\Managers\GameHostController.cs" />
     <Compile Include="GlueControl\Managers\Output.cs" />
     <Compile Include="GlueControl\Managers\ProfilingManager.cs" />

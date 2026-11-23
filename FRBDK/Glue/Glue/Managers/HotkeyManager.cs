@@ -45,9 +45,7 @@ namespace FlatRedBall.Glue.Managers
         //            RightClickHelper.MoveToTop();
         //            return true;
         //        case Keys.F5:
-        //            await PluginManager.CallPluginMethodAsync(
-        //                "Glue Compiler",
-        //                "BuildAndRun");
+        //            await GlueCommands.Self.GameHostCommands.BuildAndRunAsync();
         //            return true;
         //        case Keys.F12:
         //            GlueCommands.Self.DialogCommands.GoToDefinitionOfSelection();
@@ -141,12 +139,7 @@ namespace FlatRedBall.Glue.Managers
                     break;
                 case Key.F5:
                     // fire and forget it, otherwise this blocks the app:
-
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                    PluginManager.CallPluginMethodAsync(
-                        "Glue Compiler",
-                        "BuildAndRun");
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                    _ = GlueCommands.Self.GameHostCommands?.BuildAndRunAsync();
                     FlatRedBall.Glue.Plugins.ExportedImplementations.GlueCommands.Self.DialogCommands.FocusTab("Build");
                     return true;
                 case Key.F12:

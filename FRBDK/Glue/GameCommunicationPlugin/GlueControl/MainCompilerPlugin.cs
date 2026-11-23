@@ -161,6 +161,8 @@ namespace GameCommunicationPlugin.GlueControl
             // do this after creating the compiler, view model, and control
             AssignEvents();
 
+            GlueCommands.Self.GameHostCommands = new GameHostCommands(CompilerViewModel, BuildAndRun, _refreshManager);
+
 
         }
 
@@ -369,7 +371,7 @@ namespace GameCommunicationPlugin.GlueControl
 
         #region Public events (called externally)
 
-        public async Task BuildAndRun()
+        async Task BuildAndRun()
         {
             if (CompilerViewModel.IsToolbarPlayButtonEnabled)
             {
@@ -410,8 +412,6 @@ namespace GameCommunicationPlugin.GlueControl
         {
             return CompilerViewModel.IsEditChecked && CompilerViewModel.IsRunning;
         }
-
-        public bool GetIfIsRunning() => CompilerViewModel.IsRunning;
 
         public async Task<string> MakeGameBorderless(bool isBorderless)
         {
@@ -1097,25 +1097,11 @@ namespace GameCommunicationPlugin.GlueControl
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
         {
+            GlueCommands.Self.GameHostCommands = null;
             TryKillGame();
             return true;
         }
 
-
-        public async void ShowState(string stateName, string categoryName)
-        {
-            await _refreshManager.PushGlueSelectionToGame(categoryName, stateName);
-        }
-
-        public void SetIsLoggingSentCommands(bool isLoggingSentCommands)
-        {
-            CompilerViewModel.IsPrintEditorToGameCheckboxChecked = isLoggingSentCommands;
-        }
-
-        public void SetIsLoggingReceivedCommands(bool isLoggingReceivedCommands)
-        {
-            CompilerViewModel.IsPrintGameToEditorCheckboxChecked = isLoggingReceivedCommands;
-        }
 
 
         private void HandleGrabbedTreeNodeChanged(ITreeNode treeNode, TreeNodeAction action)

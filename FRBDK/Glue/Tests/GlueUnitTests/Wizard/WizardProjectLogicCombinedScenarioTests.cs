@@ -37,10 +37,7 @@ namespace GlueUnitTests.Wizard;
 //    every other Wizard test touching Gum has.
 //  - AddGameScreenGumToHudLayer (and by extension real dispatch of the "Add Gum" task itself): a NEW
 //    blocker found while building this test, deeper than the Forms one. WizardProjectLogic.HandleAddGum
-//    dispatches through PluginManager.CallPluginMethodAsync("Gum Plugin", "CreateGumProjectNoForms", ...),
-//    which silently no-ops unless a real MainGumPlugin is registered with PluginManager (the same
-//    "PluginManager.CallPluginMethod no-ops without a registered plugin" gap #1901/#1902/#1903/#1904 fixed
-//    per-plugin). Unlike Collision Plugin (registered successfully in #1905's
+//    calls GlueCommands.Self.GumCommands, which is null (a no-op) unless a real MainGumPlugin has started. Unlike Collision Plugin (registered successfully in #1905's
 //    EnsureCollisionPluginRegisteredWithPluginManager), MainGumPlugin.StartUp unconditionally calls
 //    AddMenuItemTo("New Gum Project", ..., Localization.MenuIds.ContentId) -> PluginBase.GetItem(container),
 //    which reads `FlatRedBall.Glue.AutomatedGlue.GlueGui.MenuStrip.Items` - a static ONLY ever initialized
@@ -166,10 +163,8 @@ public class WizardProjectLogicCombinedScenarioTests : IDisposable
             // resource copying that has nothing to do with cross-feature wiring.
             AddPlayerSprite = false,
 
-            // Skip levels: WizardProjectLogic.CreateLevel drives the Tiled Plugin through
-            // PluginManager.CallPluginMethod, the same "needs real plugin registration" gap as Gum - out of
-            // scope for this combo (Tiled/Entity-Input-Movement already have their own dedicated,
-            // registration-free coverage - see TiledPluginTests/EntityInputMovementPluginTests).
+            // Skip levels: WizardProjectLogic.CreateLevel needs the Tiled Plugin's asset types and commands -
+            // out of scope for this combo (see WizardTypedPluginCallsTests and TiledPluginTests).
             CreateLevels = false,
 
             AddCameraController = true,

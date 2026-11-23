@@ -17,27 +17,10 @@ using TMXGlueLib;
 // GlueUnitTests.GumPluginTests.
 namespace GlueUnitTests.TiledPluginTests;
 
-// Follow-up to GitHub issue #1894 (reopened): WizardProjectLogic's Tiled add-on steps (~lines 422-483) all
-// go through PluginManager.CallPluginMethod("Tiled Plugin", ...), which silently no-ops in a test host (no
-// plugin registered with PluginManager) - the same false-coverage risk PR #1901/#1902 fixed for the
-// Collision and Gum plugins.
-//
-// All five call sites (SaveFileWithVisuals x2, SaveTilesetFilesToDisk, AddStandardTilesetOnCurrentFile,
-// AddGameplayLayerToCurrentFile, AddCollisionBorderToCurrentFile) are thin forwarders on
-// MainTiledPluginClass to public methods on TmxCreationManager.Self - same "thin forwarder to
-// directly-callable logic" shape as MainCollisionPlugin.FixNamedObjectCollisionType and
-// MainGumPlugin.CreateGumProjectWithForms/NoForms. TmxCreationManager itself only depends on
-// GlueState.Self.ContentDirectory / GlueCommands.Self.FileCommands / GlueCommands.Self.GetAbsoluteFilePath
-// and plain file I/O (TiledMapSave, embedded-resource copies) - no MessageBox.Show anywhere in this call
-// chain (verified by inspection of TmxCreationManager.cs and TMXGlueLib) and no live-window dependency.
-// These tests call TmxCreationManager.Self's methods directly, bypassing both MainTiledPluginClass and
-// PluginManager.CallPluginMethod entirely - real production logic, not a fake.
-//
-// AddStandardTilesetOnCurrentFile/AddGameplayLayerToCurrentFile/AddCollisionBorderToCurrentFile add one
-// more layer of indirection in production (they read GlueState.Self.CurrentReferencedFileSave and check
-// IsTmx(rfs.GetAssetTypeInfo()) before forwarding to TmxCreationManager) - that guard is a trivial
-// extension check, not exercised here, same judgment call as the WizardProjectLogic.HandleAddPlayerInstance
-// vs. CollisionRelationshipViewModelController.TryFixSourceClassType split in PR #1901.
+// WizardProjectLogic.CreateLevel calls ITiledCommands, whose Tiled Plugin implementation (TiledCommands) forwards to
+// TmxCreationManager.Self after checking the file is a TMX. WizardTypedPluginCallsTests covers the wizard's calls;
+// these tests call TmxCreationManager.Self directly. It only needs GlueState.Self.ContentDirectory,
+// GlueCommands.Self.FileCommands, GetAbsoluteFilePath and file I/O, with no dialogs.
 [Collection(nameof(TaskManagerSequentialCollection))]
 public class TiledProjectCreationTests : IDisposable
 {
