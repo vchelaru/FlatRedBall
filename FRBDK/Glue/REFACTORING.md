@@ -1598,3 +1598,13 @@ lacked `SetPropertyManager`, `StateSaveCategorySetVariableLogic` and `PluginUpda
 `ContainerRegistrationTests` checks they resolve headless and fails if any other Glue source calls
 `Container.Set`. `InstructionManager`/`TypeConverterHelper` setup is shared the same way
 (`InitializeCodeGenerationTables`). The `Builder` DI container was already shared.
+
+### 2026-11-23 — GlueCli `set-property`
+
+`set-property` builds the Properties grid's own displayer (`NamedObjectPropertyGridDisplayer`,
+`EntitySavePropertyGridDisplayer`, `ScreenSavePropertyGridDisplayer`, plus the plugins' `AdjustDisplayed*`
+additions) headless, so the properties it accepts and the way each is set are the grid's. It then runs the
+reaction the grid's change event ends in (`GluxCommands.ReactToPropertyChanged` or
+`ElementCommands.ReactToPropertyChanged`). Glue.dll now has `InternalsVisibleTo` for GlueCli to reach those
+hooks. `UseGlobalContent`'s follow-up question is a WPF window in the displayer, so the command asks it
+itself. `set-variable` gained `--move-objects` for MainScreenPlugin's DefaultLayer question.

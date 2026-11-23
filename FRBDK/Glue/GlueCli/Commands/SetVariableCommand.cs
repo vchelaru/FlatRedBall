@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Reflection;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.GuiDisplay;
+using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
@@ -39,19 +40,24 @@ colors, states and CSV values are stored as text, as the editor stores them (--v
 state's name for a state). --value ""<NONE>"" clears a Sprite or AnimationChainList reference.
 
 Object properties (InstanceName, LayerOn, AttachToCamera, IsContainer, SourceClassType, ...) are not
-variables; set-variable refuses them.
+variables; set-variable refuses them. set-property sets them.
+
+Setting a screen's DefaultLayer asks whether to move the objects on the old layer to the new one. Pass
+--move-objects to move them; without it the question goes unanswered and the run fails.
 
 The run fails (exit 1, nothing saved) when the element, object or variable is unknown, or the text does not
 convert to the variable's type. The message lists close matches or names the expected type.
 
-With --json, ""edit"" holds {element, object, variable, type, oldValue, newValue}. object is null for an
-element variable; oldValue is null when the variable was unset (the object used its default).",
+With --json, ""edit"" holds {element, object, variable, type, oldValue, newValue, movedObjects}. object is
+null for an element variable; oldValue is null when the variable was unset (the object used its default);
+movedObjects lists the objects --move-objects put on the new layer.",
         Options = new CliOption[]
         {
             new("element", "element", "Screen or entity that holds the variable or the object. Required."),
             new("object", "name", "Object in the element whose variable to set. Default: the element's own variable."),
             new("variable", "name", "Variable name. Required."),
             new("value", "text", "New value as text. Required; pass \"\" for an empty string."),
+            new("move-objects", null, "A screen's DefaultLayer: move the objects on the old layer to the new one. Default:\nthe question is unanswered and the run fails."),
         },
         Examples = new[]
         {
@@ -66,7 +72,11 @@ element variable; oldValue is null when the variable was unset (the object used 
     };
 
     /// <summary>What --json reports under <c>edit</c>.</summary>
-    public sealed record SetVariable(string Element, string? Object, string Variable, string? Type, object? OldValue, object? NewValue);
+    public sealed record SetVariable(string Element, string? Object, string Variable, string? Type, object? OldValue, object? NewValue,
+        IReadOnlyList<string>? MovedObjects = null);
+
+    /// <summary>MainScreenPlugin's question when a screen's DefaultLayer changes and objects use the old layer.</summary>
+    const string MoveObjectsQuestion = "The following objects use the layer ";
 
     static string? ValidateArguments(CliContext context)
     {
@@ -155,9 +165,22 @@ element variable; oldValue is null when the variable was unset (the object used 
             element.CustomVariables.Add(variable);
         }
         var oldValue = variable.DefaultValue;
-        await GlueCommands.Self.GluxCommands.ElementCommands.HandleSetVariable(variable, value, performSaveAndGenerateCode: true, updateUi: false);
+        var moveObjects = context.Has("move-objects");
+        var allObjects = GlueState.Self.CurrentGlueProject.Screens.Cast<GlueElement>().Concat(GlueState.Self.CurrentGlueProject.Entities)
+            .SelectMany(item => item.AllNamedObjects.Select(nos => (element: item, nos))).ToList();
+        var layersBefore = allObjects.Select(item => item.nos.LayerOn).ToList();
+        // Without --move-objects the question is left to the runner, which reports it and fails the run.
+        using (new CliDialogs(answerConfirm: (text, _, _) =>
+            moveObjects && text.StartsWith(MoveObjectsQuestion, StringComparison.Ordinal) ? FlatRedBall.Glue.Controls.DialogButton.Yes : null))
+        {
+            await GlueCommands.Self.GluxCommands.ElementCommands.HandleSetVariable(variable, value, performSaveAndGenerateCode: true, updateUi: false);
+            await TaskManager.Self.WaitForAllTasksFinished();
+        }
+        var movedObjects = allObjects.Where((item, index) => item.nos.LayerOn != layersBefore[index])
+            .Select(item => $"{item.element.Name}.{item.nos.InstanceName}").ToList();
 
-        Report(context, new SetVariable(element.Name, null, variable.Name, typeName, oldValue, variable.DefaultValue));
+        Report(context, new SetVariable(element.Name, null, variable.Name, typeName, oldValue, variable.DefaultValue,
+            movedObjects.Count > 0 ? movedObjects : null));
     }
 
     static async Task SetOnObjectAsync(CliContext context, GlueElement element)
@@ -311,7 +334,12 @@ element variable; oldValue is null when the variable was unset (the object used 
     static void Report(CliContext context, SetVariable result)
     {
         var target = result.Object != null ? $"{result.Object}.{result.Variable} in {result.Element}" : $"{result.Element}.{result.Variable}";
-        context.Report(result, $"Set {target} ({result.Type}): {Describe(result.OldValue)} -> {Describe(result.NewValue)}.");
+        var text = $"Set {target} ({result.Type}): {Describe(result.OldValue)} -> {Describe(result.NewValue)}.";
+        if (result.MovedObjects != null)
+        {
+            text += Environment.NewLine + "  moved to the new layer: " + string.Join(", ", result.MovedObjects);
+        }
+        context.Report(result, text);
     }
 
     static string Describe(object? value) => value switch
