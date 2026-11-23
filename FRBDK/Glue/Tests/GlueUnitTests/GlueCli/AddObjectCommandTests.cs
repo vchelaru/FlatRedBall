@@ -1,6 +1,7 @@
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using GlueCli;
 using GlueUnitTests.TestSupport;
 using Shouldly;
@@ -58,6 +59,26 @@ public class AddObjectCommandTests
         playerBallList.GetProperty("ContainedObjects").EnumerateArray()
             .Select(nos => nos.GetProperty("InstanceName").GetString())
             .ShouldContain("PlayerBall3");
+    }
+
+    [StaFact]
+    public void AddObject_ShouldLeaveNothingSelected_OnceTheProjectIsUnloaded()
+    {
+        var project = GoldProject.CopyOutOfRepo("Samples/Beefball");
+        try
+        {
+            Run("add-object", project.Root, "--element", "GameScreen", "--type", "Sprite").exitCode
+                .ShouldBe(GlueCliRunner.ExitSuccess);
+            GlueState.Self.CurrentElement.ShouldNotBeNull();
+        }
+        finally
+        {
+            project.Dispose();
+        }
+
+        // add-object selects its target element. If that outlived the project, a later "generate the current
+        // element" would write this GameScreen's code into the next project loaded in the process.
+        GlueState.Self.CurrentElement.ShouldBeNull();
     }
 
     [StaFact]
