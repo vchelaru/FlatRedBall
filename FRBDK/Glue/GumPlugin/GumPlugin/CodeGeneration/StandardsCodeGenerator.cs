@@ -343,6 +343,7 @@ namespace GumPlugin.CodeGeneration
 
             // always ignore this because it's handled by GraphicalUiElement:
             mVariableNamesToSkipForProperties.Add("IgnoredByParentSize");
+            mVariableNamesToSkipForProperties.Add("IgnoredByParentLayout");
 
             // Gum-editor-only for FRB1: the generated property forwards to the contained renderable, which has no such member (CS1061).
             mVariableNamesToSkipForProperties.Add("RaiseChildrenEventsOutsideOfBounds");
