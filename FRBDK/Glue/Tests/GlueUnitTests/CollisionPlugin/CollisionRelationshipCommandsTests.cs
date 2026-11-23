@@ -116,12 +116,80 @@ public class CollisionRelationshipCommandsTests : IDisposable
         }
     }
 
+    /// <summary>
+    /// The Collision tab end to end: its Add button, then the object and sub-collision ComboBoxes, each written
+    /// through the view model as the UI's bindings do. The expected values are what the tab did before its rules
+    /// moved to CollisionRelationshipCommands: a new object that can have a sub-collision gets &lt;Entire Object&gt;
+    /// when none was chosen and keeps a chosen one even if the new entity lacks it; an object that cannot have
+    /// one clears it; the auto name follows every change.
+    /// </summary>
+    [Fact]
+    public async Task CollisionTab_CreateThenChangeObjects_ShouldKeepSubCollisionsAndNameAsBefore()
+    {
+        var screen = await CreateScreenWithLists();
+        var walls = new NamedObjectSave();
+        walls.SetDefaults();
+        walls.InstanceName = "Walls";
+        walls.SourceType = SourceType.FlatRedBallType;
+        walls.SourceClassType = "FlatRedBall.Math.Geometry.ShapeCollection";
+        await GlueCommands.Self.GluxCommands.AddNamedObjectToAsync(walls, screen, listToAddTo: null, selectNewNos: false,
+            performSaveAndGenerateCode: false, updateUi: false);
+        SetCurrentSelectionForTest(screen, null);
+
+        // The Add button on PlayerList's Collision tab, for the EnemyList row.
+        var relationship = await CollidableNamedObjectController.CreateCollisionRelationshipBetweenObjects("PlayerList", "EnemyList", screen);
+        relationship.InstanceName.ShouldBe("PlayerListVsEnemyList");
+
+        SetCurrentSelectionForTest(screen, relationship);
+        CollisionRelationshipViewModelController.RefreshViewModel(relationship);
+        var viewModel = CollisionRelationshipViewModelController.ViewModel;
+        string Stored(string name) => relationship.Properties.GetValue<string>(name);
+
+        viewModel.SecondCollisionName = "CoinList";
+        relationship.InstanceName.ShouldBe("PlayerListVsCoinList");
+        Stored(nameof(viewModel.FirstSubCollisionSelectedItem)).ShouldBe(CollisionRelationshipViewModel.EntireObject);
+        Stored(nameof(viewModel.SecondSubCollisionSelectedItem)).ShouldBe(CollisionRelationshipViewModel.EntireObject);
+
+        viewModel.FirstSubCollisionSelectedItem = "CircleInstance";
+        relationship.InstanceName.ShouldBe("PlayerListCircleInstanceVsCoinList");
+
+        // Enemy has no CircleInstance; the tab keeps the chosen sub-collision.
+        viewModel.FirstCollisionName = "EnemyList";
+        relationship.InstanceName.ShouldBe("EnemyListCircleInstanceVsCoinList");
+        Stored(nameof(viewModel.FirstSubCollisionSelectedItem)).ShouldBe("CircleInstance");
+        relationship.SourceClassType.ShouldBe("FlatRedBall.Math.Collision.ListVsListRelationship<Entities.Enemy, Entities.Coin>");
+
+        // A ShapeCollection has no sub-collisions.
+        viewModel.SecondCollisionName = "Walls";
+        relationship.InstanceName.ShouldBe("EnemyListCircleInstanceVsWalls");
+        Stored(nameof(viewModel.SecondSubCollisionSelectedItem)).ShouldBeNull();
+        relationship.SourceClassType.ShouldBe("FlatRedBall.Math.Collision.ListVsShapeCollectionRelationship<Entities.Enemy>");
+
+        // The tab shows what the model holds.
+        viewModel.FirstCollisionName.ShouldBe("EnemyList");
+        viewModel.SecondCollisionName.ShouldBe("Walls");
+        viewModel.FirstSubCollisionSelectedItem.ShouldBe("CircleInstance");
+        viewModel.SecondSubCollisionSelectedItem.ShouldBeNull();
+
+        // The screen as it serializes to its .glsj (this test project has no file to save to).
+        var saved = Newtonsoft.Json.JsonConvert.SerializeObject(screen);
+        saved.ShouldContain("\"EnemyListCircleInstanceVsWalls\"", Case.Sensitive);
+        saved.ShouldNotContain("PlayerListVsEnemyList", Case.Sensitive);
+        screen.NamedObjects.Count(item => item.IsCollisionRelationship()).ShouldBe(1);
+    }
+
     async Task<ScreenSave> CreateScreenWithLists()
     {
         foreach (var name in new[] { "Player", "Enemy", "Coin" })
         {
             ObjectFinder.Self.GlueProject.Entities.Add(new EntitySave { Name = "Entities\\" + name, ImplementsICollidable = true });
         }
+        var circle = new NamedObjectSave();
+        circle.SetDefaults();
+        circle.InstanceName = "CircleInstance";
+        circle.SourceType = SourceType.FlatRedBallType;
+        circle.SourceClassType = "Circle";
+        ObjectFinder.Self.GlueProject.Entities[0].NamedObjects.Add(circle);
         var screen = await GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen("GameScreen");
         foreach (var name in new[] { "Player", "Enemy", "Coin" })
         {
