@@ -74,7 +74,9 @@ public class GumAvailableAssetTypesNoProjectTests : IDisposable
             .Single(item => item.Name == nameof(ReferencedFileSave.RuntimeType));
         runtimeType.Options!.Invoke().ShouldBe(new[] { "Microsoft.Xna.Framework.Graphics.Texture2D" });
 
-        PluginManager.CallPluginMethod("Gum Plugin", "HasGum").ShouldNotBeNull();
+        var gumPlugin = PluginManagerBase.AllPluginContainers.Single(container => container.Plugin is global::GumPlugin.MainGumPlugin);
+        gumPlugin.FailureException.ShouldBeNull();
+        gumPlugin.IsEnabled.ShouldBeTrue();
     }
 
     static string[] FailedPlugins() => PluginManagerBase.AllPluginContainers
