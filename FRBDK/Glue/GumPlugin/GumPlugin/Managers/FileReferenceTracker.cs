@@ -45,6 +45,11 @@ namespace GumPlugin.Managers
 
         }
 
+        /// <summary>
+        /// The .gumx read started during Glue's startup, which the first load takes if it is still current.
+        /// </summary>
+        public GumProjectPrefetch Prefetch { get; set; }
+
         #endregion
 
         public static bool CanTrackDependenciesOn(string fileName)
@@ -729,7 +734,7 @@ namespace GumPlugin.Managers
         /// A value that changes whenever a Gum project, element, behavior, or animation file under the
         /// directory is added, removed, or rewritten.
         /// </summary>
-        static int GetGumDataStamp(string gumxDirectory)
+        internal static int GetGumDataStamp(string gumxDirectory)
         {
             var hash = new HashCode();
             foreach (var file in System.IO.Directory.EnumerateFiles(gumxDirectory, "*", System.IO.SearchOption.AllDirectories)
@@ -780,10 +785,15 @@ namespace GumPlugin.Managers
                     if (!string.IsNullOrEmpty(gumxFile))
                     {
 
-                        GumLoadResult result;
-
-                        Gum.Managers.ObjectFinder.Self.GumProjectSave =
-                            GumProjectSave.Load(gumxFile, out result);
+                        if (Prefetch?.TryTake(gumxFile, stamp, out var prefetched, out var result) == true)
+                        {
+                            Gum.Managers.ObjectFinder.Self.GumProjectSave = prefetched;
+                        }
+                        else
+                        {
+                            Gum.Managers.ObjectFinder.Self.GumProjectSave =
+                                GumProjectSave.Load(gumxFile, out result);
+                        }
 
                         if(!string.IsNullOrWhiteSpace(result?.ErrorMessage))
                         {

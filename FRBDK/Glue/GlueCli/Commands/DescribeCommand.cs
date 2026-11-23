@@ -18,9 +18,8 @@ public static class DescribeCommand
         Summary = "Show what the project or one screen or entity contains, with the names other commands accept.",
         Usage = "describe <project> [--element <element>] [--json]",
         Description =
-@"Read-only. Loads the project and prints its contents. Nothing is saved; filesWritten lists only what loading
-writes, as for check. The exit code is check's: 1 when the project has errors, with the description still
-printed.
+@"Read-only. Loads the project and prints its contents. It writes nothing, as for check. The exit code is check's:
+1 when the project has errors, with the description still printed.
 
 Without --element: every screen and entity (name, folder, base), the startup screen, Global Content files,
 the .gluj file version, and the Gum project if there is one.

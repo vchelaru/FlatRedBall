@@ -120,16 +120,27 @@ public class GumxPropertiesManager
         }
     }
 
+    /// <summary>
+    /// The UseAtlases property changed: applies it, and without atlases adds the Gum project's image files to
+    /// the content project.
+    /// </summary>
     public void UpdateUseAtlases()
+    {
+        ApplyUseAtlases();
+        UpdateGumFileMembershipIfNotAtlased();
+    }
+
+    /// <summary>
+    /// Tells file reference tracking whether the Gum project uses atlases, and drops the references it cached
+    /// for the Gum files, which depend on it. Reads and caches only, so a project load calls this.
+    /// </summary>
+    public void ApplyUseAtlases()
     {
         var gumRfs = GumProjectManager.Self.GetRfsForGumProject();
 
         if (gumRfs != null)
         {
-            bool useAtlases = 
-                gumRfs.Properties.GetValue<bool>(nameof(GumViewModel.UseAtlases));
-
-            FileReferenceTracker.Self.UseAtlases = useAtlases;
+            FileReferenceTracker.Self.UseAtlases = GetUseAtlases(gumRfs);
 
             var absoluteFileName = GlueCommands.Self.GetAbsoluteFilePath(gumRfs);
 
@@ -140,23 +151,34 @@ public class GumxPropertiesManager
             {
                 GlueCommands.Self.FileCommands.ClearFileCache(file);
             }
-
-            if (useAtlases == false)
-            {
-                // If useAtlases is set to false, then that means that 
-                // a lot of new files need to be added to the project.
-                TaskManager.Self.Add(
-                    () =>
-                    {
-                        bool wasAnythingAdded = GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(gumRfs);
-                        if(wasAnythingAdded)
-                        {
-                            GlueCommands.Self.ProjectCommands.SaveProjects();
-                        }
-                    },
-                    $"Refreshing files in content project for {gumRfs.Name}"); 
-            }
         }
     }
+
+    /// <summary>
+    /// Without atlases, every image the Gum project references belongs in the content project, so this adds the
+    /// missing ones and saves the .csproj. A .csproj fix-up: the editor's load and regen run it through the
+    /// plugin's project code generation, not the model load.
+    /// </summary>
+    public void UpdateGumFileMembershipIfNotAtlased()
+    {
+        var gumRfs = GumProjectManager.Self.GetRfsForGumProject();
+
+        if (gumRfs != null && GetUseAtlases(gumRfs) == false)
+        {
+            TaskManager.Self.Add(
+                () =>
+                {
+                    bool wasAnythingAdded = GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(gumRfs);
+                    if(wasAnythingAdded)
+                    {
+                        GlueCommands.Self.ProjectCommands.SaveProjects();
+                    }
+                },
+                $"Refreshing files in content project for {gumRfs.Name}");
+        }
+    }
+
+    static bool GetUseAtlases(ReferencedFileSave gumRfs) =>
+        gumRfs.Properties.GetValue<bool>(nameof(GumViewModel.UseAtlases));
 
 }

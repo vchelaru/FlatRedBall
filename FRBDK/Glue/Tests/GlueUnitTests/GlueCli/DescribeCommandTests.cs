@@ -119,6 +119,27 @@ public class DescribeCommandTests
         background.GetProperty("list").ValueKind.ShouldBe(JsonValueKind.Null);
     }
 
+    // A Gum project, read in startup's early .gumx read or by the load itself.
+    [StaFact]
+    public void Describe_ShouldShowTheGumProjectAndAScreensGumFile()
+    {
+        using var project = GoldProject.CopyOutOfRepo("Samples/FormsSampleProject");
+
+        var (exitCode, output) = Run("describe", project.Root, "--json");
+
+        exitCode.ShouldBe(GlueCliRunner.ExitSuccess, output);
+        var edit = (JsonElement)Parse(output).Edit!;
+        edit.GetProperty("gumProject").GetString().ShouldBe("GumProject/GumProject.gumx");
+        Names(edit.GetProperty("screens")).ShouldBe(
+            new[] { "Screens\\InputJoinScreen", "Screens\\MainMenu", "Screens\\PreFilledScreen" }, ignoreOrder: true);
+
+        var (elementExitCode, elementOutput) = Run("describe", project.Root, "--element", "MainMenu", "--json");
+
+        elementExitCode.ShouldBe(GlueCliRunner.ExitSuccess, elementOutput);
+        var gumScreen = Find(((JsonElement)Parse(elementOutput).Edit!).GetProperty("files"), "GumProject/Screens/MainMenuGum.gusx");
+        gumScreen.GetProperty("runtimeType").GetString().ShouldBe("FormsSampleProject.GumRuntimes.MainMenuGumRuntime");
+    }
+
     static List<string?> Names(JsonElement array) =>
         array.EnumerateArray().Select(item => item.GetProperty("name").GetString()).ToList();
 

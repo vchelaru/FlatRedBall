@@ -1845,3 +1845,18 @@ The state commands repeated the State Data tab's value and include steps, and `a
 the Entity Input Movement plugin by method name. Both now go through typed commands (see "Typed command
 interfaces" above): `IElementCommands.SetStateVariableValue` and `SetStateCategoryExcludedVariablesAsync`, and
 `GlueCommands.EntityInputMovementCommands`, which the plugin assigns at startup. No behavior change.
+
+### 2026-11-23 — Gum project read during startup; Gum image membership moved to GenerateProjectCode
+
+Two cuts to the Gum plugin's part of the project load, in Glue.exe and GlueCli alike:
+
+- `ProjectLoader.EarlyProjectFiles` names the project `StartEarlyReads` is reading and its Global Content files.
+  The Gum plugin's `StartUp` hands it to `GumProjectPrefetch`, which parses the .gumx and its element files on a
+  background thread. `FileReferenceTracker.LoadGumxIfNecessaryFromDirectory` takes that project only if it came
+  from the same .gumx and the Gum data stamp is unchanged; otherwise it reads the files as before. One use only.
+- `GumxPropertiesManager.UpdateUseAtlases` split into `ApplyUseAtlases` (the load) and
+  `UpdateGumFileMembershipIfNotAtlased`, a .csproj fix-up now raised from the plugin's `GenerateProjectCode`.
+  The model load used to run it, so `check` saved the .csproj when a Gum image was missing from it.
+
+A lazy Gum load in GlueCli was the first idea. It can't keep output identical: every command reports the
+project's errors, and Gum's error reporter walks the whole Gum project.

@@ -104,8 +104,9 @@ public static class GlueCliRunner
         {
             "",
             "Every run loads the project, runs one command, waits for Glue's queued work, and reports what Glue's",
-            "error reporters, its error output, and any would-be dialog produced. Loading reads the project and does",
-            "not regenerate or save it (plugins such as Gum and Tiled still write code they have never generated).",
+            "error reporters, its error output, and any would-be dialog produced. Loading reads the project and",
+            "writes nothing, so check and describe change no file. regen writes all generated code and the files",
+            "plugins generate for the project (Gum runtimes, Tiled classes, camera setup).",
             "Edit commands save the .gluj and element files and regenerate the code of what they changed, as the",
             "editor does after an edit, and report errors the project already had separately from the ones the edit",
             "added. Run regen once after cloning or pulling, or whenever generated code is out of date; edit",
@@ -117,8 +118,7 @@ public static class GlueCliRunner
             "and codegen) against a temp copy, and the run reports the files it would change instead of changing",
             "them. The exit code is the one the real edit would get.",
             "",
-            "When an edit is not applied, the project's changes are not saved; loading can still write generated",
-            "files, so filesWritten may list some.",
+            "When an edit is not applied, the project's changes are not saved.",
             "",
             "--json prints one object: command, project, exitCode, failure (why the run stopped, exit 2),",
             "editFailures (why an edit was not applied), edit (what it did; shape per command), editSummary (the",
@@ -655,8 +655,7 @@ public sealed class CliResult
     /// <summary>Set when the run could not get as far as reporting errors (exit code 2).</summary>
     public string? Failure { get; set; }
     /// <summary>
-    /// Why an edit command did not apply its edit. The project's changes were not saved; loading can still
-    /// have written generated files.
+    /// Why an edit command did not apply its edit. The project's changes were not saved.
     /// </summary>
     public List<string> EditFailures { get; set; } = new();
     /// <summary>What the edit did, shaped by the command (for add-object, the added object).</summary>
