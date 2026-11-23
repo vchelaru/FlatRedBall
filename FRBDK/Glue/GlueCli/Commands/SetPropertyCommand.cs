@@ -465,7 +465,7 @@ changedElements every screen and entity the edit changed.",
         return names.Any(item => string.Equals(item, name, StringComparison.OrdinalIgnoreCase));
     }
 
-    static bool IsSupportedType(Type type)
+    internal static bool IsSupportedType(Type type)
     {
         type = Nullable.GetUnderlyingType(type) ?? type;
         return type == typeof(string) || type == typeof(bool) || type.IsEnum || type == typeof(int) || type == typeof(float) ||
@@ -476,7 +476,7 @@ changedElements every screen and entity the edit changed.",
     /// <paramref name="text"/> as the descriptor's type. Text the grid picks from a list (its converter's exclusive
     /// standard values) must be one of them, matched case-insensitively and returned as the list spells it.
     /// </summary>
-    static bool TryConvert(CliContext context, PropertyDescriptor descriptor, string text, string target, out object? value)
+    internal static bool TryConvert(CliContext context, PropertyDescriptor descriptor, string text, string target, out object? value)
     {
         value = text;
         var nullable = Nullable.GetUnderlyingType(descriptor.PropertyType);
@@ -578,13 +578,13 @@ changedElements every screen and entity the edit changed.",
     }
 
     /// <summary>The setters map &lt;NONE&gt; to empty text (LayerOn, BaseEntity), so both count as the value asked for.</summary>
-    static bool SameValue(object? actual, object? requested)
+    internal static bool SameValue(object? actual, object? requested)
     {
         static object? Normalize(object? value) => value is "<NONE>" or "" ? null : value;
         return Equals(Normalize(actual), Normalize(requested));
     }
 
-    static string TypeName(Type type)
+    internal static string TypeName(Type type)
     {
         var nullable = Nullable.GetUnderlyingType(type);
         if (nullable != null)
@@ -595,9 +595,9 @@ changedElements every screen and entity the edit changed.",
             type == typeof(float) ? "float" : type == typeof(double) ? "double" : type.Name;
     }
 
-    static IEnumerable<string> Lines(string text) => text.Split('\n').Select(item => item.Trim()).Where(item => item.Length > 0);
+    internal static IEnumerable<string> Lines(string text) => text.Split('\n').Select(item => item.Trim()).Where(item => item.Length > 0);
 
-    static string FirstLine(string text) => Lines(text).FirstOrDefault() ?? "";
+    internal static string FirstLine(string text) => Lines(text).FirstOrDefault() ?? "";
 
     static Dictionary<GlueElement, string> SerializeElements()
     {
@@ -613,7 +613,7 @@ changedElements every screen and entity the edit changed.",
             .OrderBy(name => name, StringComparer.OrdinalIgnoreCase)
             .ToList();
 
-    static string Describe(object? value) => value switch
+    internal static string Describe(object? value) => value switch
     {
         null => "(none)",
         string text => $"\"{text}\"",

@@ -350,7 +350,7 @@ movedObjects lists the objects --move-objects put on the new layer.",
         _ => value.ToString() ?? "",
     };
 
-    static bool IsColor(string? typeName) => typeName is "Color" or "Microsoft.Xna.Framework.Color";
+    internal static bool IsColor(string? typeName) => typeName is "Color" or "Microsoft.Xna.Framework.Color";
 
     static bool IsPropertyName(Type type, string name) =>
         type.GetProperties(BindingFlags.Public | BindingFlags.Instance)

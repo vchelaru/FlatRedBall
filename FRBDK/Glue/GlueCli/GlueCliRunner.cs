@@ -48,6 +48,9 @@ public static class GlueCliRunner
         SetStateVariableCommand.Definition,
         RenameStateCommand.Definition,
         DeleteStateCommand.Definition,
+        AddVariableCommand.Definition,
+        SetVariablePropertyCommand.Definition,
+        RemoveVariableCommand.Definition,
     };
 
     public static readonly IReadOnlyList<CliOption> GlobalOptions = new CliOption[]
