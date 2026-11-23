@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.Controls;
+﻿using FlatRedBall.Glue.AutomatedGlue;
+using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.FormHelpers.PropertyGrids;
 using FlatRedBall.Glue.FormHelpers.StringConverters;
@@ -104,16 +105,27 @@ namespace OfficialPlugins.ScreenPlugin
 
                     if(namedObjects.Count != 0)
                     {
-                        var window = new ListBoxWindowWpf();
                         var layerDisplayName = variable.DefaultValue ?? "<NONE>";
-                        window.Message = $"The following objects use the layer {oldValue}.  Would you like to move the following objects to the new layer {layerDisplayName}?";
-                        foreach(var item in namedObjects)
+                        var message = $"The following objects use the layer {oldValue}.  Would you like to move the following objects to the new layer {layerDisplayName}?";
+                        bool? result;
+                        if(GlueGui.ShowGui)
                         {
-                            window.AddItem(item.ToString());
-                        }
+                            var window = new ListBoxWindowWpf();
+                            window.Message = message;
+                            foreach(var item in namedObjects)
+                            {
+                                window.AddItem(item.ToString());
+                            }
 
-                        window.ShowYesNoButtons();
-                        var result = window.ShowDialog();
+                            window.ShowYesNoButtons();
+                            result = window.ShowDialog();
+                        }
+                        else
+                        {
+                            // Headless (GlueCli, tests) has no desktop for the window. The dialog seam reports the
+                            // question, and its unanswered null leaves the objects on their layer, as No does.
+                            result = DialogService.ShowConfirm(message + " " + string.Join(", ", namedObjects)) == DialogButton.Yes;
+                        }
 
                         if(result == true)
                         {
