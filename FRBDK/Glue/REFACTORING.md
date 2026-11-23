@@ -368,6 +368,16 @@ the same follow-up. The settings list repeats the view model's `[SyncedProperty]
 callers use the commands class directly. The derived-screen confirm in `MainCollisionPlugin` went from a raw
 `MessageBox` to `DialogService`.
 
+### 2026-11-23 — GlueCli `--dry-run` runs the command against a temp copy
+
+`--dry-run` is a global option in `GlueCliRunner`; no command has code for it. The runner asks an injected
+`CliDryRunCopier` for a `CliDryRunCopy` of the .csproj folder, loads the copy, and runs the normal tail
+(edit, codegen, save, error diff) there, then reports the copy's changes and deletes it. Intercepting saves
+was rejected: Glue, codegen and plugins write from too many places to be sure none was missed. Large media
+is hard-linked and locked against writing rather than copied, so the cost stays low on real games;
+out-of-folder `ProjectReference`/`Import` paths in the copy's .csproj are made absolute before the
+baseline is taken. `CliDryRunCopy` has no Glue dependency and is unit-tested on a hand-made folder.
+
 ### 2026-11-23 — GlueCli `delete` answers the editor's delete dialog instead of bypassing it
 
 `DeleteCommand` calls the same `DialogCommands.AskToRemove*Async` the editor's Delete does and swaps

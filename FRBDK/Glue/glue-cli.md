@@ -52,6 +52,12 @@ before the next step builds on it.
   run, so an agent can edit a project that already has problems. When an edit is not applied, the
   project's changes are not saved; loading can still write generated files, which `filesWritten` lists.
 - Output is plain text by default and JSON with `--json`, so agents can parse it.
+- GlueCli works with the editor open on the same project: the editor's file watcher reloads what the CLI
+  saved.
+- `--dry-run` works on every command with no per-command code. The runner copies the .csproj folder to a
+  temp folder (`CliDryRunCopy`), runs the command there in full, and reports the files it would change,
+  with a diff of each JSON file. Art, audio and binaries are hard-linked, and each link is held open
+  without write sharing for the run, so a write through one fails instead of reaching the project.
 - A command never shows a dialog. Every MessageBox or yes/no prompt on a command's path goes through a
   dialog seam. In CLI mode the seam either answers from an explicit flag (for example `--overwrite`) or
   fails with a message naming the question it would have asked. Fix these one command at a time, on the
@@ -110,9 +116,6 @@ into logic and UI, plus a cross-platform UI toolkit. This plan does not cover ei
 
 ## Open questions
 
-- What happens when the CLI saves a project that Glue's editor has open? The editor's file watch should
-  reload it, but that is unverified, and the editor may have unsaved changes. The CLI may need to detect
-  an open editor and refuse or warn.
 - How it ships: alongside Glue.exe in the release, as a dotnet tool, or both. It already builds into
   Glue's output folder, so a release zip of that folder carries `GlueCli.exe`.
 
