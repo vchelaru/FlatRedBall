@@ -50,6 +50,8 @@ The delete dialog's choices, as flags:
                       remove-from-project (default) takes them out of the .csproj and keeps them on disk,
                       delete also moves them to the recycle bin, leave keeps them in the .csproj too.
                       The editor's dialog defaults to delete; this defaults to keeping the files on disk.
+                      Either way an entity's factory (Factories/<Name>Factory.Generated.cs) is deleted,
+                      as in the editor: removing the entity removes its factory whatever the dialog says.
   --keep-inheritance  Do not reset the base of elements that inherit from a deleted element (the dialog's
                       ""Reset the inheritance for X"", checked by default). They are left with a missing base.
   --keep-objects      When deleting a file, keep the objects that use it (the dialog's ""Remove the object X,
@@ -57,7 +59,7 @@ The delete dialog's choices, as flags:
   --keep-gum-screen   When deleting a screen, keep its Gum screen (the Gum plugin's option, checked by default).
 Any other option a plugin adds keeps the dialog's default and is listed in the output.
 
-The run fails (exit 1, nothing saved) when the element, object or file does not exist (the message lists
+The run fails (exit 1, changes not saved) when the element, object or file does not exist (the message lists
 close matches) or when the object is defined by a base element that exposes it to derived elements.
 
 With --json, ""edit"" holds {kind, name, element, alsoRemoved, options, warnings, fileAction, files}: kind is

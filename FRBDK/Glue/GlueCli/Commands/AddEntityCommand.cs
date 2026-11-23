@@ -34,7 +34,7 @@ Checking a shape (--circle, --rectangle, --polygon) makes the entity ICollidable
 With --base, the entity inherits from that entity and, as in the dialog, only --folder and the factory option
 apply: shapes, interfaces, lists and movement come from the base.
 
-The run fails (exit 1, nothing saved) when the name is invalid or taken by an entity, screen or file, the
+The run fails (exit 1, changes not saved) when the name is invalid or taken by an entity, screen or file, the
 folder name is invalid, or the base entity is unknown. The message lists close matches.
 
 With --json, ""edit"" holds the new entity: {name, baseEntity, objects, implementsICollidable,

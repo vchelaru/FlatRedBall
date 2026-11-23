@@ -39,7 +39,7 @@ A file outside the content folder must be copied in: pass --copy and it goes int
 folder (Content/Screens/GameScreen/, Content/GlobalContent/), with the files it references (an .achx's
 images, a .tmx's tilesets) copied next to it, as the editor does.
 
-The run fails (exit 1, nothing saved) when the file does not exist, is outside the content folder without
+The run fails (exit 1, changes not saved) when the file does not exist, is outside the content folder without
 --copy, would be copied over a file already there, is already referenced by the element (or Global
 Content), or its name is taken or invalid in Glue. A file type Glue does not know (no code is generated for
 it) fails unless --allow-unknown-type is given. Creating new files (the editor's New File dialog) and files

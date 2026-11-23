@@ -96,6 +96,23 @@ public class SetPropertyCommandTests
     }
 
     [StaFact]
+    public void SetProperty_ShouldAcceptAListValue_WithEitherSlash()
+    {
+        using var project = GoldProject.CopyOutOfRepo("Samples/Beefball");
+        // An entity with no objects, so none collide with the base's.
+        Run("add-entity", project.Root, "--name", "Blank", "--no-factory", "--no-list").exitCode
+            .ShouldBe(GlueCliRunner.ExitSuccess);
+
+        // BaseEntity lists Entities\Puck; agents also type the forward-slash form.
+        var (exitCode, output) = Run("set-property", project.Root, "--element", "Blank",
+            "--property", "BaseEntity", "--value", "entities/puck", "--json");
+
+        exitCode.ShouldBe(GlueCliRunner.ExitSuccess, output);
+        EditProperty(Parse(output), "newValue").ShouldBe("Entities\\Puck");
+        ReadJson(project, "Entities", "Blank.glej").GetProperty("BaseEntity").GetString().ShouldBe("Entities\\Puck");
+    }
+
+    [StaFact]
     public void SetProperty_ShouldPointToRename_ForInstanceName()
     {
         using var project = GoldProject.CopyOutOfRepo("Samples/Beefball");

@@ -31,17 +31,19 @@ public static class SetVariablePropertyCommand
 same follow-up changes (derived elements, instances, events), plugin reactions and code generation. Then saves
 and regenerates the changed elements' code.
 
-Properties include Type (only for a new variable, not one that exposes or tunnels), SetByDerived, IsShared,
-Scope, Category, Summary, CreatesEvent, HasAccompanyingVelocityProperty, SourceObject, SourceObjectProperty,
-OverridingPropertyType, TypeConverter and Name (which renames the variable and what refers to it). Only the
-properties the grid shows for that variable can be set; the error lists them. The default value is a
-variable value: use set-variable.
+The properties are Name (which renames the variable and what refers to it), Type (only for a new variable,
+not one that exposes or tunnels), SetByDerived, IsShared, DefinedByBase, Scope, Category, Summary,
+CreatesEvent, CreatesProperty, HasAccompanyingVelocityProperty, PreferredDisplayerTypeName, SourceObject,
+SourceObjectProperty (once SourceObject is set), OverridingPropertyType and TypeConverter (once
+OverridingPropertyType is set). A DefinedByBase variable has no Scope, SourceObject, SourceObjectProperty or
+OverridingPropertyType. Only the properties the grid shows for that variable can be set; the error lists
+them. The default value is a variable value: use set-variable.
 
 <text> is converted to the property's type: true/false, an enum value name (Public, Private, Protected,
 Internal for Scope), or text. A property the grid picks from a list (Type, SourceObject, OverridingPropertyType)
 must be one of the listed values.
 
-Some changes make Glue ask something. Without the answering option the run fails (exit 1, nothing saved),
+Some changes make Glue ask something. Without the answering option the run fails (exit 1, changes not saved),
 naming it:
   --change-derived-types   Type of a SetByDerived variable: also change the type of the derived elements'
                            copies.

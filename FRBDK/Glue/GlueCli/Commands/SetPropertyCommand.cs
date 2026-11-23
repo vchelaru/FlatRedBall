@@ -46,11 +46,12 @@ LayerOn not on a list or a Layer. The error lists the ones that can. Name and In
 
 <text> is converted to the property's type: true/false, an enum value name, a number, or text. A property
 the editor picks from a list (LayerOn, BaseEntity, SourceClassType, SourceFile) must be one of the listed
-values; <NONE> clears it.
+values, matched without case and with either slash (Entities/Puck or Entities\Puck); an element may leave
+out its folder when the name is unique. <NONE> clears it.
 
-Some changes make Glue ask something. Each question has an option below; without it the run takes the
-answer that changes the least, and fails (exit 1, nothing saved) when that answer would undo the edit or
-lose data, naming the option to pass.
+Some changes make Glue ask something. Each question has an option below that answers it, and each option
+states its default: ""Default: fail"" means the run fails (exit 1, changes not saved) and names the option
+to pass; any other default is what the run does without the option.
 
 The run fails when the element, object or property is unknown or read-only, the text does not convert, or
 Glue undoes the change (for example a second IsContainer object). The message lists close matches, the
@@ -474,7 +475,8 @@ changedElements every screen and entity the edit changed.",
 
     /// <summary>
     /// <paramref name="text"/> as the descriptor's type. Text the grid picks from a list (its converter's exclusive
-    /// standard values) must be one of them, matched case-insensitively and returned as the list spells it.
+    /// standard values) must be one of them, matched as <see cref="CliLookup.SameName"/> does and returned as the
+    /// list spells it.
     /// </summary>
     internal static bool TryConvert(CliContext context, PropertyDescriptor descriptor, string text, string target, out object? value)
     {
@@ -495,7 +497,7 @@ changedElements every screen and entity the edit changed.",
                 return true;
             }
             var match = allowed.FirstOrDefault(item => item == text) ??
-                allowed.FirstOrDefault(item => string.Equals(item, text, StringComparison.OrdinalIgnoreCase));
+                allowed.FirstOrDefault(item => CliLookup.SameName(item, text));
             if (match == null)
             {
                 // Element names are listed with their folder (Entities\Enemy); accept the bare name when it is unique.
