@@ -50,7 +50,8 @@ public class MainErrorPlugin : PluginBase
         errorListViewModel = GlueState.Self.ErrorList;
         errorListViewModel.RefreshClicked += HandleRefreshClicked;
 
-        this.ReactToLoadedGlux += HandleLoadedGlux;
+        // The editor's load fills the list through ProjectLoadOperations.RefreshErrorList, which runs the
+        // RefreshErrorsAction below. GlueCli's model-only load skips it.
         this.ReactToFileChange += HandleFileChanged;
         this.ReactToFileRemoved += HandleFileRemoved;
         this.ReactToUnloadedGlux += HandleUnloadedGlux;
@@ -117,15 +118,6 @@ public class MainErrorPlugin : PluginBase
         if(tab.Title != tabText)
         {
             tab.Title = tabText;
-        }
-    }
-
-    private void HandleLoadedGlux()
-    {
-        var glueProject = GlueState.Self.CurrentGlueProject;
-        if (glueProject != null && glueProject.IsSuppressingAutomaticErrorChecking == false)
-        {
-            RefreshLogic.RefreshAllErrors(errorListViewModel, errorListViewModel.IsOutputErrorCheckingDetailsChecked);
         }
     }
 

@@ -364,8 +364,8 @@ internal static class GlueTestBootstrap
 
     /// <summary>
     /// Opt-in: adds the error reporter <see cref="OfficialPlugins.ErrorPlugin.MainErrorPlugin"/>'s StartUp adds,
-    /// which reports referenced files missing from disk. The plugin itself is not registered: its StartUp builds
-    /// a WPF ErrorWindow.
+    /// which reports referenced files missing from disk. The plugin itself is not registered: its StartUp replaces
+    /// the process-wide <c>RefreshCommands.RefreshErrorsAction</c>.
     /// </summary>
     public static void EnsureMissingFileErrorReporterRegistered()
     {

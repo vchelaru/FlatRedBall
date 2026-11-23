@@ -343,6 +343,22 @@ changed elements, the save, and the error diff. A single command is a list of on
 each line of a file or stdin into a step before Glue starts, so bad syntax exits 2 and runs nothing. A batch's
 `--dry-run` uses one `CliDryRunCopy` for every step and reports the combined changes on `CliBatchResult`.
 
+### 2026-11-23 — Errors tab load refresh moved to the editor session
+
+The Error plugin's `ReactToLoadedGlux` ran every error reporter to fill the Errors tab, so GlueCli computed
+the project's errors on load and then again for its report. The refresh is now the editor-session step
+`ProjectLoadOperations.RefreshErrorList`, called right after `ReactToLoadedGlux`. GlueCli's model-only load
+skips it. FormsSampleProject's load went from about 1.03s to 0.79s; most of that cost (the missing-file
+reporter's first walk of every referenced file, ~170ms) moves into GlueCli's first error collection, so
+`check` is about even and an edit saves about 0.15s.
+
+Scoping an edit's second error collection to the changed elements was measured and not done. Per reporter
+(FormsSampleProject, warm, after an edit): missing files ~25ms, `ReferencedFileSaveErrorReporter` ~17ms (a
+directory scan plus `.csproj` items, project-wide), Gum ~15ms (the whole Gum project), named objects ~1ms,
+the other twelve under 1ms each. Only the missing-file and named-object reporters could scope by element,
+~25ms of a ~3s command, and a scoped result would need per-error ownership to stay identical to a full one.
+Revisit only with new numbers.
+
 ### 2026-11-23 — Object, screen and entity properties out of the WinForms displayers
 
 Same pattern as the file and variable models below, for the rest of the Properties grid:

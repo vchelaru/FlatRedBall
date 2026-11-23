@@ -148,6 +148,18 @@ namespace FlatRedBall.Glue.IO
         /// </summary>
         public void GeneratePluginProjectCode() => PluginManager.GenerateProjectCode();
 
+        /// <summary>
+        /// Fills the Errors tab with every reporter's errors, unless the project turns automatic error checking
+        /// off. This is the tab's state only: GlueCli computes the errors it reports itself.
+        /// </summary>
+        public void RefreshErrorList()
+        {
+            if (glueState.CurrentGlueProject?.IsSuppressingAutomaticErrorChecking == false)
+            {
+                glueCommands.RefreshCommands.RefreshErrors();
+            }
+        }
+
         public void GenerateAllCode() => glueCommands.GenerateCodeCommands.GenerateAllCode();
 
         /// <summary>

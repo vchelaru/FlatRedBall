@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 using GlueUnitTests.TestSupport;
 using Shouldly;
 using Xunit;
@@ -35,6 +36,27 @@ public class ProjectLoaderEditorSessionTests
 
         File.ReadAllText(stale).ShouldNotContain("// stale");
         File.Exists(missing).ShouldBeTrue();
+    }
+
+    [StaFact]
+    public async Task LoadProject_ShouldRefreshTheErrorList()
+    {
+        GlueTestBootstrap.EnsureGameProjectPluginsRegistered();
+        using var project = GoldProject.CopyOutOfRepo("Samples/Beefball");
+        var originalAction = RefreshCommands.RefreshErrorsAction;
+        var refreshCount = 0;
+        RefreshCommands.RefreshErrorsAction = () => refreshCount++;
+        try
+        {
+            await GoldProject.LoadInGlueAsync(Path.Combine(project.Root, "Beefball", "Beefball.csproj"));
+            await TaskManager.Self.WaitForAllTasksFinished();
+        }
+        finally
+        {
+            RefreshCommands.RefreshErrorsAction = originalAction;
+        }
+
+        refreshCount.ShouldBeGreaterThan(0);
     }
 
     [StaFact]
