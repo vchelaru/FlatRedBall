@@ -28,6 +28,10 @@ in parallel. It is a cleanup that makes logic testable and portable, not somethi
 We are deliberately not refactoring all of Glue first. Every step below ships something an agent can
 use, and the order can change once we see what agents actually reach for.
 
+Every step is its own small PR merged into `NetStandard`, never a long-lived feature branch. Glue is in
+daily use while this happens, so each merge must leave the editor working and gets tested in real use
+before the next step builds on it.
+
 ## Command rules
 
 - One invocation loads the project, runs one command, waits for queued tasks, saves, regenerates code,
