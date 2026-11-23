@@ -491,6 +491,8 @@ public static class GlueCliRunner
     {
         WriteIndented = true,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        // The output goes to a console or a parser, never into HTML, so List<T> can stay readable.
+        Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
     };
 
     static void Write(CliResult result, CliCommand? command, bool json, TextWriter stdout)
