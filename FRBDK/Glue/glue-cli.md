@@ -90,7 +90,7 @@ commands; tests call it in-process with their own `IGlueCliHost`.
 | Step | State | PR |
 | --- | --- | --- |
 | 1. Headless host | Done | #2470 |
-| 2. `check` / `regen` | Done | (this PR) |
+| 2. `check` / `regen` | Done | #2471 |
 | 3. Edit commands | Not started | |
 | 4. Agent skill | Not started | |
 | 5. Extraction | Ongoing, separate from the CLI | |
