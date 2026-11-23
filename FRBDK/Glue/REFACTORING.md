@@ -1539,3 +1539,14 @@ ones fail the run) and a save through `GluxCommands.SaveProjectAndElements`. `ad
 `GluxCommands.AddNewNamedObjectToAsync` after the checks the Add Object dialog makes. One seam in Glue:
 `GlueGui.SuppressedMessageHandler` receives `GlueGui.ShowMessageBox` text while `ShowGui` is off, which
 used to vanish headless; the editor (`ShowGui` on) is unchanged.
+
+### 2026-11-23 — GlueCli `set-variable`
+
+`set-variable` sets an element variable through `ElementCommands.HandleSetVariable` or an object variable
+through `GluxCommands.SetVariableOnAsync` (`recordUndo: false`), the calls the property grid makes. The grid
+passes values already converted to the variable's type, so the command converts the text itself
+(`TypeManager.GetTypeFromString` + `PropertyValuePair.ConvertStringToType`): `SetVariableOnInner`'s own
+conversion passes the type name, which does not resolve aliases like `float`, and stores a string. A screen's
+ATI-defined variables (`DefaultLayer`) get their `CustomVariable` created as `ElementVariableShowingLogic`
+does. One seam in Glue: `MainScreenPlugin`'s "move objects to the new default layer" question asks through
+`DialogService.ShowConfirm` while `ShowGui` is off instead of opening a WPF window; the editor is unchanged.
