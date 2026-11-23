@@ -36,6 +36,7 @@ public static class GlueCliRunner
         CheckCommand.Definition,
         RegenCommand.Definition,
         AddObjectCommand.Definition,
+        SetVariableCommand.Definition,
     };
 
     public static readonly IReadOnlyList<CliOption> GlobalOptions = new CliOption[]
