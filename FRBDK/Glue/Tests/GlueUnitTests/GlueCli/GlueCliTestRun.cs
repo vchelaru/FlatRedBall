@@ -22,7 +22,10 @@ namespace GlueUnitTests.Cli;
 public static class GlueCliTestRun
 {
     /// <returns>The exit code, and stdout followed by stderr for assertion messages.</returns>
-    public static (int exitCode, string output) Run(params string[] args)
+    public static (int exitCode, string output) Run(params string[] args) => RunWithStdin("", args);
+
+    /// <summary><see cref="Run"/> with <paramref name="stdin"/> as standard input, for <c>batch --stdin</c>.</summary>
+    public static (int exitCode, string output) RunWithStdin(string stdin, params string[] args)
     {
         var stdout = new StringWriter();
         var stderr = new StringWriter();
@@ -32,7 +35,7 @@ public static class GlueCliTestRun
         int exitCode;
         try
         {
-            exitCode = GlueCliRunner.Run(args, stdout, stderr, new TestHost());
+            exitCode = GlueCliRunner.Run(args, stdout, stderr, new TestHost(), stdin: new StringReader(stdin));
         }
         finally
         {

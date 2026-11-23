@@ -335,6 +335,14 @@ Traversal** (14) groups — 24 methods. Everything else stays on `ObjectFinder`.
 
 ## Completed Refactors
 
+### 2026-11-23 — GlueCli `batch`: one per-command step for single runs and batches
+
+`GlueCliRunner.RunLoaded` starts Glue and loads the project once, then runs a list of `CliStep`s through
+`RunStep`, which holds everything one command does after the load: the error baseline, `Run`, regenerating the
+changed elements, the save, and the error diff. A single command is a list of one; `batch` (`BatchCommand`) parses
+each line of a file or stdin into a step before Glue starts, so bad syntax exits 2 and runs nothing. A batch's
+`--dry-run` uses one `CliDryRunCopy` for every step and reports the combined changes on `CliBatchResult`.
+
 ### 2026-11-23 — Object, screen and entity properties out of the WinForms displayers
 
 Same pattern as the file and variable models below, for the rest of the Properties grid:

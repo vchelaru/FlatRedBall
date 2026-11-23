@@ -34,8 +34,9 @@ before the next step builds on it.
 
 ## Command rules
 
-- One invocation loads the project, runs one command, waits for queued tasks, and exits. Batch mode
-  (several commands per load) comes only if load time makes single commands too slow.
+- One invocation loads the project, runs one command, waits for queued tasks, and exits. `batch` runs
+  several commands, one per line of a file or stdin, against one load. Each line goes through the same
+  per-command step as a single run (`GlueCliRunner.RunStep`), so a command behaves the same either way.
 - Loading reads the project and nothing else: `ProjectLoader.LoadProject` with `ProjectLoadScope.ModelOnly`.
   What the editor's open does on top (plugin project code, generate all code, save what the load fix-ups
   changed, `.csproj` fix-ups, the unreferenced-file list) is `ProjectLoader.Operations`
@@ -141,6 +142,6 @@ commands; tests call it in-process with their own `IGlueCliHost`.
 | --- | --- | --- |
 | 1. Headless host | Done | #2470 |
 | 2. `check` / `regen` | Done | #2471 |
-| 3. Edit commands | In progress | add-object: #2472, set-variable: #2474, add-file: #2473, add-entity/add-screen: #2475, rename: #2477, delete: #2478, set-property: #2483, add-state-category/add-state/set-state-variable/rename-state/delete-state: #2486, add-variable/set-variable-property/remove-variable: #2487, add-event/remove-event: #2488, rename-state-category: #2490, describe (read-only): #2484, set-file-property: #2493, add-collision-relationship/set-collision-property: #2494 |
+| 3. Edit commands | In progress | add-object: #2472, set-variable: #2474, add-file: #2473, add-entity/add-screen: #2475, rename: #2477, delete: #2478, set-property: #2483, add-state-category/add-state/set-state-variable/rename-state/delete-state: #2486, add-variable/set-variable-property/remove-variable: #2487, add-event/remove-event: #2488, rename-state-category: #2490, describe (read-only): #2484, set-file-property: #2493, add-collision-relationship/set-collision-property: #2494, batch: #2515 |
 | 4. Agent skill | Not started | |
 | 5. Extraction | Ongoing, separate from the CLI | |
