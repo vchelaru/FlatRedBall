@@ -30,11 +30,13 @@ public static class GumCliRunner
     static async Task<bool> RunAsync(string arguments, string description) =>
         Report(await RunProcessAsync(arguments), description);
 
-    static async Task<GumCliResult> RunProcessAsync(string arguments)
+    static Task<GumCliResult> RunProcessAsync(string arguments) => RunProcessAsync(ExecutablePath, arguments);
+
+    internal static async Task<GumCliResult> RunProcessAsync(string fileName, string arguments)
     {
         var startInfo = new ProcessStartInfo
         {
-            FileName = ExecutablePath,
+            FileName = fileName,
             Arguments = arguments,
             UseShellExecute = false,
             RedirectStandardOutput = true,
@@ -45,8 +47,12 @@ public static class GumCliRunner
         var process = new Process { StartInfo = startInfo };
         process.Start();
 
-        var output = await process.StandardOutput.ReadToEndAsync();
-        var error = await process.StandardError.ReadToEndAsync();
+        // Both streams are drained at once. Reading one to the end first leaves gumcli blocked writing the
+        // other once it fills its pipe buffer, and both processes then wait forever.
+        var outputTask = process.StandardOutput.ReadToEndAsync();
+        var errorTask = process.StandardError.ReadToEndAsync();
+        var output = await outputTask;
+        var error = await errorTask;
         await process.WaitForExitAsync();
 
         return new GumCliResult(process.ExitCode, output, error, $"{startInfo.FileName} {startInfo.Arguments}");
