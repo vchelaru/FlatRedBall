@@ -140,6 +140,8 @@ namespace GumPlugin.CodeGeneration
             });
         }
 
+        // Which schema variables are generated at all is FrbBackedGumVariables' job. What's left here are
+        // the version gates on top of it: a variable FRB backs, but only from some GluxVersions on.
         public void RefreshVariableNamesToSkipForProperties()
         {
             mVariableNamesToSkipForProperties.Clear();
@@ -151,80 +153,8 @@ namespace GumPlugin.CodeGeneration
             _textCodeGenerator.AddVariableNamesToSkipForProperties(mVariableNamesToSkipForProperties);
 
             _containerCodeGenerator.AddVariableNamesToSkipForProperties(mVariableNamesToSkipForProperties);
-            _containerCodeGenerator.AddTypeSpecificVariableNamesToSkipForProperties(_typedVariableNamesToSkipForProperties);
 
             _nineSliceCodeGenerator.AddTypeSpecificVariableNamesToSkipForProperties(_typedVariableNamesToSkipForProperties);
-
-            _spriteCodeGenerator.AddTypeSpecificVariableNamesToSkipForProperties(_typedVariableNamesToSkipForProperties);
-
-            // Gum's "Rectangle" and "Circle" standard elements (StandardElementsManager v3 standard
-            // surface - see Gum issues #2929/#2931/#3009/#3617) now define a fill/stroke/gradient/
-            // dropshadow/blend variable family on their default state. Glue maps both of these
-            // standard elements to plain outline-only RenderingLibrary.Math.Geometry types
-            // (LineRectangle/LineCircle - see mStandardElementToQualifiedTypes above), which have no
-            // fill/stroke/gradient/dropshadow support and an unsettable get-only BlendState, so none
-            // of these variables can back a generated property. Exclude them here rather than mapping
-            // to a Skia-backed runtime, since that's a much larger change than this fix warrants.
-            var fillStrokeGradientDropshadowBlendVariables = new List<string>
-            {
-                // stroke (AddFillAndStrokeVariables)
-                "StrokeWidth", "StrokeAlpha", "StrokeRed", "StrokeGreen", "StrokeBlue",
-                // fill (AddFillAndStrokeVariables)
-                "IsFilled", "FillAlpha", "FillRed", "FillGreen", "FillBlue",
-                // gradient (AddGradientVariables, includeStartColor: false for Circle/Rectangle)
-                "UseGradient", "GradientType",
-                "GradientX1", "GradientX1Units", "GradientY1", "GradientY1Units",
-                "GradientX2", "GradientX2Units", "GradientY2", "GradientY2Units",
-                "GradientInnerRadius", "GradientInnerRadiusUnits",
-                "GradientOuterRadius", "GradientOuterRadiusUnits",
-                "Alpha2", "Red2", "Green2", "Blue2",
-                // dropshadow (AddDropshadowVariables) - "DropshadowBlur" is skipped globally below
-                "HasDropshadow", "DropshadowOffsetX", "DropshadowOffsetY",
-                "DropshadowAlpha", "DropshadowRed", "DropshadowGreen", "DropshadowBlue",
-                // blend (AddBlendVariable) - LineRectangle/LineCircle's BlendState has no setter
-                "Blend",
-            };
-
-            _typedVariableNamesToSkipForProperties.Add("Circle", new List<string>(fillStrokeGradientDropshadowBlendVariables));
-
-            // Issue #1967 - unlike Circle, a v3 (ShapeVariableExpansion) Rectangle CAN back its
-            // fill/stroke family - see FillStrokeVariableNames/IsRectangleFillStrokeSupported below,
-            // which decide this live (per-generation, not per skip-list-refresh) since the same
-            // singleton generator serves every Gum project version Glue might have loaded. So the
-            // fill/stroke names are deliberately left OUT of Rectangle's unconditional skip list here;
-            // gradient/dropshadow/blend/corner-radius remain unconditionally excluded - those need the
-            // optional Skia/Apos shape package FRB has no integration with, regardless of gumx version.
-            var rectangleVariablesToSkip = new List<string>
-            {
-                "UseGradient", "GradientType",
-                "GradientX1", "GradientX1Units", "GradientY1", "GradientY1Units",
-                "GradientX2", "GradientX2Units", "GradientY2", "GradientY2Units",
-                "GradientInnerRadius", "GradientInnerRadiusUnits",
-                "GradientOuterRadius", "GradientOuterRadiusUnits",
-                "Alpha2", "Red2", "Green2", "Blue2",
-                "HasDropshadow", "DropshadowOffsetX", "DropshadowOffsetY",
-                "DropshadowAlpha", "DropshadowRed", "DropshadowGreen", "DropshadowBlue",
-                "Blend",
-                // Rounded-corner surface (Rectangle only - a Circle has no corners). LineRectangle
-                // always renders hard corners.
-                "CornerRadius",
-                "CustomRadiusTopLeft", "CustomRadiusTopRight", "CustomRadiusBottomLeft", "CustomRadiusBottomRight",
-            };
-            _typedVariableNamesToSkipForProperties.Add("Rectangle", rectangleVariablesToSkip);
-
-            // Text is a partial case rather than an all-or-nothing one. RenderingLibrary.Graphics.Text
-            // does have HasDropshadow/DropshadowOffsetX/DropshadowOffsetY (and a single DropshadowColor),
-            // so those keep generating - but it has no per-channel color, no blur, and no LocalizeText,
-            // all of which Gum's schema defines (StandardElementsManager's Text state calls
-            // AddDropshadowVariables, and adds LocalizeText separately). Generating these produced CS1061
-            // in every project containing a Text, which is essentially every project.
-            _typedVariableNamesToSkipForProperties.Add("Text", new List<string>
-            {
-                "DropshadowAlpha", "DropshadowRed", "DropshadowGreen", "DropshadowBlue",
-                "LocalizeText",
-            });
-
-
 
             void ExcludeIfVersionLessThan(string propertyName, GluxVersions gluxVersion)
             {
@@ -234,119 +164,8 @@ namespace GumPlugin.CodeGeneration
                 }
             }
 
-            // These are properties we never generate. In some cases
-            // we don't generate them because they are already handled
-            // by base GraphicalUiElement. In other cases we just don't
-            // want to support them.
-            // If a variable is to be excluded only for certain types, see
-            // GetIfShouldGenerateProperty
-            // No FRB runtime type backs a singular "DropshadowBlur" - the Skia renderables split it into
-            // DropshadowBlurX/DropshadowBlurY (RenderableSkiaObject), RenderingLibrary.Graphics.Text has no
-            // blur at all, and LineRectangle/LineCircle have no dropshadow surface whatsoever. A Gum Editor
-            // that writes the singular name into a .gutx therefore feeds codegen a variable nothing can back,
-            // producing CS1061 in the user's game - and because codegen emits from the project's variables
-            // rather than from FRB's own schema, no amount of keeping SkiaStandardElementsManager correct
-            // prevents it. Global (rather than per-type) so an element Gum adds dropshadow to later is
-            // covered on arrival; see GumSkiaRenderableCodegenSweepTests.
-            mVariableNamesToSkipForProperties.Add("DropshadowBlur");
-
-            mVariableNamesToSkipForProperties.Add("Custom Texture Coordinates"); // replaced by texture address mode
-            mVariableNamesToSkipForProperties.Add("CustomTextureCoordinates"); // replaced by texture address mode
-            mVariableNamesToSkipForProperties.Add("Height Units");
-            mVariableNamesToSkipForProperties.Add("HeightUnits");
-            mVariableNamesToSkipForProperties.Add("Width Units");
-            mVariableNamesToSkipForProperties.Add("WidthUnits");
-            mVariableNamesToSkipForProperties.Add("Parent");
-            mVariableNamesToSkipForProperties.Add("Guide");
-
-
-            mVariableNamesToSkipForProperties.Add("X Origin");
-            mVariableNamesToSkipForProperties.Add("XOrigin");
-            mVariableNamesToSkipForProperties.Add("X Units");
-            mVariableNamesToSkipForProperties.Add("XUnits");
-            mVariableNamesToSkipForProperties.Add("Y Origin");
-            mVariableNamesToSkipForProperties.Add("YOrigin");
-            mVariableNamesToSkipForProperties.Add("Y Units");
-            mVariableNamesToSkipForProperties.Add("YUnits");
-
-            mVariableNamesToSkipForProperties.Add("FlipHorizontal");
-
-
-
-            mVariableNamesToSkipForProperties.Add("X");
-            mVariableNamesToSkipForProperties.Add("Y");
-            mVariableNamesToSkipForProperties.Add("Width");
-            mVariableNamesToSkipForProperties.Add("MinWidth");
-            mVariableNamesToSkipForProperties.Add("MaxWidth");
-            mVariableNamesToSkipForProperties.Add("Height");
-            mVariableNamesToSkipForProperties.Add("MinHeight");
-            mVariableNamesToSkipForProperties.Add("MaxHeight");
-            mVariableNamesToSkipForProperties.Add("Visible");
-
-
-            mVariableNamesToSkipForProperties.Add("HasEvents");
-            mVariableNamesToSkipForProperties.Add("ExposeChildrenEvents");
-
-            // What may be supported at some point in the future:
-            mVariableNamesToSkipForProperties.Add("Texture Height");
-            mVariableNamesToSkipForProperties.Add("TextureHeight");
-            mVariableNamesToSkipForProperties.Add("Texture Width");
-            mVariableNamesToSkipForProperties.Add("TextureWidth");
-            mVariableNamesToSkipForProperties.Add("Texture Left");
-            mVariableNamesToSkipForProperties.Add("TextureLeft");
-            mVariableNamesToSkipForProperties.Add("Texture Top");
-            mVariableNamesToSkipForProperties.Add("TextureTop");
-
-            mVariableNamesToSkipForProperties.Add("Texture Address");
-            mVariableNamesToSkipForProperties.Add("TextureAddress");
-            mVariableNamesToSkipForProperties.Add("Texture Width Scale");
-            mVariableNamesToSkipForProperties.Add("TextureWidthScale");
-            mVariableNamesToSkipForProperties.Add("Texture Height Scale");
-            mVariableNamesToSkipForProperties.Add("TextureHeightScale");
-
-
-            mVariableNamesToSkipForProperties.Add("State");
-            mVariableNamesToSkipForProperties.Add("CustomFontFile");
-            mVariableNamesToSkipForProperties.Add("UseCustomFont");
-            mVariableNamesToSkipForProperties.Add("Children Layout");
-            mVariableNamesToSkipForProperties.Add("ChildrenLayout");
-            mVariableNamesToSkipForProperties.Add("StackSpacing");
-
-            // This restriction is only enforced Gum-side, not runtime-side (yet? ever?)
-            mVariableNamesToSkipForProperties.Add("Contained Type");
-            mVariableNamesToSkipForProperties.Add("ContainedType");
-
-            mVariableNamesToSkipForProperties.Add("Clips Children");
-            mVariableNamesToSkipForProperties.Add("ClipsChildren");
-            mVariableNamesToSkipForProperties.Add("Wraps Children");
-            mVariableNamesToSkipForProperties.Add("WrapsChildren");
-
-            mVariableNamesToSkipForProperties.Add("IsXamarinFormsControl");
-            mVariableNamesToSkipForProperties.Add("IsOverrideInCodeGen");
-
-
-            // properties to skip because they're handled in the GUE
-            {
-                mVariableNamesToSkipForProperties.Add("Rotation");
-                mVariableNamesToSkipForProperties.Add("Wrap");
-                mVariableNamesToSkipForProperties.Add("CurrentChainName");
-            }
-
-            // It turns out we dont' have a way to skip/include properties by version. To be safe we are going to exclude these for now. In the future we need to have version-based
-            // include/exclude just like the StateCodeGenerator:
             ExcludeIfVersionLessThan("CustomFrameTextureCoordinateWidth", GluxVersions.GumUsesSystemTypes);
             ExcludeIfVersionLessThan("LineHeightMultiplier", GluxVersions.GumUsesSystemTypes);
-
-            // Do not generate AutoGrid properties - they are already handled by GraphicalUiElement
-            mVariableNamesToSkipForProperties.Add("AutoGridHorizontalCells");
-            mVariableNamesToSkipForProperties.Add("AutoGridVerticalCells");
-
-            // always ignore this because it's handled by GraphicalUiElement:
-            mVariableNamesToSkipForProperties.Add("IgnoredByParentSize");
-            mVariableNamesToSkipForProperties.Add("IgnoredByParentLayout");
-
-            // Gum-editor-only for FRB1: the generated property forwards to the contained renderable, which has no such member (CS1061).
-            mVariableNamesToSkipForProperties.Add("RaiseChildrenEventsOutsideOfBounds");
         }
 
 
@@ -510,7 +329,11 @@ namespace GumPlugin.CodeGeneration
                 // generate properties on the default state:
                 foreach (var variable in standardElementSave.DefaultState.Variables)
                 {
-                    bool shouldGenerateVariable = GetIfShouldGenerateProperty(variable, standardElementSave);
+                    // Only the schema variables FRB's runtime backs. The Glue-added variables below are
+                    // Glue's own, so they skip this check.
+                    bool shouldGenerateVariable =
+                        FrbBackedGumVariables.IsGeneratedAsProperty(standardElementSave.Name, variable.GetRootName())
+                        && GetIfShouldGenerateProperty(variable, standardElementSave);
 
                     if (shouldGenerateVariable)
                     {
@@ -677,31 +500,10 @@ namespace GumPlugin.CodeGeneration
                 return false;
             }
 
-            if(standardElementSave.Name == "Container" )
+            // The Glue-added Color convenience property needs a contained renderable, which Container lacks.
+            if(standardElementSave.Name == "Container" && variable.Name == "Color")
             {
-                if(variable.Name is "Color"
-                    // These may get supported in the future, but
-                    // we need to have an updated Glux version, and
-                    // the container needs to explicitly contain an InvisibleRenderable.
-                    or "Alpha" or "IsRenderTarget" or "Blend")
-                {
-                    return false;
-                }
-
-            }
-            if(standardElementSave.Name == "Svg")
-            {
-                if ( variable.Name == "Animate" || variable.Name == "SourceFile")
-                {
-                    return false;
-                }
-            }
-            if(standardElementSave.Name == "LottieAnimation")
-            {
-                if (variable.Name == "SourceFile")
-                {
-                    return false;
-                }
+                return false;
             }
             return true;
         }

@@ -22,7 +22,7 @@ Property vs. state disagreement is `CS0103: The name 'IsTilingMiddleSections' do
 
 Pipelines 1 and 2 are driven by the project's variables; pipeline 3 is driven by `GluxVersions` alone, so it is the one that most easily drifts. The `Gum.Wireframe.I*Runtime` interfaces it names are hand-written in the sibling Gum repo under `#if FRB` (`Gum/Wireframe/CustomSetPropertyOnRenderable.cs`) and mirror what Glue generates; they grow as Gum routes more of its property dispatch through the runtime instead of the renderable. Glue holds no reference to GumCore, so nothing in Glue can read one — `NineSliceCodeGenerator.InterfaceMemberNames` restates the contract by hand, and `GumGeneratedCodeCompilesTests` is what detects drift. `ContainerCodeGenerator`/`PolygonCodeGenerator` avoid the problem differently, by emitting their interface members from `GenerateAdditionalMethods` rather than relying on the project's variables at all.
 
-When you add a version gate, **update every pipeline that touches the member**. Searching for an existing skipped variable name (e.g. `"IgnoredByParentSize"`, `"StackSpacing"`) is the fastest way to spot every place that needs a parallel change — they typically appear in both `StandardsCodeGenerator.RefreshVariableNamesToSkipForProperties` and `StateCodeGenerator.RefreshVariableNamesToSkipBasedOnGlueVersion`.
+When you add a version gate, **update every pipeline that touches the member**. Searching for an existing skipped variable name (e.g. `"IgnoredByParentSize"`, `"StackSpacing"`) is the fastest way to spot every place that needs a parallel change — they typically appear in `FrbBackedGumVariables` plus a gate in `StandardsCodeGenerator.RefreshVariableNamesToSkipForProperties` or `StateCodeGenerator.RefreshVariableNamesToSkipBasedOnGlueVersion`.
 
 ## Glue never back-fills a loaded project's standard elements (landmine)
 
@@ -43,13 +43,13 @@ A Gum variable whose `Type` is an enum name (`GradientType`, `ColorOperation`) i
 
 This is why the bug class recurs: Rectangle/Circle's fill/stroke family (#1907), the Arc/ColoredCircle gradient CS0266, and Text's dropshadow-channel + `LocalizeText` family were each found by a user's build breaking, not by CI.
 
-`GlueUnitTests/GumPlugin/GumRuntimeMemberContractTests.cs` is the guard: it builds the engine's Forms solution, reflects over the real `GumCore`/`SkiaInGum` assemblies, and asserts every `ContainedXxx.Member` the generator emits exists on the mapped runtime type. It's driven off `StandardsCodeGenerator.StandardElementToQualifiedTypes`, so a standard element added to that map is covered automatically. When Gum extends a standard element's schema, that test — not the compiler — is what tells you whether FRB's runtime can back it.
+`GlueUnitTests/GumPlugin/GumRuntimeMemberContractTests.cs` is the guard: it builds the engine's Forms solution, reflects over the real `GumCore`/`SkiaInGum` assemblies, and asserts every `ContainedXxx.Member` the generator emits, and every `FrbBackedGumVariables` entry, exists on the runtime type. When you add an entry to the allowlist, that test (not the compiler) tells you whether FRB's runtime can back it.
 
 Note the fix is per-member, not per-type: `Text` legitimately backs `HasDropshadow`/`DropshadowOffsetX`/`DropshadowOffsetY` (it has a single `DropshadowColor`) while having no per-channel color, no blur, and no `LocalizeText`. Skip only what's actually unbacked.
 
 ## CI goes red after Gum adds a variable
 
-Glue generates from whatever the sibling Gum repo's current schema holds, so a Gum commit can break Glue tests with no FRB change. The detectors are `GumGeneratedCodeCompilesTests` (CS1061 on the generated runtime), `GumRuntimeMemberContractTests`, and the `NineSliceRuntimeInterfaceContractTests` text checks. Decide per variable: if FRB's runtime can't back it, add a permanent per-type skip to both `AddTypeSpecificVariableNamesToSkipForProperties` and `...ForStates` (see `ContainerCodeGenerator`'s `SourceShaderFile` and `ShaderParameters`); if it can, version-gate it as below. Default to the skip for anything that only adds visual functionality to Gum objects (shaders, effects, new rendering options): FRB1 leaves those out unless a game explicitly needs one. Text assertions on generated code must match a whole member name, not a substring, because `CustomBorderScaleBottom` contains `BorderScale`.
+A variable Gum adds is not generated until it is listed in `FrbBackedGumVariables` (same folder), so a new Gum variable no longer breaks CI by itself. `GumSchemaVariablesNotGeneratedReport` lists the schema variables left out. To opt one in, add it to that class (`PropertyVariables` for a forwarded property, `GraphicalUiElementVariables` for a `GraphicalUiElement` member, `RuntimeOnlyVariables` for one a per-type generator emits), then version-gate it as below if older shipped runtimes lack it. Default to leaving out anything that only adds visual functionality (shaders, effects, new rendering options). `GumRuntimeMemberContractTests` checks every entry against the real runtime types. Text assertions on generated code must match a whole member name, not a substring, because `CustomBorderScaleBottom` contains `BorderScale`.
 
 ## Where it lives
 
@@ -60,16 +60,11 @@ Property pipeline:
 
 State pipeline:
 - `FRBDK/Glue/GumPlugin/GumPlugin/CodeGeneration/StateCodeGenerator.cs`
-- Two relevant entry points: `RefreshVariablesToSkipForStates()` (unconditional skips and per-type contributions) and `RefreshVariableNamesToSkipBasedOnGlueVersion()` (version-gated skips, the right place for a `GluxVersions`-keyed gate).
+- Two relevant entry points: `RefreshVariablesToSkipForStates()` (per-type contributions) and `RefreshVariableNamesToSkipBasedOnGlueVersion()` (version-gated skips, the right place for a `GluxVersions`-keyed gate).
 
-## The two skip lists
+## Allowlist first, then version-gate skip lists
 
-`StandardsCodeGenerator` keeps two collections that drive omission, both cleared and rebuilt every time `RefreshVariableNamesToSkipForProperties()` runs:
-
-1. `mVariableNamesToSkipForProperties` — `List<string>`. Applies to **every** standard element. Use for variables that should never be generated regardless of type (`X`, `Y`, `Width`, `Visible`, etc., already handled by `GraphicalUiElement`).
-2. `_typedVariableNamesToSkipForProperties` — `Dictionary<string, List<string>>` keyed by standard element name (e.g. `"NineSlice"`). Use for variables that only exist on a specific type and should be skipped only there.
-
-Both lists are consumed by `GetIfShouldGenerateProperty(variable, standardElementSave)`, which is called for every variable on the default state during generation. Anything in either list short-circuits to `false`.
+`FrbBackedGumVariables` decides which schema variables exist at all. The property loop in `StandardsCodeGenerator.GenerateVariableProperties` checks `IsGeneratedAsProperty`; `StateCodeGenerator.IsBackedIfStandardElementVariable` checks `IsAssignableInState` against the target's root standard element, and lets custom, exposed and state variables through. The skip lists that remain hold only version gates: `mVariableNamesToSkipForProperties` (every element) and `_typedVariableNamesToSkipForProperties` (keyed by element name), both consumed by `GetIfShouldGenerateProperty`.
 
 ## Version-gating an omission
 

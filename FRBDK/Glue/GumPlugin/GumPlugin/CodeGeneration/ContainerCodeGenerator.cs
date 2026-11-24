@@ -100,13 +100,9 @@ public class ContainerCodeGenerator
 
     internal void AddTypeSpecificVariableNamesToSkipForStates(Dictionary<string, List<string>> typeSpecificVariableNamesToSkipForStates)
     {
-        // Container has no backing runtime type at all (StandardsCodeGenerator.mStandardElementToQualifiedTypes["Container"]
-        // is null - CreateContainedObjectMembers generates against a bare IRenderableIpso cast instead).
-        // "SourceShaderFile" (Gum v3) has no equivalent surface on Container - permanent, version-
-        // independent skip, unlike Alpha/Blend/IsRenderTarget below which are real InvisibleRenderable-backed
-        // properties gated on HasIsRenderTarget.
-        // "ShaderParameters" is the same: it lives on IRenderTargetRenderable, not IRenderableIpso.
-        var variablesToSkip = new List<string> { "SourceShaderFile", "ShaderParameters" };
+        // Alpha/Blend/IsRenderTarget are InvisibleRenderable-backed properties this class generates, gated
+        // on HasIsRenderTarget.
+        var variablesToSkip = new List<string>();
 
         if(!HasIsRenderTarget)
         {
@@ -116,15 +112,6 @@ public class ContainerCodeGenerator
         }
 
         typeSpecificVariableNamesToSkipForStates["Container"] = variablesToSkip;
-    }
-
-    internal void AddTypeSpecificVariableNamesToSkipForProperties(Dictionary<string, List<string>> typedVariableNamesToSkipForProperties)
-    {
-        // See AddTypeSpecificVariableNamesToSkipForStates above - Container has no backing runtime type,
-        // so "SourceShaderFile" can't back a generated property at any version. Left unskipped it's
-        // generated against ((RenderingLibrary.Graphics.IRenderableIpso)this.RenderableComponent), which
-        // has no such member (CS1061). "ShaderParameters" fails the same way.
-        typedVariableNamesToSkipForProperties.Add("Container", new List<string> { "SourceShaderFile", "ShaderParameters" });
     }
 }
 

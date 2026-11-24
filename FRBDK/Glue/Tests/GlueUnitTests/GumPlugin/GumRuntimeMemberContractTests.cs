@@ -178,61 +178,92 @@ public class GumRuntimeMemberContractTests : IDisposable
             string.Join(Environment.NewLine, missingRuntimeTypes) + Environment.NewLine + coverageReport);
     }
 
-    // Proves the sweep above is general rather than a restatement of the six members that happened to
-    // break Text. Nothing in this file names DropshadowBlur/LocalizeText/etc. - the fixture is built from
-    // Gum's canonical schema, so any variable Gum adds later flows in on its own. This test pins that
-    // property by injecting a variable Gum has never defined and asserting the sweep reports it. If a
-    // future refactor accidentally narrows the sweep to a fixed list, or stops picking up newly-added
-    // schema variables, this goes red while the sweep above would stay green.
+    // Issue #2404 - the sweep above only sees allowlisted variables that the current schema also has. This
+    // checks the allowlist itself, so an entry for a variable Gum dropped or renamed (or a typo) can't
+    // point at a member the runtime lacks. Each property entry is generated and checked like the sweep
+    // above; each GraphicalUiElement entry must be a member of GraphicalUiElement.
     [Fact]
-    public void Sweep_ShouldCatchAVariableAddedToTheSchemaLater()
+    public void EveryAllowlistedVariableShouldExistOnTheEngineRuntimeType()
     {
         GlueTestBootstrap.EnsureGumPluginStandardElementsInitialized();
-        GlueTestBootstrap.EnsureGumPluginCodeGeneratorsInitialized();
         EnsureSkiaStandardElementsRegistered();
+        GlueTestBootstrap.EnsureGumPluginCodeGeneratorsInitialized();
 
         var runtimeTypes = BuildAndLoadEngineRuntimeTypes(FindRepoRoot());
-        runtimeTypes.TryGetValue("RenderingLibrary.Graphics.Text", out var textRuntimeType).ShouldBeTrue();
+        var problems = new List<string>();
 
-        const string injectedName = "SomeVariableGumHasNotInventedYet";
-        textRuntimeType.GetProperty(injectedName).ShouldBeNull("the injected name must not really exist");
-
-        var defaultState = Gum.Managers.StandardElementsManager.Self
-            .TryGetDefaultStateFor("Text", throwExceptionOnMissing: false);
-        defaultState.ShouldNotBeNull();
-
-        var injected = new Gum.DataTypes.Variables.VariableSave
+        runtimeTypes.TryGetValue("Gum.Wireframe.GraphicalUiElement", out var graphicalUiElementType).ShouldBeTrue();
+        foreach (var name in FrbBackedGumVariables.GraphicalUiElementVariables.Where(IsMemberName))
         {
-            SetsValue = true,
-            Type = "float",
-            Value = 0f,
-            Name = injectedName,
-            Category = "Text",
-        };
+            if (!HasPublicMember(graphicalUiElementType!, name))
+            {
+                problems.Add($"FrbBackedGumVariables.GraphicalUiElementVariables lists {name}, but GraphicalUiElement has no such member.");
+            }
+        }
 
-        // StandardElementsManager.Self.DefaultStates is process-wide state - always restore it, or every
-        // test that runs after this one sweeps a schema with a bogus variable in it.
-        defaultState.Variables.Add(injected);
-        try
+        var elementToRuntimeType = GetStandardElementToQualifiedTypeMap();
+
+        foreach (var (elementName, allNames) in FrbBackedGumVariables.PropertyVariables)
         {
-            var standardElementSave = new StandardElementSave { Name = "Text" };
-            standardElementSave.Initialize(defaultState);
+            // Rectangle's fill/stroke family only exists on the v3 runtime type and is checked there, by
+            // V3RectangleFillStrokeMembers_ShouldExistOnFilledStrokedRectangle.
+            var names = elementName == "Rectangle"
+                ? allNames.Except(StandardsCodeGenerator.RectangleFillStrokeVariableNames).ToList()
+                : allNames;
+
+            if (!elementToRuntimeType.TryGetValue(elementName, out var qualifiedTypeName) || string.IsNullOrEmpty(qualifiedTypeName))
+            {
+                continue;
+            }
+            runtimeTypes.TryGetValue(qualifiedTypeName, out var runtimeType).ShouldBeTrue($"{qualifiedTypeName} is not in the built engine");
+
+            var standardElementSave = new StandardElementSave { Name = elementName };
+            standardElementSave.Initialize(BuildStateWithEveryAllowlistedVariable(elementName, names));
 
             var codeBlock = new CodeBlockBase();
-            StandardsCodeGenerator.Self.GenerateStandardElementSaveCodeFor(standardElementSave, codeBlock)
-                .ShouldBeTrue();
+            StandardsCodeGenerator.Self.GenerateStandardElementSaveCodeFor(standardElementSave, codeBlock).ShouldBeTrue();
+            var source = codeBlock.ToString();
 
-            var unbacked = FindUnbackedMembers("Text", codeBlock.ToString(), textRuntimeType, "RenderingLibrary.Graphics.Text");
+            problems.AddRange(FindUnbackedMembers(elementName, source, runtimeType!, qualifiedTypeName));
 
-            unbacked.ShouldContain(
-                problem => problem.Contains(injectedName, StringComparison.Ordinal),
-                "The sweep did not flag a newly-added schema variable, which means it is no longer general. " +
-                "Reported: " + string.Join(" | ", unbacked));
+            // Coverage: an entry the fixture failed to generate was not checked at all.
+            foreach (var name in names.Where(IsMemberName))
+            {
+                if (!Regex.IsMatch(source, @"public [^\r\n]* " + Regex.Escape(name) + @"\s*$", RegexOptions.Multiline))
+                {
+                    problems.Add($"{elementName}: allowlisted property {name} was not generated, so it was not checked.");
+                }
+            }
         }
-        finally
+
+        problems.ShouldBeEmpty(string.Join(Environment.NewLine, problems));
+    }
+
+    // Names with spaces are legacy .gutx spellings of a member that is checked under its real name.
+    private static bool IsMemberName(string name) => !name.Contains(' ');
+
+    // The canonical schema, plus any allowlisted variable it lacks, typed from Gum's own schema when Gum
+    // has one for it.
+    private static Gum.DataTypes.Variables.StateSave BuildStateWithEveryAllowlistedVariable(string elementName, IReadOnlyCollection<string> names)
+    {
+        var manager = Gum.Managers.StandardElementsManager.Self;
+        var state = manager.TryGetDefaultStateFor(elementName, throwExceptionOnMissing: false)?.Clone()
+            ?? new Gum.DataTypes.Variables.StateSave { Name = "Default" };
+        var gumsSchema = manager.CustomGetDefaultState?.Invoke(elementName);
+
+        foreach (var name in names.Where(IsMemberName))
         {
-            defaultState.Variables.Remove(injected);
+            if (state.Variables.Any(variable => variable.Name == name))
+            {
+                continue;
+            }
+
+            var variable = gumsSchema?.Variables.FirstOrDefault(item => item.Name == name)?.Clone()
+                ?? new Gum.DataTypes.Variables.VariableSave { Name = name, Type = "float", Value = 0f, SetsValue = true };
+            state.Variables.Add(variable);
         }
+
+        return state;
     }
 
     // Issue #1967 - the sweep above is driven off StandardElementToQualifiedTypes, the STATIC map, which

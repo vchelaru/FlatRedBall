@@ -71,114 +71,15 @@ public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
     {
     }
 
+    // Which standard-element variables a state may assign at all is FrbBackedGumVariables' job (see
+    // GetIfShouldGenerateVariableInStateSetter). What's left here are version gates on top of it.
     public void RefreshVariablesToSkipForStates()
     {
         mVariableNamesToSkipForStates.Clear();
         typeSpecificVariableNamesToSkipForStates.Clear();
 
-        //mVariableNamesToSkipForStates.Add("CustomFontFile");
-        //mVariableNamesToSkipForStates.Add("UseCustomFont");
-        mVariableNamesToSkipForStates.Add("Guide");
-        mVariableNamesToSkipForStates.Add("RaiseChildrenEventsOutsideOfBounds"); // no generated property to assign, see StandardsCodeGenerator
-        // GraphicalUiElement.IgnoredByParentLayout exists only in Gum source newer than any shipped FRB GumCore, so
-        // assigning it breaks NuGet-referencing games. Include it behind a GluxVersions gate once an engine ships it.
-        mVariableNamesToSkipForStates.Add("IgnoredByParentLayout");
-        //mVariableNamesToSkipForStates.Add("Parent");
-
-        // Why did we skip width units and height units?
-        //mVariableNamesToSkipForStates.Add("Height Units");
-        //mVariableNamesToSkipForStates.Add("Width Units");
-        mVariableNamesToSkipForStates.Add("Custom Texture Coordinates"); // This is now handled by TextureCoordinateType
-        mVariableNamesToSkipForStates.Add("CustomTextureCoordinates"); // This is now handled by TextureCoordinateType
-        //mVariableNamesToSkipForStates.Add("Children Layout");
-
-        //mVariableNamesToSkipForStates.Add("Font");
-        //mVariableNamesToSkipForStates.Add("FontSize");
-        //mVariableNamesToSkipForStates.Add("OutlineThickness");
-
-        // August 29 - adding support for these:
-        //mVariableNamesToSkipForStates.Add("HasEvents");
-        //mVariableNamesToSkipForStates.Add("ExposeChildrenEvents");
-
-        //mVariableNamesToSkipForStates.Add("SourceFile");
-        mVariableNamesToSkipForStates.Add("Contained Type");
-        mVariableNamesToSkipForStates.Add("ContainedType");
-        mVariableNamesToSkipForStates.Add("IsXamarinFormsControl");
-        mVariableNamesToSkipForStates.Add("IsOverrideInCodeGen");
-
-        // Mirrors the property-pipeline exclusion in SpriteCodeGenerator.AddTypeSpecificVariableNamesToSkipForProperties -
-        // Sprite's RenderTargetTextureSource is only ever a plain get/set pass-through to ContainedSprite
-        // (SpriteCodeGenerator.GenerateIRenderTargetTextureReferencerProperties), never state-switch driven.
-        // Permanent, version-independent skip - the name is unique to Sprite so a global skip is safe.
-        mVariableNamesToSkipForStates.Add("RenderTargetTextureSource");
-
-        // Mirrors the global property-pipeline skip in
-        // StandardsCodeGenerator.RefreshVariableNamesToSkipForProperties - see there for why nothing backs a
-        // singular "DropshadowBlur". Both pipelines must agree or the state switch assigns a property that
-        // was never generated (CS0103).
-        mVariableNamesToSkipForStates.Add("DropshadowBlur");
-        //mVariableNamesToSkipForStates.Add("IsBold");
-
-        // Eventually we'll support this but first Gum needs to support
-        // setting categorized states on instances
-        // September 17 2014
-        // no longer needed:
-        //mVariableNamesToSkipForStates.Add("State");
-
         _containerCodeGenerator.AddTypeSpecificVariableNamesToSkipForStates(typeSpecificVariableNamesToSkipForStates);
         _nineSliceCodeGenerator.AddTypeSpecificVariableNamesToSkipForStates(typeSpecificVariableNamesToSkipForStates);
-
-        // Mirrors the property-pipeline exclusion in StandardsCodeGenerator.RefreshVariableNamesToSkipForProperties -
-        // Gum's "Rectangle"/"Circle" standard elements now define a fill/stroke/gradient/dropshadow/blend
-        // variable family that plain LineRectangle/LineCircle can't back. Both pipelines must agree or a
-        // state-switch assignment references a property that was never generated (CS0103).
-        var fillStrokeGradientDropshadowBlendVariables = new List<string>
-        {
-            "StrokeWidth", "StrokeAlpha", "StrokeRed", "StrokeGreen", "StrokeBlue",
-            "IsFilled", "FillAlpha", "FillRed", "FillGreen", "FillBlue",
-            "UseGradient", "GradientType",
-            "GradientX1", "GradientX1Units", "GradientY1", "GradientY1Units",
-            "GradientX2", "GradientX2Units", "GradientY2", "GradientY2Units",
-            "GradientInnerRadius", "GradientInnerRadiusUnits",
-            "GradientOuterRadius", "GradientOuterRadiusUnits",
-            "Alpha2", "Red2", "Green2", "Blue2",
-            "HasDropshadow", "DropshadowOffsetX", "DropshadowOffsetY",
-            "DropshadowAlpha", "DropshadowRed", "DropshadowGreen", "DropshadowBlue",
-            "Blend",
-        };
-
-        typeSpecificVariableNamesToSkipForStates.Add("Circle", new List<string>(fillStrokeGradientDropshadowBlendVariables));
-
-        // Issue #1967 - mirrors StandardsCodeGenerator.RefreshVariableNamesToSkipForProperties: unlike
-        // Circle, a v3 Rectangle's fill/stroke family IS backed (FilledStrokedRectangle), decided live
-        // per-generation in GetIfShouldGenerateVariableInStateSetter below rather than baked into this
-        // skip list, since one singleton generator serves whatever gumx version is currently loaded.
-        // Gradient/dropshadow/blend/corner-radius remain unconditionally excluded here.
-        var rectangleVariablesToSkip = new List<string>
-        {
-            "UseGradient", "GradientType",
-            "GradientX1", "GradientX1Units", "GradientY1", "GradientY1Units",
-            "GradientX2", "GradientX2Units", "GradientY2", "GradientY2Units",
-            "GradientInnerRadius", "GradientInnerRadiusUnits",
-            "GradientOuterRadius", "GradientOuterRadiusUnits",
-            "Alpha2", "Red2", "Green2", "Blue2",
-            "HasDropshadow", "DropshadowOffsetX", "DropshadowOffsetY",
-            "DropshadowAlpha", "DropshadowRed", "DropshadowGreen", "DropshadowBlue",
-            "Blend",
-            "CornerRadius",
-            "CustomRadiusTopLeft", "CustomRadiusTopRight", "CustomRadiusBottomLeft", "CustomRadiusBottomRight",
-        };
-        typeSpecificVariableNamesToSkipForStates.Add("Rectangle", rectangleVariablesToSkip);
-
-        // Mirrors the Text entry in StandardsCodeGenerator - RenderingLibrary.Graphics.Text backs
-        // HasDropshadow/DropshadowOffsetX/DropshadowOffsetY but not the per-channel color, the blur, or
-        // LocalizeText. Both pipelines must agree here or the state switch assigns a property the
-        // property pipeline never generated (CS0103).
-        typeSpecificVariableNamesToSkipForStates.Add("Text", new List<string>
-        {
-            "DropshadowAlpha", "DropshadowRed", "DropshadowGreen", "DropshadowBlue",
-            "LocalizeText",
-        });
     }
 
     public void RefreshVariableNamesToSkipBasedOnGlueVersion()
@@ -600,6 +501,40 @@ public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
             element.DefaultState?.Variables.Any(item => item.IsCustomVariable && item.Name == variableName) == true;
     }
 
+    /// <summary>
+    /// False when the variable sets a standard-element variable FRB's runtime does not back
+    /// (FrbBackedGumVariables). Custom and exposed variables belong to a component, not to a standard
+    /// element, so they always pass. "State" and category variables are excluded by the caller.
+    /// </summary>
+    private static bool IsBackedIfStandardElementVariable(Gum.DataTypes.Variables.VariableSave variable, ElementSave container, string variableRootName)
+    {
+        var targetElement = string.IsNullOrEmpty(variable.SourceObject)
+            ? container
+            : ObjectFinder.Self.GetElementSave(container.GetInstance(variable.SourceObject)?.BaseType);
+
+        if (targetElement == null || IsCustomOrExposedOnElementOrBase(targetElement, variableRootName))
+        {
+            return true;
+        }
+
+        var rootStandardElement = targetElement as StandardElementSave
+            ?? ObjectFinder.Self.GetRootStandardElementSave(targetElement);
+
+        return rootStandardElement == null
+            || FrbBackedGumVariables.IsAssignableInState(rootStandardElement.Name, variableRootName);
+    }
+
+    private static bool IsCustomOrExposedOnElementOrBase(ElementSave element, string variableRootName)
+    {
+        return Defines(element) || ObjectFinder.Self.GetBaseElements(element).Any(Defines);
+
+        bool Defines(ElementSave candidate) =>
+            candidate is not StandardElementSave &&
+            candidate.DefaultState?.Variables.Any(item =>
+                item.ExposedAsName == variableRootName ||
+                (item.IsCustomVariable && item.Name == variableRootName)) == true;
+    }
+
     private bool GetIfShouldGenerateVariableInStateSetter(Gum.DataTypes.Variables.VariableSave variable, ElementSave container)
     {
         bool toReturn = true;
@@ -824,6 +759,11 @@ public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
                     toReturn = wasMatchFound;
                 }
             }
+        }
+
+        if (toReturn && !isVariableState && variableRootName != "State")
+        {
+            toReturn = IsBackedIfStandardElementVariable(variable, container, variableRootName);
         }
 
         // special case (for now)
