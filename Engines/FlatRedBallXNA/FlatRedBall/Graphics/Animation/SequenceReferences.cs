@@ -8,14 +8,17 @@ namespace FlatRedBall.Graphics.Animation
     /// <summary>One step from a sequence into a sequence its reference track plays.</summary>
     public sealed class ReferenceHop
     {
-        public ReferenceHop(SequenceReferenceSave reference, SequenceSave target)
+        public ReferenceHop(SequenceTrackSave track, SequenceSave target)
         {
-            Reference = reference;
+            Track = track;
             Target = target;
         }
 
+        /// <summary>The reference track holding the clip.</summary>
+        public SequenceTrackSave Track { get; }
+
         /// <summary>The reference clip.</summary>
-        public SequenceReferenceSave Reference { get; }
+        public SequenceReferenceSave Reference => Track.Reference;
 
         /// <summary>The sequence it plays.</summary>
         public SequenceSave Target { get; }
@@ -172,7 +175,7 @@ namespace FlatRedBall.Graphics.Animation
                 {
                     continue;
                 }
-                hops.Add(new ReferenceHop(reference, target));
+                hops.Add(new ReferenceHop(track, target));
                 stack.Add(target);
                 Collect(sequences, target, prefix + track.Name + "/", visible && track.Visible, hops, stack, result);
                 stack.RemoveAt(stack.Count - 1);
@@ -190,14 +193,31 @@ namespace FlatRedBall.Graphics.Animation
         /// <param name="length">A sequence's length in seconds (<see cref="SequenceTimeline.Length(IReadOnlyList{SequenceSave}, SequenceSave, Func{SequenceChainReferenceSave, double})"/>).</param>
         public static double? InlinedTime(InlinedTrack track, double time, Func<SequenceSave, double> length)
         {
+            return InlinedTime(track, time, 0, 0, length, out _);
+        }
+
+        /// <summary>
+        /// <see cref="InlinedTime(InlinedTrack, double, Func{SequenceSave, double})"/> for pass <paramref name="pass"/> of the
+        /// outermost sequence, <paramref name="sequenceLength"/> seconds long, where <paramref name="time"/> is the time inside
+        /// that pass. Each hop maps the time and pass through <see cref="SequenceTimeline.ReferenceTimeAtPass"/>, so a
+        /// continuous reference track carries its target across the wrap. <paramref name="innerPass"/> is the pass of
+        /// <paramref name="track"/>'s own sequence, for its continuous chain tracks; 0 when any hop on the way restarts.
+        /// </summary>
+        public static double? InlinedTime(InlinedTrack track, double time, int pass, double sequenceLength,
+            Func<SequenceSave, double> length, out int innerPass)
+        {
             double? current = time;
+            innerPass = pass;
             foreach (ReferenceHop hop in track.Hops)
             {
-                current = SequenceTimeline.ReferenceTime(hop.Reference, hop.Target, length(hop.Target), current.Value);
+                double targetLength = length(hop.Target);
+                current = SequenceTimeline.ReferenceTimeAtPass(hop.Track, hop.Target, targetLength, current.Value, innerPass, sequenceLength, out innerPass);
                 if (current == null)
                 {
+                    innerPass = 0;
                     return null;
                 }
+                sequenceLength = targetLength;
             }
             return current;
         }

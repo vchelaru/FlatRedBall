@@ -367,16 +367,22 @@ namespace FlatRedBall.Graphics.Animation
 
             // A track played through a reference runs on its own sequence's clock, or not at all while a clip on the way
             // isn't playing.
-            double? clock = track.IsReferenced
-                ? SequenceReferences.InlinedTime(track.Inlined, time, mPlayer.SequenceLength)
-                : time;
+            // A continuous reference track on the way carries its target's pass; any other hop runs its target at pass 0.
+            int pass = mPass;
+            double sequenceLength = Length;
+            double? clock = time;
+            if (track.IsReferenced)
+            {
+                clock = SequenceReferences.InlinedTime(track.Inlined, time, mPass, Length, mPlayer.SequenceLength, out pass);
+                sequenceLength = mPlayer.SequenceLength(track.Inlined.Hops[track.Inlined.Hops.Count - 1].Target);
+            }
             SequenceChainReferenceSave reference = null;
             double local = 0;
             if (clock.HasValue)
             {
-                // A continuous track keeps its phase across a wrap. A track played through a reference runs at pass 0.
-                reference = track.Save.Continuous && !track.IsReferenced && mPass > 0
-                    ? SequenceTimeline.ActiveAtPass(track.Save, clock.Value, mPass, Length, mPlayer.CycleLength, out local)
+                // A continuous track keeps its phase across a wrap of its own sequence.
+                reference = track.Save.Continuous && pass > 0
+                    ? SequenceTimeline.ActiveAtPass(track.Save, clock.Value, pass, sequenceLength, mPlayer.CycleLength, out local)
                     : SequenceTimeline.ActiveAt(track.Ordered, clock.Value, mPlayer.CycleLength, out local);
             }
 
