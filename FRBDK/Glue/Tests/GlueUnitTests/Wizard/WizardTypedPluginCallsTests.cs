@@ -26,7 +26,7 @@ public class WizardTypedPluginCallsTests : IDisposable
 {
     private readonly FlatRedBall.Glue.VSHelpers.Projects.VisualStudioProject _originalMainProject;
     private readonly GlueProjectSave _originalGlueProject;
-    private readonly string _originalRelativeDirectory;
+    private readonly ProjectRelativeDirectory _relativeDirectory;
     private readonly bool _originalSynchronousMode;
     private readonly IUiThreadMarshaller _originalMarshaller;
     private IGumCommands _originalGumCommands;
@@ -39,7 +39,6 @@ public class WizardTypedPluginCallsTests : IDisposable
 
         _originalMainProject = GlueState.Self.CurrentMainProject;
         _originalGlueProject = ObjectFinder.Self.GlueProject;
-        _originalRelativeDirectory = FlatRedBall.IO.FileManager.RelativeDirectory;
         _originalSynchronousMode = TaskManager.SynchronousMode;
         _originalMarshaller = TaskManager.UiThreadMarshaller;
         _originalGumCommands = GlueCommands.Self.GumCommands;
@@ -47,7 +46,7 @@ public class WizardTypedPluginCallsTests : IDisposable
 
         GlueState.Self.CurrentMainProject = TestVisualStudioProjectFactory.CreateInNewTempDirectory(out _tempProjectDirectory);
         ObjectFinder.Self.GlueProject = new GlueProjectSave();
-        FlatRedBall.IO.FileManager.RelativeDirectory = _tempProjectDirectory + "\\";
+        _relativeDirectory = new ProjectRelativeDirectory(_tempProjectDirectory);
 
         TaskManager.SynchronousMode = true;
         TaskManager.UiThreadMarshaller = new InlineUiThreadMarshaller();
@@ -57,7 +56,7 @@ public class WizardTypedPluginCallsTests : IDisposable
     {
         GlueState.Self.CurrentMainProject = _originalMainProject;
         ObjectFinder.Self.GlueProject = _originalGlueProject;
-        FlatRedBall.IO.FileManager.RelativeDirectory = _originalRelativeDirectory;
+        _relativeDirectory.Dispose();
         TaskManager.SynchronousMode = _originalSynchronousMode;
         TaskManager.UiThreadMarshaller = _originalMarshaller;
         GlueCommands.Self.GumCommands = _originalGumCommands;
