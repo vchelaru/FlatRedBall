@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 using GlueCli;
 using GlueUnitTests.TestSupport;
 using static GlueUnitTests.Cli.GlueCliTestRun;
@@ -27,6 +28,28 @@ public class GlueCliRunnerTests
 
         exitCode.ShouldBe(GlueCliRunner.ExitSuccess, output);
         output.ShouldContain("No errors.");
+    }
+
+    [StaFact]
+    public void Check_ShouldNotRefreshTheErrorList()
+    {
+        using var project = GoldProject.CopyOutOfRepo("Samples/Beefball");
+        var originalAction = RefreshCommands.RefreshErrorsAction;
+        var refreshCount = 0;
+        // The editor's load fills the Errors tab through this; check computes the errors it reports itself.
+        RefreshCommands.RefreshErrorsAction = () => refreshCount++;
+        try
+        {
+            var (exitCode, output) = Run("check", project.Root);
+
+            exitCode.ShouldBe(GlueCliRunner.ExitSuccess, output);
+        }
+        finally
+        {
+            RefreshCommands.RefreshErrorsAction = originalAction;
+        }
+
+        refreshCount.ShouldBe(0);
     }
 
     [StaFact]

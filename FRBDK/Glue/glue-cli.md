@@ -56,6 +56,11 @@ before the next step builds on it.
   before the plugin scan, so they cost almost nothing on top of startup. The Gum plugin reads the `.gumx`
   and its element files the same way from its `StartUp` (`GumProjectPrefetch`). The Gum project itself
   always loads: every command reports the project's errors, and Gum's error reporter reads all of it.
+- Errors are computed by the runner only (`GlueErrorManager.GetAllCurrentErrors`): once for `check` and
+  `describe`, before and after the edit for edit commands. The load does not fill the editor's Errors tab;
+  that is the editor-session step `ProjectLoadOperations.RefreshErrorList`. The second collection of an
+  edit re-runs every reporter; scoping it to the changed elements was measured and does not pay (see
+  REFACTORING.md).
 - Exit code 0 means the edit applied and left no new errors. 1 means the edit was not applied (bad
   input, a Glue rule it breaks) or it added errors. 2 means bad arguments or a project that would not
   load. Errors the project had before the edit are reported as `preexistingErrors` and do not fail the

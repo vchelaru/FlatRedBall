@@ -512,6 +512,7 @@ namespace FlatRedBall.Glue.IO
                 PluginManager.ReactToLoadedGlux(ProjectManager.GlueProjectSave, glueProjectFile, (newString) => SetInitWindowText(newString, initializationWindow));
                 if (isEditorSession)
                 {
+                    Operations.RefreshErrorList();
                     Operations.GeneratePluginProjectCode();
                 }
                 Section.EndContextAndTime();

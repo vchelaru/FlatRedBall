@@ -80,6 +80,9 @@ public partial class StateCodeGenerator : Singleton<StateCodeGenerator>
         //mVariableNamesToSkipForStates.Add("UseCustomFont");
         mVariableNamesToSkipForStates.Add("Guide");
         mVariableNamesToSkipForStates.Add("RaiseChildrenEventsOutsideOfBounds"); // no generated property to assign, see StandardsCodeGenerator
+        // GraphicalUiElement.IgnoredByParentLayout exists only in Gum source newer than any shipped FRB GumCore, so
+        // assigning it breaks NuGet-referencing games. Include it behind a GluxVersions gate once an engine ships it.
+        mVariableNamesToSkipForStates.Add("IgnoredByParentLayout");
         //mVariableNamesToSkipForStates.Add("Parent");
 
         // Why did we skip width units and height units?
