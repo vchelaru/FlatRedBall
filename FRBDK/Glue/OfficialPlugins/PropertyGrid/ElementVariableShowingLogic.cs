@@ -19,6 +19,7 @@ using WpfDataUi.Controls;
 using FlatRedBall.Glue.FormHelpers.PropertyGrids;
 using System.Threading.Tasks;
 using FlatRedBall.Glue.Controls;
+using FlatRedBall.Glue.SaveClasses.Helpers;
 using OfficialPlugins.PropertyGrid;
 
 namespace OfficialPlugins.VariableDisplay
@@ -305,6 +306,11 @@ namespace OfficialPlugins.VariableDisplay
             var tiw = new CustomizableTextInputWindow();
             tiw.Message = $"Enter the desired category for {variable.Name}";
             tiw.Result = variable.Category;
+            var parentElement = ObjectFinder.Self.GetElementContaining(variable);
+            if(parentElement != null)
+            {
+                tiw.SetOptions(CustomVariableHelper.GetAvailableCategories(parentElement));
+            }
 
             var dialogResult = tiw.ShowDialog();
 

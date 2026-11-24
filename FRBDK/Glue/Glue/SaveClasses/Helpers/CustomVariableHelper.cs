@@ -25,6 +25,20 @@ namespace FlatRedBall.Glue.SaveClasses.Helpers
 
     public static class CustomVariableHelper
     {
+        /// <summary>
+        /// Returns the distinct, non-empty variable categories used by the element and its base elements.
+        /// </summary>
+        public static List<string> GetAvailableCategories(GlueElement element) =>
+            GetAvailableCategories(element, ObjectFinder.Self.GetAllBaseElementsRecursively(element));
+
+        public static List<string> GetAvailableCategories(GlueElement element, IEnumerable<GlueElement> baseElements) =>
+            new[] { element }.Concat(baseElements)
+                .SelectMany(item => item.CustomVariables)
+                .Select(item => item.Category)
+                .Where(item => !string.IsNullOrEmpty(item))
+                .Distinct()
+                .ToList();
+
         public static void SetDefaultValueFor(CustomVariable customVariable, IElement element)
         {
             object defaultValue = GetDefaultValueFor(customVariable, element);
