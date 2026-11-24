@@ -41,7 +41,7 @@ public class WizardProjectLogicAddGameScreenTests : IDisposable
 {
     private readonly FlatRedBall.Glue.VSHelpers.Projects.VisualStudioProject _originalMainProject;
     private readonly GlueProjectSave _originalGlueProject;
-    private readonly string _originalRelativeDirectory;
+    private readonly ProjectRelativeDirectory _relativeDirectory;
     private readonly bool _originalSynchronousMode;
     private readonly IUiThreadMarshaller _originalMarshaller;
     private readonly string _tempProjectDirectory;
@@ -52,7 +52,6 @@ public class WizardProjectLogicAddGameScreenTests : IDisposable
 
         _originalMainProject = GlueState.Self.CurrentMainProject;
         _originalGlueProject = ObjectFinder.Self.GlueProject;
-        _originalRelativeDirectory = FlatRedBall.IO.FileManager.RelativeDirectory;
         _originalSynchronousMode = TaskManager.SynchronousMode;
         _originalMarshaller = TaskManager.UiThreadMarshaller;
 
@@ -60,7 +59,7 @@ public class WizardProjectLogicAddGameScreenTests : IDisposable
 
         GlueState.Self.CurrentMainProject = vsProject;
         ObjectFinder.Self.GlueProject = new GlueProjectSave();
-        FlatRedBall.IO.FileManager.RelativeDirectory = _tempProjectDirectory + "\\";
+        _relativeDirectory = new ProjectRelativeDirectory(_tempProjectDirectory);
 
         TaskManager.SynchronousMode = true;
         TaskManager.UiThreadMarshaller = new InlineUiThreadMarshaller();
@@ -70,7 +69,7 @@ public class WizardProjectLogicAddGameScreenTests : IDisposable
     {
         GlueState.Self.CurrentMainProject = _originalMainProject;
         ObjectFinder.Self.GlueProject = _originalGlueProject;
-        FlatRedBall.IO.FileManager.RelativeDirectory = _originalRelativeDirectory;
+        _relativeDirectory.Dispose();
         TaskManager.SynchronousMode = _originalSynchronousMode;
         TaskManager.UiThreadMarshaller = _originalMarshaller;
 
