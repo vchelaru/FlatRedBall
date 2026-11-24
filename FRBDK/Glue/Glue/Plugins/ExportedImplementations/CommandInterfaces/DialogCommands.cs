@@ -3,6 +3,7 @@ using System.Linq;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using Glue;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.SaveClasses.Helpers;
 using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.IO;
@@ -591,14 +592,7 @@ partial class DialogCommands : IDialogCommands
             DesiredVariableType = variableType
         };
 
-        var variableCategories = new HashSet<string>();
-        variableCategories.AddRange(container.CustomVariables.Select(item => item.Category).Where(item => !string.IsNullOrEmpty(item)));
-        var baseElements = ObjectFinder.Self.GetAllBaseElementsRecursively(container);
-        foreach(var element in baseElements)
-        {
-            variableCategories.AddRange(element.CustomVariables.Select(item => item.Category).Where(item => !string.IsNullOrEmpty(item)));
-        }
-        viewModel.AvailableCategories.AddRange(variableCategories);
+        viewModel.AvailableCategories.AddRange(CustomVariableHelper.GetAvailableCategories(container));
 
         if (variableType == CustomVariableType.New)
         {

@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -27,8 +28,12 @@ namespace FlatRedBall.Glue.Controls
 
         public string Result
         {
-            get => TextBox.Text;
-            set => TextBox.Text = value;
+            get => ComboBox.Visibility == Visibility.Visible ? ComboBox.Text : TextBox.Text;
+            set
+            {
+                TextBox.Text = value;
+                ComboBox.Text = value;
+            }
         }
 
         public event EventHandler CustomOkClicked;
@@ -49,6 +54,20 @@ namespace FlatRedBall.Glue.Controls
 
 
             ValidationLabel.Visibility = Visibility.Hidden;
+        }
+
+        /// <summary>
+        /// Replaces the text box with an editable dropdown listing the given options. The user can
+        /// still type a value that isn't in the list.
+        /// </summary>
+        public void SetOptions(IEnumerable<string> options)
+        {
+            var result = Result;
+            ComboBox.ItemsSource = options;
+            TextBox.Visibility = Visibility.Collapsed;
+            ComboBox.Visibility = Visibility.Visible;
+            ComboBox.Text = result;
+            ComboBox.Focus();
         }
 
         public void HighlightText()
