@@ -38,7 +38,7 @@ public class SequencePlayerEventTests
         file.Sequences.Add(sequence);
         var instance = new SequencePlayer(new PositionedObject(), new SequenceList(file, _ => source))["Attack"];
         var raised = new List<string>();
-        instance.EventRaised += (name, data) => raised.Add(data == null ? name : name + ":" + data);
+        instance.EventRaised += (_, name, data) => raised.Add(data == null ? name : name + ":" + data);
         return (instance, raised);
     }
 
@@ -178,7 +178,7 @@ public class SequencePlayerEventTests
     public void AHandlerThatStopsTheSequence_EndsTheRestOfThatUpdate()
     {
         var (sequence, raised) = Setup(Source(), Track("Body", 0, null));
-        sequence.EventRaised += (name, data) =>
+        sequence.EventRaised += (_, name, data) =>
         {
             if (name == "A")
             {
@@ -191,6 +191,20 @@ public class SequencePlayerEventTests
 
         raised.ShouldBe(new[] { "A:1" });
         sequence.IsPlaying.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void TwoTracksRaisingEvents_EachReportTheirOwnTrack()
+    {
+        var (sequence, _) = Setup(Source(), Track("Body", 0, null), Track("Wings", 0, null));
+        var tracks = new List<SequenceTrack>();
+        sequence.EventRaised += (track, name, data) => tracks.Add(track);
+
+        sequence.Play();
+
+        tracks.Count.ShouldBe(2);
+        tracks[0].ShouldBeSameAs(sequence.Tracks["Body"]);
+        tracks[1].ShouldBeSameAs(sequence.Tracks["Wings"]);
     }
 
     [Fact]

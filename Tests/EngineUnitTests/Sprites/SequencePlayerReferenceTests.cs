@@ -104,7 +104,7 @@ public class SequencePlayerReferenceTests
             Sequence("Outer", false, Ref("Ref", "Inner", length: 1.5)));
         var outer = player["Outer"];
         var raised = new List<string>();
-        outer.EventRaised += (name, _) => raised.Add(name);
+        outer.EventRaised += (_, name, _) => raised.Add(name);
 
         outer.Play();
         outer.Update(0.3);
@@ -113,6 +113,24 @@ public class SequencePlayerReferenceTests
 
         raised.ShouldBe(new[] { "Step", "Step", "Step" });
         outer.Tracks[0].Sprite.CurrentFrameIndex.ShouldBe(0);
+    }
+
+    [Fact]
+    public void AnEventFromAReferencedSequence_ReportsTheOuterSequencesTrack()
+    {
+        var player = Player(
+            Sequence("Inner", true, Chain("Body", "Walk")),
+            Sequence("Outer", false, Ref("Ref", "Inner")));
+        var outer = player["Outer"];
+        var tracks = new List<SequenceTrack>();
+        outer.EventRaised += (track, _, _) => tracks.Add(track);
+
+        outer.Play();
+
+        var raiser = tracks.ShouldHaveSingleItem();
+        raiser.ShouldBeSameAs(outer.Tracks["Ref/Body"]);
+        raiser.Sprite.Visible.ShouldBeTrue();
+        player["Inner"].Tracks["Body"].Sprite.Visible.ShouldBeFalse();
     }
 
     [Fact]
