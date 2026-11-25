@@ -81,12 +81,13 @@ namespace FlatRedBall.Graphics.Animation
         public float Speed { get; set; } = 1;
 
         /// <summary>
-        /// Raised with an event's name and data when playback enters a frame that has it. Events fire in the first cycle of a
-        /// chain's block only, never from a cut-off tail or a track that is off, and a big step raises every skipped frame's
-        /// events in order. <see cref="Play"/> raises the first frames' events at once. A handler that stops or restarts the
-        /// sequence ends the rest of that update.
+        /// Raised with the track that raised it and the event's name and data when playback enters a frame that has it. The
+        /// track is always one of this sequence's own <see cref="Tracks"/>, including for events from a sequence it plays
+        /// through a reference. Events fire in the first cycle of a chain's block only, never from a
+        /// cut-off tail or a track that is off, and a big step raises every skipped frame's events in order. <see cref="Play"/>
+        /// raises the first frames' events at once. A handler that stops or restarts the sequence ends the rest of that update.
         /// </summary>
-        public event Action<string, string> EventRaised;
+        public event Action<SequenceTrack, string, string> EventRaised;
 
         /// <summary>Starts the sequence from time 0. Playing it again restarts it. Tracks keep their <see cref="SequenceTrack.Visible"/>.</summary>
         public void Play()
@@ -287,7 +288,7 @@ namespace FlatRedBall.Graphics.Animation
                 List<AnimationFrameEvent> events = chain[SequenceChainClock.FrameOfVisit(chain, next)].Events;
                 for (int i = 0; i < events.Count; i++)
                 {
-                    EventRaised?.Invoke(events[i].Name, events[i].Data);
+                    EventRaised?.Invoke(track, events[i].Name, events[i].Data);
                     if (playVersion != mPlayVersion)
                     {
                         return;
