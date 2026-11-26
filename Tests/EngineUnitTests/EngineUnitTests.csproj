@@ -44,6 +44,40 @@
     </Compile>
   </ItemGroup>
 
+  <!-- The tile map code the Tiled plugin embeds into game projects (same list as TiledPlugin.csproj).
+       Glue replaces each file's $GLUE_VERSIONS$ line with #defines; here the line is blanked and the
+       defines come from DefineConstants, since this project builds against current engine source. -->
+  <PropertyGroup>
+    <DefineConstants>$(DefineConstants);REFERENCES_FRB_SOURCE;ShapeCollectionHasMaxAxisAlignedRectanglesRadiusX;SupportsNamedSubcollisions;ShapeManagerCollideAgainstClosest;ShapeCollectionHasIsPointOnOrInside;IStackableInEngine;IPositionedSizedObjectInEngine;TILEMAPS_ALPHA_AND_COLOR</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedTileMapSource Include="..\..\Engines\FlatRedBallAddOns\FlatRedBall.TileCollisions\TileShapeCollection.cs" />
+    <EmbeddedTileMapSource Include="..\..\Engines\FlatRedBallAddOns\FlatRedBall.TileGraphics\FlatRedBall.TileGraphics\*.cs" />
+    <EmbeddedTileMapSource Include="..\..\Tiled\TMXGlueLib\AbstractMapLayer.cs" />
+    <EmbeddedTileMapSource Include="..\..\Tiled\TMXGlueLib\DataTypes\NamedValue.cs" />
+    <EmbeddedTileMapSource Include="..\..\Tiled\TMXGlueLib\DataTypes\ReducedTileMapInfo.cs" />
+    <EmbeddedTileMapSource Include="..\..\Tiled\TMXGlueLib\DataTypes\ReducedTileMapInfo.TiledMapSave.cs" />
+    <EmbeddedTileMapSource Include="..\..\Tiled\TMXGlueLib\ExternalTileset.cs" />
+    <EmbeddedTileMapSource Include="..\..\Tiled\TMXGlueLib\MapLayer.cs" />
+    <EmbeddedTileMapSource Include="..\..\Tiled\TMXGlueLib\MapTileset.cs" />
+    <EmbeddedTileMapSource Include="..\..\Tiled\TMXGlueLib\MapTilesetTile.cs" />
+    <EmbeddedTileMapSource Include="..\..\Tiled\TMXGlueLib\TiledManualDeserializer.cs" />
+    <EmbeddedTileMapSource Include="..\..\Tiled\TMXGlueLib\TileAnimation.cs" />
+    <EmbeddedTileMapSource Include="..\..\Tiled\TMXGlueLib\TileAnimationFrame.cs" />
+    <EmbeddedTileMapSource Include="..\..\Tiled\TMXGlueLib\TiledMapSave.Conversion.cs" />
+    <EmbeddedTileMapSource Include="..\..\Tiled\TMXGlueLib\TiledMapSave.Serialization.cs" />
+    <EmbeddedTileMapSource Include="..\..\Tiled\TMXGlueLib\TiledMapToShapeCollectionConverter.cs" />
+    <EmbeddedTileMapSource Include="..\..\Tiled\TMXGlueLib\TilesetExtensionMethods.cs" />
+  </ItemGroup>
+  <Target Name="StampEmbeddedTileMapSources" BeforeTargets="BeforeBuild">
+    <WriteLinesToFile File="$(IntermediateOutputPath)TileGraphics\%(EmbeddedTileMapSource.Filename)%(EmbeddedTileMapSource.Extension)"
+                      Lines="$([MSBuild]::Escape($([System.IO.File]::ReadAllText('%(EmbeddedTileMapSource.FullPath)').Replace('$GLUE_VERSIONS$', ''))))"
+                      Overwrite="true" WriteOnlyWhenDifferent="true" />
+    <ItemGroup>
+      <Compile Include="$(IntermediateOutputPath)TileGraphics\*.cs" />
+    </ItemGroup>
+  </Target>
+
   <ItemGroup>
     <Using Include="Xunit" />
   </ItemGroup>
