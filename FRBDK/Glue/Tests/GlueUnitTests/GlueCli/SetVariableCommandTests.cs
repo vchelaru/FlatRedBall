@@ -1,6 +1,7 @@
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 using GlueCli;
 using GlueUnitTests.TestSupport;
 using Shouldly;
@@ -182,6 +183,29 @@ public class SetVariableCommandTests
 
         exitCode.ShouldBe(GlueCliRunner.ExitErrors, output);
         output.ShouldContain("'AttachToCamera' is a property of the object Wall1, not a variable.", Case.Sensitive, output);
+    }
+
+    // GlueCli reports errors itself once per command, so the editor's per-edit Errors tab refresh (#2535) would
+    // only slow it down.
+    [StaFact]
+    public void SetVariable_ShouldNotRefreshTheErrorsTab()
+    {
+        using var project = GoldProject.CopyOutOfRepo("Samples/Beefball");
+        var originalAction = RefreshCommands.RefreshErrorsAction;
+        var refreshCount = 0;
+        RefreshCommands.RefreshErrorsAction = () => refreshCount++;
+        try
+        {
+            var (exitCode, output) = Run("set-variable", project.Root, "--element", "GameScreen", "--object", "Wall1",
+                "--variable", "Width", "--value", "512.5");
+
+            exitCode.ShouldBe(GlueCliRunner.ExitSuccess, output);
+            refreshCount.ShouldBe(0);
+        }
+        finally
+        {
+            RefreshCommands.RefreshErrorsAction = originalAction;
+        }
     }
 
     static JsonElement ReadJson(TempDir project, string folder, string file) =>

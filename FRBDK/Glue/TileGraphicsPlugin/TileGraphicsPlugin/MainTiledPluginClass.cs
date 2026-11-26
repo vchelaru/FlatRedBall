@@ -654,11 +654,9 @@ public class MainTiledPluginClass : PluginBase
     {
         string extension = filePath.Extension;
 
-        var shouldRefreshErrors = false;
         if(extension == "tmx")
         {
             HandleTmxFileChange(filePath);
-            shouldRefreshErrors = true;
         }
 
         if(extension == "tsx")
@@ -671,7 +669,6 @@ public class MainTiledPluginClass : PluginBase
             {
                 file.PerformExternalBuild(runAsync:true);
             }
-            shouldRefreshErrors = true;
             if(allReferencedFileSaves.Length > 0)
             {
 
@@ -706,11 +703,6 @@ public class MainTiledPluginClass : PluginBase
             {
                 file.PerformExternalBuild(runAsync: true);
             }
-        }
-
-        if(shouldRefreshErrors)
-        {
-            GlueCommands.Self.RefreshCommands.RefreshErrors();
         }
     }
 

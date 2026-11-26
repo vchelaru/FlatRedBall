@@ -18,17 +18,5 @@ class MainStartupScreenPlugin : EmbeddedPlugin
     {
         _errorReporter = new ErrorReporter();
         this.AddErrorReporter(_errorReporter);
-
-        AssignEvents();
-    }
-
-    private void AssignEvents()
-    {
-        this.ReactToChangedStartupScreen += HandleStartupScreenChanged;
-    }
-
-    private void HandleStartupScreenChanged()
-    {
-        GlueCommands.Self.RefreshCommands.RefreshErrorsFor(_errorReporter);
     }
 }

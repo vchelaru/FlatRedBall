@@ -46,7 +46,6 @@ namespace OfficialPlugins.StateDataPlugin
         public override void StartUp()
         {
             this.ReactToItemsSelected += HandleItemsSelected;
-            this.ReactToStateRemovedHandler += HandleStateRemoved;
             this.ReactToUnloadedGlux += HandleGluxUnloaded;
             this.ReactToStateCategoryExcludedVariablesChanged += HandleStateCategoryVariableChange;
 
@@ -58,11 +57,6 @@ namespace OfficialPlugins.StateDataPlugin
         private void HandleGluxUnloaded()
         {
             HideCategoryUi();
-        }
-
-        private void HandleStateRemoved(IElement element, string stateName)
-        {
-            GlueCommands.Self.RefreshCommands.RefreshErrorsFor(stateErrorReporter);
         }
 
         private void HandleItemsSelected(List<ITreeNode> list)

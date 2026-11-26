@@ -60,11 +60,6 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
                         "Set AnimationChain name");
                 }
             }
-
-            if (changedMember == "CurrentChainName" || changedMember == "AnimationChains")
-            {
-                MainAnimationChainPlugin.Self.RefreshErrors();
-            }
         }
     }
 }
