@@ -4,6 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text.Json;
+using System.Collections.Concurrent;
+using FlatRedBall.Glue.CodeGeneration;
+using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
+using FlatRedBall.Glue.Parsing;
+using FlatRedBall.Glue.SaveClasses;
 using GlueCli;
 using GlueCli.Commands;
 using GlueUnitTests.TestSupport;
@@ -47,21 +52,96 @@ add-object --element Entities\PlayerBall --type Circle --name C1
                 "--value", "120.5", "--json"),
             Run("add-object", singleCopy.Root, "--element", "Entities\\PlayerBall", "--type", "Circle", "--name", "C1", "--json"),
         };
+        var singleFilesWritten = new SortedSet<string>(StringComparer.OrdinalIgnoreCase);
         for (var i = 0; i < singles.Length; i++)
         {
             singles[i].exitCode.ShouldBe(GlueCliRunner.ExitSuccess, singles[i].output);
             var single = Parse(singles[i].output);
             // Compact, since the batch nests each result one level deeper in its indented output.
             JsonSerializer.Serialize(batch.Results[i].Edit).ShouldBe(JsonSerializer.Serialize(single.Edit));
-            batch.Results[i].FilesWritten.ShouldBe(single.FilesWritten);
+            batch.Results[i].FilesWritten.ShouldBeEmpty("a batch writes once, after the last command");
+            singleFilesWritten.UnionWith(single.FilesWritten);
         }
+        batch.FilesWritten.ShouldBe(singleFilesWritten.ToList(), ignoreOrder: true);
+        batch.FilesWritten.ShouldContain("Screens/GameScreen.Generated.cs");
+        // Element files, the .csproj and generated code.
         HashFolder(batchCopy.Root).ShouldBe(HashFolder(singleCopy.Root));
     }
 
     [StaFact]
-    public void FailingMiddleCommand_ShouldStopTheBatch_AndKeepWhatRanBeforeIt()
+    public void EditsToOneElement_ShouldSaveAndGenerateItOnce()
     {
         using var project = GoldProject.CopyOutOfRepo("Samples/Beefball");
+        var generator = new CountingGenerator();
+        CodeWriter.CodeGenerators.Add(generator);
+        SaveCountingPlugin.EnsureRegistered();
+        SaveCountingPlugin.Saved.Clear();
+        try
+        {
+            var (exitCode, output) = RunWithStdin(
+@"add-object --element GameScreen --type Sprite --name S1
+set-variable --element GameScreen --object S1 --variable X --value 10
+set-variable --element GameScreen --object S1 --variable Y --value 20
+", "batch", project.Root, "--stdin", "--json");
+
+            exitCode.ShouldBe(GlueCliRunner.ExitSuccess, output);
+        }
+        finally
+        {
+            CodeWriter.CodeGenerators.Remove(generator);
+        }
+        SaveCountingPlugin.Saved.Count(name => name == "Screens\\GameScreen").ShouldBe(1);
+        generator.Generated.Count(name => name == "Screens\\GameScreen").ShouldBe(1);
+    }
+
+    /// <summary>Records each element file save (SaveElementAsync), registered once for the whole test run.</summary>
+    sealed class SaveCountingPlugin : FlatRedBall.Glue.Plugins.PluginBase
+    {
+        static readonly object lockObject = new();
+        static bool registered;
+        public static readonly ConcurrentQueue<string> Saved = new();
+
+        public static void EnsureRegistered()
+        {
+            lock (lockObject)
+            {
+                if (!registered)
+                {
+                    GlueTestBootstrap.EnsureInitialized();
+                    registered = true;
+                    FlatRedBall.Glue.Plugins.PluginManager.RegisterPlugin(new SaveCountingPlugin());
+                }
+            }
+        }
+
+        public override string FriendlyName => "Batch Save Counting Plugin (test)";
+        public override Version Version => new(1, 0);
+
+        public override void StartUp()
+        {
+            ReactToScreenJsonSave = (name, _) => Saved.Enqueue(name);
+            ReactToEntityJsonSave = (name, _) => Saved.Enqueue(name);
+        }
+
+        public override bool ShutDown(FlatRedBall.Glue.Plugins.Interfaces.PluginShutDownReason shutDownReason) => true;
+    }
+
+    sealed class CountingGenerator : ElementComponentCodeGenerator
+    {
+        public readonly ConcurrentQueue<string> Generated = new();
+
+        public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, IElement element)
+        {
+            Generated.Enqueue(element.Name);
+            return codeBlock;
+        }
+    }
+
+    [StaFact]
+    public void FailingMiddleCommand_ShouldStopTheBatch_AndWriteNothing()
+    {
+        using var project = GoldProject.CopyOutOfRepo("Samples/Beefball");
+        var before = HashFolder(project.Root);
 
         var (exitCode, output) = RunWithStdin(FailingMiddle, "batch", project.Root, "--stdin", "--json");
 
@@ -70,22 +150,59 @@ add-object --element Entities\PlayerBall --type Circle --name C1
         batch.CommandCount.ShouldBe(3);
         batch.Results.Count.ShouldBe(2);
         batch.Results[1].EditFailures.ShouldNotBeEmpty();
-        var screen = ReadGameScreen(project.Root);
-        screen.ShouldContain("\"S1\"");
-        screen.ShouldNotContain("\"S2\"");
+        batch.FilesWritten.ShouldBeEmpty();
+        ShouldBeUnchanged(project.Root, before);
     }
 
+    // A save or codegen between lines would leave line 1's or line 3's files on disk.
     [StaFact]
-    public void FailingMiddleCommand_ShouldRunTheRest_WithKeepGoing()
+    public void FailingMiddleCommand_ShouldRunTheRest_AndWriteNothing_WithKeepGoing()
     {
         using var project = GoldProject.CopyOutOfRepo("Samples/Beefball");
+        var before = HashFolder(project.Root);
 
-        var (exitCode, output) = RunWithStdin(FailingMiddle, "batch", project.Root, "--stdin", "--keep-going", "--json");
+        var (exitCode, output) = RunWithStdin(FailingMiddle, "batch", project.Root, "--stdin", "--keep-going");
+
+        exitCode.ShouldBe(GlueCliRunner.ExitErrors, output);
+        output.ShouldContain("Command(s) 2 of 3 failed, so nothing was written.");
+        ShouldBeUnchanged(project.Root, before);
+    }
+
+    /// <summary>
+    /// Every kind of edit, with the last line failing: no command may write anything on its own during a batch.
+    /// </summary>
+    [StaFact]
+    public void FailingLastCommand_ShouldWriteNothing_AfterEveryKindOfEdit()
+    {
+        using var project = GoldProject.CopyOutOfRepo("Samples/Beefball");
+        var png = Path.Combine(project.Root, "Beefball", "Content", "Screens", "GameScreen", "Background.png");
+        Directory.CreateDirectory(Path.GetDirectoryName(png)!);
+        File.WriteAllBytes(png, Convert.FromBase64String(
+            "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="));
+        var before = HashFolder(project.Root);
+
+        var (exitCode, output) = RunWithStdin(
+$@"add-entity --name Coin --circle
+add-screen --name TitleScreen
+add-object --element GameScreen --type Coin --name Coin1
+set-variable --element GameScreen --object Wall1 --variable Width --value 512.5
+add-variable --element PlayerBall --name JumpSpeed --type float --default 250.5
+add-state --element PlayerBall --category DashCategory --name Exhausted
+add-event --element GameScreen --custom --name MatchEnded
+add-file --element GameScreen --file ""{png}""
+add-collision-relationship --element GameScreen --first PlayerBallList --second GoalList
+rename --element PlayerBall --object CooldownCircle --to DashCircle
+rename --element ScoreHud --to Scoreboard
+delete --element GameScreen --object Wall6
+delete --element Puck
+add-object --element GameScreen --type PlayerBal --name P1
+", "batch", project.Root, "--stdin", "--json");
 
         exitCode.ShouldBe(GlueCliRunner.ExitErrors, output);
         var batch = ParseBatch(output);
-        batch.Results.Select(result => result.ExitCode).ShouldBe(new[] { 0, 1, 0 });
-        ReadGameScreen(project.Root).ShouldContain("\"S2\"");
+        batch.Results.Count.ShouldBe(14);
+        batch.Results.Take(13).ShouldAllBe(result => result.ExitCode == GlueCliRunner.ExitSuccess);
+        ShouldBeUnchanged(project.Root, before);
     }
 
     [StaFact]
@@ -116,13 +233,20 @@ add-object --element GameScreen --type PlayerBal --name P1
 add-object --element GameScreen --type Sprite --name S2
 ";
 
-    static string ReadGameScreen(string root) =>
-        File.ReadAllText(Path.Combine(root, "Beefball", "Screens", "GameScreen.glsj"));
-
     static CliBatchResult ParseBatch(string output)
     {
         var json = output.Substring(0, output.IndexOf(Environment.NewLine + "stderr:", StringComparison.Ordinal));
         return JsonSerializer.Deserialize<CliBatchResult>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+    }
+
+    static void ShouldBeUnchanged(string root, Dictionary<string, string> before)
+    {
+        var after = HashFolder(root);
+        var changed = before.Keys.Union(after.Keys)
+            .Where(file => !before.TryGetValue(file, out var hash) || !after.TryGetValue(file, out var newHash) || hash != newHash)
+            .OrderBy(file => file)
+            .ToList();
+        changed.ShouldBeEmpty("a batch with a failed command must write nothing");
     }
 
     static Dictionary<string, string> HashFolder(string root) =>
@@ -164,6 +288,7 @@ public class BatchCommandParseTests
     [InlineData("check --json", "--json applies to the whole batch")]
     [InlineData("check --dry-run", "--dry-run applies to the whole batch")]
     [InlineData("batch --stdin", "a batch cannot run batch")]
+    [InlineData("regen", "regen writes every generated file, so it cannot run in a batch")]
     [InlineData("check --frob", "Unknown option --frob")]
     [InlineData("# nothing\n\n", "The batch has no commands")]
     public void Run_ShouldExitTwo_WithoutStartingGlue_WhenALineIsBad(string text, string expectedMessage)

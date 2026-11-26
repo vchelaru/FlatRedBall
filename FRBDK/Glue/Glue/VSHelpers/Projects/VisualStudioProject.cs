@@ -1057,6 +1057,10 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         public override void Save(string fileName)
         {
+            if (Managers.ProjectWriteHold.IsHeld)
+            {
+                return;
+            }
             if (!IsMaintainedByGlue)
             {
                 // An FRB2 project owns its own .csproj. Items other code added still live in the

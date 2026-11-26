@@ -5,6 +5,7 @@ using System.Text.Json;
 using EditorObjects.IoC;
 using FlatRedBall.Glue.AutomatedGlue;
 using FlatRedBall.Glue.Controls;
+using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.Headless;
 using FlatRedBall.Glue.IO;
@@ -118,7 +119,8 @@ public static class GlueCliRunner
             "never saved. The project can stay open in the Glue editor: its file watcher reloads what an edit saved.",
             "",
             "To make several edits, put them in a file, one command per line, and run batch: Glue starts and loads",
-            "the project once, and each command runs as it would alone. See GlueCli batch --help.",
+            "the project once, runs every command, then saves and regenerates once, or writes nothing if a command",
+            "failed. See GlueCli batch --help.",
             "",
             "To preview an edit, add --dry-run: the command runs exactly as it would (same checks, plugin reactions",
             "and codegen) against a temp copy, and the run reports the files it would change instead of changing",
@@ -289,11 +291,13 @@ public static class GlueCliRunner
         SynchronizationContext.SetSynchronizationContext(null);
 
         var current = steps[0];
+        var projectRoot = Path.GetDirectoryName(csproj)!;
+        Dictionary<string, FileState>? before = null;
         try
         {
-            var projectRoot = Path.GetDirectoryName(csproj)!;
             HeadlessOutputRecorder.Clear();
-            var before = dryRun == null ? SnapshotFiles(projectRoot) : null;
+            // A batch keeps the text files' content, to put back what a failed batch wrote outside the held writes.
+            before = dryRun == null || batch != null ? SnapshotFiles(projectRoot, keepContent: batch != null) : null;
             var projectBefore = GlueState.Self.CurrentGlueProject;
 
             // Only the model: generating code, saving, and .csproj fix-ups are ProjectLoader.Operations steps a
@@ -308,31 +312,42 @@ public static class GlueCliRunner
             }
             outcome.LoadSeconds = stopwatch.Elapsed.TotalSeconds - outcome.StartupSeconds;
 
+            if (batch == null)
+            {
+                var single = steps[0];
+                RunStep(single.Command, single.Context, single.Result, Collected.Empty, dialogMessages, inBatch: false);
+                if (dryRun == null)
+                {
+                    single.Result.FilesWritten = ChangedFiles(projectRoot, before!);
+                }
+                else
+                {
+                    single.Result.Changes = dryRun.ComputeChanges();
+                }
+                single.Result.ExitCode = single.Result.ProblemCount == 0 ? ExitSuccess : ExitErrors;
+                single.Result.ElapsedSeconds = stopwatch.Elapsed.TotalSeconds;
+                Write(single.Result, single.Command, json, stdout);
+                return single.Result.ExitCode;
+            }
+
+            // A batch runs every command against the model with writes held, then generates and saves what the
+            // whole batch changed once, or writes nothing when a command failed.
+            var elementsBefore = SerializeElements();
+            var projectLevelBefore = SerializeProjectLevel();
+            // What each edit's errors are counted against: the project as the previous command left it.
+            var previous = Collect(dialogMessages);
             // The first command reports what the load printed; a later read-only command only its own output.
             var earlierOutput = Collected.Empty;
+            ProjectWriteHold.Hold();
             for (var i = 0; i < steps.Count; i++)
             {
                 current = steps[i];
                 var stepStart = stopwatch.Elapsed.TotalSeconds;
                 var result = current.Result;
-                RunStep(current.Command, current.Context, result, earlierOutput, dialogMessages);
-
-                if (dryRun == null)
-                {
-                    result.FilesWritten = ChangedFiles(projectRoot, before!);
-                }
-                else if (batch == null)
-                {
-                    result.Changes = dryRun.ComputeChanges();
-                }
+                var baseline = current.Command.IsEdit ? previous : earlierOutput;
+                previous = RunStep(current.Command, current.Context, result, baseline, dialogMessages, inBatch: true);
+                earlierOutput = previous with { Errors = new() };
                 result.ExitCode = result.ProblemCount == 0 ? ExitSuccess : ExitErrors;
-
-                if (batch == null)
-                {
-                    result.ElapsedSeconds = stopwatch.Elapsed.TotalSeconds;
-                    Write(result, current.Command, json, stdout);
-                    return result.ExitCode;
-                }
 
                 result.ElapsedSeconds = stopwatch.Elapsed.TotalSeconds - stepStart;
                 batch.Results.Add(result);
@@ -348,14 +363,36 @@ public static class GlueCliRunner
                 {
                     break;
                 }
-                if (i + 1 < steps.Count)
-                {
-                    before = dryRun == null ? SnapshotFiles(projectRoot) : null;
-                    earlierOutput = Collect(dialogMessages) with { Errors = new() };
-                }
             }
 
-            batch!.ElapsedSeconds = stopwatch.Elapsed.TotalSeconds;
+            var codeRequested = ProjectWriteHold.Release();
+            if (batch.ExitCode == ExitSuccess)
+            {
+                var writeStart = stopwatch.Elapsed.TotalSeconds;
+                GenerateAndSave(ChangedElements(elementsBefore), projectLevelBefore, failed: false,
+                    savesWhenFailed: new HashSet<string>(), codeRequested);
+                var after = Collect(dialogMessages);
+                var previousKeys = previous.Errors.Select(ErrorKey).ToHashSet();
+                batch.WriteErrors = after.Errors.Where(error => !previousKeys.Contains(ErrorKey(error)))
+                    .Concat(after.OutputErrors.Skip(previous.OutputErrors.Count).Select(line => new CliError("ErrorOutput", line)))
+                    .Concat(after.DialogMessages.Skip(previous.DialogMessages.Count).Select(line => new CliError("DialogMessage", line)))
+                    .ToList();
+                if (batch.WriteErrors.Count > 0)
+                {
+                    batch.ExitCode = ExitErrors;
+                }
+                if (dryRun == null)
+                {
+                    batch.FilesWritten = ChangedFiles(projectRoot, before!);
+                }
+                batch.WriteSeconds = stopwatch.Elapsed.TotalSeconds - writeStart;
+            }
+            else
+            {
+                RestoreAfterFailedBatch(batch, projectRoot, before!);
+            }
+
+            batch.ElapsedSeconds = stopwatch.Elapsed.TotalSeconds;
             if (dryRun != null)
             {
                 batch.Changes = dryRun.ComputeChanges();
@@ -365,6 +402,11 @@ public static class GlueCliRunner
         }
         catch (Exception e)
         {
+            if (batch != null && before != null)
+            {
+                ProjectWriteHold.Release();
+                RestoreAfterFailedBatch(batch, projectRoot, before);
+            }
             // What Glue reported before throwing usually names the cause better than the exception does
             // (a .gluj that does not parse surfaces as an unanswered question, then an NRE).
             return Fail(outcome, $"'{current.Command.Name}' failed: {e}" + DescribeCollected(dialogMessages), json, stdout, stderr);
@@ -386,6 +428,7 @@ public static class GlueCliRunner
             {
                 stderr.WriteLine("Closing the --dry-run copy failed: " + e.Message);
             }
+            ProjectWriteHold.Release();
             SynchronizationContext.SetSynchronizationContext(previousContext);
             (DialogService.ShowMessageImpl, DialogService.ShowConfirmImpl,
                 DialogService.ShowChoiceImpl, DialogService.ShowDeleteImpl, GlueGui.SuppressedMessageHandler) = previousDialogs;
@@ -393,25 +436,31 @@ public static class GlueCliRunner
     }
 
     /// <summary>
-    /// One command against the loaded project, shared by a single run and each line of a batch: run it, and for
-    /// an edit regenerate and save what it changed and report only the errors it added to what the project had
-    /// right before it. <paramref name="earlierOutput"/> is the error output and dialog messages a read-only
-    /// command leaves out because an earlier command in the batch produced them.
+    /// One command against the loaded project, shared by a single run and each line of a batch, reporting only
+    /// the errors it added to <paramref name="baseline"/>. On its own, an edit's baseline is collected here (pass
+    /// <see cref="Collected.Empty"/>), and the edit then regenerates and saves what it changed. In a batch the
+    /// baseline is what the previous command left, writes are held (<see cref="ProjectWriteHold"/>), and a
+    /// read-only command's baseline is only the output and dialogs earlier commands produced.
     /// </summary>
-    static void RunStep(CliCommand command, CliContext context, CliResult result, Collected earlierOutput,
-        List<string> dialogMessages)
+    /// <returns>What Glue reports after the command, the next batch command's baseline.</returns>
+    static Collected RunStep(CliCommand command, CliContext context, CliResult result, Collected baseline,
+        List<string> dialogMessages, bool inBatch)
     {
+        var savesHere = command.IsEdit && !inBatch;
         // For an edit, what the project already had is reported but does not fail the run.
-        var baseline = command.IsEdit ? Collect(dialogMessages) : earlierOutput;
-        var elementsBefore = command.IsEdit ? SerializeElements() : null;
-        var projectLevelBefore = command.IsEdit ? SerializeProjectLevel() : null;
+        if (savesHere)
+        {
+            baseline = Collect(dialogMessages);
+        }
+        var elementsBefore = savesHere ? SerializeElements() : null;
+        var projectLevelBefore = savesHere ? SerializeProjectLevel() : null;
 
         // Edits that can't name every element they change (rename, delete) save the whole project
         // (SaveProjectAndElements), which rewrites every element file. During an edit, that save's element files
         // are held back and their names recorded; afterwards only the elements whose model changed are written.
         // A save of one element (SaveElementAsync) still runs.
         var elementSavesHeld = new HashSet<string>();
-        if (command.IsEdit)
+        if (savesHere)
         {
             GluxCommands.ElementSaveFilter =name => { elementSavesHeld.Add(name); return false; };
         }
@@ -423,47 +472,10 @@ public static class GlueCliRunner
                 TaskManager.Self.WaitForAllTasksFinished().GetAwaiter().GetResult();
             }
 
-            if (command.IsEdit)
+            if (savesHere)
             {
-                var changedElements = SerializeElements()
-                    .Where(pair => !elementsBefore!.TryGetValue(pair.Key, out var jsonBefore) || jsonBefore != pair.Value)
-                    .Select(pair => pair.Key)
-                    .ToList();
-
-                if (!context.HasFailed)
-                {
-                    // Headless, TaskManager.SynchronousMode runs the AddOrMoveToEnd codegen an edit queues inline,
-                    // before the rest of the edit's task, where the editor's queue runs it after. Plugin reactions
-                    // later in that task (NewNamedObjectPlugin making a new list ExposedInDerived) would then be
-                    // missing from the generated code, so regenerate every element the edit changed.
-                    foreach (var element in changedElements)
-                    {
-                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
-                    }
-                    TaskManager.Self.WaitForAllTasksFinished().GetAwaiter().GetResult();
-                }
-
-                // Edits save what they change themselves; this writes whatever one left unsaved, so no command can
-                // forget a save: each changed element whose file differs from the model, and the .gluj when its own
-                // data changed. A failed edit writes only the changed elements a held full save had asked for.
-                if (SavesWhatTheEditLeftUnsaved)
-                {
-                    GluxCommands.ElementSaveFilter = null;
-                    foreach (var element in changedElements.Where(item => !context.HasFailed || elementSavesHeld.Contains(item.Name)))
-                    {
-                        _ = GluxCommands.Self.SaveElementAsync(element, TaskExecutionPreference.Fifo, onlyIfChanged: true);
-                    }
-                    if (!context.HasFailed && SerializeProjectLevel() != projectLevelBefore)
-                    {
-                        GlueCommands.Self.GluxCommands.SaveGlujFile();
-                    }
-                    TaskManager.Self.WaitForAllTasksFinished().GetAwaiter().GetResult();
-                }
-                if (!context.HasFailed)
-                {
-                    GlueCommands.Self.ProjectCommands.SaveProjects();
-                    TaskManager.Self.WaitForAllTasksFinished().GetAwaiter().GetResult();
-                }
+                GenerateAndSave(ChangedElements(elementsBefore!), projectLevelBefore!, context.HasFailed, elementSavesHeld,
+                    codeRequested: null);
             }
         }
         finally
@@ -481,6 +493,80 @@ public static class GlueCliRunner
             .Concat(baseline.OutputErrors.Select(line => new CliError("ErrorOutput", line)))
             .Concat(baseline.DialogMessages.Select(line => new CliError("DialogMessage", line)))
             .ToList();
+        return after;
+    }
+
+    static void RestoreAfterFailedBatch(CliBatchResult batch, string projectRoot, Dictionary<string, FileState> before)
+    {
+        batch.WriteErrors = RestoreFiles(projectRoot, before)
+            .Select(file => new CliError("NotRestored", $"{file} was changed by a command and could not be put back."))
+            .ToList();
+    }
+
+    static List<GlueElement> ChangedElements(Dictionary<GlueElement, string> elementsBefore) =>
+        SerializeElements()
+            .Where(pair => !elementsBefore.TryGetValue(pair.Key, out var jsonBefore) || jsonBefore != pair.Value)
+            .Select(pair => pair.Key)
+            .ToList();
+
+    /// <summary>
+    /// After an edit, or after a whole batch: regenerates the code of the changed elements and the code generation
+    /// the batch held (<paramref name="codeRequested"/>), then writes what was left unsaved and the .csproj.
+    /// <paramref name="failed"/> skips the codegen and every save except the changed elements in
+    /// <paramref name="savesWhenFailed"/>.
+    /// </summary>
+    static void GenerateAndSave(List<GlueElement> changedElements, string projectLevelBefore, bool failed,
+        HashSet<string> savesWhenFailed, ProjectWriteHold.Requests? codeRequested)
+    {
+        if (!failed)
+        {
+            // Headless, TaskManager.SynchronousMode runs the AddOrMoveToEnd codegen an edit queues inline,
+            // before the rest of the edit's task, where the editor's queue runs it after. Plugin reactions
+            // later in that task (NewNamedObjectPlugin making a new list ExposedInDerived) would then be
+            // missing from the generated code, so regenerate every element the edit changed.
+            var project = GlueState.Self.CurrentGlueProject;
+            var toGenerate = changedElements
+                .SelectMany(element => ObjectFinder.Self.GetAllElementsThatInheritFrom(element).Prepend(element))
+                .Concat((codeRequested?.Elements ?? Array.Empty<GlueElement>())
+                    .Where(element => project.Screens.Contains(element) || project.Entities.Contains(element)))
+                .Distinct()
+                .ToList();
+            if (codeRequested?.AllCode == true)
+            {
+                GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
+            }
+            foreach (var element in toGenerate)
+            {
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element, generateDerivedElements: false);
+            }
+            if (codeRequested?.GlobalContent == true)
+            {
+                GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCode();
+            }
+            TaskManager.Self.WaitForAllTasksFinished().GetAwaiter().GetResult();
+        }
+
+        // Edits save what they change themselves; this writes whatever one left unsaved, so no command can
+        // forget a save: each changed element whose file differs from the model, and the .gluj when its own
+        // data changed. A failed edit writes only the changed elements a held full save had asked for.
+        if (SavesWhatTheEditLeftUnsaved)
+        {
+            GluxCommands.ElementSaveFilter = null;
+            foreach (var element in changedElements.Where(item => !failed || savesWhenFailed.Contains(item.Name)))
+            {
+                _ = GluxCommands.Self.SaveElementAsync(element, TaskExecutionPreference.Fifo, onlyIfChanged: true);
+            }
+            if (!failed && SerializeProjectLevel() != projectLevelBefore)
+            {
+                GlueCommands.Self.GluxCommands.SaveGlujFile();
+            }
+            TaskManager.Self.WaitForAllTasksFinished().GetAwaiter().GetResult();
+        }
+        if (!failed)
+        {
+            GlueCommands.Self.ProjectCommands.SaveProjects();
+            TaskManager.Self.WaitForAllTasksFinished().GetAwaiter().GetResult();
+        }
     }
 
     internal static CliCommand? FindCommand(string name) =>
@@ -675,24 +761,69 @@ public static class GlueCliRunner
     // alone would list files nothing changed. These are hashed to tell; anything else counts by write time.
     static readonly HashSet<string> HashedExtensions = new(StringComparer.OrdinalIgnoreCase)
     {
-        ".gluj", ".glej", ".glsj", ".glux", ".csproj", ".cs", ".json",
+        ".gluj", ".glej", ".glsj", ".glux", ".csproj", ".cs", ".json", ".xml",
     };
 
-    sealed record FileState(DateTime WriteTime, string? Hash);
+    /// <param name="Content">The bytes of a hashed file, kept by a batch so <see cref="RestoreFiles"/> can put it back.</param>
+    sealed record FileState(DateTime WriteTime, string? Hash, byte[]? Content);
 
-    static Dictionary<string, FileState> SnapshotFiles(string root) =>
-        EnumerateProjectFiles(root).ToDictionary(file => file,
-            file => new FileState(File.GetLastWriteTimeUtc(file), HashIfText(file)), StringComparer.OrdinalIgnoreCase);
+    static Dictionary<string, FileState> SnapshotFiles(string root, bool keepContent) =>
+        EnumerateProjectFiles(root).ToDictionary(file => file, file =>
+        {
+            var content = ReadIfText(file);
+            return new FileState(File.GetLastWriteTimeUtc(file), content == null ? null : Convert.ToHexString(SHA256.HashData(content)),
+                keepContent ? content : null);
+        }, StringComparer.OrdinalIgnoreCase);
+
+    static bool HasChanged(string file, FileState state) =>
+        state.WriteTime != File.GetLastWriteTimeUtc(file) && (state.Hash == null || state.Hash != HashIfText(file));
 
     static List<string> ChangedFiles(string root, Dictionary<string, FileState> before) =>
         EnumerateProjectFiles(root)
-            .Where(file => !before.TryGetValue(file, out var state) ||
-                (state.WriteTime != File.GetLastWriteTimeUtc(file) && (state.Hash == null || state.Hash != HashIfText(file))))
+            .Where(file => !before.TryGetValue(file, out var state) || HasChanged(file, state))
             .Select(file => Path.GetRelativePath(root, file).Replace('\\', '/'))
             .OrderBy(file => file, StringComparer.OrdinalIgnoreCase)
             .ToList();
 
+    /// <summary>
+    /// Puts the project folder back as <paramref name="before"/> found it, for a failed batch: some edits write files
+    /// as part of the edit itself (a new entity's custom code file, a rename moving files), outside the saves and code
+    /// generation <see cref="ProjectWriteHold"/> holds. Deletes files the batch created and rewrites the ones it changed
+    /// or deleted, with their old write times.
+    /// </summary>
+    /// <returns>Changed or deleted files whose old content was not kept (not text), relative to <paramref name="root"/>.</returns>
+    static List<string> RestoreFiles(string root, Dictionary<string, FileState> before)
+    {
+        foreach (var file in EnumerateProjectFiles(root).Where(file => !before.ContainsKey(file)).ToList())
+        {
+            File.Delete(file);
+        }
+        var notRestored = new List<string>();
+        foreach (var (file, state) in before)
+        {
+            if (File.Exists(file) && !HasChanged(file, state))
+            {
+                continue;
+            }
+            if (state.Content == null)
+            {
+                notRestored.Add(Path.GetRelativePath(root, file).Replace('\\', '/'));
+                continue;
+            }
+            Directory.CreateDirectory(Path.GetDirectoryName(file)!);
+            File.WriteAllBytes(file, state.Content);
+            File.SetLastWriteTimeUtc(file, state.WriteTime);
+        }
+        return notRestored;
+    }
+
     static string? HashIfText(string file)
+    {
+        var content = ReadIfText(file);
+        return content == null ? null : Convert.ToHexString(SHA256.HashData(content));
+    }
+
+    static byte[]? ReadIfText(string file)
     {
         if (!HashedExtensions.Contains(Path.GetExtension(file)))
         {
@@ -700,7 +831,7 @@ public static class GlueCliRunner
         }
         try
         {
-            return Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(file)));
+            return File.ReadAllBytes(file);
         }
         catch (IOException)
         {
@@ -812,12 +943,20 @@ public static class GlueCliRunner
         stdout.WriteLine($"batch {batch.Project}");
         stdout.WriteLine($"Glue started in {batch.StartupSeconds:0.0}s, project loaded in {batch.LoadSeconds:0.0}s, " +
             $"{batch.ElapsedSeconds:0.0}s total.");
+        WriteSection(stdout, "Write errors", batch.WriteErrors.Select(error => $"{error.Type}: {error.Details}"));
+        WriteSection(stdout, "Files written", batch.FilesWritten);
         WriteChanges(stdout, batch.Changes);
         var ran = batch.Results.Count;
-        stdout.WriteLine(ran == batch.CommandCount
+        var failedLines = batch.Results.Select((result, index) => (result, index))
+            .Where(item => item.result.ExitCode != ExitSuccess)
+            .Select(item => (item.index + 1).ToString())
+            .ToList();
+        stdout.WriteLine(failedLines.Count == 0
             ? $"Ran all {ran} command(s), exit code {batch.ExitCode}."
-            : $"Stopped after command {ran} of {batch.CommandCount} failed, exit code {batch.ExitCode}. " +
-              "The commands before it stay applied; --keep-going runs the rest.");
+            : ran == batch.CommandCount
+                ? $"Command(s) {string.Join(", ", failedLines)} of {ran} failed, so nothing was written. Exit code {batch.ExitCode}."
+                : $"Stopped after command {ran} of {batch.CommandCount} failed, so nothing was written. Exit code {batch.ExitCode}. " +
+                  "--keep-going runs the rest to report every failure.");
         if (batch.DryRun)
         {
             stdout.WriteLine("Dry run: the project on disk was not changed.");
@@ -875,8 +1014,23 @@ public sealed class CliBatchResult : ICliOutcome
     public string? Failure { get; set; }
     /// <summary>How many commands the batch has; <see cref="Results"/> is shorter when it stopped early.</summary>
     public int CommandCount { get; set; }
-    /// <summary>Each command's result, in order, as the command reports it on its own.</summary>
+    /// <summary>
+    /// Each command's result, in order. Its errors are the ones it added; its filesWritten is empty, since the
+    /// batch writes once at the end (<see cref="FilesWritten"/>).
+    /// </summary>
     public List<CliResult> Results { get; set; } = new();
+    /// <summary>
+    /// Files the batch's one save and code generation wrote, relative to the .csproj folder. Empty when a command
+    /// failed: then the batch writes nothing.
+    /// </summary>
+    public List<string> FilesWritten { get; set; } = new();
+    /// <summary>
+    /// Errors, error output (type ErrorOutput) and dialogs (type DialogMessage) the final save and code generation
+    /// added. After a failed batch, files a command changed that could not be put back (type NotRestored).
+    /// </summary>
+    public List<CliError> WriteErrors { get; set; } = new();
+    /// <summary>How long the final code generation and save took, included in <see cref="ElapsedSeconds"/>.</summary>
+    public double WriteSeconds { get; set; }
     [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)]
     public bool DryRun { get; set; }
     /// <summary>--dry-run only: what the whole batch would have changed, relative to the .csproj folder.</summary>

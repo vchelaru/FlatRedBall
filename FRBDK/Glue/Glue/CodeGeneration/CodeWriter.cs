@@ -241,6 +241,10 @@ namespace FlatRedBallAddOns.Entities
     public static async Task GenerateCode(GlueElement element)
     {
         TaskManager.Self.WarnIfNotInTask();
+        if (ProjectWriteHold.HoldElementCode(element))
+        {
+            return;
+        }
 
         PrepareToGenerateCode(element);
 

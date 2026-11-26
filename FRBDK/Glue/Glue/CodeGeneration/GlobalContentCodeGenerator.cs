@@ -38,6 +38,10 @@ namespace FlatRedBall.Glue.Parsing
                 // early out in case Glue is closing:
                 return;
             }
+            if (ProjectWriteHold.HoldGlobalContentCode())
+            {
+                return;
+            }
             ///////////////////End Early Out//////////////////////
 
             var classContent = GetLoadGlobalContentCode();

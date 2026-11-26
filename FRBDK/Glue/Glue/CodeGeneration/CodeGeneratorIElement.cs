@@ -19,6 +19,10 @@ namespace FlatRedBall.Glue.CodeGeneration
                 throw new ArgumentNullException(nameof(element));
             }
 #endif
+            if (Managers.ProjectWriteHold.HoldElementCode(element))
+            {
+                return;
+            }
 
             await CodeWriter.GenerateCode(element);
 
