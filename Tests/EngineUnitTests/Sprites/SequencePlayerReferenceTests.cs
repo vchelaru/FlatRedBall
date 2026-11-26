@@ -33,13 +33,6 @@ public class SequencePlayerReferenceTests
 
     static SequenceTrackSave Ref(string name, string sequence, double start = 0, double? length = null, bool visible = true) =>
         new() { Name = name, Visible = visible, References = [new SequenceReferenceSave { Sequence = sequence, Start = start, Length = length }] };
-
-    static SequenceTrackSave Clips(string name, params SequenceReferenceSave[] clips) =>
-        new() { Name = name, References = clips.ToList() };
-
-    static SequenceReferenceSave Clip(string sequence, double start, double? length = null) =>
-        new() { Sequence = sequence, Start = start, Length = length };
-
     static SequenceSave Sequence(string name, bool loop, params SequenceTrackSave[] tracks)
     {
         var sequence = new SequenceSave { Name = name, Loop = loop };
