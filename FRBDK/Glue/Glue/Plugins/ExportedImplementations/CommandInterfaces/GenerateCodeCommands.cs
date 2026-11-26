@@ -27,6 +27,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void GenerateAllCode()
         {
+            if (ProjectWriteHold.HoldAllCode())
+            {
+                return;
+            }
             TaskManager.Self.AddOrRunIfTasked(
                 () => GenerateAllCodeSync(),
                 "Generating all code",

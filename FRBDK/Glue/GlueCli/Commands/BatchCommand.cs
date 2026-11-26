@@ -5,8 +5,8 @@ namespace GlueCli.Commands;
 
 /// <summary>
 /// <c>batch</c>: several commands against one load of the project. The runner runs each line through the
-/// same per-command step a single run uses (<see cref="GlueCliRunner"/>'s RunStep), so this file only reads
-/// and checks the lines.
+/// same per-command step a single run uses (<see cref="GlueCliRunner"/>'s RunStep) with writes held, then
+/// saves and generates once, so this file only reads and checks the lines.
 /// </summary>
 public static class BatchCommand
 {
@@ -17,26 +17,31 @@ public static class BatchCommand
         Usage = "batch <project> (--file <path> | --stdin) [--keep-going]",
         Description =
 @"Starts Glue and loads the project once, then runs each line as its own command, in order. A line is a
-command without the project: add-object --element GameScreen --type Sprite --name S1. Each command does
-exactly what it does on its own: an edit regenerates and saves what it changed, and its errors are the ones
-it added to the project as the previous command left it. This saves Glue's startup and the load on every
-command after the first.
+command without the project: add-object --element GameScreen --type Sprite --name S1. Each command makes the
+edit it makes on its own, against the project in memory, and its errors are the ones it added to the project
+as the previous command left it. Nothing is saved or regenerated between lines: after the last line the batch
+saves every element it changed, the .gluj (when its own data changed) and the .csproj, and regenerates the
+code of what changed, once. This saves Glue's startup, the load, and a save and codegen on every line.
 
 Arguments split on spaces. Quote one that has spaces in double or single quotes (--name ""Entire File""); a
 backslash is an ordinary character, so Entities\Enemy needs no escaping. Blank lines and lines starting with
 # are ignored. --json, --dry-run and --help belong on the batch command line, not on a line.
 
-Every line is checked before Glue starts: an unknown command or option, a missing required option, or a
-project path on a line exits 2 and runs nothing.
+Every line is checked before Glue starts: an unknown command or option, a missing required option, a
+project path on a line, or regen (which writes every generated file; run it on its own) exits 2 and runs
+nothing.
 
-The batch stops at the first command that does not exit 0, unless --keep-going is given. Nothing rolls
-back: commands that ran before a failure stay saved. With --dry-run the whole batch runs against one temp
-copy, so each command sees the ones before it, and the batch reports the combined changes.
+If any command does not exit 0, the batch writes nothing at all: the project on disk stays as it was. The
+batch stops at the first such command, unless --keep-going is given, which runs every line and reports every
+failure, then still writes nothing. With --dry-run the whole batch runs against one temp copy, so each command
+sees the ones before it, and the batch reports the combined changes.
 
-The exit code is the first non-zero exit code of the commands that ran, or 0. With --json the output is
-{command: ""batch"", project, exitCode, failure, commandCount, results, changes (with --dry-run), startupSeconds,
-loadSeconds, elapsedSeconds}, where results holds each command's own --json object, in order, and is shorter
-than commandCount when the batch stopped early.",
+The exit code is the first non-zero exit code of the commands that ran, else 1 if the final save or codegen
+reported errors, else 0. With --json the output is {command: ""batch"", project, exitCode, failure,
+commandCount, results, filesWritten, writeErrors, changes (with --dry-run), startupSeconds, loadSeconds,
+writeSeconds, elapsedSeconds}. results holds each command's own --json object, in order (its filesWritten is
+empty), and is shorter than commandCount when the batch stopped early. filesWritten and writeErrors are what
+the final save and codegen wrote and reported; writeSeconds is how long they took.",
         Options = new CliOption[]
         {
             new("file", "path", "Read the commands from this file."),
@@ -45,7 +50,7 @@ than commandCount when the batch stopped early.",
         },
         Examples = new[]
         {
-            ("batch MyGame --file edits.txt", "Run the commands in edits.txt, stopping at the first failure."),
+            ("batch MyGame --file edits.txt", "Run the commands in edits.txt; at the first failure, stop and write nothing."),
             ("batch MyGame --stdin --json < edits.txt", "Same, reading stdin, JSON output."),
             ("batch MyGame --file edits.txt --dry-run", "Report what the whole batch would change, changing nothing."),
         },
@@ -125,6 +130,11 @@ than commandCount when the batch stopped early.",
         if (command == Definition)
         {
             return "a batch cannot run batch.";
+        }
+        if (command == RegenCommand.Definition)
+        {
+            return "regen writes every generated file, so it cannot run in a batch, which writes once at the end. " +
+                "Run it on its own.";
         }
 
         var options = GlueCliRunner.ParseOptions(command, args.Skip(1).ToList(), out var positional, out var parseError);

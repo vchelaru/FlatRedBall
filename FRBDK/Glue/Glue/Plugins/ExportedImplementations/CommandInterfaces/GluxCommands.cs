@@ -223,6 +223,10 @@ public class GluxCommands : IGluxCommands
         {
             throw new ArgumentNullException(nameof(element));
         }
+        if (ProjectWriteHold.IsHeld)
+        {
+            return;
+        }
 
         if(GlueState.Self.CurrentGlueProject?.FileVersion >= (int)GlueProjectSave.GluxVersions.SeparateJsonFilesForElements)
         {
@@ -306,6 +310,10 @@ public class GluxCommands : IGluxCommands
     /// <returns>An awaitable task which completes once the task is finished</returns>
     public async void SaveGlujFile(TaskExecutionPreference taskExecutionPreference = TaskExecutionPreference.Asap)
     {
+        if (ProjectWriteHold.IsHeld)
+        {
+            return;
+        }
         if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.SeparateJsonFilesForElements)
         {
             await TaskManager.Self.AddAsync(
@@ -327,7 +335,7 @@ public class GluxCommands : IGluxCommands
     /// </summary>
     public void SaveProjectAndElementsImmediately()
     {
-        if (ProjectManager.GlueProjectSave != null)
+        if (ProjectManager.GlueProjectSave != null && !ProjectWriteHold.IsHeld)
         {
 
             // MainGlueWindow.Self is null in a plain xunit test host (never a real editor window),

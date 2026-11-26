@@ -56,7 +56,7 @@ class ProjectCommands : IProjectCommands
         var toLock = _glueState.CurrentMainProject;
 
         ///////////////////////early out///////////////////////
-        if (toLock == null)
+        if (toLock == null || ProjectWriteHold.IsHeld)
         {
             return;
         }
