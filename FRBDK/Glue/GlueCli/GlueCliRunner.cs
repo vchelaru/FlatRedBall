@@ -119,8 +119,8 @@ public static class GlueCliRunner
             "never saved. The project can stay open in the Glue editor: its file watcher reloads what an edit saved.",
             "",
             "To make several edits, put them in a file, one command per line, and run batch: Glue starts and loads",
-            "the project once, runs every command, then saves and regenerates once, or writes nothing if a command",
-            "failed. See GlueCli batch --help.",
+            "the project once, runs every command, checks for errors once, then saves and regenerates once, or",
+            "writes nothing if a command failed or the commands left new errors. See GlueCli batch --help.",
             "",
             "To preview an edit, add --dry-run: the command runs exactly as it would (same checks, plugin reactions",
             "and codegen) against a temp copy, and the run reports the files it would change instead of changing",
@@ -334,8 +334,10 @@ public static class GlueCliRunner
             // whole batch changed once, or writes nothing when a command failed.
             var elementsBefore = SerializeElements();
             var projectLevelBefore = SerializeProjectLevel();
-            // What each edit's errors are counted against: the project as the previous command left it.
-            var previous = Collect(dialogMessages);
+            // What the batch's errors are counted against: the project as it loaded.
+            var batchStart = Collect(dialogMessages);
+            // What each command's output and dialogs are counted against: what the previous command left.
+            var previous = CollectOutput(dialogMessages);
             // The first command reports what the load printed; a later read-only command only its own output.
             var earlierOutput = Collected.Empty;
             ProjectWriteHold.Hold();
@@ -366,16 +368,33 @@ public static class GlueCliRunner
             }
 
             var codeRequested = ProjectWriteHold.Release();
+            var afterEdits = previous;
+            if (batch.ExitCode == ExitSuccess)
+            {
+                // The errors the whole batch added, collected once, as a single edit's are after it runs. An
+                // edit that leaves errors exits 1, so the batch writes nothing, as when a command fails.
+                afterEdits = Collect(dialogMessages);
+                var startKeys = batchStart.Errors.Select(ErrorKey).ToHashSet();
+                batch.Errors = afterEdits.Errors.Where(error => !startKeys.Contains(ErrorKey(error))).ToList();
+                batch.PreexistingErrors = afterEdits.Errors.Where(error => startKeys.Contains(ErrorKey(error)))
+                    .Concat(batchStart.OutputErrors.Select(line => new CliError("ErrorOutput", line)))
+                    .Concat(batchStart.DialogMessages.Select(line => new CliError("DialogMessage", line)))
+                    .ToList();
+                if (batch.Errors.Count > 0)
+                {
+                    batch.ExitCode = ExitErrors;
+                }
+            }
             if (batch.ExitCode == ExitSuccess)
             {
                 var writeStart = stopwatch.Elapsed.TotalSeconds;
                 GenerateAndSave(ChangedElements(elementsBefore), projectLevelBefore, failed: false,
                     savesWhenFailed: new HashSet<string>(), codeRequested);
                 var after = Collect(dialogMessages);
-                var previousKeys = previous.Errors.Select(ErrorKey).ToHashSet();
+                var previousKeys = afterEdits.Errors.Select(ErrorKey).ToHashSet();
                 batch.WriteErrors = after.Errors.Where(error => !previousKeys.Contains(ErrorKey(error)))
-                    .Concat(after.OutputErrors.Skip(previous.OutputErrors.Count).Select(line => new CliError("ErrorOutput", line)))
-                    .Concat(after.DialogMessages.Skip(previous.DialogMessages.Count).Select(line => new CliError("DialogMessage", line)))
+                    .Concat(after.OutputErrors.Skip(afterEdits.OutputErrors.Count).Select(line => new CliError("ErrorOutput", line)))
+                    .Concat(after.DialogMessages.Skip(afterEdits.DialogMessages.Count).Select(line => new CliError("DialogMessage", line)))
                     .ToList();
                 if (batch.WriteErrors.Count > 0)
                 {
@@ -483,17 +502,23 @@ public static class GlueCliRunner
             GluxCommands.ElementSaveFilter = null;
         }
 
-        var after = Collect(dialogMessages);
+        // In a batch, an edit's errors are the batch's, collected once after the last command: running every
+        // error reporter after each line cost more than most edits. Its output and dialogs are cheap, so they
+        // stay its own. A read-only command (check, describe) still reports the project's errors where it runs.
+        var output = CollectOutput(dialogMessages);
+        var batchEdit = inBatch && command.IsEdit;
+        var after = batchEdit ? output : Collect(dialogMessages);
         var baselineErrorKeys = baseline.Errors.Select(ErrorKey).ToHashSet();
         result.Errors = after.Errors.Where(error => !baselineErrorKeys.Contains(ErrorKey(error))).ToList();
         result.OutputErrors = after.OutputErrors.Skip(baseline.OutputErrors.Count).ToList();
         result.DialogMessages = after.DialogMessages.Skip(baseline.DialogMessages.Count).ToList();
         // A read-only command's baseline is only output an earlier batch command printed, not the project's.
-        result.PreexistingErrors = !command.IsEdit ? new() : after.Errors.Where(error => baselineErrorKeys.Contains(ErrorKey(error)))
+        result.PreexistingErrors = !command.IsEdit || batchEdit ? new() : after.Errors.Where(error => baselineErrorKeys.Contains(ErrorKey(error)))
             .Concat(baseline.OutputErrors.Select(line => new CliError("ErrorOutput", line)))
             .Concat(baseline.DialogMessages.Select(line => new CliError("DialogMessage", line)))
             .ToList();
-        return after;
+        // The next batch command counts its output from here; reporter failures are not output it printed.
+        return inBatch ? output : after;
     }
 
     static void RestoreAfterFailedBatch(CliBatchResult batch, string projectRoot, Dictionary<string, FileState> before)
@@ -646,17 +671,25 @@ public static class GlueCliRunner
         var errors = Container.Get<GlueErrorManager>().GetAllCurrentErrors(out var reporterFailures)
             .Select(error => new CliError(error.GetType().Name, error.Details ?? error.GetType().Name))
             .ToList();
+        var output = CollectOutput(dialogMessages);
+        return output with { Errors = errors, OutputErrors = output.OutputErrors.Concat(reporterFailures).ToList() };
+    }
+
+    /// <summary>Glue's error output and would-be dialogs, without running the error reporters.</summary>
+    static Collected CollectOutput(List<string> dialogMessages)
+    {
+        FileErrorReporter.FlushPendingErrors();
         List<string> outputErrors;
         lock (HeadlessOutputRecorder.Errors)
         {
-            outputErrors = HeadlessOutputRecorder.Errors.Concat(reporterFailures).ToList();
+            outputErrors = HeadlessOutputRecorder.Errors.ToList();
         }
         List<string> dialogs;
         lock (dialogMessages)
         {
             dialogs = dialogMessages.ToList();
         }
-        return new Collected(errors, outputErrors, dialogs);
+        return new Collected(new(), outputErrors, dialogs);
     }
 
     static string ErrorKey(CliError error) => error.Type + "\n" + error.Details;
@@ -943,6 +976,8 @@ public static class GlueCliRunner
         stdout.WriteLine($"batch {batch.Project}");
         stdout.WriteLine($"Glue started in {batch.StartupSeconds:0.0}s, project loaded in {batch.LoadSeconds:0.0}s, " +
             $"{batch.ElapsedSeconds:0.0}s total.");
+        WriteSection(stdout, "Errors", batch.Errors.Select(error => $"{error.Type}: {error.Details}"));
+        WriteSection(stdout, "Errors the project already had (not counted)", batch.PreexistingErrors.Select(error => $"{error.Type}: {error.Details}"));
         WriteSection(stdout, "Write errors", batch.WriteErrors.Select(error => $"{error.Type}: {error.Details}"));
         WriteSection(stdout, "Files written", batch.FilesWritten);
         WriteChanges(stdout, batch.Changes);
@@ -952,7 +987,9 @@ public static class GlueCliRunner
             .Select(item => (item.index + 1).ToString())
             .ToList();
         stdout.WriteLine(failedLines.Count == 0
-            ? $"Ran all {ran} command(s), exit code {batch.ExitCode}."
+            ? batch.Errors.Count > 0
+                ? $"Ran all {ran} command(s); they left {batch.Errors.Count} new error(s), so nothing was written. Exit code {batch.ExitCode}."
+                : $"Ran all {ran} command(s), exit code {batch.ExitCode}."
             : ran == batch.CommandCount
                 ? $"Command(s) {string.Join(", ", failedLines)} of {ran} failed, so nothing was written. Exit code {batch.ExitCode}."
                 : $"Stopped after command {ran} of {batch.CommandCount} failed, so nothing was written. Exit code {batch.ExitCode}. " +
@@ -1008,17 +1045,30 @@ public sealed class CliBatchResult : ICliOutcome
 {
     public string Command => "batch";
     public string? Project { get; set; }
-    /// <summary>The first non-zero exit code of the commands that ran, or 2 when the batch itself failed.</summary>
+    /// <summary>
+    /// The first non-zero exit code of the commands that ran, else 1 for new <see cref="Errors"/> or
+    /// <see cref="WriteErrors"/>, or 2 when the batch itself failed.
+    /// </summary>
     public int ExitCode { get; set; }
     /// <summary>Set when the batch could not run (bad syntax, a failed load), or a command threw (exit code 2).</summary>
     public string? Failure { get; set; }
     /// <summary>How many commands the batch has; <see cref="Results"/> is shorter when it stopped early.</summary>
     public int CommandCount { get; set; }
     /// <summary>
-    /// Each command's result, in order. Its errors are the ones it added; its filesWritten is empty, since the
-    /// batch writes once at the end (<see cref="FilesWritten"/>).
+    /// Each command's result, in order. An edit's errors are empty (they are the batch's <see cref="Errors"/>);
+    /// its filesWritten is empty, since the batch writes once at the end (<see cref="FilesWritten"/>).
     /// </summary>
     public List<CliResult> Results { get; set; } = new();
+    /// <summary>
+    /// What Glue's error reporters report after the last command, minus what the project had when it loaded.
+    /// Collected only when every command exited 0; any makes the batch exit 1 and write nothing.
+    /// </summary>
+    public List<CliError> Errors { get; set; } = new();
+    /// <summary>
+    /// Errors the project had when it loaded and still has after the last command, plus the load's error output
+    /// (type ErrorOutput) and dialogs (type DialogMessage). Reported, but they do not fail the batch.
+    /// </summary>
+    public List<CliError> PreexistingErrors { get; set; } = new();
     /// <summary>
     /// Files the batch's one save and code generation wrote, relative to the .csproj folder. Empty when a command
     /// failed: then the batch writes nothing.

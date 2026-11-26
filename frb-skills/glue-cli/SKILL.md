@@ -13,7 +13,7 @@ description: "Editing a FlatRedBall Glue project from the command line with Glue
 
 1. Run `GlueCli regen <project>` once after cloning or pulling.
 2. Run `GlueCli describe <project> --json` before editing, and `--element <name>` for one screen or entity. It gives the exact names the other commands take.
-3. Make one GlueCli run per edit with `--json`, and branch on `exitCode` (see [Exit Codes](https://docs.flatredball.com/flatredball/glue-reference/gluecli#exit-codes)). `--dry-run` previews an edit. For several edits, put one command per line in a file and run [`batch`](https://docs.flatredball.com/flatredball/glue-reference/gluecli/batch), which loads the project once and saves and regenerates once after the last line. If any line fails, the batch writes nothing, so fix the failing lines and rerun the whole batch.
+3. Make one GlueCli run per edit with `--json`, and branch on `exitCode` (see [Exit Codes](https://docs.flatredball.com/flatredball/glue-reference/gluecli#exit-codes)). `--dry-run` previews an edit. For several edits, put one command per line in a file and run [`batch`](https://docs.flatredball.com/flatredball/glue-reference/gluecli/batch), which loads the project once, then checks for errors, saves and regenerates once after the last line. The batch's `errors` are reported once, for the whole batch, not per line; run commands singly to see which one adds an error. If any line fails or the batch adds errors, the batch writes nothing, so fix the lines and rerun the whole batch.
 4. Build the game with `dotnet build` and fix errors as [Build the Game and Fix Errors](https://docs.flatredball.com/flatredball/glue-reference/gluecli/gluecli-for-ai-agents#id-5.-build-the-game-and-fix-errors) describes.
 
 ## Landmines
