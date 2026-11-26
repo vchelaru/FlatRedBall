@@ -196,7 +196,10 @@ namespace FlatRedBall
             }
         }
 
-        public static GraphicsDevice GraphicsDevice => Renderer.Graphics.GraphicsDevice; 
+        /// <summary>
+        /// The graphics device, or null when FlatRedBall was initialized without graphics (for example InitializeCommandLine).
+        /// </summary>
+        public static GraphicsDevice GraphicsDevice => Renderer.Graphics?.GraphicsDevice;
 
         public static bool IsWindowsCursorVisible
         {

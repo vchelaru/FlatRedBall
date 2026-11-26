@@ -380,6 +380,17 @@ namespace FlatRedBall.TileGraphics
                 indices32Bit = new int[indexCount];
             }
 
+            // A map can be built with no graphics device (headless tests, tools); Draw creates the effects then.
+            if (FlatRedBallServices.GraphicsDevice != null)
+            {
+                CreateEffectsIfNeeded();
+            }
+
+            RenderingScale = 1;
+        }
+
+        static void CreateEffectsIfNeeded()
+        {
             // We're going to share these because creating effects is slow...
             // But is this okay if we tombstone?
             if (mBasicEffect == null)
@@ -396,8 +407,6 @@ namespace FlatRedBall.TileGraphics
                 mAlphaTestEffect.VertexColorEnabled = false;
 
             }
-
-            RenderingScale = 1;
         }
 
         #endregion
@@ -543,6 +552,12 @@ namespace FlatRedBall.TileGraphics
             MapDrawableBatch toReturn = new MapDrawableBatch(reducedLayerInfo.Quads.Count, tileDimensionWidth, tileDimensionHeight, texture);
 
             toReturn.Name = reducedLayerInfo.Name;
+
+            if (rtmi.TileOrientation == TileOrientation.Orthogonal)
+            {
+                toReturn.WidthPerTile = rtmi.QuadWidth;
+                toReturn.HeightPerTile = rtmi.QuadHeight;
+            }
 
             Vector3 position = new Vector3();
 
@@ -1048,6 +1063,86 @@ namespace FlatRedBall.TileGraphics
         }
 
         /// <summary>
+        /// The width of one grid cell of the map this layer belongs to. This is the map's tile size, which can
+        /// differ from the size of the tiles in this layer's tileset. Set when loading an orthogonal map from Tiled,
+        /// and null for isometric maps or maps built in code until set.
+        /// </summary>
+        public float? WidthPerTile { get; set; }
+
+        /// <summary>
+        /// The height of one grid cell of the map this layer belongs to. See <see cref="WidthPerTile"/>.
+        /// </summary>
+        public float? HeightPerTile { get; set; }
+
+        /// <summary>
+        /// Returns the grid cell of the argument quad, matching the column and row in Tiled: (0, 0) is the
+        /// top-left cell, columns grow to the right and rows grow down. A tile larger than the grid reports the
+        /// cell holding its bottom-left corner, which is where Tiled places it.
+        /// </summary>
+        /// <param name="orderedTileIndex">The quad index, as used by NamedTileOrderedIndexes and GetQuadIndex.</param>
+        /// <exception cref="InvalidOperationException">WidthPerTile or HeightPerTile is null.</exception>
+        public void GetTileColumnAndRow(int orderedTileIndex, out int column, out int row)
+        {
+            ThrowIfNoCellSize();
+
+            var bottomLeft = mVertices[orderedTileIndex * 4].Position;
+
+            column = MathFunctions.RoundToInt(bottomLeft.X / WidthPerTile.Value);
+            row = MathFunctions.RoundToInt(-bottomLeft.Y / HeightPerTile.Value) - 1;
+        }
+
+        /// <summary>
+        /// Returns the index of the quad in the argument grid cell (see <see cref="GetTileColumnAndRow"/>),
+        /// or null if the cell has no quad. If several quads share the cell, such as after MergeOntoThis,
+        /// returns the first one.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">WidthPerTile or HeightPerTile is null.</exception>
+        public int? GetQuadIndexAtColumnAndRow(int column, int row)
+        {
+            ThrowIfNoCellSize();
+
+            var cellWidth = WidthPerTile.Value;
+            var cellHeight = HeightPerTile.Value;
+
+            var firstVertIndex = 0;
+            var lastVertIndexExclusive = mVertices.Length;
+
+            if (mSortAxis == SortAxis.X)
+            {
+                var left = column * cellWidth;
+                firstVertIndex = GetFirstAfterX(mVertices, left - cellWidth / 2);
+                lastVertIndexExclusive = GetFirstAfterX(mVertices, left + cellWidth / 2);
+            }
+            else if (mSortAxis == SortAxis.Y)
+            {
+                var bottom = -(row + 1) * cellHeight;
+                firstVertIndex = GetFirstAfterY(mVertices, bottom - cellHeight / 2);
+                lastVertIndexExclusive = GetFirstAfterY(mVertices, bottom + cellHeight / 2);
+            }
+
+            for (int i = firstVertIndex; i < lastVertIndexExclusive; i += 4)
+            {
+                GetTileColumnAndRow(i / 4, out var quadColumn, out var quadRow);
+                if (quadColumn == column && quadRow == row)
+                {
+                    return i / 4;
+                }
+            }
+
+            return null;
+        }
+
+        void ThrowIfNoCellSize()
+        {
+            if (WidthPerTile == null || HeightPerTile == null)
+            {
+                throw new InvalidOperationException(
+                    $"The MapDrawableBatch {Name} has no grid cell size. WidthPerTile and HeightPerTile are set when " +
+                    "loading an orthogonal map from Tiled; set them yourself for a map built in code.");
+            }
+        }
+
+        /// <summary>
         /// Returns the quad index at the argument worldX and worldY. Returns null if no quad is found at this index.
         /// If the map has a SortAxis of X or Y, then this funcion uses the sorting to find the quad more quickly.
         /// </summary>
@@ -1198,6 +1293,8 @@ namespace FlatRedBall.TileGraphics
             {
                 return;
             }
+
+            CreateEffectsIfNeeded();
 
             //////////////////End Early Out/////////////////
 
@@ -2098,6 +2195,16 @@ namespace FlatRedBall.TileGraphics
                 }
 
                 this.Texture = firstWithNonNullTexture.Texture;
+            }
+
+            if (WidthPerTile == null || HeightPerTile == null)
+            {
+                var withCellSize = mapDrawableBatches.FirstOrDefault(item => item.WidthPerTile != null && item.HeightPerTile != null);
+                if (withCellSize != null)
+                {
+                    WidthPerTile = withCellSize.WidthPerTile;
+                    HeightPerTile = withCellSize.HeightPerTile;
+                }
             }
 
 
