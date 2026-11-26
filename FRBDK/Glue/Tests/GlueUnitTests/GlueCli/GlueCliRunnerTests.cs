@@ -303,6 +303,23 @@ public class GlueCliRunnerArgumentTests
         GlueCliRunner.ResolveCsproj(temp.Root, out _).ShouldBe(Path.Combine(temp.Root, "Game.csproj"));
     }
 
+    // The loaded project's name, and so the root namespace of generated code, comes from the .csproj file
+    // name as passed in, so a path typed in another casing must come back in the casing on disk.
+    [Theory]
+    [InlineData("crankygame.gluj")]
+    [InlineData("crankygame.csproj")]
+    public void ResolveCsproj_ShouldReturnTheCsprojCasingOnDisk_WhenThePathIsTypedInAnotherCasing(string typed)
+    {
+        using var temp = new TempDir("GlueCliArgs_");
+        File.WriteAllText(Path.Combine(temp.Root, "crankygame.gluj"), "{}");
+        File.WriteAllText(Path.Combine(temp.Root, "CrankyGame.csproj"), "<Project />");
+
+        var csproj = GlueCliRunner.ResolveCsproj(Path.Combine(temp.Root, typed), out var error);
+
+        error.ShouldBeNull();
+        Path.GetFileName(csproj).ShouldBe("CrankyGame.csproj");
+    }
+
     sealed class ThrowingHost : IGlueCliHost
     {
         public IReadOnlyList<string> Prepare(string csproj, Action<string> reportMessage) =>

@@ -11,6 +11,7 @@ using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.VSHelpers;
 using GlueCli.Commands;
 using GluxCommands = FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces.GluxCommands;
 
@@ -609,7 +610,7 @@ public static class GlueCliRunner
         var extension = Path.GetExtension(fullPath).ToLowerInvariant();
         if (extension == ".csproj")
         {
-            return fullPath;
+            return ProjectFileResolver.WithFileNameCasingOnDisk(fullPath);
         }
         if (extension != ".gluj")
         {
@@ -620,7 +621,7 @@ public static class GlueCliRunner
         var sameName = Path.ChangeExtension(fullPath, ".csproj");
         if (File.Exists(sameName))
         {
-            return sameName;
+            return ProjectFileResolver.WithFileNameCasingOnDisk(sameName);
         }
         var csprojs = Directory.GetFiles(Path.GetDirectoryName(fullPath)!, "*.csproj");
         if (csprojs.Length == 1)
