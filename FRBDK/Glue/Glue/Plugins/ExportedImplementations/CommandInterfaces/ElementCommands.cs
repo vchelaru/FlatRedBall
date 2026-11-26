@@ -591,8 +591,6 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
             // Refresh tree node after plugin manager has a chance to make changes according to the screen
             GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(screenSave);
 
-            GlueCommands.Self.RefreshCommands.RefreshErrors();
-
             GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(screenSave, false);
 
             var allBase = ObjectFinder.Self.GetAllBaseElementsRecursively(screenSave);

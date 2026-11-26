@@ -274,7 +274,6 @@ public class MainAnimationChainPlugin : PluginBase
         return AchxManager.GetIfIsHandlingHotkeys();
     }
 
-    public new void RefreshErrors() => base.RefreshErrors();
 
     private void HandleLoadedGluxEarly()
     {
@@ -363,8 +362,6 @@ public class MainAnimationChainPlugin : PluginBase
     {
         if (AffectsAnimationErrors(filePath.Extension))
         {
-            this.RefreshErrors();
-
             if (AchxManager.AchxFilePath == filePath)
             {
                 AchxManager.ForceRefreshAchx(filePath);

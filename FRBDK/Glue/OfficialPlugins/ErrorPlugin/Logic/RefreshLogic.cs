@@ -16,69 +16,70 @@ namespace OfficialPlugins.ErrorPlugin.Logic;
 
 public static class RefreshLogic
 {
+    /// <summary>
+    /// Reruns every error reporter and refills the list, on the calling thread. Queue it through
+    /// <see cref="FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces.RefreshCommands.RefreshErrors"/>,
+    /// whose AddOrMoveToEnd task coalesces repeated requests into one run.
+    /// </summary>
     public static void RefreshAllErrors(ErrorListViewModel errorListViewModel, bool printOutput)
     {
-        TaskManager.Self.Add(() =>
+        lock (GlueState.ErrorListSyncLock)
         {
-            lock (GlueState.ErrorListSyncLock)
+            errorListViewModel.Errors.Clear();
+        }
+
+        var errorManager = Container.Get<GlueErrorManager>();
+
+        var reporters = errorManager.ErrorReporters;
+        foreach (var reporter in reporters)
+        {
+            DateTime startTime = DateTime.Now;
+            if(printOutput)
             {
-                errorListViewModel.Errors.Clear();
+                GlueCommands.Self.PrintOutput($"Refreshing errors for reporter {reporter.GetType()}");
+            }
+            var errors = reporter.GetAllErrors();
+            reporter.ErrorsBelongingToThisReporter.Clear();
+            if(errors != null)
+            {
+                reporter.ErrorsBelongingToThisReporter.AddRange(errors);
             }
 
-            var errorManager = Container.Get<GlueErrorManager>();
+            var endTime = DateTime.Now;
 
-            var reporters = errorManager.ErrorReporters;
-            foreach (var reporter in reporters)
+            if (printOutput)
             {
-                DateTime startTime = DateTime.Now;
-                if(printOutput)
+                var duration = endTime - startTime;
+
+                var durationDisplay = $"{duration.Seconds}.{duration.Milliseconds.ToString("000")}";
+
+                if (duration.Minutes > 0)
                 {
-                    GlueCommands.Self.PrintOutput($"Refreshing errors for reporter {reporter.GetType()}");
-                }
-                var errors = reporter.GetAllErrors();
-                reporter.ErrorsBelongingToThisReporter.Clear();
-                if(errors != null)
-                {
-                    reporter.ErrorsBelongingToThisReporter.AddRange(errors);
+                    durationDisplay = $"{duration.Minutes}:{durationDisplay}";
                 }
 
-                var endTime = DateTime.Now;
-
-                if (printOutput)
-                {
-                    var duration = endTime - startTime;
-
-                    var durationDisplay = $"{duration.Seconds}.{duration.Milliseconds.ToString("000")}";
-
-                    if (duration.Minutes > 0)
-                    {
-                        durationDisplay = $"{duration.Minutes}:{durationDisplay}";
-                    }
-                        
-                    GlueCommands.Self.PrintOutput($"{reporter.GetType()} {durationDisplay}");
-                }
-
-                if(errors != null)
-                {
-                    foreach (var error in errors)
-                    {
-                       lock (GlueState.ErrorListSyncLock)
-                       {
-                           errorListViewModel.Errors.Add(error);
-                       }
-                    }
-                }
+                GlueCommands.Self.PrintOutput($"{reporter.GetType()} {durationDisplay}");
             }
-            errorManager.ClearFixedErrors();
-            foreach (var error in errorManager.Errors)
+
+            if(errors != null)
             {
-                lock (GlueState.ErrorListSyncLock)
+                foreach (var error in errors)
                 {
-                    errorListViewModel.Errors.Add(error);
+                   lock (GlueState.ErrorListSyncLock)
+                   {
+                       errorListViewModel.Errors.Add(error);
+                   }
                 }
             }
         }
-        , "Refresh all errors");
+        errorManager.ClearFixedErrors();
+        foreach (var error in errorManager.Errors)
+        {
+            lock (GlueState.ErrorListSyncLock)
+            {
+                errorListViewModel.Errors.Add(error);
+            }
+        }
     }
 
     internal static void HandleFileChange(FilePath filePath, ErrorListViewModel errorListViewModel)

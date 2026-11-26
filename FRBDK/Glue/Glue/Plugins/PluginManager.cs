@@ -1039,6 +1039,7 @@ public class PluginManager : PluginManagerBase
             plugin => plugin.ReactToStateCreated(newState, category),
             plugin => plugin.ReactToStateCreated != null,
             nameof(ReactToStateCreated));
+        RequestErrorRefresh();
     }
 
     public static void ReactToStateVariableChanged(StateSave newState, StateSaveCategory category, string variableName)
@@ -1046,6 +1047,7 @@ public class PluginManager : PluginManagerBase
         CallMethodOnPlugin(
             plugin => plugin.ReactToStateVariableChanged(newState, category, variableName),
             plugin => plugin.ReactToStateVariableChanged != null);
+        RequestErrorRefresh();
     }
 
     internal static void ReactToStateNameChange(IElement element, string oldName, string newName)
@@ -1053,7 +1055,7 @@ public class PluginManager : PluginManagerBase
         CallMethodOnPlugin(
             plugin => plugin.ReactToStateNameChangeHandler(element, oldName, newName),
             plugin => plugin.ReactToStateNameChangeHandler != null);
-
+        RequestErrorRefresh();
     }
 
     internal static void ReactToStateRemoved(IElement element, string stateName)
@@ -1074,6 +1076,7 @@ public class PluginManager : PluginManagerBase
                 }
             }
         }
+        RequestErrorRefresh();
     }
 
     internal static void ReactToEventResponseRemoved(IElement element, EventResponseSave eventResponse)
@@ -1094,12 +1097,16 @@ public class PluginManager : PluginManagerBase
                 }
             }
         }
+        RequestErrorRefresh();
     }
 
-    internal static void ReactToFileRemoved(GlueElement element, ReferencedFileSave file) =>
+    internal static void ReactToFileRemoved(GlueElement element, ReferencedFileSave file)
+    {
         CallMethodOnPlugin(
             (plugin) => plugin.ReactToFileRemoved(element, file),
             (plugin) => plugin.ReactToFileRemoved != null);
+        RequestErrorRefresh();
+    }
 
     /// <summary>
     /// Lets every plugin add its own options to the one dialog a delete shows, before it is shown.
@@ -1112,11 +1119,14 @@ public class PluginManager : PluginManagerBase
             plugin => plugin.FillDeleteOptions != null,
             nameof(FillDeleteOptions));
 
-    internal static void ReactToElementRemoved(GlueElement element, DeleteOptionsViewModel viewModel) =>
+    internal static void ReactToElementRemoved(GlueElement element, DeleteOptionsViewModel viewModel)
+    {
         CallMethodOnPlugin(
             plugin => plugin.ReactToElementRemoved(element, viewModel),
             plugin => plugin.ReactToElementRemoved != null,
             nameof(ReactToElementRemoved));
+        RequestErrorRefresh();
+    }
 
     internal static void ReactToElementVariableChange(GlueElement element, CustomVariable variable, object oldValue)
     {
@@ -1133,12 +1143,16 @@ public class PluginManager : PluginManagerBase
                 }
             },
             plugin => plugin.ReactToElementVariableChange != null || plugin.ReactToGlueElementVariableChanged != null);
+        RequestErrorRefresh();
     }
 
-    internal static void ReactToElementRenamed(IElement elementToRename, string oldName) =>
+    internal static void ReactToElementRenamed(IElement elementToRename, string oldName)
+    {
         CallMethodOnPlugin(
             plugin => plugin.ReactToElementRenamed(elementToRename, oldName),
             plugin => plugin.ReactToElementRenamed != null);
+        RequestErrorRefresh();
+    }
 
     internal static bool IsHandlingHotkeys()
     {
@@ -1159,7 +1173,7 @@ public class PluginManager : PluginManagerBase
 
     public static Task ReactToNewObjectListAsync(List<NamedObjectSave> newObjectList)
     {
-        return CallMethodOnPluginAsync(async (plugin) =>
+        return ThenRequestErrorRefresh(CallMethodOnPluginAsync(async (plugin) =>
         {
             if (plugin.ReactToNewObjectList != null)
             {
@@ -1183,13 +1197,16 @@ public class PluginManager : PluginManagerBase
                 }
             }
         },
-        plugin => plugin.ReactToNewObjectHandler != null || plugin.ReactToNewObjectList != null || plugin.ReactToNewObjectListAsync != null);
+        plugin => plugin.ReactToNewObjectHandler != null || plugin.ReactToNewObjectList != null || plugin.ReactToNewObjectListAsync != null));
     }
 
-    internal static void ReactToObjectRemoved(IElement element, NamedObjectSave removedObject) =>
+    internal static void ReactToObjectRemoved(IElement element, NamedObjectSave removedObject)
+    {
         CallMethodOnPlugin(
             plugin => plugin.ReactToObjectRemoved(element, removedObject),
             plugin => plugin.ReactToObjectRemoved != null);
+        RequestErrorRefresh();
+    }
     
 
     public static void TryAssignPreferredDisplayerFromName(CustomVariable customVariable) =>
@@ -1205,7 +1222,7 @@ public class PluginManager : PluginManagerBase
         }
 
 
-        return CallMethodOnPluginAsync(plugin =>
+        return ThenRequestErrorRefresh(CallMethodOnPluginAsync(plugin =>
         {
             if(plugin.ReactToObjectListRemoved != null)
             {
@@ -1223,22 +1240,28 @@ public class PluginManager : PluginManagerBase
                 }
             }
         },
-        plugin => plugin.ReactToObjectRemoved != null || plugin.ReactToObjectListRemoved != null);
+        plugin => plugin.ReactToObjectRemoved != null || plugin.ReactToObjectListRemoved != null));
     }
 
-    internal static async Task ReactToNewScreenCreated(ScreenSave screen) =>
+    internal static async Task ReactToNewScreenCreated(ScreenSave screen)
+    {
         await CallMethodOnPluginAsync(
             plugin => plugin.NewScreenCreated(screen),
             plugin => plugin.NewScreenCreated != null);
+        RequestErrorRefresh();
+    }
 
     /// <summary>
     /// Called any time an entity is created. ReactToNewEntityCreatedWithUi may also get called.
     /// </summary>
     /// <param name="entitySave"></param>
-    internal static void ReactToNewEntityCreated(EntitySave entitySave) =>
+    internal static void ReactToNewEntityCreated(EntitySave entitySave)
+    {
         CallMethodOnPlugin(
             plugin => plugin.NewEntityCreated(entitySave),
             plugin => plugin.NewEntityCreated != null);
+        RequestErrorRefresh();
+    }
 
     internal static void ReactToNewEntityCreatedWithUi(EntitySave entitySave, AddEntityWindow window) =>
         CallMethodOnPlugin(
@@ -1356,6 +1379,7 @@ public class PluginManager : PluginManagerBase
         CallMethodOnPlugin(
             plugin => plugin.ReactToNewFileHandler(newRfs, ati),
             plugin => plugin.ReactToNewFileHandler != null);
+        RequestErrorRefresh();
     }
 
     internal static void ReactToItemSelect(ITreeNode selectedTreeNode)
@@ -1452,6 +1476,7 @@ public class PluginManager : PluginManagerBase
 
 
         ResumeRelativeDirectory(nameof(ReactToChangedFile));
+        RequestErrorRefresh();
     }
 
     internal static void ReactToChangedBuiltFile(string fileName)
@@ -1466,6 +1491,7 @@ public class PluginManager : PluginManagerBase
         CallMethodOnPlugin(
             plugin => plugin.ReactToChangedStartupScreen(),
             plugin => plugin.ReactToChangedStartupScreen != null);
+        RequestErrorRefresh();
     }
 
     #region XML Docs
@@ -1657,6 +1683,7 @@ public class PluginManager : PluginManagerBase
         CallMethodOnPlugin(
             plugin => plugin.ReactToVariableAdded(newVariable),
             plugin => plugin.ReactToVariableAdded != null);
+        RequestErrorRefresh();
     }
 
     internal static void ReactToVariableRemoved(CustomVariable removedVariable)
@@ -1664,6 +1691,7 @@ public class PluginManager : PluginManagerBase
         CallMethodOnPlugin(
             plugin => plugin.ReactToVariableRemoved(removedVariable),
             plugin => plugin.ReactToVariableRemoved != null);
+        RequestErrorRefresh();
     }
 
     /// <summary>
@@ -1677,6 +1705,7 @@ public class PluginManager : PluginManagerBase
         CallMethodOnPlugin(
             plugin => plugin.ReactToNamedObjectChangedValue(changedMember, oldValue, namedObject),
             plugin => plugin.ReactToNamedObjectChangedValue != null);
+        RequestErrorRefresh();
     }
 
     public static void ReactToNamedObjectChangedValueList(List<VariableChangeArguments> changes)
@@ -1697,6 +1726,7 @@ public class PluginManager : PluginManagerBase
                 }
             },
             plugin => plugin.ReactToNamedObjectChangedValueList != null || plugin.ReactToNamedObjectChangedValue != null);
+        RequestErrorRefresh();
     }
 
     internal static void ReactToReferencedFileChangedValue(string changedMember, object oldValue)
@@ -1706,6 +1736,7 @@ public class PluginManager : PluginManagerBase
                 plugin.ReactToReferencedFileChangedValueHandler(changedMember, oldValue);
             },
             (plugin) => plugin.ReactToReferencedFileChangedValueHandler != null);
+        RequestErrorRefresh();
     }
 
     /// <summary>
@@ -1730,12 +1761,16 @@ public class PluginManager : PluginManagerBase
             ReactToPropertyListChanged(list);
         }
 
+        RequestErrorRefresh();
     }
 
-    public static void ReactToPropertyListChanged(List<NamedObjectSavePropertyChange> namedObjectSavePropertyChangeList) =>
+    public static void ReactToPropertyListChanged(List<NamedObjectSavePropertyChange> namedObjectSavePropertyChangeList)
+    {
         CallMethodOnPlugin(
             plugin => plugin.ReactToChangedNamedObjectPropertyList(namedObjectSavePropertyChangeList),
             plugin => plugin.ReactToChangedNamedObjectPropertyList != null);
+        RequestErrorRefresh();
+    }
 
     public class NamedObjectSavePropertyChange
     {
@@ -1950,6 +1985,33 @@ public class PluginManager : PluginManagerBase
             }
         }
         
+    }
+
+    /// <summary>
+    /// Whether project-change events refresh the Errors tab (see <see cref="RequestErrorRefresh"/>). GlueCli turns
+    /// it off: it collects the errors itself once per command or batch, and headless each refresh would run inline
+    /// after every edit.
+    /// </summary>
+    public static bool IsAutomaticErrorRefreshEnabled { get; set; } = true;
+
+    /// <summary>
+    /// Called by every event that changes the project, so the Errors tab follows any edit. Queues one full refresh
+    /// at AddOrMoveToEnd, which runs after the change's codegen and coalesces with every other request still queued.
+    /// </summary>
+    static void RequestErrorRefresh()
+    {
+        if (IsAutomaticErrorRefreshEnabled &&
+            ExportedImplementations.GlueState.Self.CurrentGlueProject?.IsSuppressingAutomaticErrorChecking != true)
+        {
+            ExportedImplementations.GlueCommands.Self.RefreshCommands.RefreshErrors();
+        }
+    }
+
+    /// <summary>Runs <paramref name="reaction"/>, then <see cref="RequestErrorRefresh"/>.</summary>
+    static async Task ThenRequestErrorRefresh(Task reaction)
+    {
+        await reaction;
+        RequestErrorRefresh();
     }
 
     public static event Action<string, TimeSpan> PluginMethodCalled;
@@ -2256,6 +2318,7 @@ public class PluginManager : PluginManagerBase
         CallMethodOnPlugin(
             plugin => plugin.ReactToImportedElement(newElement),
             plugin => plugin.ReactToImportedElement != null);
+        RequestErrorRefresh();
     }
 
     public class ObjectContainerChange
@@ -2266,7 +2329,7 @@ public class PluginManager : PluginManagerBase
     }
     public static Task ReactToObjectListContainerChanged(List<ObjectContainerChange> objectContainerChanges)
     {
-        return CallMethodOnPluginAsync(async (plugin) =>
+        return ThenRequestErrorRefresh(CallMethodOnPluginAsync(async (plugin) =>
         {
             var handledByList = false;
             if (plugin.ReactToObjectListContainerChanged != null)
@@ -2283,7 +2346,7 @@ public class PluginManager : PluginManagerBase
                 }
             }
         },
-        plugin => plugin.ReactToObjectListContainerChanged != null || plugin.ReactToObjectContainerChanged != null);
+        plugin => plugin.ReactToObjectListContainerChanged != null || plugin.ReactToObjectContainerChanged != null));
     }
         
 
@@ -2344,10 +2407,10 @@ public class PluginManager : PluginManagerBase
             plugin => plugin.GrabbedTreeNodeChanged(treeNode, treeNodeAction),
             plugin => plugin.GrabbedTreeNodeChanged != null);
 
-    public static Task ReactToStateCategoryExcludedVariablesChangedAsync(StateSaveCategory category, string variableName, StateCategoryVariableAction action) => 
-        CallMethodOnPluginAsync(
+    public static Task ReactToStateCategoryExcludedVariablesChangedAsync(StateSaveCategory category, string variableName, StateCategoryVariableAction action) =>
+        ThenRequestErrorRefresh(CallMethodOnPluginAsync(
             plugin => plugin.ReactToStateCategoryExcludedVariablesChanged(category, variableName, action),
-            plugin => plugin.ReactToStateCategoryExcludedVariablesChanged != null);
+            plugin => plugin.ReactToStateCategoryExcludedVariablesChanged != null));
 
     public static Task ReactToScreenJsonSaveAsync(string screenName, string json) =>
         CallMethodOnPluginAsync(
@@ -2382,9 +2445,9 @@ public class PluginManager : PluginManagerBase
             plugin => plugin.ReactToGlueJsonLoad != null);
 
     public static Task ReactToObjectReordered(object reorderedObject, int oldIndex, int newIndex) =>
-        CallMethodOnPluginAsync(
+        ThenRequestErrorRefresh(CallMethodOnPluginAsync(
             plugin => plugin.ReactToObjectReordered(reorderedObject, oldIndex, newIndex),
-            plugin => plugin.ReactToObjectReordered != null);
+            plugin => plugin.ReactToObjectReordered != null));
 
     #endregion
 

@@ -51,10 +51,6 @@ namespace OfficialPlugins.SpritePlugin
             {
                 TextureVariableManager.Self.HandleChange(variable);
             }
-
-            // Refresh reactively so a missing-Texture warning shows up immediately rather than
-            // only after a manual Refresh click or project reload.
-            GlueCommands.Self.RefreshCommands.RefreshErrors();
         }
 
         private void HandleGluxLoaded()

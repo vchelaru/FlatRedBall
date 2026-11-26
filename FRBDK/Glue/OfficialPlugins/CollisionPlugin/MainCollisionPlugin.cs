@@ -123,10 +123,6 @@ namespace OfficialPlugins.CollisionPlugin
 
             this.GetEventSignatureArgs += GetEventSignatureAndArgs;
 
-            this.ReactToObjectRemoved += HandleObjectRemoved;
-
-            this.ReactToNewObjectListAsync += HandleNewObjectListAsync;
-
             this.ReactToChangedPropertyHandler += CollisionRelationshipViewModelController.HandleGlueObjectPropertyChanged;
 
             this.ReactToNamedObjectChangedValue += HandleNamedObjectChangedValue;
@@ -234,33 +230,6 @@ namespace OfficialPlugins.CollisionPlugin
                 // it at all.
                 RefreshErrors(TaskExecutionPreference.Fifo);
             }
-        }
-
-        private void HandleObjectRemoved(IElement element, NamedObjectSave namedObject)
-        {
-            if(namedObject.IsCollisionRelationship())
-            {
-                GlueCommands.Self.RefreshCommands.RefreshErrors();
-            }
-            else if(element.AllNamedObjects.Any(item => item.IsCollisionRelationship() &&
-                (item.GetFirstCollidableObjectName() == namedObject.InstanceName) ||
-                (item.GetSecondCollidableObjectName() == namedObject.InstanceName)))
-            {
-                GlueCommands.Self.RefreshCommands.RefreshErrors();
-            }
-        }
-
-        private Task HandleNewObjectListAsync(List<NamedObjectSave> newObjects)
-        {
-            // A freshly-added relationship starts with no first/second collidable, which is exactly
-            // the incomplete state that generates broken code (see CollisionRelationshipErrorViewModel).
-            // Refresh immediately instead of waiting for the next Error tab refresh/project reload.
-            if(newObjects.Any(item => item.IsCollisionRelationship()))
-            {
-                GlueCommands.Self.RefreshCommands.RefreshErrors();
-            }
-
-            return Task.CompletedTask;
         }
 
         private void HandleGluxLoad()

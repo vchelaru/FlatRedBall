@@ -23,12 +23,10 @@ namespace GlueUnitTests.CollisionPlugin;
 // previously-set one) generates broken code (CollisionRelationship<>, CS0305) with no warning in the
 // editor. CollisionRelationshipErrorViewModel.TryGetErrorMessageFor already detects this - the gap was
 // that nothing told the Error tab to re-check after the two moments that put a relationship into this
-// state: MainCollisionPlugin.HandleNewObjectListAsync (a relationship is added, starting out empty) and
-// CollisionRelationshipViewModelController.HandleViewModelPropertyChanged's FirstCollisionName/
-// SecondCollisionName case (an existing relationship's collidable is cleared). Both now call
-// GlueCommands.Self.RefreshCommands.RefreshErrors(), which - with TaskManager.SynchronousMode on, as
-// GlueTestBootstrap forces - runs synchronously, so the error is observable immediately after the
-// production call that triggers it, with no fake/mock standing in for any of this.
+// state: a relationship is added (starting out empty), and an existing relationship's collidable is
+// cleared in the Collision tab. Both now reach PluginManager's project-change events, which refresh the
+// errors (#2535); with TaskManager.SynchronousMode on, as GlueTestBootstrap forces, that runs inline, so
+// the error is observable immediately after the production call that triggers it.
 [Collection(nameof(TaskManagerSequentialCollection))]
 public class CollisionRelationshipErrorRefreshTests : IDisposable
 {
@@ -112,7 +110,7 @@ public class CollisionRelationshipErrorRefreshTests : IDisposable
         // FirstCollisionName/SecondCollisionName intentionally left unset - the state shown in #2111's
         // screenshot, and what generates a CollisionRelationship<> with empty type arguments (CS0305).
 
-        // Real production add path (MainCollisionPlugin.HandleNewObjectListAsync's trigger):
+        // Real production add path (raises PluginManager.ReactToNewObjectListAsync):
         await GlueCommands.Self.GluxCommands.AddNamedObjectToAsync(
             relationshipNos, gameScreen, listToAddTo: null, selectNewNos: false,
             performSaveAndGenerateCode: false, updateUi: false);

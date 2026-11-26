@@ -73,7 +73,7 @@ public class MainErrorPlugin : PluginBase
 
     private void HandleRefreshClicked(object? sender, EventArgs e)
     {
-        RefreshLogic.RefreshAllErrors(errorListViewModel, errorListViewModel.IsOutputErrorCheckingDetailsChecked);
+        GlueCommands.Self.RefreshCommands.RefreshErrors();
     }
 
     private void HandleErrorsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)

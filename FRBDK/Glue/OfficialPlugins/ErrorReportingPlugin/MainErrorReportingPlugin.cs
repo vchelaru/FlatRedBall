@@ -33,31 +33,6 @@ namespace OfficialPlugins.ErrorReportingPlugin
             AddErrorReporter(new ReferencedFileSaveErrorReporter(glueState, objectFinder));
             AddErrorReporter(new CustomVariableSaveErrorReporter());
             AddErrorReporter(new ElementInheritanceErrorReporter());
-
-            this.ReactToFileChange += HandleFileChanged;
-            //this.ReactToNamedObjectChangedValue += HandleNamedObjectChangedValue;
-            this.ReactToChangedNamedObjectPropertyList += HandleChangedNamedObjectPropertyList;
-        }
-
-        private async void HandleChangedNamedObjectPropertyList(List<PluginManager.NamedObjectSavePropertyChange> obj)
-        {
-            if(obj.Count > 0 && obj[0].CommitType == WpfDataUi.DataTypes.SetPropertyCommitType.Full) 
-            { 
-                await GlueCommands.Self.RefreshCommands.ClearFixedErrors();
-                this.RefreshErrors();
-            }
-        }
-
-        //private async void HandleNamedObjectChangedValue(string changedMember, object oldValue, NamedObjectSave namedObject)
-        //{
-        //    await GlueCommands.Self.RefreshCommands.ClearFixedErrors();
-        //    this.RefreshErrors();
-        //}
-
-
-        private void HandleFileChanged(FilePath filePath, FileChangeType fileChangeType)
-        {
-            this.RefreshErrors();
         }
     }
 }

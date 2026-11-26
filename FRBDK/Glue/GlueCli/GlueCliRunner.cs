@@ -10,6 +10,7 @@ using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.Headless;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.VSHelpers;
@@ -234,6 +235,9 @@ public static class GlueCliRunner
             }
         }
 
+        // The runner reports errors itself, once per command or batch.
+        var wasRefreshingErrors = PluginManager.IsAutomaticErrorRefreshEnabled;
+        PluginManager.IsAutomaticErrorRefreshEnabled = false;
         try
         {
             return RunLoaded(steps, outcome, dryRun?.Csproj ?? csproj, dryRun, stopwatch, json,
@@ -241,6 +245,7 @@ public static class GlueCliRunner
         }
         finally
         {
+            PluginManager.IsAutomaticErrorRefreshEnabled = wasRefreshingErrors;
             dryRun?.Dispose();
         }
     }
