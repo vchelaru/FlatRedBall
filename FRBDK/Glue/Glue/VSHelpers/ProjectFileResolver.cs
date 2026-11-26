@@ -32,13 +32,35 @@ namespace FlatRedBall.Glue.VSHelpers
             {
                 case "sln":
                 case "slnx":
-                    return ResolveFromSolution(selectedFileName);
+                    return WithFileNameCasingOnDisk(ResolveFromSolution(selectedFileName));
                 case "gluj":
                 case "glux":
-                    return ResolveFromGlueProject(selectedFileName);
+                    return WithFileNameCasingOnDisk(ResolveFromGlueProject(selectedFileName));
                 default:
-                    return selectedFileName;
+                    return WithFileNameCasingOnDisk(selectedFileName);
             }
+        }
+
+        /// <summary>
+        /// <paramref name="path"/> with its file name spelled the way it is on disk, or unchanged when the
+        /// file does not exist. The loaded project's name, and so the root namespace of generated code when
+        /// the .csproj sets none, is the .csproj file name as given, and Windows opens a path typed in any
+        /// casing.
+        /// </summary>
+        public static string WithFileNameCasingOnDisk(string path)
+        {
+            var directory = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
+            if (string.IsNullOrEmpty(directory) || string.IsNullOrEmpty(fileName) || !Directory.Exists(directory))
+            {
+                return path;
+            }
+
+            var onDisk = Directory.EnumerateFiles(directory, fileName)
+                .Select(Path.GetFileName)
+                .FirstOrDefault(name => string.Equals(name, fileName, StringComparison.OrdinalIgnoreCase));
+
+            return onDisk == null ? path : Path.Combine(directory, onDisk);
         }
 
         /// <remarks>

@@ -46,6 +46,20 @@ public class ProjectFileResolverTests : IDisposable
         AssertResolves(csproj, csproj);
     }
 
+    // The loaded project's name, and so the root namespace of generated code, is the .csproj file name
+    // as passed in, so a selection typed in another casing must resolve to the casing on disk.
+    [Theory]
+    [InlineData("crankygame.gluj")]
+    [InlineData("crankygame.csproj")]
+    public void Selection_InAnotherCasing_ResolvesToTheCsprojCasingOnDisk(string typed)
+    {
+        Write("crankygame.gluj", "{}");
+        Write("CrankyGame.csproj");
+
+        Assert.Equal("CrankyGame.csproj",
+            Path.GetFileName(ProjectFileResolver.ResolveCsproj(Path.Combine(_directory, typed))));
+    }
+
     [Fact]
     public void Gluj_BesideTheCsproj_ResolvesToIt()
     {
