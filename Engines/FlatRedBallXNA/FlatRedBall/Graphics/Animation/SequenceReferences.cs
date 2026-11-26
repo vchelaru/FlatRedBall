@@ -5,20 +5,25 @@ using FlatRedBall.Content.AnimationChain;
 
 namespace FlatRedBall.Graphics.Animation
 {
-    /// <summary>One step from a sequence into a sequence its reference track plays.</summary>
+    /// <summary>One step from a sequence into a sequence one clip of its reference track plays.</summary>
     public sealed class ReferenceHop
     {
-        public ReferenceHop(SequenceTrackSave track, SequenceSave target)
+        public ReferenceHop(SequenceSave host, SequenceTrackSave track, SequenceReferenceSave reference, SequenceSave target)
         {
+            Host = host;
             Track = track;
+            Reference = reference;
             Target = target;
         }
 
-        /// <summary>The reference track holding the clip.</summary>
+        /// <summary>The sequence holding <see cref="Track"/>.</summary>
+        public SequenceSave Host { get; }
+
+        /// <summary>The reference track holding the clip. Its other clips cut this one.</summary>
         public SequenceTrackSave Track { get; }
 
         /// <summary>The reference clip.</summary>
-        public SequenceReferenceSave Reference => Track.Reference;
+        public SequenceReferenceSave Reference { get; }
 
         /// <summary>The sequence it plays.</summary>
         public SequenceSave Target { get; }
@@ -52,7 +57,7 @@ namespace FlatRedBall.Graphics.Animation
     }
 
     /// <summary>
-    /// The rules for tracks that play another sequence (<see cref="SequenceTrackSave.Reference"/>): cycle detection,
+    /// The rules for tracks that play other sequences (<see cref="SequenceTrackSave.References"/>): cycle detection,
     /// flattening into chain tracks, and the time mapping into the target. A reference is resolved by sequence name within
     /// the one file; the first sequence with the name wins. A port of the FlatRedBall2 AnimationEditor's SequenceReferences,
     /// so both engines agree.
@@ -91,11 +96,18 @@ namespace FlatRedBall.Graphics.Animation
             stack.Add(sequence);
             foreach (SequenceTrackSave track in sequence.Tracks)
             {
-                SequenceSave target = track.Reference == null ? null : Find(sequences, track.Reference.Sequence);
-                List<string> cycle = target == null ? null : Visit(sequences, target, stack, done);
-                if (cycle != null)
+                if (track.References == null)
                 {
-                    return cycle;
+                    continue;
+                }
+                foreach (SequenceReferenceSave reference in track.References)
+                {
+                    SequenceSave target = Find(sequences, reference.Sequence);
+                    List<string> cycle = target == null ? null : Visit(sequences, target, stack, done);
+                    if (cycle != null)
+                    {
+                        return cycle;
+                    }
                 }
             }
             stack.RemoveAt(stack.Count - 1);
@@ -127,13 +139,14 @@ namespace FlatRedBall.Graphics.Animation
             {
                 return false;
             }
-            return sequence.Tracks.Any(track => track.Reference != null && Reaches(sequences, host, track.Reference.Sequence, seen));
+            return sequence.Tracks.Any(track => track.References != null
+                && track.References.Any(reference => Reaches(sequences, host, reference.Sequence, seen)));
         }
 
         /// <summary>
         /// Whether <paramref name="host"/>'s reference to <paramref name="target"/> plays: false when no sequence has the
         /// target's name, or when the target plays the host back (a cycle), which a hand-edited file can hold. A reference
-        /// that does not play adds nothing wherever it is inlined, sampled or drawn.
+        /// that does not play adds nothing wherever it is inlined, sampled or drawn, but still cuts the clip before it.
         /// </summary>
         public static bool Plays(IReadOnlyList<SequenceSave> sequences, string host, string target)
         {
@@ -148,8 +161,10 @@ namespace FlatRedBall.Graphics.Animation
 
         /// <summary>
         /// Every chain track <paramref name="sequence"/> plays, in track order, with each reference track replaced by the
-        /// tracks of its target (recursively, see <see cref="InlinedTrack.Name"/>). A reference that does not
-        /// <see cref="Plays"/> (a missing target, or one that plays its holder back) adds nothing.
+        /// tracks of each clip's target (recursively, see <see cref="InlinedTrack.Name"/>), clips in playback order. Clips of
+        /// one track share the name prefix, so the result can hold several tracks of one name, each reached through a
+        /// different clip; the cut rule lets only one of them play at a time, and the player shows them on one sprite. A clip
+        /// that does not <see cref="Plays"/> (a missing target, or one that plays its holder back) adds nothing.
         /// </summary>
         public static IReadOnlyList<InlinedTrack> Inline(IReadOnlyList<SequenceSave> sequences, SequenceSave sequence)
         {
@@ -163,55 +178,61 @@ namespace FlatRedBall.Graphics.Animation
         {
             foreach (SequenceTrackSave track in sequence.Tracks)
             {
-                SequenceReferenceSave reference = track.Reference;
-                if (reference == null)
+                if (track.References == null)
                 {
                     result.Add(new InlinedTrack(prefix + track.Name, track, visible && track.Visible, hops.ToArray()));
                     continue;
                 }
-                // The stack check is a backstop for duplicate names, which Plays (by name) cannot tell apart.
-                SequenceSave target = Find(sequences, reference.Sequence);
-                if (!Plays(sequences, sequence.Name, reference.Sequence) || target == null || stack.Contains(target))
+                foreach (SequenceReferenceSave reference in SequenceTimeline.OrderedClips(track))
                 {
-                    continue;
+                    // The stack check is a backstop for duplicate names, which Plays (by name) cannot tell apart.
+                    SequenceSave target = Find(sequences, reference.Sequence);
+                    if (!Plays(sequences, sequence.Name, reference.Sequence) || target == null || stack.Contains(target))
+                    {
+                        continue;
+                    }
+                    hops.Add(new ReferenceHop(sequence, track, reference, target));
+                    stack.Add(target);
+                    Collect(sequences, target, prefix + track.Name + "/", visible && track.Visible, hops, stack, result);
+                    stack.RemoveAt(stack.Count - 1);
+                    hops.RemoveAt(hops.Count - 1);
                 }
-                hops.Add(new ReferenceHop(track, target));
-                stack.Add(target);
-                Collect(sequences, target, prefix + track.Name + "/", visible && track.Visible, hops, stack, result);
-                stack.RemoveAt(stack.Count - 1);
-                hops.RemoveAt(hops.Count - 1);
             }
         }
 
         /// <summary>
         /// The time to sample <paramref name="track"/>'s own sequence at when the outermost sequence is at
-        /// <paramref name="time"/>: the time mapped through each hop (<see cref="SequenceTimeline.ReferenceTime"/>), or null
-        /// when any clip on the way is not playing. A track of the outermost sequence returns <paramref name="time"/> unchanged.
+        /// <paramref name="time"/>: the time mapped through each hop (<see cref="SequenceTimeline.ReferenceTime"/>, the next
+        /// clip on the hop's track cutting it), or null when any clip on the way is not playing. A track of the outermost
+        /// sequence returns <paramref name="time"/> unchanged.
         /// </summary>
+        /// <param name="sequences">Every sequence of the file, to resolve the other clips on each hop's track.</param>
         /// <param name="track">A track from <see cref="Inline"/>.</param>
         /// <param name="time">Seconds on the outermost sequence's clock.</param>
         /// <param name="length">A sequence's length in seconds (<see cref="SequenceTimeline.Length(IReadOnlyList{SequenceSave}, SequenceSave, Func{SequenceChainReferenceSave, double})"/>).</param>
-        public static double? InlinedTime(InlinedTrack track, double time, Func<SequenceSave, double> length)
+        public static double? InlinedTime(IReadOnlyList<SequenceSave> sequences, InlinedTrack track, double time, Func<SequenceSave, double> length)
         {
-            return InlinedTime(track, time, 0, 0, length, out _);
+            return InlinedTime(sequences, track, time, 0, 0, length, out _);
         }
 
         /// <summary>
-        /// <see cref="InlinedTime(InlinedTrack, double, Func{SequenceSave, double})"/> for pass <paramref name="pass"/> of the
-        /// outermost sequence, <paramref name="sequenceLength"/> seconds long, where <paramref name="time"/> is the time inside
-        /// that pass. Each hop maps the time and pass through <see cref="SequenceTimeline.ReferenceTimeAtPass"/>, so a
-        /// continuous reference track carries its target across the wrap. <paramref name="innerPass"/> is the pass of
-        /// <paramref name="track"/>'s own sequence, for its continuous chain tracks; 0 when any hop on the way restarts.
+        /// <see cref="InlinedTime(IReadOnlyList{SequenceSave}, InlinedTrack, double, Func{SequenceSave, double})"/> for pass
+        /// <paramref name="pass"/> of the outermost sequence, <paramref name="sequenceLength"/> seconds long, where
+        /// <paramref name="time"/> is the time inside that pass. Each hop maps the time and pass through
+        /// <see cref="SequenceTimeline.ReferenceTimeAtPass"/>, so a continuous reference track carries its first clip's target
+        /// across the wrap. <paramref name="innerPass"/> is the pass of <paramref name="track"/>'s own sequence, for its
+        /// continuous chain tracks; 0 when any hop on the way restarts.
         /// </summary>
-        public static double? InlinedTime(InlinedTrack track, double time, int pass, double sequenceLength,
-            Func<SequenceSave, double> length, out int innerPass)
+        public static double? InlinedTime(IReadOnlyList<SequenceSave> sequences, InlinedTrack track, double time, int pass,
+            double sequenceLength, Func<SequenceSave, double> length, out int innerPass)
         {
             double? current = time;
             innerPass = pass;
             foreach (ReferenceHop hop in track.Hops)
             {
                 double targetLength = length(hop.Target);
-                current = SequenceTimeline.ReferenceTimeAtPass(hop.Track, hop.Target, targetLength, current.Value, innerPass, sequenceLength, out innerPass);
+                current = SequenceTimeline.ReferenceTimeAtPass(hop.Track, hop.Reference, hop.Target, targetLength, current.Value, innerPass,
+                    sequenceLength, clip => ClipTargetLength(sequences, hop.Host, clip, length), out innerPass);
                 if (current == null)
                 {
                     innerPass = 0;
@@ -220,6 +241,14 @@ namespace FlatRedBall.Graphics.Animation
                 sequenceLength = targetLength;
             }
             return current;
+        }
+
+        // A clip's target length, or 0 when the clip does not play.
+        private static double ClipTargetLength(IReadOnlyList<SequenceSave> sequences, SequenceSave host, SequenceReferenceSave clip,
+            Func<SequenceSave, double> length)
+        {
+            SequenceSave target = Find(sequences, clip.Sequence);
+            return target != null && Plays(sequences, host.Name, clip.Sequence) ? length(target) : 0;
         }
     }
 }

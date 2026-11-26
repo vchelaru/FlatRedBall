@@ -7,7 +7,7 @@ namespace EngineUnitTests.Sprites;
 
 /// <summary>
 /// A continuous reference track keeps its target playing across the holder's loop wrap instead of restarting it
-/// (<see cref="SequenceTimeline.CarriesAcrossWrap"/>). Target "T" plays Walk (two 0.25 s frames, loops) for 0.5 s, so its
+/// (<see cref="SequenceTimeline.ReferenceCarryOver"/>). Target "T" plays Walk (two 0.25 s frames, loops) for 0.5 s, so its
 /// frame tells where its clock is: 0 to 0.25 is frame 0, 0.25 to 0.5 frame 1. The holder "P" loops every 1.2 s.
 /// </summary>
 public class SequencePlayerReferenceContinuousTests
@@ -28,7 +28,7 @@ public class SequencePlayerReferenceContinuousTests
     }
 
     static SequenceTrackSave Ref(bool continuous, double start = 0, double? length = 1.2) =>
-        new() { Name = "Legs", Continuous = continuous, Reference = new SequenceReferenceSave { Sequence = "T", Start = start, Length = length } };
+        new() { Name = "Legs", Continuous = continuous, References = [new SequenceReferenceSave { Sequence = "T", Start = start, Length = length }] };
 
     static SequenceInstance Play(SequenceTrackSave reference, bool targetLoops = true, SequenceTrackSave targetTrack = null, SequenceTrackSave holderTrack = null)
     {

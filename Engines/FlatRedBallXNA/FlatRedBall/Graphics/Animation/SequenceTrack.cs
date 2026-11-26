@@ -15,14 +15,50 @@ namespace FlatRedBall.Graphics.Animation
         private readonly SequenceInstance mInstance;
         private bool mVisible;
 
-        internal SequenceTrack(SequenceInstance instance, InlinedTrack inlined, PositionedObject pivot, Sprite sprite)
+        // variants: the inlined tracks of this name, one per clip on the way in (see SequenceReferences.Inline); a track of
+        // the sequence itself has one. Only one plays at a time, so they share the Sprite.
+        internal SequenceTrack(SequenceInstance instance, IReadOnlyList<InlinedTrack> variants, PositionedObject pivot, Sprite sprite)
         {
             mInstance = instance;
-            Inlined = inlined;
+            Variants = variants;
             Pivot = pivot;
             Sprite = sprite;
-            mVisible = inlined.Visible;
-            Ordered = SequenceTimeline.Ordered(inlined.Track);
+            mVisible = variants[0].Visible;
+            mOrdered = new List<SequenceChainReferenceSave>[variants.Count];
+            UseVariant(0);
+        }
+
+        private readonly List<SequenceChainReferenceSave>[] mOrdered;
+        private int mVariant = -1;
+
+        internal IReadOnlyList<InlinedTrack> Variants { get; }
+
+        // Points the track at one variant: its chains, offset and flip.
+        internal void UseVariant(int index)
+        {
+            if (index == mVariant)
+            {
+                return;
+            }
+            mVariant = index;
+            Inlined = Variants[index];
+            if (mOrdered[index] == null)
+            {
+                mOrdered[index] = SequenceTimeline.Ordered(Inlined.Track);
+            }
+            Ordered = mOrdered[index];
+            if (Pivot != null)
+            {
+                Pivot.RelativeX = Inlined.Track.X;
+                Pivot.RelativeY = Inlined.Track.Y;
+                // A flipped track applies frame flips itself, mirrored across the track.
+                Sprite.UseAnimationTextureFlip = !Inlined.Track.FlipHorizontal;
+            }
+            // The blocks of the old variant mean nothing on the new one.
+            EventReference = null;
+            EventVisit = -1;
+            ActiveReference = null;
+            LastClock = null;
         }
 
         /// <summary>
@@ -31,13 +67,16 @@ namespace FlatRedBall.Graphics.Animation
         /// </summary>
         public string Name => Inlined.Name;
 
-        /// <summary>The track's data as written in its own sequence, which is the referenced one for a track played through a reference.</summary>
+        /// <summary>
+        /// The track's data as written in its own sequence, which is the referenced one for a track played through a reference.
+        /// When clips of a reference track play different sequences with a track of this name, it is the one last played.
+        /// </summary>
         public SequenceTrackSave Save => Inlined.Track;
 
         /// <summary>True when the track is played through one or more reference tracks, so it runs on the referenced sequence's clock.</summary>
         public bool IsReferenced => Inlined.Hops.Count > 0;
 
-        internal InlinedTrack Inlined { get; }
+        internal InlinedTrack Inlined { get; private set; }
 
         // The time on the track's own sequence clock at the last pass, or null when no clip on the way was playing.
         internal double? LastClock;
@@ -69,7 +108,7 @@ namespace FlatRedBall.Graphics.Animation
             }
         }
 
-        internal List<SequenceChainReferenceSave> Ordered { get; }
+        internal List<SequenceChainReferenceSave> Ordered { get; private set; }
 
         // Event bookkeeping: the block the track was last in and the last visit whose events were raised there.
         internal SequenceChainReferenceSave EventReference;

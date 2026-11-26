@@ -14,7 +14,10 @@ namespace FlatRedBall.Graphics.Animation
     /// together, the earlier one in the track's list plays for zero seconds.</item>
     /// <item>A missing chain (cycle length 0) never plays, but it still cuts the chain before it.</item>
     /// <item>Outside every chain, the track's sprite is hidden, including before the first chain starts.</item>
-    /// <item>A <see cref="SequenceTrackSave.Continuous"/> reference track carries its target's phase across the wrap of a looping holder (<see cref="CarriesAcrossWrap"/>): the target keeps running instead of restarting.</item>
+    /// <item>A reference track's clips (<see cref="SequenceTrackSave.References"/>) follow the same rules as chain blocks: ordered by start, list
+    /// order breaking ties, each lasting its length (one run of its target when unset) or until the next clip starts, hidden outside every clip.
+    /// A clip whose target is missing or cyclic plays nothing but still cuts the clip before it. A clip's target restarts at the clip's start.</item>
+    /// <item>A <see cref="SequenceTrackSave.Continuous"/> reference track carries its first clip's target phase across the wrap of a looping holder (<see cref="ReferenceCarryOver"/>): the target keeps running instead of restarting.</item>
     /// </list>
     /// Cycle lengths come from the caller, so this class needs no chain data.
     /// </summary>
@@ -191,23 +194,74 @@ namespace FlatRedBall.Graphics.Animation
                     end = System.Math.Max(end, reference.Start + PlayedLength(track, reference, cycleLength(reference)));
                 }
 
-                // The stack check is a backstop for duplicate names, which Plays (by name) cannot tell apart.
-                SequenceReferenceSave clip = track.Reference;
-                if (clip == null || !SequenceReferences.Plays(sequences, sequence.Name, clip.Sequence))
+                if (track.References == null)
                 {
                     continue;
                 }
-                SequenceSave target = SequenceReferences.Find(sequences, clip.Sequence);
-                if (target == null || stack.Contains(target))
+                foreach (SequenceReferenceSave clip in track.References)
                 {
-                    continue;
+                    // The stack check is a backstop for duplicate names, which Plays (by name) cannot tell apart.
+                    if (!SequenceReferences.Plays(sequences, sequence.Name, clip.Sequence))
+                    {
+                        continue;
+                    }
+                    SequenceSave target = SequenceReferences.Find(sequences, clip.Sequence);
+                    if (target == null || stack.Contains(target))
+                    {
+                        continue;
+                    }
+                    stack.Add(target);
+                    double targetLength = LengthWithin(sequences, target, cycleLength, stack);
+                    stack.RemoveAt(stack.Count - 1);
+                    end = System.Math.Max(end, clip.Start + PlayedLength(clip.Start, FullLength(clip.Length, targetLength), NextStart(track, clip)));
                 }
-                stack.Add(target);
-                double targetLength = LengthWithin(sequences, target, cycleLength, stack);
-                stack.RemoveAt(stack.Count - 1);
-                end = System.Math.Max(end, clip.Start + FullLength(clip.Length, targetLength));
             }
             return end;
+        }
+
+        /// <summary>The track's reference clips in playback order: by start, ties kept in list order. Empty for a chain track.</summary>
+        public static List<SequenceReferenceSave> OrderedClips(SequenceTrackSave track)
+        {
+            // OrderBy is stable, so ties keep list order.
+            return track.References == null
+                ? new List<SequenceReferenceSave>()
+                : track.References.OrderBy(clip => clip.Start).ToList();
+        }
+
+        /// <summary>When the clip after <paramref name="clip"/> on <paramref name="track"/> starts, cutting it short, or null when it is last or not on the track.</summary>
+        public static double? NextStart(SequenceTrackSave track, SequenceReferenceSave clip)
+        {
+            List<SequenceReferenceSave> ordered = OrderedClips(track);
+            for (int i = 0; i < ordered.Count - 1; i++)
+            {
+                if (ReferenceEquals(ordered[i], clip))
+                {
+                    return ordered[i + 1].Start;
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// The clip playing at <paramref name="time"/> on a reference <paramref name="track"/>, or null when it shows nothing:
+        /// before the first clip, after the last one ends, or when the latest clip started has a missing or empty target
+        /// (<paramref name="targetLength"/> 0). Same rule as <see cref="ActiveAt(SequenceTrackSave, double, Func{SequenceChainReferenceSave, double}, out double)"/>.
+        /// </summary>
+        public static SequenceReferenceSave ActiveClipAt(SequenceTrackSave track, double time, Func<SequenceReferenceSave, double> targetLength)
+        {
+            List<SequenceReferenceSave> ordered = OrderedClips(track);
+            for (int i = ordered.Count - 1; i >= 0; i--)
+            {
+                SequenceReferenceSave clip = ordered[i];
+                if (clip.Start > time + Slack(time))
+                {
+                    continue;
+                }
+                double? next = i + 1 < ordered.Count ? ordered[i + 1].Start : (double?)null;
+                double played = PlayedLength(clip.Start, FullLength(clip.Length, targetLength(clip)), next);
+                return time + Slack(time) >= clip.Start + played ? null : clip;
+            }
+            return null;
         }
 
         /// <summary>
@@ -239,12 +293,13 @@ namespace FlatRedBall.Graphics.Animation
         /// <summary>
         /// The time to sample <paramref name="target"/> at when the sequence holding <paramref name="reference"/> is at
         /// <paramref name="parentTime"/>, or null when the clip is not playing: before its start, after
-        /// its <see cref="SequenceReferenceSave.Length"/> (one <paramref name="targetLength"/> when unset), or when the target has no
-        /// length. The target restarts with the holder (its clock is the holder's minus the clip start). A looping target
-        /// wraps at its length; one with Loop off plays once and then holds its final pose (<see cref="PoseTime"/>) until the
-        /// clip ends.
+        /// its <see cref="SequenceReferenceSave.Length"/> (one <paramref name="targetLength"/> when unset) or at
+        /// <paramref name="nextStart"/> (the next clip on the track), whichever is first, or when the target has no length.
+        /// The target restarts at the clip's start. A looping target wraps at its length; one with Loop off plays once and then
+        /// holds its final pose (<see cref="PoseTime"/>) until the clip ends.
         /// </summary>
-        public static double? ReferenceTime(SequenceReferenceSave reference, SequenceSave target, double targetLength, double parentTime)
+        public static double? ReferenceTime(SequenceReferenceSave reference, SequenceSave target, double targetLength, double parentTime,
+            double? nextStart = null)
         {
             if (targetLength <= 0)
             {
@@ -255,7 +310,8 @@ namespace FlatRedBall.Graphics.Animation
                 return null;
             }
             double local = System.Math.Max(0, parentTime - reference.Start);
-            if (parentTime + Slack(parentTime) >= reference.Start + FullLength(reference.Length, targetLength))
+            double played = PlayedLength(reference.Start, FullLength(reference.Length, targetLength), nextStart);
+            if (parentTime + Slack(parentTime) >= reference.Start + played)
             {
                 return null;
             }
@@ -263,55 +319,78 @@ namespace FlatRedBall.Graphics.Animation
         }
 
         /// <summary>
-        /// Whether a <see cref="SequenceTrackSave.Continuous"/> reference track carries its target across the wrap of a looping
-        /// holder of <paramref name="sequenceLength"/> seconds. All of these must hold, otherwise the flag is ignored and the
-        /// target restarts at each wrap: the track is continuous, the clip starts at 0, the target loops
-        /// (<see cref="SequenceSave.Loop"/>), and the clip is still playing at the wrap: it ends (its start plus
-        /// <see cref="SequenceReferenceSave.Length"/>, or one <paramref name="targetLength"/> when unset) no earlier than the
-        /// holder's length. A clip of the default length therefore carries only when the target is as long as the holder; to
-        /// carry a shorter looping target, set the clip's length to the holder's length.
+        /// Seconds of playback a <see cref="SequenceTrackSave.Continuous"/> reference track's first clip has already advanced
+        /// when pass <paramref name="pass"/> (0 = the first run through, counted by the player) of a looping holder of
+        /// <paramref name="sequenceLength"/> seconds begins. 0 for pass 0 and unless all of these hold: the track is
+        /// continuous, the first clip starts at 0, its target loops (<paramref name="loops"/>), and the clip playing just
+        /// before the holder's end (<see cref="ActiveClipAt"/>) plays the same sequence as the first clip. At each wrap the
+        /// carry becomes the time that clip has played (<paramref name="sequenceLength"/> minus its start, plus its own carry
+        /// when it is the first clip). A default-length clip therefore carries only when its target is as long as the holder;
+        /// to carry a shorter looping target, set the clip's length to the holder's length. Only the first clip carries. The
+        /// chain rule is <see cref="CarryOver"/>.
         /// </summary>
-        public static bool CarriesAcrossWrap(SequenceTrackSave track, SequenceSave target, double targetLength, double sequenceLength)
+        public static double ReferenceCarryOver(SequenceTrackSave track, double sequenceLength, int pass,
+            Func<SequenceReferenceSave, double> targetLength, Func<SequenceReferenceSave, bool> loops)
         {
-            SequenceReferenceSave clip = track.Reference;
-            if (!track.Continuous || clip == null || sequenceLength <= 0 || targetLength <= 0 || !target.Loop)
+            if (!track.Continuous || pass <= 0 || sequenceLength <= 0)
             {
-                return false;
+                return 0;
             }
-            if (clip.Start > Slack(0))
+            List<SequenceReferenceSave> ordered = OrderedClips(track);
+            if (ordered.Count == 0)
             {
-                return false;
+                return 0;
             }
-            return FullLength(clip.Length, targetLength) >= sequenceLength - Slack(sequenceLength);
+            SequenceReferenceSave first = ordered[0];
+            if (first.Start > Slack(0) || targetLength(first) <= 0 || !loops(first))
+            {
+                return 0;
+            }
+
+            // The clip playing just before the end of a pass: the wrap instant itself belongs to the next pass.
+            double endTime = sequenceLength - System.Math.Min(HoldEpsilon, sequenceLength);
+            double carry = 0;
+            for (int i = 0; i < pass; i++)
+            {
+                SequenceReferenceSave atWrap = ActiveClipAt(track, endTime, targetLength);
+                if (atWrap == null || atWrap.Sequence != first.Sequence)
+                {
+                    carry = 0;
+                    continue;
+                }
+                carry = (ReferenceEquals(atWrap, first) ? carry : 0) + (sequenceLength - atWrap.Start);
+            }
+            return carry;
         }
 
         /// <summary>
-        /// <see cref="ReferenceTime"/> for pass <paramref name="pass"/> of a looping holder of <paramref name="sequenceLength"/>
-        /// seconds (0 = first run through, 1 = after the first wrap, counted by the player), where <paramref name="parentTime"/>
-        /// is the time inside that pass. The clip's start and end are checked against that in-pass time, as in pass 0. When the
-        /// track <see cref="CarriesAcrossWrap"/>, the target's clock does not restart at the wrap: it is
-        /// <c>pass * sequenceLength + parentTime</c> (the clip starts at 0), so the target keeps its phase. The target is then a
-        /// looping sequence playing continuously: its own wraps count as passes, returned in <paramref name="targetPass"/> and
-        /// used for the target's own continuous tracks (chain or reference), and the returned time is inside the current one.
-        /// Otherwise <paramref name="targetPass"/> is 0 and this is exactly <see cref="ReferenceTime"/>: a played sequence runs
-        /// at pass 0. Null when the clip is not playing or the track has no reference.
+        /// <see cref="ReferenceTime"/> for <paramref name="clip"/> of <paramref name="track"/> (the next clip cuts it) in pass
+        /// <paramref name="pass"/> of a looping holder of <paramref name="sequenceLength"/> seconds (counted by the player),
+        /// where <paramref name="parentTime"/> is the time inside that pass. For the track's first clip, when it carries
+        /// (<see cref="ReferenceCarryOver"/> is above 0 after a wrap) the target's clock does not restart at the wrap: it is the
+        /// carry plus <paramref name="parentTime"/>, so the target keeps its phase. Its own wraps then count as passes, in every
+        /// pass including the first, returned in <paramref name="targetPass"/> for the target's own continuous tracks, and the
+        /// returned time is inside the current one. Otherwise <paramref name="targetPass"/> is 0 and this is exactly <see cref="ReferenceTime"/>. Null when the clip
+        /// is not playing.
         /// </summary>
-        public static double? ReferenceTimeAtPass(SequenceTrackSave track, SequenceSave target, double targetLength, double parentTime,
-            int pass, double sequenceLength, out int targetPass)
+        /// <param name="targetLengthOf">The target length of any clip on the track; 0 for a missing or cyclic target.</param>
+        public static double? ReferenceTimeAtPass(SequenceTrackSave track, SequenceReferenceSave clip, SequenceSave target, double targetLength,
+            double parentTime, int pass, double sequenceLength, Func<SequenceReferenceSave, double> targetLengthOf, out int targetPass)
         {
             targetPass = 0;
-            SequenceReferenceSave clip = track.Reference;
-            if (clip == null)
-            {
-                return null;
-            }
-            double? plain = ReferenceTime(clip, target, targetLength, parentTime);
-            if (plain == null || !CarriesAcrossWrap(track, target, targetLength, sequenceLength))
+            double? plain = ReferenceTime(clip, target, targetLength, parentTime, NextStart(track, clip));
+            if (plain == null || !ReferenceEquals(clip, OrderedClips(track)[0]))
             {
                 return plain;
             }
 
-            double elapsed = System.Math.Max(0, pass) * sequenceLength + parentTime;
+            // Whether the clip carries is the same at every wrap, so pass 1 answers it for pass 0 too, where the target's own
+            // wraps still count for its continuous tracks.
+            if (ReferenceCarryOver(track, sequenceLength, 1, targetLengthOf, _ => target.Loop) <= 0)
+            {
+                return plain;
+            }
+            double elapsed = ReferenceCarryOver(track, sequenceLength, pass, targetLengthOf, _ => target.Loop) + parentTime;
             targetPass = (int)(elapsed / targetLength);
             return elapsed % targetLength;
         }

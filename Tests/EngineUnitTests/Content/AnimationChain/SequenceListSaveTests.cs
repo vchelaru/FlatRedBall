@@ -119,14 +119,14 @@ public class SequenceListSaveTests
     }
 
     [Fact]
-    public void FromJsonString_ReferenceTrack_ReadsSequenceStartAndLength()
+    public void FromJsonString_LegacyReferenceObject_ReadsAsOneClip()
     {
         const string json = """
             { "sequences": [ { "name": "A", "tracks": [
               { "name": "Earth", "reference": { "sequence": "B", "start": 0.5, "length": 2 } } ] } ] }
             """;
 
-        var reference = SequenceListSave.FromJsonString(json).Sequences.Single().Tracks.Single().Reference!;
+        var reference = SequenceListSave.FromJsonString(json).Sequences.Single().Tracks.Single().References!.ShouldHaveSingleItem();
 
         reference.Sequence.ShouldBe("B");
         reference.Start.ShouldBe(0.5);
@@ -134,16 +134,68 @@ public class SequenceListSaveTests
     }
 
     [Fact]
-    public void FromJsonString_TrackWithBothAReferenceAndChains_Throws()
+    public void FromJsonString_ReferencesArray_ReadsEveryClipInListOrder()
     {
         const string json = """
             { "sequences": [ { "name": "A", "tracks": [
-              { "name": "Earth", "reference": { "sequence": "B" }, "chains": [ { "source": "s", "chain": "Walk" } ] } ] } ] }
+              { "name": "Earth", "references": [
+                { "sequence": "B", "start": 1, "length": 2 },
+                { "sequence": "C" } ] } ] } ] }
             """;
+
+        var clips = SequenceListSave.FromJsonString(json).Sequences.Single().Tracks.Single().References!;
+
+        clips.Select(clip => clip.Sequence).ShouldBe(new[] { "B", "C" });
+        clips[0].Start.ShouldBe(1);
+        clips[0].Length.ShouldBe(2);
+        clips[1].Start.ShouldBe(0);
+        clips[1].Length.ShouldBeNull();
+    }
+
+    [Fact]
+    public void FromJsonString_ReferencesArrayWithOneClip_ReadsOneClip()
+    {
+        const string json = """
+            { "sequences": [ { "name": "A", "tracks": [
+              { "name": "Earth", "references": [ { "sequence": "B", "start": 0.5 } ] } ] } ] }
+            """;
+
+        SequenceListSave.FromJsonString(json).Sequences.Single().Tracks.Single().References!.ShouldHaveSingleItem().Sequence.ShouldBe("B");
+    }
+
+    [Fact]
+    public void FromJsonString_ChainTrack_HasNoReferences()
+    {
+        const string json = """
+            { "sequences": [ { "name": "A", "tracks": [ { "name": "Body", "chains": [ { "source": "s", "chain": "Walk" } ] } ] } ] }
+            """;
+
+        SequenceListSave.FromJsonString(json).Sequences.Single().Tracks.Single().References.ShouldBeNull();
+    }
+
+    [Theory]
+    [InlineData("\"reference\": { \"sequence\": \"B\" }, \"chains\": [ { \"source\": \"s\", \"chain\": \"Walk\" } ]")]
+    [InlineData("\"references\": [ { \"sequence\": \"B\" } ], \"chains\": [ { \"source\": \"s\", \"chain\": \"Walk\" } ]")]
+    [InlineData("\"reference\": { \"sequence\": \"B\" }, \"references\": [ { \"sequence\": \"B\" } ]")]
+    public void FromJsonString_TrackWithConflictingKeys_Throws(string trackBody)
+    {
+        string json = "{ \"sequences\": [ { \"name\": \"A\", \"tracks\": [ { \"name\": \"Earth\", " + trackBody + " } ] } ] }";
 
         var exception = Should.Throw<JsonException>(() => SequenceListSave.FromJsonString(json));
 
         exception.Message.ShouldContain("Earth");
+    }
+
+    [Theory]
+    [InlineData("\"references\": { \"sequence\": \"B\" }")]
+    [InlineData("\"references\": [ 3 ]")]
+    public void FromJsonString_MalformedReferences_ThrowsNamingTheProperty(string trackBody)
+    {
+        string json = "{ \"sequences\": [ { \"name\": \"A\", \"tracks\": [ { \"name\": \"Earth\", " + trackBody + " } ] } ] }";
+
+        var exception = Should.Throw<JsonException>(() => SequenceListSave.FromJsonString(json));
+
+        exception.Message.ShouldContain("references");
     }
 
     [Fact]
