@@ -18,10 +18,12 @@ public static class BatchCommand
         Description =
 @"Starts Glue and loads the project once, then runs each line as its own command, in order. A line is a
 command without the project: add-object --element GameScreen --type Sprite --name S1. Each command makes the
-edit it makes on its own, against the project in memory, and its errors are the ones it added to the project
-as the previous command left it. Nothing is saved or regenerated between lines: after the last line the batch
+edit it makes on its own, against the project in memory. Nothing is checked, saved or regenerated between
+lines: after the last line the batch collects Glue's errors once and reports the ones the batch added, then
 saves every element it changed, the .gluj (when its own data changed) and the .csproj, and regenerates the
-code of what changed, once. This saves Glue's startup, the load, and a save and codegen on every line.
+code of what changed, once. This saves Glue's startup, the load, and an error check, save and codegen on every
+line. For errors per command, run the commands one at a time. check and describe in a batch still report the
+project's errors where they run.
 
 Arguments split on spaces. Quote one that has spaces in double or single quotes (--name ""Entire File""); a
 backslash is an ordinary character, so Entities\Enemy needs no escaping. Blank lines and lines starting with
@@ -31,17 +33,21 @@ Every line is checked before Glue starts: an unknown command or option, a missin
 project path on a line, or regen (which writes every generated file; run it on its own) exits 2 and runs
 nothing.
 
-If any command does not exit 0, the batch writes nothing at all: the project on disk stays as it was. The
-batch stops at the first such command, unless --keep-going is given, which runs every line and reports every
-failure, then still writes nothing. With --dry-run the whole batch runs against one temp copy, so each command
-sees the ones before it, and the batch reports the combined changes.
+If any command does not exit 0 (it could not apply its edit, or printed error output or a dialog), or the
+commands together left errors the project did not have when it loaded, the batch writes nothing at all: the
+project on disk stays as it was. The batch stops at the first command that does not exit 0, unless
+--keep-going is given, which runs every line and reports every failure, then still writes nothing. With
+--dry-run the whole batch runs against one temp copy, so each command sees the ones before it, and the batch
+reports the combined changes.
 
-The exit code is the first non-zero exit code of the commands that ran, else 1 if the final save or codegen
-reported errors, else 0. With --json the output is {command: ""batch"", project, exitCode, failure,
-commandCount, results, filesWritten, writeErrors, changes (with --dry-run), startupSeconds, loadSeconds,
-writeSeconds, elapsedSeconds}. results holds each command's own --json object, in order (its filesWritten is
-empty), and is shorter than commandCount when the batch stopped early. filesWritten and writeErrors are what
-the final save and codegen wrote and reported; writeSeconds is how long they took.",
+The exit code is the first non-zero exit code of the commands that ran, else 1 if the batch left new errors or
+the final save or codegen reported errors, else 0. With --json the output is {command: ""batch"", project,
+exitCode, failure, commandCount, results, errors, preexistingErrors, filesWritten, writeErrors, changes (with
+--dry-run), startupSeconds, loadSeconds, writeSeconds, elapsedSeconds}. results holds each command's own
+--json object, in order (an edit's errors and preexistingErrors and every filesWritten are empty), and is
+shorter than commandCount when the batch stopped early. errors are the ones the whole batch added (collected
+only when every command exited 0); preexistingErrors what the project already had. filesWritten and
+writeErrors are what the final save and codegen wrote and reported; writeSeconds is how long they took.",
         Options = new CliOption[]
         {
             new("file", "path", "Read the commands from this file."),

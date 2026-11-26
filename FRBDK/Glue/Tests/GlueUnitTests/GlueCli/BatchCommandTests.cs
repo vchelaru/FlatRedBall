@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Threading;
 using System.Text.Json;
 using System.Collections.Concurrent;
 using FlatRedBall.Glue.CodeGeneration;
@@ -92,6 +93,100 @@ set-variable --element GameScreen --object S1 --variable Y --value 20
         }
         SaveCountingPlugin.Saved.Count(name => name == "Screens\\GameScreen").ShouldBe(1);
         generator.Generated.Count(name => name == "Screens\\GameScreen").ShouldBe(1);
+    }
+
+    // An object SetByDerived makes GameScreen abstract, and the startup screen must not be.
+    const string AddsAnError =
+@"add-object --element GameScreen --type Sprite --name S1
+set-property --element GameScreen --object S1 --property SetByDerived --value true
+";
+
+    [StaFact]
+    public void EditsThatAddAnError_ShouldReportItOnceForTheBatch_AsRunningThemSinglyWould_AndWriteNothing()
+    {
+        using var batchCopy = GoldProject.CopyOutOfRepo("Samples/Beefball");
+        using var singleCopy = GoldProject.CopyOutOfRepo("Samples/Beefball");
+        var before = HashFolder(batchCopy.Root);
+
+        var (exitCode, output) = RunWithStdin(AddsAnError, "batch", batchCopy.Root, "--stdin", "--json");
+
+        var add = Parse(Run("add-object", singleCopy.Root, "--element", "GameScreen", "--type", "Sprite", "--name", "S1",
+            "--json").output);
+        var (setExit, setOutput) = Run("set-property", singleCopy.Root, "--element", "GameScreen", "--object", "S1",
+            "--property", "SetByDerived", "--value", "true", "--json");
+        var set = Parse(setOutput);
+        setExit.ShouldBe(GlueCliRunner.ExitErrors, setOutput);
+        set.Errors.ShouldNotBeEmpty(setOutput);
+
+        exitCode.ShouldBe(GlueCliRunner.ExitErrors, output);
+        var batch = ParseBatch(output);
+        batch.Errors.ShouldBe(add.Errors.Concat(set.Errors).ToList());
+        batch.Results.Count.ShouldBe(2);
+        batch.Results.ShouldAllBe(result => result.ExitCode == GlueCliRunner.ExitSuccess);
+        batch.Results.ShouldAllBe(result => result.Errors.Count == 0 && result.PreexistingErrors.Count == 0);
+        batch.FilesWritten.ShouldBeEmpty();
+        ShouldBeUnchanged(batchCopy.Root, before);
+    }
+
+    [StaFact]
+    public void ErrorReporters_ShouldRunAsOftenForFiveLinesAsForOne()
+    {
+        CountingErrorReporterPlugin.EnsureRegistered();
+        var oneLine = CountReporterRuns("add-object --element GameScreen --type Sprite --name S1\n");
+        var fiveLines = CountReporterRuns(
+@"add-object --element GameScreen --type Sprite --name S1
+set-variable --element GameScreen --object S1 --variable X --value 10
+set-variable --element GameScreen --object S1 --variable Y --value 20
+add-object --element GameScreen --type Sprite --name S2
+set-variable --element GameScreen --object S2 --variable X --value 30
+");
+
+        fiveLines.ShouldBe(oneLine);
+    }
+
+    static int CountReporterRuns(string lines)
+    {
+        using var project = GoldProject.CopyOutOfRepo("Samples/Beefball");
+        var start = CountingErrorReporterPlugin.Runs;
+        var (exitCode, output) = RunWithStdin(lines, "batch", project.Root, "--stdin", "--json");
+        exitCode.ShouldBe(GlueCliRunner.ExitSuccess, output);
+        return CountingErrorReporterPlugin.Runs - start;
+    }
+
+    /// <summary>Counts every run of Glue's error reporters, registered once for the whole test run.</summary>
+    sealed class CountingErrorReporterPlugin : FlatRedBall.Glue.Plugins.PluginBase
+    {
+        static readonly object lockObject = new();
+        static bool registered;
+        static int runs;
+        public static int Runs => Volatile.Read(ref runs);
+
+        public static void EnsureRegistered()
+        {
+            lock (lockObject)
+            {
+                if (!registered)
+                {
+                    GlueTestBootstrap.EnsureInitialized();
+                    registered = true;
+                    FlatRedBall.Glue.Plugins.PluginManager.RegisterPlugin(new CountingErrorReporterPlugin());
+                }
+            }
+        }
+
+        public override string FriendlyName => "Batch Error Reporter Counting Plugin (test)";
+        public override Version Version => new(1, 0);
+        public override void StartUp() => AddErrorReporter(new Reporter());
+        public override bool ShutDown(FlatRedBall.Glue.Plugins.Interfaces.PluginShutDownReason shutDownReason) => true;
+
+        sealed class Reporter : FlatRedBall.Glue.Errors.ErrorReporterBase
+        {
+            public override FlatRedBall.Glue.Errors.ErrorViewModel[] GetAllErrors()
+            {
+                Interlocked.Increment(ref runs);
+                return Array.Empty<FlatRedBall.Glue.Errors.ErrorViewModel>();
+            }
+        }
     }
 
     /// <summary>Records each element file save (SaveElementAsync), registered once for the whole test run.</summary>
