@@ -99,18 +99,39 @@ namespace FlatRedBall.Content.AnimationChain
                             Continuous = Bool(trackObject, "continuous", false),
                         };
 
-                        if (trackObject["reference"] != null)
+                        bool legacy = trackObject["reference"] != null;
+                        if (legacy && trackObject["references"] != null)
                         {
-                            if (!(trackObject["reference"] is JsonObject referenceObject))
+                            throw new JsonException("Sequence \"" + sequence.Name + "\", track \"" + track.Name +
+                                "\" has both \"reference\" and \"references\". Keep \"references\".");
+                        }
+                        if (legacy || trackObject["references"] != null)
+                        {
+                            List<JsonObject> clips = new List<JsonObject>();
+                            if (legacy)
                             {
-                                throw new JsonException("The \"reference\" property must be an object.");
+                                // The single "reference" object written before tracks held several clips is a one-clip list.
+                                if (!(trackObject["reference"] is JsonObject referenceObject))
+                                {
+                                    throw new JsonException("The \"reference\" property must be an object.");
+                                }
+                                clips.Add(referenceObject);
                             }
-                            track.Reference = new SequenceReferenceSave
+                            else
                             {
-                                Sequence = String(referenceObject, "sequence"),
-                                Start = Double(referenceObject, "start", 0),
-                                Length = OptionalDouble(referenceObject, "length"),
-                            };
+                                clips.AddRange(Objects(trackObject, "references"));
+                            }
+
+                            track.References = new List<SequenceReferenceSave>();
+                            foreach (JsonObject clip in clips)
+                            {
+                                track.References.Add(new SequenceReferenceSave
+                                {
+                                    Sequence = String(clip, "sequence"),
+                                    Start = Double(clip, "start", 0),
+                                    Length = OptionalDouble(clip, "length"),
+                                });
+                            }
                         }
 
                         foreach (JsonObject chainObject in Objects(trackObject, "chains"))
@@ -126,7 +147,7 @@ namespace FlatRedBall.Content.AnimationChain
 
                         // Readers disagree on which one plays, so the file is refused rather than read one way. An empty
                         // "chains" is fine.
-                        if (track.Reference != null && track.Chains.Count > 0)
+                        if (track.References != null && track.Chains.Count > 0)
                         {
                             throw new JsonException("Sequence \"" + sequence.Name + "\", track \"" + track.Name +
                                 "\" has both a reference and chains; a track plays one or the other. Remove one.");
@@ -287,26 +308,30 @@ namespace FlatRedBall.Content.AnimationChain
         /// When a looping sequence wraps, this track does not restart if the chain playing at the wrap is the same chain
         /// (same source and name) as the track's first block and that block starts at 0: it keeps its playback phase.
         /// Any other case restarts as usual. Tracks drift against each other across passes. See
-        /// <see cref="SequenceTimeline.ActiveAtPass"/>.
+        /// <see cref="SequenceTimeline.ActiveAtPass"/>. On a <see cref="References"/> track the first clip's target keeps
+        /// running instead, under the same conditions (<see cref="SequenceTimeline.ReferenceCarryOver"/>).
         /// </summary>
         public bool Continuous { get; set; }
 
         /// <summary>
-        /// When set, the track plays another sequence of the file instead of chains, and <see cref="Chains"/> is empty
-        /// (reading a file whose track has both throws). The target's tracks are inlined under this track's name;
-        /// <see cref="Visible"/> false hides all of them. See <see cref="SequenceReferenceSave"/>.
+        /// When not null, the track plays other sequences of the file instead of chains: clips placed like a chain track's
+        /// blocks (see <see cref="SequenceReferenceSave"/>), and <see cref="Chains"/> is empty (reading a file whose track
+        /// has both throws). Null for a chain track. Playback orders the clips by start, list order breaking ties, and the
+        /// next clip cuts the one before it. The targets' tracks are inlined under this track's name, and same-named tracks
+        /// of different clips are one sprite; <see cref="Visible"/> false hides all of them. JSON <c>references</c>; the
+        /// older single <c>reference</c> object reads as a one-clip list.
         /// </summary>
-        public SequenceReferenceSave Reference { get; set; }
+        public List<SequenceReferenceSave> References { get; set; }
 
         /// <summary>Chain references in any order. Playback orders them by start; list order breaks ties.</summary>
         public List<SequenceChainReferenceSave> Chains { get; } = new List<SequenceChainReferenceSave>();
     }
 
     /// <summary>
-    /// A track that plays another sequence of the same .seqj instead of chains: the target's tracks are inlined under this
-    /// track's name. It is a clip like a chain placement, with a <see cref="Start"/> and a <see cref="Length"/> (one run of
-    /// the target unless set), and it extends the sequence that holds it to its end. The target restarts whenever the holding
-    /// sequence starts. A missing target, or one that plays the holder back (a cycle), plays nothing. Matches the
+    /// One clip of a reference track (<see cref="SequenceTrackSave.References"/>): it plays another sequence of the same
+    /// .seqj, whose tracks are inlined under the track's name. It is placed like a chain block, with a <see cref="Start"/>
+    /// and a <see cref="Length"/> (one run of the target unless set); the next clip on the track cuts it short, and it
+    /// extends the sequence that holds it to its end. The target restarts at the clip's start. A missing target, or one that plays the holder back (a cycle), plays nothing. Matches the
     /// FlatRedBall2 AnimationEditor's SequenceReferenceSave.
     /// </summary>
     public class SequenceReferenceSave

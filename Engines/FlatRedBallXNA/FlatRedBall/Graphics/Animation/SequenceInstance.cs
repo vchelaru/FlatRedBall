@@ -28,32 +28,53 @@ namespace FlatRedBall.Graphics.Animation
             Tracks = new SequenceTrackList(save.Name);
 
             // Tracks are created in file order, which is also their draw order (see SequencePlayer.AddToManagers). A reference
-            // track is replaced by the tracks of the sequence it plays, in its place.
-            foreach (InlinedTrack inlined in SequenceReferences.Inline(player.Source.Save.Sequences, save))
+            // track is replaced by the tracks of the sequences its clips play, in its place. Same-named tracks reached through
+            // different clips are one sprite, at the place of the first.
+            foreach (List<InlinedTrack> variants in GroupVariants(SequenceReferences.Inline(player.Source.Save.Sequences, save)))
             {
-                SequenceTrackSave trackSave = inlined.Track;
-                if (existingSprites != null && existingSprites.TryGetValue(inlined.Name, out Sprite bound) && bound != null)
+                string name = variants[0].Name;
+                if (existingSprites != null && existingSprites.TryGetValue(name, out Sprite bound) && bound != null)
                 {
                     // The entity owns this Sprite; the player only animates and shows it.
                     bound.Animate = false;
                     bound.Visible = false;
-                    Tracks.Add(new SequenceTrack(this, inlined, null, bound));
+                    Tracks.Add(new SequenceTrack(this, variants, null, bound));
                     continue;
                 }
 
-                PositionedObject pivot = new PositionedObject { Name = inlined.Name };
+                PositionedObject pivot = new PositionedObject { Name = name };
                 pivot.AttachTo(player.Owner);
-                pivot.RelativeX = trackSave.X;
-                pivot.RelativeY = trackSave.Y;
 
                 // The Sprite animates itself once a block switches its chain (Animate turns on then).
-                Sprite sprite = new Sprite { Name = inlined.Name, TextureScale = 1, Animate = false, Visible = false };
+                Sprite sprite = new Sprite { Name = name, TextureScale = 1, Animate = false, Visible = false };
                 sprite.AttachTo(pivot);
-                // A flipped track applies frame flips itself, mirrored across the track.
-                sprite.UseAnimationTextureFlip = !trackSave.FlipHorizontal;
 
-                Tracks.Add(new SequenceTrack(this, inlined, pivot, sprite));
+                // The track sets the pivot's offset and the Sprite's flip from its first variant.
+                Tracks.Add(new SequenceTrack(this, variants, pivot, sprite));
             }
+        }
+
+        // Inlined tracks of one name reached through a reference are one track; the sequence's own tracks stay apart even when
+        // a hand-edited file repeats a name.
+        private static List<List<InlinedTrack>> GroupVariants(IReadOnlyList<InlinedTrack> inlined)
+        {
+            List<List<InlinedTrack>> result = new List<List<InlinedTrack>>();
+            Dictionary<string, List<InlinedTrack>> byName = new Dictionary<string, List<InlinedTrack>>();
+            foreach (InlinedTrack track in inlined)
+            {
+                if (track.Hops.Count > 0 && byName.TryGetValue(track.Name, out List<InlinedTrack> existing))
+                {
+                    existing.Add(track);
+                    continue;
+                }
+                List<InlinedTrack> variants = new List<InlinedTrack> { track };
+                if (track.Hops.Count > 0)
+                {
+                    byName[track.Name] = variants;
+                }
+                result.Add(variants);
+            }
+            return result;
         }
 
         /// <summary>The sequence's data from the file.</summary>
@@ -213,12 +234,15 @@ namespace FlatRedBall.Graphics.Animation
                 mShapeNames = new HashSet<string>();
                 foreach (SequenceTrack track in Tracks)
                 {
-                    foreach (SequenceChainReferenceSave reference in track.Save.Chains)
+                    foreach (InlinedTrack variant in track.Variants)
                     {
-                        AnimationChain chain = mPlayer.Source.FindChain(reference);
-                        for (int i = 0; chain != null && i < chain.Count; i++)
+                        foreach (SequenceChainReferenceSave reference in variant.Track.Chains)
                         {
-                            SequencePlayer.AddShapeNames(chain[i].ShapeCollectionSave, mShapeNames);
+                            AnimationChain chain = mPlayer.Source.FindChain(reference);
+                            for (int i = 0; chain != null && i < chain.Count; i++)
+                            {
+                                SequencePlayer.AddShapeNames(chain[i].ShapeCollectionSave, mShapeNames);
+                            }
                         }
                     }
                 }
@@ -374,7 +398,17 @@ namespace FlatRedBall.Graphics.Animation
             double? clock = time;
             if (track.IsReferenced)
             {
-                clock = SequenceReferences.InlinedTime(track.Inlined, time, mPass, Length, mPlayer.SequenceLength, out pass);
+                // The variant whose clips are all playing, if any; the cut rule allows at most one.
+                IReadOnlyList<SequenceSave> sequences = mPlayer.Source.Save.Sequences;
+                clock = null;
+                for (int i = 0; i < track.Variants.Count && clock == null; i++)
+                {
+                    clock = SequenceReferences.InlinedTime(sequences, track.Variants[i], time, mPass, Length, mPlayer.SequenceLength, out pass);
+                    if (clock != null)
+                    {
+                        track.UseVariant(i);
+                    }
+                }
                 sequenceLength = mPlayer.SequenceLength(track.Inlined.Hops[track.Inlined.Hops.Count - 1].Target);
             }
             SequenceChainReferenceSave reference = null;
