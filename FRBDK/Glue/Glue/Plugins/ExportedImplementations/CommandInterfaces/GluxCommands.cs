@@ -163,6 +163,14 @@ public class GluxCommands : IGluxCommands
     #region Save Glux Methods
 
     /// <summary>
+    /// Given an element name, whether <see cref="SaveProjectAndElements"/> writes that element's .glsj/.glej
+    /// file. Null (the editor) writes every element. <see cref="SaveElementAsync"/>, a save of one element
+    /// the caller changed, ignores it. GlueCli sets it so an edit writes only the elements it changed. Static
+    /// because GluxCommands.Self and GlueCommands.Self.GluxCommands are separate instances that both save.
+    /// </summary>
+    public static Func<string, bool> ElementSaveFilter { get; set; }
+
+    /// <summary>
     /// Saves the gluj (and all elements) in a task.
     /// </summary>
     public void SaveProjectAndElements(TaskExecutionPreference taskExecutionPreference = TaskExecutionPreference.Asap)
@@ -401,14 +409,15 @@ public class GluxCommands : IGluxCommands
 
                 if (MainGlueWindow.Self?.HasErrorOccurred != true)
                 {
-                    List<FilePath> fileChangesToIgnore = GlueState.Self.CurrentGlueProject.GetAllSerializedFiles(GlueState.Self.GlueProjectFileName);
+                    var filter = ElementSaveFilter;
+                    List<FilePath> fileChangesToIgnore = GlueState.Self.CurrentGlueProject.GetAllSerializedFiles(GlueState.Self.GlueProjectFileName, filter);
                     foreach (var fileToIgnore in fileChangesToIgnore)
                     {
                         FileWatchManager.IgnoreNextChangeOnFile(fileToIgnore);
                     }
 
                     Exception lastException;
-                    var succeeded = ProjectManager.GlueProjectSave.Save("GLUE", GlueState.Self.GlueProjectFileName.FullPath, out lastException);
+                    var succeeded = ProjectManager.GlueProjectSave.Save("GLUE", GlueState.Self.GlueProjectFileName.FullPath, out lastException, filter);
 
                     if (!succeeded)
                     {

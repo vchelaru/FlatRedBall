@@ -12,6 +12,7 @@ using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using GlueCli.Commands;
+using GluxCommands = FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces.GluxCommands;
 
 namespace GlueCli;
 
@@ -403,34 +404,63 @@ public static class GlueCliRunner
         var baseline = command.IsEdit ? Collect(dialogMessages) : earlierOutput;
         var elementsBefore = command.IsEdit ? SerializeElements() : null;
 
-        if (command.Run != null)
+        // Many editor paths save the whole project (SaveProjectAndElements), which rewrites every element file.
+        // During an edit, that save's element files are held back and their names recorded; afterwards only
+        // the elements whose model changed are written. A save of one element (SaveElementAsync) still runs.
+        var elementSavesHeld = new HashSet<string>();
+        if (command.IsEdit)
         {
-            command.Run(context).GetAwaiter().GetResult();
-            TaskManager.Self.WaitForAllTasksFinished().GetAwaiter().GetResult();
+            GluxCommands.ElementSaveFilter =name => { elementSavesHeld.Add(name); return false; };
         }
-
-        if (command.IsEdit && !context.HasFailed)
+        try
         {
-            // Headless, TaskManager.SynchronousMode runs the AddOrMoveToEnd codegen an edit queues inline,
-            // before the rest of the edit's task, where the editor's queue runs it after. Plugin reactions
-            // later in that task (NewNamedObjectPlugin making a new list ExposedInDerived) would then be
-            // missing from the generated code, so regenerate every element the edit changed.
-            var elementsAfter = SerializeElements();
-            foreach (var (element, elementJson) in elementsAfter)
+            if (command.Run != null)
             {
-                if (!elementsBefore!.TryGetValue(element, out var jsonBefore) || jsonBefore != elementJson)
+                command.Run(context).GetAwaiter().GetResult();
+                TaskManager.Self.WaitForAllTasksFinished().GetAwaiter().GetResult();
+            }
+
+            if (command.IsEdit)
+            {
+                var changedElements = SerializeElements()
+                    .Where(pair => !elementsBefore!.TryGetValue(pair.Key, out var jsonBefore) || jsonBefore != pair.Value)
+                    .Select(pair => pair.Key)
+                    .ToList();
+
+                if (!context.HasFailed)
                 {
-                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
+                    // Headless, TaskManager.SynchronousMode runs the AddOrMoveToEnd codegen an edit queues inline,
+                    // before the rest of the edit's task, where the editor's queue runs it after. Plugin reactions
+                    // later in that task (NewNamedObjectPlugin making a new list ExposedInDerived) would then be
+                    // missing from the generated code, so regenerate every element the edit changed.
+                    foreach (var element in changedElements)
+                    {
+                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
+                    }
+                    TaskManager.Self.WaitForAllTasksFinished().GetAwaiter().GetResult();
+                }
+
+                // A failed edit writes only the changed elements it had already asked to save, as it did before
+                // saves were held back; a successful one is saved here so no command can forget it.
+                var toWrite = changedElements.Select(element => element.Name)
+                    .Where(name => !context.HasFailed || elementSavesHeld.Contains(name))
+                    .ToHashSet();
+                if (!context.HasFailed || toWrite.Count > 0)
+                {
+                    GluxCommands.ElementSaveFilter = toWrite.Contains;
+                    GlueCommands.Self.GluxCommands.SaveProjectAndElements();
+                    TaskManager.Self.WaitForAllTasksFinished().GetAwaiter().GetResult();
+                }
+                if (!context.HasFailed)
+                {
+                    GlueCommands.Self.ProjectCommands.SaveProjects();
+                    TaskManager.Self.WaitForAllTasksFinished().GetAwaiter().GetResult();
                 }
             }
-            TaskManager.Self.WaitForAllTasksFinished().GetAwaiter().GetResult();
-
-            // The editor's save after an edit: the .gluj and every element file, then the .csproj. Most
-            // GluxCommands edits queue this themselves; doing it here means no command can forget it.
-            GlueCommands.Self.GluxCommands.SaveProjectAndElements();
-            TaskManager.Self.WaitForAllTasksFinished().GetAwaiter().GetResult();
-            GlueCommands.Self.ProjectCommands.SaveProjects();
-            TaskManager.Self.WaitForAllTasksFinished().GetAwaiter().GetResult();
+        }
+        finally
+        {
+            GluxCommands.ElementSaveFilter = null;
         }
 
         var after = Collect(dialogMessages);

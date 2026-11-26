@@ -184,6 +184,29 @@ public class GlueCliRunnerTests
         result.FilesWritten.ShouldContain("Entities/PlayerBall.Generated.cs");
         File.Exists(Path.Combine(project.Root, "Beefball", "Screens", "GameScreen.Generated.cs")).ShouldBeTrue();
     }
+
+    [StaTheory]
+    [InlineData("Entities/Coin.glej", "add-entity", "--name", "Coin", "--no-factory", "--no-list")]
+    [InlineData("Entities/PlayerBall.glej", "set-variable", "--element", "PlayerBall", "--variable", "MovementSpeed", "--value", "350")]
+    public void Edit_ShouldSaveOnlyTheElementsItChanged(string changedElementFile, string command, params string[] options)
+    {
+        using var project = GoldProject.CopyOutOfRepo("Samples/Beefball");
+        // Every element file is saved in a form Glue no longer writes (here compact instead of indented, in
+        // the report a default value Glue now leaves out), so rewriting an untouched element changes its text.
+        var gameFolder = Path.Combine(project.Root, "Beefball");
+        foreach (var elementFile in Directory.EnumerateFiles(gameFolder, "*.gl?j", SearchOption.AllDirectories)
+            .Where(file => !file.EndsWith(".gluj")))
+        {
+            using var document = JsonDocument.Parse(File.ReadAllText(elementFile));
+            File.WriteAllText(elementFile, JsonSerializer.Serialize(document.RootElement));
+        }
+
+        var (exitCode, output) = Run(new[] { command, project.Root }.Concat(options).Append("--json").ToArray());
+
+        exitCode.ShouldBe(GlueCliRunner.ExitSuccess, output);
+        Parse(output).FilesWritten.Where(file => file.EndsWith(".glej") || file.EndsWith(".glsj"))
+            .ShouldBe(new[] { changedElementFile }, output);
+    }
 }
 
 /// <summary>
