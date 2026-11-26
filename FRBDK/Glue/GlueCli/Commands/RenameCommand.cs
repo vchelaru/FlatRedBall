@@ -204,7 +204,8 @@ entity the rename changed, by name after the rename.",
 
         var renamedFiles = new List<RenamedFile>();
         var jsonFileAfter = fileCommands.GetJsonFilePath(element);
-        if (jsonFileBefore != null && jsonFileAfter != null && jsonFileBefore != jsonFileAfter && jsonFileAfter.Exists())
+        // Not checked on disk: the runner writes the renamed element's file after the command returns.
+        if (jsonFileBefore != null && jsonFileAfter != null && jsonFileBefore != jsonFileAfter)
         {
             renamedFiles.Add(new RenamedFile(Relative(jsonFileBefore.FullPath), Relative(jsonFileAfter.FullPath)));
         }

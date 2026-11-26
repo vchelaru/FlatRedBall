@@ -46,7 +46,8 @@ public static class GlueProjectSaveExtensions
         });
     }
 
-    public static List<FilePath> GetAllSerializedFiles(this GlueProjectSave glueProjectSave, FilePath target)
+    public static List<FilePath> GetAllSerializedFiles(this GlueProjectSave glueProjectSave, FilePath target,
+        Func<string, bool> shouldSaveElement = null)
     {
         var files = new List<FilePath>();
         files.Add(target);
@@ -55,11 +56,11 @@ public static class GlueProjectSaveExtensions
         {
             var directory = target.GetDirectoryContainingThis();
 
-            foreach(var screen in glueProjectSave.Screens)
+            foreach(var screen in glueProjectSave.Screens.Where(item => shouldSaveElement?.Invoke(item.Name) != false))
             {
                 files.Add(directory + screen.Name + "." + GlueProjectSave.ScreenExtension);
             }
-            foreach(var entity in glueProjectSave.Entities)
+            foreach(var entity in glueProjectSave.Entities.Where(item => shouldSaveElement?.Invoke(item.Name) != false))
             {
                 files.Add(directory + entity.Name + "." + GlueProjectSave.EntityExtension);
             }
@@ -68,7 +69,9 @@ public static class GlueProjectSaveExtensions
         return files;
     }
 
-    public static bool Save(this GlueProjectSave glueProjectSave, string tag, string fileName, out Exception lastException)
+    /// <param name="shouldSaveElement">Given an element name, whether to write its .glsj/.glej file. Null writes every element.</param>
+    public static bool Save(this GlueProjectSave glueProjectSave, string tag, string fileName, out Exception lastException,
+        Func<string, bool> shouldSaveElement = null)
     {
         int failures = 0;
         // This gives Glue 2 chances to save....but not like weekend sales at RC Willey
@@ -82,7 +85,7 @@ public static class GlueProjectSaveExtensions
         {
             try
             {
-                glueProjectSave.SaveMainAndElementsToFile(fileName, tag);
+                glueProjectSave.SaveMainAndElementsToFile(fileName, tag, shouldSaveElement);
 
                 succeeded = true;
                 break;
@@ -135,7 +138,8 @@ public static class GlueProjectSaveExtensions
         FileManager.SaveText(serialized, filePath.FullPath);
     }
 
-    public static void SaveMainAndElementsToFile(this GlueProjectSave glueProjectSave, FilePath filePath, string tag)
+    public static void SaveMainAndElementsToFile(this GlueProjectSave glueProjectSave, FilePath filePath, string tag,
+        Func<string, bool> shouldSaveElement = null)
     {
         GlueProjectSave clone = null;
         
@@ -150,7 +154,7 @@ public static class GlueProjectSaveExtensions
                 RemoveRedundantDerivedData(clone);
             }
             
-            RemoveAndSaveElements(filePath, clone);
+            RemoveAndSaveElements(filePath, clone, shouldSaveElement);
         }
 
         var fileName = filePath.FullPath;
@@ -422,7 +426,7 @@ public static class GlueProjectSaveExtensions
         return false;
     }
 
-    private static void RemoveAndSaveElements(FilePath filePath, GlueProjectSave clone)
+    private static void RemoveAndSaveElements(FilePath filePath, GlueProjectSave clone, Func<string, bool> shouldSaveElement)
     {
         clone.EntityReferences = clone.Entities.Select(item => new GlueElementFileReference { Name = item.Name }).ToList();
         clone.ScreenReferences = clone.Screens.Select(item => new GlueElementFileReference { Name = item.Name }).ToList();
@@ -437,6 +441,10 @@ public static class GlueProjectSaveExtensions
 
         foreach (var entity in clone.Entities)
         {
+            if (shouldSaveElement?.Invoke(entity.Name) == false)
+            {
+                continue;
+            }
             var serialized = JsonConvert.SerializeObject(entity, settings);
 
             var locationToSave = glueDirectory + entity.Name + "." + GlueProjectSave.EntityExtension;
@@ -447,6 +455,10 @@ public static class GlueProjectSaveExtensions
 
         foreach (var screen in clone.Screens)
         {
+            if (shouldSaveElement?.Invoke(screen.Name) == false)
+            {
+                continue;
+            }
             var serialized = JsonConvert.SerializeObject(screen, settings);
 
             var locationToSave = glueDirectory + screen.Name + "." + GlueProjectSave.ScreenExtension;
