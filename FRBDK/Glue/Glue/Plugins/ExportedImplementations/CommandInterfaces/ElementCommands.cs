@@ -898,7 +898,8 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
                 }
             }
 
-            GluxCommands.Self.SaveProjectAndElements();
+            // The screens given a list of the new entity are among its dependents. AddEntity saved the .gluj.
+            GluxCommands.Self.SaveElementAndDependents(newElement);
         }
 
 
@@ -1137,7 +1138,9 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
 
         GlueCommands.Self.ProjectCommands.SaveProjects();
 
-        GluxCommands.Self.SaveProjectAndElements();
+        _ = GluxCommands.Self.SaveElementAsync(entitySave);
+
+        GluxCommands.Self.SaveGlujFile();
     }
 
     #endregion
@@ -1241,7 +1244,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
 
         if (save)
         {
-            GluxCommands.Self.SaveProjectAndElements();
+            GluxCommands.Self.SaveElementAndDependents(element);
         }
 
     }
@@ -1357,7 +1360,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
 
             GlueState.Self.CurrentStateSaveCategory = newCategory;
 
-            GluxCommands.Self.SaveProjectAndElements();
+            GluxCommands.Self.SaveElementAndDependents(element);
         }, nameof(AddStateSaveCategoryAsync));
     }
 

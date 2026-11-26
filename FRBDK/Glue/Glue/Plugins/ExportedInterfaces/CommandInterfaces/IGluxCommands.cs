@@ -54,6 +54,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         //void SaveElement(GlueElement element);
         Task SaveElementAsync(GlueElement element, TaskExecutionPreference taskExecutionPreference = TaskExecutionPreference.Fifo);
 
+        /// <summary>
+        /// Saves the element, plus the elements that inherit from it or hold an instance of it when their file
+        /// would change. For an edit to one element that changed nothing in the .gluj.
+        /// </summary>
+        void SaveElementAndDependents(GlueElement element, TaskExecutionPreference taskExecutionPreference = TaskExecutionPreference.Fifo);
+
         void SaveSettings();
 
         /// <summary>

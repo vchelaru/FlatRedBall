@@ -404,10 +404,12 @@ public static class GlueCliRunner
         // For an edit, what the project already had is reported but does not fail the run.
         var baseline = command.IsEdit ? Collect(dialogMessages) : earlierOutput;
         var elementsBefore = command.IsEdit ? SerializeElements() : null;
+        var projectLevelBefore = command.IsEdit ? SerializeProjectLevel() : null;
 
-        // Many editor paths save the whole project (SaveProjectAndElements), which rewrites every element file.
-        // During an edit, that save's element files are held back and their names recorded; afterwards only
-        // the elements whose model changed are written. A save of one element (SaveElementAsync) still runs.
+        // Edits that can't name every element they change (rename, delete) save the whole project
+        // (SaveProjectAndElements), which rewrites every element file. During an edit, that save's element files
+        // are held back and their names recorded; afterwards only the elements whose model changed are written.
+        // A save of one element (SaveElementAsync) still runs.
         var elementSavesHeld = new HashSet<string>();
         if (command.IsEdit)
         {
@@ -441,15 +443,20 @@ public static class GlueCliRunner
                     TaskManager.Self.WaitForAllTasksFinished().GetAwaiter().GetResult();
                 }
 
-                // A failed edit writes only the changed elements it had already asked to save, as it did before
-                // saves were held back; a successful one is saved here so no command can forget it.
-                var toWrite = changedElements.Select(element => element.Name)
-                    .Where(name => !context.HasFailed || elementSavesHeld.Contains(name))
-                    .ToHashSet();
-                if (!context.HasFailed || toWrite.Count > 0)
+                // Edits save what they change themselves; this writes whatever one left unsaved, so no command can
+                // forget a save: each changed element whose file differs from the model, and the .gluj when its own
+                // data changed. A failed edit writes only the changed elements a held full save had asked for.
+                if (SavesWhatTheEditLeftUnsaved)
                 {
-                    GluxCommands.ElementSaveFilter = toWrite.Contains;
-                    GlueCommands.Self.GluxCommands.SaveProjectAndElements();
+                    GluxCommands.ElementSaveFilter = null;
+                    foreach (var element in changedElements.Where(item => !context.HasFailed || elementSavesHeld.Contains(item.Name)))
+                    {
+                        _ = GluxCommands.Self.SaveElementAsync(element, TaskExecutionPreference.Fifo, onlyIfChanged: true);
+                    }
+                    if (!context.HasFailed && SerializeProjectLevel() != projectLevelBefore)
+                    {
+                        GlueCommands.Self.GluxCommands.SaveGlujFile();
+                    }
                     TaskManager.Self.WaitForAllTasksFinished().GetAwaiter().GetResult();
                 }
                 if (!context.HasFailed)
@@ -573,6 +580,38 @@ public static class GlueCliRunner
         var project = GlueState.Self.CurrentGlueProject;
         return project.Screens.Cast<GlueElement>().Concat(project.Entities)
             .ToDictionary(element => element, element => Newtonsoft.Json.JsonConvert.SerializeObject(element));
+    }
+
+    /// <summary>
+    /// False skips RunStep's save of what an edit left unsaved, so a test sees only what the editor's own
+    /// code wrote.
+    /// </summary>
+    internal static bool SavesWhatTheEditLeftUnsaved { get; set; } = true;
+
+    /// <summary>What the .gluj itself holds: the project without its elements, plus the element names.</summary>
+    internal static string SerializeProjectLevel()
+    {
+        var project = GlueState.Self.CurrentGlueProject;
+        var settings = new Newtonsoft.Json.JsonSerializerSettings { ContractResolver = ProjectLevelContractResolver.Instance };
+        return Newtonsoft.Json.JsonConvert.SerializeObject(project, settings) + "\n" +
+            string.Join("\n", project.Screens.Select(item => item.Name).Concat(project.Entities.Select(item => item.Name)));
+    }
+
+    sealed class ProjectLevelContractResolver : Newtonsoft.Json.Serialization.DefaultContractResolver
+    {
+        public static readonly ProjectLevelContractResolver Instance = new();
+
+        protected override Newtonsoft.Json.Serialization.JsonProperty CreateProperty(System.Reflection.MemberInfo member,
+            Newtonsoft.Json.MemberSerialization memberSerialization)
+        {
+            var property = base.CreateProperty(member, memberSerialization);
+            if (member.DeclaringType == typeof(GlueProjectSave) &&
+                member.Name is nameof(GlueProjectSave.Entities) or nameof(GlueProjectSave.Screens))
+            {
+                property.ShouldSerialize = _ => false;
+            }
+            return property;
+        }
     }
 
     /// <summary>

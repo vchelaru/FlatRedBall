@@ -183,7 +183,41 @@ public class GluxCommands : IGluxCommands
             taskExecutionPreference);
     }
 
-    public async Task SaveElementAsync(GlueElement element, TaskExecutionPreference taskExecutionPreference = TaskExecutionPreference.Fifo)
+    public Task SaveElementAsync(GlueElement element, TaskExecutionPreference taskExecutionPreference = TaskExecutionPreference.Fifo) =>
+        SaveElementAsync(element, taskExecutionPreference, onlyIfChanged: false);
+
+    /// <summary>
+    /// Saves <paramref name="element"/>, then each element an edit to it can also change: the elements that
+    /// inherit from it and, for an entity, the elements holding an instance of it or of an entity derived from
+    /// it. Those are written only when their file would change. Use this instead of
+    /// <see cref="SaveProjectAndElements"/> after an edit to one element that changed nothing in the .gluj.
+    /// </summary>
+    public void SaveElementAndDependents(GlueElement element, TaskExecutionPreference taskExecutionPreference = TaskExecutionPreference.Fifo)
+    {
+        _ = SaveElementAsync(element, taskExecutionPreference);
+
+        var derived = ObjectFinder.Self.GetAllElementsThatInheritFrom(element);
+        var dependents = new HashSet<GlueElement>(derived);
+        foreach (var entity in derived.OfType<EntitySave>().Prepend(element as EntitySave).Where(item => item != null))
+        {
+            foreach (var nos in ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(entity))
+            {
+                if (ObjectFinder.Self.GetElementContaining(nos) is { } container)
+                {
+                    dependents.Add(container);
+                }
+            }
+        }
+        dependents.Remove(element);
+
+        foreach (var dependent in dependents)
+        {
+            _ = SaveElementAsync(dependent, taskExecutionPreference, onlyIfChanged: true);
+        }
+    }
+
+    /// <param name="onlyIfChanged">Skips the write when the element's file already holds what would be written.</param>
+    internal async Task SaveElementAsync(GlueElement element, TaskExecutionPreference taskExecutionPreference, bool onlyIfChanged)
     {
         if(element == null)
         {
@@ -200,10 +234,6 @@ public class GluxCommands : IGluxCommands
                 var extension = element is SaveClasses.ScreenSave ? GlueProjectSave.ScreenExtension
                     : GlueProjectSave.EntityExtension;
 
-                var fileToIgnore = glueDirectory + element.Name + "." + extension;
-
-                FileWatchManager.IgnoreNextChangeOnFile(fileToIgnore);
-
                 // todo - eventually need to handle wildcards here
 
                 JsonSerializerSettings settings = new JsonSerializerSettings();
@@ -217,6 +247,13 @@ public class GluxCommands : IGluxCommands
                 var serialized = JsonConvert.SerializeObject(clone, settings);
 
                 var locationToSave = glueDirectory + element.Name + "." + extension;
+
+                if (onlyIfChanged && File.Exists(locationToSave) && File.ReadAllText(locationToSave) == serialized)
+                {
+                    return;
+                }
+
+                FileWatchManager.IgnoreNextChangeOnFile(locationToSave);
 
                 if (element is EntitySave entitySave)
                 {
@@ -1670,7 +1707,7 @@ public class GluxCommands : IGluxCommands
 
             if (performSaveAndGenerateCode)
             {
-                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
+                GlueCommands.Self.GluxCommands.SaveElementAndDependents(elementToAddTo);
             }
         }, $"Adding named object {newNos.InstanceName} to {elementToAddTo.Name}", TaskExecutionPreference.Asap);
     }
@@ -2655,7 +2692,15 @@ public class GluxCommands : IGluxCommands
 
             if (performSaveAndGenerateCode)
             {
-                GlueCommands.Self.GluxCommands.SaveProjectAndElements(TaskExecutionPreference.AddOrMoveToEnd);
+                // A rename can update references in elements this cannot name.
+                if (nosContainer == null || memberName == nameof(NamedObjectSave.InstanceName) || memberName == "Name")
+                {
+                    GlueCommands.Self.GluxCommands.SaveProjectAndElements(TaskExecutionPreference.AddOrMoveToEnd);
+                }
+                else
+                {
+                    GlueCommands.Self.GluxCommands.SaveElementAndDependents(nosContainer, TaskExecutionPreference.AddOrMoveToEnd);
+                }
             }
         }
 
