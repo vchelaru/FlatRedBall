@@ -13,7 +13,7 @@ Releasing FRB1 (engine + Glue/FRBDK) is semi-automated: `gh` CLI triggers and wa
 |---|---|
 | `.github/workflows/Engine.yml` | "Build Engine DLLs" — bumps engine version, builds+publishes engine NuGets across 5 platforms |
 | `.github/workflows/glue.yml` | "FlatRedBall Editor" — bumps FRBDK version, builds Glue, zips+FTPs FRBDK.zip |
-| `FRBDK/BuildServerUploader/BuildServerUploaderConsole/Program.cs` | The actual tool both workflows shell out to (`changeengineversion`, `changefrbdkversion`, `zipanduploadtemplates`, `zipanduploadfrbdk`, ...) |
+| `FRBDK/BuildServerUploader/BuildServerUploaderConsole/Program.cs` | The actual tool both workflows shell out to (`changeengineversion`, `changefrbdkversion`, `zipanduploadfrbdk`, ...) |
 | `Processes/UpdateAssemblyVersions.cs` | Version-bumping logic — see Version scheme below |
 | `Processes/CopyFrbdkAndPluginsToReleaseFolder.cs` (`DownloadGum`) | Pulls Gum's **latest GitHub release** `Gum-win-x64.zip` asset and bundles it into FRBDK — see Gum dependency below |
 | [docs.flatredball.com/flatredball/contributing/builds](https://docs.flatredball.com/flatredball/contributing/builds) | The narrative doc — kept current, cross-check before deviating from this skill |
@@ -25,13 +25,13 @@ Both workflows are `workflow_dispatch`-only, run against whatever is currently o
 ## Release sequence
 
 1. `git status`, `git fetch`, confirm local `NetStandard` == `origin/NetStandard`. If this release needs a new Gum tool version, publish it first via Gum's own release process (`gum-release`/`gum-monthly-release` skills in the Gum repo) — see Gum dependency below.
-   Then run `scripts/Test-DownstreamBuilds.ps1`, which compiles the games and in-repo projects the checklist names against the working tree, and dry-run the template steps (see below). The GitBook puts this smoke test *before* any workflow dispatch, which is the safer order — nuget.org publishes can't be revoked.
+   Then run `scripts/Test-DownstreamBuilds.ps1`, which compiles the games and in-repo projects the checklist names against the working tree. The GitBook puts this smoke test *before* any workflow dispatch, which is the safer order — nuget.org publishes can't be revoked.
    Also run the slow gate the fast unit run skips, since it covers what a user's first five minutes actually exercise: `dotnet test "FRBDK/Glue/Glue with All.sln" -c Debug --filter "Category=BuildSmoke"` (new-project creation + build, and the Gum runtime contract sweep).
 2. **CHECKPOINT — publishes `-beta` NuGet packages, not revocable.**
    `gh workflow run Engine.yml -f IsBeta=true`
 3. `gh run list --workflow=Engine.yml --limit 1` → grab the run id → `gh run watch <id> --exit-status`.
 4. *(Manual, human-only)* Point a test project at the new `-beta` NuGet version and sanity-check it. Claude can't drive this step.
-5. **CHECKPOINT — real NuGet publish + prod FTP template upload.**
+5. **CHECKPOINT — real NuGet publish.**
    `gh workflow run Engine.yml -f IsBeta=false`
 6. `gh run list --workflow=Engine.yml --limit 1` → `gh run watch <id> --exit-status`.
 7. **CHECKPOINT — FTP push of FRBDK.zip to prod download.**
@@ -94,20 +94,9 @@ The split this forces: `pr-tests.yml` gates what a clean checkout can build (Glu
 
 `DebugAutoBuild`/`ReleaseAutoBuild` are worth knowing separately: they're the configurations Glue uses to rebuild the engine during live edit, and the **only** ones where `FlatRedBall.Forms` references SkiaGum. Plain Debug/Release — all `Engine.yml` builds — never evaluate that reference, so breakage there is invisible to the release pipeline.
 
-## Dry-running the template steps (landmine)
+## Hosted templates (landmine)
 
-`copytotemplates` and `zipanduploadtemplates` run **only when `IsBeta=false`**, and they run *after* the NuGet push — so a beta run cannot exercise them and a failure there lands with packages already public. Dry-run them locally instead. From the directory *containing* the `FlatRedBall` and `Gum` checkouts (the file paths in `AllData.cs` are relative to that parent, not to the repo root):
-
-```
-dotnet build -c Debug   Engines/Forms/FlatRedBall.Forms/<Web|FNA|DesktopGLNet6>.sln   # and -c Release
-dotnet build -c Debug   FRBDK/BuildServerUploader/BuildServerUploader.sln
-./FlatRedBall/FRBDK/.../BuildServerUploaderConsole.exe copytotemplates
-./FlatRedBall/FRBDK/.../BuildServerUploaderConsole.exe zipanduploadtemplates BAD_USER BAD_PASSWORD
-```
-
-Dummy credentials are the point: everything local (copy-to-release-folder, zip) executes for real and only the final SFTP fails with `SshAuthenticationException`, which is the pass condition. Afterwards `git checkout -- Templates/ && rm -f Templates/*.zip` — the template DLLs are tracked, so a dry run dirties ~90 files.
-
-`AllData.cs`'s per-engine file lists are hand-maintained literal paths with no build-time validation, which is what makes this dry run worth doing: a project that moves on disk breaks the release and nothing else notices. SkiaInGum is the standing example — FRB forked it into `Engines/SkiaGum/`, and it is pulled from that project's own `bin` rather than the Forms output folder because Forms only references it under the AutoBuild configurations.
+`Engine.yml` no longer zips or uploads the project templates, so the zips the New Project wizard downloads (`FRBDK/Glue/NpcWpfLib/Data/EmptyTemplates.cs`) stay at the last upload while the engine packages move on. `copytotemplates` and `zipanduploadtemplates` still exist in `Program.cs`, but no workflow calls them.
 
 ## Gum dependency (landmine)
 

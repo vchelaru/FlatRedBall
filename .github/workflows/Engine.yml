@@ -240,19 +240,6 @@ jobs:
           dotnet nuget push $file.FullName --api-key "${{ steps.login.outputs.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json
         }
 
-    # Only the FNA template still keeps engine DLLs in a Libraries folder; DesktopGL and Web take
-    # everything from the packages pushed above. See EngineData.TemplateUsesLibrariesFolder.
-    - name: Copy dlls to templates
-      if: ${{ github.event.inputs.IsBeta == 'false' }}
-      run: .\FlatRedBall\FRBDK\BuildServerUploader\BuildServerUploaderConsole\bin\x86\Debug\BuildServerUploaderConsole.exe copytotemplates
-      
-    - name: Zip and upload templates
-      if: ${{ github.event.inputs.IsBeta == 'false' }}
-      env: # Or as an environment variable
-        username: ${{ secrets.FTPUSERNAME }}
-        password: ${{ secrets.FTPPASSWORD }}
-      run: .\FlatRedBall\FRBDK\BuildServerUploader\BuildServerUploaderConsole\bin\x86\Debug\BuildServerUploaderConsole.exe zipanduploadtemplates "${{ env.username }}" "${{ env.password }}"
-
     #     $FolderPath2 = 'FlatRedBall\Engines\Forms\FlatRedBall.Forms'
     #     if (Test-Path -Path $FolderPath2) {
     #         Write-Host "Directory exists at $FolderPath2"
