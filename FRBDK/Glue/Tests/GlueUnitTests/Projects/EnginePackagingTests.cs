@@ -48,6 +48,9 @@ public class EnginePackagingTests
         ["FlatRedBall.StateInterpolation.Kni.Web"] = @"FlatRedBall\Engines\Forms\FlatRedBall.Forms\StateInterpolation\StateInterpolation.Kni.Web\StateInterpolation.Kni.Web.csproj",
         ["FlatRedBall.GumCore.Kni.Web"] = @"Gum\GumCore\GumCoreXnaPc\GumCore.Kni.Web\GumCore.Kni.Web.csproj",
         ["FlatRedBall.Forms.Kni.Web"] = @"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Kni.Web\FlatRedBall.Forms.Kni.Web.csproj",
+
+        // Engine-free: no template references it, but Gum and FlatRedBall2 restore it from nuget.org.
+        ["FlatRedBall.InterpolationCore"] = @"FlatRedBall\FRBDK\Glue\StateInterpolationPlugin\InterpolationCore\FlatRedBall.InterpolationCore.csproj",
     };
 
     // What UpdateAssemblyVersions.ModifyCsprojAssemblyInfoVersion looks for when stamping the release
@@ -94,6 +97,21 @@ public class EnginePackagingTests
             var expectedFolder = Path.GetDirectoryName(relativePath) + @"\bin\Debug";
             publishedFolders.ShouldContain(expectedFolder,
                 $"Engine.yml does not push {packageId}. A release would ship the rest of the set without it.");
+        }
+    }
+
+    [Fact]
+    public void EveryPublishedProject_ShouldBeVersionStampedByTheReleaseTooling()
+    {
+        // UpdateAssemblyVersions stamps exactly the csprojs AllData lists; one missing from it ships
+        // with its committed placeholder version.
+        var allData = File.ReadAllText(Path.Combine(FindFrbRoot(),
+            "FRBDK", "BuildServerUploader", "BuildServerUploaderConsole", "Data", "AllData.cs"));
+
+        foreach (var (packageId, relativePath) in PublishedPackages)
+        {
+            allData.ShouldContain($"@\"{relativePath}\"", Case.Insensitive,
+                $"AllData does not list {packageId}, so a release would not stamp its version.");
         }
     }
 
