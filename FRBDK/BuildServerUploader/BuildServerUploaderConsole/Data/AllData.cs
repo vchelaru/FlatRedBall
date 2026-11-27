@@ -18,8 +18,19 @@ namespace BuildServerUploaderConsole.Data
         /// </summary>
         public static IEnumerable<PackageData> AllPackages =>
             Engines.SelectMany(engine => engine.Packages)
+                   .Concat(EngineIndependentPackages)
                    .GroupBy(package => package.PackageId)
                    .Select(group => group.First());
+
+        /// <summary>
+        /// Packages no template references, published with the engine so they share its version.
+        /// InterpolationCore is the engine-free tweening library Gum and FlatRedBall2 consume.
+        /// </summary>
+        public static List<PackageData> EngineIndependentPackages { get; } = new List<PackageData>
+        {
+            Package("FlatRedBall.InterpolationCore",
+                @"FlatRedBall\FRBDK\Glue\StateInterpolationPlugin\InterpolationCore\FlatRedBall.InterpolationCore.csproj"),
+        };
 
         static PackageData Package(string packageId, string csProjLocation) => new PackageData
         {

@@ -151,6 +151,13 @@ jobs:
         name: DesktopGlNet6Release
         path: FlatRedBall/Engines/Forms/FlatRedBall.Forms/FlatRedBall.Forms.DesktopGlNet6/bin/Release/net8.0/
 
+    ## -----------------------------------------------------------------------------------------------------
+    ## Engine-free tweening library that Gum and FlatRedBall2 consume; no template references it.
+    ## Debug like every other package: GeneratePackageOnBuild packs into the bin\Debug folder the
+    ## publish step reads.
+    - name: Build FlatRedBall.InterpolationCore Debug
+      run: dotnet build -c Debug 'FlatRedBall\FRBDK\Glue\StateInterpolationPlugin\InterpolationCore\FlatRedBall.InterpolationCore.csproj'
+
 
     ## ## -----------------------------------------------------------------------------------------------------
     # - name: Directory listing
@@ -176,7 +183,8 @@ jobs:
     - name: Publish NuGet packages
       run: |
         # Every assembly a template-created project references ships as its own package, so this
-        # list covers Forms, GumCore, StateInterpolation and SkiaInGum as well as the engine.
+        # list covers Forms, GumCore, StateInterpolation and SkiaInGum as well as the engine, plus the
+        # engine-free InterpolationCore.
         # GumCore is built out of the sibling Gum checkout but published by FlatRedBall.
         # GlueUnitTests' EnginePackagingTests asserts this list covers every published project.
         #
@@ -199,7 +207,9 @@ jobs:
           'FlatRedBall\Engines\Forms\FlatRedBall.Forms\StateInterpolation\StateInterpolation.DesktopGlNet6\bin\Debug',
           'Gum\GumCore\GumCoreXnaPc\GumCore.DesktopGlNet6\bin\Debug',
           'FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGlNet6\bin\Debug',
-          'FlatRedBall\Engines\SkiaGum\bin\Debug'
+          'FlatRedBall\Engines\SkiaGum\bin\Debug',
+
+          'FlatRedBall\FRBDK\Glue\StateInterpolationPlugin\InterpolationCore\bin\Debug'
         )
         # Collect and verify before pushing anything, so a platform that built but produced no package
         # fails the run instead of silently shipping an incomplete set.
