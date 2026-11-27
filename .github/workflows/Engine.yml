@@ -12,6 +12,12 @@ on:
 jobs:
   build:
 
+    # id-token: write lets NuGet/login exchange a GitHub OIDC token for a short-lived nuget.org key.
+    # Declaring permissions drops every unlisted default, so contents: read keeps the checkouts working.
+    permissions:
+      contents: read
+      id-token: write
+
     runs-on: windows-latest  # For a list of available runner types, refer to
                              # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
     steps:
@@ -180,6 +186,14 @@ jobs:
     ## on platform N left platforms 1..N-1 already public -- a half-shipped release with no way back, and
     ## on a non-beta run that is a genuinely bad state. Keeping all five pushes here makes the matrix
     ## all-or-nothing: nothing reaches nuget.org unless everything built.
+    # Trusted Publishing (https://learn.microsoft.com/nuget/nuget-org/trusted-publishing): the key it
+    # returns lasts about an hour, so log in right before the push, after the long build.
+    - name: NuGet login (OIDC to temporary API key)
+      uses: NuGet/login@v1
+      id: login
+      with:
+        user: vchelaru
+
     - name: Publish NuGet packages
       run: |
         # Every assembly a template-created project references ships as its own package, so this
@@ -223,7 +237,7 @@ jobs:
           $toPush += $files
         }
         foreach ($file in $toPush) {
-          dotnet nuget push $file.FullName --api-key "${{ secrets.NUGET_APIKEY }}" --source https://api.nuget.org/v3/index.json
+          dotnet nuget push $file.FullName --api-key "${{ steps.login.outputs.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json
         }
 
     # Only the FNA template still keeps engine DLLs in a Libraries folder; DesktopGL and Web take
