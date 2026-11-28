@@ -221,6 +221,44 @@ public class EnginePackagingTests
         }
     }
 
+    // Every web project that ships next to the engine, relative to the FlatRedBall root.
+    private static readonly string[] KniWebProjects =
+    {
+        @"Templates\FlatRedBallWebTemplate\FlatRedBallWebTemplate\FlatRedBallWebTemplate.csproj",
+        @"Samples\BeefballWeb\BeefballWeb\BeefballWeb.csproj",
+    };
+
+    [Fact]
+    public void KniWebProjects_ShouldReferenceTheSameKniReleaseAsTheEngine()
+    {
+        // A web project on a different KNI release than FlatRedBallKniWeb gets unified to the higher one
+        // at restore, and its index.html then loads nkast.Wasm scripts that release no longer ships.
+        var engine = XDocument.Load(Path.Combine(FindFrbRoot(), @"Engines\FlatRedBallXNA\KniWeb\FlatRedBallKniWeb.csproj"));
+        var engineRelease = KniRelease(engine.Descendants("PackageReference")
+            .Single(reference => (string)reference.Attribute("Include") == "nkast.Kni.Platform.Blazor.GL"));
+
+        foreach (var relativePath in KniWebProjects)
+        {
+            var csproj = XDocument.Load(Path.Combine(FindFrbRoot(), relativePath));
+            var kniReferences = csproj.Descendants("PackageReference")
+                .Where(reference => ((string)reference.Attribute("Include")).StartsWith("nkast.", StringComparison.Ordinal))
+                .ToList();
+
+            kniReferences.ShouldNotBeEmpty($"{relativePath} references no KNI packages.");
+
+            foreach (var reference in kniReferences)
+            {
+                KniRelease(reference).ShouldBe(engineRelease,
+                    $"{relativePath} references {(string)reference.Attribute("Include")} " +
+                    $"{(string)reference.Attribute("Version")}, but FlatRedBallKniWeb is on KNI {engineRelease}.");
+            }
+        }
+    }
+
+    // KNI hotfixes add a fourth part (4.0.9001.1) to some packages only, so a release is the first three.
+    private static string KniRelease(XElement packageReference) =>
+        string.Join('.', ((string)packageReference.Attribute("Version")).Split('.').Take(3));
+
     private static XDocument LoadCsproj(string relativePath)
     {
         var fullPath = Path.Combine(FindCheckoutRoot(), relativePath);
